@@ -17,7 +17,7 @@ defmodule PhilomenaWeb.ImageView do
 
   def render_intent(conn, image, size) do
     uris = thumb_urls(image, can?(conn, :show, image))
-    vid? = image.image_mime_type == "video/webm"
+    vid? = image.image_mime_type == "video/webm" || image.image_mime_type == "video/mp4"
     gif? = image.image_mime_type == "image/gif"
     alt = title_text(image)
 
@@ -38,7 +38,7 @@ defmodule PhilomenaWeb.ImageView do
 
       not vid? or use_gif? ->
         {:image, String.replace(uris[size], ".webm", ".gif"), alt}
-
+        {:image, String.replace(uris[size], ".mp4", ".gif"), alt}
       true ->
         {:video, uris[size], String.replace(uris[size], ".webm", ".mp4"), alt}
     end
@@ -128,6 +128,8 @@ defmodule PhilomenaWeb.ImageView do
       image_id: image.id,
       image_tags: Jason.encode!(Enum.map(image.tags, & &1.id)),
       image_tag_aliases: image.tag_list_plus_alias_cache,
+      image_size: image.image_size,
+      mime_type: image.image_mime_type,
       score: image.score,
       faves: image.faves_count,
       upvotes: image.upvotes_count,

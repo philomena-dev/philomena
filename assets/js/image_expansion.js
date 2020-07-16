@@ -44,7 +44,7 @@ function selectVersion(imageWidth, imageHeight, imageSize, imageMime) {
   // Sanity check to make sure we're not serving unintentionally huge assets
   // all at once (where "huge" > 25 MiB). Videos are loaded in chunks so it
   // doesn't matter too much there.
-  if (imageMime === 'video/webm' || imageSize <= 26214400) {
+  if (imageMime === 'video/webm' || imageMime === 'video/mp4' || imageSize <= 26214400) {
     return 'full';
   }
   else {
@@ -56,6 +56,7 @@ function selectVersion(imageWidth, imageHeight, imageSize, imageMime) {
  * Given a target container element, chooses and scales an image
  * to an appropriate dimension.
  */
+ 
 function pickAndResize(elem) {
   const imageWidth = parseInt(elem.dataset.width, 10),
         imageHeight = parseInt(elem.dataset.height, 10),
@@ -73,7 +74,7 @@ function pickAndResize(elem) {
   const uri = uris[version];
   let imageFormat = /\.(\w+?)$/.exec(uri)[1];
 
-  if (version === 'full' && store.get('serve_webm') && Boolean(uris.mp4)) {
+  if (version === 'full' && imageFormat !== 'gif' && store.get('serve_webm') && Boolean(uris.mp4)) {
     imageFormat = 'mp4';
   }
 
@@ -90,10 +91,9 @@ function pickAndResize(elem) {
   if (imageFormat === 'mp4') {
     elem.classList.add('full-height');
     elem.insertAdjacentHTML('afterbegin',
-      `<video controls autoplay loop muted playsinline preload="auto" id="image-display"
-           width="${imageWidth}" height="${imageHeight}">
-        <source src="${uris.mp4}" type="video/mp4">
-        <source src="${uris.webm}" type="video/webm">
+      `<video controls autoplay loop muted playsinline preload="auto" id="image-display">
+        <source src="${uri}" type="video/mp4">
+        <source src="${uri.replace(/mp4$/, 'webm')}" type="video/webm">
         <p class="block block--fixed block--warning">
           Your browser supports neither MP4/H264 nor
           WebM/VP8! Please update it to the latest version.
@@ -137,6 +137,7 @@ function pickAndResize(elem) {
     elem.insertAdjacentHTML('afterbegin', image);
   }
 }
+
 
 /**
  * Bind an event to an image container for updating an image on

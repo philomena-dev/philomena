@@ -16,7 +16,7 @@ footer#footer
 
   #serving_info
     ' Powered by the 
-    a href="https://github.com/derpibooru/philomena" philomena project
+    a href="https://github.com/ZizzyDizzyMC/philomena" philomena project
     br
     ' Served by
     => hostname()

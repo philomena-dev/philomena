@@ -63,7 +63,7 @@ p
     = if !@conn.assigns.current_user do
       .field
         = checkbox f, :captcha, class: "js-captcha", value: 0
-        = label f, :captcha, "I am not a robot!"
+        = label f, :captcha, "I am not a robot and I have read and I agree to the site rules."
       p
         ' This helps stop bot spam; log in if you don't want to deal with captchas.
 

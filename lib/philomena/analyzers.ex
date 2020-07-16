@@ -10,6 +10,7 @@ defmodule Philomena.Analyzers do
   alias Philomena.Analyzers.Png
   alias Philomena.Analyzers.Svg
   alias Philomena.Analyzers.Webm
+  alias Philomena.Analyzers.Mp4
 
   @doc """
   Returns an {:ok, analyzer} tuple, with the analyzer being a module capable
@@ -34,6 +35,7 @@ defmodule Philomena.Analyzers do
   def analyzer("image/png"), do: {:ok, Png}
   def analyzer("image/svg+xml"), do: {:ok, Svg}
   def analyzer("video/webm"), do: {:ok, Webm}
+  def analyzer("video/mp4"), do: {:ok, Mp4}
   def analyzer(_content_type), do: :error
 
   @doc """

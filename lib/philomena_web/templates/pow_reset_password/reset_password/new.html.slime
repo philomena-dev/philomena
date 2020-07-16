@@ -13,6 +13,6 @@ p
 
   .field
     = checkbox f, :captcha, class: "js-captcha", value: 0
-    = label f, :captcha, "I am not a robot!"
+    = label f, :captcha, "I am not a robot and I have read and I agree to the site rules."
 
   = submit "Submit", class: "button"

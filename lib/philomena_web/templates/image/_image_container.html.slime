@@ -28,7 +28,8 @@
       .media-box__overlay.js-spoiler-info-overlay
         = if @image.image_mime_type == "video/webm" do
           | WebM
-
+        = if @image.image_mime_type == "video/mp4" do
+          | Mp4
       a href=link title=hover_text
         picture
           img src=small_url alt=hover_text

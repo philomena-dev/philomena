@@ -228,7 +228,7 @@ defmodule Philomena.Users.User do
       :hide_vote_counts
     ])
     |> TagList.propagate_tag_list(:watched_tag_list, :watched_tag_ids)
-    |> validate_inclusion(:theme, ~W(default dark red))
+    |> validate_inclusion(:theme, ~W(default dark red olddefault))
     |> validate_inclusion(:images_per_page, 15..50)
     |> validate_inclusion(:comments_per_page, 15..100)
     |> Search.validate_search(:watched_images_query_str, user, true)
@@ -385,11 +385,11 @@ defmodule Philomena.Users.User do
     provisioning_uri = %URI{
       scheme: "otpauth",
       host: "totp",
-      path: "/Derpibooru:" <> user.email,
+      path: "/Ponybooru:" <> user.email,
       query:
         URI.encode_query(%{
           secret: secret,
-          issuer: "Derpibooru"
+          issuer: "Ponybooru"
         })
     }
 

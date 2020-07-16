@@ -24,7 +24,9 @@ defmodule Philomena.Tags.Tag do
     "series",
     "species",
     "spoiler",
-    "video"
+    "video",
+    "musician",
+    "album"
   ]
 
   @namespace_categories %{
@@ -38,7 +40,9 @@ defmodule Philomena.Tags.Tag do
     "photographer" => "origin",
     "series" => "content-fanmade",
     "spoiler" => "spoiler",
-    "video" => "content-fanmade"
+    "video" => "content-fanmade",
+    "musician" => "origin",
+    "album" => "content-fanmade"
   }
 
   @derive {Phoenix.Param, key: :slug}

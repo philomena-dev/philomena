@@ -25,6 +25,7 @@ defmodule Philomena.Processors do
   alias Philomena.Processors.Png
   alias Philomena.Processors.Svg
   alias Philomena.Processors.Webm
+  alias Philomena.Processors.Mp4
 
   @doc """
   Returns a processor, with the processor being a module capable
@@ -38,6 +39,7 @@ defmodule Philomena.Processors do
   def processor("image/png"), do: Png
   def processor("image/svg+xml"), do: Svg
   def processor("video/webm"), do: Webm
+  def processor("video/mp4"), do: Mp4
   def processor(_content_type), do: nil
 
   @doc """

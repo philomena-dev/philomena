@@ -154,13 +154,13 @@ defmodule Philomena.Images.Image do
       :uploaded_image,
       :image_is_animated
     ])
-    |> validate_number(:image_size, greater_than: 0, less_than_or_equal_to: 100_000_000)
+    |> validate_number(:image_size, greater_than: 0, less_than_or_equal_to: 110_000_000)
     |> validate_number(:image_width, greater_than: 0, less_than_or_equal_to: 32767)
     |> validate_number(:image_height, greater_than: 0, less_than_or_equal_to: 32767)
     |> validate_length(:image_name, max: 255, count: :bytes)
     |> validate_inclusion(
       :image_mime_type,
-      ~W(image/gif image/jpeg image/png image/svg+xml video/webm),
+      ~W(image/gif image/jpeg image/png image/svg+xml video/webm video/mp4),
       message: "(#{attrs["image_mime_type"]}) is invalid"
     )
     |> unsafe_validate_unique([:image_orig_sha512_hash], Repo)

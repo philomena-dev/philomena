@@ -182,7 +182,8 @@ defmodule Philomena.Images do
 
     Exq.enqueue(Exq, queue(image.image_mime_type), ThumbnailWorker, [image.id])
   end
-
+  
+  defp queue("video/mp4"), do: "videos"
   defp queue("video/webm"), do: "videos"
   defp queue(_mime_type), do: "images"
 

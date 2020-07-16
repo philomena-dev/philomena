@@ -1,46 +1,65 @@
 /*
- * Default theme - the same colors they've been for years
+ * Darker theme
  */
 
 // ///////////////////////////////////
 // ///// SECTION 1 - MAIN COLORS /////
 // ///////////////////////////////////
 
-$background_color: #ffffff;
-$page_background_color: #f8fafc;
-$foreground_color: #333333;
+$background_color: #331A2A;
+$page_background_color: #26121E;
+$foreground_color: #E4DDDD;
 
-$base_color: #62a7d9;
+$base_color: #A04A82;
 
-$primary_color: #c1e4f9;
-$success_color: #bde9a3; /* tag added, currently banned, view post history--added */
-$danger_color: #ebc0bb; /* tag removed, currently not banned, view post history--deleted */
-$warning_color: #eee9bc; /* NSFW streams, image spoilered, things like that */
+$primary_light_color: #6E1766;
+$success_light_color: #144714;
+$danger_light_color: #66211f;
+$warning_light_color: #7d4825;
 
-$link_color: #419cd9;
-$link_hover_color: #9273d0;
+$destroyed_content_color: #382c2f;
 
-$fave_color: #c4b246;
-$vote_up_color: #67af2b;
-$vote_down_color: #cf0001;
-$hide_color: #cf0001;
+$meta_color: #2C1625;
 
-$destroyed_content_color: #ffdcdc;
+$header_color: #76235A;
+$header_field_color: #571943;
+$header_secondary_color: #471A38;
+$header_admin_color: #3b1d1d;
 
-$assistant_color: #eeceed;
+$block_header_color: #572945;
+$block_header_link_text_color: #DF49C1;
 
-$tag_normal_color: #6f8f0e;
-$tag_category_rating_color: #267ead;
-$tag_category_spoiler_color: #c24523;
-$tag_category_origin_color: #393f85;
-$tag_category_oc_color: #9852a3;
-$tag_category_error_color: #ad263f;
-$tag_category_character_color: #2d8677;
-$tag_category_content_official_color: #998e1a;
-$tag_category_content_fanmade_color: #bb5496;
-$tag_category_species_color: #8b552f;
+$block_header_light_color: #402135;
+$block_header_light_link_text_color: #C85ABA;
 
-$commission_category_color: #986f3d;
+$border_color: #502A41;
+
+$media_box_color: #5E3650;
+
+$link_color: #D241B5;
+$link_hover_color: #E29A97;
+
+$fave_color: #a18e27;
+$vote_up_color: #5b9b26;
+$vote_down_color: #da3412;
+$hide_color: #da3412;
+
+$assistant_color: #511b4e;
+
+$tag_normal_color: #4aa158;
+$tag_category_rating_color: #418dd9;
+$tag_category_spoiler_color: #d49b39;
+$tag_category_origin_color: #6f66d6;
+$tag_category_oc_color: #b157b7;
+$tag_category_error_color: #d45460;
+$tag_category_character_color: #4aaabf;
+$tag_category_content_official_color: #b9b541;
+$tag_category_content_fanmade_color: #cc8eb5;
+$tag_category_species_color: #b16b50;
+
+$commission_category_color: #e07b27;
+
+$site_notice_color: #07070a;
 
 $image_overlay_color: #ffffff;
 $image_overlay_background_color: #000000;
@@ -49,102 +68,93 @@ $image_overlay_background_color: #000000;
 // ///// SECTION 2 - DERIVED COLORS /////
 // //////////////////////////////////////
 
-$text_light_color: $background_color;
+$text_light_color: $foreground_color;
 
 $meta_color: mix($foreground_color, $background_color, 5%);
 $meta_border_color: mix($foreground_color, $meta_color, 30%);
 
-$header_color: darken($base_color, 9%);
-$header_hover_color: darken($base_color, 16%);
-$header_field_color: $base_color;
-$header_field_hover_color: darken($base_color, 7%);
-$header_secondary_color: desaturate(lighten($base_color, 30%), 25%);
-$header_secondary_hover_color: darken($header_secondary_color, 7%);
+$primary_color: saturate(lighten($primary_light_color, 5%), 4%);
+$success_color: lighten($success_light_color, 4%);
+$danger_color: lighten($danger_light_color, 5%);
+$warning_color: lighten($warning_light_color, 6%);
 
-$header_admin_color: mix($vote_down_color, $background_color, 16%);
-$header_admin_hover_color: mix($vote_down_color, $background_color, 30%);
+$header_hover_color: darken($header_color, 8%);
+$header_field_hover_color: darken($header_hover_color, 4%);
+$header_secondary_hover_color: darken($header_secondary_color, 4%);
 
-$block_header_color: lighten($base_color, 28%);
-$block_header_hover_color: desaturate(lighten($base_color, 20%), 5%);
-$block_header_link_text_color: saturate(darken($header_color, 5%), 6%);
-$block_header_link_text_hover_color: darken($header_color, 15%);
+$header_admin_hover_color: darken($header_admin_color, 5%);
 
-$block_header_light_color: desaturate(lighten($base_color, 31%), 16%);
-$block_header_light_hover_color: lighten($header_secondary_hover_color, 2%);
-$block_header_light_link_text_color: darken($block_header_light_color, 42%);
-$block_header_light_link_text_hover_color: darken($block_header_light_color, 52%);
+$block_header_hover_color: adjust_hue(saturate(darken($block_header_color, 4%), 4%), -3deg);
+$block_header_link_text_hover_color: adjust_hue(desaturate(darken($block_header_link_text_color, 3%), 20%), 6deg);
 
-$border_color: darken($block_header_light_color, 3%);
+$block_header_light_hover_color: adjust_hue(saturate(darken($block_header_light_color, 4%), 10%), -4deg);
+$block_header_light_link_text_hover_color: adjust_hue(desaturate(darken($block_header_light_link_text_color, 2%), 10%), 8deg);
 
-$media_box_color: desaturate($block_header_light_color, 10%);
-$media_box_hover_color: saturate(darken($media_box_color, 6%), 6%);
+$media_box_hover_color: darken($media_box_color, 4%);
+$media_box_header_link_text_hover_color: desaturate(darken($link_color, 3%), 18%);
 $media_box_header_link_text_color: $link_color;
 $media_box_header_link_text_hover_color: darken($media_box_header_link_text_color, 10%);
 
-$primary_light_color: lighten($primary_color, 5%);
-$success_light_color: lighten($success_color, 7%);
-$danger_light_color: lighten($danger_color, 4%);
-$warning_light_color: lighten($warning_color, 6%);
+$link_dark_color: mix($link_color, $foreground_color, 70%);
+$link_dark_hover_color: mix($link_hover_color, $foreground_color, 70%);
 
-$link_dark_color: darken($link_color, 20%); //used in the tag table, amongst other things
-$link_hover_dark_color: darken($link_hover_color, 20%);
+$image_show_link_color: $link_dark_color;
+$image_show_link_hover_color: $link_dark_hover_color;
 
-$image_show_link_color: $link_color;
-$image_show_link_hover_color: $link_hover_color;
+$image_overlay_color: $foreground_color;
+$image_overlay_background: darken($background_color, 30%);
 
-/* In default theme, except odd color to be darker! */
-$background_odd_color: lighten($base_color, 35%); //also used as 'alt background color' in various places
-$background_even_color: $background_color;
-/* Depending on the theme, you may want to swap even and odd colors */
-$success_odd_color: saturate(darken($success_light_color, 3%), 8%);
-$success_even_color: lighten($success_color, 13%);
-$warning_odd_color: saturate(darken($warning_light_color, 7%), 10%);
-$warning_even_color: lighten($warning_color, 5%);
-$danger_odd_color: saturate(darken($danger_light_color, 1%), 12%);
-$danger_even_color: desaturate(lighten($danger_color, 7%), 10%);
-
-$foreground_half_color: mix($foreground_color, $background_color); //used for weird h's (on image pages like Metadata Editing and Information) and also footer text color
-
-$sparkline_color: lighten($base_color, 5%);
-
-$assistant_border_color: darken($assistant_color, 8%);
+$assistant_border_color: lighten($assistant_color, 8%);
 
 $admin_links_color: mix($vote_down_color, $background_color, 17%);
 $admin_links_hover_color: mix($vote_down_color, $background_color, 48%);
 
+$background_odd_color: darken($background_color, 3%);
+$background_even_color: $background_color;
+
+$success_odd_color: desaturate(darken($success_color, 9%), 2%);
+$success_even_color: saturate(darken($success_light_color, 2%), 2%);
+$warning_odd_color: saturate(darken($warning_color, 19%), 10%);
+$warning_even_color: saturate(darken($warning_light_color, 7%), 7%);
+$danger_odd_color: desaturate(darken($danger_color, 16%), 2%);
+$danger_even_color: darken($danger_light_color, 6%);
+
+$foreground_half_color: mix($foreground_color, $background_color);
+
+$sparkline_color: lighten($base_color, 5%);
+
 $input_text_color: $foreground_color;
 $input_color: $meta_color;
 $input_border: $meta_border_color;
-$input_color_active: desaturate(lighten($base_color, 30%), 16%);
-$input_border_active: lighten($base_color, 10%);
+$input_color_active: lighten($meta_color, 5%);
+$input_border_active: desaturate(lighten($base_color, 2%), 10%);
 
-$tag_normal_background: desaturate(lighten($tag_normal_color, 44%), 28%);
-$tag_normal_border: darken($tag_normal_background, 16%);
-$tag_category_rating_background: desaturate(lighten($tag_category_rating_color, 41%), 25%);
-$tag_category_rating_border: darken($tag_category_rating_background, 10%);
-$tag_category_spoiler_background: lighten($tag_category_spoiler_color, 41%);
-$tag_category_spoiler_border: darken($tag_category_spoiler_background, 8%);
-$tag_category_origin_background: lighten($tag_category_origin_color, 43%);
-$tag_category_origin_border: darken($tag_category_origin_background, 10%);
-$tag_category_oc_background: lighten($tag_category_oc_color, 35%);
-$tag_category_oc_border: darken($tag_category_oc_background, 9%);
-$tag_category_error_background: lighten($tag_category_error_color, 40%);
-$tag_category_error_border: darken($tag_category_error_background, 8%);
-$tag_category_character_background: desaturate(lighten($tag_category_character_color, 44%), 10%);
-$tag_category_character_border: lighten($tag_category_character_color, 22%);
-$tag_category_content_official_background: lighten($tag_category_content_official_color, 41%);
-$tag_category_content_official_border: lighten($tag_category_content_official_color, 18%);
-$tag_category_content_fanmade_background: lighten($tag_category_content_fanmade_color, 36%);
-$tag_category_content_fanmade_border: lighten($tag_category_content_fanmade_color, 18%);
-$tag_category_species_background: lighten($tag_category_species_color, 44%);
-$tag_category_species_border: lighten($tag_category_species_color, 25%);
+$tag_normal_background: darken($tag_normal_color, 29%);
+$tag_normal_border: darken($tag_normal_color, 18%);
+$tag_category_rating_background: darken($tag_category_rating_color, 35%);
+$tag_category_rating_border: desaturate(darken($tag_category_rating_color, 20%), 10%);
+$tag_category_spoiler_background: darken($tag_category_spoiler_color, 34%);
+$tag_category_spoiler_border: darken($tag_category_spoiler_color, 23%);
+$tag_category_origin_background: darken($tag_category_origin_color, 40%);
+$tag_category_origin_border: desaturate(darken($tag_category_origin_color, 22%), 28%);
+$tag_category_oc_background: darken($tag_category_oc_color, 33%);
+$tag_category_oc_border: darken($tag_category_oc_color, 15%);
+$tag_category_error_background: desaturate(darken($tag_category_error_color, 38%), 6%);
+$tag_category_error_border: darken($tag_category_error_color, 22%);
+$tag_category_character_background: darken($tag_category_character_color, 33%);
+$tag_category_character_border: darken($tag_category_character_color, 20%);
+$tag_category_content_official_background: desaturate(darken($tag_category_content_official_color, 29%), 2%);
+$tag_category_content_official_border: darken($tag_category_content_official_color, 20%);
+$tag_category_content_fanmade_background: darken($tag_category_content_fanmade_color, 40%);
+$tag_category_content_fanmade_border: desaturate(darken($tag_category_content_fanmade_color, 20%), 10%);
+$tag_category_species_background: darken($tag_category_species_color, 35%);
+$tag_category_species_border: desaturate(darken($tag_category_species_color, 20%), 10%);
 
-$commission_category_background: saturate(lighten($commission_category_color, 40%), 12%);
-$commission_category_border: lighten($commission_category_color, 20%);
+$commission_category_background: darken($commission_category_color, 36%);
+$commission_category_border: darken($commission_category_color, 25%);
 
-$site_notice_color: darken($base_color, 32%);
-$site_notice_link_color: $block_header_light_color;
-$site_notice_link_hover_color: $block_header_hover_color;
+$site_notice_link_color: desaturate(lighten($block_header_link_text_color, 8%), 20%);
+$site_notice_link_hover_color: darken($site_notice_link_color, 8%);
 
 $button_text_color: $foreground_color;
 $button_background_color: rgba($meta_color, 0.2);
@@ -157,10 +167,10 @@ $button_success_background_color: $success_light_color;
 $button_warning_background_color: $warning_light_color;
 $button_danger_background_color: $danger_light_color;
 
-$button_primary_border_color: darken($primary_color, 8%);
-$button_success_border_color: darken($success_color, 10%);
-$button_warning_border_color: darken($warning_color, 11%);
-$button_danger_border_color: darken($danger_color, 8%);
+$button_primary_border_color: saturate(lighten($primary_light_color, 14%), 22%);
+$button_success_border_color: saturate(lighten($success_light_color, 9%), 10%);
+$button_warning_border_color: saturate(lighten($warning_light_color, 12%), 10%);
+$button_danger_border_color: saturate(lighten($danger_light_color, 18%), 6%);
 
 $button_primary_hover_background: darken($button_primary_background_color, 5%);
 $button_primary_hover_border: darken($button_primary_border_color, 5%);

@@ -64,19 +64,19 @@ defmodule Philomena.DnpEntries.DnpEntry do
 
   def reasons do
     [
-      {"No Edits",
-       "I would like to prevent edited versions of my artwork from being uploaded in the future"},
-      {"Artist Tag Change",
-       "I would like my artist tag to be changed to something that can not be connected to my current name"},
-      {"Uploader Credit Change",
-       "I would like the uploader credit for already existing uploads of my art to be assigned to me"},
-      {"Certain Type/Location Only",
-       "I only want to allow art of a certain type or from a certain location to be uploaded to Derpibooru"},
-      {"With Permission Only",
-       "I only want people with my permission to be allowed to upload my art to Derpibooru"},
-      {"Artist Upload Only",
-       "I want to be the only person allowed to upload my art to Derpibooru"},
-      {"Other", "I would like a DNP entry under other conditions"}
+      {"Uploader Credit Change", "I would like the uploader credit for existing and future uploads of my art to be assigned to me."},
+      {"Artist Upload Only", "I am an artist and will be uploading my own art."},
+      {"With Permission Only", "I am an artist and have given specific people permission to upload my art."},
+      {"Delayed Artist Upload Only", "I am an artist and will be uploading my own art. After a default of 6 months, users can post my art."},
+      {"Delayed With Permission Only", "I am an artist and have given specific people permission to upload my art. After a default of 6 months, users can post my art."},
+      {"Limited Edits", "I am an artist and would like to limit edits to things likely to fall under Fair Use (Parody, Transformative, Sufficiently different from original.)"},
+      {"Separate Edits", "I am an artist and would like edits to be placed under a different artist tag."},
+      {"User Interaction Lock", "I am an artist and would like my art to have comments disabled."},
+      {"Video Hold", "I am a content creator and would like to delay my videos from being uploaded to Ponybooru."},
+      {"Image Hold", "I am an artist and would like to delay my art from being uploaded to Ponybooru."},
+      {"Artist Tag Change", "I would like my artist tag to be changed to something that can not be connected to my current name."},
+      {"Hidden by default", "I would like my art to be available to logged in users only."},
+      {"Other", "Choose this if you would like to choose a combination of other DNP types."}
     ]
   end
 

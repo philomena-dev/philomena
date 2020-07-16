@@ -29,7 +29,7 @@ function showVideoThumb(img) {
 function showThumb(img) {
   const size = img.dataset.size;
   const uris = JSON.parse(img.dataset.uris);
-  const thumbUri = uris[size].replace(/webm$/, 'gif');
+  const thumbUri = uris[size].replace(/(webm|mp4)$/, 'gif');
 
   const picEl = img.querySelector('picture');
   if (!picEl) return showVideoThumb(img);
