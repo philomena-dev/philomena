@@ -10,6 +10,6 @@ defmodule Philomena.ThumbnailWorker do
       "image:process",
       %{image_id: image_id}
     )
-    Elasticsearch.update_mapping!(Image)
+    Images.reindex_image(image)
   end
 end
