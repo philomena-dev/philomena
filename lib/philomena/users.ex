@@ -19,10 +19,6 @@ defmodule Philomena.Users do
   alias Philomena.Galleries
   alias Philomena.Reports
 
-  use Pow.Ecto.Context,
-    repo: Repo,
-    user: User
-
   @doc """
   Returns the list of users.
 
@@ -240,19 +236,6 @@ defmodule Philomena.Users do
     User.changeset(user, %{})
   end
 
-  @impl Pow.Ecto.Context
-  def delete(user) do
-    {:error, User.changeset(user, %{})}
-  end
-
-  @impl Pow.Ecto.Context
-  def create(params) do
-    %User{}
-    |> User.creation_changeset(params)
-    |> Repo.insert()
-  end
-
-  @impl Pow.Ecto.Context
   def get_by(clauses) do
     User
     |> join(:left, [u], _ in assoc(u, :roles))

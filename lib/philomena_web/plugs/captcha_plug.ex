@@ -6,10 +6,7 @@ defmodule PhilomenaWeb.CaptchaPlug do
   def init([]), do: false
 
   def call(conn, _opts) do
-    user = conn |> Pow.Plug.current_user()
-
-    conn
-    |> maybe_check_captcha(user)
+    maybe_check_captcha(conn, conn.assigns.current_user)
   end
 
   defp maybe_check_captcha(conn, nil) do

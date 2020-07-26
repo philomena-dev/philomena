@@ -1,5 +1,4 @@
 defmodule PhilomenaWeb.PowMailer do
-  use Pow.Phoenix.Mailer
   alias PhilomenaWeb.Mailer
   alias Philomena.Users.User
   import Bamboo.Email

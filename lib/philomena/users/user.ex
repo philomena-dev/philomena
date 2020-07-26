@@ -3,14 +3,6 @@ defmodule Philomena.Users.User do
   alias Philomena.Slug
 
   use Ecto.Schema
-
-  use Pow.Ecto.Schema,
-    password_hash_methods: {&Password.hash_pwd_salt/1, &Password.verify_pass/2},
-    password_min_length: 6
-
-  use Pow.Extension.Ecto.Schema,
-    extensions: [PowResetPassword, PowLockout]
-
   import Ecto.Changeset
 
   alias Philomena.Schema.TagList
@@ -73,7 +65,7 @@ defmodule Philomena.Users.User do
     field :encrypted_otp_secret_salt, :string
     field :consumed_timestep, :integer
     field :otp_backup_codes, {:array, :string}
-    pow_user_fields()
+    # pow_user_fields()
 
     # General attributes
     field :name, :string
@@ -150,8 +142,8 @@ defmodule Philomena.Users.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> pow_changeset(attrs)
-    |> pow_extension_changeset(attrs)
+    # |> pow_changeset(attrs)
+    # |> pow_extension_changeset(attrs)
     |> cast(attrs, [])
     |> validate_required([])
     |> unique_constraints()
@@ -169,8 +161,8 @@ defmodule Philomena.Users.User do
 
   def creation_changeset(user, attrs) do
     user
-    |> pow_changeset(attrs)
-    |> pow_extension_changeset(attrs)
+    # |> pow_changeset(attrs)
+    # |> pow_extension_changeset(attrs)
     |> cast(attrs, [:name])
     |> validate_required([:name])
     |> put_api_key()
@@ -359,14 +351,14 @@ defmodule Philomena.Users.User do
       true ->
         # User wants to disable TOTP
         changeset
-        |> pow_password_changeset(params)
+        # |> pow_password_changeset(params)
         |> consume_totp_token_changeset(params)
         |> disable_totp_changeset()
 
       _falsy ->
         # User wants to enable TOTP
         changeset
-        |> pow_password_changeset(params)
+        # |> pow_password_changeset(params)
         |> consume_totp_token_changeset(params)
         |> enable_totp_changeset(backup_codes)
     end

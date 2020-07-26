@@ -45,7 +45,6 @@ defmodule Philomena.MixProject do
       {:plug_cowboy, "~> 2.3"},
       {:phoenix_slime, "~> 0.13"},
       {:ecto_network, "~> 1.3"},
-      {:pow, "~> 1.0"},
       {:bcrypt_elixir, "~> 2.2"},
       {:pot, "~> 0.11"},
       {:secure_compare, "~> 0.1.0"},
@@ -67,7 +66,6 @@ defmodule Philomena.MixProject do
       {:tesla, "~> 1.3"},
       {:castore, "~> 0.1"},
       {:mint, "~> 1.1"},
-      {:libcluster, "~> 3.2"},
       {:exq, "~> 0.13"},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false}
     ]

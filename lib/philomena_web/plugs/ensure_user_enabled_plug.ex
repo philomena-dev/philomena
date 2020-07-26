@@ -6,10 +6,9 @@ defmodule PhilomenaWeb.EnsureUserEnabledPlug do
 
       plug PhilomenaWeb.EnsureUserEnabledPlug
   """
-  alias PhilomenaWeb.Router.Helpers, as: Routes
+  # alias PhilomenaWeb.Router.Helpers, as: Routes
   alias Phoenix.Controller
   alias Plug.Conn
-  alias Pow.Plug
 
   @doc false
   @spec init(any()) :: any()
@@ -18,8 +17,7 @@ defmodule PhilomenaWeb.EnsureUserEnabledPlug do
   @doc false
   @spec call(Conn.t(), any()) :: Conn.t()
   def call(conn, _opts) do
-    conn
-    |> Plug.current_user()
+    conn.assigns.current_user
     |> disabled?()
     |> maybe_halt(conn)
   end
@@ -29,8 +27,8 @@ defmodule PhilomenaWeb.EnsureUserEnabledPlug do
 
   defp maybe_halt(true, conn) do
     conn
-    |> Plug.delete()
-    |> Controller.redirect(to: Routes.pow_session_path(conn, :new))
+    # |> Pow.Plug.delete()
+    |> Controller.redirect(to: "/")
     |> Conn.halt()
   end
 

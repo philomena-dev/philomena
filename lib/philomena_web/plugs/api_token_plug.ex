@@ -1,6 +1,6 @@
 defmodule PhilomenaWeb.ApiTokenPlug do
   alias Philomena.Users
-  alias Pow.Plug
+  alias Plug.Conn
 
   def init([]), do: []
 
@@ -19,8 +19,9 @@ defmodule PhilomenaWeb.ApiTokenPlug do
   end
 
   defp assign_user({conn, user}) do
-    config = Plug.fetch_config(conn)
+    # config = Plug.fetch_config(conn)
 
-    Plug.assign_current_user(conn, user, config)
+    # Plug.assign_current_user(conn, user, config)
+    Conn.assign(conn, :current_user, user)
   end
 end
