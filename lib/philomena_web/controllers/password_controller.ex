@@ -4,7 +4,7 @@ defmodule PhilomenaWeb.PasswordController do
   alias Philomena.Users
 
   plug PhilomenaWeb.CaptchaPlug when action in [:create]
-
+  plug PhilomenaWeb.CompromisedPasswordCheckPlug when action in [:update]
   plug :get_user_by_reset_password_token when action in [:edit, :update]
 
   def new(conn, _params) do

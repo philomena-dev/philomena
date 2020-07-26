@@ -1,9 +1,9 @@
 h1 Sign in
 
-= form_for @changeset, Routes.session_path(@conn, :create), fn f ->
-  = if @changeset.action do
+= form_for @conn, Routes.session_path(@conn, :create), [as: :user], fn f ->
+  = if @error_message do
     .alert.alert-danger
-      p Oops, something went wrong! Please check the errors below.
+      p = @error_message
 
   p = link "Forgot your password?", to: Routes.password_path(@conn, :new)
 

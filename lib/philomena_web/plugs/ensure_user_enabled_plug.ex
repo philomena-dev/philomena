@@ -30,6 +30,7 @@ defmodule PhilomenaWeb.EnsureUserEnabledPlug do
   defp maybe_halt(true, conn) do
     conn
     |> UserAuth.log_out_user()
+    |> Controller.put_flash(:error, "Your account is not currently active.")
     |> Controller.redirect(to: "/")
     |> Conn.halt()
   end

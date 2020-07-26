@@ -68,7 +68,7 @@ defmodule PhilomenaWeb.Router do
     ]
 
     resources "/registrations", RegistrationController, only: [:new, :create], singleton: true
-    resources "/passwords", PasswordController, only: [:new, :create, :edit, :update], singleton: true
+    resources "/passwords", PasswordController, only: [:new, :create, :edit, :update]
     resources "/confirmations", ConfirmationController, only: [:new, :create, :show]
   end
 

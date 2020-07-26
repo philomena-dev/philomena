@@ -29,7 +29,7 @@ p
 
 h3 Change e-mail
 
-= form_for @email_changeset, Routes.registration_email_path(@conn, :create), fn f ->
+= form_for @email_changeset, Routes.registration_email_path(@conn, :create), [method: :post], fn f ->
   = if @email_changeset.action do
     .alert.alert-danger
       p Oops, something went wrong! Please check the errors below.
@@ -39,16 +39,16 @@ h3 Change e-mail
     = error_tag f, :email
 
   .field
-    = password_input f, :current_password, class: "input", required: true, placeholder: "Current password"
+    = password_input f, :current_password, class: "input", required: true, name: "current_password", placeholder: "Current password"
     = error_tag f, :current_password
 
   div
-    = submit "Change e-mail"
+    = submit "Change e-mail", class: "button"
 
 h3 Change password
 
 = form_for @password_changeset, Routes.registration_password_path(@conn, :update), fn f ->
-  = if @changeset.action do
+  = if @password_changeset.action do
     .alert.alert-danger
       p Oops, something went wrong! Please check the errors below.
 
@@ -61,7 +61,7 @@ h3 Change password
     = error_tag f, :password_confirmation
 
   .field
-    = password_input f, :current_password, class: "input", placeholder: "Current password"
+    = password_input f, :current_password, name: "current_password", class: "input", placeholder: "Current password"
     = error_tag f, :current_password
 
   = submit "Change password", class: "button"

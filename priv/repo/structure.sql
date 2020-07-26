@@ -1817,6 +1817,39 @@ ALTER SEQUENCE public.user_statistics_id_seq OWNED BY public.user_statistics.id;
 
 
 --
+-- Name: user_tokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.user_tokens (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    token bytea NOT NULL,
+    context character varying(255) NOT NULL,
+    sent_to character varying(255),
+    inserted_at timestamp(0) without time zone NOT NULL
+);
+
+
+--
+-- Name: user_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.user_tokens_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: user_tokens_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.user_tokens_id_seq OWNED BY public.user_tokens.id;
+
+
+--
 -- Name: user_whitelists; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1958,39 +1991,6 @@ CREATE TABLE public.users_roles (
     user_id integer NOT NULL,
     role_id integer NOT NULL
 );
-
-
---
--- Name: users_tokens; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.users_tokens (
-    id bigint NOT NULL,
-    user_id bigint NOT NULL,
-    token bytea NOT NULL,
-    context character varying(255) NOT NULL,
-    sent_to character varying(255),
-    inserted_at timestamp(0) without time zone NOT NULL
-);
-
-
---
--- Name: users_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.users_tokens_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: users_tokens_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.users_tokens_id_seq OWNED BY public.users_tokens.id;
 
 
 --
@@ -2345,6 +2345,13 @@ ALTER TABLE ONLY public.user_statistics ALTER COLUMN id SET DEFAULT nextval('pub
 
 
 --
+-- Name: user_tokens id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_tokens ALTER COLUMN id SET DEFAULT nextval('public.user_tokens_id_seq'::regclass);
+
+
+--
 -- Name: user_whitelists id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2356,13 +2363,6 @@ ALTER TABLE ONLY public.user_whitelists ALTER COLUMN id SET DEFAULT nextval('pub
 --
 
 ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
-
-
---
--- Name: users_tokens id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.users_tokens ALTER COLUMN id SET DEFAULT nextval('public.users_tokens_id_seq'::regclass);
 
 
 --
@@ -2733,6 +2733,14 @@ ALTER TABLE ONLY public.user_statistics
 
 
 --
+-- Name: user_tokens user_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_tokens
+    ADD CONSTRAINT user_tokens_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: user_whitelists user_whitelists_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2746,14 +2754,6 @@ ALTER TABLE ONLY public.user_whitelists
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
-
-
---
--- Name: users_tokens users_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.users_tokens
-    ADD CONSTRAINT users_tokens_pkey PRIMARY KEY (id);
 
 
 --
@@ -3941,17 +3941,17 @@ CREATE INDEX intensities_index ON public.images USING btree (se_intensity, sw_in
 
 
 --
--- Name: users_tokens_context_token_index; Type: INDEX; Schema: public; Owner: -
+-- Name: user_tokens_context_token_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX users_tokens_context_token_index ON public.users_tokens USING btree (context, token);
+CREATE UNIQUE INDEX user_tokens_context_token_index ON public.user_tokens USING btree (context, token);
 
 
 --
--- Name: users_tokens_user_id_index; Type: INDEX; Schema: public; Owner: -
+-- Name: user_tokens_user_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX users_tokens_user_id_index ON public.users_tokens USING btree (user_id);
+CREATE INDEX user_tokens_user_id_index ON public.user_tokens USING btree (user_id);
 
 
 --
@@ -4755,19 +4755,19 @@ ALTER TABLE ONLY public.image_sources
 
 
 --
+-- Name: user_tokens user_tokens_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_tokens
+    ADD CONSTRAINT user_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
 -- Name: users users_forced_filter_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_forced_filter_id_fkey FOREIGN KEY (forced_filter_id) REFERENCES public.filters(id);
-
-
---
--- Name: users_tokens users_tokens_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.users_tokens
-    ADD CONSTRAINT users_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --

@@ -7,7 +7,7 @@ defmodule Philomena.Users.UserNotifier do
       to: to,
       from: mailer_address(),
       subject: subject,
-      body: body
+      text_body: body
     )
     |> Mailer.deliver_later()
   end
