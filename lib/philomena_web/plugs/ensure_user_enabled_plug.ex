@@ -6,7 +6,7 @@ defmodule PhilomenaWeb.EnsureUserEnabledPlug do
 
       plug PhilomenaWeb.EnsureUserEnabledPlug
   """
-  # alias PhilomenaWeb.Router.Helpers, as: Routes
+
   alias Phoenix.Controller
   alias Plug.Conn
   alias PhilomenaWeb.UserAuth

@@ -27,23 +27,31 @@ p
   ' Avoid sharing this key with others, as it could be used to compromise
   ' your account.
 
-h3 Update Settings
-p
-  strong
-    ' Don't forget to confirm your changes by entering your current password
-    ' at the bottom of the page!
+h3 Change e-mail
 
-= form_for @changeset, @action, [as: :user], fn f ->
+= form_for @email_changeset, Routes.registration_email_path(@conn, :create), fn f ->
+  = if @email_changeset.action do
+    .alert.alert-danger
+      p Oops, something went wrong! Please check the errors below.
+
+  .field
+    = email_input f, :email, class: "input", placeholder: "Email", required: true, pattern: ".*@.*"
+    = error_tag f, :email
+
+  .field
+    = password_input f, :current_password, class: "input", required: true, placeholder: "Current password"
+    = error_tag f, :current_password
+
+  div
+    = submit "Change e-mail"
+
+h3 Change password
+
+= form_for @password_changeset, Routes.registration_password_path(@conn, :update), fn f ->
   = if @changeset.action do
     .alert.alert-danger
       p Oops, something went wrong! Please check the errors below.
 
-  h3 Email address
-  .field
-    = text_input f, :email, class: "input", placeholder: "Email", required: true, pattern: ".*@.*"
-    = error_tag f, :email
-
-  h3 Change Password
   .field
     = password_input f, :password, class: "input", placeholder: "New password"
     = error_tag f, :password
@@ -52,17 +60,8 @@ p
     = password_input f, :password_confirmation, class: "input", placeholder: "Confirm new password"
     = error_tag f, :password_confirmation
 
-  .fieldlabel
-    ' Leave these blank if you don't want to change your password.
+  .field
+    = password_input f, :current_password, class: "input", placeholder: "Current password"
+    = error_tag f, :current_password
 
-  br
-
-  .block.block--fixed.block--warning
-    h3 Confirm
-    .field
-      = password_input f, :current_password, class: "input", placeholder: "Current password"
-      = error_tag f, :current_password
-    .fieldlabel
-      ' We need your current password to confirm all of these changes
-
-  = submit "Save Account", class: "button"
+  = submit "Change password", class: "button"

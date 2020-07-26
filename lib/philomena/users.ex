@@ -358,6 +358,10 @@ defmodule Philomena.Users do
     end
   end
 
+  def change_user(%User{} = user) do
+    User.changeset(user, %{})
+  end
+
   @doc """
   Updates a user.
 

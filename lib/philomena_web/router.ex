@@ -73,13 +73,20 @@ defmodule PhilomenaWeb.Router do
   end
 
   scope "/", PhilomenaWeb do
-    pipe_through [:browser, :ensure_tor_authorized, :require_authenticated_user]
+    pipe_through [
+      :browser,
+      :ensure_totp,
+      :ensure_tor_authorized,
+      :require_authenticated_user
+    ]
 
     # Additional routes for TOTP
     resources "/registrations", RegistrationController, only: [:edit, :update], singleton: true
     scope "/registrations", Registration, as: :registration do
       resources "/totp", TotpController, only: [:edit, :update], singleton: true
       resources "/name", NameController, only: [:edit, :update], singleton: true
+      resources "/password", PasswordController, only: [:update], singleton: true
+      resources "/email", EmailController, only: [:create, :show]
     end
 
     resources "/sessions", SessionController, only: [:delete], singleton: true

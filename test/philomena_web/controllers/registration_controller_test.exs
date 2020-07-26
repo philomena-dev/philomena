@@ -44,4 +44,20 @@ defmodule PhilomenaWeb.RegistrationControllerTest do
       assert response =~ "should be at least 12 character"
     end
   end
+
+  describe "GET /registration/edit" do
+    setup :register_and_log_in_user
+
+    test "renders settings page", %{conn: conn} do
+      conn = get(conn, Routes.user_settings_path(conn, :edit))
+      response = html_response(conn, 200)
+      assert response =~ "Settings"
+    end
+
+    test "redirects if user is not logged in" do
+      conn = build_conn()
+      conn = get(conn, Routes.user_settings_path(conn, :edit))
+      assert redirected_to(conn) == Routes.user_session_path(conn, :new)
+    end
+  end
 end

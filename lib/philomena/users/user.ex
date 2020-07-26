@@ -240,6 +240,10 @@ defmodule Philomena.Users.User do
     end
   end
 
+  def changeset(user, attrs) do
+    cast(user, attrs, [])
+  end
+
   def update_changeset(user, attrs, roles) do
     user
     |> cast(attrs, [:name, :email, :role, :secondary_role, :hide_default_role])
