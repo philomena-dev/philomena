@@ -1,6 +1,6 @@
 h1 Register
 
-= form_for @changeset, @action, [as: :user], fn f ->
+= form_for @changeset, Routes.registration_path(@conn, :create), fn f ->
   = if @changeset.action do
     .alert.alert-danger
       p Oops, something went wrong! Please check the errors below.
@@ -16,11 +16,11 @@ h1 Register
     ' You'll use your email address to log in, and we'll use this to get in
     ' touch if we need to. Don't worry, we won't share this or spam you.
   .field
-    = text_input f, :email, class: "input", placeholder: "Email", required: true, pattern: ".*@.*"
+    = email_input f, :email, class: "input", placeholder: "Email", required: true, pattern: ".*@.*"
     = error_tag f, :email
 
   .fieldlabel
-    ' Pick a good strong password - longer is better! Minimum of 6 characters.
+    ' Pick a good strong password - longer is better! Minimum of 12 characters.
   .field
     = password_input f, :password, class: "input", placeholder: "Password", required: true
     = error_tag f, :password

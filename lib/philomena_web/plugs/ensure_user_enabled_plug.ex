@@ -9,6 +9,7 @@ defmodule PhilomenaWeb.EnsureUserEnabledPlug do
   # alias PhilomenaWeb.Router.Helpers, as: Routes
   alias Phoenix.Controller
   alias Plug.Conn
+  alias PhilomenaWeb.UserAuth
 
   @doc false
   @spec init(any()) :: any()
@@ -18,16 +19,17 @@ defmodule PhilomenaWeb.EnsureUserEnabledPlug do
   @spec call(Conn.t(), any()) :: Conn.t()
   def call(conn, _opts) do
     conn.assigns.current_user
-    |> disabled?()
+    |> disabled_or_unconfirmed?()
     |> maybe_halt(conn)
   end
 
-  defp disabled?(%{deleted_at: deleted_at}) when not is_nil(deleted_at), do: true
-  defp disabled?(_user), do: false
+  defp disabled_or_unconfirmed?(%{deleted_at: deleted_at}) when not is_nil(deleted_at), do: true
+  defp disabled_or_unconfirmed?(%{confirmed_at: nil}), do: true
+  defp disabled_or_unconfirmed?(_user), do: false
 
   defp maybe_halt(true, conn) do
     conn
-    # |> Pow.Plug.delete()
+    |> UserAuth.log_out_user()
     |> Controller.redirect(to: "/")
     |> Conn.halt()
   end

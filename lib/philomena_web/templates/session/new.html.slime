@@ -1,6 +1,6 @@
 h1 Sign in
 
-= form_for @changeset, @action, [as: :user], fn f ->
+= form_for @changeset, Routes.session_path(@conn, :create), fn f ->
   = if @changeset.action do
     .alert.alert-danger
       p Oops, something went wrong! Please check the errors below.
@@ -8,7 +8,7 @@ h1 Sign in
   p = link "Forgot your password?", to: Routes.password_path(@conn, :new)
 
   .field
-    = text_input f, :email, class: "input", required: true, placeholder: "Email", autofocus: true, pattern: ".*@.*"
+    = email_input f, :email, class: "input", required: true, placeholder: "Email", autofocus: true, pattern: ".*@.*"
     = error_tag f, :email
 
   .field
@@ -16,8 +16,8 @@ h1 Sign in
     = error_tag f, :password
 
   .field
-    = checkbox f, :persistent_session
-    = label f, :persistent_session, "Remember me"
+    = checkbox f, :remember_me
+    = label f, :remember_me, "Remember me"
 
   = submit "Sign in", class: "button"
 

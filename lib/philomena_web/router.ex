@@ -1,12 +1,15 @@
 defmodule PhilomenaWeb.Router do
   use PhilomenaWeb, :router
 
+  import PhilomenaWeb.UserAuth
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :fetch_current_user
     plug PhilomenaWeb.ContentSecurityPolicyPlug
     plug PhilomenaWeb.CurrentFilterPlug
     plug PhilomenaWeb.ImageFilterPlug
@@ -50,32 +53,27 @@ defmodule PhilomenaWeb.Router do
     plug PhilomenaWeb.FilterBannedUsersPlug
   end
 
-  pipeline :ensure_authorized do
-    # plug Pow.Plug.RequireAuthenticated,
-    #   error_handler: Pow.Phoenix.PlugErrorHandler
-  end
+  scope "/", PhilomenaWeb do
+    pipe_through [:browser, :redirect_if_user_is_authenticated]
 
-  pipeline :ensure_not_authorized do
-    # ...
+    resources "/sessions", SessionController, only: [:new, :create], singleton: true
   end
 
   scope "/", PhilomenaWeb do
     pipe_through [
       :browser,
-      :ensure_totp,
       :ensure_not_banned,
       :ensure_tor_authorized,
-      :ensure_not_authorized
+      :redirect_if_user_is_authenticated
     ]
 
     resources "/registrations", RegistrationController, only: [:new, :create], singleton: true
-    resources "/passwords", PasswordController, only: [:new, :edit, :update, :create], singleton: true
-    resources "/confirmations", ConfirmationController, only: [:new, :show, :create], singleton: true
-    resources "/sessions", SessionController, only: [:new, :create], singleton: true
+    resources "/passwords", PasswordController, only: [:new, :create, :edit, :update], singleton: true
+    resources "/confirmations", ConfirmationController, only: [:new, :create, :show]
   end
 
   scope "/", PhilomenaWeb do
-    pipe_through [:browser, :ensure_authorized]
+    pipe_through [:browser, :ensure_tor_authorized, :require_authenticated_user]
 
     # Additional routes for TOTP
     resources "/registrations", RegistrationController, only: [:edit, :update], singleton: true
@@ -91,7 +89,7 @@ defmodule PhilomenaWeb.Router do
   end
 
   scope "/api/v1/rss", PhilomenaWeb.Api.Rss, as: :api_rss do
-    pipe_through [:accepts_rss, :api, :ensure_authorized]
+    pipe_through [:accepts_rss, :api, :require_authenticated_user]
     resources "/watched", WatchedController, only: [:index]
   end
 
@@ -146,7 +144,7 @@ defmodule PhilomenaWeb.Router do
   end
 
   scope "/", PhilomenaWeb do
-    pipe_through [:browser, :ensure_totp, :ensure_authorized]
+    pipe_through [:browser, :ensure_totp, :require_authenticated_user]
 
     scope "/notifications", Notification, as: :notification do
       resources "/unread", UnreadController, only: [:index]
