@@ -12,7 +12,10 @@ config :philomena, Philomena.Repo,
   pool: Ecto.Adapters.SQL.Sandbox
 
 config :philomena,
-  redis_host: "redis"
+  elasticsearch_url: "http://elasticsearch:9200",
+  redis_host: "redis",
+  pwned_passwords: false,
+  captcha: false
 
 config :exq,
   host: "redis"

@@ -14,7 +14,18 @@ defmodule Philomena.Repo.Migrations.CreateUsersAuthTables do
       timestamps(updated_at: false)
     end
 
+    execute(&email_citext_up/0, &email_citext_down/0)
     create index(:user_tokens, [:user_id])
     create unique_index(:user_tokens, [:context, :token])
+  end
+
+  defp email_citext_up() do
+    repo().query!("create extension citext")
+    repo().query!("alter table users alter column email type citext")
+  end
+
+  defp email_citext_down() do
+    repo().query!("alter table users alter column email type character varying")
+    repo().query!("drop extension citext")
   end
 end

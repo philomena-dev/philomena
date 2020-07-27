@@ -6,7 +6,7 @@ defmodule PhilomenaWeb.PasswordControllerTest do
   import Philomena.UsersFixtures
 
   setup do
-    %{user: user_fixture()}
+    %{user: confirmed_user_fixture()}
   end
 
   describe "GET /passwords/new" do

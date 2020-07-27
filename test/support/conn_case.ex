@@ -40,7 +40,11 @@ defmodule PhilomenaWeb.ConnCase do
     |> Philomena.Filters.change_filter()
     |> Philomena.Repo.insert!()
 
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+    conn =
+      Phoenix.ConnTest.build_conn()
+      |> Phoenix.ConnTest.put_req_cookie("_ses", Integer.to_string(System.unique_integer()))
+
+    {:ok, conn: conn}
   end
 
   @doc """
@@ -52,7 +56,7 @@ defmodule PhilomenaWeb.ConnCase do
   test context.
   """
   def register_and_log_in_user(%{conn: conn}) do
-    user = Philomena.UsersFixtures.user_fixture()
+    user = Philomena.UsersFixtures.confirmed_user_fixture()
     %{conn: log_in_user(conn, user), user: user}
   end
 

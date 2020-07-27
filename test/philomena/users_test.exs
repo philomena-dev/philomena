@@ -75,11 +75,12 @@ defmodule Philomena.UsersTest do
 
     test "validates e-mail uniqueness" do
       %{email: email} = user_fixture()
+
       {:error, changeset} = Users.register_user(%{name: email, email: email})
       assert "has already been taken" in errors_on(changeset).email
 
       # Now try with the upper cased e-mail too, to check that email case is ignored.
-      {:error, changeset} = Users.register_user(%{name: String.upcase(email), email: String.upcase(email)})
+      {:error, changeset} = Users.register_user(%{name: String.upcase(email), email: String.upcase(email), password: valid_user_password()})
       assert "has already been taken" in errors_on(changeset).email
     end
 

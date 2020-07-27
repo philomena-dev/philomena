@@ -27,9 +27,7 @@ defmodule PhilomenaWeb.Registration.EmailControllerTest do
           "user" => %{"email" => "with spaces"}
         })
 
-      response = html_response(conn, 200)
-      assert response =~ "must have the @ sign and no spaces"
-      assert response =~ "is not valid"
+      assert get_flash(conn, :error) =~ "Failed to update email"
     end
   end
 

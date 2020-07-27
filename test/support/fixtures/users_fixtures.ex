@@ -4,6 +4,9 @@ defmodule Philomena.UsersFixtures do
   entities via the `Philomena.Users` context.
   """
 
+  alias Philomena.Users
+  alias Philomena.Repo
+
   def unique_user_email, do: "user#{System.unique_integer()}@example.com"
   def valid_user_password, do: "hello world!"
 
@@ -17,9 +20,15 @@ defmodule Philomena.UsersFixtures do
         email: email,
         password: valid_user_password()
       })
-      |> Philomena.Users.register_user()
+      |> Users.register_user()
 
     user
+  end
+
+  def confirmed_user_fixture(attrs \\ %{}) do
+    user_fixture(attrs)
+    |> Users.User.confirm_changeset()
+    |> Repo.update!()
   end
 
   def extract_user_token(fun) do

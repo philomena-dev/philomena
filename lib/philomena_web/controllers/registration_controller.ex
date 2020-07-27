@@ -19,10 +19,12 @@ defmodule PhilomenaWeb.RegistrationController do
         {:ok, _} =
           Users.deliver_user_confirmation_instructions(
             user,
-            &Routes.confirmation_url(conn, :confirm, &1)
+            &Routes.confirmation_url(conn, :show, &1)
           )
 
-        put_flash(conn, :info, "Account created successfully. Check your email for confirmation instructions.")
+        conn
+        |> put_flash(:info, "Account created successfully. Check your email for confirmation instructions.")
+        |> redirect(to: "/")
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
