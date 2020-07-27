@@ -1,6 +1,7 @@
 defmodule PhilomenaWeb.Registration.TotpController do
   use PhilomenaWeb, :controller
 
+  alias PhilomenaWeb.UserAuth
   alias Philomena.Users.User
   alias Philomena.Users
   alias Philomena.Repo
@@ -46,7 +47,7 @@ defmodule PhilomenaWeb.Registration.TotpController do
 
       {:ok, user} ->
         conn
-        |> PhilomenaWeb.TotpPlug.update_valid_totp_at_for_session(user)
+        |> UserAuth.totp_auth_user(user, %{})
         |> put_flash(:totp_backup_codes, backup_codes)
         |> redirect(to: Routes.registration_totp_path(conn, :edit))
     end

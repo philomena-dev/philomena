@@ -14,6 +14,8 @@ defmodule PhilomenaWeb.Session.TotpController do
   end
 
   def create(conn, params) do
+    %{"user" => user_params} = params
+
     conn.assigns.current_user
     |> User.consume_totp_token_changeset(params)
     |> Repo.update()
@@ -25,7 +27,7 @@ defmodule PhilomenaWeb.Session.TotpController do
 
       {:ok, user} ->
         conn
-        |> PhilomenaWeb.TotpPlug.update_valid_totp_at_for_session(user)
+        |> UserAuth.totp_auth_user(user, user_params)
         |> redirect(to: "/")
     end
   end

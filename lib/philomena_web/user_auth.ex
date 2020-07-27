@@ -5,12 +5,14 @@ defmodule PhilomenaWeb.UserAuth do
   alias Philomena.Users
   alias PhilomenaWeb.Router.Helpers, as: Routes
 
-  # Make the remember me cookie valid for 60 days.
+  # Make the remember me cookie valid for 365 days.
   # If you want bump or reduce this value, also change
   # the token expiry itself in UserToken.
-  @max_age 60 * 60 * 24 * 60
+  @max_age 60 * 60 * 24 * 365
   @remember_me_cookie "user_remember_me"
   @remember_me_options [sign: true, max_age: @max_age, same_site: "Lax"]
+  @totp_auth_cookie "user_totp_auth"
+  @totp_auth_options [sign: true, max_age: @max_age, same_site: "Lax"]
 
   @doc """
   Logs the user in.
@@ -44,6 +46,27 @@ defmodule PhilomenaWeb.UserAuth do
     conn
   end
 
+  @doc """
+  Writes TOTP session metadata for an authenticated user.
+  """
+  def totp_auth_user(conn, user, params) do
+    token = Users.generate_user_totp_token(user)
+    user_return_to = get_session(conn, :user_return_to)
+
+    conn
+    |> put_session(:totp_token, token)
+    |> maybe_write_totp_auth_cookie(token, params)
+    |> redirect(to: user_return_to || signed_in_path(conn))
+  end
+
+  defp maybe_write_totp_auth_cookie(conn, token, %{"remember_me" => "true"}) do
+    put_resp_cookie(conn, @totp_auth_cookie, token, @totp_auth_options)
+  end
+
+  defp maybe_write_totp_auth_cookie(conn, _token, _params) do
+    conn
+  end
+
   # This function renews the session ID and erases the whole
   # session to avoid fixation attacks. If there is any data
   # in the session you may want to preserve after log in/log out,
@@ -74,6 +97,9 @@ defmodule PhilomenaWeb.UserAuth do
     user_token = get_session(conn, :user_token)
     user_token && Users.delete_session_token(user_token)
 
+    totp_token = get_session(conn, :totp_token)
+    totp_token && Users.delete_totp_token(totp_token)
+
     if live_socket_id = get_session(conn, :live_socket_id) do
       PhilomenaWeb.Endpoint.broadcast(live_socket_id, "disconnect", %{})
     end
@@ -81,6 +107,7 @@ defmodule PhilomenaWeb.UserAuth do
     conn
     |> renew_session()
     |> delete_resp_cookie(@remember_me_cookie)
+    |> delete_resp_cookie(@totp_auth_cookie)
     |> redirect(to: "/")
   end
 
@@ -90,8 +117,14 @@ defmodule PhilomenaWeb.UserAuth do
   """
   def fetch_current_user(conn, _opts) do
     {user_token, conn} = ensure_user_token(conn)
+    {totp_token, conn} = ensure_totp_token(conn)
+
     user = user_token && Users.get_user_by_session_token(user_token)
-    assign(conn, :current_user, user)
+    totp = totp_token && Users.user_totp_token_valid?(user, totp_token)
+
+    conn
+    |> assign(:current_user, user)
+    |> assign(:totp_valid?, totp)
   end
 
   defp ensure_user_token(conn) do
@@ -102,6 +135,20 @@ defmodule PhilomenaWeb.UserAuth do
 
       if user_token = conn.cookies[@remember_me_cookie] do
         {user_token, put_session(conn, :user_token, user_token)}
+      else
+        {nil, conn}
+      end
+    end
+  end
+
+  defp ensure_totp_token(conn) do
+    if totp_token = get_session(conn, :totp_token) do
+      {totp_token, conn}
+    else
+      conn = fetch_cookies(conn, signed: [@totp_auth_cookie])
+
+      if totp_token = conn.cookies[@totp_auth_cookie] do
+        {totp_token, put_session(conn, :totp_token, totp_token)}
       else
         {nil, conn}
       end

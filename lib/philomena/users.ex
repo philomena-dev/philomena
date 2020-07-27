@@ -234,11 +234,29 @@ defmodule Philomena.Users do
   end
 
   @doc """
+  Generates a TOTP token.
+  """
+  def generate_user_totp_token(user) do
+    {token, user_token} = UserToken.build_totp_token(user)
+    Repo.insert!(user_token)
+    token
+  end
+
+  @doc """
   Gets the user with the given signed token.
   """
   def get_user_by_session_token(token) do
     {:ok, query} = UserToken.verify_session_token_query(token)
-    Repo.one(query)
+    load_with_roles(query)
+  end
+
+  def user_totp_token_valid?(nil, _token) do
+    false
+  end
+
+  def user_totp_token_valid?(user, token) do
+    {:ok, query} = UserToken.verify_totp_token_query(user, token)
+    Repo.exists?(query)
   end
 
   @doc """
@@ -246,6 +264,14 @@ defmodule Philomena.Users do
   """
   def delete_session_token(token) do
     Repo.delete_all(UserToken.token_and_context_query(token, "session"))
+    :ok
+  end
+
+  @doc """
+  Deletes the signed token with the given context.
+  """
+  def delete_totp_token(token) do
+    Repo.delete_all(UserToken.token_and_context_query(token, "totp"))
     :ok
   end
 
@@ -519,12 +545,10 @@ defmodule Philomena.Users do
     |> Repo.update()
   end
 
-  def get_by(clauses) do
-    User
-    |> join(:left, [u], _ in assoc(u, :roles))
-    |> join(:left, [u, _], _ in assoc(u, :current_filter))
-    |> preload([_, r, cf], current_filter: cf, roles: r)
-    |> Repo.get_by(clauses)
+  defp load_with_roles(query) do
+    query
+    |> Repo.one()
+    |> Repo.preload([:roles, :current_filter])
     |> setup_roles()
   end
 

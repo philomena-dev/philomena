@@ -10,7 +10,7 @@ defmodule Philomena.Users.UserToken do
   @reset_password_validity_in_days 1
   @confirm_validity_in_days 7
   @change_email_validity_in_days 7
-  @session_validity_in_days 60
+  @session_validity_in_days 365
 
   schema "user_tokens" do
     field :token, :binary
@@ -21,7 +21,6 @@ defmodule Philomena.Users.UserToken do
     timestamps(updated_at: false)
   end
 
-  # @spec build_session_token(atom | %{id: any}) :: {binary, Philomena.Users.UserToken.t()}
   @doc """
   Generates a token that will be stored in a signed place,
   such as session or cookie. As they are signed, those
@@ -43,6 +42,28 @@ defmodule Philomena.Users.UserToken do
         join: user in assoc(token, :user),
         where: token.inserted_at > ago(@session_validity_in_days, "day"),
         select: user
+
+    {:ok, query}
+  end
+
+  @doc """
+  Generates a token that will be stored in a signed place,
+  such as session or cookie. As they are signed, those
+  tokens do not need to be hashed.
+  """
+  def build_totp_token(user) do
+    token = :crypto.strong_rand_bytes(@rand_size)
+    {token, %Philomena.Users.UserToken{token: token, context: "totp", user_id: user.id}}
+  end
+
+  @doc """
+  Checks if the TOTP token is valid and returns its underlying lookup query.
+  """
+  def verify_totp_token_query(%{id: id}, token) do
+    query =
+      from token in token_and_context_query(token, "totp"),
+        where: token.user_id == ^id,
+        where: token.inserted_at > ago(@session_validity_in_days, "day")
 
     {:ok, query}
   end
