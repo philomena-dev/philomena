@@ -2,12 +2,13 @@ defmodule PhilomenaWeb.Session.TotpController do
   use PhilomenaWeb, :controller
 
   alias PhilomenaWeb.LayoutView
+  alias PhilomenaWeb.UserAuth
   alias Philomena.Users.User
   alias Philomena.Users
   alias Philomena.Repo
 
   def new(conn, _params) do
-    changeset = Users.change_user(conn)
+    changeset = Users.change_user(conn.assigns.current_user)
 
     render(conn, "new.html", layout: {LayoutView, "two_factor.html"}, changeset: changeset)
   end
@@ -19,9 +20,8 @@ defmodule PhilomenaWeb.Session.TotpController do
     |> case do
       {:error, _changeset} ->
         conn
-        # |> Pow.Plug.delete()
         |> put_flash(:error, "Invalid TOTP token entered. Please sign in again.")
-        |> redirect(to: "/")
+        |> UserAuth.log_out_user()
 
       {:ok, user} ->
         conn

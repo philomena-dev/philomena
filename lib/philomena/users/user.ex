@@ -428,23 +428,25 @@ defmodule Philomena.Users.User do
   end
 
   def totp_changeset(changeset, params, backup_codes) do
+    %{"user" => %{"current_password" => password}} = params
     changeset = change(changeset, %{})
     user = changeset.data
 
-    case user.otp_required_for_login do
-      true ->
+    cond do
+      !!user.otp_required_for_login and valid_password?(user, password) ->
         # User wants to disable TOTP
         changeset
-        # |> pow_password_changeset(params)
         |> consume_totp_token_changeset(params)
         |> disable_totp_changeset()
 
-      _falsy ->
+      !user.otp_required_for_login and valid_password?(user, password) ->
         # User wants to enable TOTP
         changeset
-        # |> pow_password_changeset(params)
         |> consume_totp_token_changeset(params)
         |> enable_totp_changeset(backup_codes)
+
+      true ->
+        add_error(changeset, :current_password, "is invalid")
     end
   end
 

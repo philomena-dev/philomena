@@ -10,7 +10,7 @@ defmodule PhilomenaWeb.UserAuth do
   # the token expiry itself in UserToken.
   @max_age 60 * 60 * 24 * 60
   @remember_me_cookie "user_remember_me"
-  @remember_me_options [sign: true, max_age: @max_age]
+  @remember_me_options [sign: true, max_age: @max_age, same_site: "Lax"]
 
   @doc """
   Logs the user in.

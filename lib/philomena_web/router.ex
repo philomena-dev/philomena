@@ -60,6 +60,15 @@ defmodule PhilomenaWeb.Router do
   end
 
   scope "/", PhilomenaWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    # Additional routes for TOTP
+    scope "/sessions", Session, as: :session do
+      resources "/totp", TotpController, only: [:new, :create], singleton: true
+    end
+  end
+
+  scope "/", PhilomenaWeb do
     pipe_through [
       :browser,
       :ensure_not_banned,
@@ -80,18 +89,13 @@ defmodule PhilomenaWeb.Router do
       :require_authenticated_user
     ]
 
-    # Additional routes for TOTP
     resources "/registrations", RegistrationController, only: [:edit, :update], singleton: true
+    resources "/sessions", SessionController, only: [:delete], singleton: true
     scope "/registrations", Registration, as: :registration do
       resources "/totp", TotpController, only: [:edit, :update], singleton: true
       resources "/name", NameController, only: [:edit, :update], singleton: true
       resources "/password", PasswordController, only: [:update], singleton: true
       resources "/email", EmailController, only: [:create, :show]
-    end
-
-    resources "/sessions", SessionController, only: [:delete], singleton: true
-    scope "/sessions", Session, as: :session do
-      resources "/totp", TotpController, only: [:new, :create], singleton: true
     end
   end
 
