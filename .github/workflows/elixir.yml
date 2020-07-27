@@ -39,14 +39,11 @@ jobs:
         mix local.rebar --force
         mix local.hex --force
         mix deps.get
-        until wget -qO - elasticsearch:9200; do
-          echo -n "."
-          sleep 2
-        done
-        mix ecto.create
-        mix ecto.load
-        mix reindex_all
     - name: Run Tests
       env: 
         MIX_ENV: 'test'
-      run: mix test
+      run: |
+        mix ecto.create
+        mix ecto.load
+        mix reindex_all
+        mix test
