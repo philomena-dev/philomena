@@ -12,7 +12,7 @@ defmodule PhilomenaWeb.PasswordControllerTest do
   describe "GET /passwords/new" do
     test "renders the reset password page", %{conn: conn} do
       conn = get(conn, Routes.password_path(conn, :new))
-      response = html_response(conn, 200)
+      html_response(conn, 200)
     end
   end
 
@@ -53,7 +53,7 @@ defmodule PhilomenaWeb.PasswordControllerTest do
 
     test "renders reset password", %{conn: conn, token: token} do
       conn = get(conn, Routes.password_path(conn, :edit, token))
-      response = html_response(conn, 200)
+      html_response(conn, 200)
     end
 
     test "does not render reset password with invalid token", %{conn: conn} do

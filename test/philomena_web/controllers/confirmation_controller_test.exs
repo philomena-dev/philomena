@@ -62,20 +62,20 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
           Users.deliver_user_confirmation_instructions(user, url)
         end)
 
-      conn = get(conn, Routes.confirmation_path(conn, :confirm, token))
+      conn = get(conn, Routes.confirmation_path(conn, :show, token))
       assert redirected_to(conn) == "/"
       assert get_flash(conn, :info) =~ "Account confirmed successfully"
       assert Users.get_user!(user.id).confirmed_at
       refute get_session(conn, :user_token)
       assert Repo.all(Users.UserToken) == []
 
-      conn = get(conn, Routes.confirmation_path(conn, :confirm, token))
+      conn = get(conn, Routes.confirmation_path(conn, :show, token))
       assert redirected_to(conn) == "/"
       assert get_flash(conn, :error) =~ "Confirmation link is invalid or it has expired"
     end
 
     test "does not confirm email with invalid token", %{conn: conn, user: user} do
-      conn = get(conn, Routes.confirmation_path(conn, :confirm, "oops"))
+      conn = get(conn, Routes.confirmation_path(conn, :show, "oops"))
       assert redirected_to(conn) == "/"
       assert get_flash(conn, :error) =~ "Confirmation link is invalid or it has expired"
       refute Users.get_user!(user.id).confirmed_at

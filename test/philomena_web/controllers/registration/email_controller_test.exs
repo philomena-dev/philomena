@@ -1,4 +1,4 @@
-defmodule PhilomenaWeb.EmailControllerTest do
+defmodule PhilomenaWeb.Registration.EmailControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
   alias Philomena.Users
@@ -15,14 +15,14 @@ defmodule PhilomenaWeb.EmailControllerTest do
           "user" => %{"email" => unique_user_email()}
         })
 
-      assert redirected_to(conn) == Routes.user_settings_path(conn, :edit)
+      assert redirected_to(conn) == Routes.registration_path(conn, :edit)
       assert get_flash(conn, :info) =~ "A link to confirm your e-mail"
       assert Users.get_user_by_email(user.email)
     end
 
     test "does not update email on invalid data", %{conn: conn} do
       conn =
-        put(conn, Routes.registration_email_path(conn, :create), %{
+        post(conn, Routes.registration_email_path(conn, :create), %{
           "current_password" => "invalid",
           "user" => %{"email" => "with spaces"}
         })
@@ -67,7 +67,7 @@ defmodule PhilomenaWeb.EmailControllerTest do
     test "redirects if user is not logged in", %{token: token} do
       conn = build_conn()
       conn = get(conn, Routes.registration_email_path(conn, :show, token))
-      assert redirected_to(conn) == Routes.user_session_path(conn, :new)
+      assert redirected_to(conn) == Routes.session_path(conn, :new)
     end
   end
 end

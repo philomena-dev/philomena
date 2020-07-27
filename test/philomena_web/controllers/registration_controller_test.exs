@@ -5,12 +5,12 @@ defmodule PhilomenaWeb.RegistrationControllerTest do
 
   describe "GET /registrations/new" do
     test "renders registration page", %{conn: conn} do
-      conn = get(conn, Routes.user_registration_path(conn, :new))
-      response = html_response(conn, 200)
+      conn = get(conn, Routes.registration_path(conn, :new))
+      html_response(conn, 200)
     end
 
     test "redirects if already logged in", %{conn: conn} do
-      conn = conn |> log_in_user(user_fixture()) |> get(Routes.user_registration_path(conn, :new))
+      conn = conn |> log_in_user(user_fixture()) |> get(Routes.registration_path(conn, :new))
       assert redirected_to(conn) == "/"
     end
   end
@@ -30,7 +30,7 @@ defmodule PhilomenaWeb.RegistrationControllerTest do
 
       # Now do a logged in request and assert on the menu
       conn = get(conn, "/")
-      response = html_response(conn, 200)
+      html_response(conn, 200)
     end
 
     test "render errors for invalid data", %{conn: conn} do
@@ -49,15 +49,15 @@ defmodule PhilomenaWeb.RegistrationControllerTest do
     setup :register_and_log_in_user
 
     test "renders settings page", %{conn: conn} do
-      conn = get(conn, Routes.user_settings_path(conn, :edit))
+      conn = get(conn, Routes.registration_path(conn, :edit))
       response = html_response(conn, 200)
       assert response =~ "Settings"
     end
 
     test "redirects if user is not logged in" do
       conn = build_conn()
-      conn = get(conn, Routes.user_settings_path(conn, :edit))
-      assert redirected_to(conn) == Routes.user_session_path(conn, :new)
+      conn = get(conn, Routes.registration_path(conn, :edit))
+      assert redirected_to(conn) == Routes.session_path(conn, :new)
     end
   end
 end

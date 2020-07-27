@@ -75,17 +75,17 @@ defmodule Philomena.UsersTest do
 
     test "validates e-mail uniqueness" do
       %{email: email} = user_fixture()
-      {:error, changeset} = Users.register_user(%{email: email})
+      {:error, changeset} = Users.register_user(%{name: email, email: email})
       assert "has already been taken" in errors_on(changeset).email
 
       # Now try with the upper cased e-mail too, to check that email case is ignored.
-      {:error, changeset} = Users.register_user(%{email: String.upcase(email)})
+      {:error, changeset} = Users.register_user(%{name: String.upcase(email), email: String.upcase(email)})
       assert "has already been taken" in errors_on(changeset).email
     end
 
     test "registers users with a hashed password" do
       email = unique_user_email()
-      {:ok, user} = Users.register_user(%{email: email, password: valid_user_password()})
+      {:ok, user} = Users.register_user(%{name: email, email: email, password: valid_user_password()})
       assert user.email == email
       assert is_binary(user.hashed_password)
       assert is_nil(user.confirmed_at)
@@ -96,7 +96,7 @@ defmodule Philomena.UsersTest do
   describe "change_user_registration/2" do
     test "returns a changeset" do
       assert %Ecto.Changeset{} = changeset = Users.change_user_registration(%User{})
-      assert changeset.required == [:password, :email]
+      assert changeset.required == [:password, :email, :name]
     end
   end
 
@@ -245,7 +245,7 @@ defmodule Philomena.UsersTest do
     end
 
     test "validates maximum values for password for security", %{user: user} do
-      too_long = String.duplicate("db", 100)
+      too_long = String.duplicate("db", 200)
 
       {:error, changeset} =
         Users.update_user_password(user, valid_user_password(), %{password: too_long})

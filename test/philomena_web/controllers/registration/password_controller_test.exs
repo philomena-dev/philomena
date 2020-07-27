@@ -1,4 +1,4 @@
-defmodule PhilomenaWeb.PasswordControllerTest do
+defmodule PhilomenaWeb.Registration.PasswordControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
   alias Philomena.Users
@@ -17,7 +17,7 @@ defmodule PhilomenaWeb.PasswordControllerTest do
           }
         })
 
-      assert redirected_to(new_password_conn) == Routes.user_settings_path(conn, :edit)
+      assert redirected_to(new_password_conn) == Routes.registration_path(conn, :edit)
       assert get_session(new_password_conn, :user_token) != get_session(conn, :user_token)
       assert get_flash(new_password_conn, :info) =~ "Password updated successfully"
       assert Users.get_user_by_email_and_password(user.email, "new valid password")
