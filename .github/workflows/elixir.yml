@@ -21,7 +21,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
       elasticsearch:
-        image: elasticsearch:latest
+        image: elasticsearch:7.6.2
         ports: ['9200:9200']
       redis:
         image: redis:5.0.9
@@ -44,6 +44,7 @@ jobs:
           sleep 2
         done
         mix ecto.create
+        mix ecto.load
         mix reindex_all
     - name: Run Tests
       env: 
