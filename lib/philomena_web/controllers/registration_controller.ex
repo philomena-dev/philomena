@@ -23,7 +23,10 @@ defmodule PhilomenaWeb.RegistrationController do
           )
 
         conn
-        |> put_flash(:info, "Account created successfully. Check your email for confirmation instructions.")
+        |> put_flash(
+          :info,
+          "Account created successfully. Check your e-mail for confirmation instructions."
+        )
         |> redirect(to: "/")
 
       {:error, %Ecto.Changeset{} = changeset} ->

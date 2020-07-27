@@ -80,13 +80,22 @@ defmodule Philomena.UsersTest do
       assert "has already been taken" in errors_on(changeset).email
 
       # Now try with the upper cased e-mail too, to check that email case is ignored.
-      {:error, changeset} = Users.register_user(%{name: String.upcase(email), email: String.upcase(email), password: valid_user_password()})
+      {:error, changeset} =
+        Users.register_user(%{
+          name: String.upcase(email),
+          email: String.upcase(email),
+          password: valid_user_password()
+        })
+
       assert "has already been taken" in errors_on(changeset).email
     end
 
     test "registers users with a hashed password" do
       email = unique_user_email()
-      {:ok, user} = Users.register_user(%{name: email, email: email, password: valid_user_password()})
+
+      {:ok, user} =
+        Users.register_user(%{name: email, email: email, password: valid_user_password()})
+
       assert user.email == email
       assert is_binary(user.hashed_password)
       assert is_nil(user.confirmed_at)
@@ -137,15 +146,13 @@ defmodule Philomena.UsersTest do
     test "validates e-mail uniqueness", %{user: user} do
       %{email: email} = user_fixture()
 
-      {:error, changeset} =
-        Users.apply_user_email(user, valid_user_password(), %{email: email})
+      {:error, changeset} = Users.apply_user_email(user, valid_user_password(), %{email: email})
 
       assert "has already been taken" in errors_on(changeset).email
     end
 
     test "validates current password", %{user: user} do
-      {:error, changeset} =
-        Users.apply_user_email(user, "invalid", %{email: unique_user_email()})
+      {:error, changeset} = Users.apply_user_email(user, "invalid", %{email: unique_user_email()})
 
       assert %{current_password: ["is not valid"]} = errors_on(changeset)
     end

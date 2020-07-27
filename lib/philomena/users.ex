@@ -21,6 +21,22 @@ defmodule Philomena.Users do
   ## Database getters
 
   @doc """
+  Gets a user by API token.
+
+  ## Examples
+
+      iex> get_user_by_authentication_token("5Ow89k7nW24E0K34d3zX")
+      %User{}
+
+      iex> get_user_by_authentication_token("invalid")
+      nil
+
+  """
+  def get_user_by_authentication_token(token) when is_binary(token) do
+    Repo.get_by(User, authentication_token: token)
+  end
+
+  @doc """
   Gets a user by email.
 
   ## Examples

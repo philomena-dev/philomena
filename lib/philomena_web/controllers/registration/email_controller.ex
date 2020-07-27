@@ -21,10 +21,10 @@ defmodule PhilomenaWeb.Registration.EmailController do
         )
         |> redirect(to: Routes.registration_path(conn, :edit))
 
-        {:error, _changeset} ->
-          conn
-          |> put_flash(:error, "Failed to update email.")
-          |> redirect(to: Routes.registration_path(conn, :edit))
+      {:error, _changeset} ->
+        conn
+        |> put_flash(:error, "Failed to update email.")
+        |> redirect(to: Routes.registration_path(conn, :edit))
     end
   end
 
