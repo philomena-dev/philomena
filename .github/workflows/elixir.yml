@@ -42,6 +42,11 @@ jobs:
     - name: Run Tests
       env: 
         MIX_ENV: 'test'
+        PGUSER: 'postgres'
+        PGPASSWORD: 'postgres'
+        PGDATABASE: 'philomena_test'
+        PGPORT: 5432
+        PGHOST: db
       run: |
         mix ecto.create
         mix ecto.load

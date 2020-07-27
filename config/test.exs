@@ -7,7 +7,6 @@ config :bcrypt_elixir, :log_rounds, 1
 config :philomena, Philomena.Repo,
   username: "postgres",
   password: "postgres",
-  hostname: "postgres",
   database: "philomena_test",
   pool: Ecto.Adapters.SQL.Sandbox
 
