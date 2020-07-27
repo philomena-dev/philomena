@@ -43,7 +43,7 @@ config :philomena, :pow,
   cache_store_backend: Pow.Store.Backend.MnesiaCache
 
 config :exq,
-  queues: [{"videos", 2}, {"images", 4}, {"indexing", 16}],
+  queues: [{"videos", 4}, {"images", 40}, {"indexing", 16}],
   scheduler_enable: true,
   max_retries: 1,
   start_on_application: false
