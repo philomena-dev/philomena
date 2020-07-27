@@ -321,7 +321,7 @@ defmodule Philomena.UsersTest do
     end
 
     test "does not return user for expired token", %{token: token} do
-      {1, nil} = Repo.update_all(UserToken, set: [inserted_at: ~N[2020-01-01 00:00:00]])
+      {1, nil} = Repo.update_all(UserToken, set: [inserted_at: ~N[2019-01-01 00:00:00]])
       refute Users.get_user_by_session_token(token)
     end
   end

@@ -39,7 +39,7 @@ defmodule PhilomenaWeb.UserAuthTest do
 
       assert %{value: signed_token, max_age: max_age} = conn.resp_cookies["user_remember_me"]
       assert signed_token != get_session(conn, :user_token)
-      assert max_age == 5_184_000
+      assert max_age == 31_536_000
     end
   end
 
