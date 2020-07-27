@@ -27,8 +27,7 @@ defmodule PhilomenaWeb.RegistrationControllerTest do
 
       assert redirected_to(conn) =~ "/"
 
-      # Now do a logged in request and assert on the menu
-      conn = get(conn, "/")
+      conn = get(conn, "/sessions/new")
       html_response(conn, 200)
       assert get_flash(conn, :info) =~ "email for confirmation instructions"
     end
