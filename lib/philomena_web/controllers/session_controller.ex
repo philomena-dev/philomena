@@ -11,7 +11,7 @@ defmodule PhilomenaWeb.SessionController do
   def create(conn, %{"user" => user_params}) do
     %{"email" => email, "password" => password} = user_params
 
-    if user = Users.get_user_by_email_and_password(email, password) do
+    if user = Users.get_user_by_email_and_password(email, password, &Routes.unlock_url(conn, :show, &1)) do
       conn
       |> put_flash(:info, "Successfully logged in.")
       |> UserAuth.log_in_user(user, user_params)

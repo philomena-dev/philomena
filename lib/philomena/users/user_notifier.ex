@@ -29,7 +29,7 @@ defmodule Philomena.Users.UserNotifier do
 
     Hi #{user.name},
 
-    You can confirm your account by visiting the url below:
+    You can confirm your account by visiting the URL below:
 
     #{url}
 
@@ -40,7 +40,7 @@ defmodule Philomena.Users.UserNotifier do
   end
 
   @doc """
-  Deliver instructions to reset password account.
+  Deliver instructions to reset password for an account.
   """
   def deliver_reset_password_instructions(user, url) do
     deliver(user.email, "Password reset instructions for your account", """
@@ -49,7 +49,7 @@ defmodule Philomena.Users.UserNotifier do
 
     Hi #{user.name},
 
-    You can reset your password by visiting the url below:
+    You can reset your password by visiting the URL below:
 
     #{url}
 
@@ -60,7 +60,7 @@ defmodule Philomena.Users.UserNotifier do
   end
 
   @doc """
-  Deliver instructions to update your e-mail.
+  Deliver instructions to update an account e-mail.
   """
   def deliver_update_email_instructions(user, url) do
     deliver(user.email, "E-mail update instructions for your account", """
@@ -69,11 +69,31 @@ defmodule Philomena.Users.UserNotifier do
 
     Hi #{user.name},
 
-    You can change your e-mail by visiting the url below:
+    You can change your e-mail by visiting the URL below:
 
     #{url}
 
     If you didn't request this change, please ignore this.
+
+    ==============================
+    """)
+  end
+
+  @doc """
+  Deliver instructions to unlock an account.
+  """
+  def deliver_unlock_instructions(user, url) do
+    deliver(user.email, "Unlock instructions for your account", """
+
+    ==============================
+
+    Hi #{user.name},
+
+    Your account has been automatically locked due to too many attempts to sign in.
+
+    You can unlock your account by visting the URL below:
+
+    #{url}
 
     ==============================
     """)

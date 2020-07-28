@@ -64,10 +64,41 @@ defmodule Philomena.Users do
       nil
 
   """
-  def get_user_by_email_and_password(email, password)
+  def get_user_by_email_and_password(email, password, unlock_url_fun)
       when is_binary(email) and is_binary(password) do
     user = Repo.get_by(User, email: email)
-    if User.valid_password?(user, password), do: user
+
+    cond do
+      not is_nil(user.locked_at) ->
+        nil
+
+      User.valid_password?(user, password) ->
+        user
+        |> User.successful_attempt_changeset()
+        |> Repo.update!()
+
+      true ->
+        user
+        |> User.failed_attempt_changeset()
+        |> Repo.update!()
+        |> maybe_send_unlock_instructions(unlock_url_fun)
+
+        nil
+    end
+  end
+
+  defp maybe_send_unlock_instructions(%{failed_attempts: attempts}, _unlock_url_fun)
+      when attempts < 10 do
+    nil
+  end
+
+  defp maybe_send_unlock_instructions(%User{} = user, unlock_url_fun) do
+    user
+    |> User.lock_changeset()
+    |> Repo.update!()
+    |> deliver_user_unlock_instructions(unlock_url_fun)
+
+    nil
   end
 
   @doc """
@@ -196,6 +227,50 @@ defmodule Philomena.Users do
     Repo.insert!(user_token)
     UserNotifier.deliver_update_email_instructions(user, update_email_url_fun.(encoded_token))
   end
+
+  @doc """
+  Unlocks the user by the given token.
+
+  If the token matches, the user is marked as unlocked
+  and the token is deleted.
+  """
+  def unlock_user(token) do
+    with {:ok, query} <- UserToken.verify_email_token_query(token, "unlock"),
+         %User{} = user <- Repo.one(query),
+         {:ok, %{user: user}} <- Repo.transaction(unlock_user_multi(user)) do
+      {:ok, user}
+    else
+      _ -> :error
+    end
+  end
+
+  defp unlock_user_multi(user) do
+    changeset = User.unlock_changeset(user)
+
+    Ecto.Multi.new()
+    |> Ecto.Multi.update(:user, changeset)
+    |> Ecto.Multi.delete_all(:tokens, UserToken.user_and_contexts_query(user, ["unlock"]))
+  end
+
+  @doc """
+  Delivers the unlock instructions to the given user.
+
+  ## Examples
+
+    iex> deliver_user_unlock_instructions(user, &Routes.unlock_url(conn, :show, &1))
+    {:ok, %{to: ..., body: ...}}
+
+  """
+  def deliver_user_unlock_instructions(%User{} = user, unlock_url_fun)
+      when is_function(unlock_url_fun, 1) do
+    if is_nil(user.locked_at) do
+      {:error, :not_locked}
+    else
+      {encoded_token, user_token} = UserToken.build_email_token(user, "unlock")
+      Repo.insert!(user_token)
+      UserNotifier.deliver_unlock_instructions(user, unlock_url_fun.(encoded_token))
+    end
+end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for changing the user password.

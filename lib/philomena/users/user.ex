@@ -51,9 +51,9 @@ defmodule Philomena.Users.User do
     field :confirmed_at, :naive_datetime
     field :otp_required_for_login, :boolean
     field :authentication_token, :string
-    # field :failed_attempts, :integer
+    field :failed_attempts, :integer
     # field :unlock_token, :string
-    # field :locked_at, :naive_datetime
+    field :locked_at, :naive_datetime
     field :encrypted_otp_secret, :string
     field :encrypted_otp_secret_iv, :string
     field :encrypted_otp_secret_salt, :string
@@ -238,6 +238,28 @@ defmodule Philomena.Users.User do
     else
       add_error(changeset, :current_password, "is not valid")
     end
+  end
+
+  def successful_attempt_changeset(user) do
+    change(user, failed_attempts: 0)
+  end
+
+  def failed_attempt_changeset(user) do
+    if not is_integer(user.failed_attempts) or user.failed_attempts < 0 do
+      change(user, failed_attempts: 1)
+    else
+      change(user, failed_attempts: user.failed_attempts + 1)
+    end
+  end
+
+  def lock_changeset(user) do
+    locked_at = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+    change(user, locked_at: locked_at)
+  end
+
+  def unlock_changeset(user) do
+    change(user, locked_at: nil, failed_attempts: 0)
   end
 
   def changeset(user, attrs) do
