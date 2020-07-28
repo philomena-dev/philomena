@@ -19,7 +19,7 @@ defmodule Philomena.Users.UserToken do
     field :sent_to, :string
     belongs_to :user, Philomena.Users.User
 
-    timestamps(updated_at: false)
+    timestamps(inserted_at: :created_at, updated_at: false)
   end
 
   @doc """
@@ -41,7 +41,7 @@ defmodule Philomena.Users.UserToken do
     query =
       from token in token_and_context_query(token, "session"),
         join: user in assoc(token, :user),
-        where: token.inserted_at > ago(@session_validity_in_days, "day"),
+        where: token.created_at > ago(@session_validity_in_days, "day"),
         select: user
 
     {:ok, query}
@@ -64,7 +64,7 @@ defmodule Philomena.Users.UserToken do
     query =
       from token in token_and_context_query(token, "totp"),
         where: token.user_id == ^id,
-        where: token.inserted_at > ago(@session_validity_in_days, "day")
+        where: token.created_at > ago(@session_validity_in_days, "day")
 
     {:ok, query}
   end
@@ -108,7 +108,7 @@ defmodule Philomena.Users.UserToken do
         query =
           from token in token_and_context_query(hashed_token, context),
             join: user in assoc(token, :user),
-            where: token.inserted_at > ago(^days, "day") and token.sent_to == user.email,
+            where: token.created_at > ago(^days, "day") and token.sent_to == user.email,
             select: user
 
         {:ok, query}
@@ -134,7 +134,7 @@ defmodule Philomena.Users.UserToken do
 
         query =
           from token in token_and_context_query(hashed_token, context),
-            where: token.inserted_at > ago(@change_email_validity_in_days, "day")
+            where: token.created_at > ago(@change_email_validity_in_days, "day")
 
         {:ok, query}
 

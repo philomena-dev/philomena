@@ -1840,7 +1840,7 @@ CREATE TABLE public.user_tokens (
     token bytea NOT NULL,
     context character varying(255) NOT NULL,
     sent_to character varying(255),
-    inserted_at timestamp(0) without time zone NOT NULL
+    created_at timestamp(0) without time zone NOT NULL
 );
 
 

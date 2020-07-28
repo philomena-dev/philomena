@@ -255,7 +255,7 @@ defmodule Philomena.UsersTest do
     end
 
     test "does not update e-mail if token expired", %{user: user, token: token} do
-      {1, nil} = Repo.update_all(UserToken, set: [inserted_at: ~N[2020-01-01 00:00:00]])
+      {1, nil} = Repo.update_all(UserToken, set: [created_at: ~N[2020-01-01 00:00:00]])
       assert Users.update_user_email(user, token) == :error
       assert Repo.get!(User, user.id).email == user.email
       assert Repo.get_by(UserToken, user_id: user.id)
@@ -363,7 +363,7 @@ defmodule Philomena.UsersTest do
     end
 
     test "does not return user for expired token", %{token: token} do
-      {1, nil} = Repo.update_all(UserToken, set: [inserted_at: ~N[2019-01-01 00:00:00]])
+      {1, nil} = Repo.update_all(UserToken, set: [created_at: ~N[2019-01-01 00:00:00]])
       refute Users.get_user_by_session_token(token)
     end
   end
@@ -414,7 +414,7 @@ defmodule Philomena.UsersTest do
     end
 
     test "returns false for expired token", %{user: user, token: token} do
-      {1, nil} = Repo.update_all(UserToken, set: [inserted_at: ~N[2019-01-01 00:00:00]])
+      {1, nil} = Repo.update_all(UserToken, set: [created_at: ~N[2019-01-01 00:00:00]])
       refute Users.user_totp_token_valid?(user, token)
     end
   end
@@ -474,7 +474,7 @@ defmodule Philomena.UsersTest do
     end
 
     test "does not confirm e-mail if token expired", %{user: user, token: token} do
-      {1, nil} = Repo.update_all(UserToken, set: [inserted_at: ~N[2020-01-01 00:00:00]])
+      {1, nil} = Repo.update_all(UserToken, set: [created_at: ~N[2020-01-01 00:00:00]])
       assert Users.confirm_user(token) == :error
       refute Repo.get!(User, user.id).confirmed_at
       assert Repo.get_by(UserToken, user_id: user.id)
@@ -526,7 +526,7 @@ defmodule Philomena.UsersTest do
     end
 
     test "does not unlocked if token expired", %{user: user, token: token} do
-      {1, nil} = Repo.update_all(UserToken, set: [inserted_at: ~N[2020-01-01 00:00:00]])
+      {1, nil} = Repo.update_all(UserToken, set: [created_at: ~N[2020-01-01 00:00:00]])
       assert Users.unlock_user(token) == :error
       assert Repo.get!(User, user.id).locked_at
       assert Repo.get_by(UserToken, user_id: user.id)
@@ -575,7 +575,7 @@ defmodule Philomena.UsersTest do
     end
 
     test "does not return the user if token expired", %{user: user, token: token} do
-      {1, nil} = Repo.update_all(UserToken, set: [inserted_at: ~N[2020-01-01 00:00:00]])
+      {1, nil} = Repo.update_all(UserToken, set: [created_at: ~N[2020-01-01 00:00:00]])
       refute Users.get_user_by_reset_password_token(token)
       assert Repo.get_by(UserToken, user_id: user.id)
     end

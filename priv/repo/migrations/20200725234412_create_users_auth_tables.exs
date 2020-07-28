@@ -11,7 +11,7 @@ defmodule Philomena.Repo.Migrations.CreateUsersAuthTables do
       add :token, :binary, null: false
       add :context, :string, null: false
       add :sent_to, :string
-      timestamps(updated_at: false)
+      timestamps(inserted_at: :created_at, updated_at: false)
     end
 
     execute(&email_citext_up/0, &email_citext_down/0)
