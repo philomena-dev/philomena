@@ -37,6 +37,7 @@ defmodule Philomena.UsersTest do
       end)
 
       user = Users.get_user!(user.id)
+
       token =
         extract_user_token(fn url ->
           Users.deliver_user_unlock_instructions(user, url)
@@ -101,20 +102,20 @@ defmodule Philomena.UsersTest do
              } = errors_on(changeset)
     end
 
-    test "validates maximum values for e-mail and password for security" do
+    test "validates maximum values for email and password for security" do
       too_long = String.duplicate("db", 100)
       {:error, changeset} = Users.register_user(%{email: too_long, password: too_long})
       assert "should be at most 160 character(s)" in errors_on(changeset).email
       assert "should be at most 80 character(s)" in errors_on(changeset).password
     end
 
-    test "validates e-mail uniqueness" do
+    test "validates email uniqueness" do
       %{email: email} = user_fixture()
 
       {:error, changeset} = Users.register_user(%{name: email, email: email})
       assert "has already been taken" in errors_on(changeset).email
 
-      # Now try with the upper cased e-mail too, to check that email case is ignored.
+      # Now try with the upper cased email too, to check that email case is ignored.
       {:error, changeset} =
         Users.register_user(%{
           name: String.upcase(email),
@@ -169,7 +170,7 @@ defmodule Philomena.UsersTest do
       assert %{email: ["must have the @ sign and no spaces"]} = errors_on(changeset)
     end
 
-    test "validates maximum value for e-mail for security", %{user: user} do
+    test "validates maximum value for email for security", %{user: user} do
       too_long = String.duplicate("db", 100)
 
       {:error, changeset} =
@@ -178,7 +179,7 @@ defmodule Philomena.UsersTest do
       assert "should be at most 160 character(s)" in errors_on(changeset).email
     end
 
-    test "validates e-mail uniqueness", %{user: user} do
+    test "validates email uniqueness", %{user: user} do
       %{email: email} = user_fixture()
 
       {:error, changeset} = Users.apply_user_email(user, valid_user_password(), %{email: email})
@@ -192,7 +193,7 @@ defmodule Philomena.UsersTest do
       assert %{current_password: ["is not valid"]} = errors_on(changeset)
     end
 
-    test "applies the e-mail without persisting it", %{user: user} do
+    test "applies the email without persisting it", %{user: user} do
       email = unique_user_email()
       {:ok, user} = Users.apply_user_email(user, valid_user_password(), %{email: email})
       assert user.email == email
@@ -232,7 +233,7 @@ defmodule Philomena.UsersTest do
       %{user: user, token: token, email: email}
     end
 
-    test "updates the e-mail with a valid token", %{user: user, token: token, email: email} do
+    test "updates the email with a valid token", %{user: user, token: token, email: email} do
       assert Users.update_user_email(user, token) == :ok
       changed_user = Repo.get!(User, user.id)
       assert changed_user.email != user.email
@@ -242,19 +243,19 @@ defmodule Philomena.UsersTest do
       refute Repo.get_by(UserToken, user_id: user.id)
     end
 
-    test "does not update e-mail with invalid token", %{user: user} do
+    test "does not update email with invalid token", %{user: user} do
       assert Users.update_user_email(user, "oops") == :error
       assert Repo.get!(User, user.id).email == user.email
       assert Repo.get_by(UserToken, user_id: user.id)
     end
 
-    test "does not update e-mail if user e-mail changed", %{user: user, token: token} do
+    test "does not update email if user email changed", %{user: user, token: token} do
       assert Users.update_user_email(%{user | email: "current@example.com"}, token) == :error
       assert Repo.get!(User, user.id).email == user.email
       assert Repo.get_by(UserToken, user_id: user.id)
     end
 
-    test "does not update e-mail if token expired", %{user: user, token: token} do
+    test "does not update email if token expired", %{user: user, token: token} do
       {1, nil} = Repo.update_all(UserToken, set: [created_at: ~N[2020-01-01 00:00:00]])
       assert Users.update_user_email(user, token) == :error
       assert Repo.get!(User, user.id).email == user.email
@@ -459,7 +460,7 @@ defmodule Philomena.UsersTest do
       %{user: user, token: token}
     end
 
-    test "confirms the e-mail with a valid token", %{user: user, token: token} do
+    test "confirms the email with a valid token", %{user: user, token: token} do
       assert {:ok, confirmed_user} = Users.confirm_user(token)
       assert confirmed_user.confirmed_at
       assert confirmed_user.confirmed_at != user.confirmed_at
@@ -473,7 +474,7 @@ defmodule Philomena.UsersTest do
       assert Repo.get_by(UserToken, user_id: user.id)
     end
 
-    test "does not confirm e-mail if token expired", %{user: user, token: token} do
+    test "does not confirm email if token expired", %{user: user, token: token} do
       {1, nil} = Repo.update_all(UserToken, set: [created_at: ~N[2020-01-01 00:00:00]])
       assert Users.confirm_user(token) == :error
       refute Repo.get!(User, user.id).confirmed_at

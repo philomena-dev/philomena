@@ -6,7 +6,7 @@ defmodule Philomena.Users.UserToken do
   @rand_size 32
 
   # It is very important to keep the reset password token expiry short,
-  # since someone with access to the e-mail may take over the account.
+  # since someone with access to the email may take over the account.
   @reset_password_validity_in_days 1
   @confirm_validity_in_days 7
   @change_email_validity_in_days 7
@@ -72,7 +72,7 @@ defmodule Philomena.Users.UserToken do
   @doc """
   Builds a token with a hashed counter part.
 
-  The non-hashed token is sent to the user e-mail while the
+  The non-hashed token is sent to the user email while the
   hashed part is stored in the database, to avoid reconstruction.
   The token is valid for a week as long as users don't change
   their email.

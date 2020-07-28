@@ -31,7 +31,7 @@ defmodule PhilomenaWeb.RegistrationControllerTest do
 
       conn = get(conn, "/sessions/new")
       html_response(conn, 200)
-      assert get_flash(conn, :info) =~ "e-mail for confirmation instructions"
+      assert get_flash(conn, :info) =~ "email for confirmation instructions"
     end
 
     test "render errors for invalid data", %{conn: conn} do

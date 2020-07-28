@@ -88,7 +88,7 @@ defmodule Philomena.Users do
   end
 
   defp maybe_send_unlock_instructions(%{failed_attempts: attempts}, _unlock_url_fun)
-      when attempts < 10 do
+       when attempts < 10 do
     nil
   end
 
@@ -153,7 +153,7 @@ defmodule Philomena.Users do
   ## Settings
 
   @doc """
-  Returns an `%Ecto.Changeset{}` for changing the user e-mail.
+  Returns an `%Ecto.Changeset{}` for changing the user email.
 
   ## Examples
 
@@ -166,7 +166,7 @@ defmodule Philomena.Users do
   end
 
   @doc """
-  Emulates that the e-mail will change without actually changing
+  Emulates that the email will change without actually changing
   it in the database.
 
   ## Examples
@@ -186,7 +186,7 @@ defmodule Philomena.Users do
   end
 
   @doc """
-  Updates the user e-mail in token.
+  Updates the user email in token.
 
   If the token matches, the user email is updated and the token is deleted.
   The confirmed_at date is also updated to the current time.
@@ -212,7 +212,7 @@ defmodule Philomena.Users do
   end
 
   @doc """
-  Delivers the update e-mail instructions to the given user.
+  Delivers the update email instructions to the given user.
 
   ## Examples
 
@@ -270,7 +270,7 @@ defmodule Philomena.Users do
       Repo.insert!(user_token)
       UserNotifier.deliver_unlock_instructions(user, unlock_url_fun.(encoded_token))
     end
-end
+  end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for changing the user password.
@@ -369,7 +369,7 @@ end
   ## Confirmation
 
   @doc """
-  Delivers the confirmation e-mail instructions to the given user.
+  Delivers the confirmation email instructions to the given user.
 
   ## Examples
 
@@ -416,7 +416,7 @@ end
   ## Reset password
 
   @doc """
-  Delivers the reset password e-mail to the given user.
+  Delivers the reset password email to the given user.
 
   ## Examples
 

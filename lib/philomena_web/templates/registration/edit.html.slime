@@ -27,7 +27,7 @@ p
   ' Avoid sharing this key with others, as it could be used to compromise
   ' your account.
 
-h3 Change e-mail
+h3 Change email
 
 = form_for @email_changeset, Routes.registration_email_path(@conn, :create), [method: :post], fn f ->
   = if @email_changeset.action do
@@ -43,7 +43,7 @@ h3 Change e-mail
     = error_tag f, :current_password
 
   div
-    = submit "Change e-mail", class: "button"
+    = submit "Change email", class: "button"
 
 h3 Change password
 

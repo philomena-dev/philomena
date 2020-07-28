@@ -58,7 +58,7 @@ defmodule PhilomenaWeb.SessionControllerTest do
         })
 
       response = html_response(conn, 200)
-      assert response =~ "Invalid e-mail or password"
+      assert response =~ "Invalid email or password"
     end
   end
 

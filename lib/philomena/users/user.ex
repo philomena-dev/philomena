@@ -135,8 +135,8 @@ defmodule Philomena.Users.User do
   @doc """
   A user changeset for registration.
 
-  It is important to validate the length of both e-mail and password.
-  Otherwise databases may truncate the e-mail without warnings, which
+  It is important to validate the length of both email and password.
+  Otherwise databases may truncate the email without warnings, which
   could lead to unpredictable or insecure behaviour. Long passwords may
   also be very expensive to hash for certain algorithms.
   """
@@ -181,9 +181,9 @@ defmodule Philomena.Users.User do
   end
 
   @doc """
-  A user changeset for changing the e-mail.
+  A user changeset for changing the email.
 
-  It requires the e-mail to change otherwise an error is added.
+  It requires the email to change otherwise an error is added.
   """
   def email_changeset(user, attrs) do
     user

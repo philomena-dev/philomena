@@ -16,7 +16,7 @@ defmodule PhilomenaWeb.Registration.EmailControllerTest do
         })
 
       assert redirected_to(conn) == Routes.registration_path(conn, :edit)
-      assert get_flash(conn, :info) =~ "A link to confirm your e-mail"
+      assert get_flash(conn, :info) =~ "A link to confirm your email"
       assert Users.get_user_by_email(user.email)
     end
 
@@ -46,7 +46,7 @@ defmodule PhilomenaWeb.Registration.EmailControllerTest do
     test "updates the user email once", %{conn: conn, user: user, token: token, email: email} do
       conn = get(conn, Routes.registration_email_path(conn, :show, token))
       assert redirected_to(conn) == Routes.registration_path(conn, :edit)
-      assert get_flash(conn, :info) =~ "E-mail changed successfully"
+      assert get_flash(conn, :info) =~ "Email changed successfully"
       refute Users.get_user_by_email(user.email)
       assert Users.get_user_by_email(email)
 

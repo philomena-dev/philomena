@@ -60,16 +60,16 @@ defmodule Philomena.Users.UserNotifier do
   end
 
   @doc """
-  Deliver instructions to update an account e-mail.
+  Deliver instructions to update an account email.
   """
   def deliver_update_email_instructions(user, url) do
-    deliver(user.email, "E-mail update instructions for your account", """
+    deliver(user.email, "Email update instructions for your account", """
 
     ==============================
 
     Hi #{user.name},
 
-    You can change your e-mail by visiting the URL below:
+    You can change your email by visiting the URL below:
 
     #{url}
 

@@ -21,8 +21,8 @@ defmodule PhilomenaWeb.UnlockController do
     conn
     |> put_flash(
       :info,
-      "If your e-mail is in our system and your account has been locked, " <>
-        "you will receive an e-mail with instructions shortly."
+      "If your email is in our system and your account has been locked, " <>
+        "you will receive an email with instructions shortly."
     )
     |> redirect(to: "/")
   end
