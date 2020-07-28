@@ -11,17 +11,26 @@ defmodule PhilomenaWeb.SessionController do
   def create(conn, %{"user" => user_params}) do
     %{"email" => email, "password" => password} = user_params
 
-    if user =
-         Users.get_user_by_email_and_password(
-           email,
-           password,
-           &Routes.unlock_url(conn, :show, &1)
-         ) do
-      conn
-      |> put_flash(:info, "Successfully logged in.")
-      |> UserAuth.log_in_user(user, user_params)
-    else
-      render(conn, "new.html", error_message: "Invalid email or password")
+    user =
+      Users.get_user_by_email_and_password(
+        email,
+        password,
+        &Routes.unlock_url(conn, :show, &1)
+      )
+
+    cond do
+      not is_nil(user) and is_nil(user.confirmed_at) ->
+        conn
+        |> put_flash(:error, "You must confirm your account before logging in.")
+        |> redirect(to: "/")
+
+      not is_nil(user) ->
+        conn
+        |> put_flash(:info, "Successfully logged in.")
+        |> UserAuth.log_in_user(user, user_params)
+
+      true ->
+        render(conn, "new.html", error_message: "Invalid email or password")
     end
   end
 
