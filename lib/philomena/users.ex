@@ -69,7 +69,7 @@ defmodule Philomena.Users do
     user = Repo.get_by(User, email: email)
 
     cond do
-      not is_nil(user.locked_at) ->
+      is_nil(user) or not is_nil(user.locked_at) ->
         nil
 
       User.valid_password?(user, password) ->

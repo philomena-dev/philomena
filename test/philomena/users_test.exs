@@ -16,21 +16,56 @@ defmodule Philomena.UsersTest do
     end
   end
 
-  describe "get_user_by_email_and_password/1" do
+  describe "get_user_by_email_and_password/3" do
     test "does not return the user if the email does not exist" do
-      refute Users.get_user_by_email_and_password("unknown@example.com", "hello world!")
+      refute Users.get_user_by_email_and_password("unknown@example.com", "hello world!", & &1)
     end
 
     test "does not return the user if the password is not valid" do
       user = user_fixture()
-      refute Users.get_user_by_email_and_password(user.email, "invalid")
+      refute Users.get_user_by_email_and_password(user.email, "invalid", & &1)
+
+      user = Users.get_user!(user.id)
+      assert user.failed_attempts == 1
+    end
+
+    test "sends lock email if too many attempts to sign in are made" do
+      user = user_fixture()
+
+      Enum.map(1..10, fn _ ->
+        refute Users.get_user_by_email_and_password(user.email, "invalid", & &1)
+      end)
+
+      user = Users.get_user!(user.id)
+      token =
+        extract_user_token(fn url ->
+          Users.deliver_user_unlock_instructions(user, url)
+        end)
+
+      {:ok, token} = Base.url_decode64(token, padding: false)
+      assert user_token = Repo.get_by(UserToken, token: :crypto.hash(:sha256, token))
+      assert user_token.user_id == user.id
+      assert user_token.sent_to == user.email
+      assert user_token.context == "unlock"
+      assert user.failed_attempts == 10
+      refute is_nil(user.locked_at)
+    end
+
+    test "denies access to account if locked" do
+      user = user_fixture()
+
+      Enum.map(1..10, fn _ ->
+        refute Users.get_user_by_email_and_password(user.email, "invalid", & &1)
+      end)
+
+      refute Users.get_user_by_email_and_password(user.email, valid_user_password(), & &1)
     end
 
     test "returns the user if the email and password are valid" do
       %{id: id} = user = user_fixture()
 
       assert %User{id: ^id} =
-               Users.get_user_by_email_and_password(user.email, valid_user_password())
+               Users.get_user_by_email_and_password(user.email, valid_user_password(), & &1)
     end
   end
 
@@ -275,7 +310,7 @@ defmodule Philomena.UsersTest do
         })
 
       assert is_nil(user.password)
-      assert Users.get_user_by_email_and_password(user.email, "new valid password")
+      assert Users.get_user_by_email_and_password(user.email, "new valid password", & &1)
     end
 
     test "deletes all tokens for the given user", %{user: user} do
@@ -342,6 +377,57 @@ defmodule Philomena.UsersTest do
     end
   end
 
+  describe "generate_user_totp_token/1" do
+    setup do
+      %{user: user_fixture()}
+    end
+
+    test "generates a token", %{user: user} do
+      token = Users.generate_user_totp_token(user)
+      assert user_token = Repo.get_by(UserToken, token: token)
+      assert user_token.context == "totp"
+
+      # Creating the same token for another user should fail
+      assert_raise Ecto.ConstraintError, fn ->
+        Repo.insert!(%UserToken{
+          token: user_token.token,
+          user_id: user_fixture().id,
+          context: "totp"
+        })
+      end
+    end
+  end
+
+  describe "user_totp_token_valid?/1" do
+    setup do
+      user = user_fixture()
+      token = Users.generate_user_totp_token(user)
+      %{user: user, token: token}
+    end
+
+    test "returns true for valid token", %{user: user, token: token} do
+      assert Users.user_totp_token_valid?(user, token)
+    end
+
+    test "returns false for invalid token", %{user: user} do
+      refute Users.user_totp_token_valid?(user, "oops")
+    end
+
+    test "returns false for expired token", %{user: user, token: token} do
+      {1, nil} = Repo.update_all(UserToken, set: [inserted_at: ~N[2019-01-01 00:00:00]])
+      refute Users.user_totp_token_valid?(user, token)
+    end
+  end
+
+  describe "delete_totp_token/1" do
+    test "deletes the token" do
+      user = user_fixture()
+      token = Users.generate_user_totp_token(user)
+      assert Users.delete_totp_token(token) == :ok
+      refute Users.user_totp_token_valid?(user, token)
+    end
+  end
+
   describe "deliver_user_confirmation_instructions/2" do
     setup do
       %{user: user_fixture()}
@@ -391,6 +477,58 @@ defmodule Philomena.UsersTest do
       {1, nil} = Repo.update_all(UserToken, set: [inserted_at: ~N[2020-01-01 00:00:00]])
       assert Users.confirm_user(token) == :error
       refute Repo.get!(User, user.id).confirmed_at
+      assert Repo.get_by(UserToken, user_id: user.id)
+    end
+  end
+
+  describe "deliver_user_unlock_instructions/2" do
+    setup do
+      %{user: locked_user_fixture()}
+    end
+
+    test "sends token through notification", %{user: user} do
+      token =
+        extract_user_token(fn url ->
+          Users.deliver_user_unlock_instructions(user, url)
+        end)
+
+      {:ok, token} = Base.url_decode64(token, padding: false)
+      assert user_token = Repo.get_by(UserToken, token: :crypto.hash(:sha256, token))
+      assert user_token.user_id == user.id
+      assert user_token.sent_to == user.email
+      assert user_token.context == "unlock"
+    end
+  end
+
+  describe "unlock_user/2" do
+    setup do
+      user = locked_user_fixture()
+
+      token =
+        extract_user_token(fn url ->
+          Users.deliver_user_unlock_instructions(user, url)
+        end)
+
+      %{user: user, token: token}
+    end
+
+    test "unlocks the user with a valid token", %{user: user, token: token} do
+      assert {:ok, unlocked_user} = Users.unlock_user(token)
+      refute unlocked_user.locked_at
+      refute Repo.get!(User, user.id).locked_at
+      refute Repo.get_by(UserToken, user_id: user.id)
+    end
+
+    test "does not confirm with invalid token", %{user: user} do
+      assert Users.unlock_user("oops") == :error
+      assert Repo.get!(User, user.id).locked_at
+      assert Repo.get_by(UserToken, user_id: user.id)
+    end
+
+    test "does not unlocked if token expired", %{user: user, token: token} do
+      {1, nil} = Repo.update_all(UserToken, set: [inserted_at: ~N[2020-01-01 00:00:00]])
+      assert Users.unlock_user(token) == :error
+      assert Repo.get!(User, user.id).locked_at
       assert Repo.get_by(UserToken, user_id: user.id)
     end
   end
@@ -470,7 +608,7 @@ defmodule Philomena.UsersTest do
     test "updates the password", %{user: user} do
       {:ok, updated_user} = Users.reset_user_password(user, %{password: "new valid password"})
       assert is_nil(updated_user.password)
-      assert Users.get_user_by_email_and_password(user.email, "new valid password")
+      assert Users.get_user_by_email_and_password(user.email, "new valid password", & &1)
     end
 
     test "deletes all tokens for the given user", %{user: user} do

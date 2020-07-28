@@ -43,22 +43,52 @@ defmodule PhilomenaWeb.UserAuthTest do
     end
   end
 
+  describe "totp_auth_user/3" do
+    test "stores the user token in the session", %{conn: conn, user: user} do
+      conn = UserAuth.totp_auth_user(conn, user)
+      assert token = get_session(conn, :totp_token)
+      assert redirected_to(conn) == "/"
+      assert Users.user_totp_token_valid?(user, token)
+    end
+
+    test "redirects to the configured path", %{conn: conn, user: user} do
+      conn = conn |> put_session(:user_return_to, "/hello") |> UserAuth.totp_auth_user(user)
+      assert redirected_to(conn) == "/hello"
+    end
+
+    test "writes a cookie if remember_me is configured", %{conn: conn, user: user} do
+      conn = conn |> fetch_cookies() |> UserAuth.totp_auth_user(user, %{"remember_me" => "true"})
+      assert get_session(conn, :totp_token) == conn.cookies["user_totp_auth"]
+
+      assert %{value: signed_token, max_age: max_age} = conn.resp_cookies["user_totp_auth"]
+      assert signed_token != get_session(conn, :totp_token)
+      assert max_age == 31_536_000
+    end
+  end
+
   describe "logout_user/1" do
     test "erases session and cookies", %{conn: conn, user: user} do
       user_token = Users.generate_user_session_token(user)
+      totp_token = Users.generate_user_totp_token(user)
 
       conn =
         conn
         |> put_session(:user_token, user_token)
+        |> put_session(:totp_token, totp_token)
         |> put_req_cookie("user_remember_me", user_token)
+        |> put_req_cookie("user_totp_auth", totp_token)
         |> fetch_cookies()
         |> UserAuth.log_out_user()
 
       refute get_session(conn, :user_token)
+      refute get_session(conn, :totp_token)
       refute conn.cookies["user_remember_me"]
+      refute conn.cookies["user_totp_auth"]
       assert %{max_age: 0} = conn.resp_cookies["user_remember_me"]
+      assert %{max_age: 0} = conn.resp_cookies["user_totp_auth"]
       assert redirected_to(conn) == "/"
       refute Users.get_user_by_session_token(user_token)
+      refute Users.user_totp_token_valid?(user, totp_token)
     end
 
     test "broadcasts to the given live_socket_id", %{conn: conn} do

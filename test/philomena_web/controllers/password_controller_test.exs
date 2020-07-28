@@ -85,7 +85,7 @@ defmodule PhilomenaWeb.PasswordControllerTest do
       assert redirected_to(conn) == Routes.session_path(conn, :new)
       refute get_session(conn, :user_token)
       assert get_flash(conn, :info) =~ "Password reset successfully"
-      assert Users.get_user_by_email_and_password(user.email, "new valid password")
+      assert Users.get_user_by_email_and_password(user.email, "new valid password", & &1)
     end
 
     test "does not reset password on invalid data", %{conn: conn, token: token} do

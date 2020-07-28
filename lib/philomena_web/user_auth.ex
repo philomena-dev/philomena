@@ -49,7 +49,7 @@ defmodule PhilomenaWeb.UserAuth do
   @doc """
   Writes TOTP session metadata for an authenticated user.
   """
-  def totp_auth_user(conn, user, params) do
+  def totp_auth_user(conn, user, params \\ %{}) do
     token = Users.generate_user_totp_token(user)
     user_return_to = get_session(conn, :user_return_to)
 

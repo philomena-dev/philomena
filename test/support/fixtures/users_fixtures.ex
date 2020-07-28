@@ -31,6 +31,12 @@ defmodule Philomena.UsersFixtures do
     |> Repo.update!()
   end
 
+  def locked_user_fixture(attrs \\ %{}) do
+    user_fixture(attrs)
+    |> Users.User.lock_changeset()
+    |> Repo.update!()
+  end
+
   def extract_user_token(fun) do
     {:ok, captured} = fun.(&"[TOKEN]#{&1}[TOKEN]")
     [_, token, _] = String.split(captured.text_body, "[TOKEN]")

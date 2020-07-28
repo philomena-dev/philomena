@@ -57,7 +57,6 @@ defmodule PhilomenaWeb.Router do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
 
     resources "/sessions", SessionController, only: [:new, :create], singleton: true
-    resources "/unlocks", UnlockController, only: [:show]
   end
 
   scope "/", PhilomenaWeb do
@@ -80,7 +79,7 @@ defmodule PhilomenaWeb.Router do
     resources "/registrations", RegistrationController, only: [:new, :create], singleton: true
     resources "/passwords", PasswordController, only: [:new, :create, :edit, :update]
     resources "/confirmations", ConfirmationController, only: [:new, :create, :show]
-    resources "/unlocks", UnlockController, only: [:new, :create]
+    resources "/unlocks", UnlockController, only: [:new, :create, :show]
   end
 
   scope "/", PhilomenaWeb do
