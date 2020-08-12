@@ -13,11 +13,10 @@ defmodule PhilomenaWeb.Image.NavigateController do
   def index(conn, %{"rel" => rel} = params) when rel in ~W(prev next) do
     image = conn.assigns.image
     filter = conn.assigns.compiled_filter
-    rel = String.to_existing_atom(rel)
     scope = ImageScope.scope(conn)
 
     conn
-    |> ImageNavigator.find_consecutive(image, rel, params, compile_query(conn), filter)
+    |> ImageNavigator.find_consecutive(image, compile_query(conn), filter)
     |> case do
       {next_image, hit} ->
         redirect(conn, to: Routes.image_path(conn, :show, next_image, Keyword.put(scope, :sort, hit["sort"])))

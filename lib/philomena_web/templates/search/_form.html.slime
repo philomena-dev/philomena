@@ -14,6 +14,7 @@ h1 Search
         .dropdown__content
           a data-search-add="score.gte:100" data-search-select-last="3" data-search-show-help="numeric" Score
           a data-search-add="created_at.lte:3 years ago" data-search-select-last="11" data-search-show-help="date" Created at
+          a data-search-add="id.lte:10" data-search-select-last="2" data-search-show-help="numeric" Numeric ID
           a data-search-add="faves.gte:100" data-search-select-last="3" data-search-show-help="numeric" Number of faves
           a data-search-add="upvotes.gte:100" data-search-select-last="3" data-search-show-help="numeric" Number of upvotes
           a data-search-add="downvotes.gte:100" data-search-select-last="3" data-search-show-help="numeric" Number of downvotes
@@ -114,7 +115,7 @@ h1 Search
         end
 
       sort_fields = [
-        "Sort by upload date": :created_at,
+        "Sort by upload date": :id,
         "Sort by last modification date": :updated_at,
         "Sort by initial post date": :first_seen_at,
         "Sort by aspect ratio": :aspect_ratio,

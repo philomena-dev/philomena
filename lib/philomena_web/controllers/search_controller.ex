@@ -31,6 +31,6 @@ defmodule PhilomenaWeb.SearchController do
     end
   end
 
-  defp custom_ordering?(%{params: %{"sf" => sf}}) when sf != "created_at", do: true
+  defp custom_ordering?(%{params: %{"sf" => sf}}) when sf != "id", do: true
   defp custom_ordering?(_conn), do: false
 end
