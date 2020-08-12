@@ -10,7 +10,7 @@ defmodule PhilomenaWeb.Image.NavigateController do
   plug PhilomenaWeb.CanaryMapPlug, index: :show
   plug :load_and_authorize_resource, model: Image, id_name: "image_id", persisted: true
 
-  def index(conn, %{"rel" => rel} = params) when rel in ~W(prev next) do
+  def index(conn, %{"rel" => rel}) when rel in ~W(prev next) do
     image = conn.assigns.image
     filter = conn.assigns.compiled_filter
     scope = ImageScope.scope(conn)
