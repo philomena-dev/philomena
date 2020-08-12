@@ -53,6 +53,7 @@ defmodule PhilomenaWeb.ImageNavigator do
   defp maybe_search_after(module, body, options, queryable, true) do
     Elasticsearch.search_records_with_hits(module, body, options, queryable)
   end
+
   defp maybe_search_after(_module, _body, _options, _queryable, _false) do
     []
   end

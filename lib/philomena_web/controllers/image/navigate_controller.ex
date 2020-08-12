@@ -19,7 +19,9 @@ defmodule PhilomenaWeb.Image.NavigateController do
     |> ImageNavigator.find_consecutive(image, compile_query(conn), filter)
     |> case do
       {next_image, hit} ->
-        redirect(conn, to: Routes.image_path(conn, :show, next_image, Keyword.put(scope, :sort, hit["sort"])))
+        redirect(conn,
+          to: Routes.image_path(conn, :show, next_image, Keyword.put(scope, :sort, hit["sort"]))
+        )
 
       nil ->
         redirect(conn, to: Routes.image_path(conn, :show, image, scope))
