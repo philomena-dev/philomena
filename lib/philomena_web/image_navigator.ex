@@ -43,7 +43,7 @@ defmodule PhilomenaWeb.ImageNavigator do
     sorts = sortify(sorts, image_index)
     filters = filterify(filters, image_index)
 
-    Elasticsearch.search_records(
+    Elasticsearch.search_records_with_hits(
       Image,
       %{
         query: %{
@@ -63,7 +63,7 @@ defmodule PhilomenaWeb.ImageNavigator do
     )
     |> Enum.to_list()
     |> case do
-      [] -> image
+      [] -> nil
       [next_image] -> next_image
     end
   end
