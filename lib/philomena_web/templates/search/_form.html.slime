@@ -107,6 +107,7 @@ h1 Search
 
     elixir:
       random_is_selected = to_string(@conn.params["sf"]) =~ ~r/\Arandom(:\d+)?\z/
+
       random_seed =
         if random_is_selected do
           @conn.params["sf"]

@@ -58,6 +58,12 @@ defmodule PhilomenaWeb.ImageNavigator do
     []
   end
 
+  defp apply_direction({"galleries.position", sort_body}, rel) do
+    sort_body = update_in(sort_body.order, fn direction -> @order_for_dir[rel][direction] end)
+
+    %{"galleries.position" => sort_body}
+  end
+
   defp apply_direction({field, direction}, rel) do
     %{field => @order_for_dir[rel][direction]}
   end
