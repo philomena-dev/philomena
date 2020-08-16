@@ -3,6 +3,7 @@ defmodule PhilomenaWeb.Image.RelatedController do
 
   alias PhilomenaWeb.ImageLoader
   alias Philomena.Interactions
+  alias Philomena.SpoilerExecutor
   alias Philomena.Images.Image
 
   plug PhilomenaWeb.CanaryMapPlug, index: :show
@@ -59,12 +60,14 @@ defmodule PhilomenaWeb.Image.RelatedController do
       )
 
     interactions = Interactions.user_interactions(images, user)
+    spoilers = SpoilerExecutor.execute_spoiler(conn.assigns.compiled_spoiler, images)
 
     render(conn, "index.html",
       title: "##{image.id} - Related Images",
       layout_class: "wide",
       images: images,
-      interactions: interactions
+      interactions: interactions,
+      spoilers: spoilers
     )
   end
 end

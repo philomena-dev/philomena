@@ -2,6 +2,7 @@ defmodule PhilomenaWeb.ImageFilterPlug do
   import Plug.Conn
   import Philomena.Search.String
 
+  alias Philomena.SpoilerExecutor
   alias Philomena.Images.Query
 
   # No options
@@ -14,7 +15,7 @@ defmodule PhilomenaWeb.ImageFilterPlug do
     forced = defaults(conn.assigns[:forced_filter])
 
     tag_exclusion = %{terms: %{tag_ids: filter.hidden_tag_ids ++ forced.hidden_tag_ids}}
-    query_spoiler = invalid_filter_guard(user, filter.spoilered_complex_str)
+    query_spoiler = SpoilerExecutor.compile_spoiler(user, filter)
 
     query_exclusion = %{
       bool: %{
@@ -32,8 +33,7 @@ defmodule PhilomenaWeb.ImageFilterPlug do
     }
 
     conn
-    |> assign(:compiled_complex_filter, query_exclusion)
-    |> assign(:compiled_complex_spoiler, query_spoiler)
+    |> assign(:compiled_spoiler, query_spoiler)
     |> assign(:compiled_filter, query)
   end
 

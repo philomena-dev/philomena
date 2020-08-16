@@ -10,6 +10,7 @@ defmodule PhilomenaWeb.ProfileController do
   alias Philomena.Galleries.Gallery
   alias Philomena.Posts.Post
   alias Philomena.Comments.Comment
+  alias Philomena.SpoilerExecutor
   alias Philomena.Interactions
   alias Philomena.Tags.Tag
   alias Philomena.UserIps.UserIp
@@ -137,8 +138,11 @@ defmodule PhilomenaWeb.ProfileController do
 
     statistics = calculate_statistics(user)
 
-    interactions =
-      Interactions.user_interactions([recent_uploads, recent_faves, recent_artwork], current_user)
+    images = [recent_uploads, recent_faves, recent_artwork]
+
+    interactions = Interactions.user_interactions(images, current_user)
+
+    spoilers = SpoilerExecutor.execute_spoiler(conn.assigns.compiled_spoiler, images)
 
     forced = user.forced_filter
 
@@ -153,6 +157,7 @@ defmodule PhilomenaWeb.ProfileController do
       "show.html",
       user: user,
       interactions: interactions,
+      spoilers: spoilers,
       commission_information: commission_information,
       recent_artwork: recent_artwork,
       recent_uploads: recent_uploads,

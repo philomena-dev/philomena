@@ -4,6 +4,7 @@ defmodule PhilomenaWeb.Profile.TagChangeController do
   alias Philomena.Users.User
   alias Philomena.Images.Image
   alias Philomena.TagChanges.TagChange
+  alias Philomena.SpoilerExecutor
   alias Philomena.Repo
   import Ecto.Query
 
@@ -25,10 +26,17 @@ defmodule PhilomenaWeb.Profile.TagChangeController do
       |> order_by(desc: :created_at)
       |> Repo.paginate(conn.assigns.scrivener)
 
+    spoilers =
+      SpoilerExecutor.execute_spoiler(
+        conn.assigns.compiled_spoiler,
+        Enum.map(tag_changes, & &1.image)
+      )
+
     render(conn, "index.html",
       title: "Tag Changes for User `#{user.name}'",
       user: user,
-      tag_changes: tag_changes
+      tag_changes: tag_changes,
+      spoilers: spoilers
     )
   end
 

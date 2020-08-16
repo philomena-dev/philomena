@@ -14,6 +14,7 @@ defmodule PhilomenaWeb.ActivityController do
   }
 
   alias Philomena.Interactions
+  alias Philomena.SpoilerExecutor
   alias Philomena.Repo
   import Ecto.Query
 
@@ -102,6 +103,12 @@ defmodule PhilomenaWeb.ActivityController do
         user
       )
 
+    spoilers =
+      SpoilerExecutor.execute_spoiler(
+        conn.assigns.compiled_spoiler,
+        [images, top_scoring, watched, featured_image]
+      )
+
     render(
       conn,
       "index.html",
@@ -114,6 +121,7 @@ defmodule PhilomenaWeb.ActivityController do
       streams: streams,
       topics: topics,
       interactions: interactions,
+      spoilers: spoilers,
       layout_class: "layout--wide"
     )
   end

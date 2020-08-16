@@ -1,6 +1,7 @@
 defmodule PhilomenaWeb.TextileRenderer do
   alias Philomena.Textile.Parser
   alias Philomena.Images.Image
+  alias Philomena.SpoilerExecutor
   alias Philomena.Repo
   import Phoenix.HTML
   import Phoenix.HTML.Link
@@ -17,7 +18,7 @@ defmodule PhilomenaWeb.TextileRenderer do
     opts = %{image_transform: &Camo.Image.image_url/1}
     parsed = Enum.map(posts, &Parser.parse(opts, &1.body))
 
-    images =
+    {images, spoilers} =
       parsed
       |> Enum.flat_map(fn tree ->
         tree
@@ -29,7 +30,7 @@ defmodule PhilomenaWeb.TextileRenderer do
             []
         end)
       end)
-      |> find_images
+      |> find_images(conn)
 
     parsed
     |> Enum.map(fn tree ->
@@ -38,7 +39,7 @@ defmodule PhilomenaWeb.TextileRenderer do
         {:text, text} ->
           text
           |> replacement_entities()
-          |> replacement_images(conn, images)
+          |> replacement_images(conn, spoilers, images)
 
         {_k, markup} ->
           markup
@@ -59,7 +60,7 @@ defmodule PhilomenaWeb.TextileRenderer do
     |> String.replace("&apos;", "&rsquo;")
   end
 
-  defp replacement_images(t, conn, images) do
+  defp replacement_images(t, conn, spoilers, images) do
     t
     |> String.replace(~r|&gt;&gt;(\d+)([pts])?|, fn match ->
       # Stupid, but the method doesn't give us capture group information
@@ -78,6 +79,7 @@ defmodule PhilomenaWeb.TextileRenderer do
           Phoenix.View.render(@image_view, "_image_target.html",
             image: image,
             size: :medium,
+            spoilers: spoilers,
             conn: conn
           )
           |> safe_to_string()
@@ -86,6 +88,7 @@ defmodule PhilomenaWeb.TextileRenderer do
           Phoenix.View.render(@image_view, "_image_target.html",
             image: image,
             size: :small,
+            spoilers: spoilers,
             conn: conn
           )
           |> safe_to_string()
@@ -94,6 +97,7 @@ defmodule PhilomenaWeb.TextileRenderer do
           Phoenix.View.render(@image_view, "_image_target.html",
             image: image,
             size: :thumb_small,
+            spoilers: spoilers,
             conn: conn
           )
           |> safe_to_string()
@@ -105,24 +109,32 @@ defmodule PhilomenaWeb.TextileRenderer do
     end)
   end
 
-  defp find_images(text_segments) do
+  defp find_images(text_segments, conn) do
     text_segments
     |> Enum.flat_map(fn t ->
       Regex.scan(~r|&gt;&gt;(\d+)|, t, capture: :all_but_first)
       |> Enum.map(fn [first] -> String.to_integer(first) end)
       |> Enum.filter(&(&1 < 2_147_483_647))
     end)
-    |> load_images()
+    |> load_images(conn)
   end
 
-  defp load_images([]), do: %{}
+  defp load_images([], _conn), do: {%{}, %{}}
 
-  defp load_images(ids) do
-    Image
-    |> where([i], i.id in ^ids)
-    |> where([i], i.hidden_from_users == false)
-    |> preload(:tags)
-    |> Repo.all()
-    |> Map.new(&{&1.id, &1})
+  defp load_images(ids, conn) do
+    images =
+      Image
+      |> where([i], i.id in ^ids)
+      |> where([i], i.hidden_from_users == false)
+      |> preload(:tags)
+      |> Repo.all()
+
+    spoilers =
+      SpoilerExecutor.execute_spoiler(
+        conn.assigns.compiled_spoiler,
+        images
+      )
+
+    {Map.new(images, &{&1.id, &1}), spoilers}
   end
 end

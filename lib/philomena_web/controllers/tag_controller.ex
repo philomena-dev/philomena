@@ -5,6 +5,7 @@ defmodule PhilomenaWeb.TagController do
   alias Philomena.Elasticsearch
   alias Philomena.{Tags, Tags.Tag}
   alias PhilomenaWeb.TextileRenderer
+  alias Philomena.SpoilerExecutor
   alias Philomena.Interactions
 
   plug PhilomenaWeb.RecodeParameterPlug, [name: "id"] when action in [:show]
@@ -57,6 +58,7 @@ defmodule PhilomenaWeb.TagController do
     {images, _tags} = ImageLoader.query(conn, %{term: %{"namespaced_tags.name" => tag.name}})
 
     interactions = Interactions.user_interactions(images, user)
+    spoilers = SpoilerExecutor.execute_spoiler(conn.assigns.compiled_spoiler, images)
 
     body = TextileRenderer.render_one(%{body: tag.description || ""}, conn)
 
@@ -78,6 +80,7 @@ defmodule PhilomenaWeb.TagController do
       tags: [{tag, body, dnp_entries}],
       search_query: search_query,
       interactions: interactions,
+      spoilers: spoilers,
       images: images,
       layout_class: "layout--wide",
       title: "#{tag.name} - Tags"

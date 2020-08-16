@@ -13,6 +13,7 @@ defmodule PhilomenaWeb.ImageController do
     Galleries.Gallery
   }
 
+  alias Philomena.SpoilerExecutor
   alias Philomena.Interactions
   alias Philomena.Comments
   alias Philomena.Repo
@@ -37,12 +38,14 @@ defmodule PhilomenaWeb.ImageController do
     {:ok, {images, _tags}} = ImageLoader.search_string(conn, "created_at.lte:3 minutes ago")
 
     interactions = Interactions.user_interactions(images, conn.assigns.current_user)
+    spoilers = SpoilerExecutor.execute_spoiler(conn.assigns.compiled_spoiler, images)
 
     render(conn, "index.html",
       title: "Images",
       layout_class: "layout--wide",
       images: images,
-      interactions: interactions
+      interactions: interactions,
+      spoilers: spoilers
     )
   end
 
@@ -66,6 +69,7 @@ defmodule PhilomenaWeb.ImageController do
       |> TextileRenderer.render_one(conn)
 
     interactions = Interactions.user_interactions([image], conn.assigns.current_user)
+    spoilers = SpoilerExecutor.execute_spoiler(conn.assigns.compiled_spoiler, [image])
 
     comment_changeset =
       %Comment{}
@@ -89,6 +93,7 @@ defmodule PhilomenaWeb.ImageController do
       interactions: interactions,
       watching: watching,
       layout_class: "layout--wide",
+      spoilers: spoilers,
       title: "##{image.id} - #{image.tag_list_cache}"
     ]
 

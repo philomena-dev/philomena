@@ -2,6 +2,7 @@ defmodule PhilomenaWeb.IpProfile.TagChangeController do
   use PhilomenaWeb, :controller
 
   alias Philomena.TagChanges.TagChange
+  alias Philomena.SpoilerExecutor
   alias Philomena.Repo
   import Ecto.Query
 
@@ -18,10 +19,17 @@ defmodule PhilomenaWeb.IpProfile.TagChangeController do
       |> order_by(desc: :created_at)
       |> Repo.paginate(conn.assigns.scrivener)
 
+    spoilers =
+      SpoilerExecutor.execute_spoiler(
+        conn.assigns.compiled_spoiler,
+        Enum.map(tag_changes, & &1.image)
+      )
+
     render(conn, "index.html",
       title: "Tag Changes for IP `#{ip}'",
       ip: ip,
-      tag_changes: tag_changes
+      tag_changes: tag_changes,
+      spoilers: spoilers
     )
   end
 

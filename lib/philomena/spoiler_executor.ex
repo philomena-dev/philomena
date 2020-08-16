@@ -116,7 +116,7 @@ defmodule Philomena.SpoilerExecutor do
         {id, :complex}
 
       matched_tags ->
-        matched_tags
+        {id, matched_tags}
     end
   end
 

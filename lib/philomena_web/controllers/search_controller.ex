@@ -3,6 +3,7 @@ defmodule PhilomenaWeb.SearchController do
 
   alias PhilomenaWeb.ImageLoader
   alias Philomena.Interactions
+  alias Philomena.SpoilerExecutor
 
   def index(conn, params) do
     user = conn.assigns.current_user
@@ -10,6 +11,7 @@ defmodule PhilomenaWeb.SearchController do
     case ImageLoader.search_string(conn, params["q"], include_hits: custom_ordering?(conn)) do
       {:ok, {images, tags}} ->
         interactions = Interactions.user_interactions(images, user)
+        spoilers = SpoilerExecutor.execute_spoiler(conn.assigns.compiled_spoiler, images)
 
         conn
         |> render("index.html",
@@ -18,6 +20,7 @@ defmodule PhilomenaWeb.SearchController do
           tags: tags,
           search_query: params["q"],
           interactions: interactions,
+          spoilers: spoilers,
           layout_class: "layout--wide"
         )
 

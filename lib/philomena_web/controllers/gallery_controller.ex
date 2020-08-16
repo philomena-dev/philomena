@@ -5,6 +5,7 @@ defmodule PhilomenaWeb.GalleryController do
   alias PhilomenaWeb.NotificationCountPlug
   alias Philomena.Elasticsearch
   alias Philomena.Interactions
+  alias Philomena.SpoilerExecutor
   alias Philomena.Galleries.Gallery
   alias Philomena.Galleries
   import Ecto.Query
@@ -33,9 +34,16 @@ defmodule PhilomenaWeb.GalleryController do
         Gallery |> preload([:creator, thumbnail: :tags])
       )
 
+    spoilers =
+      SpoilerExecutor.execute_spoiler(
+        conn.assigns.compiled_spoiler,
+        Enum.map(galleries, & &1.thumbnail)
+      )
+
     render(conn, "index.html",
       title: "Galleries",
       galleries: galleries,
+      spoilers: spoilers,
       layout_class: "layout--wide"
     )
   end
@@ -58,8 +66,6 @@ defmodule PhilomenaWeb.GalleryController do
 
     {gallery_prev, gallery_next} = prev_next_page_images(conn, query)
 
-    interactions = Interactions.user_interactions([images, gallery_prev, gallery_next], user)
-
     watching = Galleries.subscribed?(gallery, user)
 
     prev_image = if gallery_prev, do: [gallery_prev], else: []
@@ -69,6 +75,9 @@ defmodule PhilomenaWeb.GalleryController do
     gallery_json = Jason.encode!(Enum.map(gallery_images, &elem(&1, 0).id))
 
     Galleries.clear_notification(gallery, user)
+
+    interactions = Interactions.user_interactions(gallery_images, user)
+    spoilers = SpoilerExecutor.execute_spoiler(conn.assigns.compiled_spoiler, gallery_images)
 
     conn
     |> NotificationCountPlug.call([])
@@ -83,7 +92,8 @@ defmodule PhilomenaWeb.GalleryController do
       gallery_next: gallery_next,
       gallery_images: gallery_images,
       images: images,
-      interactions: interactions
+      interactions: interactions,
+      spoilers: spoilers
     )
   end
 

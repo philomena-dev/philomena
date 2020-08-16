@@ -2,6 +2,7 @@ defmodule PhilomenaWeb.Search.ReverseController do
   use PhilomenaWeb, :controller
 
   alias PhilomenaWeb.ImageReverse
+  alias Philomena.SpoilerExecutor
 
   plug PhilomenaWeb.ScraperCachePlug
   plug PhilomenaWeb.ScraperPlug, params_key: "image", params_name: "image"
@@ -12,8 +13,9 @@ defmodule PhilomenaWeb.Search.ReverseController do
 
   def create(conn, %{"image" => image_params}) when is_map(image_params) do
     images = ImageReverse.images(image_params)
+    spoilers = SpoilerExecutor.execute_spoiler(conn.assigns.compiled_spoiler, images)
 
-    render(conn, "index.html", title: "Reverse Search", images: images)
+    render(conn, "index.html", title: "Reverse Search", images: images, spoilers: spoilers)
   end
 
   def create(conn, _params) do

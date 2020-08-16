@@ -2,6 +2,7 @@ defmodule PhilomenaWeb.IpProfile.SourceChangeController do
   use PhilomenaWeb, :controller
 
   alias Philomena.SourceChanges.SourceChange
+  alias Philomena.SpoilerExecutor
   alias Philomena.Repo
   import Ecto.Query
 
@@ -17,10 +18,17 @@ defmodule PhilomenaWeb.IpProfile.SourceChangeController do
       |> preload([:user, image: [:user, :tags]])
       |> Repo.paginate(conn.assigns.scrivener)
 
+    spoilers =
+      SpoilerExecutor.execute_spoiler(
+        conn.assigns.compiled_spoiler,
+        Enum.map(source_changes, & &1.image)
+      )
+
     render(conn, "index.html",
       title: "Source Changes for IP `#{ip}'",
       ip: ip,
-      source_changes: source_changes
+      source_changes: source_changes,
+      spoilers: spoilers
     )
   end
 

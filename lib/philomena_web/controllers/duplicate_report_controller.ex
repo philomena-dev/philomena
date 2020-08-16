@@ -3,6 +3,7 @@ defmodule PhilomenaWeb.DuplicateReportController do
 
   alias Philomena.DuplicateReports
   alias Philomena.DuplicateReports.DuplicateReport
+  alias Philomena.SpoilerExecutor
   alias Philomena.Images.Image
   alias Philomena.Repo
   import Ecto.Query
@@ -30,9 +31,16 @@ defmodule PhilomenaWeb.DuplicateReportController do
       |> order_by(desc: :created_at)
       |> Repo.paginate(conn.assigns.scrivener)
 
+    spoilers =
+      SpoilerExecutor.execute_spoiler(
+        conn.assigns.compiled_spoiler,
+        Enum.map(duplicate_reports, &[&1.image, &1.duplicate_of_image])
+      )
+
     render(conn, "index.html",
       title: "Duplicate Reports",
       duplicate_reports: duplicate_reports,
+      spoilers: spoilers,
       layout_class: "layout--wide"
     )
   end
