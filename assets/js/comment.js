@@ -4,7 +4,6 @@
 
 import { $ } from './utils/dom';
 import { showOwnedComments } from './communications/comment';
-import { filterNode } from './imagesclientside';
 import { fetchHtml } from './utils/requests';
 
 function handleError(response) {
@@ -94,9 +93,6 @@ function insertParentPost(data, clickedLink, fullComment) {
   // Add class active_reply_link to the clicked link
   clickedLink.classList.add('active_reply_link');
 
-  // Filter images (if any) in the loaded comment
-  filterNode(fullComment.previousSibling);
-
 }
 
 function clearParentPost(clickedLink, fullComment) {
@@ -124,9 +120,6 @@ function displayComments(container, commentsHtml) {
 
   // Execute timeago on comments
   window.booru.timeAgo(document.getElementsByTagName('time'));
-
-  // Filter images in the comments
-  filterNode(container);
 
   // Show options on own comments
   showOwnedComments();
@@ -171,7 +164,6 @@ function setupComments() {
       loadComments(false);
     }
     else {
-      filterNode(comments);
       showOwnedComments();
     }
   }

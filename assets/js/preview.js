@@ -3,7 +3,6 @@
  */
 
 import { fetchJson } from './utils/requests';
-import { filterNode } from './imagesclientside';
 
 function handleError(response) {
   const errorMessage = '<div>Preview failed to load!</div>';
@@ -42,7 +41,6 @@ function getPreview(body, anonymous, previewTab, isImage = false) {
     .then(handleError)
     .then(data => {
       previewTab.innerHTML = data;
-      filterNode(previewTab);
     });
 }
 

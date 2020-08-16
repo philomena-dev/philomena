@@ -27,7 +27,6 @@ defmodule PhilomenaWeb.Image.CommentController do
     preload: [:tags]
 
   plug :verify_authorized when action in [:show]
-  plug PhilomenaWeb.FilterForcedUsersPlug when action in [:create, :edit, :update]
 
   # Undo the previous private parameter screwery
   plug PhilomenaWeb.LoadCommentPlug, [param: "id", show_hidden: true] when action in [:show]

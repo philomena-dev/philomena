@@ -24,11 +24,6 @@ defmodule PhilomenaWeb.LayoutView do
     host |> to_string
   end
 
-  defp ignored_tag_list(nil), do: []
-  defp ignored_tag_list([]), do: []
-  defp ignored_tag_list([{tag, _body, _dnp_entries}]), do: [tag.id]
-  defp ignored_tag_list(tags), do: Enum.map(tags, & &1.id)
-
   def clientside_data(conn) do
     conn = Conn.fetch_cookies(conn)
 
@@ -40,9 +35,7 @@ defmodule PhilomenaWeb.LayoutView do
     data = [
       filter_id: filter.id,
       hidden_tag_list: Jason.encode!(filter.hidden_tag_ids),
-      hidden_filter: Philomena.Search.String.normalize(filter.hidden_complex_str || ""),
       spoilered_tag_list: Jason.encode!(filter.spoilered_tag_ids),
-      spoilered_filter: Philomena.Search.String.normalize(filter.spoilered_complex_str || ""),
       user_id: if(user, do: user.id, else: nil),
       user_name: if(user, do: user.name, else: nil),
       user_slug: if(user, do: user.slug, else: nil),
@@ -53,7 +46,6 @@ defmodule PhilomenaWeb.LayoutView do
       fancy_tag_edit: if(user, do: user.fancy_tag_field_on_edit, else: true),
       fancy_tag_upload: if(user, do: user.fancy_tag_field_on_upload, else: true),
       interactions: Jason.encode!(interactions),
-      ignored_tag_list: Jason.encode!(ignored_tag_list(conn.assigns[:tags])),
       hide_staff_tools: conn.cookies["hide_staff_tools"]
     ]
 

@@ -15,8 +15,6 @@ defmodule PhilomenaWeb.Image.VoteController do
     persisted: true,
     preload: [:tags]
 
-  plug PhilomenaWeb.FilterForcedUsersPlug
-
   def create(conn, params) do
     user = conn.assigns.current_user
     image = conn.assigns.image

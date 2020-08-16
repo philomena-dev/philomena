@@ -16,8 +16,8 @@ import { setupComments }        from './comment';
 import { setupDupeReports }     from './duplicate_reports.js';
 import { setFingerprintCookie } from './fingerprint';
 import { setupGalleryEditing }  from './galleries';
-import { initImagesClientside } from './imagesclientside';
 import { bindImageTarget }      from './image_expansion';
+import { setupInteractions }    from './interactions';
 import { setupEvents }          from './misc';
 import { setupNotifications }   from './notifications';
 import { setupPreviews }        from './preview';
@@ -44,7 +44,7 @@ whenReady(() => {
   registerEvents();
   setupBurgerMenu();
   bindCaptchaLinks();
-  initImagesClientside();
+  setupInteractions();
   setupComments();
   setupDupeReports();
   setFingerprintCookie();

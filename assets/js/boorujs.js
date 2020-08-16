@@ -6,7 +6,6 @@
 
 import { $, $$ } from './utils/dom';
 import { fetchHtml, handleError } from './utils/requests';
-import { showBlock } from './utils/image';
 import { addTag } from './tagsinput';
 
 // Event types and any qualifying conditions - return true to not run action
@@ -72,10 +71,7 @@ const actions = {
         .catch(() => newTab.textContent = 'Error!');
     }
 
-  },
-
-  unfilter(data) { showBlock(data.el.closest('.image-show-container')); },
-
+  }
 };
 
 // Use this function to apply a callback to elements matching the selectors

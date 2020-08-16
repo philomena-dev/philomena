@@ -123,31 +123,8 @@ defmodule PhilomenaWeb.ImageView do
     Application.get_env(:philomena, :image_url_root)
   end
 
-  def image_container_data(conn, image, size) do
-    [
-      image_id: image.id,
-      image_tags: Jason.encode!(Enum.map(image.tags, & &1.id)),
-      image_tag_aliases: image.tag_list_plus_alias_cache,
-      score: image.score,
-      faves: image.faves_count,
-      upvotes: image.upvotes_count,
-      downvotes: image.downvotes_count,
-      comment_count: image.comments_count,
-      created_at: NaiveDateTime.to_iso8601(image.created_at),
-      source_url: image.source_url,
-      uris: Jason.encode!(thumb_urls(image, can?(conn, :show, image))),
-      width: image.image_width,
-      height: image.image_height,
-      aspect_ratio: image.image_aspect_ratio,
-      size: size
-    ]
-  end
-
-  def image_container(conn, image, size, block) do
-    content_tag(:div, block.(),
-      class: "image-container #{size}",
-      data: image_container_data(conn, image, size)
-    )
+  def image_container(_conn, _image, size, block) do
+    content_tag(:div, block.(), class: "image-container #{size}")
   end
 
   def display_order(tags) do
@@ -215,26 +192,6 @@ defmodule PhilomenaWeb.ImageView do
   defp thumb_format("svg", _name, false), do: "png"
   defp thumb_format(_, :rendered, _download), do: "png"
   defp thumb_format(format, _name, _download), do: format
-
-  def image_filter_data(image) do
-    %{
-      id: image.id,
-      "namespaced_tags.name": String.split(image.tag_list_plus_alias_cache || "", ", "),
-      score: image.score,
-      faves: image.faves_count,
-      upvotes: image.upvotes_count,
-      downvotes: image.downvotes_count,
-      comment_count: image.comments_count,
-      created_at: image.created_at,
-      first_seen_at: image.first_seen_at,
-      source_url: image.source_url,
-      width: image.image_width,
-      height: image.image_height,
-      aspect_ratio: image.image_aspect_ratio,
-      sha512_hash: image.image_sha512_hash,
-      orig_sha512_hash: image.image_orig_sha512_hash
-    }
-  end
 
   def filter_or_spoiler_value(conn, image) do
     spoilered(conn)[image.id]

@@ -15,8 +15,6 @@ defmodule PhilomenaWeb.Image.FaveController do
     persisted: true,
     preload: [:tags]
 
-  plug PhilomenaWeb.FilterForcedUsersPlug
-
   def create(conn, _params) do
     user = conn.assigns.current_user
     image = conn.assigns.image
