@@ -20,7 +20,7 @@ defmodule PhilomenaWeb.ImageLoader do
 
   def query(conn, body, options \\ []) do
     pagination = Keyword.get(options, :pagination, conn.assigns.image_pagination)
-    queryable = Keyword.get(options, :queryable, Image |> preload(:tags))
+    queryable = Keyword.get(options, :queryable, Image)
     sorts = Keyword.get(options, :sorts, &ImageSorter.parse_sort(conn.params, &1))
 
     tags =

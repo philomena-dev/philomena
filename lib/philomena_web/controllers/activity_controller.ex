@@ -54,7 +54,7 @@ defmodule PhilomenaWeb.ActivityController do
           sort: %{posted_at: :desc}
         },
         %{page_number: 1, page_size: 6},
-        Comment |> preload([:user, image: [:tags]])
+        Comment |> preload([:user, :image])
       )
 
     comment_images = Enum.map(comments, & &1.image)
@@ -77,7 +77,6 @@ defmodule PhilomenaWeb.ActivityController do
       |> filter_hidden(user, conn.params["hidden"])
       |> order_by([i, f], desc: f.created_at)
       |> limit(1)
-      |> preload([:tags])
       |> Repo.one()
 
     streams =

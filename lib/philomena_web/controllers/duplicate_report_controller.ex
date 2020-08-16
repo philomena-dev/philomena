@@ -27,7 +27,7 @@ defmodule PhilomenaWeb.DuplicateReportController do
     duplicate_reports =
       DuplicateReport
       |> where([d], d.state in ^states)
-      |> preload([:user, :modifier, image: [:user, :tags], duplicate_of_image: [:user, :tags]])
+      |> preload([:user, :modifier, image: [:user], duplicate_of_image: [:user]])
       |> order_by(desc: :created_at)
       |> Repo.paginate(conn.assigns.scrivener)
 

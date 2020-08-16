@@ -16,7 +16,7 @@ defmodule PhilomenaWeb.GalleryController do
   plug :load_and_authorize_resource,
     model: Gallery,
     except: [:index],
-    preload: [:creator, thumbnail: :tags]
+    preload: [:creator, :thumbnail]
 
   def index(conn, params) do
     galleries =
@@ -31,7 +31,7 @@ defmodule PhilomenaWeb.GalleryController do
           sort: parse_sort(params)
         },
         conn.assigns.pagination,
-        Gallery |> preload([:creator, thumbnail: :tags])
+        Gallery |> preload([:creator, :thumbnail])
       )
 
     spoilers =

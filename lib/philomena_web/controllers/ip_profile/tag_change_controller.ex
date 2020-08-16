@@ -15,7 +15,7 @@ defmodule PhilomenaWeb.IpProfile.TagChangeController do
       TagChange
       |> where(ip: ^ip)
       |> added_filter(params)
-      |> preload([:tag, :user, image: [:user, :tags]])
+      |> preload([:tag, :user, image: [:user]])
       |> order_by(desc: :created_at)
       |> Repo.paginate(conn.assigns.scrivener)
 

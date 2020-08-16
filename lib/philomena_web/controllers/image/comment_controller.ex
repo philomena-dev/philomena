@@ -23,8 +23,7 @@ defmodule PhilomenaWeb.Image.CommentController do
   plug :load_and_authorize_resource,
     model: Image,
     id_name: "image_id",
-    persisted: true,
-    preload: [:tags]
+    persisted: true
 
   plug :verify_authorized when action in [:show]
 

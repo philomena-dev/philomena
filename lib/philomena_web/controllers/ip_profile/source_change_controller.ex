@@ -15,7 +15,7 @@ defmodule PhilomenaWeb.IpProfile.SourceChangeController do
       SourceChange
       |> where(ip: ^ip)
       |> order_by(desc: :created_at)
-      |> preload([:user, image: [:user, :tags]])
+      |> preload([:user, image: [:user]])
       |> Repo.paginate(conn.assigns.scrivener)
 
     spoilers =

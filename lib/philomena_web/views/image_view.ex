@@ -7,10 +7,13 @@ defmodule PhilomenaWeb.ImageView do
   def show_vote_counts?(_user), do: true
 
   def title_text(image) do
-    tags = Tag.display_order(image.tags) |> Enum.map_join(", ", & &1.name)
+    tags = truncate(image.tag_list_cache)
 
     "Size: #{image.image_width}x#{image.image_height} | Tagged: #{tags}"
   end
+
+  def truncate(<<string::binary-size(1024), _rest::binary>>), do: string <> "..."
+  def truncate(string), do: string
 
   # this is a bit ridiculous
   def render_intent(_conn, %{thumbnails_generated: false}, _size), do: :not_rendered

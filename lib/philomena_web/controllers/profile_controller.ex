@@ -28,7 +28,7 @@ defmodule PhilomenaWeb.ProfileController do
       awards: [:badge, :awarded_by],
       public_links: :tag,
       verified_links: :tag,
-      commission: [sheet_image: :tags, items: [example_image: :tags]]
+      commission: [:sheet_image, items: :example_image]
     ]
 
   plug :set_admin_metadata
@@ -93,7 +93,7 @@ defmodule PhilomenaWeb.ProfileController do
           sort: %{posted_at: :desc}
         },
         %{page_size: 3},
-        Comment |> preload(user: [awards: :badge], image: :tags)
+        Comment |> preload([:image, user: [awards: :badge]])
       )
       |> Enum.filter(&Canada.Can.can?(current_user, :show, &1.image))
 
@@ -132,7 +132,7 @@ defmodule PhilomenaWeb.ProfileController do
     recent_galleries =
       Gallery
       |> where(creator_id: ^user.id)
-      |> preload([:creator, thumbnail: :tags])
+      |> preload([:creator, :thumbnail])
       |> limit(4)
       |> Repo.all()
 

@@ -13,7 +13,7 @@ defmodule PhilomenaWeb.FingerprintProfile.SourceChangeController do
       SourceChange
       |> where(fingerprint: ^fingerprint)
       |> order_by(desc: :created_at)
-      |> preload([:user, image: [:user, :tags]])
+      |> preload([:user, image: [:user]])
       |> Repo.paginate(conn.assigns.scrivener)
 
     spoilers =
