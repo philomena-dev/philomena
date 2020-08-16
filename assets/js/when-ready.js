@@ -17,6 +17,7 @@ import { setupDupeReports }     from './duplicate_reports.js';
 import { setFingerprintCookie } from './fingerprint';
 import { setupGalleryEditing }  from './galleries';
 import { bindImageTarget }      from './image_expansion';
+import { configureSpoilers }    from './imagesclientside';
 import { setupInteractions }    from './interactions';
 import { setupEvents }          from './misc';
 import { setupNotifications }   from './notifications';
@@ -50,6 +51,7 @@ whenReady(() => {
   setFingerprintCookie();
   setupGalleryEditing();
   bindImageTarget();
+  configureSpoilers();
   setupEvents();
   setupNotifications();
   setupPreviews();

@@ -15,36 +15,39 @@ defmodule PhilomenaWeb.ImageView do
   def truncate(<<string::binary-size(1024), _rest::binary>>), do: string <> "..."
   def truncate(string), do: string
 
-  # this is a bit ridiculous
+  def truncate_short(<<string::binary-size(24), _rest::binary>>), do: string <> "..."
+  def truncate_short(string), do: string
+
   def render_intent(_conn, %{thumbnails_generated: false}, _size), do: :not_rendered
 
   def render_intent(conn, image, size) do
     uris = thumb_urls(image, can?(conn, :show, image))
     vid? = image.image_mime_type == "video/webm"
     gif? = image.image_mime_type == "image/gif"
-    alt = title_text(image)
 
     hidpi? = conn.cookies["hidpi"] == "true"
     webm? = conn.cookies["webm"] == "true"
     use_gif? = vid? and not webm? and size in ~W(thumb thumb_small thumb_tiny)a
-    filtered? = filter_or_spoiler_hits?(conn, image)
+    filter = filter_or_spoiler_value(conn, image)
 
     cond do
-      filtered? and vid? ->
-        {:filtered_video, alt}
-
-      filtered? and not vid? ->
-        {:filtered_image, alt}
-
       hidpi? and not (gif? or vid?) ->
-        {:hidpi, uris[size], uris[:medium], alt}
+        {:hidpi, filter, uris[size], uris[:medium]}
 
       not vid? or use_gif? ->
-        {:image, String.replace(uris[size], ".webm", ".gif"), alt}
+        {:image, filter, String.replace(uris[size], ".webm", ".gif")}
 
       true ->
-        {:video, uris[size], String.replace(uris[size], ".webm", ".mp4"), alt}
+        {:video, filter, uris[size], String.replace(uris[size], ".webm", ".mp4")}
     end
+  end
+
+  def image_link_class(nil) do
+    nil
+  end
+
+  def image_link_class(_filter) do
+    "hidden js-spoiler-target"
   end
 
   def thumb_urls(image, show_hidden) do
@@ -126,8 +129,10 @@ defmodule PhilomenaWeb.ImageView do
     Application.get_env(:philomena, :image_url_root)
   end
 
-  def image_container(_conn, _image, size, block) do
-    content_tag(:div, block.(), class: "image-container #{size}")
+  def image_container(image, link, size, block) do
+    hover_text = title_text(image)
+
+    content_tag(:a, block.(), href: link, title: hover_text, class: "image-container #{size}")
   end
 
   def display_order(tags) do
@@ -197,24 +202,36 @@ defmodule PhilomenaWeb.ImageView do
   defp thumb_format(format, _name, _download), do: format
 
   def filter_or_spoiler_value(conn, image) do
-    spoilered(conn)[image.id]
+    spoilers(conn)[image.id]
   end
 
   def filter_or_spoiler_hits?(conn, image) do
-    Map.has_key?(spoilered(conn), image.id)
+    Map.has_key?(spoilers(conn), image.id)
   end
 
   def filter_hits?(conn, image) do
-    spoilered(conn)[image.id] == :hidden
+    spoilers(conn)[image.id] == :hidden
   end
 
   def spoiler_hits?(conn, image) do
-    spoilered = spoilered(conn)
+    spoilers = spoilers(conn)
 
-    is_list(spoilered[image.id]) or spoilered[image.id] == :complex
+    is_list(spoilers[image.id]) or spoilers[image.id] == :complex
   end
 
-  defp spoilered(conn) do
-    Map.get(conn.assigns, :spoilered, %{})
+  defp spoilers(conn) do
+    Map.get(conn.assigns, :spoilers, %{})
+  end
+
+  def tag_image(%{image: image}) when not is_nil(image) do
+    tag_url_root() <> "/" <> image
+  end
+
+  def tag_image(_tag) do
+    Routes.static_path(PhilomenaWeb.Endpoint, "/images/tagblocked.svg")
+  end
+
+  defp tag_url_root do
+    Application.get_env(:philomena, :tag_url_root)
   end
 end

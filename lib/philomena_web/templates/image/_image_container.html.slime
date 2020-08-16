@@ -1,6 +1,6 @@
 - link = assigns[:link] || Routes.image_path(@conn, :show, @image)
 
-= image_container @conn, @image, @size, fn ->
+= image_container @image, link, @size, fn ->
   = cond do
     - @image.duplicate_id ->
       .media-box__overlay
@@ -18,42 +18,21 @@
     - true ->
 
   = case render_intent(@conn, @image, @size) do
-    - {:hidpi, small_url, medium_url, hover_text} ->
-      .media-box__overlay.js-spoiler-info-overlay
-      a href=link title=hover_text
-        picture
-          img src=small_url srcset="#{small_url} 1x, #{medium_url} 2x" alt=hover_text
+    - {:hidpi, filter, small_url, medium_url} ->
+      = render PhilomenaWeb.ImageView, "_filter_info.html", filter: filter, image: @image, video: false
+      picture class=image_link_class(filter)
+        img src=small_url srcset="#{small_url} 1x, #{medium_url} 2x"
 
-    - {:image, small_url, hover_text} ->
-      .media-box__overlay.js-spoiler-info-overlay
-        = if @image.image_mime_type == "video/webm" do
-          | WebM
+    - {:image, filter, small_url} ->
+      = render PhilomenaWeb.ImageView, "_filter_info.html", filter: filter, image: @image, video: false
+      picture class=image_link_class(filter)
+        img src=small_url
 
-      a href=link title=hover_text
-        picture
-          img src=small_url alt=hover_text
-
-    - {:video, webm, mp4, hover_text} ->
-      .media-box__overlay.js-spoiler-info-overlay
-      a href=link title=hover_text
-        video alt=hover_text autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline"
-          source src=webm type="video/webm"
-          source src=mp4 type="video/mp4"
-        img alt=hover_text
-
-    - {:filtered_image, hover_text} ->
-      .media-box__overlay.js-spoiler-info-overlay
-      a href=link title=hover_text
-        picture
-          img alt=hover_text
-
-    - {:filtered_video, hover_text} ->
-      .media-box__overlay.js-spoiler-info-overlay
-      a href=link title=hover_text
-        video autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline"
-        img alt=hover_text
+    - {:video, filter, webm, mp4} ->
+      = render PhilomenaWeb.ImageView, "_filter_info.html", filter: filter, image: @image, video: true
+      video class=image_link_class(filter) autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline"
+        source src=webm type="video/webm"
+        source src=mp4 type="video/mp4"
 
     - :not_rendered ->
-      .media-box__overlay.js-spoiler-info-overlay
-      a href=link
-        ' Thumbnails not yet generated
+      | Thumbnails not yet generated

@@ -15,7 +15,8 @@ defmodule PhilomenaWeb.ContentSecurityPolicyPlug do
         "manifest-src 'self'; img-src 'self' data: #{cdn_uri} #{camo_uri}; " <>
         "block-all-mixed-content"
 
-    Conn.put_resp_header(conn, "content-security-policy", csp_value)
+    #Conn.put_resp_header(conn, "content-security-policy", csp_value)
+    conn
   end
 
   defp cdn_uri, do: Application.get_env(:philomena, :cdn_host) |> to_uri()

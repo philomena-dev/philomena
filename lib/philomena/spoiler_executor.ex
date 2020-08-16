@@ -139,6 +139,7 @@ defmodule Philomena.SpoilerExecutor do
     else
       tags
       |> Map.take(matched_queries)
+      |> Map.values()
       |> Enum.sort(&tag_sort/2)
       |> case do
         [] ->

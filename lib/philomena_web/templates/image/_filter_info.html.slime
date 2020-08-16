@@ -1,0 +1,30 @@
+= case @filter do
+  - :hidden ->
+      / Image is hidden by filter.
+      .js-spoiler-image
+        .media-box__overlay.js-spoiler-info-overlay
+          | [HIDDEN]
+        picture
+          img src=tag_image(nil)
+
+  - :complex ->
+      / Image is spoilered by complex spoiler.
+      .js-spoiler-image
+        .media-box__overlay.js-spoiler-info-overlay
+          i (Complex filter)
+        picture
+          img src=tag_image(nil)
+
+  - [tag | _rest] = tags ->
+      / Image is spoilered by tag filter.
+      .js-spoiler-image
+        .media-box__overlay.js-spoiler-info-overlay
+          i = truncate_short(Enum.map_join(tags, ", ", & &1.name))
+        picture
+          img src=tag_image(tag)
+
+  - _other ->
+      / Nothing to filter.
+      = if @image.image_mime_type == "video/webm" and not @video do
+        .media-box__overlay.js-spoiler-info-overlay
+          | WebM
