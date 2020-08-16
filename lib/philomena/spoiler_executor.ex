@@ -8,27 +8,42 @@ defmodule Philomena.SpoilerExecutor do
   import Ecto.Query
   import Philomena.Search.String
 
+  @complex_tag "complex"
+  @hidden_tag "hidden"
+
   @doc """
   Compile a filter's spoiler context for the purpose of executing it as
   a spoiler. This logic is different from filter execution because it
   tags query leaves with relevant information about which aspect of the
-  spoiler they match (tag match, complex filter match).
+  spoiler they match (tag spoiler match, complex spoiler match).
   """
   @spec compile_spoiler(map(), map()) :: map()
   def compile_spoiler(user, filter) do
     spoilered_tags =
       Enum.map(filter.spoilered_tag_ids, fn id ->
-        %{term: %{tag_id: id}, _name: Integer.to_string(id)}
+        %{term: %{tag_ids: %{value: id, _name: Integer.to_string(id)}}}
       end)
 
-    spoilered_complex =
-      user
-      |> invalid_filter_guard(filter.spoilered_complex_str)
-      |> Map.put(:_name, "complex")
+    spoilered_complex = %{
+      bool: %{
+        must: invalid_filter_guard(user, filter.spoilered_complex_str),
+        _name: @complex_tag
+      }
+    }
+
+    hides = %{
+      bool: %{
+        must: [
+          invalid_filter_guard(user, filter.hidden_complex_str),
+          %{terms: %{tag_ids: filter.hidden_tag_ids}}
+        ],
+        _name: @hidden_tag
+      }
+    }
 
     %{
       bool: %{
-        should: [spoilered_complex | spoilered_tags]
+        should: [hides, spoilered_complex | spoilered_tags]
       }
     }
   end
@@ -39,19 +54,28 @@ defmodule Philomena.SpoilerExecutor do
   the spoiler matched, or the atom :complex if the complex spoiler matched
   instead of any tag object.
   """
-  @spec execute_spoiler(map(), list()) :: %{optional(integer()) => [map()] | :complex}
+  @spec execute_spoiler(map(), list()) :: %{optional(integer()) => [map()] | :complex | :hidden}
   def execute_spoiler(compiled, images) do
-    image_ids = %{
+    image_ids = extract_ids(images)
+
+    image_terms = %{
       terms: %{id: extract_ids(images)}
     }
 
     test_query = %{
-      bool: %{
-        must: [compiled, image_ids],
+      query: %{
+        bool: %{
+          must: [compiled, image_terms]
+        }
       }
     }
 
-    results = Elasticsearch.search_results(Image, test_query)
+    pagination_params = %{
+      page_number: 1,
+      page_size: length(image_ids)
+    }
+
+    results = Elasticsearch.search_results(Image, test_query, pagination_params)
 
     tags = extract_tags(results.entries)
 
@@ -95,7 +119,7 @@ defmodule Philomena.SpoilerExecutor do
   defp extract_tags(results) do
     hit_tag_ids =
       results
-      |> Enum.flat_map(fn {_id, hit} -> hit["matched_queries"] end)
+      |> Enum.flat_map(fn {_id, hit} -> filter_special_matched(hit["matched_queries"]) end)
       |> Enum.uniq()
 
     Tag
@@ -106,17 +130,23 @@ defmodule Philomena.SpoilerExecutor do
 
   # Create a map key for the response of execute_spoiler/2. Determines
   # the reason an image was in this response.
-  @spec filter_reason({integer(), map()}, map()) :: {integer(), [map()] | :complex}
+  @spec filter_reason({integer(), map()}, map()) :: {integer(), [map()] | :complex | :hidden}
   defp filter_reason({id, hit}, tags) do
-    tags
-    |> Map.take(hit["matched_queries"])
-    |> Enum.sort(&tag_sort/2)
-    |> case do
-      [] ->
-        {id, :complex}
+    matched_queries = hit["matched_queries"]
 
-      matched_tags ->
-        {id, matched_tags}
+    if Enum.member?(matched_queries, @hidden_tag) do
+      {id, :hidden}
+    else
+      tags
+      |> Map.take(matched_queries)
+      |> Enum.sort(&tag_sort/2)
+      |> case do
+        [] ->
+          {id, :complex}
+
+        matched_tags ->
+          {id, matched_tags}
+      end
     end
   end
 
@@ -139,5 +169,12 @@ defmodule Philomena.SpoilerExecutor do
       true ->
         true
     end
+  end
+
+  # The list of matched queries may return things which do not look like
+  # integer IDs and will cause Postgrex to choke; filter those out here.
+  @spec filter_special_matched(list()) :: list()
+  defp filter_special_matched(matched_queries) do
+    Enum.filter(matched_queries, &String.match?(&1, ~r/\A\d+\z/))
   end
 end

@@ -57,6 +57,8 @@ defmodule PhilomenaWeb.ActivityController do
         Comment |> preload([:user, image: [:tags]])
       )
 
+    comment_images = Enum.map(comments, & &1.image)
+
     watched =
       if !!user do
         {:ok, {watched_images, _tags}} =
@@ -106,7 +108,7 @@ defmodule PhilomenaWeb.ActivityController do
     spoilers =
       SpoilerExecutor.execute_spoiler(
         conn.assigns.compiled_spoiler,
-        [images, top_scoring, watched, featured_image]
+        [images, top_scoring, watched, featured_image, comment_images]
       )
 
     render(

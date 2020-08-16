@@ -236,29 +236,25 @@ defmodule PhilomenaWeb.ImageView do
     }
   end
 
+  def filter_or_spoiler_value(conn, image) do
+    spoilered(conn)[image.id]
+  end
+
   def filter_or_spoiler_hits?(conn, image) do
-    tag_filter_or_spoiler_hits?(conn, image) or complex_filter_or_spoiler_hits?(conn, image)
+    Map.has_key?(spoilered(conn), image.id)
   end
 
-  defp tag_filter_or_spoiler_hits?(conn, image) do
-    filter = conn.assigns.current_filter
-    filtered_tag_ids = MapSet.new(filter.spoilered_tag_ids ++ filter.hidden_tag_ids)
-    image_tag_ids = MapSet.new(image.tags, & &1.id)
-
-    MapSet.size(MapSet.intersection(filtered_tag_ids, image_tag_ids)) > 0
+  def filter_hits?(conn, image) do
+    spoilered(conn)[image.id] == :hidden
   end
 
-  defp complex_filter_or_spoiler_hits?(conn, image) do
-    doc = image_filter_data(image)
-    complex_filter = conn.assigns.compiled_complex_filter
-    complex_spoiler = conn.assigns.compiled_complex_spoiler
+  def spoiler_hits?(conn, image) do
+    spoilered = spoilered(conn)
 
-    query = %{
-      bool: %{
-        should: [complex_filter, complex_spoiler]
-      }
-    }
+    is_list(spoilered[image.id]) or spoilered[image.id] == :complex
+  end
 
-    Philomena.Search.Evaluator.hits?(doc, query)
+  defp spoilered(conn) do
+    Map.get(conn.assigns, :spoilered, %{})
   end
 end
