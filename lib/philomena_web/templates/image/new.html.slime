@@ -9,14 +9,7 @@
       ' Don't post content the artist doesn't want here (or shared in general),
       strong including commercial content.
 
-  = if !@conn.assigns.current_user do
-    p
-      strong<> Sorry, but due to spam, anonymous uploaders need to fill this out.
-      | If you're logged in, you can still post anonymously and won't have to deal with captchas!
-
-    .field
-      = checkbox f, :captcha, class: "js-captcha", value: 0
-      = label f, :captcha, "I am not a robot!"
+  = render PhilomenaWeb.CaptchaView, "_captcha.html", conn: @conn
 
   p
     strong

@@ -11,7 +11,6 @@ import { listenAutocomplete }   from './autocomplete';
 import { loadBooruData }        from './booru';
 import { registerEvents }       from './boorujs';
 import { setupBurgerMenu }      from './burger';
-import { bindCaptchaLinks }     from './captcha';
 import { setupComments }        from './comment';
 import { setupDupeReports }     from './duplicate_reports.js';
 import { setFingerprintCookie } from './fingerprint';
@@ -43,7 +42,6 @@ whenReady(() => {
   listenAutocomplete();
   registerEvents();
   setupBurgerMenu();
-  bindCaptchaLinks();
   initImagesClientside();
   setupComments();
   setupDupeReports();
