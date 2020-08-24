@@ -9,8 +9,6 @@
       ' Don't post content the artist doesn't want here (or shared in general),
       strong including commercial content.
 
-  = render PhilomenaWeb.CaptchaView, "_captcha.html", conn: @conn
-
   p
     strong
       ' Please check it isn't already here with
@@ -82,6 +80,8 @@
     .field
       = label f, :anonymous, "Post anonymously"
       = checkbox f, :anonymous, class: "checkbox", value: anonymous_by_default?(@conn)
+
+  = render PhilomenaWeb.CaptchaView, "_captcha.html", conn: @conn
 
   .actions
     = submit "Upload", class: "button", autocomplete: "off", data: [disable_with: "Please wait..."]
