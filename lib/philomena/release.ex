@@ -15,17 +15,17 @@ defmodule Philomena.Release do
   end
 
   def update_channels do
-    load_app()
+    start_app()
     Philomena.Channels.update_tracked_channels!()
   end
 
   def verify_user_links do
-    load_app()
+    start_app()
     Philomena.UserLinks.automatic_verify!()
   end
 
   def update_stats do
-    load_app()
+    start_app()
     PhilomenaWeb.StatsUpdater.update_stats!()
   end
 
@@ -35,5 +35,9 @@ defmodule Philomena.Release do
 
   defp load_app do
     Application.load(@app)
+  end
+
+  defp start_app do
+    Application.ensure_all_started(@app)
   end
 end
