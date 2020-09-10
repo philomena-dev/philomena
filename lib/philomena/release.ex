@@ -14,6 +14,21 @@ defmodule Philomena.Release do
     {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :down, to: version))
   end
 
+  def update_channels do
+    load_app()
+    Philomena.Channels.update_tracked_channels!()
+  end
+
+  def verify_user_links do
+    load_app()
+    Philomena.UserLinks.automatic_verify!()
+  end
+
+  def update_stats do
+    load_app()
+    PhilomenaWeb.StatsUpdater.update_stats!()
+  end
+
   defp repos do
     Application.fetch_env!(@app, :ecto_repos)
   end
