@@ -1,5 +1,5 @@
 = if is_nil(@conn.assigns.current_user) do
-  - challenge = challenge_name()
+  - challenge = challenge_name(@name)
 
   .field.js-captcha-box
     br

@@ -7,6 +7,6 @@ p
   .field
     = email_input f, :email, class: "input", placeholder: "Email", required: true
 
-  = render PhilomenaWeb.CaptchaView, "_captcha.html", conn: @conn
+  = render PhilomenaWeb.CaptchaView, "_captcha.html", name: "password", conn: @conn
 
   = submit "Send instructions to reset password", class: "button"

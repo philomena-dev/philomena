@@ -12,7 +12,7 @@
         button.button.button--separate-left type="reset" data-click-hide="#source-form" data-click-show="#image-source"
           ' Cancel
 
-      = render PhilomenaWeb.CaptchaView, "_captcha.html", conn: @conn
+      = render PhilomenaWeb.CaptchaView, "_captcha.html", name: "source", conn: @conn
 
     - else
       p

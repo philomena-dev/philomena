@@ -33,7 +33,7 @@
             a> href="/pages/tags" tagging guidelines
             ' before editing tags.
 
-          = render PhilomenaWeb.CaptchaView, "_captcha.html", conn: @conn
+          = render PhilomenaWeb.CaptchaView, "_captcha.html", name: "tags", conn: @conn
 
         ul.horizontal-list
           li

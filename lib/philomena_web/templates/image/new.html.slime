@@ -81,7 +81,7 @@
       = label f, :anonymous, "Post anonymously"
       = checkbox f, :anonymous, class: "checkbox", value: anonymous_by_default?(@conn)
 
-  = render PhilomenaWeb.CaptchaView, "_captcha.html", conn: @conn
+  = render PhilomenaWeb.CaptchaView, "_captcha.html", name: "image", conn: @conn
 
   .actions
     = submit "Upload", class: "button", autocomplete: "off", data: [disable_with: "Please wait..."]

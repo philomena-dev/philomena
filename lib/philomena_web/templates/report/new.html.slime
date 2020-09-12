@@ -60,6 +60,6 @@ p
       .block__tab.communication-edit__tab.hidden data-tab="preview"
         ' [Loading preview...]
 
-    = render PhilomenaWeb.CaptchaView, "_captcha.html", conn: @conn
+    = render PhilomenaWeb.CaptchaView, "_captcha.html", name: "report", conn: @conn
 
     = submit "Send Report", class: "button"

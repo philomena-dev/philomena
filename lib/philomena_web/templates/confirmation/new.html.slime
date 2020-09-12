@@ -4,7 +4,7 @@ h1 Resend confirmation instructions
   .field
     = email_input f, :email, placeholder: "Email", class: "input", required: true
 
-  = render PhilomenaWeb.CaptchaView, "_captcha.html", conn: @conn
+  = render PhilomenaWeb.CaptchaView, "_captcha.html", name: "confirmation", conn: @conn
 
   div
     = submit "Resend confirmation instructions", class: "button"

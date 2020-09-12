@@ -2,8 +2,8 @@ defmodule PhilomenaWeb.CaptchaView do
   use PhilomenaWeb, :view
 
   # Prevent ID collisions if multiple forms are on the page.
-  def challenge_name do
-    Integer.to_string(:rand.uniform(1024))
+  def challenge_name(name) do
+    "#{name}_challenge"
   end
 
   def hcaptcha_site_key do
