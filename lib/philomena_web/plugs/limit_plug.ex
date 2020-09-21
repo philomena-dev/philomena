@@ -30,6 +30,7 @@ defmodule PhilomenaWeb.LimitPlug do
       conn.private.phoenix_action,
       conn.private.phoenix_controller
     ]
+
     key = "rl-#{Enum.join(data, "")}"
     amt = Redix.command!(:redix, ["GET", key]) || 0
 
