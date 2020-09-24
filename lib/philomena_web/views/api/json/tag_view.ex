@@ -12,7 +12,7 @@ defmodule PhilomenaWeb.Api.Json.TagView do
     %{tag: render_one(tag, PhilomenaWeb.Api.Json.TagView, "tag.json", assigns)}
   end
 
-  def render("tag.json", %{tag: tag}) do
+  def render("tag.json", %{tag: tag} = assigns) do
     %{
       id: tag.id,
       name: tag.name,
@@ -28,17 +28,7 @@ defmodule PhilomenaWeb.Api.Json.TagView do
       aliases: Enum.map(tag.aliases, & &1.slug),
       implied_tags: Enum.map(tag.implied_tags, & &1.slug),
       implied_by_tags: Enum.map(tag.implied_by_tags, & &1.slug),
-      dnp_entries:
-        Enum.map(
-          tag.dnp_entries,
-          &%{
-            id: &1.id,
-            dnp_type: &1.dnp_type,
-            conditions: &1.conditions,
-            reason: if(!&1.hide_reason, do: &1.reason),
-            created_at: &1.created_at
-          }
-        )
+      dnp_entries: render_many(tag.dnp_entries, PhilomenaWeb.Api.Json.DNPView, "dnp.json", assigns)
     }
   end
 
