@@ -39,7 +39,9 @@ config :philomena,
   proxy_host: System.get_env("PROXY_HOST"),
   camo_host: System.fetch_env!("CAMO_HOST"),
   camo_key: System.fetch_env!("CAMO_KEY"),
-  cdn_host: System.fetch_env!("CDN_HOST")
+  cdn_host: System.fetch_env!("CDN_HOST"),
+  endpoint: not is_nil(System.get_env("START_ENDPOINT")),
+  worker: not is_nil(System.get_env("START_WORKER"))
 
 config :philomena, Philomena.Repo,
   url: System.fetch_env!("DATABASE_URL"),

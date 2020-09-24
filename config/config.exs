@@ -31,6 +31,8 @@ config :philomena,
   hcaptcha_secret_key: "0x0000000000000000000000000000000000000000",
   cdn_host: "",
   proxy_host: nil,
+  endpoint: true,
+  worker: true,
   app_dir: File.cwd!()
 
 config :exq,
