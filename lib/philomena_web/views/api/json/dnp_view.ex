@@ -1,15 +1,15 @@
-defmodule PhilomenaWeb.Api.Json.DNPView do
+defmodule PhilomenaWeb.Api.Json.DnpView do
   use PhilomenaWeb, :view
 
   def render("index.json", %{dnps: dnp, total: total} = assigns) do
     %{
-      dnps: render_many(dnp, PhilomenaWeb.Api.Json.DNPView, "dnp.json", assigns),
+      dnps: render_many(dnp, PhilomenaWeb.Api.Json.DnpView, "dnp.json", assigns),
       total: total
     }
   end
 
   def render("show.json", %{dnp: dnp} = assigns) do
-    %{dnp: render_one(dnp, PhilomenaWeb.Api.Json.DNPView, "dnp.json", assigns)}
+    %{dnp: render_one(dnp, PhilomenaWeb.Api.Json.DnpView, "dnp.json", assigns)}
   end
 
   def render("dnp.json", %{dnp: dnp}) do

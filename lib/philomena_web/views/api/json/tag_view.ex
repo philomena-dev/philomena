@@ -28,7 +28,8 @@ defmodule PhilomenaWeb.Api.Json.TagView do
       aliases: Enum.map(tag.aliases, & &1.slug),
       implied_tags: Enum.map(tag.implied_tags, & &1.slug),
       implied_by_tags: Enum.map(tag.implied_by_tags, & &1.slug),
-      dnp_entries: render_many(tag.dnp_entries, PhilomenaWeb.Api.Json.DNPView, "dnp.json", assigns)
+      dnp_entries:
+        render_many(tag.dnp_entries, PhilomenaWeb.Api.Json.DnpView, "dnp.json", assigns)
     }
   end
 
