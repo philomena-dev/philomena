@@ -67,8 +67,9 @@ h1 Users
             = pretty_time user.created_at
 
           td
-            => link "Edit", to: Routes.admin_user_path(@conn, :edit, user)
-            ' &bull;
+            = if can?(@conn, :edit, user) do
+              => link "Edit", to: Routes.admin_user_path(@conn, :edit, user)
+              ' &bull;
 
             /= if user.deleted_at do
             /  => link_to 'Reactivate', admin_user_activation_path(user), data: { confirm: t('are_you_sure') }, method: :create
