@@ -4,24 +4,29 @@ defmodule PhilomenaWeb.Image.NavigateController do
   alias PhilomenaWeb.ImageLoader
   alias PhilomenaWeb.ImageNavigator
   alias PhilomenaWeb.ImageScope
+  alias Philomena.Elasticsearch
   alias Philomena.Images.Image
   alias Philomena.Images.Query
 
   plug PhilomenaWeb.CanaryMapPlug, index: :show
   plug :load_and_authorize_resource, model: Image, id_name: "image_id", persisted: true
 
-  def index(conn, %{"rel" => rel} = params) when rel in ~W(prev next) do
+  def index(conn, %{"rel" => rel}) when rel in ~W(prev next) do
     image = conn.assigns.image
     filter = conn.assigns.compiled_filter
-    rel = String.to_existing_atom(rel)
-
-    next_image =
-      ImageNavigator.find_consecutive(conn, image, rel, params, compile_query(conn), filter)
-
     scope = ImageScope.scope(conn)
 
     conn
-    |> redirect(to: Routes.image_path(conn, :show, next_image, scope))
+    |> ImageNavigator.find_consecutive(image, compile_query(conn), filter)
+    |> case do
+      {next_image, hit} ->
+        redirect(conn,
+          to: Routes.image_path(conn, :show, next_image, Keyword.put(scope, :sort, hit["sort"]))
+        )
+
+      nil ->
+        redirect(conn, to: Routes.image_path(conn, :show, image, scope))
+    end
   end
 
   def index(conn, %{"rel" => "find"}) do
@@ -31,7 +36,8 @@ defmodule PhilomenaWeb.Image.NavigateController do
     # (although it probably should).
     body = %{range: %{id: %{gt: conn.assigns.image.id}}}
 
-    {images, _tags} = ImageLoader.query(conn, body, queryable: Image, pagination: pagination)
+    {images, _tags} = ImageLoader.query(conn, body, pagination: pagination)
+    images = Elasticsearch.search_records(images, Image)
 
     page_num = page_for_offset(pagination.page_size, images.total_entries)
 

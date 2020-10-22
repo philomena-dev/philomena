@@ -27,20 +27,11 @@ config :philomena,
   channel_image_file_root: "priv/static/system/images",
   channel_banner_file_root: "priv/static/system/images",
   tag_file_root: "priv/static/system/images",
+  hcaptcha_site_key: "10000000-ffff-ffff-ffff-000000000001",
+  hcaptcha_secret_key: "0x0000000000000000000000000000000000000000",
   cdn_host: "",
   proxy_host: nil,
   app_dir: File.cwd!()
-
-config :philomena, :pow,
-  user: Philomena.Users.User,
-  repo: Philomena.Repo,
-  web_module: PhilomenaWeb,
-  users_context: Philomena.Users,
-  extensions: [PowResetPassword, PowLockout, PowCaptcha, PowPersistentSession],
-  controller_callbacks: Pow.Extension.Phoenix.ControllerCallbacks,
-  mailer_backend: PhilomenaWeb.PowMailer,
-  captcha_verifier: Philomena.Captcha,
-  cache_store_backend: Pow.Store.Backend.MnesiaCache
 
 config :exq,
   queues: [{"videos", 4}, {"images", 40}, {"indexing", 16}],
@@ -77,6 +68,8 @@ config :tesla, adapter: Tesla.Adapter.Mint
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
+  handle_otp_reports: true,
+  handle_sasl_reports: true,
   metadata: [:request_id],
   truncate: :infinity
 

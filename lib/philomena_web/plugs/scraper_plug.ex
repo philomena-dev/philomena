@@ -1,5 +1,7 @@
 defmodule PhilomenaWeb.ScraperPlug do
-  def init(opts), do: opts
+  def init(opts) do
+    opts
+  end
 
   def call(conn, opts) do
     params_name = Keyword.get(opts, :params_name, "image")
@@ -10,7 +12,8 @@ defmodule PhilomenaWeb.ScraperPlug do
         conn
 
       %{"scraper_cache" => url} when not is_nil(url) ->
-        Philomena.Http.get!(url)
+        url
+        |> Philomena.Http.get()
         |> maybe_fixup_params(opts, conn)
 
       _ ->
@@ -18,7 +21,7 @@ defmodule PhilomenaWeb.ScraperPlug do
     end
   end
 
-  defp maybe_fixup_params(%Tesla.Env{body: body, status: 200}, opts, conn) do
+  defp maybe_fixup_params({:ok, %Tesla.Env{body: body, status: 200}}, opts, conn) do
     params_name = Keyword.get(opts, :params_name, "image")
     params_key = Keyword.get(opts, :params_key, "image")
     file = Briefly.create!()
@@ -36,7 +39,7 @@ defmodule PhilomenaWeb.ScraperPlug do
 
     updated_params = Map.put(conn.params, params_name, updated_form)
 
-    %{conn | params: updated_params}
+    %Plug.Conn{conn | params: updated_params}
   end
 
   defp maybe_fixup_params(_response, _opts, conn), do: conn

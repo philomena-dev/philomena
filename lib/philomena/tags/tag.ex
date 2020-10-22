@@ -1,12 +1,14 @@
 defmodule Philomena.Tags.Tag do
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query
 
   alias Philomena.Channels.Channel
   alias Philomena.DnpEntries.DnpEntry
   alias Philomena.UserLinks.UserLink
   alias Philomena.Tags.Tag
   alias Philomena.Slug
+  alias Philomena.Repo
 
   @namespaces [
     "artist",
@@ -45,10 +47,18 @@ defmodule Philomena.Tags.Tag do
     "album" => "content-fanmade"
   }
 
+  @underscore_safe_namespaces [
+    "artist:",
+    "colorist:",
+    "editor:",
+    "oc:",
+    "photographer:"
+  ]
+
   @derive {Phoenix.Param, key: :slug}
 
   schema "tags" do
-    belongs_to :aliased_tag, Tag, source: :aliased_tag_id
+    belongs_to :aliased_tag, Tag, source: :aliased_tag_id, on_replace: :nilify
     has_many :aliases, Tag, foreign_key: :aliased_tag_id
 
     has_many :channels, Channel, foreign_key: :associated_artist_tag_id
@@ -115,6 +125,15 @@ defmodule Philomena.Tags.Tag do
     |> put_change(:image, nil)
   end
 
+  def alias_changeset(tag, target_tag) do
+    change(tag)
+    |> put_assoc(:aliased_tag, target_tag)
+    |> validate_required([:aliased_tag])
+    |> validate_not_aliased_to_self()
+    |> validate_alias_not_transitive()
+    |> validate_incoming_aliases()
+  end
+
   def unalias_changeset(tag) do
     change(tag, aliased_tag_id: nil)
   end
@@ -146,6 +165,7 @@ defmodule Philomena.Tags.Tag do
         &1.category != "character",
         &1.category != "oc",
         &1.category != "species",
+        &1.category != "body-type",
         &1.category != "content-fanmade",
         &1.category != "content-official",
         &1.category != "spoiler",
@@ -162,6 +182,7 @@ defmodule Philomena.Tags.Tag do
       "character",
       "oc",
       "species",
+      "body-type",
       "content-fanmade",
       "content-official",
       "spoiler"
@@ -173,7 +194,10 @@ defmodule Philomena.Tags.Tag do
     # with ascii quotes, trim space from end
     name
     |> String.downcase()
-    |> String.replace(~r/[[:space:]|\x{200c}]+/u, " ")
+    |> String.replace(
+      ~r/[[:space:]\x{00a0}\x{1680}\x{180e}\x{2000}-\x{200f}\x{202f}\x{205f}\x{3000}\x{feff}]+/u,
+      " "
+    )
     |> String.replace(~r/[\x{00b4}\x{2018}\x{2019}\x{201a}\x{201b}\x{2032}]/u, "'")
     |> String.replace(~r/[\x{201c}\x{201d}\x{201e}\x{201f}\x{2033}]/u, "\"")
     |> String.trim()
@@ -199,11 +223,12 @@ defmodule Philomena.Tags.Tag do
   defp join_namespace_parts([_namespace, _name], original_name),
     do: original_name
 
-  defp ununderscore(<<"artist:", _rest::binary>> = name),
-    do: name
-
-  defp ununderscore(name),
-    do: String.replace(name, "_", " ")
+  defp ununderscore(name) do
+    case String.starts_with?(name, @underscore_safe_namespaces) do
+      true -> name
+      false -> String.replace(name, "_", " ")
+    end
+  end
 
   defp put_slug(changeset) do
     slug =
@@ -244,6 +269,48 @@ defmodule Philomena.Tags.Tag do
     case @namespace_categories[namespace] do
       nil -> changeset
       category -> change(changeset, category: category)
+    end
+  end
+
+  defp validate_not_aliased_to_self(changeset) do
+    aliased_tag = get_field(changeset, :aliased_tag)
+    id = get_field(changeset, :id)
+
+    case aliased_tag do
+      %{id: ^id} ->
+        add_error(changeset, :aliased_tag, "is the same tag as the source")
+
+      _tag ->
+        changeset
+    end
+  end
+
+  defp validate_alias_not_transitive(changeset) do
+    case get_field(changeset, :aliased_tag) do
+      %{aliased_tag_id: tag} when not is_nil(tag) ->
+        add_error(
+          changeset,
+          :aliased_tag,
+          "is itself aliased and would create a transitive alias"
+        )
+
+      _tag ->
+        changeset
+    end
+  end
+
+  defp validate_incoming_aliases(changeset) do
+    id = get_field(changeset, :id)
+
+    count =
+      Tag
+      |> where(aliased_tag_id: ^id)
+      |> Repo.aggregate(:count, :id)
+
+    if count > 0 do
+      add_error(changeset, :tag, "has incoming aliases and cannot be aliased")
+    else
+      changeset
     end
   end
 end

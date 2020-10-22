@@ -7,9 +7,11 @@ defmodule PhilomenaWeb.GalleryController do
   alias Philomena.Interactions
   alias Philomena.Galleries.Gallery
   alias Philomena.Galleries
+  alias Philomena.Images.Image
   import Ecto.Query
 
   plug PhilomenaWeb.FilterBannedUsersPlug when action in [:new, :create, :edit, :update, :delete]
+  plug PhilomenaWeb.MapParameterPlug, [param: "gallery"] when action in [:index]
 
   plug :load_and_authorize_resource,
     model: Gallery,
@@ -18,8 +20,8 @@ defmodule PhilomenaWeb.GalleryController do
 
   def index(conn, params) do
     galleries =
-      Elasticsearch.search_records(
-        Gallery,
+      Gallery
+      |> Elasticsearch.search_definition(
         %{
           query: %{
             bool: %{
@@ -28,9 +30,9 @@ defmodule PhilomenaWeb.GalleryController do
           },
           sort: parse_sort(params)
         },
-        conn.assigns.pagination,
-        Gallery |> preload([:creator, thumbnail: :tags])
+        conn.assigns.pagination
       )
+      |> Elasticsearch.search_records(preload(Gallery, [:creator, thumbnail: :tags]))
 
     render(conn, "index.html",
       title: "Galleries",
@@ -44,42 +46,46 @@ defmodule PhilomenaWeb.GalleryController do
     user = conn.assigns.current_user
     query = "gallery_id:#{gallery.id}"
 
-    params =
-      Map.merge(conn.params, %{
-        "q" => query,
-        "sf" => "gallery_id:#{gallery.id}",
-        "sd" => position_order(gallery)
-      })
-
-    conn = %{conn | params: params}
+    conn =
+      update_in(
+        conn.params,
+        &Map.merge(&1, %{
+          "q" => query,
+          "sf" => "gallery_id:#{gallery.id}",
+          "sd" => position_order(gallery)
+        })
+      )
 
     {:ok, {images, _tags}} = ImageLoader.search_string(conn, query)
-
     {gallery_prev, gallery_next} = prev_next_page_images(conn, query)
+
+    [images, gallery_prev, gallery_next] =
+      Elasticsearch.msearch_records_with_hits(
+        [images, gallery_prev, gallery_next],
+        [preload(Image, :tags), preload(Image, :tags), preload(Image, :tags)]
+      )
 
     interactions = Interactions.user_interactions([images, gallery_prev, gallery_next], user)
 
     watching = Galleries.subscribed?(gallery, user)
 
-    prev_image = if gallery_prev, do: [gallery_prev], else: []
-    next_image = if gallery_next, do: [gallery_next], else: []
+    gallery_images =
+      Enum.to_list(gallery_prev) ++ Enum.to_list(images) ++ Enum.to_list(gallery_next)
 
-    gallery_images = prev_image ++ Enum.to_list(images) ++ next_image
-    gallery_json = Jason.encode!(Enum.map(gallery_images, & &1.id))
+    gallery_json = Jason.encode!(Enum.map(gallery_images, &elem(&1, 0).id))
 
     Galleries.clear_notification(gallery, user)
 
     conn
     |> NotificationCountPlug.call([])
-    |> Map.put(:params, params)
     |> assign(:clientside_data, gallery_images: gallery_json)
     |> render("show.html",
       title: "Showing Gallery",
       layout_class: "layout--wide",
       watching: watching,
       gallery: gallery,
-      gallery_prev: gallery_prev,
-      gallery_next: gallery_next,
+      gallery_prev: Enum.any?(gallery_prev),
+      gallery_next: Enum.any?(gallery_next),
       gallery_images: gallery_images,
       images: images,
       interactions: interactions
@@ -156,17 +162,16 @@ defmodule PhilomenaWeb.GalleryController do
     {prev_image, next_image}
   end
 
-  defp gallery_image(offset, _conn, _query) when offset < 0, do: nil
+  defp gallery_image(offset, _conn, _query) when offset < 0 do
+    Elasticsearch.search_definition(Image, %{query: %{match_none: %{}}})
+  end
 
   defp gallery_image(offset, conn, query) do
     pagination_params = %{page_number: offset + 1, page_size: 1}
 
     {:ok, {image, _tags}} = ImageLoader.search_string(conn, query, pagination: pagination_params)
 
-    case Enum.to_list(image) do
-      [image] -> image
-      [] -> nil
-    end
+    image
   end
 
   defp parse_search(%{"gallery" => gallery_params}) do

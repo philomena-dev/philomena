@@ -24,7 +24,7 @@ body {
   font-size: 13px;
   margin: 0;
   padding: 0;
-  line-height: 1.15em;
+  line-height: 1.15;
 }
 
 h1, h2, h3, h4, h5 {
@@ -280,7 +280,7 @@ blockquote {
 
 /* User titles (admin/mod/assistant) and channel states (live/off air) */
 .label {
-  padding: 4px;
+  padding: 6px;
   overflow-y: hidden;
 }
 

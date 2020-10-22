@@ -8,7 +8,7 @@ defmodule PhilomenaWeb.Image.TamperController do
   alias Philomena.ImageVotes
   alias Philomena.Repo
 
-  plug PhilomenaWeb.CanaryMapPlug, create: :hide
+  plug PhilomenaWeb.CanaryMapPlug, create: :tamper
   plug :load_and_authorize_resource, model: Image, id_name: "image_id", persisted: true
   plug :load_resource, model: User, id_name: "user_id", persisted: true
 
@@ -18,7 +18,7 @@ defmodule PhilomenaWeb.Image.TamperController do
 
     {:ok, _result} =
       ImageVotes.delete_vote_transaction(image, user)
-      |> Repo.isolated_transaction(:serializable)
+      |> Repo.transaction()
 
     Images.reindex_image(image)
 

@@ -1,7 +1,7 @@
 defmodule Philomena.Scrapers.Twitter do
   @gt_regex ~r|document.cookie = decodeURIComponent\("gt=(\d+);|
   @url_regex ~r|\Ahttps?://(?:mobile\.)?twitter.com/([A-Za-z\d_]+)/status/([\d]+)/?|
-  @script_regex ~r|<script type="text/javascript" .*? src="(https://abs.twimg.com/responsive-web/web/main\.[\da-z]+\.js)">|
+  @script_regex ~r|<script type="text/javascript" .*? src="(https://abs.twimg.com/responsive-web/client-web/main\.[\da-z]+\.js)">|
   @bearer_regex ~r|"(AAAAAAAAAAAAA[^"]*)"|
 
   @spec can_handle?(URI.t(), String.t()) :: true | false
@@ -46,10 +46,13 @@ defmodule Philomena.Scrapers.Twitter do
     url = "https://twitter.com/#{user}/status/#{status_id}"
 
     {gt, bearer} =
-      Philomena.Http.get!(page_url)
+      Philomena.Http.get(page_url)
       |> extract_guest_token_and_bearer()
 
-    Philomena.Http.get!(api_url, [{"Authorization", "Bearer #{bearer}"}, {"x-guest-token", gt}])
+    {:ok, api_resp} =
+      Philomena.Http.get(api_url, [{"Authorization", "Bearer #{bearer}"}, {"x-guest-token", gt}])
+
+    api_resp
     |> Map.get(:body)
     |> Jason.decode!()
     |> Map.get("globalObjects")
@@ -59,11 +62,11 @@ defmodule Philomena.Scrapers.Twitter do
     |> Map.put("url", url)
   end
 
-  defp extract_guest_token_and_bearer(%Tesla.Env{body: page}) do
+  defp extract_guest_token_and_bearer({:ok, %Tesla.Env{body: page}}) do
     [gt] = Regex.run(@gt_regex, page, capture: :all_but_first)
     [script] = Regex.run(@script_regex, page, capture: :all_but_first)
 
-    %{body: body} = Philomena.Http.get!(script)
+    {:ok, %{body: body}} = Philomena.Http.get(script)
 
     [bearer] = Regex.run(@bearer_regex, body, capture: :all_but_first)
 

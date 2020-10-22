@@ -21,7 +21,7 @@ services:
       - redis
 
   postgres:
-    image: postgres:12.3
+    image: postgres:12.4
     environment:
       - POSTGRES_PASSWORD=postgres
     volumes:
@@ -30,7 +30,7 @@ services:
       driver: "none"
 
   elasticsearch:
-    image: elasticsearch:7.6.2
+    image: elasticsearch:7.8.1
     volumes:
       - elastic_data:/var/lib/elasticsearch
     logging:
@@ -43,7 +43,7 @@ services:
           hard: 65536
 
   redis:
-    image: redis:5.0.9
+    image: redis:6.0.7
     logging:
       driver: "none"
 

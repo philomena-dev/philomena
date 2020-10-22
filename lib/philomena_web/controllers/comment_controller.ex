@@ -20,8 +20,8 @@ defmodule PhilomenaWeb.CommentController do
 
   defp render_index({:ok, query}, conn, user) do
     comments =
-      Elasticsearch.search_records(
-        Comment,
+      Comment
+      |> Elasticsearch.search_definition(
         %{
           query: %{
             bool: %{
@@ -33,8 +33,10 @@ defmodule PhilomenaWeb.CommentController do
           },
           sort: %{posted_at: :desc}
         },
-        conn.assigns.pagination,
-        Comment |> preload([:deleted_by, image: [:tags], user: [awards: :badge]])
+        conn.assigns.pagination
+      )
+      |> Elasticsearch.search_records(
+        preload(Comment, [:deleted_by, image: [:tags], user: [awards: :badge]])
       )
 
     rendered = TextileRenderer.render_collection(comments.entries, conn)
@@ -48,7 +50,7 @@ defmodule PhilomenaWeb.CommentController do
     render(conn, "index.html", title: "Comments", error: msg, comments: [])
   end
 
-  defp filters(%{role: role}) when role in ["moderator", "admin"], do: []
+  defp filters(%{role: role}) when role in ["assistant", "moderator", "admin"], do: []
 
   defp filters(_user),
     do: [%{term: %{hidden_from_users: false}}]

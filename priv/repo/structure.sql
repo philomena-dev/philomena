@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 12.3 (Debian 12.3-1.pgdg100+1)
--- Dumped by pg_dump version 12.3 (Debian 12.3-1.pgdg90+1)
+-- Dumped by pg_dump version 12.4 (Debian 12.4-1.pgdg90+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -15,6 +15,20 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
+
+--
+-- Name: citext; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION citext; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION citext IS 'data type for case-insensitive character strings';
+
 
 SET default_tablespace = '';
 
@@ -1817,6 +1831,39 @@ ALTER SEQUENCE public.user_statistics_id_seq OWNED BY public.user_statistics.id;
 
 
 --
+-- Name: user_tokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.user_tokens (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    token bytea NOT NULL,
+    context character varying(255) NOT NULL,
+    sent_to character varying(255),
+    created_at timestamp(0) without time zone NOT NULL
+);
+
+
+--
+-- Name: user_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.user_tokens_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: user_tokens_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.user_tokens_id_seq OWNED BY public.user_tokens.id;
+
+
+--
 -- Name: user_whitelists; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1854,7 +1901,7 @@ ALTER SEQUENCE public.user_whitelists_id_seq OWNED BY public.user_whitelists.id;
 
 CREATE TABLE public.users (
     id integer NOT NULL,
-    email character varying DEFAULT ''::character varying NOT NULL,
+    email public.citext DEFAULT ''::character varying NOT NULL,
     encrypted_password character varying DEFAULT ''::character varying NOT NULL,
     reset_password_token character varying,
     reset_password_sent_at timestamp without time zone,
@@ -1912,7 +1959,7 @@ CREATE TABLE public.users (
     images_favourited_count integer DEFAULT 0 NOT NULL,
     last_donation_at timestamp without time zone,
     scratchpad text,
-    use_centered_layout boolean DEFAULT false NOT NULL,
+    use_centered_layout boolean DEFAULT true NOT NULL,
     secondary_role character varying,
     hide_default_role boolean DEFAULT false NOT NULL,
     personal_title character varying,
@@ -1926,7 +1973,9 @@ CREATE TABLE public.users (
     otp_required_for_login boolean,
     otp_backup_codes character varying[],
     last_renamed_at timestamp without time zone DEFAULT '1970-01-01 00:00:00'::timestamp without time zone NOT NULL,
-    forced_filter_id bigint
+    forced_filter_id bigint,
+    confirmed_at timestamp(0) without time zone,
+    senior_staff boolean DEFAULT false
 );
 
 
@@ -2311,6 +2360,13 @@ ALTER TABLE ONLY public.user_statistics ALTER COLUMN id SET DEFAULT nextval('pub
 
 
 --
+-- Name: user_tokens id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_tokens ALTER COLUMN id SET DEFAULT nextval('public.user_tokens_id_seq'::regclass);
+
+
+--
 -- Name: user_whitelists id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2689,6 +2745,14 @@ ALTER TABLE ONLY public.user_name_changes
 
 ALTER TABLE ONLY public.user_statistics
     ADD CONSTRAINT user_statistics_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_tokens user_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_tokens
+    ADD CONSTRAINT user_tokens_pkey PRIMARY KEY (id);
 
 
 --
@@ -3892,6 +3956,20 @@ CREATE INDEX intensities_index ON public.images USING btree (se_intensity, sw_in
 
 
 --
+-- Name: user_tokens_context_token_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX user_tokens_context_token_index ON public.user_tokens USING btree (context, token);
+
+
+--
+-- Name: user_tokens_user_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX user_tokens_user_id_index ON public.user_tokens USING btree (user_id);
+
+
+--
 -- Name: channels fk_rails_021c624081; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4692,6 +4770,14 @@ ALTER TABLE ONLY public.image_sources
 
 
 --
+-- Name: user_tokens user_tokens_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_tokens
+    ADD CONSTRAINT user_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
 -- Name: users users_forced_filter_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4708,3 +4794,6 @@ INSERT INTO public."schema_migrations" (version) VALUES (20200607000511);
 INSERT INTO public."schema_migrations" (version) VALUES (20200617111116);
 INSERT INTO public."schema_migrations" (version) VALUES (20200617113333);
 INSERT INTO public."schema_migrations" (version) VALUES (20200706171350);
+INSERT INTO public."schema_migrations" (version) VALUES (20200725234412);
+INSERT INTO public."schema_migrations" (version) VALUES (20200817213256);
+INSERT INTO public."schema_migrations" (version) VALUES (20200905214139);

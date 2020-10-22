@@ -18,7 +18,7 @@ defmodule PhilomenaWeb.Image.RandomController do
     if random_id do
       redirect(conn, to: Routes.image_path(conn, :show, random_id, scope))
     else
-      redirect(conn, external: conn.assigns.referrer)
+      redirect(conn, to: Routes.image_path(conn, :index))
     end
   end
 
@@ -33,8 +33,8 @@ defmodule PhilomenaWeb.Image.RandomController do
   defp random_image_id(query, filter) do
     %{query: query, sorts: sort} = ImageSorter.parse_sort(%{"sf" => "random"}, query)
 
-    Elasticsearch.search_records(
-      Image,
+    Image
+    |> Elasticsearch.search_definition(
       %{
         query: %{
           bool: %{
@@ -47,9 +47,9 @@ defmodule PhilomenaWeb.Image.RandomController do
         },
         sort: sort
       },
-      %{page_size: 1},
-      Image
+      %{page_size: 1}
     )
+    |> Elasticsearch.search_records(Image)
     |> Enum.to_list()
     |> unwrap()
   end

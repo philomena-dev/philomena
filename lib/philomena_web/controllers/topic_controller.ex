@@ -3,11 +3,15 @@ defmodule PhilomenaWeb.TopicController do
 
   alias PhilomenaWeb.NotificationCountPlug
   alias Philomena.{Forums.Forum, Topics.Topic, Posts.Post, Polls.Poll, PollOptions.PollOption}
-  alias Philomena.{Forums, Topics, Posts}
+  alias Philomena.{Forums, Topics, Polls, Posts}
   alias Philomena.PollVotes
   alias PhilomenaWeb.TextileRenderer
   alias Philomena.Repo
   import Ecto.Query
+
+  plug PhilomenaWeb.LimitPlug,
+       [time: 300, error: "You may only make a new topic once every 5 minutes."]
+       when action in [:create]
 
   plug PhilomenaWeb.FilterBannedUsersPlug when action in [:new, :create]
   plug PhilomenaWeb.UserAttributionPlug when action in [:new, :create]
@@ -72,6 +76,8 @@ defmodule PhilomenaWeb.TopicController do
 
     voted = PollVotes.voted?(topic.poll, conn.assigns.current_user)
 
+    poll_active = Polls.active?(topic.poll)
+
     changeset =
       %Post{}
       |> Posts.change_post()
@@ -86,7 +92,8 @@ defmodule PhilomenaWeb.TopicController do
       changeset: changeset,
       topic_changeset: topic_changeset,
       watching: watching,
-      voted: voted
+      voted: voted,
+      poll_active: poll_active
     )
   end
 

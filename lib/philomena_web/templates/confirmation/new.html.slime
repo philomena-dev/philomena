@@ -1,0 +1,10 @@
+h1 Resend confirmation instructions
+
+= form_for :user, Routes.confirmation_path(@conn, :create), fn f ->
+  .field
+    = email_input f, :email, placeholder: "Email", class: "input", required: true
+
+  = render PhilomenaWeb.CaptchaView, "_captcha.html", name: "confirmation", conn: @conn
+
+  div
+    = submit "Resend confirmation instructions", class: "button"

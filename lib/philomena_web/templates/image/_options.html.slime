@@ -110,7 +110,7 @@
         = if not @image.hidden_from_users do
           = form_for @changeset, Routes.image_feature_path(@conn, :create, @image), [method: "post"], fn _f ->
             .field
-              p Automatically tags 'featured image'
+              p Marks the image as featured
               = submit "Feature", data: [confirm: "Are you really, really sure?"], class: "button button--state-success"
         - else
           = button_to "Restore", Routes.image_delete_path(@conn, :delete, @image), method: "delete", class: "button button--state-success"
@@ -141,3 +141,8 @@
           = button_to "Lock tag editing", Routes.image_tag_lock_path(@conn, :create, @image), method: "post", class: "button"
         - else
           = button_to "Unlock tag editing", Routes.image_tag_lock_path(@conn, :delete, @image), method: "delete", class: "button"
+
+      = if @image.hidden_from_users and can?(@conn, :destroy, @image) do
+        br
+        .flex.flex--spaced-out
+          = button_to "Destroy image", Routes.image_destroy_path(@conn, :create, @image), method: "post", class: "button button--state-danger", data: [confirm: "This action is IRREVERSIBLE. Are you sure?"]

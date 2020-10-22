@@ -1,6 +1,6 @@
 defmodule Philomena.Scrapers.Tumblr do
   @url_regex ~r|\Ahttps?://(?:.*)/(?:image\|post)/(\d+)(?:\z\|[/?#])|
-  @inline_regex ~r|https?://(?:\d+\.)?media\.tumblr\.com\/[a-f\d]+\/tumblr(?:_inline)?_[a-z\d]+_\d+\.(?:png\|jpe?g\|gif)|i
+  @media_regex ~r|https?://(?:\d+\.)?media\.tumblr\.com/[a-f\d]+/[a-f\d]+-[a-f\d]+/s\d+x\d+/[a-f\d]+\.(?:png\|jpe?g\|gif)|i
   @size_regex ~r|_(\d+)(\..+)\z|
   @sizes [1280, 540, 500, 400, 250, 100, 75]
   @tumblr_ranges [
@@ -26,12 +26,12 @@ defmodule Philomena.Scrapers.Tumblr do
         tumblr_api_key()
       }"
 
-    Philomena.Http.get!(api_url)
+    Philomena.Http.get(api_url)
     |> json!()
     |> process_response!()
   end
 
-  defp json!(%Tesla.Env{body: body, status: 200}),
+  defp json!({:ok, %Tesla.Env{body: body, status: 200}}),
     do: Jason.decode!(body)
 
   defp process_response!(%{"response" => %{"posts" => [post | _rest]}}),
@@ -54,10 +54,10 @@ defmodule Philomena.Scrapers.Tumblr do
 
   defp process_post!(%{"type" => "text"} = post) do
     images =
-      @inline_regex
-      |> Regex.scan(post["text"])
-      |> Enum.map(fn url ->
-        %{url: upsize(url), camo_url: Camo.Image.image_url(url)}
+      @media_regex
+      |> Regex.scan(post["body"])
+      |> Enum.map(fn [url | _captures] ->
+        %{url: url, camo_url: Camo.Image.image_url(url)}
       end)
 
     add_meta(post, images)
@@ -70,7 +70,7 @@ defmodule Philomena.Scrapers.Tumblr do
   end
 
   defp url_ok?(url) do
-    match?(%Tesla.Env{status: 200}, Philomena.Http.head!(url))
+    match?({:ok, %Tesla.Env{status: 200}}, Philomena.Http.head(url))
   end
 
   defp add_meta(post, images) do

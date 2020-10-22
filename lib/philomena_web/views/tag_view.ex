@@ -6,7 +6,10 @@ defmodule PhilomenaWeb.TagView do
   alias Philomena.Elasticsearch
   alias Philomena.Tags.Tag
   alias Philomena.Repo
+  alias PhilomenaWeb.ImageScope
   import Ecto.Query
+
+  def scope(conn), do: ImageScope.scope(conn)
 
   def tag_categories do
     [[key: "-", value: ""] | Tag.categories()]
@@ -18,6 +21,10 @@ defmodule PhilomenaWeb.TagView do
 
   def aliases_tags?(conn) do
     can?(conn, :alias, %Tag{})
+  end
+
+  def pretty_tag_path(%{slug: slug}) do
+    "/tags/" <> URI.encode(slug, &(&1 == ?+ or URI.char_unreserved?(&1)))
   end
 
   def tag_image(%{image: image}) do
@@ -111,14 +118,13 @@ defmodule PhilomenaWeb.TagView do
   end
 
   defp names_in_tab("season", data) do
-    data
-    |> Enum.flat_map(&Map.values/1)
+    Enum.map(data, fn [_number, name] -> name end)
   end
 
   defp names_in_tab("shorthand", data) do
     data
-    |> Map.values()
-    |> Enum.flat_map(&Map.values/1)
+    |> Enum.map(fn [_title, tags] -> tags end)
+    |> Enum.flat_map(&Enum.map(&1, fn [_shorthand, tag] -> tag end))
   end
 
   defp names_in_tab(_mode, _data), do: []
@@ -132,8 +138,8 @@ defmodule PhilomenaWeb.TagView do
   end
 
   defp implied_by_multitag(tag_names, ignore_tag_names) do
-    Elasticsearch.search_records(
-      Tag,
+    Tag
+    |> Elasticsearch.search_definition(
       %{
         query: %{
           bool: %{
@@ -143,9 +149,9 @@ defmodule PhilomenaWeb.TagView do
         },
         sort: %{images: :desc}
       },
-      %{page_size: 40},
-      Tag |> preload(:implied_tags)
+      %{page_size: 40}
     )
+    |> Elasticsearch.search_records(preload(Tag, :implied_tags))
   end
 
   defp manages_links?(conn),

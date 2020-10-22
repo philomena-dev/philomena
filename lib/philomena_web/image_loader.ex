@@ -20,7 +20,6 @@ defmodule PhilomenaWeb.ImageLoader do
 
   def query(conn, body, options \\ []) do
     pagination = Keyword.get(options, :pagination, conn.assigns.image_pagination)
-    queryable = Keyword.get(options, :queryable, Image |> preload(:tags))
     sorts = Keyword.get(options, :sorts, &ImageSorter.parse_sort(conn.params, &1))
 
     tags =
@@ -35,8 +34,8 @@ defmodule PhilomenaWeb.ImageLoader do
 
     %{query: query, sorts: sort} = sorts.(body)
 
-    records =
-      Elasticsearch.search_records(
+    definition =
+      Elasticsearch.search_definition(
         Image,
         %{
           query: %{
@@ -47,11 +46,10 @@ defmodule PhilomenaWeb.ImageLoader do
           },
           sort: sort
         },
-        pagination,
-        queryable
+        pagination
       )
 
-    {records, tags}
+    {definition, tags}
   end
 
   defp create_filters(conn, user, filter) do

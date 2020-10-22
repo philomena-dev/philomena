@@ -4,13 +4,14 @@ defmodule Philomena.MixProject do
   def project do
     [
       app: :philomena,
-      version: "0.1.0",
+      version: "1.1.0",
       elixir: "~> 1.5",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      dialyzer: [plt_add_apps: [:mix]]
     ]
   end
 
@@ -20,7 +21,7 @@ defmodule Philomena.MixProject do
   def application do
     [
       mod: {Philomena.Application, []},
-      extra_applications: [:logger, :canada, :mnesia, :runtime_tools]
+      extra_applications: [:logger, :canada, :runtime_tools]
     ]
   end
 
@@ -45,8 +46,7 @@ defmodule Philomena.MixProject do
       {:plug_cowboy, "~> 2.3"},
       {:phoenix_slime, "~> 0.13"},
       {:ecto_network, "~> 1.3"},
-      {:pow, "~> 1.0"},
-      {:bcrypt_elixir, "~> 2.2"},
+      {:bcrypt_elixir, "~> 2.0"},
       {:pot, "~> 0.11"},
       {:secure_compare, "~> 0.1.0"},
       {:elastix, "~> 0.8.0"},
@@ -62,12 +62,10 @@ defmodule Philomena.MixProject do
       {:briefly, "~> 0.3.0"},
       {:phoenix_mtm, "~> 1.0.0"},
       {:yaml_elixir, "~> 2.4.0"},
-      {:distillery, "~> 2.1"},
       {:ranch_connection_drainer, "~> 0.1"},
       {:tesla, "~> 1.3"},
       {:castore, "~> 0.1"},
       {:mint, "~> 1.1"},
-      {:libcluster, "~> 3.2"},
       {:exq, "~> 0.13"},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false}
     ]
@@ -90,8 +88,7 @@ defmodule Philomena.MixProject do
       ],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       "ecto.migrate": ["ecto.migrate", "ecto.dump"],
-      "ecto.rollback": ["ecto.rollback", "ecto.dump"],
-      test: ["ecto.create --quiet", "ecto.load", "test"]
+      "ecto.rollback": ["ecto.rollback", "ecto.dump"]
     ]
   end
 end

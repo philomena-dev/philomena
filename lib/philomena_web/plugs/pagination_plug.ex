@@ -1,14 +1,13 @@
 defmodule PhilomenaWeb.PaginationPlug do
   import Plug.Conn
-  alias Pow.Plug
 
   # No options
   def init([]), do: []
 
   # Assign pagination info
   def call(conn, _opts) do
-    conn = conn |> fetch_query_params()
-    user = conn |> Plug.current_user()
+    conn = fetch_query_params(conn)
+    user = conn.assigns.current_user
     params = conn.params
 
     page_size = get_page_size(params)
@@ -24,7 +23,10 @@ defmodule PhilomenaWeb.PaginationPlug do
   end
 
   defp get_page_number(%{"page" => page}) do
-    to_integer(page) || 1
+    page
+    |> to_integer()
+    |> Kernel.||(1)
+    |> max(1)
   end
 
   defp get_page_number(_params), do: 1
