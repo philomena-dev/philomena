@@ -71,7 +71,7 @@ h1 Users
 
           td
             = if can?(@conn, :edit, user) do
-              => link to: Routes.admin_user_path(@conn, :edit, user)
+              => link to: Routes.admin_user_path(@conn, :edit, user) do
                 i.fa.fa-fw.fa-user-edit
                 ' Edit
               ' &bull;
