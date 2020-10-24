@@ -35,8 +35,6 @@ config :philomena,
   camo_host: System.get_env("CAMO_HOST"),
   camo_key: System.get_env("CAMO_KEY"),
   cdn_host: System.fetch_env!("CDN_HOST"),
-  endpoint: not is_nil(System.get_env("START_ENDPOINT")),
-  worker: not is_nil(System.get_env("START_WORKER")),
   app_dir: System.get_env("APP_DIR", File.cwd!())
 
 config :exq,
@@ -72,7 +70,7 @@ if config_env() == :prod do
     http: [ip: {127, 0, 0, 1}, port: {:system, "PORT"}],
     url: [host: System.fetch_env!("APP_HOSTNAME"), scheme: "https", port: 443],
     secret_key_base: System.fetch_env!("SECRET_KEY_BASE"),
-    server: true
+    server: not is_nil(System.get_env("START_ENDPOINT"))
 else
   # Don't send email in development
   config :philomena, Philomena.Mailer, adapter: Bamboo.LocalAdapter

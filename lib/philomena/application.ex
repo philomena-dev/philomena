@@ -7,25 +7,7 @@ defmodule Philomena.Application do
 
   def start(_type, _args) do
     # List all child processes to be supervised
-    children =
-      default_config()
-      |> maybe_endpoint_config(Application.get_env(:philomena, :endpoint))
-
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: Philomena.Supervisor]
-    Supervisor.start_link(children, opts)
-  end
-
-  # Tell Phoenix to update the endpoint configuration
-  # whenever the application is updated.
-  def config_change(changed, _new, removed) do
-    PhilomenaWeb.Endpoint.config_change(changed, removed)
-    :ok
-  end
-
-  defp default_config do
-    [
+    children = [
       # Start the Ecto repository
       Philomena.Repo,
 
@@ -42,25 +24,30 @@ defmodule Philomena.Application do
          adapter: Phoenix.PubSub.Redis,
          host: Application.get_env(:philomena, :redis_host),
          node_name: valid_node_name(node())
-       ]}
+       ]},
+
+      # Start the endpoint when the application starts
+      PhilomenaWeb.AdvertUpdater,
+      PhilomenaWeb.UserFingerprintUpdater,
+      PhilomenaWeb.UserIpUpdater,
+      PhilomenaWeb.Endpoint,
+
+      # Connection drainer for SIGTERM
+      {RanchConnectionDrainer, ranch_ref: PhilomenaWeb.Endpoint.HTTP, shutdown: 30_000}
     ]
+
+    # See https://hexdocs.pm/elixir/Supervisor.html
+    # for other strategies and supported options
+    opts = [strategy: :one_for_one, name: Philomena.Supervisor]
+    Supervisor.start_link(children, opts)
   end
 
-  defp maybe_endpoint_config(children, true) do
-    children ++
-      [
-        # Start the endpoint when the application starts
-        PhilomenaWeb.AdvertUpdater,
-        PhilomenaWeb.UserFingerprintUpdater,
-        PhilomenaWeb.UserIpUpdater,
-        PhilomenaWeb.Endpoint,
-
-        # Connection drainer for SIGTERM
-        {RanchConnectionDrainer, ranch_ref: PhilomenaWeb.Endpoint.HTTP, shutdown: 30_000}
-      ]
+  # Tell Phoenix to update the endpoint configuration
+  # whenever the application is updated.
+  def config_change(changed, _new, removed) do
+    PhilomenaWeb.Endpoint.config_change(changed, removed)
+    :ok
   end
-
-  defp maybe_endpoint_config(children, _false), do: children
 
   # Redis adapter really really wants you to have a unique node name,
   # so just fake one if iex is being started
