@@ -10,7 +10,7 @@ RUN apt-get update \
     && wget -qO - "https://deb.nodesource.com/gpgkey/nodesource.gpg.key" | apt-key add - \
     && apt-get update \
     && apt-get -qq -y dist-upgrade \
-    && apt-get -qq -y install inotify-tools postgresql-client build-essential git ffmpeg libavformat-dev libavcodec-dev libswscale-dev nodejs libmagic-dev libpng-dev gifsicle optipng libjpeg-progs librsvg2-bin \
+    && apt-get -qq -y install inotify-tools postgresql-client build-essential git ffmpeg libavformat-dev libavcodec-dev libswscale-dev nodejs libmagic-dev libpng-dev gifsicle optipng libjpeg-progs librsvg2-bin imagemagick \
     && mix local.hex --force \
     && mix local.rebar --force
 

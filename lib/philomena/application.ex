@@ -10,7 +10,6 @@ defmodule Philomena.Application do
     children =
       default_config()
       |> maybe_endpoint_config(Application.get_env(:philomena, :endpoint))
-      |> maybe_worker_config(Application.get_env(:philomena, :worker))
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -29,6 +28,9 @@ defmodule Philomena.Application do
     [
       # Start the Ecto repository
       Philomena.Repo,
+
+      # Background queueing system
+      Philomena.ExqSupervisor,
 
       # Starts a worker by calling: Philomena.Worker.start_link(arg)
       # {Philomena.Worker, arg},
@@ -59,16 +61,6 @@ defmodule Philomena.Application do
   end
 
   defp maybe_endpoint_config(children, _false), do: children
-
-  defp maybe_worker_config(children, true) do
-    children ++
-      [
-        # Background queueing system
-        Philomena.ExqSupervisor
-      ]
-  end
-
-  defp maybe_worker_config(children, _false), do: children
 
   # Redis adapter really really wants you to have a unique node name,
   # so just fake one if iex is being started

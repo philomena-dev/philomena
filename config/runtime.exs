@@ -43,6 +43,11 @@ config :exq,
   host: System.get_env("REDIS_HOST", "localhost"),
   queues: [{"videos", 2}, {"images", 4}, {"indexing", 16}]
 
+if is_nil(System.get_env("START_WORKER")) do
+  # Make queueing available but don't process any jobs
+  config :exq, queues: []
+end
+
 if config_env() != :test do
   # Database config
   config :philomena, Philomena.Repo,
