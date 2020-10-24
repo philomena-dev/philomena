@@ -2,6 +2,7 @@ import Config
 
 # Configure your database
 config :philomena, Philomena.Repo,
+  hostname: "postgres",
   username: "postgres",
   password: "postgres",
   database: "philomena_test",
