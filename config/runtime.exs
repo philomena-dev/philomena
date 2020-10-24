@@ -35,7 +35,7 @@ config :philomena,
   camo_host: System.get_env("CAMO_HOST"),
   camo_key: System.get_env("CAMO_KEY"),
   cdn_host: System.fetch_env!("CDN_HOST"),
-  endpoint: not is_nil(System.get_env("START_WORKER")),
+  endpoint: not is_nil(System.get_env("START_ENDPOINT")),
   worker: not is_nil(System.get_env("START_WORKER")),
   app_dir: System.get_env("APP_DIR", File.cwd!())
 
@@ -75,8 +75,7 @@ if config_env() == :prod do
     server: true
 else
   # Don't send email in development
-  config :philomena, Philomena.Mailer,
-    adapter: Bamboo.LocalAdapter
+  config :philomena, Philomena.Mailer, adapter: Bamboo.LocalAdapter
 
   # Use this to debug slime templates
   # config :slime, :keep_lines, true
