@@ -34,7 +34,6 @@ services:
       - CDN_HOST=
       - MAILER_ADDRESS=noreply@philomena.local
       - START_ENDPOINT=true
-      - START_WORKER=true
     working_dir: /srv/philomena
     tty: true
     volumes:
