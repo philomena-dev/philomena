@@ -27,7 +27,7 @@ If you run into an Elasticsearch bootstrap error, you may need to increase your 
 sudo sysctl -w vm.max_map_count=262144
 ```
 
-If you have SELinux enforcing, you should run the following in the application directory on the host before proceeding:
+If you have SELinux enforcing (Fedora, Arch, others; manifests as a `Could not find a Mix.Project` error), you should run the following in the application directory on the host before proceeding:
 ```
 chcon -Rt svirt_sandbox_file_t .
 ```
