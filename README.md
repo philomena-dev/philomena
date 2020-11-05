@@ -34,6 +34,8 @@ chcon -Rt svirt_sandbox_file_t .
 
 This allows Docker or Podman to bind mount the application directory into the containers.
 
+If you are using a platform which uses cgroups v2 by default (Fedora 31+), use `podman` and `podman-compose`.
+
 ## Deployment
 You need a key installed on the server you target, and the git remote installed in your ssh configuration.
 
