@@ -11,5 +11,6 @@ defmodule Philomena.Repo.Migrations.RenameUserLinksTable do
     execute "ALTER INDEX index_user_links_on_uri_tag_id_user_id RENAME TO index_artist_links_on_uri_tag_id_user_id"
     execute "ALTER INDEX index_user_links_on_user_id RENAME TO index_artist_links_on_user_id"
     execute "ALTER INDEX index_user_links_on_verified_by_user_id RENAME TO index_artist_links_on_verified_by_user_id"
+    execute "UPDATE roles SET resource_type='ArtistLink' WHERE resource_type='UserLink'"
   end
 end
