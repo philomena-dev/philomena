@@ -2396,6 +2396,14 @@ ALTER TABLE ONLY public.adverts
 
 
 --
+-- Name: artist_links artist_links_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.artist_links
+    ADD CONSTRAINT artist_links_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: badge_awards badge_awards_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2721,14 +2729,6 @@ ALTER TABLE ONLY public.user_fingerprints
 
 ALTER TABLE ONLY public.user_ips
     ADD CONSTRAINT user_ips_pkey PRIMARY KEY (id);
-
-
---
--- Name: artist_links user_links_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.artist_links
-    ADD CONSTRAINT user_links_pkey PRIMARY KEY (id);
 
 
 --
