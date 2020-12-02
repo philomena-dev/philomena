@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 13.0 (Debian 13.0-1.pgdg100+1)
--- Dumped by pg_dump version 13.0 (Ubuntu 13.0-1.pgdg20.04+1)
+-- Dumped by pg_dump version 13.1 (Debian 13.1-1.pgdg100+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -2396,14 +2396,6 @@ ALTER TABLE ONLY public.adverts
 
 
 --
--- Name: artist_links artist_links_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.artist_links
-    ADD CONSTRAINT artist_links_pkey PRIMARY KEY (id);
-
-
---
 -- Name: badge_awards badge_awards_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2729,6 +2721,14 @@ ALTER TABLE ONLY public.user_fingerprints
 
 ALTER TABLE ONLY public.user_ips
     ADD CONSTRAINT user_ips_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: artist_links user_links_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.artist_links
+    ADD CONSTRAINT user_links_pkey PRIMARY KEY (id);
 
 
 --
