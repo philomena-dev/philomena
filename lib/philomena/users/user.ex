@@ -9,7 +9,7 @@ defmodule Philomena.Users.User do
   alias Philomena.Schema.Search
 
   alias Philomena.Filters.Filter
-  alias Philomena.UserLinks.UserLink
+  alias Philomena.ArtistLinks.ArtistLink
   alias Philomena.Badges
   alias Philomena.Notifications.UnreadNotification
   alias Philomena.Galleries.Gallery
@@ -24,9 +24,9 @@ defmodule Philomena.Users.User do
   @derive {Phoenix.Param, key: :slug}
   @derive {Inspect, except: [:password]}
   schema "users" do
-    has_many :links, UserLink
-    has_many :verified_links, UserLink, where: [aasm_state: "verified"]
-    has_many :public_links, UserLink, where: [public: true, aasm_state: "verified"]
+    has_many :links, ArtistLink
+    has_many :verified_links, ArtistLink, where: [aasm_state: "verified"]
+    has_many :public_links, ArtistLink, where: [public: true, aasm_state: "verified"]
     has_many :galleries, Gallery, foreign_key: :creator_id
     has_many :awards, Badges.Award
     has_many :unread_notifications, UnreadNotification
@@ -161,7 +161,9 @@ defmodule Philomena.Users.User do
   defp validate_email(changeset) do
     changeset
     |> validate_required([:email])
-    |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must have the @ sign and no spaces")
+    |> validate_format(:email, ~r/^[^\s]+@[^\s]+\.[^\s]+$/,
+      message: "must be valid (e.g., user@example.com)"
+    )
     |> validate_length(:email, max: 160)
     |> unsafe_validate_unique(:email, Philomena.Repo)
   end
