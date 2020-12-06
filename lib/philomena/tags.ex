@@ -10,6 +10,7 @@ defmodule Philomena.Tags do
   alias Philomena.IndexWorker
   alias Philomena.TagAliasWorker
   alias Philomena.TagUnaliasWorker
+  alias Philomena.TagReindexWorker
   alias Philomena.Tags.Tag
   alias Philomena.Tags.Uploader
   alias Philomena.Images
@@ -257,6 +258,14 @@ defmodule Philomena.Tags do
   end
 
   def reindex_tag_images(%Tag{} = tag) do
+    Exq.enqueue(Exq, "indexing", TagReindexWorker, [tag.id])
+
+    {:ok, tag}
+  end
+
+  def perform_reindex_images(tag_id) do
+    tag = get_tag!(tag_id)
+
     # First recount the tag
     image_count =
       Image
