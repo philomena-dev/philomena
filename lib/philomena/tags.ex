@@ -11,6 +11,7 @@ defmodule Philomena.Tags do
   alias Philomena.TagAliasWorker
   alias Philomena.TagUnaliasWorker
   alias Philomena.TagReindexWorker
+  alias Philomena.TagDeleteWorker
   alias Philomena.Tags.Tag
   alias Philomena.Tags.Uploader
   alias Philomena.Images
@@ -166,6 +167,14 @@ defmodule Philomena.Tags do
 
   """
   def delete_tag(%Tag{} = tag) do
+    Exq.enqueue(Exq, "indexing", TagDeleteWorker, [tag.id])
+
+    {:ok, tag}
+  end
+
+  def perform_delete(tag_id) do
+    tag = get_tag!(tag_id)
+
     image_ids =
       Image
       |> join(:inner, [i], _ in assoc(i, :tags))
