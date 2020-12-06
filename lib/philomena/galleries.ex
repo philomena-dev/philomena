@@ -11,6 +11,7 @@ defmodule Philomena.Galleries do
   alias Philomena.Galleries.Gallery
   alias Philomena.Galleries.Interaction
   alias Philomena.Galleries.ElasticsearchIndex, as: GalleryIndex
+  alias Philomena.IndexWorker
   alias Philomena.Notifications
   alias Philomena.Images
 
@@ -117,27 +118,26 @@ defmodule Philomena.Galleries do
   end
 
   def reindex_gallery(%Gallery{} = gallery) do
-    spawn(fn ->
-      Gallery
-      |> preload(^indexing_preloads())
-      |> where(id: ^gallery.id)
-      |> Repo.one()
-      |> Elasticsearch.index_document(Gallery)
-    end)
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["Galleries", "id", [gallery.id]])
 
     gallery
   end
 
   def unindex_gallery(%Gallery{} = gallery) do
-    spawn(fn ->
-      Elasticsearch.delete_document(gallery.id, Gallery)
-    end)
+    Elasticsearch.delete_document(gallery.id, Gallery)
 
     gallery
   end
 
   def indexing_preloads do
     [:subscribers, :creator, :interactions]
+  end
+
+  def perform_reindex(column, condition) do
+    Gallery
+    |> preload(^indexing_preloads())
+    |> where([g], field(g, ^column) in ^condition)
+    |> Elasticsearch.reindex(Gallery)
   end
 
   def add_image_to_gallery(gallery, image) do

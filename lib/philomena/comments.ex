@@ -11,6 +11,7 @@ defmodule Philomena.Comments do
   alias Philomena.Reports.Report
   alias Philomena.Comments.Comment
   alias Philomena.Comments.ElasticsearchIndex, as: CommentIndex
+  alias Philomena.IndexWorker
   alias Philomena.Images.Image
   alias Philomena.Images
   alias Philomena.Notifications
@@ -216,29 +217,25 @@ defmodule Philomena.Comments do
   end
 
   def reindex_comment(%Comment{} = comment) do
-    spawn(fn ->
-      Comment
-      |> preload(^indexing_preloads())
-      |> where(id: ^comment.id)
-      |> Repo.one()
-      |> Elasticsearch.index_document(Comment)
-    end)
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["Comments", "id", [comment.id]])
 
     comment
   end
 
   def reindex_comments(image) do
-    spawn(fn ->
-      Comment
-      |> preload(^indexing_preloads())
-      |> where(image_id: ^image.id)
-      |> Elasticsearch.reindex(Comment)
-    end)
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["Comments", "image_id", [image.id]])
 
     image
   end
 
   def indexing_preloads do
     [:user, image: :tags]
+  end
+
+  def perform_reindex(column, condition) do
+    Comment
+    |> preload(^indexing_preloads())
+    |> where([c], field(c, ^column) in ^condition)
+    |> Elasticsearch.reindex(Comment)
   end
 end

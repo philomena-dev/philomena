@@ -7,6 +7,7 @@ defmodule Philomena.Tags do
   alias Philomena.Repo
 
   alias Philomena.Elasticsearch
+  alias Philomena.IndexWorker
   alias Philomena.Tags.Tag
   alias Philomena.Tags.Uploader
   alias Philomena.Images
@@ -352,26 +353,26 @@ defmodule Philomena.Tags do
   end
 
   def reindex_tag(%Tag{} = tag) do
-    reindex_tags([%Tag{id: tag.id}])
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["Tags", "id", [tag.id]])
+
+    tag
   end
 
   def reindex_tags(tags) do
-    spawn(fn ->
-      ids =
-        tags
-        |> Enum.map(& &1.id)
-
-      Tag
-      |> preload(^indexing_preloads())
-      |> where([t], t.id in ^ids)
-      |> Elasticsearch.reindex(Tag)
-    end)
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["Tags", "id", Enum.map(tags, & &1.id)])
 
     tags
   end
 
   def indexing_preloads do
     [:aliased_tag, :aliases, :implied_tags, :implied_by_tags]
+  end
+
+  def perform_reindex(column, condition) do
+    Tag
+    |> preload(^indexing_preloads())
+    |> where([t], field(t, ^column) in ^condition)
+    |> Elasticsearch.reindex(Tag)
   end
 
   alias Philomena.Tags.Implication

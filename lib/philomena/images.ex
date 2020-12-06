@@ -16,6 +16,7 @@ defmodule Philomena.Images do
   alias Philomena.Images.Uploader
   alias Philomena.Images.Tagging
   alias Philomena.Images.ElasticsearchIndex, as: ImageIndex
+  alias Philomena.IndexWorker
   alias Philomena.ImageFeatures.ImageFeature
   alias Philomena.SourceChanges.SourceChange
   alias Philomena.Notifications.Notification
@@ -644,18 +645,13 @@ defmodule Philomena.Images do
   end
 
   def reindex_image(%Image{} = image) do
-    reindex_images([image.id])
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["Images", "id", [image.id]])
 
     image
   end
 
   def reindex_images(image_ids) do
-    spawn(fn ->
-      Image
-      |> preload(^indexing_preloads())
-      |> where([i], i.id in ^image_ids)
-      |> Elasticsearch.reindex(Image)
-    end)
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["Images", "id", image_ids])
 
     image_ids
   end
@@ -671,6 +667,13 @@ defmodule Philomena.Images do
       :gallery_interactions,
       tags: [:aliases, :aliased_tag]
     ]
+  end
+
+  def perform_reindex(column, condition) do
+    Image
+    |> preload(^indexing_preloads())
+    |> where([i], field(i, ^column) in ^condition)
+    |> Elasticsearch.reindex(Image)
   end
 
   alias Philomena.Images.Subscription

@@ -12,6 +12,7 @@ defmodule Philomena.Posts do
   alias Philomena.Topics
   alias Philomena.Posts.Post
   alias Philomena.Posts.ElasticsearchIndex, as: PostIndex
+  alias Philomena.IndexWorker
   alias Philomena.Forums.Forum
   alias Philomena.Notifications
   alias Philomena.Versions
@@ -232,18 +233,19 @@ defmodule Philomena.Posts do
   end
 
   def reindex_post(%Post{} = post) do
-    spawn(fn ->
-      Post
-      |> preload(^indexing_preloads())
-      |> where(id: ^post.id)
-      |> Repo.one()
-      |> Elasticsearch.index_document(Post)
-    end)
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["Posts", "id", [post.id]])
 
     post
   end
 
   def indexing_preloads do
     [:user, topic: :forum]
+  end
+
+  def perform_reindex(column, condition) do
+    Post
+    |> preload(^indexing_preloads())
+    |> where([p], field(p, ^column) in ^condition)
+    |> Elasticsearch.reindex(Post)
   end
 end
