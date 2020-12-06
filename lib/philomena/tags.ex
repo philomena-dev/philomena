@@ -9,6 +9,7 @@ defmodule Philomena.Tags do
   alias Philomena.Elasticsearch
   alias Philomena.IndexWorker
   alias Philomena.TagAliasWorker
+  alias Philomena.TagUnaliasWorker
   alias Philomena.Tags.Tag
   alias Philomena.Tags.Uploader
   alias Philomena.Images
@@ -276,6 +277,13 @@ defmodule Philomena.Tags do
   end
 
   def unalias_tag(%Tag{} = tag) do
+    Exq.enqueue(Exq, "indexing", TagUnaliasWorker, [tag.id])
+
+    {:ok, tag}
+  end
+
+  def perform_unalias(tag_id) do
+    tag = get_tag!(tag_id)
     former_alias = Repo.preload(tag, :aliased_tag).aliased_tag
 
     tag
