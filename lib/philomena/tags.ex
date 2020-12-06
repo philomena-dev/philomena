@@ -8,6 +8,7 @@ defmodule Philomena.Tags do
 
   alias Philomena.Elasticsearch
   alias Philomena.IndexWorker
+  alias Philomena.TagAliasWorker
   alias Philomena.Tags.Tag
   alias Philomena.Tags.Uploader
   alias Philomena.Images
@@ -74,7 +75,7 @@ defmodule Philomena.Tags do
       ** (Ecto.NoResultsError)
 
   """
-  def get_tag!(slug), do: Repo.get_by!(Tag, slug: slug)
+  def get_tag!(id), do: Repo.get!(Tag, id)
 
   @doc """
   Creates a tag.
@@ -189,9 +190,7 @@ defmodule Philomena.Tags do
     |> Repo.update()
     |> case do
       {:ok, tag} ->
-        spawn(fn ->
-          perform_alias(tag, target_tag)
-        end)
+        Exq.enqueue(Exq, "indexing", TagAliasWorker, [tag.id, target_tag.id])
 
         {:ok, tag}
 
@@ -200,7 +199,10 @@ defmodule Philomena.Tags do
     end
   end
 
-  defp perform_alias(tag, target_tag) do
+  def perform_alias(tag_id, target_tag_id) do
+    tag = get_tag!(tag_id)
+    target_tag = get_tag!(target_tag_id)
+
     filters_hidden =
       where(Filter, [f], fragment("? @> ARRAY[?]::integer[]", f.hidden_tag_ids, ^tag.id))
 
