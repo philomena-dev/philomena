@@ -13,6 +13,7 @@ defmodule Philomena.Galleries do
   alias Philomena.Galleries.ElasticsearchIndex, as: GalleryIndex
   alias Philomena.IndexWorker
   alias Philomena.Notifications
+  alias Philomena.NotificationWorker
   alias Philomena.Images
 
   @doc """
@@ -231,26 +232,28 @@ defmodule Philomena.Galleries do
   end
 
   def notify_gallery(gallery) do
-    spawn(fn ->
-      subscriptions =
-        gallery
-        |> Repo.preload(:subscriptions)
-        |> Map.fetch!(:subscriptions)
+    Exq.enqueue(Exq, "notifications", NotificationWorker, ["Galleries", gallery.id])
+  end
 
-      Notifications.notify(
-        gallery,
-        subscriptions,
-        %{
-          actor_id: gallery.id,
-          actor_type: "Gallery",
-          actor_child_id: nil,
-          actor_child_type: nil,
-          action: "added images to"
-        }
-      )
-    end)
+  def perform_notify(gallery_id) do
+    gallery = get_gallery!(gallery_id)
 
-    gallery
+    subscriptions =
+      gallery
+      |> Repo.preload(:subscriptions)
+      |> Map.fetch!(:subscriptions)
+
+    Notifications.notify(
+      gallery,
+      subscriptions,
+      %{
+        actor_id: gallery.id,
+        actor_type: "Gallery",
+        actor_child_id: nil,
+        actor_child_type: nil,
+        action: "added images to"
+      }
+    )
   end
 
   def reorder_gallery(gallery, image_ids) do

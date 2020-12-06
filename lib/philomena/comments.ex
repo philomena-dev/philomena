@@ -15,6 +15,7 @@ defmodule Philomena.Comments do
   alias Philomena.Images.Image
   alias Philomena.Images
   alias Philomena.Notifications
+  alias Philomena.NotificationWorker
   alias Philomena.Versions
   alias Philomena.Reports
 
@@ -65,31 +66,33 @@ defmodule Philomena.Comments do
   end
 
   def notify_comment(comment) do
-    spawn(fn ->
-      image =
-        comment
-        |> Repo.preload(:image)
-        |> Map.fetch!(:image)
+    Exq.enqueue(Exq, "notifications", NotificationWorker, ["Comments", comment.id])
+  end
 
-      subscriptions =
-        image
-        |> Repo.preload(:subscriptions)
-        |> Map.fetch!(:subscriptions)
+  def perform_notify(comment_id) do
+    comment = get_comment!(comment_id)
 
-      Notifications.notify(
-        comment,
-        subscriptions,
-        %{
-          actor_id: image.id,
-          actor_type: "Image",
-          actor_child_id: comment.id,
-          actor_child_type: "Comment",
-          action: "commented on"
-        }
-      )
-    end)
+    image =
+      comment
+      |> Repo.preload(:image)
+      |> Map.fetch!(:image)
 
-    comment
+    subscriptions =
+      image
+      |> Repo.preload(:subscriptions)
+      |> Map.fetch!(:subscriptions)
+
+    Notifications.notify(
+      comment,
+      subscriptions,
+      %{
+        actor_id: image.id,
+        actor_type: "Image",
+        actor_child_id: comment.id,
+        actor_child_type: "Comment",
+        action: "commented on"
+      }
+    )
   end
 
   @doc """

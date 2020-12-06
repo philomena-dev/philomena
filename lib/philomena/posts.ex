@@ -15,6 +15,7 @@ defmodule Philomena.Posts do
   alias Philomena.IndexWorker
   alias Philomena.Forums.Forum
   alias Philomena.Notifications
+  alias Philomena.NotificationWorker
   alias Philomena.Versions
   alias Philomena.Reports
   alias Philomena.Reports.Report
@@ -94,31 +95,33 @@ defmodule Philomena.Posts do
   end
 
   def notify_post(post) do
-    spawn(fn ->
-      topic =
-        post
-        |> Repo.preload(:topic)
-        |> Map.fetch!(:topic)
+    Exq.enqueue(Exq, "notifications", NotificationWorker, ["Posts", post.id])
+  end
 
-      subscriptions =
-        topic
-        |> Repo.preload(:subscriptions)
-        |> Map.fetch!(:subscriptions)
+  def perform_notify(post_id) do
+    post = get_post!(post_id)
 
-      Notifications.notify(
-        post,
-        subscriptions,
-        %{
-          actor_id: topic.id,
-          actor_type: "Topic",
-          actor_child_id: post.id,
-          actor_child_type: "Post",
-          action: "posted a new reply in"
-        }
-      )
-    end)
+    topic =
+      post
+      |> Repo.preload(:topic)
+      |> Map.fetch!(:topic)
 
-    post
+    subscriptions =
+      topic
+      |> Repo.preload(:subscriptions)
+      |> Map.fetch!(:subscriptions)
+
+    Notifications.notify(
+      post,
+      subscriptions,
+      %{
+        actor_id: topic.id,
+        actor_type: "Topic",
+        actor_child_id: post.id,
+        actor_child_type: "Post",
+        action: "posted a new reply in"
+      }
+    )
   end
 
   @doc """
