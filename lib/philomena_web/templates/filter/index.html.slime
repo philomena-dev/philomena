@@ -91,7 +91,7 @@
         td
           code creator
         td Literal
-        td Matches the creator of this filter. Anonymous creator will never match this term.
+        td Matches the creator of this filter.
         td
           code = link "creator:AppleDash", to: Routes.filter_path(@conn, :index, fq: "creator:AppleDash")
       tr
@@ -154,8 +154,18 @@
           code = link "system:true", to: Routes.filter_path(@conn, :index, fq: "system:true")
       tr
         td
+          code public
+        td Boolean
+        td
+          ' Matches public filters. Note that
+          code> public:false
+          ' matches only your own private filters.
+        td
+          code = link "public:false", to: Routes.filter_path(@conn, :index, fq: "public:false")
+      tr
+        td
           code user_id
         td Literal
-        td Matches filters with the specified user_id. Anonymous users will never match this term.
+        td Matches filters with the specified user_id.
         td
           code = link "user_id:307505", to: Routes.filter_path(@conn, :index, fq: "user_id:307505")
