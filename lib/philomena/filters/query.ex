@@ -73,10 +73,6 @@ defmodule Philomena.Filters.Query do
     )
   end
 
-  defp moderator_fields do
-    fields = user_fields()
-  end
-
   defp parse(fields, context, query_string) do
     fields
     |> Parser.parser()
@@ -90,14 +86,8 @@ defmodule Philomena.Filters.Query do
       nil ->
         parse(anonymous_fields(), %{user: nil}, query_string)
 
-      %{role: role} when role in ~W(user assistant) ->
+      user ->
         parse(user_fields(), %{user: user}, query_string)
-
-      %{role: role} when role in ~W(moderator admin) ->
-        parse(moderator_fields(), %{user: user}, query_string)
-
-      _ ->
-        raise ArgumentError, "Unknown user role."
     end
   end
 end

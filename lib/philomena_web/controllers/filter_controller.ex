@@ -54,7 +54,10 @@ defmodule PhilomenaWeb.FilterController do
               must: [query | filters(user)]
             }
           },
-          sort: %{created_at: :desc}
+          sort: [
+            %{"name.raw" => :asc},
+            %{id: :desc}
+          ]
         },
         conn.assigns.pagination
       )
@@ -77,11 +80,8 @@ defmodule PhilomenaWeb.FilterController do
       nil ->
         anonymous_should()
 
-      %{role: role} when role in ~W(user assistant moderator admin) ->
+      user ->
         user_should(user)
-
-      _ ->
-        raise ArgumentError, "Unknown user role."
     end
   end
 

@@ -23,7 +23,10 @@ defmodule PhilomenaWeb.Api.Json.Search.FilterController do
                    ]
                  }
                },
-               sort: %{created_at: :desc}
+               sort: [
+                 %{"name.raw" => :asc},
+                 %{id: :desc}
+               ]
              },
              conn.assigns.pagination
           )
@@ -45,11 +48,8 @@ defmodule PhilomenaWeb.Api.Json.Search.FilterController do
       nil ->
         []
 
-      %{role: role} when role in ~W(user assistant moderator admin) ->
+      user ->
         [%{term: %{user_id: user.id}}]
-
-      _ ->
-        raise ArgumentError, "Unknown user role."
     end
   end
 

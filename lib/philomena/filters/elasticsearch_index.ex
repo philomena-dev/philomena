@@ -26,10 +26,37 @@ defmodule Philomena.Filters.ElasticsearchIndex do
           public: %{type: "keyword"},
           # boolean
           system: %{type: "keyword"},
-          name: %{type: "text", analyzer: "snowball"},
+          name: %{
+            type: "text",
+            analyzer: "snowball",
+            fields: %{
+              raw: %{
+                type: "keyword"
+              }
+            }
+          },
           description: %{type: "text", analyzer: "snowball"},
           spoilered_count: %{type: "integer"},
-          hidden_count: %{type: "integer"}
+          hidden_count: %{type: "integer"},
+          spoilered_tag_ids: %{type: "keyword"},
+          hidden_tag_ids: %{type: "keyword"},
+          spoilers_namespaced_tags: %{
+            properties: %{
+              name: %{type: "keyword"},
+              name_in_namespace: %{type: "keyword"},
+              namespace: %{type: "keyword"}
+            }
+          },
+          hides_namespaced_tags: %{
+            properties: %{
+              name: %{type: "keyword"},
+              name_in_namespace: %{type: "keyword"},
+              namespace: %{type: "keyword"}
+            }
+          },
+          hidden_complex_str: %{type: "wildcard"},
+          spoilered_complex_str: %{type: "wildcard"},
+          user_count: %{type: "integer"}
         }
       }
     }
@@ -47,7 +74,12 @@ defmodule Philomena.Filters.ElasticsearchIndex do
       name: filter.name,
       description: filter.description,
       spoilered_count: length(filter.spoilered_tag_ids),
-      hidden_count: length(filter.hidden_tag_ids)
+      hidden_count: length(filter.hidden_tag_ids),
+      spoilered_tag_ids: filter.spoilered_tag_ids,
+      hidden_tag_ids: filter.hidden_tag_ids,
+      hidden_complex_str: filter.hidden_complex_str,
+      spoilered_complex_str: filter.spoilered_complex_str,
+      user_count: filter.user_count
     }
   end
 
