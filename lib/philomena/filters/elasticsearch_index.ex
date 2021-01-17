@@ -26,36 +26,16 @@ defmodule Philomena.Filters.ElasticsearchIndex do
           public: %{type: "keyword"},
           # boolean
           system: %{type: "keyword"},
-          name: %{
-            type: "text",
-            analyzer: "snowball",
-            fields: %{
-              raw: %{
-                type: "keyword"
-              }
-            }
-          },
+          name: %{type: "keyword"},
           description: %{type: "text", analyzer: "snowball"},
           spoilered_count: %{type: "integer"},
           hidden_count: %{type: "integer"},
           spoilered_tag_ids: %{type: "keyword"},
           hidden_tag_ids: %{type: "keyword"},
-          spoilers_namespaced_tags: %{
-            properties: %{
-              name: %{type: "keyword"},
-              name_in_namespace: %{type: "keyword"},
-              namespace: %{type: "keyword"}
-            }
-          },
-          hides_namespaced_tags: %{
-            properties: %{
-              name: %{type: "keyword"},
-              name_in_namespace: %{type: "keyword"},
-              namespace: %{type: "keyword"}
-            }
-          },
-          hidden_complex_str: %{type: "wildcard"},
-          spoilered_complex_str: %{type: "wildcard"},
+          spoilered_tags: %{type: "keyword"},
+          hidden_tags: %{type: "keyword"},
+          spoilered_complex_str: %{type: "keyword"},
+          hidden_complex_str: %{type: "keyword"},
           user_count: %{type: "integer"}
         }
       }
@@ -68,17 +48,17 @@ defmodule Philomena.Filters.ElasticsearchIndex do
       id: filter.id,
       created_at: filter.created_at,
       user_id: filter.user_id,
-      creator: if(!!filter.user, do: filter.user.name),
+      creator: if(!!filter.user, do: String.downcase(filter.user.name)),
       public: filter.public,
       system: filter.system,
-      name: filter.name,
+      name: filter.name |> String.downcase(),
       description: filter.description,
       spoilered_count: length(filter.spoilered_tag_ids),
       hidden_count: length(filter.hidden_tag_ids),
       spoilered_tag_ids: filter.spoilered_tag_ids,
       hidden_tag_ids: filter.hidden_tag_ids,
-      hidden_complex_str: filter.hidden_complex_str,
-      spoilered_complex_str: filter.spoilered_complex_str,
+      spoilered_complex_str: if(!!filter.spoilered_complex_str, do: String.downcase(filter.spoilered_complex_str)),
+      hidden_complex_str: if(!!filter.hidden_complex_str, do: String.downcase(filter.hidden_complex_str)),
       user_count: filter.user_count
     }
   end

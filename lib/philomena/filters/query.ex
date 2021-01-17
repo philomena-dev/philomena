@@ -1,47 +1,6 @@
 defmodule Philomena.Filters.Query do
   alias Philomena.Search.Parser
 
-  defp user_id_transform(_ctx, data) do
-    case Integer.parse(data) do
-      {int, _rest} ->
-        {
-          :ok,
-          %{
-            bool: %{
-              must: [
-                %{term: %{public: true}},
-                %{term: %{user_id: int}}
-              ]
-            }
-          }
-        }
-
-      _err ->
-        {:error, "Unknown `user_id' value."}
-    end
-  end
-
-  defp creator_transform(_ctx, data) do
-    {
-      :ok,
-      %{
-        bool: %{
-          must: [
-            %{term: %{public: true}},
-            %{
-              bool: %{
-                should: [
-                  %{term: %{creator: data}},
-                  %{wildcard: %{creator: data}}
-                ]
-              }
-            }
-          ]
-        }
-      }
-    }
-  end
-
   defp user_my_transform(%{user: %{id: id}}, "filters"),
        do: {:ok, %{term: %{user_id: id}}}
 
@@ -52,15 +11,9 @@ defmodule Philomena.Filters.Query do
     [
       int_fields: ~W(id spoilered_count hidden_count),
       date_fields: ~W(created_at),
-      ngram_fields: ~W(name description),
+      ngram_fields: ~W(name description creator user_id),
       bool_fields: ~W(public system),
-      custom_fields: ~W(creator user_id),
-      default_field: {"name", :ngram},
-      transforms: %{
-        "user_id" => &user_id_transform/2,
-        "creator" => &creator_transform/2
-      },
-      aliases: %{"title" => "name", "maintainer" => "creator"}
+      default_field: {"name", :ngram}
     ]
   end
 
@@ -68,8 +21,8 @@ defmodule Philomena.Filters.Query do
     fields = anonymous_fields()
 
     Keyword.merge(fields,
-      custom_fields: fields[:custom_fields] ++ ~W(my),
-      transforms: Map.merge(fields[:transforms], %{"my" => &user_my_transform/2})
+      custom_fields: ~W(my),
+      transforms: %{"my" => &user_my_transform/2}
     )
   end
 

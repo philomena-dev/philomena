@@ -97,7 +97,7 @@
       tr
         td
           code name
-        td Full Text
+        td Literal
         td Matches the name of this filter. This is the default field.
         td
           code = link "name:default", to: Routes.filter_path(@conn, :index, fq: "name:default")

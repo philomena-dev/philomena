@@ -24,7 +24,7 @@ defmodule PhilomenaWeb.Api.Json.Search.FilterController do
                  }
                },
                sort: [
-                 %{"name.raw" => :asc},
+                 %{name: :asc},
                  %{id: :desc}
                ]
              },

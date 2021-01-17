@@ -55,7 +55,7 @@ defmodule PhilomenaWeb.FilterController do
             }
           },
           sort: [
-            %{"name.raw" => :asc},
+            %{name: :asc},
             %{id: :desc}
           ]
         },
