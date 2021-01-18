@@ -57,8 +57,10 @@ defmodule Philomena.Filters.ElasticsearchIndex do
       hidden_count: length(filter.hidden_tag_ids),
       spoilered_tag_ids: filter.spoilered_tag_ids,
       hidden_tag_ids: filter.hidden_tag_ids,
-      spoilered_complex_str: if(!!filter.spoilered_complex_str, do: String.downcase(filter.spoilered_complex_str)),
-      hidden_complex_str: if(!!filter.hidden_complex_str, do: String.downcase(filter.hidden_complex_str)),
+      spoilered_complex_str:
+        if(!!filter.spoilered_complex_str, do: String.downcase(filter.spoilered_complex_str)),
+      hidden_complex_str:
+        if(!!filter.hidden_complex_str, do: String.downcase(filter.hidden_complex_str)),
       user_count: filter.user_count
     }
   end

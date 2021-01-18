@@ -14,21 +14,27 @@ defmodule PhilomenaWeb.Api.Json.Search.FilterController do
         filters =
           Filter
           |> Elasticsearch.search_definition(
-             %{
-               query: %{
-                 bool: %{
-                   must: [
-                     query,
-                     %{bool: %{should: [%{term: %{public: true}}, %{term: %{system: true}}] ++ user_should(user)}}
-                   ]
-                 }
-               },
-               sort: [
-                 %{name: :asc},
-                 %{id: :desc}
-               ]
-             },
-             conn.assigns.pagination
+            %{
+              query: %{
+                bool: %{
+                  must: [
+                    query,
+                    %{
+                      bool: %{
+                        should:
+                          [%{term: %{public: true}}, %{term: %{system: true}}] ++
+                            user_should(user)
+                      }
+                    }
+                  ]
+                }
+              },
+              sort: [
+                %{name: :asc},
+                %{id: :desc}
+              ]
+            },
+            conn.assigns.pagination
           )
           |> Elasticsearch.search_records(preload(Filter, [:user]))
 
@@ -52,5 +58,4 @@ defmodule PhilomenaWeb.Api.Json.Search.FilterController do
         [%{term: %{user_id: user.id}}]
     end
   end
-
 end

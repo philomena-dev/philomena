@@ -2,10 +2,10 @@ defmodule Philomena.Filters.Query do
   alias Philomena.Search.Parser
 
   defp user_my_transform(%{user: %{id: id}}, "filters"),
-       do: {:ok, %{term: %{user_id: id}}}
+    do: {:ok, %{term: %{user_id: id}}}
 
   defp user_my_transform(_ctx, _value),
-       do: {:error, "Unknown `my' value."}
+    do: {:error, "Unknown `my' value."}
 
   defp anonymous_fields do
     [

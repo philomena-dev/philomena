@@ -65,11 +65,13 @@ for filter_def <- resources["system_filters"] do
     spoilered_tag_list: spoilered_tag_list,
     hidden_tag_list: hidden_tag_list
   })
-  |> Repo.insert(on_conflict: :nothing) |> case do
+  |> Repo.insert(on_conflict: :nothing)
+  |> case do
     {:ok, filter} ->
       Filters.reindex_filter(filter)
+
     {:error, changeset} ->
-      IO.inspect changeset.errors
+      IO.inspect(changeset.errors)
   end
 end
 

@@ -61,9 +61,7 @@ defmodule PhilomenaWeb.FilterController do
         },
         conn.assigns.pagination
       )
-      |> Elasticsearch.search_records(
-        preload(Filter, [:user])
-      )
+      |> Elasticsearch.search_records(preload(Filter, [:user]))
 
     render(conn, "index.html", title: "Filters", filters: filters)
   end
