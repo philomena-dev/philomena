@@ -14,7 +14,7 @@ defmodule Philomena.Filters.Query do
       ngram_fields: ~W(description),
       literal_fields: ~W(name creator user_id),
       bool_fields: ~W(public system),
-      default_field: {"name", :ngram}
+      default_field: {"name", :term}
     ]
   end
 
