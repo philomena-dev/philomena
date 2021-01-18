@@ -49,7 +49,7 @@ defmodule Philomena.Filters.ElasticsearchIndex do
       created_at: filter.created_at,
       user_id: filter.user_id,
       creator: if(!!filter.user, do: String.downcase(filter.user.name)),
-      public: filter.public,
+      public: filter.public || filter.system,
       system: filter.system,
       name: filter.name |> String.downcase(),
       description: filter.description,
