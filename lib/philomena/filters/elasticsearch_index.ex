@@ -22,10 +22,8 @@ defmodule Philomena.Filters.ElasticsearchIndex do
           created_at: %{type: "date"},
           user_id: %{type: "keyword"},
           creator: %{type: "keyword"},
-          # boolean
-          public: %{type: "keyword"},
-          # boolean
-          system: %{type: "keyword"},
+          public: %{type: "boolean"},
+          system: %{type: "boolean"},
           name: %{type: "keyword"},
           description: %{type: "text", analyzer: "snowball"},
           spoilered_count: %{type: "integer"},
