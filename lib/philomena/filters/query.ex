@@ -11,7 +11,8 @@ defmodule Philomena.Filters.Query do
     [
       int_fields: ~W(id spoilered_count hidden_count),
       date_fields: ~W(created_at),
-      ngram_fields: ~W(name description creator user_id),
+      ngram_fields: ~W(description),
+      literal_fields: ~W(name creator user_id),
       bool_fields: ~W(public system),
       default_field: {"name", :ngram}
     ]
