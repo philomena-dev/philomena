@@ -1,14 +1,18 @@
 defmodule Philomena.Http do
-  def get!(url, headers \\ [], options \\ []) do
-    Tesla.get!(client(headers), url, opts: [adapter: adapter_opts(options)])
+  def get(url, headers \\ [], options \\ []) do
+    Tesla.get(client(headers), url, opts: [adapter: adapter_opts(options)])
   end
 
-  def head!(url, headers \\ [], options \\ []) do
-    Tesla.head!(client(headers), url, opts: [adapter: adapter_opts(options)])
+  def head(url, headers \\ [], options \\ []) do
+    Tesla.head(client(headers), url, opts: [adapter: adapter_opts(options)])
+  end
+
+  def post(url, body, headers \\ [], options \\ []) do
+    Tesla.post(client(headers), url, body, opts: [adapter: adapter_opts(options)])
   end
 
   defp adapter_opts(opts) do
-    opts = Keyword.merge(opts, max_body: 110_000_000)
+    opts = Keyword.merge(opts, max_body: 125_000_000)
 
     case Application.get_env(:philomena, :proxy_host) do
       nil ->
