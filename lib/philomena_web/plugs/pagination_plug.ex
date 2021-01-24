@@ -36,7 +36,7 @@ defmodule PhilomenaWeb.PaginationPlug do
     |> to_integer()
     |> Kernel.||(25)
     |> max(1)
-    |> min(50)
+    |> min(500)
   end
 
   defp get_page_size(_params), do: nil
