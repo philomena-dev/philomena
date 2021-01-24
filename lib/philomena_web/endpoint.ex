@@ -28,7 +28,7 @@ defmodule PhilomenaWeb.Endpoint do
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
 
   plug Plug.Parsers,
-    parsers: [:urlencoded, {:multipart, length: 110_000_000}, :json],
+    parsers: [:urlencoded, {:multipart, length: 125_000_000}, :json],
     pass: ["*/*"],
     json_decoder: Phoenix.json_library()
 
@@ -45,23 +45,8 @@ defmodule PhilomenaWeb.Endpoint do
     signing_salt: "signed cookie",
     encryption_salt: "authenticated encrypted cookie"
 
-  # This is used to capture tokens being invalidated to store for temporary
-  # reuse
-  plug PhilomenaWeb.PowInvalidatedSessionPlug, :pow_session
-  plug PhilomenaWeb.PowInvalidatedSessionPlug, :pow_persistent_session
-
-  plug Pow.Plug.Session, otp_app: :philomena
-
-  plug PowPersistentSession.Plug.Cookie,
-    otp_app: :philomena,
-    persistent_session_cookie_opts: [extra: "SameSite=Lax"]
-
-  # This is used as fallback to load user if the Pow session could not be
-  # loaded
-  plug PhilomenaWeb.PowInvalidatedSessionPlug, :load
-
-  plug PhilomenaWeb.ReloadUserPlug
   plug PhilomenaWeb.RenderTimePlug
   plug PhilomenaWeb.ReferrerPlug
+  plug PhilomenaWeb.LastIpPlug
   plug PhilomenaWeb.Router
 end
