@@ -43,10 +43,10 @@
       strong.comment_deleted> Hidden links:
       br
 
-      = for user_link <- @tag.hidden_links do
-        => link user_link.user.name, to: Routes.profile_path(@conn, :show, user_link.user)
+      = for artist_link <- @tag.hidden_links do
+        => link artist_link.user.name, to: Routes.profile_path(@conn, :show, artist_link.user)
         ' &rarr;
-        => link user_link.uri, to: user_link.uri
+        => link artist_link.uri, to: artist_link.uri
         br
 
 
@@ -78,6 +78,11 @@
           strong> Associated streams:
           = for channel <- @tag.channels do
             => link channel.title, to: Routes.channel_path(@conn, :show, channel)
+
+            = if can?(@conn, :edit, channel) do
+              | (
+              = link "Edit", to: Routes.channel_path(@conn, :edit, channel)
+              ' )
 
         = if Enum.any?(@tag.implied_by_tags) do
           input.toggle-box id="implied_by" type="checkbox"

@@ -2,7 +2,7 @@ defmodule PhilomenaWeb.TagView do
   use PhilomenaWeb, :view
 
   # this is bad practice, don't copy this.
-  alias Philomena.Servers.Config
+  alias Philomena.Config
   alias Philomena.Elasticsearch
   alias Philomena.Tags.Tag
   alias Philomena.Repo
@@ -155,7 +155,7 @@ defmodule PhilomenaWeb.TagView do
   end
 
   defp manages_links?(conn),
-    do: can?(conn, :index, Philomena.UserLinks.UserLink)
+    do: can?(conn, :index, Philomena.ArtistLinks.ArtistLink)
 
   defp manages_dnp?(conn),
     do: can?(conn, :index, Philomena.DnpEntries.DnpEntry)

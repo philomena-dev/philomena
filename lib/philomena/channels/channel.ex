@@ -32,7 +32,7 @@ defmodule Philomena.Channels.Channel do
     field :remote_stream_id, :integer
     field :thumbnail_url, :string, default: ""
 
-    timestamps(inserted_at: :created_at)
+    timestamps(inserted_at: :created_at, type: :utc_datetime)
   end
 
   @doc false
@@ -48,5 +48,17 @@ defmodule Philomena.Channels.Channel do
     |> validate_required([:type, :short_name])
     |> validate_inclusion(:type, ["PicartoChannel", "PiczelChannel"])
     |> put_change(:associated_artist_tag_id, tag_id)
+  end
+
+  def update_changeset(channel, attrs) do
+    cast(channel, attrs, [
+      :title,
+      :is_live,
+      :nsfw,
+      :viewers,
+      :thumbnail_url,
+      :last_fetched_at,
+      :last_live_at
+    ])
   end
 end

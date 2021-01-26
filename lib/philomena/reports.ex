@@ -9,6 +9,7 @@ defmodule Philomena.Reports do
   alias Philomena.Elasticsearch
   alias Philomena.Reports.Report
   alias Philomena.Reports.ElasticsearchIndex, as: ReportIndex
+  alias Philomena.IndexWorker
   alias Philomena.Polymorphic
 
   @doc """
@@ -56,7 +57,7 @@ defmodule Philomena.Reports do
     %Report{reportable_id: reportable_id, reportable_type: reportable_type}
     |> Report.creation_changeset(attrs, attribution)
     |> Repo.insert()
-    |> maybe_reindex_report()
+    |> reindex_after_update()
   end
 
   @doc """
@@ -75,7 +76,7 @@ defmodule Philomena.Reports do
     report
     |> Report.changeset(attrs)
     |> Repo.update()
-    |> maybe_reindex_report()
+    |> reindex_after_update()
   end
 
   @doc """
@@ -111,21 +112,21 @@ defmodule Philomena.Reports do
     report
     |> Report.claim_changeset(user)
     |> Repo.update()
-    |> maybe_reindex_report()
+    |> reindex_after_update()
   end
 
   def unclaim_report(%Report{} = report) do
     report
     |> Report.unclaim_changeset()
     |> Repo.update()
-    |> maybe_reindex_report()
+    |> reindex_after_update()
   end
 
   def close_report(%Report{} = report, user) do
     report
     |> Report.close_changeset(user)
     |> Repo.update()
-    |> maybe_reindex_report()
+    |> reindex_after_update()
   end
 
   def user_name_reindex(old_name, new_name) do
@@ -134,31 +135,35 @@ defmodule Philomena.Reports do
     Elasticsearch.update_by_query(Report, data.query, data.set_replacements, data.replacements)
   end
 
-  defp maybe_reindex_report({:ok, report} = result) do
+  defp reindex_after_update({:ok, report}) do
     reindex_report(report)
 
+    {:ok, report}
+  end
+
+  defp reindex_after_update(result) do
     result
   end
 
-  defp maybe_reindex_report(result), do: result
-
   def reindex_reports(report_ids) do
-    spawn(fn ->
-      Report
-      |> where([r], r.id in ^report_ids)
-      |> preload([:user, :admin])
-      |> Repo.all()
-      |> Polymorphic.load_polymorphic(reportable: [reportable_id: :reportable_type])
-      |> Enum.map(&Elasticsearch.index_document(&1, Report))
-    end)
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["Reports", "id", report_ids])
 
     report_ids
   end
 
   def reindex_report(%Report{} = report) do
-    reindex_reports([report.id])
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["Reports", "id", [report.id]])
 
     report
+  end
+
+  def perform_reindex(column, condition) do
+    Report
+    |> where([r], field(r, ^column) in ^condition)
+    |> preload([:user, :admin])
+    |> Repo.all()
+    |> Polymorphic.load_polymorphic(reportable: [reportable_id: :reportable_type])
+    |> Enum.map(&Elasticsearch.index_document(&1, Report))
   end
 
   def count_reports(user) do

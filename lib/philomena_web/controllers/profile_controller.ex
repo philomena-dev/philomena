@@ -28,7 +28,7 @@ defmodule PhilomenaWeb.ProfileController do
       awards: [:badge, :awarded_by],
       public_links: :tag,
       verified_links: :tag,
-      commission: [sheet_image: :tags, items: [example_image: :tags]]
+      commission: [sheet_image: [tags: :aliases], items: [example_image: [tags: :aliases]]]
     ]
 
   plug :set_admin_metadata
@@ -118,10 +118,10 @@ defmodule PhilomenaWeb.ProfileController do
       Elasticsearch.msearch_records(
         [recent_uploads, recent_faves, recent_artwork, recent_comments, recent_posts],
         [
-          preload(Image, :tags),
-          preload(Image, :tags),
-          preload(Image, :tags),
-          preload(Comment, user: [awards: :badge], image: :tags),
+          preload(Image, tags: :aliases),
+          preload(Image, tags: :aliases),
+          preload(Image, tags: :aliases),
+          preload(Comment, user: [awards: :badge], image: [tags: :aliases]),
           preload(Post, user: [awards: :badge], topic: :forum)
         ]
       )
@@ -143,7 +143,7 @@ defmodule PhilomenaWeb.ProfileController do
     recent_galleries =
       Gallery
       |> where(creator_id: ^user.id)
-      |> preload([:creator, thumbnail: :tags])
+      |> preload([:creator, thumbnail: [tags: :aliases]])
       |> limit(4)
       |> Repo.all()
 
@@ -157,8 +157,8 @@ defmodule PhilomenaWeb.ProfileController do
     bans =
       Bans.User
       |> where(user_id: ^user.id)
+      |> order_by(desc: :created_at)
       |> Repo.all()
-      |> Enum.reject(&String.contains?(&1.note || "", "discourage"))
 
     render(
       conn,

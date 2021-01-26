@@ -161,13 +161,19 @@ function bindImageForClick(target) {
 
 function bindImageTarget() {
   const target = document.getElementById('image_target');
-  if (target) {
-    pickAndResize(target);
-    bindImageForClick(target);
-    window.addEventListener('resize', () => {
-      pickAndResize(target);
-    });
+  if (!target) return;
+
+  pickAndResize(target);
+
+  if (target.dataset.mimeType === 'video/webm' || target.dataset.mimeType === 'video/mp4') {
+    // Don't interfere with media controls on video
+    return;
   }
+
+  bindImageForClick(target);
+  window.addEventListener('resize', () => {
+    pickAndResize(target);
+  });
 }
 
 export { bindImageTarget };

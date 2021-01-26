@@ -12,8 +12,10 @@ defmodule Philomena.Posts do
   alias Philomena.Topics
   alias Philomena.Posts.Post
   alias Philomena.Posts.ElasticsearchIndex, as: PostIndex
+  alias Philomena.IndexWorker
   alias Philomena.Forums.Forum
   alias Philomena.Notifications
+  alias Philomena.NotificationWorker
   alias Philomena.Versions
   alias Philomena.Reports
   alias Philomena.Reports.Report
@@ -90,34 +92,45 @@ defmodule Philomena.Posts do
       Topics.create_subscription(topic, attributes[:user])
     end)
     |> Repo.transaction()
+    |> case do
+      {:ok, %{post: post}} = result ->
+        reindex_post(post)
+
+        result
+
+      error ->
+        error
+    end
   end
 
   def notify_post(post) do
-    spawn(fn ->
-      topic =
-        post
-        |> Repo.preload(:topic)
-        |> Map.fetch!(:topic)
+    Exq.enqueue(Exq, "notifications", NotificationWorker, ["Posts", post.id])
+  end
 
-      subscriptions =
-        topic
-        |> Repo.preload(:subscriptions)
-        |> Map.fetch!(:subscriptions)
+  def perform_notify(post_id) do
+    post = get_post!(post_id)
 
-      Notifications.notify(
-        post,
-        subscriptions,
-        %{
-          actor_id: topic.id,
-          actor_type: "Topic",
-          actor_child_id: post.id,
-          actor_child_type: "Post",
-          action: "posted a new reply in"
-        }
-      )
-    end)
+    topic =
+      post
+      |> Repo.preload(:topic)
+      |> Map.fetch!(:topic)
 
-    post
+    subscriptions =
+      topic
+      |> Repo.preload(:subscriptions)
+      |> Map.fetch!(:subscriptions)
+
+    Notifications.notify(
+      post,
+      subscriptions,
+      %{
+        actor_id: topic.id,
+        actor_type: "Topic",
+        actor_child_id: post.id,
+        actor_child_type: "Post",
+        action: "posted a new reply in"
+      }
+    )
   end
 
   @doc """
@@ -148,6 +161,15 @@ defmodule Philomena.Posts do
       })
     end)
     |> Repo.transaction()
+    |> case do
+      {:ok, %{post: post}} = result ->
+        reindex_post(post)
+
+        result
+
+      error ->
+        error
+    end
   end
 
   @doc """
@@ -195,19 +217,14 @@ defmodule Philomena.Posts do
     post
     |> Post.unhide_changeset()
     |> Repo.update()
-    |> case do
-      {:ok, post} ->
-        reindex_post(post)
-
-      error ->
-        error
-    end
+    |> reindex_after_update()
   end
 
   def destroy_post(%Post{} = post) do
     post
     |> Post.destroy_changeset()
     |> Repo.update()
+    |> reindex_after_update()
   end
 
   @doc """
@@ -229,19 +246,30 @@ defmodule Philomena.Posts do
     Elasticsearch.update_by_query(Post, data.query, data.set_replacements, data.replacements)
   end
 
+  defp reindex_after_update({:ok, post}) do
+    reindex_post(post)
+
+    {:ok, post}
+  end
+
+  defp reindex_after_update(result) do
+    result
+  end
+
   def reindex_post(%Post{} = post) do
-    spawn(fn ->
-      Post
-      |> preload(^indexing_preloads())
-      |> where(id: ^post.id)
-      |> Repo.one()
-      |> Elasticsearch.index_document(Post)
-    end)
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["Posts", "id", [post.id]])
 
     post
   end
 
   def indexing_preloads do
     [:user, topic: :forum]
+  end
+
+  def perform_reindex(column, condition) do
+    Post
+    |> preload(^indexing_preloads())
+    |> where([p], field(p, ^column) in ^condition)
+    |> Elasticsearch.reindex(Post)
   end
 end

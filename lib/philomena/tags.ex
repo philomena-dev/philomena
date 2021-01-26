@@ -7,14 +7,20 @@ defmodule Philomena.Tags do
   alias Philomena.Repo
 
   alias Philomena.Elasticsearch
+  alias Philomena.IndexWorker
+  alias Philomena.TagAliasWorker
+  alias Philomena.TagUnaliasWorker
+  alias Philomena.TagReindexWorker
+  alias Philomena.TagDeleteWorker
   alias Philomena.Tags.Tag
   alias Philomena.Tags.Uploader
   alias Philomena.Images
   alias Philomena.Images.Image
   alias Philomena.Users.User
+  alias Philomena.Filters
   alias Philomena.Filters.Filter
   alias Philomena.Images.Tagging
-  alias Philomena.UserLinks.UserLink
+  alias Philomena.ArtistLinks.ArtistLink
   alias Philomena.DnpEntries.DnpEntry
   alias Philomena.Channels.Channel
 
@@ -73,7 +79,7 @@ defmodule Philomena.Tags do
       ** (Ecto.NoResultsError)
 
   """
-  def get_tag!(slug), do: Repo.get_by!(Tag, slug: slug)
+  def get_tag!(id), do: Repo.get!(Tag, id)
 
   @doc """
   Creates a tag.
@@ -116,6 +122,15 @@ defmodule Philomena.Tags do
     tag
     |> Tag.changeset(attrs, implied_tags)
     |> Repo.update()
+    |> case do
+      {:ok, tag} ->
+        reindex_tag(tag)
+
+        {:ok, tag}
+
+      error ->
+        error
+    end
   end
 
   def update_tag_image(%Tag{} = tag, attrs) do
@@ -162,6 +177,14 @@ defmodule Philomena.Tags do
 
   """
   def delete_tag(%Tag{} = tag) do
+    Exq.enqueue(Exq, "indexing", TagDeleteWorker, [tag.id])
+
+    {:ok, tag}
+  end
+
+  def perform_delete(tag_id) do
+    tag = get_tag!(tag_id)
+
     image_ids =
       Image
       |> join(:inner, [i], _ in assoc(i, :tags))
@@ -188,9 +211,7 @@ defmodule Philomena.Tags do
     |> Repo.update()
     |> case do
       {:ok, tag} ->
-        spawn(fn ->
-          perform_alias(tag, target_tag)
-        end)
+        Exq.enqueue(Exq, "indexing", TagAliasWorker, [tag.id, target_tag.id])
 
         {:ok, tag}
 
@@ -199,7 +220,10 @@ defmodule Philomena.Tags do
     end
   end
 
-  defp perform_alias(tag, target_tag) do
+  def perform_alias(tag_id, target_tag_id) do
+    tag = get_tag!(tag_id)
+    target_tag = get_tag!(target_tag_id)
+
     filters_hidden =
       where(Filter, [f], fragment("? @> ARRAY[?]::integer[]", f.hidden_tag_ids, ^tag.id))
 
@@ -228,7 +252,7 @@ defmodule Philomena.Tags do
     |> Repo.delete_all()
 
     # Update other assocations
-    UserLink
+    ArtistLink
     |> where(tag_id: ^tag.id)
     |> Repo.update_all(set: [tag_id: target_tag.id])
 
@@ -253,6 +277,14 @@ defmodule Philomena.Tags do
   end
 
   def reindex_tag_images(%Tag{} = tag) do
+    Exq.enqueue(Exq, "indexing", TagReindexWorker, [tag.id])
+
+    {:ok, tag}
+  end
+
+  def perform_reindex_images(tag_id) do
+    tag = get_tag!(tag_id)
+
     # First recount the tag
     image_count =
       Image
@@ -270,9 +302,22 @@ defmodule Philomena.Tags do
     |> where([_i, t], t.id == ^tag.id)
     |> preload(^Images.indexing_preloads())
     |> Elasticsearch.reindex(Image)
+
+    Filter
+    |> where([f], fragment("? @> ARRAY[?]::integer[]", f.hidden_tag_ids, ^tag.id))
+    |> or_where([f], fragment("? @> ARRAY[?]::integer[]", f.spoilered_tag_ids, ^tag.id))
+    |> preload(^Filters.indexing_preloads())
+    |> Elasticsearch.reindex(Filter)
   end
 
   def unalias_tag(%Tag{} = tag) do
+    Exq.enqueue(Exq, "indexing", TagUnaliasWorker, [tag.id])
+
+    {:ok, tag}
+  end
+
+  def perform_unalias(tag_id) do
+    tag = get_tag!(tag_id)
     former_alias = Repo.preload(tag, :aliased_tag).aliased_tag
 
     tag
@@ -352,26 +397,26 @@ defmodule Philomena.Tags do
   end
 
   def reindex_tag(%Tag{} = tag) do
-    reindex_tags([%Tag{id: tag.id}])
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["Tags", "id", [tag.id]])
+
+    tag
   end
 
   def reindex_tags(tags) do
-    spawn(fn ->
-      ids =
-        tags
-        |> Enum.map(& &1.id)
-
-      Tag
-      |> preload(^indexing_preloads())
-      |> where([t], t.id in ^ids)
-      |> Elasticsearch.reindex(Tag)
-    end)
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["Tags", "id", Enum.map(tags, & &1.id)])
 
     tags
   end
 
   def indexing_preloads do
     [:aliased_tag, :aliases, :implied_tags, :implied_by_tags]
+  end
+
+  def perform_reindex(column, condition) do
+    Tag
+    |> preload(^indexing_preloads())
+    |> where([t], field(t, ^column) in ^condition)
+    |> Elasticsearch.reindex(Tag)
   end
 
   alias Philomena.Tags.Implication

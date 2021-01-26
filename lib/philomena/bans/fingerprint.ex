@@ -18,7 +18,7 @@ defmodule Philomena.Bans.Fingerprint do
 
     field :until, :string, virtual: true
 
-    timestamps(inserted_at: :created_at)
+    timestamps(inserted_at: :created_at, type: :utc_datetime)
   end
 
   @doc false
@@ -34,5 +34,6 @@ defmodule Philomena.Bans.Fingerprint do
     |> Time.assign_time(:until, :valid_until)
     |> BanId.put_ban_id("F")
     |> validate_required([:reason, :enabled, :fingerprint, :valid_until])
+    |> check_constraint(:valid_until, name: :fingerprint_ban_duration_must_be_valid)
   end
 end

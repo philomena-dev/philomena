@@ -9,29 +9,30 @@ defmodule Mix.Tasks.ReindexAll do
     Posts.Post,
     Images.Image,
     Reports.Report,
-    Tags.Tag
+    Tags.Tag,
+    Filters.Filter
   }
 
-  alias Philomena.{Comments, Galleries, Posts, Images, Tags}
+  alias Philomena.{Comments, Galleries, Posts, Images, Tags, Filters}
   alias Philomena.Polymorphic
   alias Philomena.Repo
   import Ecto.Query
 
   @shortdoc "Destroys and recreates all Elasticsearch indices."
+  @requirements ["app.start"]
   @impl Mix.Task
   def run(args) do
     if Mix.env() == :prod and not Enum.member?(args, "--i-know-what-im-doing") do
       raise "do not run this task unless you know what you're doing"
     end
 
-    {:ok, _apps} = Application.ensure_all_started(:philomena)
-
     for {context, schema} <- [
           {Images, Image},
           {Comments, Comment},
           {Galleries, Gallery},
           {Tags, Tag},
-          {Posts, Post}
+          {Posts, Post},
+          {Filters, Filter}
         ] do
       Elasticsearch.delete_index!(schema)
       Elasticsearch.create_index!(schema)

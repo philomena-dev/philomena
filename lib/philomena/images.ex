@@ -10,14 +10,19 @@ defmodule Philomena.Images do
 
   alias Philomena.Elasticsearch
   alias Philomena.ThumbnailWorker
+  alias Philomena.ImagePurgeWorker
   alias Philomena.DuplicateReports.DuplicateReport
   alias Philomena.Images.Image
   alias Philomena.Images.Hider
   alias Philomena.Images.Uploader
   alias Philomena.Images.Tagging
+  alias Philomena.Images.Thumbnailer
   alias Philomena.Images.ElasticsearchIndex, as: ImageIndex
+  alias Philomena.IndexWorker
   alias Philomena.ImageFeatures.ImageFeature
   alias Philomena.SourceChanges.SourceChange
+  alias Philomena.Notifications.Notification
+  alias Philomena.NotificationWorker
   alias Philomena.TagChanges.TagChange
   alias Philomena.Tags
   alias Philomena.UserStatistics
@@ -27,6 +32,8 @@ defmodule Philomena.Images do
   alias Philomena.Reports
   alias Philomena.Reports.Report
   alias Philomena.Comments
+  alias Philomena.Galleries.Gallery
+  alias Philomena.Galleries.Interaction
 
   @doc """
   Gets a single image.
@@ -122,6 +129,7 @@ defmodule Philomena.Images do
     |> case do
       {:ok, image} ->
         Uploader.unpersist_old_upload(image)
+        purge_files(image, image.hidden_image_key)
         Hider.destroy_thumbnails(image)
 
         {:ok, image}
@@ -191,6 +199,7 @@ defmodule Philomena.Images do
         Uploader.unpersist_old_upload(image)
 
         repair_image(image)
+        purge_files(image, image.hidden_image_key)
         reindex_image(image)
 
         {:ok, image}
@@ -311,7 +320,7 @@ defmodule Philomena.Images do
   end
 
   defp tag_change_attributes(attribution, image, tag, added, user) do
-    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    now = DateTime.utc_now() |> DateTime.truncate(:second)
 
     user_id =
       case user do
@@ -423,9 +432,18 @@ defmodule Philomena.Images do
       |> select([r], r.id)
       |> update(set: [open: false, state: "closed", admin_id: ^user.id])
 
+    galleries =
+      Gallery
+      |> join(:inner, [g], gi in assoc(g, :interactions), on: gi.image_id == ^image.id)
+      |> update(inc: [image_count: -1])
+
+    gallery_interactions = where(Interaction, image_id: ^image.id)
+
     multi
     |> Multi.update(:image, changeset)
     |> Multi.update_all(:reports, reports, [])
+    |> Multi.update_all(:galleries, galleries, [])
+    |> Multi.delete_all(:gallery_interactions, gallery_interactions, [])
     |> Multi.run(:tags, fn repo, %{image: image} ->
       image = Repo.preload(image, :tags, force: true)
 
@@ -451,6 +469,7 @@ defmodule Philomena.Images do
         Tags.reindex_tags(tags)
         reindex_image(image)
         reindex_copied_tags(result)
+        purge_files(image, image.hidden_image_key)
 
         {:ok, result}
 
@@ -464,7 +483,7 @@ defmodule Philomena.Images do
 
   defp update_first_seen_at(image, time_1, time_2) do
     min_time =
-      case NaiveDateTime.compare(time_1, time_2) do
+      case DateTime.compare(time_1, time_2) do
         :gt -> time_2
         _ -> time_1
       end
@@ -497,6 +516,7 @@ defmodule Philomena.Images do
         Hider.unhide_thumbnails(image, key)
 
         reindex_image(image)
+        purge_files(image, image.hidden_image_key)
         Comments.reindex_comments(image)
         Tags.reindex_tags(tags)
 
@@ -532,7 +552,7 @@ defmodule Philomena.Images do
       |> where([t], t.image_id in ^image_ids and t.tag_id in ^removed_tags)
       |> select([t], [t.image_id, t.tag_id])
 
-    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    now = DateTime.utc_now() |> DateTime.truncate(:second)
     tag_change_attributes = Map.merge(tag_change_attributes, %{created_at: now, updated_at: now})
     tag_attributes = %{name: "", slug: "", created_at: now, updated_at: now}
 
@@ -633,18 +653,13 @@ defmodule Philomena.Images do
   end
 
   def reindex_image(%Image{} = image) do
-    reindex_images([image.id])
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["Images", "id", [image.id]])
 
     image
   end
 
   def reindex_images(image_ids) do
-    spawn(fn ->
-      Image
-      |> preload(^indexing_preloads())
-      |> where([i], i.id in ^image_ids)
-      |> Elasticsearch.reindex(Image)
-    end)
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["Images", "id", image_ids])
 
     image_ids
   end
@@ -660,6 +675,29 @@ defmodule Philomena.Images do
       :gallery_interactions,
       tags: [:aliases, :aliased_tag]
     ]
+  end
+
+  def perform_reindex(column, condition) do
+    Image
+    |> preload(^indexing_preloads())
+    |> where([i], field(i, ^column) in ^condition)
+    |> Elasticsearch.reindex(Image)
+  end
+
+  def purge_files(image, hidden_key) do
+    files =
+      if is_nil(hidden_key) do
+        Thumbnailer.thumbnail_urls(image, nil)
+      else
+        Thumbnailer.thumbnail_urls(image, hidden_key) ++
+          Thumbnailer.thumbnail_urls(image, nil)
+      end
+
+    Exq.enqueue(Exq, "indexing", ImagePurgeWorker, [files])
+  end
+
+  def perform_purge(files) do
+    Hider.purge_cache(files)
   end
 
   alias Philomena.Images.Subscription
@@ -718,30 +756,39 @@ defmodule Philomena.Images do
       |> select([s], %{image_id: type(^target.id, :integer), user_id: s.user_id})
       |> Repo.all()
 
-    {count, nil} = Repo.insert_all(Subscription, subscriptions, on_conflict: :nothing)
+    Repo.insert_all(Subscription, subscriptions, on_conflict: :nothing)
+
+    {count, nil} =
+      Notification
+      |> where(actor_type: "Image", actor_id: ^source.id)
+      |> Repo.delete_all()
 
     {:ok, count}
   end
 
   def notify_merge(source, target) do
-    spawn(fn ->
-      subscriptions =
-        target
-        |> Repo.preload(:subscriptions)
-        |> Map.fetch!(:subscriptions)
+    Exq.enqueue(Exq, "notifications", NotificationWorker, ["Images", [source.id, target.id]])
+  end
 
-      Notifications.notify(
-        nil,
-        subscriptions,
-        %{
-          actor_id: target.id,
-          actor_type: "Image",
-          actor_child_id: nil,
-          actor_child_type: nil,
-          action: "merged ##{source.id} into"
-        }
-      )
-    end)
+  def perform_notify([source_id, target_id]) do
+    target = get_image!(target_id)
+
+    subscriptions =
+      target
+      |> Repo.preload(:subscriptions)
+      |> Map.fetch!(:subscriptions)
+
+    Notifications.notify(
+      nil,
+      subscriptions,
+      %{
+        actor_id: target.id,
+        actor_type: "Image",
+        actor_child_id: nil,
+        actor_child_type: nil,
+        action: "merged ##{source_id} into"
+      }
+    )
   end
 
   def clear_notification(_image, nil), do: nil

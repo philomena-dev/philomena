@@ -11,9 +11,13 @@ p
         ' Make sure to report for the correct
         = link "rule", to: "/pages/rules"
         ' .
-      li One report per problem (mention all things affected, please).
+      li One report per problem. If it involves multiple things (images, comments, etc), list all of their IDs in the description of a single report.
       li
         strong Do not report someone just because they disagree with you. Abusing the report system is a bannable offense.
+    p
+      ' You may only open up to
+      strong> 3 reports
+      ' at a time. Please be mindful of what you report.
   br
 
   = if image?(@changeset) do
@@ -23,7 +27,7 @@ p
         strong> Only an owner of an image's rights (normally the artist) can request a takedown.
         ' If you're the artist, you'll
         strong> need
-        ' a verified user link.
+        ' a verified artist link.
       p
         ' For more information, please read the
         = link "takedown policy", to: "/pages/takedowns"

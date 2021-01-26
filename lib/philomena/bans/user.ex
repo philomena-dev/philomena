@@ -21,7 +21,7 @@ defmodule Philomena.Bans.User do
     field :username, :string, virtual: true
     field :until, :string, virtual: true
 
-    timestamps(inserted_at: :created_at)
+    timestamps(inserted_at: :created_at, type: :utc_datetime)
   end
 
   @doc false
@@ -39,6 +39,7 @@ defmodule Philomena.Bans.User do
     |> populate_user_id()
     |> BanId.put_ban_id("U")
     |> validate_required([:reason, :enabled, :user_id, :valid_until])
+    |> check_constraint(:valid_until, name: :user_ban_duration_must_be_valid)
   end
 
   defp populate_username(changeset) do

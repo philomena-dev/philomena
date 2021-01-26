@@ -17,6 +17,8 @@ defmodule Philomena.Users do
   alias Philomena.Posts
   alias Philomena.Galleries
   alias Philomena.Reports
+  alias Philomena.Filters
+  alias Philomena.UserRenameWorker
 
   ## Database getters
 
@@ -604,19 +606,22 @@ defmodule Philomena.Users do
     |> Repo.transaction()
     |> case do
       {:ok, %{account: %{name: new_name} = account}} ->
-        spawn(fn ->
-          Images.user_name_reindex(old_name, new_name)
-          Comments.user_name_reindex(old_name, new_name)
-          Posts.user_name_reindex(old_name, new_name)
-          Galleries.user_name_reindex(old_name, new_name)
-          Reports.user_name_reindex(old_name, new_name)
-        end)
+        Exq.enqueue(Exq, "indexing", UserRenameWorker, [old_name, new_name])
 
         {:ok, account}
 
       {:error, :account, changeset, _changes} ->
         {:error, changeset}
     end
+  end
+
+  def perform_rename(old_name, new_name) do
+    Images.user_name_reindex(old_name, new_name)
+    Comments.user_name_reindex(old_name, new_name)
+    Posts.user_name_reindex(old_name, new_name)
+    Galleries.user_name_reindex(old_name, new_name)
+    Reports.user_name_reindex(old_name, new_name)
+    Filters.user_name_reindex(old_name, new_name)
   end
 
   def reactivate_user(%User{} = user) do

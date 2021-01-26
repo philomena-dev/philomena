@@ -11,6 +11,8 @@ html lang="en"
       - else
         ' Ponybooru
     link rel="stylesheet" href=stylesheet_path(@conn, @current_user)
+    = if is_nil(@current_user) do
+      link rel="stylesheet" href=dark_stylesheet_path(@conn) media="(prefers-color-scheme: dark)"
     link rel="icon" href="/favicon.ico" type="image/x-icon"
     link rel="icon" href="/favicon.svg" type="image/svg+xml"
     meta name="generator" content="philomena"
@@ -27,4 +29,5 @@ html lang="en"
       main#content class=layout_class(@conn)
         = @inner_content
       = render PhilomenaWeb.LayoutView, "_footer.html", assigns
+      form.hidden: input.js-interaction-cache type="hidden" value="{}"
       = clientside_data(@conn)

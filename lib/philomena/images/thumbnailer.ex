@@ -22,14 +22,22 @@ defmodule Philomena.Images.Thumbnailer do
     full: nil
   ]
 
+  def thumbnail_urls(image, hidden_key) do
+    Path.join([image_thumb_dir(image), "*"])
+    |> Path.wildcard()
+    |> Enum.map(fn version_name ->
+      Path.join([image_url_base(image, hidden_key), Path.basename(version_name)])
+    end)
+  end
+
   def generate_thumbnails(image_id) do
     image = Repo.get!(Image, image_id)
     file = image_file(image)
     {:ok, analysis} = Analyzers.analyze(file)
 
     apply_edit_script(image, Processors.process(analysis, file, @versions))
-    recompute_meta(image, file, &Image.thumbnail_changeset/2)
     generate_dupe_reports(image)
+    recompute_meta(image, file, &Image.thumbnail_changeset/2)
 
     apply_edit_script(image, Processors.post_process(analysis, file))
     recompute_meta(image, file, &Image.process_changeset/2)
@@ -53,8 +61,11 @@ defmodule Philomena.Images.Thumbnailer do
   defp apply_thumbnail(image, thumb_dir, {:symlink_original, destination}),
     do: symlink(image_file(image), Path.join(thumb_dir, destination))
 
-  defp generate_dupe_reports(image),
-    do: DuplicateReports.generate_reports(image)
+  defp generate_dupe_reports(image) do
+    if not image.duplication_checked do
+      DuplicateReports.generate_reports(image)
+    end
+  end
 
   defp recompute_meta(image, file, changeset_fn) do
     {:ok, %{dimensions: {width, height}}} = Analyzers.analyze(file)
@@ -121,6 +132,12 @@ defmodule Philomena.Images.Thumbnailer do
   defp image_thumb_dir(%Image{created_at: created_at, id: id}),
     do: Path.join([image_thumbnail_root(), time_identifier(created_at), to_string(id)])
 
+  defp image_url_base(%Image{created_at: created_at, id: id}, nil),
+    do: Path.join([image_url_root(), time_identifier(created_at), to_string(id)])
+
+  defp image_url_base(%Image{created_at: created_at, id: id}, key),
+    do: Path.join([image_url_root(), time_identifier(created_at), "#{id}-#{key}"])
+
   defp time_identifier(time),
     do: Enum.join([time.year, time.month, time.day], "/")
 
@@ -129,4 +146,7 @@ defmodule Philomena.Images.Thumbnailer do
 
   defp image_thumbnail_root,
     do: Application.get_env(:philomena, :image_file_root) <> "/thumbs"
+
+  defp image_url_root,
+    do: Application.get_env(:philomena, :image_url_root)
 end

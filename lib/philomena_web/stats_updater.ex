@@ -1,6 +1,6 @@
 defmodule PhilomenaWeb.StatsUpdater do
+  alias Philomena.Config
   alias Philomena.Elasticsearch
-  alias Philomena.Servers.Config
   alias Philomena.Images.Image
   alias Philomena.Comments.Comment
   alias Philomena.Topics.Topic
@@ -16,20 +16,7 @@ defmodule PhilomenaWeb.StatsUpdater do
   alias Philomena.Repo
   import Ecto.Query
 
-  def child_spec([]) do
-    %{
-      id: PhilomenaWeb.StatsUpdater,
-      start: {PhilomenaWeb.StatsUpdater, :start_link, [[]]}
-    }
-  end
-
-  def start_link([]) do
-    {:ok, spawn_link(&run/0)}
-  end
-
-  defp run do
-    :timer.sleep(:timer.seconds(300))
-
+  def update_stats! do
     {gallery_count, gallery_size, distinct_creators, images_in_galleries} = galleries()
     {open_reports, report_count, response_time} = moderation()
     {open_commissions, commission_items} = commissions()
@@ -59,7 +46,7 @@ defmodule PhilomenaWeb.StatsUpdater do
         images_in_galleries: images_in_galleries
       )
 
-    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    now = DateTime.utc_now() |> DateTime.truncate(:second)
 
     static_page = %{
       title: "Statistics",
@@ -73,8 +60,6 @@ defmodule PhilomenaWeb.StatsUpdater do
       on_conflict: {:replace, [:body, :updated_at]},
       conflict_target: :slug
     )
-
-    run()
   end
 
   defp aggregations do
@@ -154,7 +139,7 @@ defmodule PhilomenaWeb.StatsUpdater do
 
     response_time =
       closed_reports
-      |> Enum.reduce(0, &(&2 + NaiveDateTime.diff(&1.updated_at, &1.created_at, :second)))
+      |> Enum.reduce(0, &(&2 + DateTime.diff(&1.updated_at, &1.created_at, :second)))
       |> Kernel./(safe_length(closed_reports) * 3600)
       |> trunc()
 

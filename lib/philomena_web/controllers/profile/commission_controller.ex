@@ -14,7 +14,11 @@ defmodule PhilomenaWeb.Profile.CommissionController do
     id_field: "slug",
     preload: [
       :verified_links,
-      commission: [sheet_image: :tags, user: [awards: :badge], items: [example_image: :tags]]
+      commission: [
+        sheet_image: [tags: :aliases],
+        user: [awards: :badge],
+        items: [example_image: [tags: :aliases]]
+      ]
     ],
     persisted: true
 
@@ -28,7 +32,7 @@ defmodule PhilomenaWeb.Profile.CommissionController do
 
     items =
       commission.items
-      |> Enum.sort(&(Decimal.cmp(&1.base_price, &2.base_price) != :gt))
+      |> Enum.sort(&(Decimal.compare(&1.base_price, &2.base_price) != :gt))
 
     item_descriptions =
       items
@@ -148,7 +152,10 @@ defmodule PhilomenaWeb.Profile.CommissionController do
 
       false ->
         conn
-        |> put_flash(:error, "You must have a verified user link to create a commission listing.")
+        |> put_flash(
+          :error,
+          "You must have a verified artist link to create a commission listing."
+        )
         |> redirect(to: Routes.commission_path(conn, :index))
         |> halt()
     end

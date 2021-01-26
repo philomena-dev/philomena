@@ -9,7 +9,9 @@ defmodule Philomena.Topics do
 
   alias Philomena.Topics.Topic
   alias Philomena.Forums.Forum
+  alias Philomena.Posts
   alias Philomena.Notifications
+  alias Philomena.NotificationWorker
 
   @doc """
   Gets a single topic.
@@ -71,34 +73,46 @@ defmodule Philomena.Topics do
       create_subscription(topic, attribution[:user])
     end)
     |> Repo.transaction()
+    |> case do
+      {:ok, %{topic: topic}} = result ->
+        Posts.reindex_post(hd(topic.posts))
+
+        result
+
+      error ->
+        error
+    end
   end
 
-  def notify_topic(topic) do
-    spawn(fn ->
-      forum =
-        topic
-        |> Repo.preload(:forum)
-        |> Map.fetch!(:forum)
+  def notify_topic(topic, post) do
+    Exq.enqueue(Exq, "notifications", NotificationWorker, ["Topics", [topic.id, post.id]])
+  end
 
-      subscriptions =
-        forum
-        |> Repo.preload(:subscriptions)
-        |> Map.fetch!(:subscriptions)
+  def perform_notify([topic_id, post_id]) do
+    topic = get_topic!(topic_id)
+    post = Posts.get_post!(post_id)
 
-      Notifications.notify(
-        topic,
-        subscriptions,
-        %{
-          actor_id: forum.id,
-          actor_type: "Forum",
-          actor_child_id: topic.id,
-          actor_child_type: "Topic",
-          action: "posted a new topic"
-        }
-      )
-    end)
+    forum =
+      topic
+      |> Repo.preload(:forum)
+      |> Map.fetch!(:forum)
 
-    topic
+    subscriptions =
+      forum
+      |> Repo.preload(:subscriptions)
+      |> Map.fetch!(:subscriptions)
+
+    Notifications.notify(
+      post,
+      subscriptions,
+      %{
+        actor_id: topic.id,
+        actor_type: "Topic",
+        actor_child_id: post.id,
+        actor_child_type: "Post",
+        action: "posted a new topic in #{forum.name}"
+      }
+    )
   end
 
   @doc """

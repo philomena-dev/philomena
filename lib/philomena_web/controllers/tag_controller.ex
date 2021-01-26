@@ -57,7 +57,7 @@ defmodule PhilomenaWeb.TagController do
 
     {images, _tags} = ImageLoader.query(conn, %{term: %{"namespaced_tags.name" => tag.name}})
 
-    images = Elasticsearch.search_records(images, preload(Image, :tags))
+    images = Elasticsearch.search_records(images, preload(Image, tags: :aliases))
 
     interactions = Interactions.user_interactions(images, user)
 
@@ -95,8 +95,6 @@ defmodule PhilomenaWeb.TagController do
   def update(conn, %{"tag" => tag_params}) do
     case Tags.update_tag(conn.assigns.tag, tag_params) do
       {:ok, tag} ->
-        Tags.reindex_tag(tag)
-
         conn
         |> put_flash(:info, "Tag successfully updated.")
         |> redirect(to: Routes.tag_path(conn, :show, tag))
@@ -107,12 +105,10 @@ defmodule PhilomenaWeb.TagController do
   end
 
   def delete(conn, _params) do
-    spawn(fn ->
-      Tags.delete_tag(conn.assigns.tag)
-    end)
+    {:ok, _tag} = Tags.delete_tag(conn.assigns.tag)
 
     conn
-    |> put_flash(:info, "Tag scheduled for deletion.")
+    |> put_flash(:info, "Tag queued for deletion.")
     |> redirect(to: "/")
   end
 
