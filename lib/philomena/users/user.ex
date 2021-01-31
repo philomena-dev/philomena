@@ -319,7 +319,8 @@ defmodule Philomena.Users.User do
       :watch_on_upload,
       :watch_on_new_topic,
       :comments_always_jump_to_last,
-      :messages_newest_first
+      :messages_newest_first,
+      :show_sidebar_and_watched_images
     ])
     |> validate_required([
       :images_per_page,
@@ -336,7 +337,8 @@ defmodule Philomena.Users.User do
       :watch_on_upload,
       :watch_on_new_topic,
       :comments_always_jump_to_last,
-      :messages_newest_first
+      :messages_newest_first,
+      :show_sidebar_and_watched_images
     ])
     |> TagList.propagate_tag_list(:watched_tag_list, :watched_tag_ids)
     |> validate_inclusion(:theme, ~W(default dark red))

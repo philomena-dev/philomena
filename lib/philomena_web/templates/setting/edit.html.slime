@@ -58,6 +58,10 @@ h1 Content Settings
             => checkbox f, :use_centered_layout, class: "checkbox"
             .fieldlabel: i Align content to the center of the page - try this option out if you browse the site on a tablet or a fairly wide screen.
           .field
+            => label f, :show_sidebar_and_watched_images
+            => checkbox f, :show_sidebar_and_watched_images, class: "checkbox"
+            .fieldlabel: i Show the sidebar and new watched images on the homepage (the default) or hide it.
+          .field
             => label f, :hide_vote_counts
             => checkbox f, :hide_vote_counts, class: "checkbox"
             .fieldlabel: i Hide upvote and downvote counts on images, showing only the overall score
