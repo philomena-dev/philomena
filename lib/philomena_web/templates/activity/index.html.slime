@@ -40,7 +40,7 @@
 
   .column-layout__main
     = render PhilomenaWeb.ImageView, "index.html", conn: @conn, images: @images, size: :thumb
-    = if not is_nil(@watched) and Enum.any?(@watched) do
+    = if @show_sidebar and not is_nil(@watched) and Enum.any?(@watched) do
       .block
         .block__header
           span.block__header__title
