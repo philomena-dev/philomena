@@ -523,6 +523,13 @@ defmodule Philomena.Users.User do
     )
   end
 
+  def clear_recent_filters_changeset(user) do
+    user
+    |> change(%{
+      recent_filter_ids: [user.current_filter_id]
+    })
+  end
+
   defp enable_totp_changeset(user, backup_codes) do
     hashed_codes = Enum.map(backup_codes, &Password.hash_pwd_salt/1)
 
