@@ -74,7 +74,7 @@ defmodule Philomena.Images.Query do
       date_fields: ~W(created_at updated_at first_seen_at),
       literal_fields:
         ~W(faved_by orig_sha512_hash sha512_hash uploader source_url original_format mime_type),
-      bool_fields: ~W(animated),
+      bool_fields: ~W(animated processed thumbnails_generated),
       ngram_fields: ~W(description),
       custom_fields: ~W(gallery_id),
       default_field: {"namespaced_tags.name", :term},
