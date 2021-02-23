@@ -18,6 +18,7 @@ defmodule Philomena.Images.ElasticsearchIndex do
       mappings: %{
         dynamic: false,
         properties: %{
+          animated: %{type: "boolean"},
           anonymous: %{type: "boolean"},
           aspect_ratio: %{type: "float"},
           comment_count: %{type: "integer"},
@@ -100,7 +101,8 @@ defmodule Philomena.Images.ElasticsearchIndex do
       height: image.image_height,
       pixels: image.image_width * image.image_height,
       size: image.image_size,
-      duration: image.image_duration,
+      animated: image.image_is_animated,
+      duration: if(image.image_is_animated, do: image.image_duration, else: 0),
       tag_count: length(image.tags),
       aspect_ratio: image.image_aspect_ratio,
       wilson_score: wilson_score(image),
