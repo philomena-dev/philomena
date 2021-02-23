@@ -39,6 +39,7 @@ defmodule Philomena.Images.ElasticsearchIndex do
           file_name: %{type: "keyword"},
           fingerprint: %{type: "keyword"},
           first_seen_at: %{type: "date"},
+          frames: %{type: "integer"},
           height: %{type: "integer"},
           hidden_by_user_ids: %{type: "keyword"},
           hidden_by_users: %{type: "keyword"},
