@@ -34,6 +34,7 @@ defmodule PhilomenaWeb.ImageController do
        [params_name: "image", params_key: "image"] when action in [:create]
 
   plug PhilomenaWeb.AdvertPlug when action in [:show]
+  plug PhilomenaWeb.ImagePlug when action in [:show]
 
   def index(conn, _params) do
     {:ok, {images, _tags}} = ImageLoader.search_string(conn, "created_at.lte:3 minutes ago, processed:true")
