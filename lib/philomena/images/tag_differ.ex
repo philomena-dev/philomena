@@ -5,9 +5,10 @@ defmodule Philomena.Images.TagDiffer do
   alias Philomena.Tags.Tag
   alias Philomena.Repo
 
-  def diff_input(changeset, old_tags, new_tags) do
-    old_set = to_set(old_tags)
-    new_set = to_set(new_tags)
+  def diff_input(changeset, old_tags, new_tags, excluded_tags) do
+    exl_ids = Enum.map(excluded_tags, & &1.id)
+    old_set = Map.drop(to_set(old_tags), exl_ids)
+    new_set = Map.drop(to_set(new_tags), exl_ids)
 
     tags = changeset |> get_field(:tags)
     added_tags = added_set(old_set, new_set)
