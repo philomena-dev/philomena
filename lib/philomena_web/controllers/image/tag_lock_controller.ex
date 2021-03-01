@@ -4,7 +4,7 @@ defmodule PhilomenaWeb.Image.TagLockController do
   alias Philomena.Images.Image
   alias Philomena.Images
 
-  plug PhilomenaWeb.CanaryMapPlug, create: :hide, delete: :hide
+  plug PhilomenaWeb.CanaryMapPlug, show: :hide, update: :hide, create: :hide, delete: :hide
 
   plug :load_and_authorize_resource,
     model: Image,
