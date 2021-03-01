@@ -5,7 +5,12 @@ defmodule PhilomenaWeb.Image.TagLockController do
   alias Philomena.Images
 
   plug PhilomenaWeb.CanaryMapPlug, create: :hide, delete: :hide
-  plug :load_and_authorize_resource, model: Image, id_name: "image_id", persisted: true, preload: [:locked_tags]
+
+  plug :load_and_authorize_resource,
+    model: Image,
+    id_name: "image_id",
+    persisted: true,
+    preload: [:locked_tags]
 
   def show(conn, _params) do
     changeset = Images.change_image(conn.assigns.image)
