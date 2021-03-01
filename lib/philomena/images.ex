@@ -265,7 +265,7 @@ defmodule Philomena.Images do
     |> Repo.transaction()
   end
 
-  def update_tag_locks(%Image{} = image, attrs) do
+  def update_locked_tags(%Image{} = image, attrs) do
     new_tags = Tags.get_or_create_tags(attrs["tag_input"])
 
     image
