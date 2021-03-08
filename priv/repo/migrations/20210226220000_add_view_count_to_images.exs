@@ -3,7 +3,7 @@ defmodule Philomena.Repo.Migrations.AddDurationToImages do
 
   def change do
     alter table("images") do
-      add :views_count, :float
+      add :views_count, :bigint
     end
 
     # After successful migration:
