@@ -80,7 +80,6 @@ defmodule Philomena.Images.Image do
     field :hidden_image_key, :string
     field :scratchpad, :string
     field :hides_count, :integer, default: 0
-	field :views_count, :integer, default: 0
 
     # todo: can probably remove these now
     field :tag_list_cache, :string
