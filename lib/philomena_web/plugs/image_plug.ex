@@ -1,11 +1,11 @@
 defmodule PhilomenaWeb.ImagePlug do
   alias PhilomenaWeb.ImageUpdater
   alias Philomena.Images.Image
-  
+  alias Plug.Conn
   def init([]), do: []
   
   def call(conn, _opts) do
-	IO.puts("hello world")
+	record_impression(conn.assigns.image)
 	conn
   end
   
@@ -13,7 +13,6 @@ defmodule PhilomenaWeb.ImagePlug do
   
   defp record_impression(image) do
     ImageUpdater.cast(image.id)
-  
     image
   end
 end
