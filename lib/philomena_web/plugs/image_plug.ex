@@ -1,7 +1,6 @@
 defmodule PhilomenaWeb.ImagePlug do
   alias PhilomenaWeb.ImageUpdater
-  alias Philomena.Images
-  alias Plug.Conn
+  alias Philomena.Images.Image
   
   def init([]), do: []
   
@@ -13,7 +12,7 @@ defmodule PhilomenaWeb.ImagePlug do
   defp record_impression(nil), do: nil
   
   defp record_impression(image) do
-    ImageUpdater.cast(:image.id)
+    ImageUpdater.cast(image.id)
   
     image
   end
