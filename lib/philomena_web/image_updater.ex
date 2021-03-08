@@ -36,7 +36,7 @@ defmodule PhilomenaWeb.ImageUpdater do
     # Merge into table
     views_update = update(Image, inc: [views_count: fragment("EXCLUDED.views_count")])
 
-    Repo.insert_all(Image, views_count, on_conflict: views_update, conflict_target: [:id])
+    Repo.insert_all(Image, views_count, on_conflict: views_update, conflict_target: [:image.id])
 
     :timer.sleep(:timer.seconds(10))
 
