@@ -21,7 +21,7 @@ defmodule PhilomenaWeb.ImageUpdater do
   
   def cast(image_id) do
     pid = Process.whereis(:image_updater)
-	if pid, do: send(pid, {image_id})
+	if pid, do: send(pid, image_id)
   end
   
   defp run do
