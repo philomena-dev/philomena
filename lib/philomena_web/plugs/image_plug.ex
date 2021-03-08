@@ -7,7 +7,7 @@ defmodule PhilomenaWeb.ImagePlug do
   
   def call(conn, _opts) do
 	IO.puts("hello world")
-	Conn.assign(conn, :image)
+	conn
   end
   
   defp record_impression(nil), do: nil
