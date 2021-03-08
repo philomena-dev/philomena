@@ -55,7 +55,6 @@ defmodule PhilomenaWeb.ImageUpdater do
   end
 
   defp views_insert_all({image_id, views_count}, now) do
-	IO.inspect
     %{
       id: image_id,
       views_count: views_count,
