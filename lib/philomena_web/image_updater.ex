@@ -3,7 +3,16 @@ defmodule PhilomenaWeb.ImageUpdater do
   alias Philomena.Repo
   import Ecto.Query
   
-  
+  def child_spec([]) do
+    %{
+      id: PhilomenaWeb.ImageUpdater,
+      start: {PhilomenaWeb.ImageUpdater, :start_link, [[]]}
+    }
+  end
+
+  def start_link([]) do
+    {:ok, spawn_link(&init/0)}
+  end
   
   defp init do
 	Process.register(self(), :image_updater)
@@ -37,7 +46,7 @@ defmodule PhilomenaWeb.ImageUpdater do
   defp receive_all(views \\ %{}) do
     receive do
       image_id ->
-        views = Map.update(views, image_id, 1, &(&1 + 1))
+        views = Map.update(views_count, image_id, 1, &(&1 + 1))
         receive_all(views)
     after
       0 ->
@@ -48,7 +57,7 @@ defmodule PhilomenaWeb.ImageUpdater do
   defp views_insert_all({image_id, views}, now) do
     %{
       id: image_id,
-      views: views,
+      views_count: views,
       created_at: now,
       updated_at: now
     }
