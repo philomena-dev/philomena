@@ -10,7 +10,7 @@ defmodule PhilomenaWeb.ImageUpdater do
 	run()
   end
   
-  def cast(image_id) in [:impression] do
+  def cast(image_id) do
     pid = Process.whereis(:image_updater)
 	if pid, do: send(pid, {image_id})
   end
