@@ -6,6 +6,7 @@ defmodule PhilomenaWeb.ImagePlug do
   def init([]), do: []
   
   def call(conn, _opts) do
+	IO.puts("hello world")
 	Conn.assign(conn, :image)
   end
   
