@@ -29,10 +29,10 @@ defmodule PhilomenaWeb.ImageUpdater do
     # Read view counts from mailbox
     views_count = receive_all()
 
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    
 
     # Create insert statements for Ecto
-    views_count = Enum.map(views_count, &views_insert_all(&1, now))
+    views_count = Enum.map(views_count, &views_insert_all/1)
 
     # Merge into table
     views_update = update(ImageView, inc: [views_count: fragment("EXCLUDED.views_count")])
@@ -55,7 +55,7 @@ defmodule PhilomenaWeb.ImageUpdater do
     end
   end
 
-  defp views_insert_all({image_id, views_count}, now) do
+  defp views_insert_all({image_id, views_count}) do
     %{
       image_id: image_id,
       views_count: views_count,
