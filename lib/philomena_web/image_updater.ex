@@ -35,9 +35,9 @@ defmodule PhilomenaWeb.ImageUpdater do
     views_count = Enum.map(views_count, &views_insert_all(&1, now))
 
     # Merge into table
-    views_update = update(ImageViews, inc: [views_count: fragment("EXCLUDED.views_count")])
+    views_update = update(ImageView, inc: [views_count: fragment("EXCLUDED.views_count")])
 
-    Repo.insert_all(ImageViews, views_count, on_conflict: views_update, conflict_target: [:id])
+    Repo.insert_all(ImageView, views_count, on_conflict: views_update, conflict_target: [:id])
 
     :timer.sleep(:timer.seconds(10))
 
