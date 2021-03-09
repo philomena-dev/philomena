@@ -59,8 +59,6 @@ defmodule PhilomenaWeb.ImageUpdater do
     %{
       id: image_id,
       views_count: views_count,
-      created_at: now,
-      updated_at: now
     }
   end
 end
