@@ -39,6 +39,7 @@ defmodule Philomena.Images.Image do
     has_many :hiders, through: [:hides, :user]
     many_to_many :tags, Tag, join_through: "image_taggings", on_replace: :delete
     has_one :intensity, ImageIntensity
+	has_one :view, ImageView
     has_many :galleries, through: [:gallery_interactions, :image]
 
     field :image, :string
