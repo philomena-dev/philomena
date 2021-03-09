@@ -72,7 +72,7 @@
       = if not is_nil(@image.view) do
         span.image-size
           =< @image.view.views_count
-          '< Views
+          | ' Views'
       =<> String.upcase(to_string(@image.image_format))
       - size_kb = div(@image.image_size, 1000)
       - size_mb = Float.round(size_kb / 1000.0, 2)
