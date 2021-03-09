@@ -69,7 +69,7 @@
           - ms = trunc((@image.image_duration - dur)*100)
           - {mm, ss} = {div(dur, 60), rem(dur, 60)}
           = :io_lib.format("~2..0B:~2..0B.~2..0B", [mm, ss, ms])
-      - if not is_nil(@image.view) do
+      = if not is_nil(@image.view) do
         span.image-size
           => @image.view.views_count
           | views
