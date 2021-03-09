@@ -34,6 +34,7 @@ defmodule PhilomenaWeb.ImageController do
        [params_name: "image", params_key: "image"] when action in [:create]
 
   plug PhilomenaWeb.AdvertPlug when action in [:show]
+  plug PhilomenaWeb.ImagePlug when action in [:show]
 
   def index(conn, _params) do
     {:ok, {images, _tags}} = ImageLoader.search_string(conn, "created_at.lte:3 minutes ago, processed:true")
@@ -167,7 +168,7 @@ defmodule PhilomenaWeb.ImageController do
         [i, _],
         _ in fragment("SELECT COUNT(*) FROM source_changes s WHERE s.image_id = ?", i.id)
       )
-      |> preload([:deleter, user: [awards: :badge], tags: :aliases])
+      |> preload([:deleter, :view, user: [awards: :badge], tags: :aliases])
       |> select([i, t, s], {i, t.count, s.count})
       |> Repo.one()
       |> case do

@@ -941,6 +941,7 @@ CREATE TABLE public.images (
     hidden_image_key character varying,
     scratchpad character varying,
     hides_count integer DEFAULT 0 NOT NULL,
+	views_count integer DEFAULT 0 NOT NULL,
     image_duration double precision
 );
 
