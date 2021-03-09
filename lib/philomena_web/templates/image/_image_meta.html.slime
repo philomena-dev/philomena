@@ -70,7 +70,7 @@
           - {mm, ss} = {div(dur, 60), rem(dur, 60)}
           = :io_lib.format("~2..0B:~2..0B.~2..0B", [mm, ss, ms])
       - if not is_nil(@image.view) do
-		span.image-size
+        span.image-size
           => @image.view.views_count
           | views
       =<> String.upcase(to_string(@image.image_format))
