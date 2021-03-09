@@ -1,7 +1,5 @@
 defmodule PhilomenaWeb.ImagePlug do
   alias PhilomenaWeb.ImageUpdater
-  alias Philomena.Images.Image
-  alias Plug.Conn
   def init([]), do: []
   
   def call(conn, _opts) do

@@ -1,5 +1,4 @@
 defmodule PhilomenaWeb.ImageUpdater do
-  alias Philomena.Images.Image
   alias Philomena.Repo
   alias Philomena.Images.ImageView
   import Ecto.Query
