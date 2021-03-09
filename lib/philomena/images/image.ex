@@ -20,6 +20,8 @@ defmodule Philomena.Images.Image do
   alias Philomena.Images.TagValidator
   alias Philomena.Images.DnpValidator
   alias Philomena.Repo
+  
+  alias Philomena.Images.ImageView
 
   schema "images" do
     belongs_to :user, User
