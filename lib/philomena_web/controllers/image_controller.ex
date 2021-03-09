@@ -60,6 +60,8 @@ defmodule PhilomenaWeb.ImageController do
     # Update the notification ticker in the header
     conn = NotificationCountPlug.call(conn)
 
+    conn = maybe_skip_to_last_comment_page(conn, image, user)
+
     comments = CommentLoader.load_comments(conn, image)
 
     rendered = TextileRenderer.render_collection(comments.entries, conn)
@@ -133,6 +135,18 @@ defmodule PhilomenaWeb.ImageController do
     end
   end
 
+  defp maybe_skip_to_last_comment_page(conn, image, %{
+         comments_newest_first: false,
+         comments_always_jump_to_last: true
+       }) do
+    page = CommentLoader.last_page(conn, image)
+
+    conn
+    |> assign(:comment_scrivener, Keyword.merge(conn.assigns.comment_scrivener, page: page))
+  end
+
+  defp maybe_skip_to_last_comment_page(conn, _image, _user), do: conn
+
   defp user_galleries(_image, nil), do: []
 
   defp user_galleries(image, user) do
@@ -168,7 +182,7 @@ defmodule PhilomenaWeb.ImageController do
         [i, _],
         _ in fragment("SELECT COUNT(*) FROM source_changes s WHERE s.image_id = ?", i.id)
       )
-      |> preload([:deleter, :view, user: [awards: :badge], tags: :aliases])
+      |> preload([:deleter, :view, :locked_tags, user: [awards: :badge], tags: :aliases])
       |> select([i, t, s], {i, t.count, s.count})
       |> Repo.one()
       |> case do

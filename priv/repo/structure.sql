@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12.3 (Ubuntu 12.3-1.pgdg20.04+1)
--- Dumped by pg_dump version 12.4 (Ubuntu 12.3-1.pgdg20.04+1)
+-- Dumped from database version 13.1 (Debian 13.1-1.pgdg100+1)
+-- Dumped by pg_dump version 13.1 (Debian 13.1-1.pgdg100+1)
 
 
 SET statement_timeout = 0;
@@ -856,6 +856,16 @@ ALTER SEQUENCE public.image_sources_id_seq OWNED BY public.image_sources.id;
 CREATE TABLE public.image_subscriptions (
     image_id integer NOT NULL,
     user_id integer NOT NULL
+);
+
+
+--
+-- Name: image_tag_locks; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.image_tag_locks (
+    image_id bigint NOT NULL,
+    tag_id bigint NOT NULL
 );
 
 
@@ -2796,6 +2806,20 @@ CREATE INDEX image_intensities_index ON public.image_intensities USING btree (nw
 --
 
 CREATE UNIQUE INDEX image_sources_image_id_source_index ON public.image_sources USING btree (image_id, source);
+
+
+--
+-- Name: image_tag_locks_image_id_tag_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX image_tag_locks_image_id_tag_id_index ON public.image_tag_locks USING btree (image_id, tag_id);
+
+
+--
+-- Name: image_tag_locks_tag_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX image_tag_locks_tag_id_index ON public.image_tag_locks USING btree (tag_id);
 
 
 --
@@ -4775,6 +4799,22 @@ ALTER TABLE ONLY public.image_sources
 
 
 --
+-- Name: image_tag_locks image_tag_locks_image_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.image_tag_locks
+    ADD CONSTRAINT image_tag_locks_image_id_fkey FOREIGN KEY (image_id) REFERENCES public.images(id) ON DELETE CASCADE;
+
+
+--
+-- Name: image_tag_locks image_tag_locks_tag_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.image_tag_locks
+    ADD CONSTRAINT image_tag_locks_tag_id_fkey FOREIGN KEY (tag_id) REFERENCES public.tags(id) ON DELETE CASCADE;
+
+
+--
 -- Name: user_tokens user_tokens_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4804,3 +4844,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20200817213256);
 INSERT INTO public."schema_migrations" (version) VALUES (20200905214139);
 INSERT INTO public."schema_migrations" (version) VALUES (20201124224116);
 INSERT INTO public."schema_migrations" (version) VALUES (20210121200815);
+INSERT INTO public."schema_migrations" (version) VALUES (20210301012137);

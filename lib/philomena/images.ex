@@ -34,6 +34,7 @@ defmodule Philomena.Images do
   alias Philomena.Comments
   alias Philomena.Galleries.Gallery
   alias Philomena.Galleries.Interaction
+  alias Philomena.Users.User
 
   @doc """
   Gets a single image.
@@ -95,9 +96,7 @@ defmodule Philomena.Images do
 
       {:ok, count}
     end)
-    |> Multi.run(:subscribe, fn _repo, %{image: image} ->
-      create_subscription(image, attribution[:user])
-    end)
+    |> maybe_create_subscription_on_upload(attribution[:user])
     |> Repo.transaction()
     |> case do
       {:ok, %{image: image}} = result ->
@@ -114,6 +113,17 @@ defmodule Philomena.Images do
       result ->
         result
     end
+  end
+
+  defp maybe_create_subscription_on_upload(multi, %User{watch_on_upload: true} = user) do
+    multi
+    |> Multi.run(:subscribe, fn _repo, %{image: image} ->
+      create_subscription(image, user)
+    end)
+  end
+
+  defp maybe_create_subscription_on_upload(multi, _user) do
+    multi
   end
 
   def feature_image(featurer, %Image{} = image) do
@@ -256,15 +266,25 @@ defmodule Philomena.Images do
     |> Repo.transaction()
   end
 
+  def update_locked_tags(%Image{} = image, attrs) do
+    new_tags = Tags.get_or_create_tags(attrs["tag_input"])
+
+    image
+    |> Repo.preload(:locked_tags)
+    |> Image.locked_tags_changeset(attrs, new_tags)
+    |> Repo.update()
+  end
+
   def update_tags(%Image{} = image, attribution, attrs) do
     old_tags = Tags.get_or_create_tags(attrs["old_tag_input"])
     new_tags = Tags.get_or_create_tags(attrs["tag_input"])
 
     Multi.new()
     |> Multi.run(:image, fn repo, _chg ->
+      image = repo.preload(image, [:tags, :locked_tags])
+
       image
-      |> repo.preload(:tags)
-      |> Image.tag_changeset(%{}, old_tags, new_tags)
+      |> Image.tag_changeset(%{}, old_tags, new_tags, image.locked_tags)
       |> repo.update()
       |> case do
         {:ok, image} ->
