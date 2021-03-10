@@ -19,8 +19,8 @@ RUN git clone https://github.com/philomena-dev/cli_intensities /tmp/cli_intensit
     && cd /tmp/cli_intensities \
     && make install
 
-ADD https://api.github.com/repos/philomena-dev/mediatools/git/refs/heads/master /tmp/mediatools_version.json
-RUN git clone https://github.com/philomena-dev/mediatools /tmp/mediatools \
+ADD https://api.github.com/repos/zizzydizzymc/mediatools/git/refs/heads/master /tmp/mediatools_version.json
+RUN git clone https://github.com/zizzydizzymc/mediatools /tmp/mediatools \
     && cd /tmp/mediatools \
     && make install
 
