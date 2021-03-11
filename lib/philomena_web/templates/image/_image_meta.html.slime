@@ -78,7 +78,7 @@
           | kB
         - else
           => size_mb
-          | MB |
+          | MB
       = if not is_nil(@image.view) do
         span.image-size<
           => @image.view.views_count
