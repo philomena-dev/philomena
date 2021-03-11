@@ -3,8 +3,7 @@
 --
 
 -- Dumped from database version 13.1 (Debian 13.1-1.pgdg100+1)
--- Dumped by pg_dump version 13.1 (Debian 13.1-1.pgdg100+1)
-
+-- Dumped by pg_dump version 13.2 (Debian 13.2-1.pgdg100+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -880,6 +879,16 @@ CREATE TABLE public.image_taggings (
 
 
 --
+-- Name: image_views; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.image_views (
+    image_id bigint NOT NULL,
+    views_count bigint DEFAULT 0 NOT NULL
+);
+
+
+--
 -- Name: image_votes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -951,8 +960,8 @@ CREATE TABLE public.images (
     hidden_image_key character varying,
     scratchpad character varying,
     hides_count integer DEFAULT 0 NOT NULL,
-	views_count integer DEFAULT 0 NOT NULL,
-    image_duration double precision
+    image_duration double precision,
+    views_count bigint
 );
 
 
@@ -2560,6 +2569,14 @@ ALTER TABLE ONLY public.image_intensities
 
 ALTER TABLE ONLY public.image_sources
     ADD CONSTRAINT image_sources_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: image_views image_views_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.image_views
+    ADD CONSTRAINT image_views_pkey PRIMARY KEY (image_id);
 
 
 --
@@ -4815,6 +4832,14 @@ ALTER TABLE ONLY public.image_tag_locks
 
 
 --
+-- Name: image_views image_views_image_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.image_views
+    ADD CONSTRAINT image_views_image_id_fkey FOREIGN KEY (image_id) REFERENCES public.images(id);
+
+
+--
 -- Name: user_tokens user_tokens_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4844,4 +4869,6 @@ INSERT INTO public."schema_migrations" (version) VALUES (20200817213256);
 INSERT INTO public."schema_migrations" (version) VALUES (20200905214139);
 INSERT INTO public."schema_migrations" (version) VALUES (20201124224116);
 INSERT INTO public."schema_migrations" (version) VALUES (20210121200815);
+INSERT INTO public."schema_migrations" (version) VALUES (20210226220000);
 INSERT INTO public."schema_migrations" (version) VALUES (20210301012137);
+INSERT INTO public."schema_migrations" (version) VALUES (20210308231844);
