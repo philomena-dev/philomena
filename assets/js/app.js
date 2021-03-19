@@ -21,10 +21,10 @@ import '../css/themes/default.scss';
 import '../css/themes/dark.scss';
 import '../css/themes/red.scss';
 import '../css/themes/olddefault.scss';
-import '../css/themes/ponerpics-default.scss';
-import '../css/themes/manebooru-default.scss';
-import '../css/themes/manebooru-fuchsia.scss';
-import '../css/themes/manebooru-green.scss';
-import '../css/themes/manebooru-orange.scss';
-import '../css/themes/twibooru-default.scss';
-import '../css/themes/furbooru-default.scss';
+import '../css/themes/ponerpicsdefault.scss';
+import '../css/themes/maneboorudefault.scss';
+import '../css/themes/maneboorufuchsia.scss';
+import '../css/themes/maneboorugreen.scss';
+import '../css/themes/manebooruorange.scss';
+import '../css/themes/twiboorudefault.scss';
+import '../css/themes/furboorudefault.scss''

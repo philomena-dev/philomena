@@ -74,25 +74,25 @@ defmodule PhilomenaWeb.LayoutView do
     do: Routes.static_path(conn, "/css/olddefault.css")
 
   def stylesheet_path(conn, %{theme: "ponerpics-default"}),
-    do: Routes.static_path(conn, "/css/ponerpics-default.css")
+    do: Routes.static_path(conn, "/css/ponerpicsdefault.css")
 
   def stylesheet_path(conn, %{theme: "manebooru-default"}),
-    do: Routes.static_path(conn, "/css/manebooru-default.css")
+    do: Routes.static_path(conn, "/css/maneboorudefault.css")
 
   def stylesheet_path(conn, %{theme: "manebooru-fuchsia"}),
-    do: Routes.static_path(conn, "/css/manebooru-fuchsia.css")
+    do: Routes.static_path(conn, "/css/maneboorufuchsia.css")
 
   def stylesheet_path(conn, %{theme: "manebooru-green"}),
-    do: Routes.static_path(conn, "/css/manebooru-green.css")
+    do: Routes.static_path(conn, "/css/maneboorugreen.css")
 
   def stylesheet_path(conn, %{theme: "manebooru-orange"}),
-    do: Routes.static_path(conn, "/css/manebooru-orange.css")
+    do: Routes.static_path(conn, "/css/manebooruorange.css")
 
   def stylesheet_path(conn, %{theme: "twibooru-default"}),
-    do: Routes.static_path(conn, "/css/twibooru-default.css")
+    do: Routes.static_path(conn, "/css/twiboorudefault.css")
 	
   def stylesheet_path(conn, %{theme: "furbooru-default"}),
-    do: Routes.static_path(conn, "/css/furbooru-default.css")
+    do: Routes.static_path(conn, "/css/furboorudefault.css")
     
   def stylesheet_path(conn, _user),
     do: Routes.static_path(conn, "/css/default.css")
