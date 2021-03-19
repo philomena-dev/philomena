@@ -4,13 +4,20 @@ defmodule PhilomenaWeb.SettingView do
   def theme_options(conn) do
     [
       [
-        key: "Default",
+        key: "Ponybooru Default",
         value: "default",
         data: [theme_path: Routes.static_path(conn, "/css/default.css")]
       ],
-      [key: "Dark", value: "dark", data: [theme_path: Routes.static_path(conn, "/css/dark.css")]],
-      [key: "Red", value: "red", data: [theme_path: Routes.static_path(conn, "/css/red.css")]],
-      [key: "Old Default", value: "olddefault", data: [theme_path: Routes.static_path(conn, "/css/olddefault.css")]]
+      [key: "Philomena Dark", value: "dark", data: [theme_path: Routes.static_path(conn, "/css/dark.css")]],
+      [key: "Philomena Red", value: "red", data: [theme_path: Routes.static_path(conn, "/css/red.css")]],
+      [key: "Philomena Light", value: "olddefault", data: [theme_path: Routes.static_path(conn, "/css/olddefault.css")]],
+	  [key: "Ponerpics Default", value: "ponerpics-default", data: [theme_path: Routes.static_path(conn, "/css/ponerpics-default.css")]],
+	  [key: "Manebooru Fuchsia", value: "manebooru-fuchsia", data: [theme_path: Routes.static_path(conn, "/css/manebooru-fuchsia.css")]],
+	  [key: "Manebooru Green", value: "manebooru-green", data: [theme_path: Routes.static_path(conn, "/css/manebooru-green.css")]],
+	  [key: "Manebooru Orange", value: "manebooru-orange", data: [theme_path: Routes.static_path(conn, "/css/manebooru-orange.css")]],
+	  [key: "Twibooru Default", value: "twibooru-default", data: [theme_path: Routes.static_path(conn, "/css/twibooru-default.css")]],
+	  [key: "Furbooru Default", value: "furbooru-default", data: [theme_path: Routes.static_path(conn, "/css/furbooru-default.css")]]
+	  
     ]
   end
 

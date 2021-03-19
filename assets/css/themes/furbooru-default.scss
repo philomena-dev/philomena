@@ -1,43 +1,44 @@
 /*
- * Default Ponybooru Theme
+ * Furbooru purple theme
  */
 
 // ///////////////////////////////////
 // ///// SECTION 1 - MAIN COLORS /////
 // ///////////////////////////////////
 
-$background_color: #331A2A;
-$page_background_color: #26121E;
-$foreground_color: #E4DDDD;
+$background_color: #1d1924;
+$page_background_color: #15121a;
+$foreground_color: #dadada;
 
-$base_color: #A04A82;
+$base_color: #785b99;
 
-$primary_light_color: #6E1766;
-$success_light_color: #144714;
+$primary_light_color: #46266b;
+$success_light_color: #0f330f;
 $danger_light_color: #66211f;
 $warning_light_color: #7d4825;
 
-$destroyed_content_color: #382c2f;
+$destroyed_content_color: #332025;
+$destroyed_content_color_odd: saturate(darken($destroyed_content_color, 5%), 10%);
 
-$meta_color: #2C1625;
+$meta_color: #191f2a;
 
-$header_color: #76235A;
-$header_field_color: #571943;
-$header_secondary_color: #471A38;
+$header_color: #36274e;
+$header_field_color: #241c2c;
+$header_secondary_color: #251c36;
 $header_admin_color: #3b1d1d;
 
-$block_header_color: #572945;
-$block_header_link_text_color: #DF49C1;
+$block_header_color: #3a314e;
+$block_header_link_text_color: lighten($block_header_color, 50%);
 
-$block_header_light_color: #402135;
-$block_header_light_link_text_color: #C85ABA;
+$block_header_light_color: #2d253c;
+$block_header_light_link_text_color: lighten($block_header_light_color, 50%);
 
-$border_color: #502A41;
+$border_color: #332941;
 
-$media_box_color: #5E3650;
+$media_box_color: #311e49;
 
-$link_color: #D241B5;
-$link_hover_color: #E29A97;
+$link_color: #9747cc;
+$link_hover_color: lighten($link_color, 30%);
 
 $fave_color: #a18e27;
 $vote_up_color: #5b9b26;
@@ -151,7 +152,7 @@ $tag_category_content_fanmade_border: desaturate(darken($tag_category_content_fa
 $tag_category_species_background: darken($tag_category_species_color, 35%);
 $tag_category_species_border: desaturate(darken($tag_category_species_color, 20%), 10%);
 $tag_category_body_type_background: darken($tag_category_body_type_color, 50%);
-$tag_category_body_type_border: desaturate(darken($tag_category_body_type_color, 37%), 10%);
+$tag_category_body_type_border: desaturate(darken($tag_category_body_type_color, 35%), 10%);
 
 $commission_category_background: darken($commission_category_color, 36%);
 $commission_category_border: darken($commission_category_color, 25%);
