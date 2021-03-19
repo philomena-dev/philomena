@@ -1,66 +1,67 @@
 /*
- * Default Ponybooru Theme
+ * Ponerpics theme
  */
 
 // ///////////////////////////////////
 // ///// SECTION 1 - MAIN COLORS /////
 // ///////////////////////////////////
 
-$background_color: #331A2A;
-$page_background_color: #26121E;
-$foreground_color: #E4DDDD;
+$background_color: #E6E6E6;
+$page_background_color: #C2C7D6;
+$foreground_color: #333333;
 
-$base_color: #A04A82;
+$base_color: #ECC892;
 
-$primary_light_color: #6E1766;
-$success_light_color: #144714;
-$danger_light_color: #66211f;
-$warning_light_color: #7d4825;
+$primary_light_color: #FCDDC9;
+$success_light_color: #D2F0C0;
+$danger_light_color: #F0CFCB;
+$warning_light_color: #F4F1D4;
 
-$destroyed_content_color: #382c2f;
+$destroyed_content_color: #FFDCDC;
 
-$meta_color: #2C1625;
+$meta_color: #2C1625; // Doesn't exist?
 
-$header_color: #76235A;
-$header_field_color: #571943;
-$header_secondary_color: #471A38;
-$header_admin_color: #3b1d1d;
+$header_color: #CD861E;
+$header_field_color: #E29D36;
+$header_secondary_color: #ECDCC5;
+$header_admin_color: #E2C1C1;
 
-$block_header_color: #572945;
-$block_header_link_text_color: #DF49C1;
+$block_header_color: #F4DAB3;
+$block_header_link_text_color: #BD7914;
 
-$block_header_light_color: #402135;
-$block_header_light_link_text_color: #C85ABA;
+$block_header_light_color: #F0DFC6;
+$block_header_light_link_text_color: #B27D2E;
 
-$border_color: #502A41;
+$border_color: #EDD8BA;
 
-$media_box_color: #5E3650;
+$media_box_color: #EDDFCA;
 
-$link_color: #D241B5;
-$link_hover_color: #E29A97;
+$link_color: #828AA8;
+$link_hover_color: #E29D36;
 
-$fave_color: #a18e27;
-$vote_up_color: #5b9b26;
-$vote_down_color: #da3412;
-$hide_color: #da3412;
+$fave_color: #C4B246;
+$vote_up_color: #67AF2B;
+$vote_down_color: #CF0001;
+$hide_color: #CF0001;
 
-$assistant_color: #511b4e;
+$assistant_color: #EECEED;
 
-$tag_normal_color: #4aa158;
-$tag_category_rating_color: #418dd9;
-$tag_category_spoiler_color: #d49b39;
-$tag_category_origin_color: #6f66d6;
-$tag_category_oc_color: #b157b7;
-$tag_category_error_color: #d45460;
-$tag_category_character_color: #4aaabf;
-$tag_category_content_official_color: #b9b541;
-$tag_category_content_fanmade_color: #cc8eb5;
-$tag_category_species_color: #b16b50;
+$tag_normal_color: #6F8F0E;
+$tag_category_rating_color: #267EAD;
+$tag_category_spoiler_color: #C24523;
+$tag_category_origin_color: #393F85;
+$tag_category_oc_color: #9852A3;
+$tag_category_error_color: #AD263F;
+$tag_category_character_color: #2D8677;
+$tag_category_content_official_color: #998E1A;
+$tag_category_content_fanmade_color: #BB5496;
+$tag_category_species_color: #8B552F;
+// Not available
 $tag_category_body_type_color: #b8b8b8;
 
-$commission_category_color: #e07b27;
+$commission_category_color: #986F3D;
 
-$site_notice_color: #07070a;
+$site_notice_color: #F69150;
 
 $image_overlay_color: #ffffff;
 $image_overlay_background_color: #000000;

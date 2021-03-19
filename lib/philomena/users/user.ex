@@ -341,7 +341,7 @@ defmodule Philomena.Users.User do
       :show_sidebar_and_watched_images
     ])
     |> TagList.propagate_tag_list(:watched_tag_list, :watched_tag_ids)
-    |> validate_inclusion(:theme, ~W(default dark red olddefault))
+    |> validate_inclusion(:theme, ~W(default dark red olddefault ponerpics))
     |> validate_inclusion(:images_per_page, 15..500)
     |> validate_inclusion(:comments_per_page, 15..100)
     |> Search.validate_search(:watched_images_query_str, user, true)
