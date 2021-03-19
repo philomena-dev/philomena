@@ -2,7 +2,7 @@ defmodule PhilomenaWeb.ImageUpdater do
   alias Philomena.Repo
   alias Philomena.Images.ImageView
   import Ecto.Query
-  
+
   def child_spec([]) do
     %{
       id: PhilomenaWeb.ImageUpdater,
@@ -13,22 +13,20 @@ defmodule PhilomenaWeb.ImageUpdater do
   def start_link([]) do
     {:ok, spawn_link(&init/0)}
   end
-  
+
   defp init do
-	Process.register(self(), :image_updater)
-	run()
+    Process.register(self(), :image_updater)
+    run()
   end
-  
+
   def cast(image_id) do
     pid = Process.whereis(:image_updater)
-	if pid, do: send(pid, image_id)
+    if pid, do: send(pid, image_id)
   end
-  
+
   defp run do
     # Read view counts from mailbox
     views_count = receive_all()
-
-    
 
     # Create insert statements for Ecto
     views_count = Enum.map(views_count, &views_insert_all/1)
@@ -36,7 +34,10 @@ defmodule PhilomenaWeb.ImageUpdater do
     # Merge into table
     views_update = update(ImageView, inc: [views_count: fragment("EXCLUDED.views_count")])
 
-    Repo.insert_all(ImageView, views_count, on_conflict: views_update, conflict_target: [:image_id])
+    Repo.insert_all(ImageView, views_count,
+      on_conflict: views_update,
+      conflict_target: [:image_id]
+    )
 
     :timer.sleep(:timer.seconds(10))
 
@@ -57,7 +58,7 @@ defmodule PhilomenaWeb.ImageUpdater do
   defp views_insert_all({image_id, views_count}) do
     %{
       image_id: image_id,
-      views_count: views_count,
+      views_count: views_count
     }
   end
 end

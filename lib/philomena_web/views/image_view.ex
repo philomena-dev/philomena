@@ -39,6 +39,7 @@ defmodule PhilomenaWeb.ImageView do
       not vid? or use_gif? ->
         {:image, String.replace(uris[size], ".webm", ".gif"), alt}
         {:image, String.replace(uris[size], ".mp4", ".gif"), alt}
+
       true ->
         {:video, uris[size], String.replace(uris[size], ".webm", ".mp4"), alt}
     end

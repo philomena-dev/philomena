@@ -5,7 +5,7 @@ defmodule Philomena.Processors.Mp4 do
   def process(analysis, file, versions) do
     dimensions = analysis.dimensions
     duration = analysis.duration
-	stripped = strip(file)
+    stripped = strip(file)
     preview = preview(duration, file)
     palette = gif_palette(file, duration)
     webm = scale_webm_only(file, dimensions, dimensions)
@@ -16,7 +16,7 @@ defmodule Philomena.Processors.Mp4 do
       Enum.flat_map(versions, &scale_if_smaller(file, webm, palette, duration, dimensions, &1))
 
     %{
-	  replace_original: stripped,
+      replace_original: stripped,
       intensities: intensities,
       thumbnails: scaled ++ [{:copy, preview, "rendered.png"}]
     }

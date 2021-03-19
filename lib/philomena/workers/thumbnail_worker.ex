@@ -10,6 +10,7 @@ defmodule Philomena.ThumbnailWorker do
       "image:process",
       %{image_id: image_id}
     )
+
     image_id
     |> Images.get_image!()
     |> Images.reindex_image()
