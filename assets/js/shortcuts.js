@@ -23,13 +23,6 @@ function openFullViewNewTab() {
   window.open(JSON.parse(imageHover.dataset.uris).full);
 }
 
-function openFullViewNewTab() {
-  const imageHover = $('[data-uris]:hover');
-  if (!imageHover) return;
-
-  window.open(JSON.parse(imageHover.dataset.uris).full);
-}
-
 function click(selector) {
   const el = $(selector);
   if (el) el.click();
