@@ -27,4 +27,4 @@ import '../css/themes/maneboorufuchsia.scss';
 import '../css/themes/maneboorugreen.scss';
 import '../css/themes/manebooruorange.scss';
 import '../css/themes/twiboorudefault.scss';
-import '../css/themes/furboorudefault.scss''
+import '../css/themes/furboorudefault.scss';
