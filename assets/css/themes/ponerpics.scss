@@ -8,7 +8,7 @@
 
 $background_color: #E6E6E6;
 $page_background_color: #C2C7D6;
-$foreground_color: #E6E6E6;
+$foreground_color: #333333;
 
 $base_color: #ECC892;
 
@@ -70,7 +70,7 @@ $image_overlay_background_color: #000000;
 // ///// SECTION 2 - DERIVED COLORS /////
 // //////////////////////////////////////
 
-$text_light_color: #333333;
+$text_light_color: #E6E6E6;
 
 $meta_color: mix($foreground_color, $background_color, 5%);
 $meta_border_color: mix($foreground_color, $meta_color, 30%);
