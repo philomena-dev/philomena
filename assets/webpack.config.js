@@ -81,7 +81,7 @@ module.exports = {
         ],
       },
       {
-        test: /themes\/[a-z]+\.scss$/,
+        test: /themes\/[a-z\-]+\.scss$/,
         use: [
           {
             loader: 'file-loader',
