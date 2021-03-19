@@ -12,7 +12,7 @@ defmodule Philomena.Http do
   end
 
   defp adapter_opts(opts) do
-    opts = Keyword.merge(opts, max_body: 125_000_000)
+    opts = Keyword.merge(opts, max_body: 125_000_000, inet6: true)
 
     case Application.get_env(:philomena, :proxy_host) do
       nil ->
@@ -23,8 +23,11 @@ defmodule Philomena.Http do
     end
   end
 
-  defp proxy_opts(%{host: host, port: port, scheme: "https"}), do: {:https, host, port, []}
-  defp proxy_opts(%{host: host, port: port, scheme: "http"}), do: {:http, host, port, []}
+  defp proxy_opts(%{host: host, port: port, scheme: "https"}),
+    do: {:https, host, port, [transport_opts: [inet6: true]]}
+
+  defp proxy_opts(%{host: host, port: port, scheme: "http"}),
+    do: {:http, host, port, [transport_opts: [inet6: true]]}
 
   defp client(headers) do
     Tesla.client(
@@ -33,7 +36,7 @@ defmodule Philomena.Http do
         {Tesla.Middleware.Headers,
          [
            {"User-Agent",
-            "Mozilla/5.0 (X11; Philomena; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/76.0"}
+            "Mozilla/5.0 (X11; Philomena; Linux x86_64; rv:86.0) Gecko/20100101 Firefox/86.0"}
            | headers
          ]}
       ],
