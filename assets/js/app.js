@@ -27,3 +27,4 @@ import '../css/themes/manebooru-green.scss';
 import '../css/themes/manebooru-orange.scss';
 import '../css/themes/twibooru-default.scss';
 import '../css/themes/furbooru-default.scss';
+import '../css/themes/bronyhub-default.scss';
