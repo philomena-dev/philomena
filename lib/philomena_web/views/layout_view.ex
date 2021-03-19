@@ -76,8 +76,6 @@ defmodule PhilomenaWeb.LayoutView do
   def stylesheet_path(conn, %{theme: "ponerpics-default"}),
     do: Routes.static_path(conn, "/css/ponerpicsdefault.css")
 
-  def stylesheet_path(conn, %{theme: "manebooru-default"}),
-    do: Routes.static_path(conn, "/css/maneboorudefault.css")
 
   def stylesheet_path(conn, %{theme: "manebooru-fuchsia"}),
     do: Routes.static_path(conn, "/css/maneboorufuchsia.css")

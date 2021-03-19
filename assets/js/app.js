@@ -22,7 +22,6 @@ import '../css/themes/dark.scss';
 import '../css/themes/red.scss';
 import '../css/themes/olddefault.scss';
 import '../css/themes/ponerpicsdefault.scss';
-import '../css/themes/maneboorudefault.scss';
 import '../css/themes/maneboorufuchsia.scss';
 import '../css/themes/maneboorugreen.scss';
 import '../css/themes/manebooruorange.scss';
