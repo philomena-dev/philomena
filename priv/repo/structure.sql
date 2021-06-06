@@ -3522,7 +3522,7 @@ CREATE INDEX index_posts_on_topic_id_and_created_at ON public.posts USING btree 
 -- Name: index_posts_on_topic_id_and_topic_position; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_posts_on_topic_id_and_topic_position ON public.posts USING btree (topic_id, topic_position);
+CREATE UNIQUE INDEX index_posts_on_topic_id_and_topic_position ON public.posts USING btree (topic_id, topic_position);
 
 
 --
@@ -4872,3 +4872,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20210121200815);
 INSERT INTO public."schema_migrations" (version) VALUES (20210226220000);
 INSERT INTO public."schema_migrations" (version) VALUES (20210301012137);
 INSERT INTO public."schema_migrations" (version) VALUES (20210308231844);
+INSERT INTO public."schema_migrations" (version) VALUES (20210427022351);
