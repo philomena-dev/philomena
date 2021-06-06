@@ -36,6 +36,9 @@ defmodule PhilomenaWeb.AvatarGeneratorView do
   end
 
   # Build the final SVG for the character.
+  #
+  # Inputs to raw/1 are not user-generated.
+  # sobelow_skip ["XSS.Raw"]
   defp avatar_svg(config, color_bd, color_hr, species, style_hr) do
     [
       header(config),
@@ -55,10 +58,10 @@ defmodule PhilomenaWeb.AvatarGeneratorView do
   # 32-bit xorshift deterministic PRNG
   defp xorshift32(state) do
     state = state &&& 0xFFFF_FFFF
-    state = state ^^^ (state <<< 13)
-    state = state ^^^ (state >>> 17)
+    state = bxor(state, (state <<< 13))
+    state = bxor(state, (state >>> 17))
 
-    state ^^^ (state <<< 5)
+    bxor(state, (state <<< 5))
   end
 
   # Generate pseudorandom, clamped RGB values with a specified

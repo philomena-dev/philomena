@@ -1,6 +1,6 @@
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -23,11 +23,7 @@ if (!isDevelopment){
       parallel: true,
       sourceMap: isDevelopment,
     }),
-    new OptimizeCSSAssetsPlugin({
-      cssProcessorOptions: { discardComments: { removeAll: true } },
-      canPrint: true,
-      sourceMaps: isDevelopment,
-    }),
+    new CssMinimizerPlugin(),
   ]);
 }
 
@@ -93,16 +89,24 @@ module.exports = {
             },
           },
           { loader: 'extract-loader', options: { sourceMaps: isDevelopment } },
-          { loader: 'css-loader', options: { sourceMap: isDevelopment } },
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: isDevelopment,
+              url: (url) => !url.startsWith('/'),
+            },
+          },
           {
             loader: 'postcss-loader',
             options: {
-              sourceMaps: isDevelopment,
-              ident: 'postcss',
-              syntax: 'postcss-scss',
-              plugins: [
-                require('autoprefixer')(),
-              ],
+              postcssOptions: {
+                sourceMaps: isDevelopment,
+                ident: 'postcss',
+                syntax: 'postcss-scss',
+                plugins: [
+                  require('autoprefixer')(),
+                ],
+              },
             },
           },
           { loader: 'sass-loader', options: { sourceMap: isDevelopment } },
