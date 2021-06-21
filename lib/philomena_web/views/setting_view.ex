@@ -4,7 +4,7 @@ defmodule PhilomenaWeb.SettingView do
   def theme_options(conn) do
     [
       [
-        key: "Ponybooru Default",
+        key: "#{booru_name()} Default",
         value: "default",
         data: [theme_path: Routes.static_path(conn, "/css/default.css")]
       ],

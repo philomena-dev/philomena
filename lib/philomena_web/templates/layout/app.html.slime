@@ -7,9 +7,9 @@ html lang="en"
     title
       = if assigns[:title] do
         => assigns[:title]
-        ' - Ponybooru
+        ' - #{booru_name()}
       - else
-        ' Ponybooru
+        ' #{booru_name()}
     link rel="stylesheet" href=stylesheet_path(@conn, @current_user)
     = if is_nil(@current_user) do
       link rel="stylesheet" href=dark_stylesheet_path(@conn) media="(prefers-color-scheme: dark)"

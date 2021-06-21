@@ -169,4 +169,17 @@ defmodule PhilomenaWeb.AppView do
   def blank?(_object), do: false
 
   def present?(object), do: not blank?(object)
+  
+  
+  def booru_name do
+    Application.get_env(:philomena, :booru_name)
+  end
+  
+  def booru_name_lowercase do
+    String.downcase(booru_name())
+  end
+  
+  dev booru_tagline do
+    Application.get_env(:philomena, :booru_tagline)
+  end
 end

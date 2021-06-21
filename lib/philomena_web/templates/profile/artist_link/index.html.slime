@@ -3,7 +3,7 @@ p
   a.button href=Routes.profile_artist_link_path(@conn, :new, @user)
     ' Request a link
 p
-  ' Artist links associate your account on Ponybooru with tags about content you create and with accounts on sites elsewhere. This allows users to easily identify artists and staff to act more rapidly on takedown requests.
+  ' Artist links associate your account on #{booru_name()} with tags about content you create and with accounts on sites elsewhere. This allows users to easily identify artists and staff to act more rapidly on takedown requests.
 
 table.table
   thead

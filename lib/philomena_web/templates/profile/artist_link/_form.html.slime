@@ -15,7 +15,7 @@
 
   .field
     label for="uri"
-      ' URL of your art webpage (may be your Ponybooru profile page if you have no other sources)
+      ' URL of your art webpage (may be your #{booru_name()} profile page if you have no other sources)
     = url_input f, :uri, class: "input input--wide", placeholder: "https://www.deviantart.com/your-name", required: true
     = error_tag f, :uri
 

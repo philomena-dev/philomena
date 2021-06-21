@@ -1,6 +1,6 @@
 .block#imagespns
   .spnstxt
-    ' Interested in advertising on Ponybooru?
+    ' Interested in advertising on #{booru_name()}?
     => link "Click here", to: "/pages/advertising"
     ' for information!
 
@@ -9,6 +9,6 @@
 
   p
     strong
-      ' Ponybooru ain't free mate -
+      ' #{booru_name()} ain't free mate -
       = link "help support us financially", to: "/pages/donations"
       ' !

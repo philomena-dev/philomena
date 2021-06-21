@@ -34,8 +34,9 @@ config :philomena,
   proxy_host: System.get_env("PROXY_HOST"),
   camo_host: System.get_env("CAMO_HOST"),
   camo_key: System.get_env("CAMO_KEY"),
-  cdn_host: System.fetch_env!("CDN_HOST")
-
+  cdn_host: System.fetch_env!("CDN_HOST"),
+  booru_name: System.fetch_env("BOORU_NAME", "Philomena"),
+  booru_tagline: System.fetch_env("BOORU_TAGLINE", "Philomena is a linear imagebooru which lets you share, find and discover new art and media within the MLP Fandom")
 app_dir = System.get_env("APP_DIR", File.cwd!())
 
 json_config =
