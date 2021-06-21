@@ -179,7 +179,7 @@ defmodule PhilomenaWeb.AppView do
     String.downcase(booru_name())
   end
   
-  dev booru_tagline do
+  def booru_tagline do
     Application.get_env(:philomena, :booru_tagline)
   end
 end
