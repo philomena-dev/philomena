@@ -6,7 +6,7 @@ defmodule PhilomenaWeb.SettingView do
       [
         key: "#{booru_name()} Default",
         value: "default",
-        data: [theme_path: Routes.static_path(conn, "/css/default.css")]
+        data: [theme_path: Routes.static_path(conn, "/css/#{booru_style()}.css")]
       ],
       [
         key: "Philomena Dark",
@@ -57,6 +57,11 @@ defmodule PhilomenaWeb.SettingView do
         key: "Bronyhub Default",
         value: "bronyhub-default",
         data: [theme_path: Routes.static_path(conn, "/css/bronyhub-default.css")]
+      ],
+	  [
+        key: "Ponybooru Default",
+        value: "ponybooru-default",
+        data: [theme_path: Routes.static_path(conn, "/css/ponybooru-default.css")]
       ]
     ]
   end

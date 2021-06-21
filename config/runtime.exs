@@ -36,7 +36,9 @@ config :philomena,
   camo_key: System.get_env("CAMO_KEY"),
   cdn_host: System.fetch_env!("CDN_HOST"),
   booru_name: System.get_env("BOORU_NAME", "Philomena"),
-  booru_tagline: System.get_env("BOORU_TAGLINE", "Philomena is a linear imagebooru which lets you share, find and discover new art and media within the MLP Fandom")
+  booru_tagline: System.get_env("BOORU_TAGLINE", "Philomena is a linear imagebooru which lets you share, find and discover new art and media within the MLP Fandom"),
+  booru_style: System.get_env("BOORU_STYLE", "default"),
+  booru_dark_style: System.get_env("BOORU_DARK_STYLE", "default")
 app_dir = System.get_env("APP_DIR", File.cwd!())
 
 json_config =

@@ -94,11 +94,14 @@ defmodule PhilomenaWeb.LayoutView do
   def stylesheet_path(conn, %{theme: "bronyhub-default"}),
     do: Routes.static_path(conn, "/css/bronyhub-default.css")
 
+  def stylesheet_path(conn, %{theme: "ponybooru-default"}),
+    do: Routes.static_path(conn, "/css/ponybooru-default.css")
+
   def stylesheet_path(conn, _user),
-    do: Routes.static_path(conn, "/css/default.css")
+    do: Routes.static_path(conn, "/css/#{booru_style()}.css")
 
   def dark_stylesheet_path(conn),
-    do: Routes.static_path(conn, "/css/default.css")
+    do: Routes.static_path(conn, "/css/#{booru_dark_style()}.css")
 
   def theme_name(%{theme: theme}), do: theme
   def theme_name(_user), do: "default"

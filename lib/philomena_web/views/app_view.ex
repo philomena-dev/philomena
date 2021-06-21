@@ -182,4 +182,12 @@ defmodule PhilomenaWeb.AppView do
   def booru_tagline do
     Application.get_env(:philomena, :booru_tagline)
   end
+  
+  def booru_style do
+    Application.get_env(:philomena, :booru_style)
+  end
+  
+  def booru_dark_style do
+    Application.get_env(:philomena, :booru_dark_style)
+  end
 end
