@@ -13,4 +13,4 @@
       = link "help support us financially", to: "/pages/donations"
       ' !
   .addrtxt
-    ' #{booru_alt_donation()}'
+    ' #{booru_alt_donation()}
