@@ -12,3 +12,6 @@
       ' #{booru_name()} ain't free mate -
       = link "help support us financially", to: "/pages/donations"
       ' !
+  if #{booru_alt_donation()} do 
+    .addrtxt
+	  ' #{booru_alt_donation()}'
