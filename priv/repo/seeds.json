@@ -15,16 +15,76 @@
       "description": "This filter won't filter out anything at all.",
       "hidden": [],
       "spoilered": []
+    },
+    {
+      "name": "Placeholder1",
+      "description": "An empty placeholder filter for future use.",
+      "hidden": [],
+      "spoilered": []
+    },
+    {
+      "name": "Placeholder2",
+      "description": "An empty placeholder filter for future use.",
+      "hidden": [],
+      "spoilered": []
+    },
+    {
+      "name": "Placeholder3",
+      "description": "An empty placeholder filter for future use.",
+      "hidden": [],
+      "spoilered": []
+    },
+    {
+      "name": "Placeholder4",
+      "description": "An empty placeholder filter for future use.",
+      "hidden": [],
+      "spoilered": []
+    },
+    {
+      "name": "Placeholder5",
+      "description": "An empty placeholder filter for future use.",
+      "hidden": [],
+      "spoilered": []
+    },
+    {
+      "name": "Placeholder6",
+      "description": "An empty placeholder filter for future use.",
+      "hidden": [],
+      "spoilered": []
+    },
+    {
+      "name": "Placeholder7",
+      "description": "An empty placeholder filter for future use.",
+      "hidden": [],
+      "spoilered": []
+    },
+    {
+      "name": "Placeholder8",
+      "description": "An empty placeholder filter for future use.",
+      "hidden": [],
+      "spoilered": []
+    },
+    {
+      "name": "Placeholder9",
+      "description": "An empty placeholder filter for future use.",
+      "hidden": [],
+      "spoilered": []
+    },
+    {
+      "name": "Placeholder10",
+      "description": "An empty placeholder filter for future use.",
+      "hidden": [],
+      "spoilered": []
     }
   ],
   "forums": [{
       "name": "General Discussion",
       "short_name": "dis",
-      "description": "This is a discussion forum for everything unrelated to the show or other forums",
+      "description": "This is a discussion forum for everything unrelated to the other forums.",
       "access_level": "normal"
     },
     {
-      "name": "Episode Discussion",
+      "name": "Show Discussion",
       "short_name": "pony",
       "description": "Discuss the show, characters, and theories",
       "access_level": "normal"
@@ -63,9 +123,70 @@
   "users": [{
     "name": "Administrator",
     "email": "admin@example.com",
-    "password": "trixieisbestpony",
+    "password": "CHANGE_ME_FOR_DEPLOYMENT",
     "role": "admin"
-  }],
+  },
+  {
+    "name": "Placeholder1",
+    "email": "Placeholder1@example.com",
+    "password": "CHANGE_ME_FOR_DEPLOYMENT",
+    "role": "user"
+  },
+  {
+    "name": "Placeholder2",
+    "email": "Placeholder2@example.com",
+    "password": "CHANGE_ME_FOR_DEPLOYMENT",
+    "role": "user"
+  },
+  {
+    "name": "Placeholder3",
+    "email": "Placeholder3@example.com",
+    "password": "CHANGE_ME_FOR_DEPLOYMENT",
+    "role": "user"
+  },
+  {
+    "name": "Placeholder4",
+    "email": "Placeholder4@example.com",
+    "password": "CHANGE_ME_FOR_DEPLOYMENT",
+    "role": "user"
+  },
+  {
+    "name": "Placeholder5",
+    "email": "Placeholder5@example.com",
+    "password": "CHANGE_ME_FOR_DEPLOYMENT",
+    "role": "user"
+  },
+  {
+    "name": "Placeholder6",
+    "email": "Placeholder6@example.com",
+    "password": "CHANGE_ME_FOR_DEPLOYMENT",
+    "role": "user"
+  },
+  {
+    "name": "Placeholder7",
+    "email": "Placeholder7@example.com",
+    "password": "CHANGE_ME_FOR_DEPLOYMENT",
+    "role": "user"
+  },
+  {
+    "name": "Placeholder8",
+    "email": "Placeholder8@example.com",
+    "password": "CHANGE_ME_FOR_DEPLOYMENT",
+    "role": "user"
+  },
+  {
+    "name": "Placeholder9",
+    "email": "Placeholder9@example.com",
+    "password": "CHANGE_ME_FOR_DEPLOYMENT",
+    "role": "user"
+  },
+  {
+    "name": "Placeholder10",
+    "email": "Placeholder10@example.com",
+    "password": "CHANGE_ME_FOR_DEPLOYMENT",
+    "role": "user"
+  }
+  ],
   "rating_tags": [
     "safe",
     "suggestive",
