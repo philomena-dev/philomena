@@ -39,7 +39,7 @@ config :philomena,
   booru_tagline: System.get_env("BOORU_TAGLINE", "Philomena is a linear imagebooru which lets you share, find and discover new art and media within the MLP Fandom"),
   booru_style: System.get_env("BOORU_STYLE", "default"),
   booru_dark_style: System.get_env("BOORU_DARK_STYLE", "default"),
-  booru_alt_donation: System.get_env("BOORU_ALT_DONATION", false)
+  booru_alt_donation: System.fetch_env!("BOORU_ALT_DONATION")
 app_dir = System.get_env("APP_DIR", File.cwd!())
 
 json_config =
