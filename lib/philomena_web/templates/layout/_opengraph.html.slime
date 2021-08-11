@@ -7,7 +7,7 @@ meta name="format-detection" content="telephone=no"
   - filtered = not image.thumbnails_generated
   - description = "##{image.id} - #{image.tag_list_cache} - #{booru_name()}"
 
-  meta name="keywords" content=image.tag_list_cache
+  meta name="keywords" content=tag_list(image)
   meta name="description" content=description
   meta property="og:title" content=description
   meta property="og:url" content=Routes.image_url(@conn, :show, image)
