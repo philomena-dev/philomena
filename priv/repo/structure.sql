@@ -1964,7 +1964,7 @@ CREATE TABLE public.users (
     fancy_tag_field_in_settings boolean DEFAULT true NOT NULL,
     autorefresh_by_default boolean DEFAULT false NOT NULL,
     anonymous_by_default boolean DEFAULT false NOT NULL,
-    scale_large_images boolean DEFAULT true NOT NULL,
+    scale_large_images character varying DEFAULT 'true'::character varying NOT NULL,
     comments_newest_first boolean DEFAULT true NOT NULL,
     comments_always_jump_to_last boolean DEFAULT false NOT NULL,
     comments_per_page integer DEFAULT 20 NOT NULL,

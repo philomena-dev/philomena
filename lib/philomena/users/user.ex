@@ -21,14 +21,6 @@ defmodule Philomena.Users.User do
   alias Philomena.Bans.User, as: UserBan
   alias Philomena.Donations.Donation
 
-  # defenum ScaleLargeImages do
-  #   value False, "false"
-  #   value PartScaled, "partscaled"
-  #   value True, "true"
-
-  #   default True
-  # end
-
   @derive {Phoenix.Param, key: :slug}
   @derive {Inspect, except: [:password]}
   schema "users" do
@@ -87,8 +79,7 @@ defmodule Philomena.Users.User do
     field :fancy_tag_field_in_settings, :boolean, default: true
     field :autorefresh_by_default, :boolean, default: false
     field :anonymous_by_default, :boolean, default: false
-    # field :scale_large_images, ScaleLargeImages, default: ScaleLargeImages.default
-    field :scale_large_images, :boolean, default: true
+    field :scale_large_images, :string, default: "true"
     field :comments_newest_first, :boolean, default: true
     field :comments_always_jump_to_last, :boolean, default: true
     field :comments_per_page, :integer, default: 20
@@ -356,6 +347,7 @@ defmodule Philomena.Users.User do
     |> validate_inclusion(:theme, ~W(default dark red))
     |> validate_inclusion(:images_per_page, 1..50)
     |> validate_inclusion(:comments_per_page, 1..100)
+    |> validate_inclusion(:scale_large_images, ["false", "partscaled", "true"])
     |> Search.validate_search(:watched_images_query_str, user, true)
     |> Search.validate_search(:watched_images_exclude_str, user, true)
   end
