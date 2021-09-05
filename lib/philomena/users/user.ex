@@ -21,6 +21,14 @@ defmodule Philomena.Users.User do
   alias Philomena.Bans.User, as: UserBan
   alias Philomena.Donations.Donation
 
+  # defenum ScaleLargeImages do
+  #   value False, "false"
+  #   value PartScaled, "partscaled"
+  #   value True, "true"
+
+  #   default True
+  # end
+
   @derive {Phoenix.Param, key: :slug}
   @derive {Inspect, except: [:password]}
   schema "users" do
@@ -79,6 +87,7 @@ defmodule Philomena.Users.User do
     field :fancy_tag_field_in_settings, :boolean, default: true
     field :autorefresh_by_default, :boolean, default: false
     field :anonymous_by_default, :boolean, default: false
+    # field :scale_large_images, ScaleLargeImages, default: ScaleLargeImages.default
     field :scale_large_images, :boolean, default: true
     field :comments_newest_first, :boolean, default: true
     field :comments_always_jump_to_last, :boolean, default: true
