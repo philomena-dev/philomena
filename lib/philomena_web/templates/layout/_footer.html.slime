@@ -8,17 +8,10 @@ footer#footer
 
         = for row <- footer_data[column] do
           = if row["bold"] do
-            = if row["new_tab"] do
-              strong
-                a href=row["url"] target="_blank" = row["title"]
-            - else
-              strong
-                a href=row["url"] = row["title"]
+            strong
+              a href=row["url"] target=row["target"]||"_self" = row["title"]
           - else
-            = if row["new_tab"] do
-              a href=row["url"] target="_blank" = row["title"]
-            - else
-              a href=row["url"] = row["title"]
+            a href=row["url"] target=row["target"]||"_self" = row["title"]
           br
 
   #serving_info
