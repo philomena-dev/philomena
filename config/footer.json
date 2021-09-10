@@ -42,7 +42,7 @@
       "title": "Changelog",
       "url": "https://github.com/derpibooru/philomena/commits/master",
       "bold": true,
-      "new_tab": true
+      "target": "_blank"
     },
     {
       "title": "FAQs",
@@ -92,7 +92,7 @@
     {
       "title": "Twitter",
       "url": "https://twitter.com/Derpibooru",
-      "new_tab": true
+      "target": "_blank"
     }
   ]
 }
