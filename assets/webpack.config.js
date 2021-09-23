@@ -88,7 +88,6 @@ module.exports = {
               publicPath: '/css',
             },
           },
-          { loader: 'extract-loader', options: { sourceMaps: isDevelopment } },
           {
             loader: 'css-loader',
             options: {
@@ -111,6 +110,7 @@ module.exports = {
           },
           { loader: 'sass-loader', options: { sourceMap: isDevelopment } },
         ],
+        sideEffects: true
       },
     ],
   },
