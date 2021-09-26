@@ -1,5 +1,4 @@
 defmodule Philomena.Scrapers.Pillowfort do
-  # <a ng-href="https://img3.pillowfort.social/posts/60c27cdc99d9e737abc1.jpg" target="_blank">
   @url_regex ~r|\Ahttps?://[-a-z0-9.]+.pillowfort\.social/posts/[0-9]+\z| # probly'd fail for https://pillowfort...
   @post_regex ~r|\Ahttps?://[-a-z0-9.]+.pillowfort\.social/posts/([0-9]+)\z|
 
@@ -8,10 +7,10 @@ defmodule Philomena.Scrapers.Pillowfort do
     String.match?(url, @url_regex)
   end
 
-  def scrape(_uri, url) do
+  def scrape(uri, url) do
     [post_id] = Regex.run(@post_regex, url, capture: :all_but_first)
 
-    api_url = "https://www.pillowfort.social/posts/#{post_id}/json"
+    api_url = "#{uri.scheme}://#{uri.host}/posts/#{post_id}/json"
 
     Philomena.Http.get(api_url)
     |> json!()
