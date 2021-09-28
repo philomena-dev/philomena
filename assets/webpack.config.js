@@ -12,7 +12,7 @@ const multiEntry = require('rollup-plugin-multi-entry')();
 const buble = require('rollup-plugin-buble')({ transforms: { dangerousForOf: true } });
 
 let plugins = [
-  new IgnoreEmitPlugin(/css\/themes.*(?<!css)$/),
+  new IgnoreEmitPlugin(/css\/.*(?<!css)$/),
   new MiniCssExtractPlugin({
     filename: '[name].css',
     chunkFilename: '[id].css'
@@ -35,9 +35,9 @@ if (!isDevelopment){
 }
 
 const themes = {
-  'css/themes/default': './css/themes/default.scss',
-  'css/themes/dark': './css/themes/dark.scss',
-  'css/themes/red': './css/themes/red.scss',
+  'css/default': './css/themes/default.scss',
+  'css/dark': './css/themes/dark.scss',
+  'css/red': './css/themes/red.scss',
 };
 
 module.exports = {
