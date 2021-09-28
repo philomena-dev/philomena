@@ -1,3 +1,4 @@
+const fs = require('fs');
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
@@ -34,11 +35,15 @@ if (!isDevelopment){
   ]);
 }
 
-const themes = {
-  'css/default': './css/themes/default.scss',
-  'css/dark': './css/themes/dark.scss',
-  'css/red': './css/themes/red.scss',
-};
+const themeNames =
+  fs.readdirSync(path.resolve(__dirname, 'css/themes')).map(name =>
+    name.match(/([-a-z]+).scss/)[1]
+  );
+
+const themes = {};
+for (const name of themeNames) {
+  themes[`css/${name}`] = `./css/themes/${name}.scss`;
+}
 
 module.exports = {
   mode: isDevelopment ? 'development' : 'production',
