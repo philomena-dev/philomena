@@ -21,6 +21,14 @@ jobs:
       - name: Build and test
         run: docker-compose run app run-test
 
+      - name: Install npm dependencies
+        run: npm ci
+        working-directory: ./assets
+
+      - name: Run ESLint
+        run: npm run lint
+        working-directory: ./assets
+
       - name: Security lint
         run: |
           docker-compose run app mix sobelow --config
