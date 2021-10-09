@@ -5,6 +5,7 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const IgnoreEmitPlugin = require('ignore-emit-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -25,7 +26,15 @@ let plugins = [
     ],
   }),
 ];
-if (!isDevelopment) {
+if (isDevelopment) {
+  plugins = plugins.concat([
+    new ESLintPlugin({
+      extensions: ['js', 'ts'],
+      failOnError: true,
+      failOnWarning: isDevelopment
+    })
+  ]);
+} else {
   plugins = plugins.concat([
     new TerserPlugin({
       cache: true,
@@ -33,15 +42,6 @@ if (!isDevelopment) {
       sourceMap: isDevelopment
     }),
     new CssMinimizerPlugin()
-  ]);
-} else {
-  const ESLintPlugin = require('eslint-webpack-plugin');
-  plugins = plugins.concat([
-    new ESLintPlugin({
-      extensions: ['js', 'ts'],
-      failOnError: true,
-      failOnWarning: isDevelopment
-    })
   ]);
 }
 
