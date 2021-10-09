@@ -34,7 +34,8 @@ if (isDevelopment) {
       failOnWarning: isDevelopment
     })
   ]);
-} else {
+}
+else {
   plugins = plugins.concat([
     new TerserPlugin({
       cache: true,
