@@ -39,9 +39,9 @@ if (isDevelopment) {
     new TerserPlugin({
       cache: true,
       parallel: true,
-      sourceMap: isDevelopment
+      sourceMap: isDevelopment,
     }),
-    new CssMinimizerPlugin()
+    new CssMinimizerPlugin(),
   ]);
 }
 
