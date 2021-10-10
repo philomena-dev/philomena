@@ -10,5 +10,8 @@
       "DOM"
     ],
     "strict": true
-  }
+  },
+  "exclude": [
+    "**/*.spec.ts"
+  ]
 }

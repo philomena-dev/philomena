@@ -18,15 +18,17 @@ export default {
     },
   },
   preset: 'ts-jest/presets/js-with-ts-esm',
-  testEnvironment: 'node',
+  setupFilesAfterEnv: ['<rootDir>/test/jest-setup.ts'],
+  testEnvironment: 'jsdom',
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
   moduleNameMapper: {
     './js/(.*)': '<rootDir>/js/$1',
   },
   globals: {
-      extensionsToTreatAsEsm: ['.ts', '.js'],
-      'ts-jest': {
-          useESM: true
-      }
+    extensionsToTreatAsEsm: ['.ts', '.js'],
+    'ts-jest': {
+      tsconfig: '<rootDir>/tsconfig.test.json',
+      useESM: true
+    }
   },
 };
