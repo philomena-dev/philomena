@@ -3,7 +3,12 @@
     "noEmit": true,
     "baseUrl": "./js",
     "target": "ES2018",
+    "esModuleInterop": true,
     "allowJs": true,
+    "lib": [
+      "ES2018",
+      "DOM"
+    ],
     "strict": true
   }
 }
