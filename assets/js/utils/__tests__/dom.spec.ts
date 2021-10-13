@@ -1,5 +1,21 @@
-import { $, $$, hideEl, showEl, toggleEl, clearEl, removeEl } from '../dom';
-import { getRandomIntBetween } from '../../../test/randomness';
+import {
+  $,
+  $$,
+  clearEl,
+  escapeCss,
+  escapeHtml,
+  hideEl,
+  insertBefore,
+  makeEl,
+  onLeftClick,
+  removeEl,
+  showEl,
+  toggleEl,
+  whenReady,
+  findFirstTextNode,
+} from '../dom';
+import { getRandomArrayItem, getRandomIntBetween } from '../../../test/randomness';
+import { fireEvent } from '@testing-library/dom';
 
 describe('DOM Utilities', () => {
   const mockSelectors = ['#id', '.class', 'div', '#a .complex--selector:not(:hover)'];
@@ -244,6 +260,175 @@ describe('DOM Utilities', () => {
       removeEl(childNode);
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenNthCalledWith(1, childNode);
+    });
+  });
+
+  describe('makeEl', () => {
+    it('should create br tag', () => {
+      const el = makeEl('br');
+      expect(el.nodeName).toEqual('BR');
+    });
+
+    it('should create a script tag', () => {
+      const mockSource = 'https://example.com/';
+      const el = makeEl('script', { src: mockSource, async: true, defer: true });
+      expect(el.nodeName).toEqual('SCRIPT');
+      expect(el.src).toEqual(mockSource);
+      expect(el.async).toEqual(true);
+      expect(el.defer).toEqual(true);
+    });
+
+    it('should create a link tag', () => {
+      const mockHref = 'https://example.com/';
+      const mockTarget = '_blank';
+      const el = makeEl('a', { href: mockHref, target: mockTarget });
+      expect(el.nodeName).toEqual('A');
+      expect(el.href).toEqual(mockHref);
+      expect(el.target).toEqual(mockTarget);
+    });
+
+    it('should create paragraph tag', () => {
+      const mockClassOne = 'class-one';
+      const mockClassTwo = 'class-two';
+      const el = makeEl('p', { className: `${mockClassOne} ${mockClassTwo}` });
+      expect(el.nodeName).toEqual('P');
+      expect(el).toHaveClass(mockClassOne);
+      expect(el).toHaveClass(mockClassTwo);
+    });
+  });
+
+  describe('insertBefore', () => {
+    it('should insert the new element before the existing element', () => {
+      const mockParent = document.createElement('p');
+      const mockExisingElement = document.createElement('span');
+      mockParent.appendChild(mockExisingElement);
+      const mockNewElement = document.createElement('strong');
+
+      insertBefore(mockExisingElement, mockNewElement);
+
+      expect(mockParent.children).toHaveLength(2);
+      expect(mockParent.children[0].tagName).toBe('STRONG');
+      expect(mockParent.children[1].tagName).toBe('SPAN');
+    });
+    it('should insert between two elements', () => {
+      const mockParent = document.createElement('p');
+      const mockFirstExisingElement = document.createElement('span');
+      const mockSecondExisingElement = document.createElement('em');
+      mockParent.appendChild(mockFirstExisingElement);
+      mockParent.appendChild(mockSecondExisingElement);
+      const mockNewElement = document.createElement('strong');
+
+      insertBefore(mockSecondExisingElement, mockNewElement);
+
+      expect(mockParent.children).toHaveLength(3);
+      expect(mockParent.children[0].tagName).toBe('SPAN');
+      expect(mockParent.children[1].tagName).toBe('STRONG');
+      expect(mockParent.children[2].tagName).toBe('EM');
+    });
+
+    it('should fail if there is no parent', () => {
+      const mockParent = document.createElement('p');
+      const mockNewElement = document.createElement('em');
+
+      expect(() => {
+        insertBefore(mockParent, mockNewElement);
+      }).toThrow(/propert(y|ies).*null/);
+    });
+  });
+
+  describe('onLeftClick', () => {
+    it('should call callback on left click', () => {
+      const mockCallback = jest.fn();
+      const element = document.createElement('div');
+      onLeftClick(mockCallback, element as unknown as Document);
+
+      fireEvent.click(element, { button: 0 });
+
+      expect(mockCallback).toHaveBeenCalledTimes(1);
+    });
+
+    it('should NOT call callback on non-left click', () => {
+      const mockCallback = jest.fn();
+      const element = document.createElement('div');
+      onLeftClick(mockCallback, element as unknown as Document);
+
+      const mockButton = getRandomArrayItem([1, 2, 3, 4, 5]);
+      fireEvent.click(element, { button: mockButton });
+
+      expect(mockCallback).not.toHaveBeenCalled();
+    });
+
+    it('should add click event listener to the document by default', () => {
+      const mockCallback = jest.fn();
+      onLeftClick(mockCallback);
+
+      fireEvent.click(document.body);
+
+      expect(mockCallback).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('whenReady', () => {
+    it('should call callback immediately if document ready state is not loading', () => {
+      const mockReadyStateValue = getRandomArrayItem<DocumentReadyState>(['complete', 'interactive']);
+      const readyStateSpy = jest.spyOn(document, 'readyState', 'get').mockReturnValue(mockReadyStateValue);
+      const mockCallback = jest.fn();
+
+      try {
+        whenReady(mockCallback);
+        expect(mockCallback).toHaveBeenCalledTimes(1);
+      }
+      finally {
+        readyStateSpy.mockRestore();
+      }
+    });
+
+    it('should add event listener with callback if document ready state is loading', () => {
+      const readyStateSpy = jest.spyOn(document, 'readyState', 'get').mockReturnValue('loading');
+      const addEventListenerSpy = jest.spyOn(document, 'addEventListener');
+      const mockCallback = jest.fn();
+
+      try {
+        whenReady(mockCallback);
+        expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
+        expect(addEventListenerSpy).toHaveBeenNthCalledWith(1, 'DOMContentLoaded', mockCallback);
+        expect(mockCallback).not.toHaveBeenCalled();
+      }
+      finally {
+        readyStateSpy.mockRestore();
+        addEventListenerSpy.mockRestore();
+      }
+    });
+  });
+
+  describe('escapeHtml', () => {
+    it('should replace only the expected characters with their HTML entity equivalents', () => {
+      expect(escapeHtml('<script src="http://example.com/?a=1&b=2"></script>')).toBe('&lt;script src=&quot;http://example.com/?a=1&amp;b=2&quot;&gt;&lt;/script&gt;');
+    });
+  });
+
+  describe('escapeCss', () => {
+    it('should replace only the expected characters with their escaped equivalents', () => {
+      expect(escapeCss('url("https://example.com")')).toBe('url(\\"https://example.com\\")');
+    });
+  });
+
+  describe('findFirstTextNode', () => {
+    it('should return the first text node child', () => {
+      const mockText = `expected text ${Math.random()}`;
+      const mockNode = document.createElement('div');
+      mockNode.innerHTML = `<strong>bold</strong>${mockText}<em>italic</em>`;
+
+      const result: Node = findFirstTextNode(mockNode);
+      expect(result.nodeValue).toBe(mockText);
+    });
+
+    it('should return undefined if there is no text node child', () => {
+      const mockNode = document.createElement('div');
+      mockNode.innerHTML = '<strong>bold</strong><em>italic</em>';
+
+      const result: Node = findFirstTextNode(mockNode);
+      expect(result).toBe(undefined);
     });
   });
 });
