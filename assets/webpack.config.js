@@ -60,6 +60,7 @@ module.exports = {
   mode: isDevelopment ? 'development' : 'production',
   entry: {
     'js/app.js': './js/app.js',
+    'js/worker.js': './js/worker.ts',
     ...themes
   },
   output: {
@@ -92,7 +93,7 @@ module.exports = {
         },
       },
       {
-        test: /app\.js/,
+        test: /(app\.js|worker\.ts)/,
         use: [
           {
             loader: 'webpack-rollup-loader',

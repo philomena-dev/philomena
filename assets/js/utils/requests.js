@@ -38,4 +38,27 @@ function handleError(response) {
   return response;
 }
 
-export { fetchJson, fetchHtml, handleError };
+/** @returns {Promise<Response>} */
+function fetchBackoff(...fetchArgs) {
+  /**
+   * @param timeout {number}
+   * @returns {Promise<Response>}
+   */
+  function fetchBackoffTimeout(timeout) {
+    // Adjust timeout
+    const newTimeout = Math.min(timeout * 2, 300000);
+
+    // Try to fetch the thing
+    return fetch(...fetchArgs)
+      .then(handleError)
+      .catch(() =>
+        new Promise(resolve =>
+          setTimeout(() => resolve(fetchBackoffTimeout(newTimeout)), timeout)
+        )
+      );
+  }
+
+  return fetchBackoffTimeout(5000);
+}
+
+export { fetchJson, fetchHtml, fetchBackoff, handleError };

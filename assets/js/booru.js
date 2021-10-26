@@ -101,6 +101,11 @@ function loadBooruData() {
 
   // CSRF
   window.booru.csrfToken = $('meta[name="csrf-token"]').content;
+
+  // ServiceWorker
+  if ('serviceWorker' in navigator && window.booru.workerPath) {
+    navigator.serviceWorker.register(window.booru.workerPath);
+  }
 }
 
 function BooruOnRails() {

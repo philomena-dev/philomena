@@ -118,7 +118,7 @@ defmodule PhilomenaWeb.ImageView do
     "#{root}/#{view}/#{year}/#{month}/#{day}/#{filename}.#{format}"
   end
 
-  defp verbose_file_name(image) do
+  def verbose_file_name(image) do
     # Truncate filename to 150 characters, making room for the path + filename on Windows
     # https://stackoverflow.com/questions/265769/maximum-filename-length-in-ntfs-windows-xp-and-windows-vista
     file_name_slug_fragment =

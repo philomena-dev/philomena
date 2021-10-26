@@ -52,7 +52,8 @@ defmodule PhilomenaWeb.LayoutView do
       fancy_tag_upload: if(user, do: user.fancy_tag_field_on_upload, else: true),
       interactions: Jason.encode!(interactions),
       ignored_tag_list: Jason.encode!(ignored_tag_list(conn.assigns[:tags])),
-      hide_staff_tools: conn.cookies["hide_staff_tools"]
+      hide_staff_tools: conn.cookies["hide_staff_tools"],
+      worker_path: Routes.static_path(conn, "/js/worker.js")
     ]
 
     data = Keyword.merge(data, extra)

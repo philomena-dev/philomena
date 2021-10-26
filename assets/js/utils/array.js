@@ -10,4 +10,24 @@ function arraysEqual(array1, array2) {
   return true;
 }
 
-export { moveElement, arraysEqual };
+/**
+ * @template T
+ * @param {T[]} array
+ * @param {number} numBins
+ * @returns {T[][]}
+ */
+function evenlyDivide(array, numBins) {
+  const bins = [];
+
+  for (let i = 0; i < numBins; i++) {
+    bins[i] = [];
+  }
+
+  for (let i = 0; i < array.length; i++) {
+    bins[i % numBins].push(array[i]);
+  }
+
+  return bins;
+}
+
+export { moveElement, arraysEqual, evenlyDivide };

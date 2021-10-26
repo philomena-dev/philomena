@@ -462,6 +462,7 @@ defmodule PhilomenaWeb.Router do
 
     scope "/search", Search, as: :search do
       resources "/reverse", ReverseController, only: [:index, :create]
+      resources "/download", DownloadController, only: [:index]
     end
 
     resources "/search", SearchController, only: [:index]

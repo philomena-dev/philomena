@@ -17,6 +17,10 @@ elixir:
     .page__pagination = pagination
 
     .flex__right.page__info
+      a.js-download href="#" data-query=@conn.params["q"] title="Download"
+        i.fa.fa-download>
+        span.hide-mobile.hide-limited-desktop Download
+
       = random_button @conn, params
       = hidden_toggle @conn, route, params
       = deleted_toggle @conn, route, params
