@@ -1,15 +1,7 @@
-/// <reference lib="WebWorker" />
-
+import { wait, json, u8Array } from 'utils/async';
 import { evenlyDivide } from 'utils/array';
 import { fetchBackoff } from 'utils/requests';
 import { Zip } from 'utils/zip';
-
-declare const self: ServiceWorkerGlobalScope;
-
-const wait = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
-const buffer = (blob: Blob) => blob.arrayBuffer().then(buf => new Uint8Array(buf));
-const json = (resp: Response) => resp.json();
-const blob = (resp: Response) => resp.blob();
 
 interface Image {
   id: number;
@@ -22,8 +14,8 @@ interface PageResult {
   total: number;
 }
 
-function handleStream(event: FetchEvent, url: URL): void {
-  const concurrency = parseInt(url.searchParams.get('concurrency') || '1', 5);
+export function handleBulk(event: FetchEvent, url: URL): void {
+  const concurrency = parseInt(url.searchParams.get('concurrency') || '1', 10);
   const queryString = url.searchParams.get('q');
   const failures = [];
   const zipper = new Zip();
@@ -39,18 +31,20 @@ function handleStream(event: FetchEvent, url: URL): void {
     pull(controller) {
       // Path to fetch next
       const nextQuery = encodeURIComponent(`(${queryString}),id.lte:${maxId}`);
+      const consumer = (buf: Uint8Array) => controller.enqueue(buf);
 
       return fetchBackoff(`/search/download?q=${nextQuery}`)
         .then(json)
         .then(({ images, total }: PageResult): Promise<void> => {
           if (total === 0) {
-            // Done, no results left
-            // Finalize zip and close stream to prevent any further pulls
-            return buffer(zipper.finalize())
-              .then(buf => {
-                controller.enqueue(buf);
-                controller.close();
-              });
+            // Finalize zip
+            zipper.finalize(consumer);
+
+            // Close stream
+            controller.close();
+
+            // Done
+            return Promise.resolve();
           }
 
           // Decrease maximum ID for next round below current minimum
@@ -74,9 +68,8 @@ function handleStream(event: FetchEvent, url: URL): void {
         // eslint-disable-next-line camelcase
         for (const { name, view_url } of images) {
           promise = promise
-            .then(() => fetchBackoff(view_url)).then(blob).then(buffer)
-            .then(file => zipper.storeFile(name, file.buffer)).then(buffer)
-            .then(entry => controller.enqueue(entry))
+            .then(() => fetchBackoff(view_url).then(u8Array))
+            .then(file => zipper.storeFile(name, file.buffer, consumer))
             .catch(() => { failures.push(view_url); });
         }
 
@@ -92,15 +85,3 @@ function handleStream(event: FetchEvent, url: URL): void {
     }
   }));
 }
-
-self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
-
-  // Streaming path
-  if (url.pathname === '/js/stream') return handleStream(event, url);
-
-  // Otherwise, not destined for us
-  return event.respondWith(fetch(event.request));
-});
-
-export default null;

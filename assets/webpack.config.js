@@ -60,7 +60,7 @@ module.exports = {
   mode: isDevelopment ? 'development' : 'production',
   entry: {
     'js/app.js': './js/app.js',
-    'js/worker.js': './js/worker.ts',
+    'js/worker.js': './js/sw/worker.ts',
     ...themes
   },
   output: {

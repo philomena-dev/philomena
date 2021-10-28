@@ -53,7 +53,7 @@ defmodule PhilomenaWeb.LayoutView do
       interactions: Jason.encode!(interactions),
       ignored_tag_list: Jason.encode!(ignored_tag_list(conn.assigns[:tags])),
       hide_staff_tools: conn.cookies["hide_staff_tools"],
-      worker_path: Routes.static_path(conn, "/js/worker.js")
+      worker_path: Routes.static_path(conn, "/js/worker.js") <> "?cdn=" <> cdn_host()
     ]
 
     data = Keyword.merge(data, extra)

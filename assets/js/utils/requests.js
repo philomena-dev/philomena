@@ -2,6 +2,8 @@
  * Request Utils
  */
 
+import { wait } from './async';
+
 function fetchJson(verb, endpoint, body) {
   const data = {
     method: verb,
@@ -52,13 +54,37 @@ function fetchBackoff(...fetchArgs) {
     return fetch(...fetchArgs)
       .then(handleError)
       .catch(() =>
-        new Promise(resolve =>
-          setTimeout(() => resolve(fetchBackoffTimeout(newTimeout)), timeout)
-        )
+        wait(timeout).then(fetchBackoffTimeout(newTimeout))
       );
   }
 
   return fetchBackoffTimeout(5000);
 }
 
-export { fetchJson, fetchHtml, fetchBackoff, handleError };
+/**
+ * Escape a filename for inclusion in a Content-Disposition
+ * response header.
+ *
+ * @param {string} name
+ * @returns {string}
+ */
+function escapeFilename(name) {
+  return name
+    .replace(/[^-_+a-zA-Z0-9]/, '_')
+    .substring(0, 150);
+}
+
+/**
+ * Run the wrapped function if the response was okay,
+ * otherwise return the response.
+ * @param {(_: Response) => Response} responseGenerator
+ * @returns {(_: Response) => Response}
+ */
+function ifOk(responseGenerator) {
+  return resp => {
+    if (resp.ok) return new Response(responseGenerator(resp));
+    return resp;
+  };
+}
+
+export { fetchJson, fetchHtml, fetchBackoff, handleError, escapeFilename, ifOk };

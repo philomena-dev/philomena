@@ -1,5 +1,8 @@
 import { crc32, asciiEncode, serialize } from './binary';
 
+// eslint-disable-next-line no-unused-vars
+type U8Consumer = (_: Uint8Array) => void;
+
 interface FileInfo {
     headerOffset: number;
     byteLength: number;
@@ -18,7 +21,7 @@ export class Zip {
       this.offset = 0;
     }
 
-    storeFile(name: string, file: ArrayBuffer): Blob {
+    storeFile(name: string, file: ArrayBuffer, consumer: U8Consumer): void {
       const crc = crc32(file);
       const ns = asciiEncode(name);
 
@@ -51,11 +54,14 @@ export class Zip {
       ]);
 
       this.offset += header.byteLength + ns.byteLength + localField.byteLength + file.byteLength;
-      return new Blob([header, ns, localField, file]);
+
+      consumer(new Uint8Array(header));
+      consumer(new Uint8Array(ns));
+      consumer(new Uint8Array(localField));
+      consumer(new Uint8Array(file));
     }
 
-    finalize(): Blob {
-      const segments = [];
+    finalize(consumer: U8Consumer): void {
       const cdOff = this.offset;
       let numFiles = 0;
 
@@ -91,7 +97,10 @@ export class Zip {
         ]);
 
         this.offset += cdEntry.byteLength + info.name.byteLength + cdField.byteLength;
-        segments.push(cdEntry, info.name, cdField);
+
+        consumer(new Uint8Array(cdEntry));
+        consumer(new Uint8Array(info.name));
+        consumer(new Uint8Array(cdField));
 
         numFiles++;
       }
@@ -129,8 +138,9 @@ export class Zip {
       ]);
 
       this.offset += endCd64.byteLength + endLoc64.byteLength + endCd.byteLength;
-      segments.push(endCd64, endLoc64, endCd);
 
-      return new Blob(segments);
+      consumer(new Uint8Array(endCd64));
+      consumer(new Uint8Array(endLoc64));
+      consumer(new Uint8Array(endCd));
     }
 }
