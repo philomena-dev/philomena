@@ -70,7 +70,7 @@ function fetchBackoff(...fetchArgs) {
  */
 function escapeFilename(name) {
   return name
-    .replace(/[^-_+a-zA-Z0-9]/, '_')
+    .replace(/[^.-_+a-zA-Z0-9]/, '_')
     .substring(0, 150);
 }
 
@@ -82,7 +82,7 @@ function escapeFilename(name) {
  */
 function ifOk(responseGenerator) {
   return resp => {
-    if (resp.ok) return new Response(responseGenerator(resp));
+    if (resp.ok) return responseGenerator(resp);
     return resp;
   };
 }

@@ -15,15 +15,15 @@ export function handleDownload(event: FetchEvent, url: URL): void {
     return event.respondWith(new Response('Don\'t know what to download!', { status: 400 }));
   }
 
-  const generateResponse = ifOk((upstream: Response) => {
-    const headers = new Headers(upstream.headers);
+  const response =
+    fetch(target)
+      .then(ifOk((upstream: Response) => {
+        const headers = new Headers(upstream.headers);
 
-    headers.set('content-disposition', `attachment; filename="${escapeFilename(name)}"`);
+        headers.set('content-disposition', `attachment; filename="${escapeFilename(name)}"`);
 
-    return new Response(upstream.body, { headers });
-  });
+        return new Response(upstream.body, { headers });
+      }));
 
-  fetch(target)
-    .then(generateResponse)
-    .then(event.respondWith);
+  event.respondWith(response);
 }
