@@ -318,4 +318,32 @@ describe('Image utils', () => {
       expect(mockShowElement).toHaveClass(spoilerPendingClass);
     });
   });
+
+  describe('hideThumb', () => {
+    describe('hideVideoThumb', () => {
+      it.todo('should return early if picture element is missing AND img element is missing');
+
+      it.todo('should hide video thumbnail if picture element is missing BUT img element is present');
+    });
+
+    it.todo('should return early if picture element is present AND img element is missing');
+
+    it.todo('should hide img thumbnail if picture element is present AND img element is present');
+  });
+
+  describe('spoilerThumb', () => {
+    it.todo('should hide image thumbnail');
+
+    it.todo('should hide video thumbnail');
+
+    it.todo('should call add click and mouseleave handlers for click spoiler type');
+
+    it.todo('should call add mouseenter and mouseleave handlers for click spoiler type');
+  });
+
+  describe('spoilerBlock', () => {
+    it.todo('should do nothing if image element is missing');
+
+    it.todo('should update the elements with the parameters and set classes if image element is found');
+  });
 });
