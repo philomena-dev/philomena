@@ -165,14 +165,4 @@ defmodule Philomena.Reports do
     |> Polymorphic.load_polymorphic(reportable: [reportable_id: :reportable_type])
     |> Enum.map(&Elasticsearch.index_document(&1, Report))
   end
-
-  def count_reports(user) do
-    if Canada.Can.can?(user, :index, Report) do
-      Report
-      |> where(open: true)
-      |> Repo.aggregate(:count, :id)
-    else
-      nil
-    end
-  end
 end

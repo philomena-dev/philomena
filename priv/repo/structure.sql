@@ -985,6 +985,97 @@ ALTER SEQUENCE public.images_id_seq OWNED BY public.images.id;
 
 
 --
+-- Name: reports; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.reports (
+    id integer NOT NULL,
+    ip inet NOT NULL,
+    fingerprint character varying,
+    user_agent character varying DEFAULT ''::character varying,
+    referrer character varying DEFAULT ''::character varying,
+    reason_textile character varying DEFAULT ''::character varying NOT NULL,
+    state character varying DEFAULT 'open'::character varying NOT NULL,
+    open boolean DEFAULT true NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    user_id integer,
+    admin_id integer,
+    reportable_id integer NOT NULL,
+    reportable_type character varying NOT NULL,
+    reason character varying NOT NULL
+);
+
+
+--
+-- Name: site_notices; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.site_notices (
+    id integer NOT NULL,
+    title character varying NOT NULL,
+    text character varying NOT NULL,
+    link character varying NOT NULL,
+    link_text character varying NOT NULL,
+    live boolean DEFAULT false NOT NULL,
+    start_date timestamp without time zone NOT NULL,
+    finish_date timestamp without time zone NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    user_id integer NOT NULL
+);
+
+
+--
+-- Name: layouts; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.layouts AS
+ WITH artist_link_count AS (
+         SELECT count(*) AS count
+           FROM public.artist_links
+          WHERE ((artist_links.aasm_state)::text = ANY ((ARRAY['unverified'::character varying, 'link_verified'::character varying, 'contacted'::character varying])::text[]))
+        ), channel_count AS (
+         SELECT count(*) AS count
+           FROM public.channels
+          WHERE (channels.is_live = true)
+        ), duplicate_report_count AS (
+         SELECT count(*) AS count
+           FROM public.duplicate_reports
+          WHERE ((duplicate_reports.state)::text = 'open'::text)
+        ), dnp_entry_count AS (
+         SELECT count(*) AS count
+           FROM public.dnp_entries
+          WHERE ((dnp_entries.aasm_state)::text = ANY ((ARRAY['requested'::character varying, 'claimed'::character varying, 'acknowledged'::character varying])::text[]))
+        ), report_count AS (
+         SELECT count(*) AS count
+           FROM public.reports
+          WHERE (reports.open = true)
+        ), forums AS (
+         SELECT array_agg(row_to_json(f.*)) AS "array"
+           FROM public.forums f
+        ), site_notices AS (
+         SELECT array_agg(row_to_json(sn.*)) AS "array"
+           FROM public.site_notices sn
+          WHERE ((sn.start_date <= now()) AND (sn.finish_date > now()))
+        )
+ SELECT artist_link_count.count AS artist_link_count,
+    channel_count.count AS channel_count,
+    dnp_entry_count.count AS dnp_entry_count,
+    duplicate_report_count.count AS duplicate_report_count,
+    report_count.count AS report_count,
+    forums."array" AS forums,
+    site_notices."array" AS site_notices
+   FROM artist_link_count,
+    channel_count,
+    duplicate_report_count,
+    dnp_entry_count,
+    report_count,
+    forums,
+    site_notices;
+
+
+--
 -- Name: messages; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1239,29 +1330,6 @@ ALTER SEQUENCE public.posts_id_seq OWNED BY public.posts.id;
 
 
 --
--- Name: reports; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.reports (
-    id integer NOT NULL,
-    ip inet NOT NULL,
-    fingerprint character varying,
-    user_agent character varying DEFAULT ''::character varying,
-    referrer character varying DEFAULT ''::character varying,
-    reason_textile character varying DEFAULT ''::character varying NOT NULL,
-    state character varying DEFAULT 'open'::character varying NOT NULL,
-    open boolean DEFAULT true NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    user_id integer,
-    admin_id integer,
-    reportable_id integer NOT NULL,
-    reportable_type character varying NOT NULL,
-    reason character varying NOT NULL
-);
-
-
---
 -- Name: reports_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1320,25 +1388,6 @@ ALTER SEQUENCE public.roles_id_seq OWNED BY public.roles.id;
 CREATE TABLE public.schema_migrations (
     version bigint NOT NULL,
     inserted_at timestamp(0) without time zone
-);
-
-
---
--- Name: site_notices; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.site_notices (
-    id integer NOT NULL,
-    title character varying NOT NULL,
-    text character varying NOT NULL,
-    link character varying NOT NULL,
-    link_text character varying NOT NULL,
-    live boolean DEFAULT false NOT NULL,
-    start_date timestamp without time zone NOT NULL,
-    finish_date timestamp without time zone NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    user_id integer NOT NULL
 );
 
 
@@ -4867,3 +4916,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20210912171343);
 INSERT INTO public."schema_migrations" (version) VALUES (20210917190346);
 INSERT INTO public."schema_migrations" (version) VALUES (20210921025336);
 INSERT INTO public."schema_migrations" (version) VALUES (20210929181319);
+INSERT INTO public."schema_migrations" (version) VALUES (20211108003620);

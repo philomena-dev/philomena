@@ -165,16 +165,6 @@ defmodule Philomena.ArtistLinks do
     ArtistLink.changeset(artist_link, %{})
   end
 
-  def count_artist_links(user) do
-    if Canada.Can.can?(user, :index, %ArtistLink{}) do
-      ArtistLink
-      |> where([ul], ul.aasm_state in ^["unverified", "link_verified", "contacted"])
-      |> Repo.aggregate(:count, :id)
-    else
-      nil
-    end
-  end
-
   defp fetch_tag(name) do
     Tag
     |> preload(:aliased_tag)
