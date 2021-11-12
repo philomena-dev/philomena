@@ -661,16 +661,33 @@ defmodule Philomena.Users do
   end
 
   defp load_with_roles(query) do
+    query = exclude(query, :select)
+
+    query =
+      from [user_token, user] in query,
+        left_join: current_filter in assoc(user, :current_filter),
+        left_join: forced_filter in assoc(user, :forced_filter),
+        inner_join: layout in assoc(user, :layout),
+        preload: [
+          user: {
+            user,
+            current_filter: current_filter,
+            forced_filter: forced_filter,
+            layout: layout
+          }
+        ],
+        select: user_token
+
     query
     |> Repo.one()
-    |> Repo.preload([:roles, :current_filter])
+    |> Map.fetch!(:user)
     |> setup_roles()
   end
 
   defp setup_roles(nil), do: nil
 
   defp setup_roles(user) do
-    role_map = Map.new(user.roles, &{&1.resource_type || &1.name, &1.name})
+    role_map = Map.new(user.layout.roles, &{&1.resource_type || &1.name, &1.name})
 
     %{user | role_map: role_map}
   end

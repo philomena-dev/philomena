@@ -9,6 +9,7 @@ defmodule PhilomenaWeb.LayoutPlug do
 
   alias Canada.Can
   alias Philomena.Layouts
+  alias Philomena.Users.User
   import Plug.Conn
 
   @doc false
@@ -29,6 +30,7 @@ defmodule PhilomenaWeb.LayoutPlug do
     |> assign(:report_count, layout.report_count)
     |> assign(:forums, visible_forums(user, layout.forums))
     |> assign(:site_notices, site_notices(layout.site_notices))
+    |> user_assignments(user)
   end
 
   defp visible_forums(user, forum_list) do
@@ -39,5 +41,16 @@ defmodule PhilomenaWeb.LayoutPlug do
 
   defp site_notices(notice_list) do
     Enum.sort_by(notice_list, & &1.start_date, Date)
+  end
+
+  @spec user_assignments(Plug.Conn.t(), User.t()) :: Plug.Conn.t()
+  defp user_assignments(conn, %{layout: layout}) when is_map(layout) do
+    conn
+    |> assign(:notification_count, layout.unread_notification_count)
+    |> assign(:conversation_count, layout.conversation_count)
+  end
+
+  defp user_assignments(conn, _user) do
+    conn
   end
 end

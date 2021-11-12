@@ -30,7 +30,28 @@ defmodule Philomena.Repo.Migrations.AddLayouts do
         forums,
         site_notices
       """,
-      "DROP VIEW layouts"
+      "DROP VIEW IF EXISTS layouts"
+    )
+
+    execute(
+      """
+      CREATE VIEW user_layouts AS
+      SELECT
+        u.id AS user_id,
+        roles.array AS roles,
+        my_filters.array AS my_filters,
+        recent_filters.array AS recent_filters,
+        unread_notification_count.count AS unread_notification_count,
+        conversation_from_count.count + conversation_to_count.count AS conversation_count
+      FROM users u
+      INNER JOIN LATERAL (SELECT array_agg(row_to_json(r.*)) AS array FROM roles r JOIN users_roles ur ON r.id=ur.role_id WHERE ur.user_id=u.id) roles ON 't'
+      INNER JOIN LATERAL (SELECT array_agg(row_to_json(f)) AS array FROM filters f WHERE f.user_id=u.id LIMIT 10) my_filters ON 't'
+      INNER JOIN LATERAL (SELECT array_agg(row_to_json(f)) AS array FROM filters f WHERE f.id = ANY(u.recent_filter_ids) LIMIT 10) recent_filters ON 't'
+      INNER JOIN LATERAL (SELECT COUNT(*) FROM unread_notifications WHERE user_id=u.id) unread_notification_count ON 't'
+      INNER JOIN LATERAL (SELECT COUNT(*) FROM conversations WHERE from_read='f' AND from_hidden='f' AND from_id=u.id) conversation_from_count ON 't'
+      INNER JOIN LATERAL (SELECT COUNT(*) FROM conversations WHERE to_read='f' AND to_hidden='f' AND to_id=u.id) conversation_to_count ON 't'
+      """,
+      "DROP VIEW IF EXISTS user_layouts"
     )
   end
 end

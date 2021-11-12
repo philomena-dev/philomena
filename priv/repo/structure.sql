@@ -1146,6 +1146,39 @@ ALTER SEQUENCE public.mod_notes_id_seq OWNED BY public.mod_notes.id;
 
 
 --
+-- Name: moderation_logs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.moderation_logs (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    body character varying NOT NULL,
+    subject_path character varying NOT NULL,
+    type character varying NOT NULL,
+    created_at timestamp(0) without time zone NOT NULL
+);
+
+
+--
+-- Name: moderation_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.moderation_logs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: moderation_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.moderation_logs_id_seq OWNED BY public.moderation_logs.id;
+
+
+--
 -- Name: notifications; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1841,6 +1874,136 @@ ALTER SEQUENCE public.user_ips_id_seq OWNED BY public.user_ips.id;
 
 
 --
+-- Name: users; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.users (
+    id integer NOT NULL,
+    email public.citext DEFAULT ''::character varying NOT NULL,
+    encrypted_password character varying DEFAULT ''::character varying NOT NULL,
+    reset_password_token character varying,
+    reset_password_sent_at timestamp without time zone,
+    remember_created_at timestamp without time zone,
+    sign_in_count integer DEFAULT 0 NOT NULL,
+    current_sign_in_at timestamp without time zone,
+    last_sign_in_at timestamp without time zone,
+    current_sign_in_ip inet,
+    last_sign_in_ip inet,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    deleted_at timestamp without time zone,
+    authentication_token character varying NOT NULL,
+    name character varying NOT NULL,
+    slug character varying NOT NULL,
+    role character varying DEFAULT 'user'::character varying NOT NULL,
+    description_textile character varying,
+    avatar character varying,
+    spoiler_type character varying DEFAULT 'static'::character varying NOT NULL,
+    theme character varying DEFAULT 'default'::character varying NOT NULL,
+    images_per_page integer DEFAULT 15 NOT NULL,
+    show_large_thumbnails boolean DEFAULT true NOT NULL,
+    show_sidebar_and_watched_images boolean DEFAULT true NOT NULL,
+    fancy_tag_field_on_upload boolean DEFAULT true NOT NULL,
+    fancy_tag_field_on_edit boolean DEFAULT true NOT NULL,
+    fancy_tag_field_in_settings boolean DEFAULT true NOT NULL,
+    autorefresh_by_default boolean DEFAULT false NOT NULL,
+    anonymous_by_default boolean DEFAULT false NOT NULL,
+    comments_newest_first boolean DEFAULT true NOT NULL,
+    comments_always_jump_to_last boolean DEFAULT false NOT NULL,
+    comments_per_page integer DEFAULT 20 NOT NULL,
+    watch_on_reply boolean DEFAULT true NOT NULL,
+    watch_on_new_topic boolean DEFAULT true NOT NULL,
+    watch_on_upload boolean DEFAULT true NOT NULL,
+    messages_newest_first boolean DEFAULT false NOT NULL,
+    serve_webm boolean DEFAULT false NOT NULL,
+    no_spoilered_in_watched boolean DEFAULT false NOT NULL,
+    watched_images_query_str character varying DEFAULT ''::character varying NOT NULL,
+    watched_images_exclude_str character varying DEFAULT ''::character varying NOT NULL,
+    forum_posts_count integer DEFAULT 0 NOT NULL,
+    topic_count integer DEFAULT 0 NOT NULL,
+    recent_filter_ids integer[] DEFAULT '{}'::integer[] NOT NULL,
+    unread_notification_ids integer[] DEFAULT '{}'::integer[] NOT NULL,
+    watched_tag_ids integer[] DEFAULT '{}'::integer[] NOT NULL,
+    deleted_by_user_id integer,
+    current_filter_id integer,
+    failed_attempts integer,
+    unlock_token character varying,
+    locked_at timestamp without time zone,
+    uploads_count integer DEFAULT 0 NOT NULL,
+    votes_cast_count integer DEFAULT 0 NOT NULL,
+    comments_posted_count integer DEFAULT 0 NOT NULL,
+    metadata_updates_count integer DEFAULT 0 NOT NULL,
+    images_favourited_count integer DEFAULT 0 NOT NULL,
+    last_donation_at timestamp without time zone,
+    scratchpad_textile text,
+    use_centered_layout boolean DEFAULT true NOT NULL,
+    secondary_role character varying,
+    hide_default_role boolean DEFAULT false NOT NULL,
+    personal_title character varying,
+    show_hidden_items boolean DEFAULT false NOT NULL,
+    hide_vote_counts boolean DEFAULT false NOT NULL,
+    hide_advertisements boolean DEFAULT false NOT NULL,
+    encrypted_otp_secret character varying,
+    encrypted_otp_secret_iv character varying,
+    encrypted_otp_secret_salt character varying,
+    consumed_timestep integer,
+    otp_required_for_login boolean,
+    otp_backup_codes character varying[],
+    last_renamed_at timestamp without time zone DEFAULT '1970-01-01 00:00:00'::timestamp without time zone NOT NULL,
+    forced_filter_id bigint,
+    confirmed_at timestamp(0) without time zone,
+    senior_staff boolean DEFAULT false,
+    description character varying,
+    scratchpad character varying,
+    bypass_rate_limits boolean DEFAULT false,
+    scale_large_images character varying(255) DEFAULT 'true'::character varying NOT NULL
+);
+
+
+--
+-- Name: users_roles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.users_roles (
+    user_id integer NOT NULL,
+    role_id integer NOT NULL
+);
+
+
+--
+-- Name: user_layouts; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.user_layouts AS
+ SELECT u.id AS user_id,
+    roles."array" AS roles,
+    my_filters."array" AS my_filters,
+    recent_filters."array" AS recent_filters,
+    unread_notification_count.count AS unread_notification_count,
+    (conversation_from_count.count + conversation_to_count.count) AS conversation_count
+   FROM ((((((public.users u
+     JOIN LATERAL ( SELECT array_agg(row_to_json(r.*)) AS "array"
+           FROM (public.roles r
+             JOIN public.users_roles ur ON ((r.id = ur.role_id)))
+          WHERE (ur.user_id = u.id)) roles ON (true))
+     JOIN LATERAL ( SELECT array_agg(row_to_json(f.*)) AS "array"
+           FROM public.filters f
+          WHERE (f.user_id = u.id)) my_filters ON (true))
+     JOIN LATERAL ( SELECT array_agg(row_to_json(f.*)) AS "array"
+           FROM public.filters f
+          WHERE (f.id = ANY (u.recent_filter_ids))) recent_filters ON (true))
+     JOIN LATERAL ( SELECT count(*) AS count
+           FROM public.unread_notifications
+          WHERE (unread_notifications.user_id = u.id)) unread_notification_count ON (true))
+     JOIN LATERAL ( SELECT count(*) AS count
+           FROM public.conversations
+          WHERE ((conversations.from_read = false) AND (conversations.from_hidden = false) AND (conversations.from_id = u.id))) conversation_from_count ON (true))
+     JOIN LATERAL ( SELECT count(*) AS count
+           FROM public.conversations
+          WHERE ((conversations.to_read = false) AND (conversations.to_hidden = false) AND (conversations.to_id = u.id))) conversation_to_count ON (true));
+
+
+--
 -- Name: user_name_changes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1974,93 +2137,6 @@ ALTER SEQUENCE public.user_whitelists_id_seq OWNED BY public.user_whitelists.id;
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.users (
-    id integer NOT NULL,
-    email public.citext DEFAULT ''::character varying NOT NULL,
-    encrypted_password character varying DEFAULT ''::character varying NOT NULL,
-    reset_password_token character varying,
-    reset_password_sent_at timestamp without time zone,
-    remember_created_at timestamp without time zone,
-    sign_in_count integer DEFAULT 0 NOT NULL,
-    current_sign_in_at timestamp without time zone,
-    last_sign_in_at timestamp without time zone,
-    current_sign_in_ip inet,
-    last_sign_in_ip inet,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    deleted_at timestamp without time zone,
-    authentication_token character varying NOT NULL,
-    name character varying NOT NULL,
-    slug character varying NOT NULL,
-    role character varying DEFAULT 'user'::character varying NOT NULL,
-    description_textile character varying,
-    avatar character varying,
-    spoiler_type character varying DEFAULT 'static'::character varying NOT NULL,
-    theme character varying DEFAULT 'default'::character varying NOT NULL,
-    images_per_page integer DEFAULT 15 NOT NULL,
-    show_large_thumbnails boolean DEFAULT true NOT NULL,
-    show_sidebar_and_watched_images boolean DEFAULT true NOT NULL,
-    fancy_tag_field_on_upload boolean DEFAULT true NOT NULL,
-    fancy_tag_field_on_edit boolean DEFAULT true NOT NULL,
-    fancy_tag_field_in_settings boolean DEFAULT true NOT NULL,
-    autorefresh_by_default boolean DEFAULT false NOT NULL,
-    anonymous_by_default boolean DEFAULT false NOT NULL,
-    comments_newest_first boolean DEFAULT true NOT NULL,
-    comments_always_jump_to_last boolean DEFAULT false NOT NULL,
-    comments_per_page integer DEFAULT 20 NOT NULL,
-    watch_on_reply boolean DEFAULT true NOT NULL,
-    watch_on_new_topic boolean DEFAULT true NOT NULL,
-    watch_on_upload boolean DEFAULT true NOT NULL,
-    messages_newest_first boolean DEFAULT false NOT NULL,
-    serve_webm boolean DEFAULT false NOT NULL,
-    no_spoilered_in_watched boolean DEFAULT false NOT NULL,
-    watched_images_query_str character varying DEFAULT ''::character varying NOT NULL,
-    watched_images_exclude_str character varying DEFAULT ''::character varying NOT NULL,
-    forum_posts_count integer DEFAULT 0 NOT NULL,
-    topic_count integer DEFAULT 0 NOT NULL,
-    recent_filter_ids integer[] DEFAULT '{}'::integer[] NOT NULL,
-    unread_notification_ids integer[] DEFAULT '{}'::integer[] NOT NULL,
-    watched_tag_ids integer[] DEFAULT '{}'::integer[] NOT NULL,
-    deleted_by_user_id integer,
-    current_filter_id integer,
-    failed_attempts integer,
-    unlock_token character varying,
-    locked_at timestamp without time zone,
-    uploads_count integer DEFAULT 0 NOT NULL,
-    votes_cast_count integer DEFAULT 0 NOT NULL,
-    comments_posted_count integer DEFAULT 0 NOT NULL,
-    metadata_updates_count integer DEFAULT 0 NOT NULL,
-    images_favourited_count integer DEFAULT 0 NOT NULL,
-    last_donation_at timestamp without time zone,
-    scratchpad_textile text,
-    use_centered_layout boolean DEFAULT true NOT NULL,
-    secondary_role character varying,
-    hide_default_role boolean DEFAULT false NOT NULL,
-    personal_title character varying,
-    show_hidden_items boolean DEFAULT false NOT NULL,
-    hide_vote_counts boolean DEFAULT false NOT NULL,
-    hide_advertisements boolean DEFAULT false NOT NULL,
-    encrypted_otp_secret character varying,
-    encrypted_otp_secret_iv character varying,
-    encrypted_otp_secret_salt character varying,
-    consumed_timestep integer,
-    otp_required_for_login boolean,
-    otp_backup_codes character varying[],
-    last_renamed_at timestamp without time zone DEFAULT '1970-01-01 00:00:00'::timestamp without time zone NOT NULL,
-    forced_filter_id bigint,
-    confirmed_at timestamp(0) without time zone,
-    senior_staff boolean DEFAULT false,
-    description character varying,
-    scratchpad character varying,
-    bypass_rate_limits boolean DEFAULT false,
-    scale_large_images character varying(255) DEFAULT 'true'::character varying NOT NULL
-);
-
-
---
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -2077,16 +2153,6 @@ CREATE SEQUENCE public.users_id_seq
 --
 
 ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
-
-
---
--- Name: users_roles; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.users_roles (
-    user_id integer NOT NULL,
-    role_id integer NOT NULL
-);
 
 
 --
@@ -2291,6 +2357,13 @@ ALTER TABLE ONLY public.messages ALTER COLUMN id SET DEFAULT nextval('public.mes
 --
 
 ALTER TABLE ONLY public.mod_notes ALTER COLUMN id SET DEFAULT nextval('public.mod_notes_id_seq'::regclass);
+
+
+--
+-- Name: moderation_logs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.moderation_logs ALTER COLUMN id SET DEFAULT nextval('public.moderation_logs_id_seq'::regclass);
 
 
 --
@@ -2650,6 +2723,14 @@ ALTER TABLE ONLY public.messages
 
 ALTER TABLE ONLY public.mod_notes
     ADD CONSTRAINT mod_notes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: moderation_logs moderation_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.moderation_logs
+    ADD CONSTRAINT moderation_logs_pkey PRIMARY KEY (id);
 
 
 --
@@ -4051,6 +4132,41 @@ CREATE INDEX intensities_index ON public.images USING btree (se_intensity, sw_in
 
 
 --
+-- Name: moderation_logs_created_at_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX moderation_logs_created_at_index ON public.moderation_logs USING btree (created_at);
+
+
+--
+-- Name: moderation_logs_type_created_at_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX moderation_logs_type_created_at_index ON public.moderation_logs USING btree (type, created_at);
+
+
+--
+-- Name: moderation_logs_type_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX moderation_logs_type_index ON public.moderation_logs USING btree (type);
+
+
+--
+-- Name: moderation_logs_user_id_created_at_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX moderation_logs_user_id_created_at_index ON public.moderation_logs USING btree (user_id, created_at);
+
+
+--
+-- Name: moderation_logs_user_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX moderation_logs_user_id_index ON public.moderation_logs USING btree (user_id);
+
+
+--
 -- Name: user_tokens_context_token_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4881,6 +4997,14 @@ ALTER TABLE ONLY public.image_tag_locks
 
 
 --
+-- Name: moderation_logs moderation_logs_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.moderation_logs
+    ADD CONSTRAINT moderation_logs_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
 -- Name: user_tokens user_tokens_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4916,4 +5040,5 @@ INSERT INTO public."schema_migrations" (version) VALUES (20210912171343);
 INSERT INTO public."schema_migrations" (version) VALUES (20210917190346);
 INSERT INTO public."schema_migrations" (version) VALUES (20210921025336);
 INSERT INTO public."schema_migrations" (version) VALUES (20210929181319);
+INSERT INTO public."schema_migrations" (version) VALUES (20211107130226);
 INSERT INTO public."schema_migrations" (version) VALUES (20211108003620);

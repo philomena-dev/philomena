@@ -141,37 +141,32 @@ defmodule Philomena.Filters do
   end
 
   def recent_and_user_filters(user) do
-    recent_filter_ids =
-      [user.current_filter_id | user.recent_filter_ids]
-      |> Enum.take(10)
+    sorter = fn f ->
+      Enum.find_index(user.recent_filter_ids, fn id -> f.id == id end)
+    end
+
+    mapper = fn %{id: id, name: name} ->
+      [key: name, value: id]
+    end
+
+    add_if = fn
+      list, _label, [] -> list
+      list, label, entries -> [{label, entries} | list]
+    end
 
     user_filters =
-      Filter
-      |> select([f], %{id: f.id, name: f.name, recent: ^"f"})
-      |> where(user_id: ^user.id)
-      |> limit(10)
+      user.layout.my_filters
+      |> Enum.sort_by(sorter)
+      |> Enum.map(mapper)
 
     recent_filters =
-      Filter
-      |> select([f], %{id: f.id, name: f.name, recent: ^"t"})
-      |> where([f], f.id in ^recent_filter_ids)
+      user.layout.recent_filters
+      |> Enum.sort_by(sorter)
+      |> Enum.map(mapper)
 
-    union_all(recent_filters, ^user_filters)
-    |> Repo.all()
-    |> Enum.sort_by(fn f ->
-      Enum.find_index(user.recent_filter_ids, fn id -> f.id == id end)
-    end)
-    |> Enum.group_by(
-      fn
-        %{recent: "t"} -> "Recent Filters"
-        _user -> "Your Filters"
-      end,
-      fn %{id: id, name: name} ->
-        [key: name, value: id]
-      end
-    )
-    |> Enum.to_list()
-    |> Enum.reverse()
+    []
+    |> add_if.("Your Filters", user_filters)
+    |> add_if.("Recent Filters", recent_filters)
   end
 
   def hide_tag(filter, tag) do

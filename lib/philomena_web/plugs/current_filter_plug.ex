@@ -14,10 +14,7 @@ defmodule PhilomenaWeb.CurrentFilterPlug do
 
     {filter, forced_filter} =
       if user do
-        user =
-          user
-          |> Repo.preload([:current_filter, :forced_filter])
-          |> maybe_set_default_filter()
+        user = maybe_set_default_filter(user)
 
         {user.current_filter, user.forced_filter}
       else

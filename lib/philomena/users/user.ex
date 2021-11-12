@@ -20,6 +20,7 @@ defmodule Philomena.Users.User do
   alias Philomena.UserIps.UserIp
   alias Philomena.Bans.User, as: UserBan
   alias Philomena.Donations.Donation
+  alias Philomena.Layouts.UserLayout
 
   @derive {Phoenix.Param, key: :slug}
   @derive {Inspect, except: [:password]}
@@ -37,6 +38,7 @@ defmodule Philomena.Users.User do
     has_many :bans, UserBan
     has_many :donations, Donation
     has_one :commission, Commission
+    has_one :layout, UserLayout
     many_to_many :roles, Role, join_through: "users_roles", on_replace: :delete
 
     belongs_to :current_filter, Filter

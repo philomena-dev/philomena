@@ -16,7 +16,6 @@ defmodule PhilomenaWeb.Router do
     plug PhilomenaWeb.PaginationPlug
     plug PhilomenaWeb.EnsureUserEnabledPlug
     plug PhilomenaWeb.CurrentBanPlug
-    plug PhilomenaWeb.NotificationCountPlug
     plug PhilomenaWeb.LayoutPlug
     plug PhilomenaWeb.FilterSelectPlug
   end
