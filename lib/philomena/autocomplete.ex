@@ -34,35 +34,25 @@ defmodule Philomena.Autocomplete do
     #       uint32_t associations[];
     #     };
     #
-
-    {ac_file, tag_locations} =
-      Enum.reduce(tags, {<<>>, %{}}, fn {name, _, _}, {file, locations} ->
-        pos = byte_size(file)
-        assn = Map.get(associations, name, [])
-        assn_bin = for id <- assn, into: <<>>, do: <<id::32-little>>
-
-        {
-          <<file::binary, byte_size(name)::8, name::binary, length(assn)::8, assn_bin::binary>>,
-          Map.put(locations, name, pos)
-        }
-      end)
-
-    reference_start = byte_size(ac_file)
-
-    # Add the indexable reference locations in the same order
-    #
     #     struct tag_reference {
     #       uint32_t tag_location;
     #       uint32_t num_uses;
     #     };
     #
 
-    ac_file =
-      Enum.reduce(tags, ac_file, fn {name, images_count, _}, file ->
-        location = Map.fetch!(tag_locations, name)
+    {ac_file, references} =
+      Enum.reduce(tags, {<<>>, <<>>}, fn {name, images_count, _}, {file, references} ->
+        pos = byte_size(file)
+        assn = Map.get(associations, name, [])
+        assn_bin = for id <- assn, into: <<>>, do: <<id::32-little>>
 
-        <<file::binary, location::32-little, images_count::32-little>>
+        {
+          <<file::binary, byte_size(name)::8, name::binary, length(assn)::8, assn_bin::binary>>,
+          <<references::binary, pos::32-little, images_count::32-little>>
+        }
       end)
+
+    reference_start = byte_size(ac_file)
 
     # Finally add the reference start and number of tags in the footer
     #
@@ -74,7 +64,7 @@ defmodule Philomena.Autocomplete do
     #     };
     #
 
-    ac_file = <<ac_file::binary, reference_start::32-little, length(tags)::32-little>>
+    ac_file = <<ac_file::binary, references::binary, reference_start::32-little, length(tags)::32-little>>
 
     # Insert the autocomplete binary
     new_ac =
