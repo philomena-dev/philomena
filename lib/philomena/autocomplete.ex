@@ -86,6 +86,7 @@ defmodule Philomena.Autocomplete do
   defp get_tags do
     Tag
     |> select([t], {t.name, t.images_count, t.id})
+    |> where([t], t.images_count > 0)
     |> order_by(desc: :images_count)
     |> limit(65_535)
     |> Repo.all()
@@ -100,6 +101,7 @@ defmodule Philomena.Autocomplete do
   defp get_associations(tags) do
     tags
     |> Enum.map(fn {name, images_count, id} ->
+      # Randomly sample 100 images with this tag
       image_sample =
         Tagging
         |> where(tag_id: ^id)
@@ -107,6 +109,8 @@ defmodule Philomena.Autocomplete do
         |> order_by(asc: fragment("random()"))
         |> limit(100)
 
+      # Select the tags from those images which have more uses than
+      # the current one being considered, and overlap more than 50%
       assoc_ids =
         Tagging
         |> join(:inner, [it], _ in assoc(it, :tag))
@@ -114,14 +118,10 @@ defmodule Philomena.Autocomplete do
         |> where([it, _], it.image_id in subquery(image_sample))
         |> group_by([_, t], t.id)
         |> order_by(desc: fragment("count(*)"))
-        |> select([_, t], {t.id, fragment("count(*)")})
-        |> limit(5)
+        |> having([_, t], fragment("(100 * count(*)::float / LEAST(?, 100)) > 50", ^images_count))
+        |> select([_, t], t.id)
+        |> limit(8)
         |> Repo.all()
-        |> Enum.filter(fn {_, count} ->
-          # Ensure at least 50% of taggings match
-          100 * count / min(images_count, 100) > 50
-        end)
-        |> Enum.map(fn {id, _} -> id end)
 
       {name, assoc_ids}
     end)
