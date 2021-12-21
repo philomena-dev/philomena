@@ -95,7 +95,7 @@ defmodule Philomena.Autocomplete do
   end
 
   #
-  # Get up to five associated tag ids for each returned tag.
+  # Get up to eight associated tag ids for each returned tag.
   #
   @spec get_associations(tags_list()) :: assoc_map()
   defp get_associations(tags) do
