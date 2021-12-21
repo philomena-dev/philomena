@@ -33,6 +33,12 @@ export class LocalAutocompleter {
     this.numTags = this.view.getUint32(backingStore.byteLength - 4, true);
     /** @type {number} */
     this.referenceStart = this.view.getUint32(backingStore.byteLength - 8, true);
+    /** @type {number} */
+    this.formatVersion = this.view.getUint32(backingStore.byteLength - 12, true);
+
+    if (this.formatVersion !== 1) {
+      throw new Error('Incompatible autocomplete format version');
+    }
   }
 
   /**

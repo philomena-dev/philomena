@@ -52,6 +52,7 @@ defmodule Philomena.Autocomplete do
         }
       end)
 
+    ac_file = int32_align(ac_file)
     reference_start = byte_size(ac_file)
 
     # Finally add the reference start and number of tags in the footer
@@ -59,12 +60,15 @@ defmodule Philomena.Autocomplete do
     #     struct autocomplete_file {
     #       struct tag tags[];
     #       struct tag_reference references[];
+    #       uint32_t format_version;
     #       uint32_t reference_start;
     #       uint32_t num_tags;
     #     };
     #
 
-    ac_file = <<ac_file::binary, references::binary, reference_start::32-little, length(tags)::32-little>>
+    ac_file =
+      <<ac_file::binary, references::binary, 1::32-little, reference_start::32-little,
+        length(tags)::32-little>>
 
     # Insert the autocomplete binary
     new_ac =
@@ -126,5 +130,15 @@ defmodule Philomena.Autocomplete do
       {name, assoc_ids}
     end)
     |> Map.new()
+  end
+
+  #
+  # Right-pad a binary to be a multiple of 4 bytes.
+  #
+  @spec int32_align(binary()) :: binary()
+  defp int32_align(bin) do
+    pad_bits = 8 * (4 - rem(byte_size(bin), 4))
+
+    <<bin::binary, 0::size(pad_bits)>>
   end
 end
