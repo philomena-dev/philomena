@@ -129,16 +129,11 @@ function listenAutocomplete() {
   let localAc = null;
   let localFetched = false;
 
+  document.addEventListener('focusin', fetchLocalAutocomplete);
+
   document.addEventListener('input', event => {
     removeParent();
-
-    if (!localFetched) {
-      localFetched = true;
-      fetch('/autocomplete/compiled', { credentials: 'omit', cache: 'force-cache' })
-        .then(handleError)
-        .then(resp => resp.arrayBuffer())
-        .then(buf => localAc = new LocalAutocompleter(buf));
-    }
+    fetchLocalAutocomplete(event);
 
     if (localAc !== null && 'ac' in event.target.dataset) {
       inputField = event.target;
@@ -173,6 +168,16 @@ function listenAutocomplete() {
   document.addEventListener('click', event => {
     if (event.target && event.target !== inputField) removeParent();
   });
+
+  function fetchLocalAutocomplete(event) {
+    if (!localFetched && event.target.dataset && 'ac' in event.target.dataset) {
+      localFetched = true;
+      fetch('/autocomplete/compiled', { credentials: 'omit', cache: 'force-cache' })
+        .then(handleError)
+        .then(resp => resp.arrayBuffer())
+        .then(buf => localAc = new LocalAutocompleter(buf));
+    }
+  }
 }
 
 export { listenAutocomplete };
