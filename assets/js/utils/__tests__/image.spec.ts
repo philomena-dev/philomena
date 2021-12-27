@@ -1,56 +1,61 @@
-import { showBlock, showThumb } from '../image';
+import { hideThumb, showBlock, showThumb, spoilerBlock, spoilerThumb } from '../image';
 import { getRandomArrayItem } from '../../../test/randomness';
 import { mockStorageGetItem } from '../../../test/mock-storage-get-item';
+import { createEvent, fireEvent } from '@testing-library/dom';
+import { EventType } from '@testing-library/dom/types/events';
 
 describe('Image utils', () => {
   const hiddenClass = 'hidden';
   const spoilerOverlayClass = 'js-spoiler-info-overlay';
   const serveHidpiStorageKey = 'serve_hidpi';
+  const mockSpoilerReason = 'Mock reason';
+  const mockSpoilerUri = '/images/tagblocked.svg';
+  const mockImageUri = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+  const getMockImageSizeUrls = (extension: string) => ({
+    thumb: `https://example.com/thumb.${extension}`,
+    small: `https://example.com/small.${extension}`,
+    medium: `https://example.com/medium.${extension}`,
+    large: `https://example.com/large.${extension}`,
+  });
+  type ImageSize = keyof ReturnType<typeof getMockImageSizeUrls>;
+  const PossibleImageSizes: ImageSize[] = ['thumb', 'small', 'medium', 'large'];
+
+  const applyMockDataAttributes = (element: HTMLElement, extension: string, size?: ImageSize) => {
+    const mockSize = size || getRandomArrayItem(PossibleImageSizes);
+    const mockSizeUrls = getMockImageSizeUrls(extension);
+    element.setAttribute('data-size', mockSize);
+    element.setAttribute('data-uris', JSON.stringify(mockSizeUrls));
+    return { mockSize, mockSizeUrls };
+  };
+  const createMockSpoilerOverlay = () => {
+    const mockSpoilerOverlay = document.createElement('div');
+    mockSpoilerOverlay.classList.add(spoilerOverlayClass);
+    return mockSpoilerOverlay;
+  };
+  const createMockElementWithPicture = (extension: string, size?: ImageSize) => {
+    const mockElement = document.createElement('div');
+    const { mockSizeUrls, mockSize } = applyMockDataAttributes(mockElement, extension, size);
+
+    const mockPicture = document.createElement('picture');
+    mockElement.appendChild(mockPicture);
+
+    const mockSizeImage = new Image();
+    mockPicture.appendChild(mockSizeImage);
+
+    const mockSpoilerOverlay = createMockSpoilerOverlay();
+    mockElement.appendChild(mockSpoilerOverlay);
+
+    return {
+      mockElement,
+      mockPicture,
+      mockSize,
+      mockSizeImage,
+      mockSizeUrls,
+      mockSpoilerOverlay,
+    };
+  };
 
   describe('showThumb', () => {
-    const getMockImageSizeUrls = (extension: string) => ({
-      thumb: `https://example.com/thumb.${extension}`,
-      small: `https://example.com/small.${extension}`,
-      medium: `https://example.com/medium.${extension}`,
-      large: `https://example.com/large.${extension}`,
-    });
-    type ImageSize = keyof ReturnType<typeof getMockImageSizeUrls>;
-    const PossibleImageSizes: ImageSize[] = ['thumb', 'small', 'medium', 'large'];
-
-    const applyMockDataAttributes = (element: HTMLElement, extension: string, size?: ImageSize) => {
-      const mockSize = size || getRandomArrayItem(PossibleImageSizes);
-      const mockSizeUrls = getMockImageSizeUrls(extension);
-      element.setAttribute('data-size', mockSize);
-      element.setAttribute('data-uris', JSON.stringify(mockSizeUrls));
-      return { mockSize, mockSizeUrls };
-    };
-    const createMockSpoilerOverlay = () => {
-      const mockSpoilerOverlay = document.createElement('div');
-      mockSpoilerOverlay.classList.add(spoilerOverlayClass);
-      return mockSpoilerOverlay;
-    };
-    const createMockElementWithPicture = (extension: string, size?: ImageSize) => {
-      const mockElement = document.createElement('div');
-      const { mockSizeUrls, mockSize } = applyMockDataAttributes(mockElement, extension, size);
-
-      const mockPicture = document.createElement('picture');
-      mockElement.appendChild(mockPicture);
-
-      const mockSizeImage = new Image();
-      mockPicture.appendChild(mockSizeImage);
-
-      const mockSpoilerOverlay = createMockSpoilerOverlay();
-      mockElement.appendChild(mockSpoilerOverlay);
-
-      return {
-        mockElement,
-        mockPicture,
-        mockSize,
-        mockSizeImage,
-        mockSizeUrls,
-        mockSpoilerOverlay,
-      };
-    };
     let mockServeHidpiValue: string | null = null;
     mockStorageGetItem((key: string) => {
       if (key !== serveHidpiStorageKey) return null;
@@ -70,7 +75,7 @@ describe('Image utils', () => {
         const { mockSize, mockSizeUrls } = applyMockDataAttributes(mockElement, extension);
 
         const mockImage = new Image();
-        mockImage.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+        mockImage.src = mockImageUri;
         if (imgClasses) {
           imgClasses.forEach(videoClass => {
             mockImage.classList.add(videoClass);
@@ -109,7 +114,7 @@ describe('Image utils', () => {
           mockVideo,
           mockSize,
           mockSizeUrls,
-          mockSpoilerOverlay
+          mockSpoilerOverlay,
         } = createMockElements({
           extension: 'webm',
           videoClasses: ['hidden'],
@@ -182,7 +187,7 @@ describe('Image utils', () => {
         mockSizeImage,
         mockSizeUrls,
         mockSize,
-        mockSpoilerOverlay
+        mockSpoilerOverlay,
       } = createMockElementWithPicture('jpg');
       const result = showThumb(mockElement);
 
@@ -199,7 +204,7 @@ describe('Image utils', () => {
         mockSizeImage,
         mockSizeUrls,
         mockSize,
-        mockSpoilerOverlay
+        mockSpoilerOverlay,
       } = createMockElementWithPicture('gif');
       const result = showThumb(mockElement);
 
@@ -216,7 +221,7 @@ describe('Image utils', () => {
         mockSpoilerOverlay,
         mockSizeImage,
         mockSizeUrls,
-        mockSize
+        mockSize,
       } = createMockElementWithPicture('webm');
       const result = showThumb(mockElement);
 
@@ -239,7 +244,7 @@ describe('Image utils', () => {
           mockElement,
           mockSizeImage,
           mockSizeUrls,
-          mockSpoilerOverlay
+          mockSpoilerOverlay,
         } = createMockElementWithPicture('jpg', size);
         const result = showThumb(mockElement);
 
@@ -267,7 +272,7 @@ describe('Image utils', () => {
           mockElement,
           mockSizeImage,
           mockSizeUrls,
-          mockSpoilerOverlay
+          mockSpoilerOverlay,
         } = createMockElementWithPicture('gif', mockSize);
         const result = showThumb(mockElement);
 
@@ -287,7 +292,12 @@ describe('Image utils', () => {
     });
 
     it('should return false if img source already matches thumbUri', () => {
-      const { mockElement, mockSizeImage, mockSizeUrls, mockSize } = createMockElementWithPicture('jpg');
+      const {
+        mockElement,
+        mockSizeImage,
+        mockSizeUrls,
+        mockSize,
+      } = createMockElementWithPicture('jpg');
       mockSizeImage.src = mockSizeUrls[mockSize];
       const result = showThumb(mockElement);
       expect(result).toBe(false);
@@ -321,29 +331,253 @@ describe('Image utils', () => {
 
   describe('hideThumb', () => {
     describe('hideVideoThumb', () => {
-      it.todo('should return early if picture element is missing AND img element is missing');
+      it('should return early if picture AND video elements are missing', () => {
+        const mockElement = document.createElement('div');
 
-      it.todo('should hide video thumbnail if picture element is missing BUT img element is present');
+        const querySelectorSpy = jest.spyOn(mockElement, 'querySelector');
+
+        hideThumb(mockElement, mockSpoilerUri, mockSpoilerReason);
+
+        try {
+          expect(querySelectorSpy).toHaveBeenCalledTimes(2);
+          expect(querySelectorSpy).toHaveBeenNthCalledWith(1, 'picture');
+          expect(querySelectorSpy).toHaveBeenNthCalledWith(2, 'video');
+        }
+        finally {
+          querySelectorSpy.mockRestore();
+        }
+      });
+      it('should return early if picture and img elements are missing BUT video element is present', () => {
+        const mockElement = document.createElement('div');
+        const mockVideo = document.createElement('video');
+        mockElement.appendChild(mockVideo);
+        const pauseSpy = jest.spyOn(mockVideo, 'pause').mockReturnValue(undefined);
+
+        const querySelectorSpy = jest.spyOn(mockElement, 'querySelector');
+
+        hideThumb(mockElement, mockSpoilerUri, mockSpoilerReason);
+
+        try {
+          expect(querySelectorSpy).toHaveBeenCalledTimes(4);
+          expect(querySelectorSpy).toHaveBeenNthCalledWith(1, 'picture');
+          expect(querySelectorSpy).toHaveBeenNthCalledWith(2, 'video');
+          expect(querySelectorSpy).toHaveBeenNthCalledWith(3, 'img');
+          expect(querySelectorSpy).toHaveBeenNthCalledWith(4, `.${spoilerOverlayClass}`);
+          expect(mockVideo).not.toHaveClass(hiddenClass);
+        }
+        finally {
+          querySelectorSpy.mockRestore();
+          pauseSpy.mockRestore();
+        }
+      });
+
+      it('should hide video thumbnail if picture element is missing BUT video element is present', () => {
+        const mockElement = document.createElement('div');
+        const mockVideo = document.createElement('video');
+        mockElement.appendChild(mockVideo);
+        const pauseSpy = jest.spyOn(mockVideo, 'pause').mockReturnValue(undefined);
+        const mockImage = document.createElement('img');
+        mockImage.classList.add(hiddenClass);
+        mockElement.appendChild(mockImage);
+        const mockOverlay = document.createElement('span');
+        mockOverlay.classList.add(spoilerOverlayClass, hiddenClass);
+        mockElement.appendChild(mockOverlay);
+
+        hideThumb(mockElement, mockSpoilerUri, mockSpoilerReason);
+
+        try {
+          expect(mockImage).not.toHaveClass(hiddenClass);
+          expect(mockImage).toHaveAttribute('src', mockSpoilerUri);
+          expect(mockOverlay).toHaveTextContent(mockSpoilerReason);
+          expect(mockVideo).toBeEmptyDOMElement();
+          expect(mockVideo).toHaveClass(hiddenClass);
+          expect(pauseSpy).toHaveBeenCalled();
+        }
+        finally {
+          pauseSpy.mockRestore();
+        }
+      });
     });
 
-    it.todo('should return early if picture element is present AND img element is missing');
+    it('should return early if picture element is present AND img element is missing', () => {
+      const mockElement = document.createElement('div');
+      const mockPicture = document.createElement('picture');
+      mockElement.appendChild(mockPicture);
 
-    it.todo('should hide img thumbnail if picture element is present AND img element is present');
+      const imgQuerySelectorSpy = jest.spyOn(mockElement, 'querySelector');
+      const pictureQuerySelectorSpy = jest.spyOn(mockPicture, 'querySelector');
+
+      hideThumb(mockElement, mockSpoilerUri, mockSpoilerReason);
+
+      try {
+        expect(imgQuerySelectorSpy).toHaveBeenCalledTimes(2);
+        expect(pictureQuerySelectorSpy).toHaveBeenCalledTimes(1);
+
+        expect(imgQuerySelectorSpy).toHaveBeenNthCalledWith(1, 'picture');
+        expect(pictureQuerySelectorSpy).toHaveBeenNthCalledWith(1, 'img');
+        expect(imgQuerySelectorSpy).toHaveBeenNthCalledWith(2, `.${spoilerOverlayClass}`);
+      }
+      finally {
+        imgQuerySelectorSpy.mockRestore();
+        pictureQuerySelectorSpy.mockRestore();
+      }
+    });
+
+    it('should hide img thumbnail if picture element is present AND img element is present', () => {
+      const mockElement = document.createElement('div');
+      const mockPicture = document.createElement('picture');
+      mockElement.appendChild(mockPicture);
+      const mockImage = document.createElement('img');
+      mockPicture.appendChild(mockImage);
+      const mockOverlay = document.createElement('span');
+      mockOverlay.classList.add(spoilerOverlayClass, hiddenClass);
+      mockElement.appendChild(mockOverlay);
+
+      hideThumb(mockElement, mockSpoilerUri, mockSpoilerReason);
+
+      expect(mockImage).toHaveAttribute('srcset', '');
+      expect(mockImage).toHaveAttribute('src', mockSpoilerUri);
+      expect(mockOverlay).toContainHTML(mockSpoilerReason);
+      expect(mockOverlay).not.toHaveClass(hiddenClass);
+    });
+
+    describe('edge cases', () => {
+      it('should crash if imageOverlay is missing', () => {
+        const mockElement = document.createElement('div');
+        const mockPicture = document.createElement('picture');
+        mockElement.appendChild(mockPicture);
+        const mockImage = document.createElement('img');
+        mockPicture.appendChild(mockImage);
+
+        expect(() => hideThumb(mockElement, mockSpoilerUri, mockSpoilerReason)).toThrow();
+      });
+    });
   });
 
   describe('spoilerThumb', () => {
-    it.todo('should hide image thumbnail');
+    const testSpoilerThumb = (handlers?: [EventType, EventType]) => {
+      const { mockElement, mockSpoilerOverlay, mockSizeImage } = createMockElementWithPicture('jpg');
+      const addEventListenerSpy = jest.spyOn(mockElement, 'addEventListener');
 
-    it.todo('should hide video thumbnail');
+      spoilerThumb(mockElement, mockSpoilerUri, mockSpoilerReason);
 
-    it.todo('should call add click and mouseleave handlers for click spoiler type');
+      // Element should be hidden by the call
+      expect(mockSizeImage).toHaveAttribute('src', mockSpoilerUri);
+      expect(mockSpoilerOverlay).not.toHaveClass(hiddenClass);
+      expect(mockSpoilerOverlay).toContainHTML(mockSpoilerReason);
 
-    it.todo('should call add mouseenter and mouseleave handlers for click spoiler type');
+      // If addEventListener calls are not expected, bail
+      if (!handlers) {
+        expect(addEventListenerSpy).not.toHaveBeenCalled();
+        return;
+      }
+
+      const [firstHandler, secondHandler] = handlers;
+
+      // Event listeners should be attached to correct events
+      expect(addEventListenerSpy).toHaveBeenCalledTimes(2);
+      expect(addEventListenerSpy.mock.calls[0][0]).toBe(firstHandler.toLowerCase());
+      expect(addEventListenerSpy.mock.calls[1][0]).toBe(secondHandler.toLowerCase());
+
+      // Clicking once should reveal the image and hide spoiler elements
+      let clickEvent = createEvent[firstHandler](mockElement);
+      fireEvent(mockElement, clickEvent);
+      if (firstHandler === 'click') {
+        expect(clickEvent.defaultPrevented).toBe(true);
+      }
+      expect(mockSizeImage).not.toHaveAttribute('src', mockSpoilerUri);
+      expect(mockSpoilerOverlay).toHaveClass(hiddenClass);
+
+      if (firstHandler === 'click') {
+        // Second attempt to click a shown spoiler should not cause default prevention
+        clickEvent = createEvent.click(mockElement);
+        fireEvent(mockElement, clickEvent);
+        expect(clickEvent.defaultPrevented).toBe(false);
+      }
+
+      // Moving the mouse away should hide the image and show the overlay again
+      const mouseLeaveEvent = createEvent.mouseLeave(mockElement);
+      fireEvent(mockElement, mouseLeaveEvent);
+      expect(mockSizeImage).toHaveAttribute('src', mockSpoilerUri);
+      expect(mockSpoilerOverlay).not.toHaveClass(hiddenClass);
+      expect(mockSpoilerOverlay).toContainHTML(mockSpoilerReason);
+    };
+    let lastSpoilerType: SpoilerType;
+
+    beforeEach(() => {
+      lastSpoilerType = window.booru.spoilerType;
+    });
+
+    afterEach(() => {
+      window.booru.spoilerType = lastSpoilerType;
+    });
+
+    it('should add click and mouseleave handlers for click spoiler type', () => {
+      window.booru.spoilerType = 'click';
+      expect.hasAssertions();
+      testSpoilerThumb(['click', 'mouseLeave']);
+    });
+
+    it('should add mouseenter and mouseleave handlers for hover spoiler type', () => {
+      window.booru.spoilerType = 'hover';
+      expect.hasAssertions();
+      testSpoilerThumb(['mouseEnter', 'mouseLeave']);
+    });
+
+    it('should not add event handlers for unknown spoiler type', () => {
+      window.booru.spoilerType = 'off';
+      expect.hasAssertions();
+      testSpoilerThumb();
+    });
   });
 
   describe('spoilerBlock', () => {
-    it.todo('should do nothing if image element is missing');
+    const imageFilteredClass = 'image-filtered';
+    const filterExplanationClass = 'filter-explanation';
+    const imageShowClass = 'image-show';
+    const createFilteredImageElement = () => {
+      const mockImageFiltered = document.createElement('div');
+      mockImageFiltered.classList.add(imageFilteredClass, hiddenClass);
 
-    it.todo('should update the elements with the parameters and set classes if image element is found');
+      const mockImage = new Image();
+      mockImage.src = mockImageUri;
+      mockImageFiltered.appendChild(mockImage);
+
+      return { mockImageFiltered, mockImage };
+    };
+
+    it('should do nothing if image element is missing', () => {
+      const mockElement = document.createElement('div');
+      expect(() => spoilerBlock(mockElement, mockSpoilerUri, mockSpoilerReason)).not.toThrow();
+    });
+
+    it('should update the elements with the parameters and set classes if image element is found', () => {
+      const mockElement = document.createElement('div');
+      const { mockImageFiltered, mockImage } = createFilteredImageElement();
+      mockElement.appendChild(mockImageFiltered);
+      const mockExplanation = document.createElement('span');
+      mockExplanation.classList.add(filterExplanationClass);
+      mockElement.appendChild(mockExplanation);
+      const mockImageShow = document.createElement('div');
+      mockImageShow.classList.add(imageShowClass);
+      mockElement.appendChild(mockImageShow);
+
+      spoilerBlock(mockElement, mockSpoilerUri, mockSpoilerReason);
+
+      expect(mockImage).toHaveAttribute('src', mockSpoilerUri);
+      expect(mockExplanation).toContainHTML(mockSpoilerReason);
+      expect(mockImageShow).toHaveClass(hiddenClass);
+      expect(mockImageFiltered).not.toHaveClass(hiddenClass);
+    });
+
+    describe('edge cases', () => {
+      it('should crash if imgReason is missing', () => {
+        const mockElement = document.createElement('div');
+        const { mockImageFiltered } = createFilteredImageElement();
+        mockElement.appendChild(mockImageFiltered);
+
+        expect(() => spoilerBlock(mockElement, mockSpoilerUri, mockSpoilerReason)).toThrow();
+      });
+    });
   });
 });

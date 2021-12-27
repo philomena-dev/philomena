@@ -1,6 +1,4 @@
-/**
- * Request Utils
- */
+// Request Utils
 
 export function fetchJson(verb, endpoint, body) {
   const data = {

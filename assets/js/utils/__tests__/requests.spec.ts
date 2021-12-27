@@ -1,5 +1,4 @@
-import '../../../types/booru-object';
-import { handleError, fetchHtml, fetchJson } from '../requests';
+import { fetchHtml, fetchJson, handleError } from '../requests';
 import fetchMock from 'jest-fetch-mock';
 
 describe('Request utils', () => {

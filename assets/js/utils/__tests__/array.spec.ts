@@ -59,7 +59,7 @@ describe('Array Utilities', () => {
       });
 
       it('should return true for matching arrays', () => {
-      // Numbers
+        // Numbers
         expect(arraysEqual([0], [0])).toBe(true);
         expect(arraysEqual([4e3], [4000])).toBe(true);
         expect(arraysEqual([0, 1], [0, 1])).toBe(true);
@@ -90,7 +90,7 @@ describe('Array Utilities', () => {
       });
 
       it('should return true for matching up to the first array\'s length', () => {
-      // Numbers
+        // Numbers
         expect(arraysEqual([0], [0, 1])).toBe(true);
         expect(arraysEqual([0, 1], [0, 1, 2])).toBe(true);
 
@@ -129,10 +129,10 @@ describe('Array Utilities', () => {
     });
 
     describe('negative cases', () => {
-    // FIXME This case should be handled
-    // eslint-disable-next-line jest/no-disabled-tests
+      // FIXME This case should be handled
+      // eslint-disable-next-line jest/no-disabled-tests
       it.skip('should return false for arrays of different length', () => {
-      // Numbers
+        // Numbers
         expect(arraysEqual([], [0])).toBe(false);
         expect(arraysEqual([0], [])).toBe(false);
         expect(arraysEqual([0], [0, 0])).toBe(false);
@@ -153,7 +153,7 @@ describe('Array Utilities', () => {
       });
 
       it('should return false if items up to the first array\'s length differ', () => {
-      // Numbers
+        // Numbers
         expect(arraysEqual([0], [1])).toBe(false);
         expect(arraysEqual([0, 1], [1, 2])).toBe(false);
         expect(arraysEqual([0, 1, 2], [1, 2, 3])).toBe(false);
