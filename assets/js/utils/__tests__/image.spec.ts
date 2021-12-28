@@ -1,6 +1,6 @@
 import { hideThumb, showBlock, showThumb, spoilerBlock, spoilerThumb } from '../image';
 import { getRandomArrayItem } from '../../../test/randomness';
-import { mockStorageGetItem } from '../../../test/mock-storage-get-item';
+import { mockStorage } from '../../../test/mock-storage';
 import { createEvent, fireEvent } from '@testing-library/dom';
 import { EventType } from '@testing-library/dom/types/events';
 
@@ -57,10 +57,12 @@ describe('Image utils', () => {
 
   describe('showThumb', () => {
     let mockServeHidpiValue: string | null = null;
-    mockStorageGetItem((key: string) => {
-      if (key !== serveHidpiStorageKey) return null;
+    mockStorage({
+      getItem(key: string) {
+        if (key !== serveHidpiStorageKey) return null;
 
-      return mockServeHidpiValue;
+        return mockServeHidpiValue;
+      },
     });
 
     describe('video thumbnail', () => {
