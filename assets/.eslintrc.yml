@@ -274,6 +274,8 @@ overrides:
       '@typescript-eslint/no-redeclare': 2
       no-extra-parens: 0
       '@typescript-eslint/no-extra-parens': 2
+      no-shadow: 0
+      '@typescript-eslint/no-shadow': 2
   # Jest Tests (also written in TypeScript)
   # Disable rules that do not make sense in test files (e.g. testing for undefined input values should be allowed)
   - files:

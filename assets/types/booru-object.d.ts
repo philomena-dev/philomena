@@ -19,6 +19,10 @@ interface BooruObject {
    */
   spoileredTagList: number[];
   /**
+   * Array of ignored tag IDs as numbers
+   */
+  ignoredTagList: number[];
+  /**
    * Array of hidden tag IDs as numbers
    */
   hiddenTagList: number[];
@@ -31,6 +35,22 @@ interface BooruObject {
    * Indicates if the current user has edit rights to the currently selected filter
    */
   userCanEditFilter: boolean;
+  /**
+   * SearchAST instance for hidden tags, converted from raw AST data in {@see import('../js/booru.js')}
+   *
+   * TODO Properly type after TypeScript migration
+   *
+   * @type {import('../js/match_query.js').SearchAST}
+   */
+  hiddenFilter: unknown;
+  /**
+   * SearchAST instance for spoilered tags, converted from raw AST data in {@see import('../js/booru.js')}
+   *
+   * TODO Properly type after TypeScript migration
+   *
+   * @type {import('../js/match_query.js').SearchAST}
+   */
+  spoileredFilter: unknown;
 }
 
 interface Window {
