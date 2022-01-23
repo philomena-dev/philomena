@@ -11,10 +11,10 @@ export default {
   coverageDirectory: '<rootDir>/coverage/',
   coverageThreshold: {
     global: {
-      statements: 10,
-      branches: 10,
-      functions: 10,
-      lines: 10,
+      statements: 0,
+      branches: 0,
+      functions: 0,
+      lines: 0,
     },
     './js/utils/**/*.js': {
       statements: 100,
