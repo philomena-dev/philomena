@@ -9,15 +9,20 @@ export default {
     '.*\\.d\\.ts$',
   ],
   coverageDirectory: '<rootDir>/coverage/',
-  // TODO Enable coverage threshold once code is sufficiently tested
-  /* coverageThreshold: {
+  coverageThreshold: {
     global: {
+      statements: 10,
+      branches: 10,
+      functions: 10,
+      lines: 10,
+    },
+    './js/utils/**/*.js': {
       statements: 100,
       branches: 100,
       functions: 100,
       lines: 100,
     },
-  }, */
+  },
   preset: 'ts-jest/presets/js-with-ts-esm',
   setupFilesAfterEnv: ['<rootDir>/test/jest-setup.ts'],
   testEnvironment: 'jsdom',
