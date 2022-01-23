@@ -1,4 +1,4 @@
-import { $ } from '../utils/dom.js';
+import { $ } from '../utils/dom';
 
 function showOwnedComments() {
   const editableComments = $('.js-editable-comments');

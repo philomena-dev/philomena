@@ -1,8 +1,5 @@
+// Client-side tag completion.
 import store from './store';
-
-/*
- * Client-side tag completion.
- */
 
 /**
  * @typedef {object} Result
