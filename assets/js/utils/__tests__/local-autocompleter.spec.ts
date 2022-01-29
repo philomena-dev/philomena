@@ -1,7 +1,7 @@
 import { LocalAutocompleter } from '../local-autocompleter';
 import { promises } from 'fs';
 import { join } from 'path';
-import { TextDecoder, TextEncoder } from 'util';
+import { TextDecoder } from 'util';
 
 describe('Local Autocompleter', () => {
   let mockData: ArrayBuffer;
@@ -19,7 +19,6 @@ describe('Local Autocompleter', () => {
     mockData = (await promises.readFile(mockDataPath, { encoding: null })).buffer;
 
     // Polyfills for jsdom
-    global.TextEncoder = TextEncoder;
     global.TextDecoder = TextDecoder as unknown as typeof global.TextDecoder;
   });
 

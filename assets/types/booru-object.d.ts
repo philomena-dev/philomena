@@ -1,4 +1,4 @@
-type SpoilerType = 'click' | 'hover' | 'off';
+type SpoilerType = 'click' | 'hover' | 'static' | 'off';
 
 interface BooruObject {
   csrfToken: string;

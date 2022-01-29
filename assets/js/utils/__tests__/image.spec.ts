@@ -442,18 +442,6 @@ describe('Image utils', () => {
       expect(mockOverlay).toContainHTML(mockSpoilerReason);
       expect(mockOverlay).not.toHaveClass(hiddenClass);
     });
-
-    describe('edge cases', () => {
-      it('should crash if imageOverlay is missing', () => {
-        const mockElement = document.createElement('div');
-        const mockPicture = document.createElement('picture');
-        mockElement.appendChild(mockPicture);
-        const mockImage = document.createElement('img');
-        mockPicture.appendChild(mockImage);
-
-        expect(() => hideThumb(mockElement, mockSpoilerUri, mockSpoilerReason)).toThrow();
-      });
-    });
   });
 
   describe('spoilerThumb', () => {
@@ -526,8 +514,14 @@ describe('Image utils', () => {
       testSpoilerThumb(['mouseEnter', 'mouseLeave']);
     });
 
-    it('should not add event handlers for unknown spoiler type', () => {
+    it('should not add event handlers for off spoiler type', () => {
       window.booru.spoilerType = 'off';
+      expect.hasAssertions();
+      testSpoilerThumb();
+    });
+
+    it('should not add event handlers for static spoiler type', () => {
+      window.booru.spoilerType = 'static';
       expect.hasAssertions();
       testSpoilerThumb();
     });
@@ -570,16 +564,6 @@ describe('Image utils', () => {
       expect(mockExplanation).toContainHTML(mockSpoilerReason);
       expect(mockImageShow).toHaveClass(hiddenClass);
       expect(mockImageFiltered).not.toHaveClass(hiddenClass);
-    });
-
-    describe('edge cases', () => {
-      it('should crash if imgReason is missing', () => {
-        const mockElement = document.createElement('div');
-        const { mockImageFiltered } = createFilteredImageElement();
-        mockElement.appendChild(mockImageFiltered);
-
-        expect(() => spoilerBlock(mockElement, mockSpoilerUri, mockSpoilerReason)).toThrow();
-      });
     });
   });
 });

@@ -45,7 +45,7 @@ describe('Tag utilities', () => {
       spoiler_image_uri: null,
     },
   };
-  const getEnabledSpoilerType = () => getRandomArrayItem<SpoilerType>(['click', 'hover']);
+  const getEnabledSpoilerType = () => getRandomArrayItem<SpoilerType>(['click', 'hover', 'static']);
 
   mockStorage({
     getItem(key: string): string | null {

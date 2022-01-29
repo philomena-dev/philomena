@@ -58,8 +58,7 @@ export default {
     const lastUpdatedKey = key + lastUpdatedSuffix;
     const lastUpdatedTime = this.get(lastUpdatedKey);
 
-    const currentTime = Date.now();
-    return currentTime > lastUpdatedTime;
+    return Date.now() > lastUpdatedTime;
   },
 
 };
