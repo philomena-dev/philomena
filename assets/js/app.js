@@ -17,6 +17,9 @@ import './vendor/values-entries.polyfill';
 import './ujs';
 import './when-ready';
 
-import '../css/themes/default.scss';
-import '../css/themes/dark.scss';
-import '../css/themes/red.scss';
+// Base stylesheet.
+import '../css/application.scss';
+
+// Themes.
+import '../css/themes/dark-blue.scss';
+import '../css/themes/dark-purple.scss';

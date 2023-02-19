@@ -1,10 +1,14 @@
 - params = assigns[:params] || []
 
 = if @page.total_pages > 1 do
-  nav.pagination.hide-mobile-t
+  nav.pagination.hidden--mobile
     = if not first_page?(@page) do
-      = link("« First", to: first_page_path(@page, @route, params))
-      = link("‹ Prev", to: prev_page_path(@page, @route, params), class: "js-prev")
+      = link to: first_page_path(@page, @route, params) do
+        i.fa.fa-backward>
+        ' First
+      = link to: prev_page_path(@page, @route, params), class: "js-prev" do
+        i.fa.fa-chevron-left>
+        ' Prev
 
     = if left_gap?(@page) do
       span.page.gap
@@ -23,16 +27,28 @@
         ' …
 
     = if not last_page?(@page) do
-      = link("Next ›", to: next_page_path(@page, @route, params), class: "js-next")
-      = link("Last »", to: last_page_path(@page, @route, params))
+      = link to: next_page_path(@page, @route, params), class: "js-next" do
+        ' Next
+        i.fa.fa-chevron-right
+      = link to: last_page_path(@page, @route, params) do
+        ' Last
+        i.fa.fa-fast-forward
 
-  nav.pagination.hide-desktop-t
+  nav.pagination.hidden--desktop
     = if first_page?(@page) do
-      span « First
-      span ‹ Prev
+      span
+        i.fa.fa-backward>
+        ' First
+      span
+        i.fa.fa-chevron-left>
+        ' Prev
     - else
-      = link("« First", to: first_page_path(@page, @route, params))
-      = link("‹ Prev", to: prev_page_path(@page, @route, params), class: "js-prev")
+      = link to: first_page_path(@page, @route, params) do
+        i.fa.fa-backward>
+        ' First
+      = link to: prev_page_path(@page, @route, params), class: "js-prev" do
+        i.fa.fa-chevron-left>
+        ' Prev
 
     .dropdown
       a.page-current.pagination__dropdown
@@ -57,8 +73,16 @@
             ' …
 
     = if last_page?(@page) do
-      span Next ›
-      span Last »
+      span
+        ' Next
+        i.fa.fa-chevron-right
+      span
+        ' Last
+        i.fa.fa-fast-forward
     - else
-      = link("Next ›", to: next_page_path(@page, @route, params), class: "js-next")
-      = link("Last »", to: last_page_path(@page, @route, params))
+      = link to: next_page_path(@page, @route, params), class: "js-next" do
+        ' Next
+        i.fa.fa-chevron-right
+      = link to: last_page_path(@page, @route, params) do
+        ' Last
+        i.fa.fa-fast-forward

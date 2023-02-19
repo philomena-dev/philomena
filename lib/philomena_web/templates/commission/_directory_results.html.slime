@@ -22,7 +22,7 @@ elixir:
         = for c <- @commissions do
           .block.commission
             .block__content.flex.flex--no-wrap
-              .flex__fixed.spacing-right
+              .flex__fixed.spacing--right
                 = render PhilomenaWeb.UserAttributionView, "_user_avatar.html", object: c, conn: @conn
 
               .flex__grow.commission__listing_body

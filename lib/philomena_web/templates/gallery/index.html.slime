@@ -38,7 +38,7 @@ elixir:
       .block__header.page__header
         .page__pagination = pagination
 
-      .block__content.js-resizable-media-container
+      .block__content.media-list
         = if Enum.any?(@galleries) do
           = for gallery <- @galleries do
             = render PhilomenaWeb.GalleryView, "_gallery.html", gallery: gallery, conn: @conn

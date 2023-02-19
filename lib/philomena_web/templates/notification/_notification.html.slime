@@ -1,7 +1,7 @@
 = if @notification.actor do
   .block.block--fixed.flex id="notification-#{@notification.id}"
     = if @notification.actor_type == "Image" and @notification.actor do
-      .flex.flex--centered.flex__fixed.thumb-tiny-container.spacing-right
+      .flex.flex--centered.flex__fixed.media-tiny-container.spacing--right
         = render PhilomenaWeb.ImageView, "_image_container.html", image: @notification.actor, size: :thumb_tiny, conn: @conn
 
     => render PhilomenaWeb.NotificationView, notification_template_path(@notification.actor_type), notification: @notification, conn: @conn

@@ -9,15 +9,15 @@ elixir:
   span#js-subscription-target
     a.js-subscription-link.media-box__header.media-box__header--channel.media-box__header--link href=watch_path class=watch_class data-remote="true" data-method="post"
       i.fa.fa-bell>
-      span.hide-mobile
+      span.hidden--mobile
         ' Subscribe
 
     a.js-subscription-link.media-box__header.media-box__header--channel.media-box__header--link href=unwatch_path class=unwatch_class data-remote="true" data-method="delete"
       i.fa.fa-bell-slash>
-      span.hide-mobile
+      span.hidden--mobile
         ' Unsubscribe
 - else
   a.media-box__header.media-box__header--channel.media-box__header--link href=Routes.session_path(@conn, :new)
     i.fa.fa-bell>
-    span.hide-mobile
+    span.hidden--mobile
       ' Subscribe

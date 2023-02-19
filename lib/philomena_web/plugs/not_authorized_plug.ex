@@ -16,7 +16,7 @@ defmodule PhilomenaWeb.NotAuthorizedPlug do
       _false ->
         conn
         |> Controller.fetch_flash()
-        |> Controller.put_flash(:error, "You can't access that page.")
+        |> Controller.put_flash(:warning, "You can't access that page.")
         |> Controller.redirect(to: "/")
         |> Conn.halt()
     end

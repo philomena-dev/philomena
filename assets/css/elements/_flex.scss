@@ -1,0 +1,86 @@
+.flex {
+  display: flex;
+}
+
+.flex__row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex__column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex__row--centered {
+  @extend .flex__row;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex__column--centered {
+  @extend .flex__column;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex--centered {
+  align-items: center;
+}
+
+.flex--center-distributed {
+  justify-content: center;
+}
+
+.flex--no-wrap {
+  flex-wrap: nowrap;
+}
+
+.flex--wrap {
+  flex-wrap: wrap;
+}
+
+.flex__right {
+  flex: 1 1 auto;
+  text-align: right;
+}
+
+.flex__grow {
+  flex: 1 0 0;
+}
+
+.flex__shrink {
+  flex: 0 1 auto;
+}
+
+.flex__fixed {
+  flex: 0 0 auto;
+}
+
+.flex--column {
+  flex-direction: column;
+}
+
+.flex--spaced-out {
+  justify-content: space-between;
+}
+
+.flex--start-bunched {
+  justify-content: flex-start;
+}
+
+.flex--end-bunched {
+  justify-content: flex-end;
+}
+
+@include if-desktop {
+  .flex--maybe-wrap {
+    flex-wrap: nowrap;
+  }
+}
+
+@include if-mobile {
+  .flex--maybe-wrap {
+    flex-wrap: wrap;
+  }
+}

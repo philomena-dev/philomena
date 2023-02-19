@@ -10,7 +10,7 @@ defmodule PhilomenaWeb.LayoutView do
   end
 
   def container_class(%{use_centered_layout: false}), do: nil
-  def container_class(_user), do: "layout--center-aligned"
+  def container_class(_user), do: "centered-layout"
 
   def render_time(conn) do
     (Time.diff(Time.utc_now(), conn.assigns[:start_time], :microsecond) / 1000.0)
@@ -64,17 +64,17 @@ defmodule PhilomenaWeb.LayoutView do
     Config.get(:footer)
   end
 
-  def stylesheet_path(conn, %{theme: "dark"}),
-    do: Routes.static_path(conn, "/css/dark.css")
+  # def stylesheet_path(conn, %{theme: "dark"}),
+  #   do: Routes.static_path(conn, "/css/dark.css")
 
-  def stylesheet_path(conn, %{theme: "red"}),
-    do: Routes.static_path(conn, "/css/red.css")
+  # def stylesheet_path(conn, %{theme: "red"}),
+  #   do: Routes.static_path(conn, "/css/red.css")
 
   def stylesheet_path(conn, _user),
-    do: Routes.static_path(conn, "/css/default.css")
+    do: Routes.static_path(conn, "/css/dark-blue.css")
 
   def dark_stylesheet_path(conn),
-    do: Routes.static_path(conn, "/css/dark.css")
+    do: Routes.static_path(conn, "/css/dark-blue.css")
 
   def theme_name(%{theme: theme}), do: theme
   def theme_name(_user), do: "default"

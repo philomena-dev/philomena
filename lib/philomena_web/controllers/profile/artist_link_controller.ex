@@ -49,7 +49,7 @@ defmodule PhilomenaWeb.Profile.ArtistLinkController do
       {:ok, artist_link} ->
         conn
         |> put_flash(
-          :info,
+          :alert,
           "Link submitted! Please put '#{artist_link.verification_code}' on your linked webpage now."
         )
         |> redirect(

@@ -3,39 +3,39 @@
     aside.column-layout__left#activity-side
       = if not is_nil(@featured_image) and not PhilomenaWeb.ImageView.filter_or_spoiler_hits?(@conn, @featured_image) do
         .center
-          h4.remove-top-margin Featured Image
+          h3 Featured Image
           = render PhilomenaWeb.ImageView, "_image_box.html", image: @featured_image, size: :medium, conn: @conn
-      .block.block--fixed.block--fixed--sub.block--success.center.hide-mobile
+      .block.block--fixed.block--fixed--sub.block--success.center.hidden--mobile
         ' Enjoy the site?
         a href="/pages/donations"
           ' Become a patron or donate!
-      .block.block--fixed.block--fixed--sub.center.hide-mobile
+      .block.block--fixed.block--fixed--sub.center.hidden--mobile
         ' Issues? Want to chat?
         a href="/pages/contact" Contact us!
-      .block.hide-mobile
+      .block.hidden--mobile
         a.block__header--single-item.center href="/search?q=first_seen_at.gt:3 days ago&amp;sf=wilson_score&amp;sd=desc"
           ' Trending Images
-        .block__content.flex.flex--centered.flex--wrap.image-flex-grid
+        .block__content--small.media-grid
           = for image <- @top_scoring do
-            = render PhilomenaWeb.ImageView, "_image_box.html", image: image, size: :thumb_small, conn: @conn
-        a.block__header--single-item.center href="/search?q=*&amp;sf=score&amp;sd=desc"
+            = render PhilomenaWeb.ImageView, "_image_box.html", image: image, size: :thumb, conn: @conn
+        a.block__footer--small.center href="/search?q=*&amp;sf=score&amp;sd=desc"
           ' All Time Top Scoring
-      .block.hide-mobile
+      .block.hidden--mobile
         a.block__header--single-item.center href="/channels"
           ' Streams
         = for channel <- @streams do
           = render PhilomenaWeb.ActivityView, "_channel_strip.html", channel: channel, conn: @conn
-      .block.hide-mobile
+      .block.hidden--mobile
         a.block__header--single-item.center href="/forums"
           ' Forum Activity
         = for topic <- @topics do
           = render PhilomenaWeb.ActivityView, "_topic_strip.html", topic: topic, conn: @conn
-      .block.hide-mobile
+      .block.hidden--mobile
         a.block__header--single-item.center href="/comments"
           ' Recent Comments
         = for comment <- @comments do
           = render PhilomenaWeb.ActivityView, "_comment_strip.html", comment: comment, conn: @conn
-        a.block__header--single-item.center href="/search?q=first_seen_at.gt:3 days ago&amp;sf=comment_count&amp;sd=desc"
+        a.block__footer.center href="/search?q=first_seen_at.gt:3 days ago&amp;sf=comment_count&amp;sd=desc"
           ' Most Commented-on Images
 
   .column-layout__main
@@ -47,8 +47,8 @@
             ' Watched Images
           a href="/search?q=my:watched" title="Browse Watched Images"
             i.fa.fa-eye>
-            span.hide-mobile
+            span.hidden--mobile
               ' Browse Watched Images
-        .block__content.js-resizable-media-container
+        .block__content.media-list
           = for image <- @watched do
             = render PhilomenaWeb.ImageView, "_image_box.html", image: image, link: Routes.image_path(@conn, :show, image, q: "my:watched"), size: :thumb_small, conn: @conn

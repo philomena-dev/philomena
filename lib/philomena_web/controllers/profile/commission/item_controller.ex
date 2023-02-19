@@ -99,7 +99,7 @@ defmodule PhilomenaWeb.Profile.Commission.ItemController do
     {:ok, _multi} = Commissions.delete_item(item)
 
     conn
-    |> put_flash(:info, "Item deleted successfully.")
+    |> put_flash(:info, "Item successfully deleted.")
     |> redirect(to: Routes.profile_commission_path(conn, :show, conn.assigns.user))
   end
 

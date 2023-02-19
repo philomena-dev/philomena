@@ -1,0 +1,60 @@
+$min-desktop-width: 1280px;
+$max-phone-width: 700px;
+$narrow-layout-width: 960px;
+$medium-layout-width: $min-desktop-width;
+
+$font-family-base: verdana, arial, helvetica, sans-serif;
+$font-family-monospace: "Droid Sans Mono", monospace;
+
+:root {
+  --padding-tiny: 4px;
+  --padding-small: 0.5em;
+  --padding-normal: 1em;
+  --padding-large: 2em;
+
+  --block-header-height: 2.2em;
+
+  --navbar-size: 40px;
+  --navbar-secondary-size: 36px;
+  --navbar-avatar-size: 36px;
+  --navbar-input-size: 32px;
+
+  --button-group-height: 2em;
+  --button-group-tall-height: 2.5em;
+  --button-group-small-height: 1.5em;
+
+  --column-left-width: 360px;
+
+  --border-radius: 4px;
+
+  --media-container-width: 225px;
+  --media-tiny-container-width: 50px;
+  --media-small-container-width: 125px;
+  --media-medium-container-width: 250px;
+  --media-large-container-width: 500px;
+  --media-full-container-width: 100%;
+  --media-featured-width: 358px;
+  --media-header-height: 22px;
+
+  --font-family: #{$font-family-base};
+  --font-family-monospace: #{$font-family-monospace};
+
+  --font-size: 14px;
+  --font-tiny-size: 12px;
+  --font-header-size: 16px;
+  --font-h1-size: 1.5em;
+  --font-h2-size: 1.35em;
+  --font-h3-size: 1.2em;
+  --font-h4-size: 1.1em;
+  --font-h5-size: 1em;
+  --font-h6-size: 1em;
+
+  --input-text-height: 9em;
+
+  --min-desktop-width: #{$min-desktop-width};
+  --max-phone-width: #{$max-phone-width};
+  --medium-layout-width: #{$medium-layout-width};
+  --narrow-layout-width: #{$narrow-layout-width};
+
+  --transition-animation-duration: 0.2s;
+}

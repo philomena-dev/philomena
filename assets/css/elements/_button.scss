@@ -1,0 +1,117 @@
+@mixin button-type($type) {
+  .button--#{$type} {
+    border-color: var(--#{$type}-border-color);
+
+    &.button--important {
+      background: var(--#{$type}-color) !important;
+      box-shadow: 0 -1px var(--#{$type}-dark-color) inset;
+    }
+
+    &.button:hover {
+      background: var(--#{$type}-dark-color) !important;
+    }
+  }
+
+  .button__group--#{$type} {
+    border-color: var(--#{$type}-color);
+    background: var(--#{$type}-dark-color);
+
+    & a {
+      color: var(--#{$type}-border-color);
+
+      &:hover {
+        @include animated-transition;
+        color: var(--text-color);
+        background: var(--#{$type}-color);
+      }
+    }
+  }
+}
+
+.button {
+  @include animated-transition;
+  display: block;
+  width: fit-content;
+  font-weight: bold;
+  background: var(--background-color);
+  color: var(--text-color) !important;
+  font-size: var(--padding-normal);
+  padding: var(--padding-small);
+  border: 1px solid var(--primary-border-color);
+  box-sizing: border-box;
+
+  &:hover {
+    @include animated-transition;
+    background: var(--primary-dark-color);
+    cursor: pointer;
+  }
+}
+
+.button--important {
+  background: var(--primary-color);
+  box-shadow: 0 -1px var(--primary-dark-color) inset;
+}
+
+.button__row {
+  @extend .flex__row;
+
+  & > button {
+    margin-right: var(--padding-small);
+  }
+}
+
+.button__group {
+  @extend .flex__row;
+  border: 1px solid var(--secondary-color);
+  border-radius: var(--border-radius);
+  margin-right: var(--padding-normal);
+  background: var(--secondary-dark-color);
+  line-height: var(--button-group-height);
+
+  &:last-child {
+    margin: 0;
+  }
+}
+
+.button__group--tall {
+  line-height: var(--button-group-tall-height)
+}
+
+.button__group--small {
+  line-height: var(--button-group-small-height)
+}
+
+.button__group .button {
+  border: 0;
+  border-right: var(--secondary-color);
+
+  &:last-child {
+    border-right: 0;
+  }
+}
+
+.button__group--single {
+  @extend .button__group;
+  margin-right: 0;
+}
+
+.button__group--standalone {
+  @extend .button__group;
+}
+
+.button__group--standalone a {
+  @include animated-transition;
+  font-weight: bold;
+  padding: 0 var(--padding-small);
+
+  &:hover {
+    @include animated-transition;
+    background: var(--secondary-muted-color);
+  }
+}
+
+@include button-type(success);
+@include button-type(warning);
+@include button-type(danger);
+@include button-type(information);
+@include button-type(purple);

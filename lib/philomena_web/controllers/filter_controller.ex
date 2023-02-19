@@ -189,7 +189,7 @@ defmodule PhilomenaWeb.FilterController do
 
       _error ->
         conn
-        |> put_flash(:error, "Filter is still in use, not deleted.")
+        |> put_flash(:warning, "Filter is still in use, not deleted.")
         |> redirect(to: Routes.filter_path(conn, :show, filter))
     end
   end

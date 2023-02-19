@@ -1,0 +1,26 @@
+.input {
+  border: 1px solid var(--secondary-border-color);
+  box-shadow: 0 -1px var(--secondary-dark-color) inset;
+  background: var(--secondary-dark-color);
+  color: var(--text-color);
+  box-sizing: border-box;
+  font-family: var(--font-family-monospace);
+
+  &:focus {
+    outline: none;
+  }
+
+  &::placeholder {
+    color: var(--secondary-border-color);
+  }
+}
+
+.input--wide {
+  width: 100%;
+}
+
+.input--text {
+  height: var(--input-text-height);
+  padding: var(--padding-normal) var(--padding-small);
+  cursor: text;
+}

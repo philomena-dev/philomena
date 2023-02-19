@@ -1,0 +1,27 @@
+// Phones.
+@include if-phone {
+  .hidden--phone {
+    display: none !important;
+  }
+}
+
+// Tablets.
+@include if-tablet {
+  .hidden--tablet {
+    display: none !important;
+  }
+}
+
+// Phones and tablets.
+@include if-mobile {
+  .hidden--mobile {
+    display: none !important;
+  }
+}
+
+// Anything larger than 1280px (Desktops).
+@include if-desktop {
+  .hidden--desktop {
+    display: none !important;
+  }
+}

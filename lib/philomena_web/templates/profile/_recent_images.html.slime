@@ -2,9 +2,12 @@
   .block
     .block__header
       span.block__header__title = @title
-      = if assigns[:view_all_path] do
-        = link("View all", to: assigns[:view_all_path])
 
-    .block__content.js-resizable-media-container
+    .block__content.media-list
       = for image <- @images do
         = render PhilomenaWeb.ImageView, "_image_box.html", image: image, size: :thumb, conn: @conn
+      = if assigns[:view_all_path] do
+        hr.separator.separator--secondary
+        a.button href=assigns[:view_all_path]
+          i.fa.fa-eye>
+          | View all

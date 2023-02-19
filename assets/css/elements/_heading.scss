@@ -1,0 +1,32 @@
+@mixin heading($el) {
+  #{$el} {
+    font-size: var(--font-#{$el}-size);
+    font-weight: bold;
+    padding: var(--padding-small) 0;
+    border-bottom: 1px solid var(--primary-border-color);
+  }
+}
+
+@mixin heading-type($type) {
+  .heading--#{$type} {
+    border-bottom-color: var(--#{$type}-border-color);
+  }
+}
+
+@include heading(h1);
+@include heading(h2);
+@include heading(h3);
+@include heading(h4);
+@include heading(h5);
+@include heading(h6);
+
+/* To differentiate between h5 and h6, simply make h6 not bold */
+h6 {
+  font-weight: normal;
+}
+
+@include heading-type(success);
+@include heading-type(warning);
+@include heading-type(danger);
+@include heading-type(information);
+@include heading-type(purple);

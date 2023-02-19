@@ -26,9 +26,13 @@
     .block__tab.communication-edit__tab.hidden data-tab="preview"
       ' [Loading preview...]
 
-    .block__content.communication-edit__actions
-      => submit "Post", class: "button", data: [disable_with: raw("Posting&hellip;")]
+    .block.communication-edit__actions
+      => submit "Post", class: "button button--important button--success", data: [disable_with: raw("Posting&hellip;")]
 
       = if @conn.assigns.current_user do
-        = checkbox f, :anonymous, value: anonymous_by_default?(@conn)
-        = label f, :anonymous, "Anonymous"
+        .communication__anonymous
+          .communication__anonymous--checkbox
+            = checkbox f, :anonymous, value: anonymous_by_default?(@conn)
+          .communication__anonymous--label
+            i.fa.fa-eye-slash>
+            = label f, :anonymous, "Anonymous"

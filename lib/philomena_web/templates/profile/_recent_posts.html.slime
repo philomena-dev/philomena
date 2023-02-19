@@ -1,8 +1,8 @@
 = if Enum.any?(@posts) do
   .block
     .block__header
-      span.block__header__title Recent Forum Posts
-      = link "View all", to: Routes.post_path(@conn, :index, pq: "user_id:#{@user.id}")
+      i.fa.fa-pen-square
+      | Recent Forum Posts
 
     .block__content
       .block
@@ -12,3 +12,7 @@
             => link pretty_time(post.created_at), to: Routes.forum_topic_path(@conn, :show, post.topic.forum, post.topic, post_id: post) <> "#post_#{post.id}"
             ' in topic
             => link post.topic.title, to: Routes.forum_topic_path(@conn, :show, post.topic.forum, post.topic)
+      hr.separator.separator--secondary
+      a.button href=Routes.post_path(@conn, :index, pq: "user_id:#{@user.id}")
+        i.fa.fa-eye>
+        | View all

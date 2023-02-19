@@ -1,9 +1,9 @@
-.center--layout--flex
+.layout--centered-flex
   = if @image.thumbnails_generated do
     = render PhilomenaWeb.ImageView, "_image_target.html", image: @image, conn: @conn
   - else
     #thumbnails-not-yet-generated.block.block--fixed.block--warning.layout--narrow
-      h3 Just a moment
+      h3.heading--warning Just a moment
       = if @image.image_mime_type == "video/webm" do
         p WEBM uploads may take longer to process, it should appear in up to an hour (depending on file size and video length).
       - else

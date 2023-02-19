@@ -1,5 +1,5 @@
 .block.block--fixed.block--warning
-  h4
+  h4.heading--warning
     ' You've been banned!
   p
     ' You cannot create comments or posts or update metadata (or do anything but read, really) until

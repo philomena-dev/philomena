@@ -1,0 +1,92 @@
+$background-color: #131a22;
+$text-color: #e0e0e0;
+
+$primary-color: #2e4c80;
+$secondary-color: #434f69;
+$danger-color: #57261f;
+$warning-color: #5c472a;
+$success-color: #255339;
+$information-color: #1f5057;
+$purple-color: #501f57;
+
+$upvote-color: #5b9b26;
+$downvote-color: #da3412;
+$fave-color: #a18e27;
+$comment-color: #b099dd;
+$hide-color: #da3412;
+
+$tag-default-color: #1b3c21;
+$tag-error-color: #4f181d;
+$tag-rating-color: #113456;
+$tag-origin-color: #1d1858;
+$tag-character-color: #193f47;
+$tag-oc-color: #451f47;
+$tag-species-color: #362118;
+$tag-body-type-color: #393939;
+$tag-content-fanmade-color: #622c4e;
+$tag-content-official-color: #4b491c;
+$tag-spoiler-color: #4f3811;
+
+$spoiler-color: #0f0f0f;
+
+@mixin tag-color($tagname, $color, $text-percentage: 35%, $border-percentage: 15%) {
+  --tag-#{$tagname}-color: #{$color};
+  --tag-#{$tagname}-border-color: #{lighten($color, $border-percentage)};
+  --tag-#{$tagname}-text-color: #{lighten($color, $text-percentage)}; 
+}
+
+@mixin type-color($type, $color) {
+  --#{$type}-color: #{$color};
+  --#{$type}-border-color: #{lighten(desaturate($color, 5%), 25%)};
+  --#{$type}-dark-color: #{darken($color, 15%)};
+  --#{$type}-link-color: #{lighten(saturate($color, 10%), 45%)};
+}
+
+:root {
+  --background-color: #{$background-color};
+  --text-color: #{$text-color};
+
+  --link-color: #{lighten(saturate($primary-color, 7%), 35%)};
+  --link-hover-color: #{$text-color};
+
+  --primary-color: #{$primary-color};
+  --primary-border-color: #{lighten(desaturate($primary-color, 20%), 17%)};
+  --primary-muted-color: #{darken(desaturate($primary-color, 10%), 10%)};
+  --primary-dark-color: #{darken(desaturate($primary-color, 5%), 15%)};
+
+  --secondary-color: #{$secondary-color};
+  --secondary-border-color: #{lighten($secondary-color, 20%)};
+  --secondary-muted-color: #{darken(desaturate($secondary-color, 5%), 10%)};
+  --secondary-dark-color: #{darken($secondary-color, 15%)};
+  --secondary-link-color: #{lighten($secondary-color, 55%)};
+
+  --upvote-color: #{$upvote-color};
+  --downvote-color: #{$downvote-color};
+  --fave-color: #{$fave-color};
+  --comment-color: #{$comment-color};
+  --hide-color: #{$hide-color};
+
+  --spoiler-color: #{$spoiler-color};
+  --spoiler-revealed-color: #{lighten($spoiler-color, 20%)};
+
+  @include type-color(success, $success-color);
+  @include type-color(warning, $warning-color);
+  @include type-color(danger, $danger-color);
+  @include type-color(information, $information-color);
+  @include type-color(purple, $purple-color);
+
+  @include tag-color(default, $tag-default-color);
+  @include tag-color(error, $tag-error-color, 37%);
+  @include tag-color(rating, $tag-rating-color, 37%);
+  @include tag-color(origin, $tag-origin-color, 42%);
+  @include tag-color(character, $tag-character-color);
+  @include tag-color(oc, $tag-oc-color, 40%);
+  @include tag-color(species, $tag-species-color, 37%);
+  @include tag-color(body-type, $tag-body-type-color, 45%, 12%);
+  @include tag-color(content-fanmade, $tag-content-fanmade-color, 40%);
+  @include tag-color(content-official, $tag-content-official-color);
+  @include tag-color(spoiler, $tag-spoiler-color);
+
+  /* Exceptions to mixin colors */
+  --tag-origin-border-color: #{lighten(desaturate($tag-origin-color, 10%), 22%)};
+}

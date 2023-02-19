@@ -40,7 +40,7 @@ defmodule PhilomenaWeb.ReportController do
       true ->
         conn
         |> put_flash(
-          :error,
+          :warning,
           "You may not have more than #{max_reports()} open reports at a time. Did you read the reporting tips?"
         )
         |> redirect(to: "/")
@@ -50,7 +50,7 @@ defmodule PhilomenaWeb.ReportController do
           {:ok, _report} ->
             conn
             |> put_flash(
-              :info,
+              :alert,
               "Your report has been received and will be checked by staff shortly."
             )
             |> redirect(to: redirect_path(conn, conn.assigns.current_user))

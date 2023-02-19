@@ -11,7 +11,7 @@ defmodule PhilomenaWeb.Admin.User.VoteController do
     Exq.enqueue(Exq, "indexing", UserUnvoteWorker, [conn.assigns.user.id, true])
 
     conn
-    |> put_flash(:info, "Vote and fave wipe started.")
+    |> put_flash(:alert, "Vote and fave wipe started.")
     |> redirect(to: Routes.profile_path(conn, :show, conn.assigns.user))
   end
 

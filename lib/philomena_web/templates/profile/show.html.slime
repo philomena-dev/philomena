@@ -50,9 +50,10 @@
     = link @forced.name, to: Routes.filter_path(@conn, :show, @forced)
 
 = if (current?(@user, @conn.assigns.current_user) or can?(@conn, :index, Philomena.Bans.User)) and Enum.any?(@bans) do
-  .block
-    .block__header--single-item
-      ' Ban History
+  .block.block--warning
+    .block__header
+      i.fa.fa-ban
+      | Ban History
     .block__content
       = render PhilomenaWeb.BanView, "_bans.html", bans: @bans, conn: @conn
 
@@ -60,15 +61,15 @@
   .column-layout__left
     .block
       .block__header
-        span.block__header__title Commissions
+        i.fa.fa-briefcase
+        | Commissions
       = render PhilomenaWeb.ProfileView, "_commission.html", user: @user, commission_information: @commission_information, conn: @conn
 
     .block
-      = if current?(@user, @conn.assigns.current_user) or manages_links?(@conn, @user) do
-        a.block__header--single-item href=Routes.profile_artist_link_path(@conn, :new, @user) Artist Links
-      - else
-        .block__header
-          span.block__header__title Artist Links
+      .block__header
+        i.fa.fa-link
+        | Artist Links
+
       = for link <- @user.verified_links, should_see_link?(@conn, @user, link) do
         - watchers = if link.tag, do: @watcher_counts[link.tag.id] || 0, else: 0
 
@@ -101,12 +102,15 @@
                 br
                 ' Hidden
 
+      = if current?(@user, @conn.assigns.current_user) or manages_links?(@conn, @user) do
+        .block__content.alternating-color.break-word
+          a.button href=Routes.profile_artist_link_path(@conn, :new, @user)
+            i.fa.fa-link>
+            | Create an Artist Link
     .block
-      = if manages_awards?(@conn) and not hide_staff_tools?(@conn) do
-        a.block__header--single-item href=Routes.profile_award_path(@conn, :new, @user) Badges
-      - else
-        .block__header
-          span.block__header__title Badges
+      .block__header
+        i.fa.fa-award
+        | Badges
       = for award <- award_order(@user.awards) do
         .block__content.flex.flex--centered.flex--center-distributed.alternating-color.no-overflow title=award.label
           .flex__grow.center
@@ -125,19 +129,24 @@
               br
               a href=Routes.profile_award_path(@conn, :edit, @user, award)
                 ' Edit
+      = if manages_awards?(@conn) and not hide_staff_tools?(@conn) do
+        .block__content.alternating-color.no-overflow
+          a.button href=Routes.profile_award_path(@conn, :new, @user)
+            i.fa.fa-trophy>
+            | Award a badge
 
     .block
       .block__header
-        = if can?(@conn, :edit_description, @user) do
-          a.block__header--single-item href=Routes.profile_description_path(@conn, :edit, @user) About Me
-        - else
-          span.block__header__title About Me
+        i.fa.fa-question
+        | About Me
 
       = render PhilomenaWeb.ProfileView, "_about_me.html", user: @user, about_me: @about_me, conn: @conn
 
     = if can_read_mod_notes?(@conn) and not hide_staff_tools?(@conn) do
-      .block
-        a.block__header--single-item href=Routes.profile_detail_path(@conn, :index, @user) Mod Notes
+      .block.block--warning
+        .block__header
+          i.fa.fa-sticky-note
+          | Mod Notes
         table.table
           thead
             tr
@@ -148,11 +157,21 @@
               tr
                 td == body
                 td = pretty_time(mod_note.created_at)
+        .block__content
+          a.button href=Routes.profile_detail_path(@conn, :index, @user)
+            i.fa.fa-plus>
+            | Edit mod notes
     = if can_index_user?(@conn) do
-      .block
-        a.block__header--single-item href=Routes.profile_scratchpad_path(@conn, :edit, @user) Moderation Scratchpad
+      .block.block--warning
+        .block__header
+          i.fa.fa-clipboard
+          | Moderation Scratchpad
         .block__content.profile-about
           == @scratchpad
+        .block__content
+          a.button href=Routes.profile_scratchpad_path(@conn, :edit, @user)
+            i.fa.fa-edit>
+            | Edit
 
   .column-layout__main
     = render PhilomenaWeb.ProfileView, "_statistics.html", user: @user, statistics: @statistics, conn: @conn

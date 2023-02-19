@@ -12,7 +12,7 @@ defmodule PhilomenaWeb.Admin.User.WipeController do
 
     conn
     |> put_flash(
-      :info,
+      :alert,
       "PII wipe queued, please verify and then deactivate the account as necessary."
     )
     |> redirect(to: Routes.profile_path(conn, :show, conn.assigns.user))

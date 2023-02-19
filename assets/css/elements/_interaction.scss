@@ -1,0 +1,17 @@
+@mixin interaction-type($type) {
+  .interaction--#{$type} {
+    color: var(--#{$type}-color) !important;
+    padding: 0 var(--padding-tiny);
+
+    &.active, &:hover {
+      color: var(--text-color) !important;
+      background-color: var(--#{$type}-color);
+    }
+  }
+}
+
+@include interaction-type(fave);
+@include interaction-type(upvote);
+@include interaction-type(downvote);
+@include interaction-type(comment);
+@include interaction-type(hide);

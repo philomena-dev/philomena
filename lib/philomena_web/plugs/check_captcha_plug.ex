@@ -19,7 +19,7 @@ defmodule PhilomenaWeb.CheckCaptchaPlug do
       false ->
         conn
         |> put_flash(
-          :error,
+          :warning,
           "There was an error verifying you're not a robot. Please try again."
         )
         |> do_failure_response(conn.assigns.ajax?)

@@ -1,0 +1,52 @@
+@mixin flash-type($type) {
+  .flash--#{$type} {
+    border: 1px solid var(--#{$type}-border-color);
+    box-shadow: 0 -1px var(--#{$type}-dark-color) inset;
+    background: var(--#{$type}-color);
+
+    .flash__icon {
+      border-right: 1px solid var(--#{$type}-dark-color);
+    }
+
+    .flash__message {
+      border-left: 1px solid var(--#{$type}-border-color);
+    }
+
+    & a {
+      color: var(--#{$type}-link-color);
+
+      &:hover {
+        color: var(--link-hover-color);
+      }
+    }
+  }
+}
+
+.flash {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  margin: var(--padding-normal);
+  margin-bottom: 0;
+}
+
+@include if-phone {
+  .flash {
+    margin: var(--padding-small);
+    margin-bottom: 0;
+  }
+}
+
+.flash__icon {
+  @extend .flex__column--centered;
+  padding: var(--padding-normal);
+}
+
+.flash__message {
+  padding: var(--padding-normal);
+}
+
+@include flash-type(success);
+@include flash-type(warning);
+@include flash-type(danger);
+@include flash-type(information);
+@include flash-type(purple);

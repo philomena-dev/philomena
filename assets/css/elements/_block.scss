@@ -1,0 +1,132 @@
+@mixin block-type($type) {
+  .block--#{$type} {
+    border-color: var(--#{$type}-border-color);
+
+    .block__header {
+      background: var(--#{$type}-color);
+      box-shadow: 0 -1px var(--#{$type}-dark-color) inset;
+      border-bottom: 1px solid var(--#{$type}-border-color);
+    }
+
+    .block__footer {
+      background: var(--#{$type}-color);
+    }
+
+    &.block--muted {
+      border-color: var(--#{$type}-color);
+    }
+
+    &.block--fixed {
+      background: var(--#{$type}-color);
+    }
+
+    & a {
+      color: var(--#{$type}-link-color);
+
+      &:hover {
+        color: var(--link-hover-color);
+      }
+    }
+  }
+}
+
+.block {
+  border: 1px solid var(--primary-border-color);
+  margin-bottom: var(--padding-small);
+}
+
+.block--muted {
+  border-color: var(--primary-color);
+}
+
+.block--borderless {
+  border: 0;
+}
+
+.block__content {
+  padding: var(--padding-normal);
+}
+
+.block__content--small {
+  padding: var(--padding-small);
+}
+
+.block__footer {
+  @extend .flex__row;
+  background: var(--primary-muted-color);
+  padding: var(--padding-normal);
+  margin: var(--padding-normal);
+  margin-top: 0;
+}
+
+.block__footer--small {
+  @extend .block__footer;
+  margin: var(--padding-small);
+  margin-top: 0;
+}
+
+@include if-phone {
+  .block__content {
+    padding: var(--padding-small);
+  }
+
+  .block__footer {
+    margin: var(--padding-small);
+    margin-top: 0;
+  }
+}
+
+.block__header {
+  line-height: var(--block-header-height);
+  padding: 0 var(--padding-normal);
+  background: var(--primary-muted-color);
+  box-shadow: 0 -1px var(--primary-dark-color) inset;
+  border-bottom: 1px solid var(--primary-border-color);
+
+  & > .fa {
+    margin-right: var(--padding-normal);
+  }
+}
+
+.block__header--single-item {
+  @extend .block__header;
+  display: inline-block;
+  width: 100%;
+  box-sizing: border-box;
+  font-weight: bold;
+  color: var(--link-color) !important;
+}
+
+.block--fixed {
+  padding: var(--padding-normal);
+}
+
+.block__tab {
+  padding: var(--padding-normal);
+}
+
+.block__header--js-tabbed {
+  display: flex;
+  padding: 0;
+
+  & a {
+    display: block;
+    color: var(--text-color);
+    padding: 0 var(--padding-normal);
+
+    &:hover {
+      background: var(--background-color);
+    }
+  }
+
+  .selected {
+    background: var(--background-color);
+  }
+}
+
+@include block-type(secondary);
+@include block-type(success);
+@include block-type(warning);
+@include block-type(danger);
+@include block-type(information);
+@include block-type(purple);

@@ -13,7 +13,7 @@ h1 Updating Profile Description
         = text_input f, :personal_title, class: "input input--short", placeholder: "Title"
         = error_tag f, :personal_title
 
-  .block
+  .block.block--secondary
     .block__header.block__header--js-tabbed
       a.selected href="#" data-click-tab="write"
         i.fas.fa-edit>
@@ -34,5 +34,5 @@ h1 Updating Profile Description
     .block__tab.communication-edit__tab.hidden data-tab="preview"
       ' [Loading preview...]
 
-    .block__content.communication-edit__actions
-      => submit "Update", class: "button"
+    .block.communication-edit__actions
+      => submit "Update", class: "button button--important button--success"

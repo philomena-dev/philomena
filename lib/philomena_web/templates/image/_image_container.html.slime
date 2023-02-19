@@ -21,8 +21,7 @@
     - {:hidpi, small_url, medium_url, hover_text} ->
       .media-box__overlay.js-spoiler-info-overlay
       a href=link title=hover_text
-        picture
-          img src=small_url srcset="#{small_url} 1x, #{medium_url} 2x" alt=hover_text
+        img.media-box__image src=small_url srcset="#{small_url} 1x, #{medium_url} 2x" alt=hover_text
 
     - {:image, small_url, hover_text} ->
       .media-box__overlay.js-spoiler-info-overlay
@@ -30,8 +29,7 @@
           | WebM
 
       a href=link title=hover_text
-        picture
-          img src=small_url alt=hover_text
+        img.media-box__image src=small_url alt=hover_text
 
     - {:video, webm, mp4, hover_text} ->
       .media-box__overlay.js-spoiler-info-overlay
@@ -39,19 +37,18 @@
         video alt=hover_text autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline"
           source src=webm type="video/webm"
           source src=mp4 type="video/mp4"
-        img alt=hover_text
+        img.media-box__image alt=hover_text
 
     - {:filtered_image, hover_text} ->
       .media-box__overlay.js-spoiler-info-overlay
       a href=link title=hover_text
-        picture
-          img alt=hover_text
+        img.media-box__image alt=hover_text
 
     - {:filtered_video, hover_text} ->
       .media-box__overlay.js-spoiler-info-overlay
       a href=link title=hover_text
         video autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline"
-        img alt=hover_text
+        img.media-box__image alt=hover_text
 
     - :not_rendered ->
       .media-box__overlay.js-spoiler-info-overlay

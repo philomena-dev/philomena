@@ -21,12 +21,12 @@ elixir:
 
         a href=Routes.gallery_report_path(@conn, :new, @gallery)
           i.fa.fa-exclamation-triangle>
-          span.hide-mobile Report
+          span.hidden--mobile Report
 
         = if can?(@conn, :edit, @gallery) do
           a href=Routes.gallery_path(@conn, :edit, @gallery)
             i.fas.fa-edit>
-            span.hide-mobile Edit
+            span.hidden--mobile Edit
 
         = if can?(@conn, :edit, @gallery) do
           a.rearrange-button.js-rearrange href="#" data-click-hide=".js-rearrange" data-click-show=".js-save,#gallery-rearrange-info"
@@ -39,7 +39,7 @@ elixir:
 
           a href=Routes.gallery_path(@conn, :delete, @gallery) data-method="delete" data-confirm="Are you really, really sure?"
             i.fa.fa-trash>
-            span.hide-mobile Delete
+            span.hidden--mobile Delete
 
         = if show_subscription_link?(@gallery.creator, @conn.assigns.current_user) do
           = render PhilomenaWeb.Gallery.SubscriptionView, "_subscription.html", watching: @watching, gallery: @gallery, conn: @conn
@@ -51,12 +51,12 @@ elixir:
       ' with
       => @gallery.image_count
       = pluralize("image", "images", @gallery.image_count)
-      span.hide-mobile-t
+      span.hidden--mobile
         ' , last updated
         = pretty_time(@gallery.updated_at)
 
     .block__content.flex.js-imagelist-info
-      .flex__fixed.thumb-tiny-container.spacing-right
+      .flex__fixed.media-tiny-container.spacing--right
         = render PhilomenaWeb.ImageView, "_image_container.html", image: @gallery.thumbnail, size: :thumb_tiny, conn: @conn
 
       .flex__grow
@@ -73,7 +73,7 @@ elixir:
         br
         strong Note that you may have to wait a couple of seconds before the order is applied.
 
-    .block__content.js-resizable-media-container
+    .block__content.media-list
       = for {image, hit} <- @gallery_images do
         = render PhilomenaWeb.ImageView, "_image_box.html", image: image, link: image_url.(image, hit), size: :thumb, conn: @conn
 

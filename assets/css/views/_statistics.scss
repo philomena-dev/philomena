@@ -1,0 +1,31 @@
+.statistics {
+  @extend .flex__column;
+  border: 1px solid var(--secondary-color);
+}
+
+.statistics__statistic {
+  @include even-odd;
+
+  display: grid;
+  grid-template-columns: 15% 15% auto;
+  background: var(--secondary-color);
+}
+
+.statistics__column {
+  text-align: center;
+  padding: var(--padding-small);
+}
+
+.sparkline {
+  border-bottom: 1px solid var(--primary-border-color);
+  display: flex;
+  height: var(--padding-normal);
+}
+
+.barline__bar {
+  fill: var(--primary-border-color);
+
+  &:hover {
+    fill: var(--danger-color);
+  }
+}
