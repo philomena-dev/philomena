@@ -1,7 +1,9 @@
 // More Modules
 import { $ } from '../utils/dom';
-import * as web3 from 'web3';
 import { web3Cfg } from '../../../web3/client.side.config';
+
+// https://web3js.readthedocs.io/en/v1.8.2/index.html
+import * as web3 from 'web3';
 
 // Module
 const startWeb3 = function() {
