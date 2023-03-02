@@ -5,4 +5,7 @@ h1 Editing Web3
     .alert.alert-danger
       p Oops, something went wrong! Please check the errors below.
 
+  center
+    button.button type="button" Connect Wallet
+
 p = link "Back", to: Routes.registration_path(@conn, :edit)

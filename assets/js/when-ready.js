@@ -35,6 +35,7 @@ import { setupToolbar }         from './markdowntoolbar';
 import { hideStaffTools }       from './staffhider';
 import { pollOptionCreator }    from './poll';
 import { warnAboutPMs }         from './pmwarning';
+import { startWeb3 }            from './web3';
 
 whenReady(() => {
 
@@ -68,5 +69,6 @@ whenReady(() => {
   hideStaffTools();
   pollOptionCreator();
   warnAboutPMs();
+  startWeb3();
 
 });
