@@ -51,3 +51,27 @@ And if everything goes wrong:
     git push -f production master
 
 (to be repeated until it works again)
+
+## Files Example
+
+Website route manager:
+
+    /lib/philomena_web/router.ex
+
+    Example:
+
+        router.ex ==> resources "/web3", Web3Controller, only: [:edit, :update], singleton: true
+        
+        file path ==> Web3Controller = /lib/philomena_web/controllers/registration/web3_controller.ex
+        web3_controller.ex ==> defmodule PhilomenaWeb.Registration.Web3Controller do
+
+        /lib/philomena_web/views/registration/web3_view.ex
+
+        def edit(conn, _params) do ==> /lib/philomena_web/templates/registration/web3/edit.html.slime
+
+
+## Admin Login
+This is the credentials to access the admin panel of this project repository.
+
+    user: admin@example.com
+    password: philomena123
