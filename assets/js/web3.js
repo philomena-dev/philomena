@@ -1,3 +1,5 @@
+import { $ } from './utils/dom';
+
 const startWeb3 = function() {
 
   // Check if Web3 has been injected by the browser (Mist/MetaMask).
@@ -12,6 +14,10 @@ const startWeb3 = function() {
   } else {
     console.log('No Ethereum installed.');
   }
+
+  // Detect Connect Wallet Buttom
+  const connectWallet = $('#connect-web3-wallet');
+  if (!connectWallet) return;
 
 };
 
