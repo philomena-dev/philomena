@@ -1,4 +1,4 @@
-h1 Editing Web3 Address
+h1 Editing Web3
 
 = form_for @changeset, Routes.registration_web3_path(@conn, :update), [as: :user], fn f ->
   = if @changeset.action do
