@@ -11,8 +11,6 @@ const startWeb3 = function() {
     window.tinyCrypto = { provider: new Web3(window.ethereum) };
   }
 
-  // Page Load Ready
-
   // Detect Connect Wallet Buttom
   const connectWallet = $('#connect-web3-wallet');
   if (connectWallet) {
