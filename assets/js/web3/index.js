@@ -1,14 +1,53 @@
 // More Modules
 import { $ } from '../utils/dom';
 import * as web3 from 'web3';
+import { web3Cfg } from '../../../web3/client.side.config';
 
 // Module
 const startWeb3 = function() {
 
-  // Check if Web3 has been injected by the browser (Mist/MetaMask).
+  // Prepare Web3 Object
   window.web3 = web3;
+  window.tinyCrypto = { connected: false, providerConnected: false, config: web3Cfg() };
+
+  // Get Main Blockchains
+  window.tinyCrypto.networks = {
+
+    matic: {
+      chainId: '0x89',
+      chainIdInt: 137,
+      rpcUrls: ['https://polygon-rpc.com/'],
+      chainName: 'Polygon Mainnet',
+      nativeCurrency: {
+        name: 'MATIC',
+        symbol: 'MATIC',
+        decimals: 18
+      },
+      blockExplorerUrls: ['https://polygonscan.com/']
+    },
+
+    bsc: {
+      chainId: '56',
+      chainIdInt: 56,
+      rpcUrls: ['https://bsc-dataseed.binance.org/'],
+      chainName: 'Smart Chain',
+      nativeCurrency: {
+        name: 'BNB',
+        symbol: 'BNB',
+        decimals: 18
+      },
+      blockExplorerUrls: ['https://bscscan.com/']
+    }
+
+  };
+
+  // Selected Network
+  if (typeof  window.tinyCrypto.config.network === 'string' && window.tinyCrypto.config.network.length > 0) { window.tinyCrypto.network = window.tinyCrypto.config.network; }
+
+  // Check if Web3 has been injected by the browser (Mist/MetaMask).
   if (typeof ethereum !== 'undefined') {
-    window.tinyCrypto = { provider: new Web3(window.ethereum) };
+    window.tinyCrypto.provider = new Web3(window.ethereum);
+    window.tinyCrypto.providerConnected = true;
   }
 
   // Detect Connect Wallet Buttom
