@@ -92,7 +92,11 @@ defmodule Philomena.MixProject do
 
       # Fixes for OTP/25
       {:neotoma, "~> 1.7.3", manager: :rebar3, override: true},
-      {:hut, "~> 1.4.0", manager: :rebar3, override: true}
+      {:hut, "~> 1.4.0", manager: :rebar3, override: true},
+
+      # Web3
+      {:ex_web3_ec_recover, "~> 0.3.0"}
+      #{:exw3, "~> 0.6"}
     ]
   end
 
