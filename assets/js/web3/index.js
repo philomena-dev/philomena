@@ -17,7 +17,9 @@ const startWeb3 = function() {
 
   // Detect Connect Wallet Buttom
   const connectWallet = $('#connect-web3-wallet');
-  if (!connectWallet) return;
+  if (connectWallet) { 
+    w
+  }
 
 };
 
