@@ -10,9 +10,6 @@ import * as web3 from 'web3';
 const startWeb3 = function() {
 
   // Prepare Web3 Object
-  class MyEmitter extends EventEmitter {}
-  const myEmitter = new MyEmitter();
-
   window.web3 = web3;
   window.tinyCrypto = {
 
@@ -24,6 +21,10 @@ const startWeb3 = function() {
     call: {},
 
   };
+
+  // Emitter
+  class MyEmitter extends EventEmitter {}
+  const myEmitter = new MyEmitter();
 
   window.tinyCrypto.on = function(where, callback) {
     return myEmitter.on(where, callback);
@@ -70,8 +71,12 @@ const startWeb3 = function() {
     myEmitter.emit('signerUpdated', { where });
   };
 
+  // Coming Soon
   window.tinyCrypto.call.signerGetAddress = function() {
-    console.log('signerGetAddress');
+    return new Promise(resolve => {
+      console.log('signerGetAddress');
+      resolve();
+    });
   };
 
   // Network Changed
@@ -87,10 +92,12 @@ const startWeb3 = function() {
 
   };
 
+  // Coming Soon
   window.tinyCrypto.call.checkConnection = function() {
     console.log('checkConnection');
   };
 
+  // Coming Soon
   window.tinyCrypto.call.readyProvider = function() {
     console.log('readyProvider');
   };
