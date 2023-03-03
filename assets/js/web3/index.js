@@ -50,10 +50,12 @@ const startWeb3 = function() {
           window.tinyCrypto.call.accountsChanged(accounts);
         });
 
+        // Network Change
         window.ethereum.on('networkChanged', networkId => {
           window.tinyCrypto.call.networkChanged(networkId);
         });
 
+        // Ready Provider and check the connection
         window.tinyCrypto.call.checkConnection();
         window.tinyCrypto.call.readyProvider();
 
