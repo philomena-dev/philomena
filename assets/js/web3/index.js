@@ -65,12 +65,17 @@ const startWeb3 = function() {
     });
   };
 
+  // Warn Signer Updated
+  window.tinyCrypto.call.signerUpdated = function(where) {
+    myEmitter.emit('signerUpdated', { where });
+  };
+
   window.tinyCrypto.call.signerGetAddress = function() {
     console.log('signerGetAddress');
   };
 
   window.tinyCrypto.call.networkChanged = function(networkId) {
-    console.log('networkChanged', networkId);
+    myEmitter.emit('networkChanged', networkId);
   };
 
   window.tinyCrypto.call.checkConnection = function() {
