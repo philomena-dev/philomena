@@ -10,7 +10,7 @@ const startWeb3 = function() {
 
   // Prepare Web3 Object
   window.web3 = web3;
-  window.tinyCrypto = { connected: false, providerConnected: false, config: web3Cfg() };
+  window.tinyCrypto = { connected: false, providerConnected: false, isMetaMask: false, config: web3Cfg() };
   if (window.tinyCrypto.config.enabled) {
 
     // Get Main Blockchains
@@ -51,6 +51,7 @@ const startWeb3 = function() {
     if (typeof ethereum !== 'undefined') {
       window.tinyCrypto.provider = new Web3(window.ethereum);
       window.tinyCrypto.providerConnected = true;
+      if (window.ethereum.isMetaMask) { window.tinyCrypto.isMetaMask = true; }
     }
 
     // Detect Connect Wallet Buttom
