@@ -1,5 +1,6 @@
 // More Modules
 import { $ } from '../utils/dom';
+import { EventEmitter } from 'events';
 import { web3Cfg } from '../../../web3/client.side.config';
 
 // https://web3js.readthedocs.io/en/v1.8.2/index.html
@@ -9,6 +10,9 @@ import * as web3 from 'web3';
 const startWeb3 = function() {
 
   // Prepare Web3 Object
+  class MyEmitter extends EventEmitter {}
+  const myEmitter = new MyEmitter();
+
   window.web3 = web3;
   window.tinyCrypto = {
 
@@ -19,14 +23,48 @@ const startWeb3 = function() {
     config: web3Cfg(),
     call: {},
 
-    callbacks: {
-      accountsChanged: [],
-      signerUpdated: []
-    }
+  };
 
+  window.tinyCrypto.on = function(where, callback) {
+    return myEmitter.on(where, callback);
+  };
+
+  window.tinyCrypto.once = function(where, callback) {
+    return myEmitter.once(where, callback);
   };
 
   // Calls
+
+  // Account Change
+  window.tinyCrypto.call.accountsChanged = function(accounts) {
+    return new Promise((resolve, reject) => {
+
+      // Address
+      window.tinyCrypto.signer = window.tinyCrypto.provider.getSigner();
+      window.tinyCrypto.call.signerUpdated('accountsChanged');
+
+      window.tinyCrypto.call.signerGetAddress().then(address => {
+
+        window.tinyCrypto.address = address;
+        if (window.tinyCrypto.address) {
+
+          window.tinyCrypto.address = window.tinyCrypto.address.toLowerCase();
+
+          if (localStorage) {
+            localStorage.setItem('web3_address', window.tinyCrypto.address);
+          }
+
+          window.tinyCrypto.accounts = accounts;
+          myEmitter.emit('accountsChanged', accounts);
+          resolve(accounts);
+
+        }
+
+      }).catch(reject);
+
+    });
+  };
+
   window.tinyCrypto.call.signerGetAddress = function() {
     console.log('signerGetAddress');
   };
