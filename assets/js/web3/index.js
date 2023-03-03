@@ -10,14 +10,55 @@ const startWeb3 = function() {
 
   // Prepare Web3 Object
   window.web3 = web3;
-  window.tinyCrypto = { connected: false, providerConnected: false, isMetaMask: false, config: web3Cfg() };
+  window.tinyCrypto = { connected: false, providerConnected: false, protocol: null, config: web3Cfg(), call: {} };
+
+  // Calls
+  window.tinyCrypto.call.accountsChanged = function(accounts) {
+    console.log('accountsChanged', accounts);
+  };
+
+  window.tinyCrypto.call.networkChanged = function(networkId) {
+    console.log('networkChanged', networkId);
+  };
+
+  window.tinyCrypto.call.checkConnection = function() {
+    console.log('checkConnection');
+  };
+
+  window.tinyCrypto.call.readyProvider = function() {
+    console.log('readyProvider');
+  };
+
+  // Web3 Enabled on the website
   if (window.tinyCrypto.config.enabled) {
 
     // Check if Web3 has been injected by the browser (Mist/MetaMask).
     if (typeof ethereum !== 'undefined') {
+
+      // Insert Provider
       window.tinyCrypto.provider = new Web3(window.ethereum);
       window.tinyCrypto.providerConnected = true;
-      if (window.ethereum.isMetaMask) { window.tinyCrypto.isMetaMask = true; }
+
+      // Is Metamask
+      if (window.ethereum.isMetaMask) {
+
+        // Insert Protocol
+        window.tinyCrypto.protocol = 'metamask';
+
+        // Change Account Detector
+        window.ethereum.on('accountsChanged', accounts => {
+          window.tinyCrypto.call.accountsChanged(accounts);
+        });
+
+        window.ethereum.on('networkChanged', networkId => {
+          window.tinyCrypto.call.networkChanged(networkId);
+        });
+
+        window.tinyCrypto.call.checkConnection();
+        window.tinyCrypto.call.readyProvider();
+
+      }
+
     }
 
     // Detect Connect Wallet Buttom
