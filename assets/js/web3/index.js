@@ -24,12 +24,17 @@ const startWeb3 = function() {
     window.tinyCrypto.address = await window.tinyCrypto.call.signerGetAddress();
 
     if (window.tinyCrypto.address) {
+
       window.tinyCrypto.address = window.tinyCrypto.address.toLowerCase();
-      localStorage.setItem('web3_address', window.tinyCrypto.address);
+
+      if (localStorage) {
+        localStorage.setItem('web3_address', window.tinyCrypto.address);
+      }
 
       for (const item in window.tinyCrypto.accountsChanged) {
         await window.tinyCrypto.accountsChanged[item](accounts);
       }
+
     }
 
     return;
