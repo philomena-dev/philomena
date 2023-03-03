@@ -29,57 +29,57 @@ const startWeb3 = function() {
   // Calls
 
   // Account Change
-  window.tinyCrypto.call.accountsChanged = async accounts => {
+  window.tinyCrypto.call.accountsChanged = async function(accounts) {
 
     // Address
-    window.tinyCrypto.signer = window.tinyCrypto.provider.getSigner();
-    await window.tinyCrypto.call.signerUpdated('accountsChanged');
+    //window.tinyCrypto.signer = window.tinyCrypto.provider.getSigner();
+    //await window.tinyCrypto.call.signerUpdated('accountsChanged');
 
-    window.tinyCrypto.address = await window.tinyCrypto.call.signerGetAddress();
+    //window.tinyCrypto.address = await window.tinyCrypto.call.signerGetAddress();
 
-    if (window.tinyCrypto.address) {
+    //if (window.tinyCrypto.address) {
 
-      window.tinyCrypto.address = window.tinyCrypto.address.toLowerCase();
+    //  window.tinyCrypto.address = window.tinyCrypto.address.toLowerCase();
 
-      if (localStorage) {
-        localStorage.setItem('web3_address', window.tinyCrypto.address);
-      }
+    //  if (localStorage) {
+    //    localStorage.setItem('web3_address', window.tinyCrypto.address);
+    //  }
 
-      for (const item in window.tinyCrypto.callbacks.accountsChanged) {
-        await window.tinyCrypto.callbacks.accountsChanged[item](accounts);
-      }
+    //  for (const item in window.tinyCrypto.callbacks.accountsChanged) {
+    //    await window.tinyCrypto.callbacks.accountsChanged[item](accounts);
+    //  }
 
-    }
+    //}
 
     return;
 
   };
 
   // Warn Signer Updated
-  window.tinyCrypto.call.signerUpdated = async where => {
+  window.tinyCrypto.call.signerUpdated = async function(where) {
 
     // Send Request
-    for (const item in window.tinyCrypto.callbacks.signerUpdated) {
-      await window.tinyCrypto.callbacks.signerUpdated[item](window.tinyCrypto.signer, where);
-    }
+    //for (const item in window.tinyCrypto.callbacks.signerUpdated) {
+    //  await window.tinyCrypto.callbacks.signerUpdated[item](window.tinyCrypto.signer, where);
+    //}
 
     return;
 
   };
 
-  window.tinyCrypto.call.signerGetAddress = () => {
+  window.tinyCrypto.call.signerGetAddress = function() {
     console.log('signerGetAddress');
   };
 
-  window.tinyCrypto.call.networkChanged = networkId => {
+  window.tinyCrypto.call.networkChanged = function(networkId) {
     console.log('networkChanged', networkId);
   };
 
-  window.tinyCrypto.call.checkConnection = () => {
+  window.tinyCrypto.call.checkConnection = function() {
     console.log('checkConnection');
   };
 
-  window.tinyCrypto.call.readyProvider = () => {
+  window.tinyCrypto.call.readyProvider = function() {
     console.log('readyProvider');
   };
 
