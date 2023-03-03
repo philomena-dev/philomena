@@ -74,8 +74,17 @@ const startWeb3 = function() {
     console.log('signerGetAddress');
   };
 
+  // Network Changed
   window.tinyCrypto.call.networkChanged = function(networkId) {
+
+    window.tinyCrypto.networkId = networkId;
+
+    if (localStorage) {
+      localStorage.setItem('web3_network_id', networkId);
+    }
+
     myEmitter.emit('networkChanged', networkId);
+
   };
 
   window.tinyCrypto.call.checkConnection = function() {
