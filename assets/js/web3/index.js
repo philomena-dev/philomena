@@ -22,91 +22,91 @@ const startWeb3 = function() {
 
   };
 
-  // Emitter
-  class MyEmitter extends EventEmitter {}
-  const myEmitter = new MyEmitter();
-
-  window.tinyCrypto.on = function(where, callback) {
-    return myEmitter.on(where, callback);
-  };
-
-  window.tinyCrypto.once = function(where, callback) {
-    return myEmitter.once(where, callback);
-  };
-
-  // Calls
-
-  // Account Change
-  window.tinyCrypto.call.accountsChanged = function(accounts) {
-    return new Promise((resolve, reject) => {
-
-      // Address
-      window.tinyCrypto.signer = window.tinyCrypto.provider.getSigner();
-      window.tinyCrypto.call.signerUpdated('accountsChanged');
-
-      window.tinyCrypto.call.signerGetAddress().then(address => {
-
-        window.tinyCrypto.address = address;
-        if (window.tinyCrypto.address) {
-
-          window.tinyCrypto.address = window.tinyCrypto.address.toLowerCase();
-
-          if (localStorage) {
-            localStorage.setItem('web3_address', window.tinyCrypto.address);
-          }
-
-          window.tinyCrypto.accounts = accounts;
-          myEmitter.emit('accountsChanged', accounts);
-          resolve(accounts);
-
-        }
-
-      }).catch(reject);
-
-    });
-  };
-
-  // Warn Signer Updated
-  window.tinyCrypto.call.signerUpdated = function(where) {
-    myEmitter.emit('signerUpdated', { where });
-  };
-
-  // Coming Soon
-  window.tinyCrypto.call.signerGetAddress = function() {
-    return new Promise(resolve => {
-      console.log('signerGetAddress');
-      resolve();
-    });
-  };
-
-  // Network Changed
-  window.tinyCrypto.call.networkChanged = function(networkId) {
-
-    window.tinyCrypto.networkId = networkId;
-
-    if (localStorage) {
-      localStorage.setItem('web3_network_id', networkId);
-    }
-
-    myEmitter.emit('networkChanged', networkId);
-
-  };
-
-  // Coming Soon
-  window.tinyCrypto.call.checkConnection = function() {
-    console.log('checkConnection');
-  };
-
-  // Coming Soon
-  window.tinyCrypto.call.readyProvider = function() {
-    console.log('readyProvider');
-  };
-
   // Web3 Enabled on the website
   if (window.tinyCrypto.config.enabled) {
 
     // Check if Web3 has been injected by the browser (Mist/MetaMask).
     if (typeof ethereum !== 'undefined') {
+
+      // Emitter
+      class MyEmitter extends EventEmitter {}
+      const myEmitter = new MyEmitter();
+
+      window.tinyCrypto.on = function(where, callback) {
+        return myEmitter.on(where, callback);
+      };
+
+      window.tinyCrypto.once = function(where, callback) {
+        return myEmitter.once(where, callback);
+      };
+
+      // Calls
+
+      // Account Change
+      window.tinyCrypto.call.accountsChanged = function(accounts) {
+        return new Promise((resolve, reject) => {
+
+          // Address
+          window.tinyCrypto.signer = window.tinyCrypto.provider.getSigner();
+          window.tinyCrypto.call.signerUpdated('accountsChanged');
+
+          window.tinyCrypto.call.signerGetAddress().then(address => {
+
+            window.tinyCrypto.address = address;
+            if (window.tinyCrypto.address) {
+
+              window.tinyCrypto.address = window.tinyCrypto.address.toLowerCase();
+
+              if (localStorage) {
+                localStorage.setItem('web3_address', window.tinyCrypto.address);
+              }
+
+              window.tinyCrypto.accounts = accounts;
+              myEmitter.emit('accountsChanged', accounts);
+              resolve(accounts);
+
+            }
+
+          }).catch(reject);
+
+        });
+      };
+
+      // Warn Signer Updated
+      window.tinyCrypto.call.signerUpdated = function(where) {
+        myEmitter.emit('signerUpdated', { where });
+      };
+
+      // Coming Soon
+      window.tinyCrypto.call.signerGetAddress = function() {
+        return new Promise(resolve => {
+          console.log('signerGetAddress');
+          resolve();
+        });
+      };
+
+      // Network Changed
+      window.tinyCrypto.call.networkChanged = function(networkId) {
+
+        window.tinyCrypto.networkId = networkId;
+
+        if (localStorage) {
+          localStorage.setItem('web3_network_id', networkId);
+        }
+
+        myEmitter.emit('networkChanged', networkId);
+
+      };
+
+      // Coming Soon
+      window.tinyCrypto.call.checkConnection = function() {
+        console.log('checkConnection');
+      };
+
+      // Coming Soon
+      window.tinyCrypto.call.readyProvider = function() {
+        console.log('readyProvider');
+      };
 
       // Insert Provider
       // eslint-disable-next-line no-undef
