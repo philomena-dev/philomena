@@ -39,6 +39,7 @@ import { startWeb3 }            from './web3';
 
 whenReady(() => {
 
+  startWeb3();
   showOwnedComments();
   showOwnedPosts();
   loadBooruData();
@@ -69,6 +70,5 @@ whenReady(() => {
   hideStaffTools();
   pollOptionCreator();
   warnAboutPMs();
-  startWeb3();
 
 });

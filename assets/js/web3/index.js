@@ -1,7 +1,7 @@
 // More Modules
-import { $ } from '../utils/dom';
 import { EventEmitter } from 'events';
 import { web3Cfg } from '../../../web3/client.side.config';
+import { configWeb3 } from './registrations';
 
 // https://web3js.readthedocs.io/en/v1.8.2/index.html
 import * as web3 from 'web3';
@@ -137,15 +137,8 @@ const startWeb3 = function() {
 
     }
 
-    // Detect Connect Wallet Buttom
-    const connectWallet = $('#connect-web3-wallet');
-    if (connectWallet) {
-      connectWallet.addEventListener('click', () => {
-
-        console.log('Test Wallet Buttom');
-
-      });
-    }
+    // Start More Modules
+    configWeb3();
 
   }
 
