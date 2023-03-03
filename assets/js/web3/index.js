@@ -10,7 +10,20 @@ const startWeb3 = function() {
 
   // Prepare Web3 Object
   window.web3 = web3;
-  window.tinyCrypto = { connected: false, providerConnected: false, protocol: null, config: web3Cfg(), call: {}, callbacks: [] };
+  window.tinyCrypto = {
+
+    connected: false,
+    providerConnected: false,
+    protocol: null,
+
+    config: web3Cfg(),
+    call: {},
+
+    callbacks: {
+      accountsChanged: []
+    }
+
+  };
 
   // Calls
 
@@ -31,8 +44,8 @@ const startWeb3 = function() {
         localStorage.setItem('web3_address', window.tinyCrypto.address);
       }
 
-      for (const item in window.tinyCrypto.accountsChanged) {
-        await window.tinyCrypto.accountsChanged[item](accounts);
+      for (const item in window.tinyCrypto.callbacks.accountsChanged) {
+        await window.tinyCrypto.callbacks.accountsChanged[item](accounts);
       }
 
     }
@@ -41,8 +54,16 @@ const startWeb3 = function() {
 
   };
 
-  window.tinyCrypto.call.signerUpdated = function() {
-    console.log('signerUpdated');
+  // Warn Signer Updated
+  window.tinyCrypto.call.signerUpdated = async function() {
+
+    // Send Request
+    for (const item in window.tinyCrypto.callbacks.signerUpdated) {
+      await window.tinyCrypto.callbacks.signerUpdated[item](this.signer);
+    }
+
+    return;
+
   };
 
   window.tinyCrypto.call.signerGetAddress = function() {
