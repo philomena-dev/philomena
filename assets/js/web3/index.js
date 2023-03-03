@@ -29,7 +29,7 @@ const startWeb3 = function() {
   // Calls
 
   // Account Change
-  window.tinyCrypto.call.accountsChanged = async function(accounts) {
+  //window.tinyCrypto.call.accountsChanged = async function(accounts) {
 
     // Address
     //window.tinyCrypto.signer = window.tinyCrypto.provider.getSigner();
@@ -51,21 +51,21 @@ const startWeb3 = function() {
 
     //}
 
-    return;
+  //  return;
 
-  };
+  //};
 
   // Warn Signer Updated
-  window.tinyCrypto.call.signerUpdated = async function(where) {
+  //window.tinyCrypto.call.signerUpdated = async function(where) {
 
     // Send Request
     //for (const item in window.tinyCrypto.callbacks.signerUpdated) {
     //  await window.tinyCrypto.callbacks.signerUpdated[item](window.tinyCrypto.signer, where);
     //}
 
-    return;
+  //  return;
 
-  };
+  //};
 
   window.tinyCrypto.call.signerGetAddress = function() {
     console.log('signerGetAddress');
