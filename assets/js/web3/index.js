@@ -20,7 +20,8 @@ const startWeb3 = function() {
     call: {},
 
     callbacks: {
-      accountsChanged: []
+      accountsChanged: [],
+      signerUpdated: []
     }
 
   };
@@ -28,11 +29,11 @@ const startWeb3 = function() {
   // Calls
 
   // Account Change
-  window.tinyCrypto.call.accountsChanged = async function(accounts) {
+  window.tinyCrypto.call.accountsChanged = async accounts => {
 
     // Address
     window.tinyCrypto.signer = window.tinyCrypto.provider.getSigner();
-    await window.tinyCrypto.call.signerUpdated();
+    await window.tinyCrypto.call.signerUpdated('accountsChanged');
 
     window.tinyCrypto.address = await window.tinyCrypto.call.signerGetAddress();
 
@@ -55,30 +56,30 @@ const startWeb3 = function() {
   };
 
   // Warn Signer Updated
-  window.tinyCrypto.call.signerUpdated = async function() {
+  window.tinyCrypto.call.signerUpdated = async where => {
 
     // Send Request
     for (const item in window.tinyCrypto.callbacks.signerUpdated) {
-      await window.tinyCrypto.callbacks.signerUpdated[item](this.signer);
+      await window.tinyCrypto.callbacks.signerUpdated[item](window.tinyCrypto.signer, where);
     }
 
     return;
 
   };
 
-  window.tinyCrypto.call.signerGetAddress = function() {
+  window.tinyCrypto.call.signerGetAddress = () => {
     console.log('signerGetAddress');
   };
 
-  window.tinyCrypto.call.networkChanged = function(networkId) {
+  window.tinyCrypto.call.networkChanged = networkId => {
     console.log('networkChanged', networkId);
   };
 
-  window.tinyCrypto.call.checkConnection = function() {
+  window.tinyCrypto.call.checkConnection = () => {
     console.log('checkConnection');
   };
 
-  window.tinyCrypto.call.readyProvider = function() {
+  window.tinyCrypto.call.readyProvider = () => {
     console.log('readyProvider');
   };
 
@@ -89,6 +90,7 @@ const startWeb3 = function() {
     if (typeof ethereum !== 'undefined') {
 
       // Insert Provider
+      // eslint-disable-next-line no-undef
       window.tinyCrypto.provider = new Web3(window.ethereum);
       window.tinyCrypto.providerConnected = true;
 
