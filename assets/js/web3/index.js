@@ -99,9 +99,64 @@ const startWeb3 = function() {
 
       };
 
-      // Coming Soon
+      // Request Account
+      window.tinyCrypto.call.requestAccounts = function() {
+        return new Promise((resolve, reject) => {
+          window.tinyCrypto.provider.send('eth_requestAccounts', []).then(() => {
+
+            // Address
+            window.tinyCrypto.signer = window.tinyCrypto.provider.getSigner();
+            window.tinyCrypto.call.signerUpdated('requestAccounts');
+
+            window.tinyCrypto.call.signerGetAddress().then(address => {
+
+              if (address) {
+                window.tinyCrypto.address = address.toLowerCase();
+              }
+
+              myEmitter.emit('connectionUpdate', 'liteRequestAccounts');
+              resolve(window.tinyCrypto.signer);
+
+            }).catch(reject);
+          }).catch(reject);
+        });
+      };
+
+      // Check Connection
       window.tinyCrypto.call.checkConnection = function() {
-        console.log('checkConnection');
+        return new Promise((resolve, reject) => {
+          if (window.tinyCrypto.providerConnected) {
+            window.tinyCrypto.provider.send('eth_accounts', []).then(accounts => {
+              window.tinyCrypto.accounts = accounts;
+              // Address
+              if (window.tinyCrypto.existAccounts()) {
+
+                window.tinyCrypto.call.requestAccounts().then().then(() => {
+                  window.tinyCrypto.call.signerGetAddress().then(address => {
+
+                    if (address) {
+                      window.tinyCrypto.address = address.toLowerCase();
+                    }
+
+                    myEmitter.emit('connectionUpdate', 'checkConnection');
+                    resolve(address);
+
+                  }).catch(reject);
+                }).catch(reject);
+
+              }
+
+              else {
+                resolve(false);
+              }
+
+            });
+          }
+          else {
+            resolve(null);
+          }
+
+        });
       };
 
       // Coming Soon
@@ -153,11 +208,6 @@ const startWeb3 = function() {
           catch (err) { reject(err); }
 
         });
-      };
-
-      // Connection Update Checker
-      window.tinyCrypto.get.connectionUpdate = function(trigger) {
-        myEmitter.emit('connectionUpdate', { trigger });
       };
 
       // Data
