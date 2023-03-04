@@ -19,6 +19,7 @@ const startWeb3 = function() {
 
     config: web3Cfg(),
     call: {},
+    get: {},
 
   };
 
@@ -155,9 +156,18 @@ const startWeb3 = function() {
       };
 
       // Connection Update Checker
-      window.tinyCrypto.call.connectionUpdate = function(trigger) {
+      window.tinyCrypto.get.connectionUpdate = function(trigger) {
         myEmitter.emit('connectionUpdate', { trigger });
       };
+
+      // Data
+      window.tinyCrypto.get.blockchain = function() { return window.clone(window.tinyCrypto.config.networks[window.tinyCrypto.config.network]); };
+      window.tinyCrypto.get.provider = function() { return window.tinyCrypto.provider; };
+      window.tinyCrypto.get.address = function() { return window.tinyCrypto.address; };
+      window.tinyCrypto.get.signer = function() { return window.tinyCrypto.signer; };
+
+      // Exist Accounts
+      window.tinyCrypto.existAccounts = function() { return Array.isArray(window.tinyCrypto.accounts) && window.tinyCrypto.accounts.length > 0; };
 
       // Insert Provider
       // eslint-disable-next-line no-undef
