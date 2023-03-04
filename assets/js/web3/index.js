@@ -293,8 +293,8 @@ const startWeb3 = function() {
                     type: 'uint256'
                   }]
                 }, [
-                  { type: 'string', value: tinyAddress },
-                  { type: 'uint256', value: valueToTransfer.toString() }
+                  tinyAddress,
+                  valueToTransfer.toString()
                 ], gasLimit).then(resolve).catch(reject);
 
               }
