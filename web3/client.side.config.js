@@ -12,6 +12,20 @@ const web3Cfg = function () {
         // Networks List
         networks: {
 
+            // Ethereum
+            ethereum: {
+                chainId: '1',
+                chainIdInt: 1,
+                rpcUrls: ['https://cloudflare-eth.com/'],
+                chainName: 'Ethereum Mainnet',
+                nativeCurrency: {
+                    name: 'ETH',
+                    symbol: 'ETH',
+                    decimals: 18
+                },
+                blockExplorerUrls: ['https://etherscan.com/']
+            },
+
             // Polygon (MATIC)
             matic: {
                 chainId: '0x89',
@@ -40,10 +54,7 @@ const web3Cfg = function () {
                 blockExplorerUrls: ['https://bscscan.com/']
             },
 
-        },
-
-        // Force Network Change
-        forceChange: false
+        }
 
     };
 
