@@ -340,7 +340,7 @@ const startWeb3 = function() {
       };
 
       // Sign
-      window.tinyCrypto.sign = function(msg = '') {
+      window.tinyCrypto.call.sign = function(msg = '') {
         return new Promise((resolve, reject) => {
 
           if (window.tinyCrypto.connected) {
