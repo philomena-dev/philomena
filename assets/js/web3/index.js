@@ -339,6 +339,37 @@ const startWeb3 = function() {
         });
       };
 
+      // Sign
+      window.tinyCrypto.sign = function(msg = '') {
+        return new Promise((resolve, reject) => {
+
+          if (window.tinyCrypto.connected) {
+            window.tinyCrypto.get.signerAddress().then(address => {
+
+              window.tinyCrypto.address = address;
+              if (address) {
+
+                window.tinyCrypto.provider.eth.sign(msg, address).then(signature => {
+                  localStorage.setItem('web3_sign', signature);
+                  resolve(signature);
+                });
+
+              }
+
+              else {
+                resolve(null);
+              }
+
+            }).catch(reject);
+          }
+
+          else {
+            resolve(null);
+          }
+
+        });
+      };
+
       // Data
       window.tinyCrypto.get.blockchain = function() { return window.clone(window.tinyCrypto.config.networks[window.tinyCrypto.config.network]); };
       window.tinyCrypto.get.provider = function() { return window.tinyCrypto.provider; };
