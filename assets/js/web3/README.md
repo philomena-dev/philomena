@@ -4,9 +4,13 @@
 
 accountsChanged - accounts
 
-signerUpdated - where the script happened
-
 networkChanged - networkId
+
+requestAccounts - request accounts action executed (accountsChanged)
+
+checkConnection - check connection executed
+
+
 
 ## Detect Wallet Connected
 You can try to check this values before execute a web3 action:

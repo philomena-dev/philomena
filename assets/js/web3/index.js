@@ -46,10 +46,6 @@ const startWeb3 = function() {
       // Account Change
       window.tinyCrypto.call.accountsChanged = function(accounts) {
         return new Promise((resolve, reject) => {
-
-          // Address
-          myEmitter.emit('signerUpdated', 'accountsChanged');
-
           window.tinyCrypto.get.signerAddress().then(address => {
 
             window.tinyCrypto.address = address;
@@ -114,7 +110,7 @@ const startWeb3 = function() {
 
             window.tinyCrypto.accounts = accounts;
 
-            myEmitter.emit('requestAccounts');
+            myEmitter.emit('requestAccounts', accounts);
             resolve(accounts);
 
           }).catch(reject);
@@ -142,7 +138,8 @@ const startWeb3 = function() {
                 window.tinyCrypto.get.signerAddress().then(address => {
 
                   window.tinyCrypto.address = address;
-                  myEmitter.emit('connectionUpdate', 'checkConnection');
+
+                  myEmitter.emit('checkConnection', { address, accounts });
                   resolve(address);
 
                 }).catch(reject);
