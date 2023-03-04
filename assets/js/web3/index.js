@@ -154,6 +154,11 @@ const startWeb3 = function() {
         });
       };
 
+      // Connection Update Checker
+      window.tinyCrypto.call.connectionUpdate = function(trigger) {
+        myEmitter.emit('connectionUpdate', { trigger });
+      };
+
       // Insert Provider
       // eslint-disable-next-line no-undef
       window.tinyCrypto.provider = new Web3(window.ethereum);

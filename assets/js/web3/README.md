@@ -18,3 +18,4 @@ tinyCrypto.protocol (String)
 tinyCrypto.connected (Boolean) (Wallet Connected)
 
 tinyCrypto.provider (Crypto Provider Object)
+```
