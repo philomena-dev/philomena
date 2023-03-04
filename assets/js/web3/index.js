@@ -25,7 +25,7 @@ const startWeb3 = function() {
   if (window.tinyCrypto.config.enabled) {
 
     // Check if Web3 has been injected by the browser (Mist/MetaMask).
-    if (typeof ethereum !== 'undefined') {
+    if (typeof ethereum !== 'undefined' && window.ethereum.isMetaMask) {
 
       // Emitter
       class MyEmitter extends EventEmitter {}
@@ -197,28 +197,23 @@ const startWeb3 = function() {
       window.tinyCrypto.provider = new Web3(window.ethereum);
       window.tinyCrypto.providerConnected = true;
 
-      // Is Metamask
-      if (window.ethereum.isMetaMask) {
+      // Insert Protocol
+      window.tinyCrypto.protocol = 'metamask';
 
-        // Insert Protocol
-        window.tinyCrypto.protocol = 'metamask';
+      // Change Account Detector
+      window.ethereum.on('accountsChanged', accounts => {
+        window.tinyCrypto.call.accountsChanged(accounts);
+      });
 
-        // Change Account Detector
-        window.ethereum.on('accountsChanged', accounts => {
-          window.tinyCrypto.call.accountsChanged(accounts);
-        });
+      // Network Change
+      window.ethereum.on('networkChanged', networkId => {
+        window.tinyCrypto.call.networkChanged(networkId);
+      });
 
-        // Network Change
-        window.ethereum.on('networkChanged', networkId => {
-          window.tinyCrypto.call.networkChanged(networkId);
-        });
-
-        // Ready Provider and check the connection
-        window.tinyCrypto.call.checkConnection().then(() => {
-          myEmitter.emit('readyProvider');
-        });
-
-      }
+      // Ready Provider and check the connection
+      window.tinyCrypto.call.checkConnection().then(() => {
+        myEmitter.emit('readyProvider');
+      });
 
     }
 
