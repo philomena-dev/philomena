@@ -108,6 +108,29 @@ const startWeb3 = function() {
         console.log('readyProvider');
       };
 
+      // Wait Address
+      window.tinyCrypto.call.waitAddress = function() {
+        return new Promise((resolve, reject) => {
+
+          try {
+
+            if (window.tinyCrypto.address) {
+              resolve(window.tinyCrypto.address);
+            }
+
+            else {
+              setTimeout(() => {
+                window.tinyCrypto.call.waitAddress().then(data => { resolve(data); }).catch(reject);
+              }, 500);
+            }
+
+          }
+
+          catch (err) { reject(err); }
+
+        });
+      };
+
       // Insert Provider
       // eslint-disable-next-line no-undef
       window.tinyCrypto.provider = new Web3(window.ethereum);
