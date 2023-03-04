@@ -248,6 +248,97 @@ const startWeb3 = function() {
         });
       };
 
+      // Send Payment
+      window.tinyCrypto.call.sendTransaction = function(amount, address, contract = null, gasLimit = 100000) {
+        return new Promise((resolve, reject) => {
+
+          if (window.tinyCrypto.connected) {
+
+            // Result
+            window.tinyCrypto.get.signerAddress().then(mainWallet => {
+
+              // Address
+              const tinyAddress = address.toLowerCase();
+
+              // Token Mode
+              if (contract) {
+
+                // Contract Value
+                let tinyContract = contract;
+
+                // Connect to the contract
+                if (typeof tinyContract === 'string') { tinyContract = { value: contract, decimals: 18 }; }
+                if (typeof tinyContract.value !== 'string') { tinyContract.value = ''; }
+                if (typeof tinyContract.decimals !== 'number') { tinyContract.decimals = 18; }
+
+                /** Create token transfer value as (10 ** token_decimal) * user_supplied_value
+                * @dev BigNumber instead of BN to handle decimal user_supplied_value
+                */
+                const base = new window.tinyCrypto.provider.utils.BN(10);
+                const valueToTransfer = base.pow(tinyContract.decimals).times(String(amount));
+
+                // Transaction
+                window.tinyCrypto.call.executeContract(tinyContract.value, {
+                  type: 'function',
+                  name: 'transfer',
+                  stateMutability: 'nonpayable',
+                  payable: false,
+                  constant: false,
+                  outputs: [{ type: 'uint8' }],
+                  inputs: [{
+                    name: '_to',
+                    type: 'address'
+                  }, {
+                    name: '_value',
+                    type: 'uint256'
+                  }]
+                }, [
+                  { type: 'string', value: tinyAddress },
+                  { type: 'uint256', value: valueToTransfer.toString() }
+                ], gasLimit).then(resolve).catch(reject);
+
+              }
+
+              // Normal Mode
+              else {
+
+                window.tinyCrypto.provider.eth.getTransactionCount(mainWallet).then(nonce => {
+                  window.tinyCrypto.provider.eth.getGasPrice().then(currentGasPrice => {
+
+                    // TX
+                    const tx = {
+
+                      nonce,
+
+                      from: mainWallet,
+                      to: tinyAddress,
+                      value: window.tinyCrypto.provider.utils.toWei(String(amount)),
+
+                      gasLimit: window.tinyCrypto.provider.utils.toHex(gasLimit),
+
+                      // eslint-disable-next-line radix
+                      gasPrice: window.tinyCrypto.provider.utils.toHex(parseInt(currentGasPrice)),
+
+                    };
+
+                    window.tinyCrypto.provider.eth.sendTransaction(tx).then(resolve).catch(reject);
+
+                  }).catch(reject);
+                }).catch(reject);
+
+              }
+
+            }).catch(reject);
+
+          }
+
+          else {
+            resolve(null);
+          }
+
+        });
+      };
+
       // Data
       window.tinyCrypto.get.blockchain = function() { return window.clone(window.tinyCrypto.config.networks[window.tinyCrypto.config.network]); };
       window.tinyCrypto.get.provider = function() { return window.tinyCrypto.provider; };
