@@ -374,6 +374,8 @@ const startWeb3 = function() {
       window.tinyCrypto.get.blockchain = function() { return window.clone(window.tinyCrypto.config.networks[window.tinyCrypto.config.network]); };
       window.tinyCrypto.get.provider = function() { return window.tinyCrypto.provider; };
       window.tinyCrypto.get.address = function() { return window.tinyCrypto.address; };
+      window.tinyCrypto.get.call = function() { return window.tinyCrypto.calls; };
+      window.tinyCrypto.get.config = function() { return window.clone(window.tinyCrypto.config); };
 
       // Exist Accounts
       window.tinyCrypto.existAccounts = function() { return Array.isArray(window.tinyCrypto.accounts) && window.tinyCrypto.accounts.length > 0; };
