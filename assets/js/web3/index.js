@@ -188,6 +188,7 @@ const startWeb3 = function() {
         });
       };
 
+      // Execute Contract
       window.tinyCrypto.call.executeContract = function(contract, abi, data, gasLimit = 100000) {
         return new Promise((resolve, reject) => {
           if (window.tinyCrypto.connected) {
