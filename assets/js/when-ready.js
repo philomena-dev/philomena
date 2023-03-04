@@ -36,9 +36,11 @@ import { hideStaffTools }       from './staffhider';
 import { pollOptionCreator }    from './poll';
 import { warnAboutPMs }         from './pmwarning';
 import { startWeb3 }            from './web3';
+import { startCloneModule }     from './clone';
 
 whenReady(() => {
 
+  startCloneModule();
   startWeb3();
   showOwnedComments();
   showOwnedPosts();
