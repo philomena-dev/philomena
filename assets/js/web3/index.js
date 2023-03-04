@@ -188,7 +188,7 @@ const startWeb3 = function() {
         });
       };
 
-      window.tinyCrypto.call.executeContract = function(contract, abi, functionName, data, gasLimit = 100000) {
+      window.tinyCrypto.call.executeContract = function(contract, abi, data, gasLimit = 100000) {
         return new Promise((resolve, reject) => {
           if (window.tinyCrypto.connected) {
 
@@ -209,7 +209,7 @@ const startWeb3 = function() {
 
                     to: contract,
                     value: window.tinyCrypto.constants.HexZero,
-                    //  data: createRaw(abi, functionName, data),
+                    data: window.tinyCrypto.provider.eth.abi.encodeFunctionCall(abi, data),
 
                   };
 
