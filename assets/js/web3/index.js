@@ -70,7 +70,7 @@ const startWeb3 = function() {
         });
       };
 
-      // Coming Soon
+      // Get Signer Address
       window.tinyCrypto.call.signerGetAddress = function() {
         return new Promise((resolve, reject) => {
           window.tinyCrypto.call.requestAccounts().then(accounts => {
@@ -162,11 +162,6 @@ const startWeb3 = function() {
         });
       };
 
-      // Coming Soon
-      window.tinyCrypto.call.readyProvider = function() {
-        console.log('readyProvider');
-      };
-
       // Wait Address
       window.tinyCrypto.call.waitAddress = function() {
         return new Promise((resolve, reject) => {
@@ -220,8 +215,9 @@ const startWeb3 = function() {
         });
 
         // Ready Provider and check the connection
-        window.tinyCrypto.call.checkConnection();
-        window.tinyCrypto.call.readyProvider();
+        window.tinyCrypto.call.checkConnection().then(() => {
+          myEmitter.emit('readyProvider');
+        });
 
       }
 
