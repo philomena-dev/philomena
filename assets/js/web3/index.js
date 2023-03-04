@@ -188,24 +188,29 @@ const startWeb3 = function() {
         });
       };
 
-      window.tinyCrypto.call.executeContract = function(contract_address, abi, functionName, data, gasLimit = 100000) {
+      window.tinyCrypto.call.executeContract = function(contract, abi, functionName, data, gasLimit = 100000) {
         return new Promise((resolve, reject) => {
           if (window.tinyCrypto.connected) {
 
             // Loading
-            window.tinyCrypto.call.signerAddress().then(send_account => {
-              window.tinyCrypto.address = send_account;
-              window.tinyCrypto.provider.eth.getTransactionCount(send_account).then(nonce => {
+            window.tinyCrypto.call.signerAddress().then(address => {
+              window.tinyCrypto.address = address;
+              window.tinyCrypto.provider.eth.getTransactionCount(address).then(nonce => {
                 window.tinyCrypto.provider.eth.getGasPrice().then(currentGasPrice => {
 
                   // construct the transaction data
                   const tx = {
-                    nonce: nonce,
+
+                    nonce,
                     gasLimit: window.tinyCrypto.provider.utils.toHex(gasLimit),
+
+                    // eslint-disable-next-line radix
                     gasPrice: window.tinyCrypto.provider.utils.toHex(parseInt(currentGasPrice)),
-                    to: contract_address,
+
+                    to: contract,
                     value: window.tinyCrypto.constants.HexZero,
                     //  data: createRaw(abi, functionName, data),
+
                   };
 
                   // Complete
