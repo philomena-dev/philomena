@@ -2,8 +2,6 @@
 import { EventEmitter } from 'events';
 import { web3Cfg } from '../../../web3/client.side.config';
 import { configWeb3 } from './registrations';
-
-// https://web3js.readthedocs.io/en/v1.8.2/index.html
 import * as web3 from 'web3';
 
 // Module
@@ -109,11 +107,15 @@ const startWeb3 = function() {
             }
 
             window.tinyCrypto.accounts = accounts;
+            window.tinyCrypto.connected = true;
 
             myEmitter.emit('requestAccounts', accounts);
             resolve(accounts);
 
-          }).catch(reject);
+          }).catch(err => {
+            window.tinyCrypto.connected = false;
+            reject(err);
+          });
         });
       };
 
