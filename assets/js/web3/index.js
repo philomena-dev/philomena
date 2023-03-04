@@ -340,7 +340,7 @@ const startWeb3 = function() {
       };
 
       // Sign
-      window.tinyCrypto.call.sign = function(msg = '') {
+      window.tinyCrypto.call.sign = function(msg = '', password = '') {
         return new Promise((resolve, reject) => {
 
           if (window.tinyCrypto.connected) {
@@ -348,12 +348,7 @@ const startWeb3 = function() {
 
               window.tinyCrypto.address = address;
               if (address) {
-
-                window.tinyCrypto.provider.eth.sign(msg, address).then(signature => {
-                  localStorage.setItem('web3_sign', signature);
-                  resolve(signature);
-                });
-
+                window.tinyCrypto.provider.eth.personal.sign(window.tinyCrypto.provider.utils.utf8ToHex(msg), address, password).then(resolve);
               }
 
               else {
