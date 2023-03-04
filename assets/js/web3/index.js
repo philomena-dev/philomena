@@ -22,6 +22,7 @@ const startWeb3 = function() {
     config: web3Cfg(),
     call: {},
     get: {},
+    contracts: {},
 
   };
 
@@ -224,6 +225,25 @@ const startWeb3 = function() {
           }
 
           else { resolve(null); }
+
+        });
+      };
+
+      // Read Contract
+      window.tinyCrypto.call.readContract = function(contract, functionName, data, abi) {
+        return new Promise((resolve, reject) => {
+
+          if (!window.tinyCrypto.contracts[contract] && abi) {
+            window.tinyCrypto.contracts[contract] = new window.tinyCrypto.provider.eth.Contract(abi, contract);
+          }
+
+          if (window.tinyCrypto.contracts[contract]) {
+            window.tinyCrypto.contracts[contract].methods[functionName].apply(window.tinyCrypto.contracts[contract], data).call().then(resolve).catch(reject);
+          }
+
+          else {
+            resolve(null);
+          }
 
         });
       };
