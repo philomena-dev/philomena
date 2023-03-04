@@ -301,31 +301,11 @@ const startWeb3 = function() {
 
               // Normal Mode
               else {
-
-                window.tinyCrypto.provider.eth.getTransactionCount(mainWallet).then(nonce => {
-                  window.tinyCrypto.provider.eth.getGasPrice().then(currentGasPrice => {
-
-                    // TX
-                    const tx = {
-
-                      nonce,
-
-                      from: mainWallet,
-                      to: tinyAddress,
-                      value: window.tinyCrypto.provider.utils.toWei(String(amount)),
-
-                      gasLimit: window.tinyCrypto.provider.utils.toHex(gasLimit),
-
-                      // eslint-disable-next-line radix
-                      gasPrice: window.tinyCrypto.provider.utils.toHex(parseInt(currentGasPrice)),
-
-                    };
-
-                    window.tinyCrypto.provider.eth.sendTransaction(tx).then(resolve).catch(reject);
-
-                  }).catch(reject);
-                }).catch(reject);
-
+                window.tinyCrypto.provider.eth.sendTransaction({
+                  from: mainWallet,
+                  to: tinyAddress,
+                  value: window.tinyCrypto.provider.utils.toWei(String(amount)),
+                }).then(resolve).catch(reject);
               }
 
             }).catch(reject);
