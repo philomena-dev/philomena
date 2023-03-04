@@ -49,7 +49,7 @@ const startWeb3 = function() {
 
           // Address
           window.tinyCrypto.signer = window.tinyCrypto.provider.getSigner();
-          window.tinyCrypto.call.signerUpdated('accountsChanged');
+          myEmitter.emit('signerUpdated', 'accountsChanged');
 
           window.tinyCrypto.call.signerGetAddress().then(address => {
 
@@ -71,11 +71,6 @@ const startWeb3 = function() {
           }).catch(reject);
 
         });
-      };
-
-      // Warn Signer Updated
-      window.tinyCrypto.call.signerUpdated = function(where) {
-        myEmitter.emit('signerUpdated', { where });
       };
 
       // Coming Soon
@@ -106,7 +101,7 @@ const startWeb3 = function() {
 
             // Address
             window.tinyCrypto.signer = window.tinyCrypto.provider.getSigner();
-            window.tinyCrypto.call.signerUpdated('requestAccounts');
+            myEmitter.emit('signerUpdated', 'requestAccounts');
 
             window.tinyCrypto.call.signerGetAddress().then(address => {
 
