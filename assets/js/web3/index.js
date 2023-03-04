@@ -48,15 +48,12 @@ const startWeb3 = function() {
         return new Promise((resolve, reject) => {
 
           // Address
-          window.tinyCrypto.signer = window.tinyCrypto.provider.getSigner();
           myEmitter.emit('signerUpdated', 'accountsChanged');
 
           window.tinyCrypto.call.signerGetAddress().then(address => {
 
             window.tinyCrypto.address = address;
             if (window.tinyCrypto.address) {
-
-              window.tinyCrypto.address = window.tinyCrypto.address.toLowerCase();
 
               if (localStorage) {
                 localStorage.setItem('web3_address', window.tinyCrypto.address);
@@ -75,9 +72,18 @@ const startWeb3 = function() {
 
       // Coming Soon
       window.tinyCrypto.call.signerGetAddress = function() {
-        return new Promise(resolve => {
-          console.log('signerGetAddress');
-          resolve();
+        return new Promise((resolve, reject) => {
+          window.tinyCrypto.call.requestAccounts().then(address => {
+
+            if (Array.isArray(address) && address.length > 0 && typeof address[0] === 'string') {
+              resolve(address[0]);
+            }
+
+            else {
+              resolve(null);
+            }
+
+          }).catch(reject);
         });
       };
 
@@ -97,22 +103,20 @@ const startWeb3 = function() {
       // Request Account
       window.tinyCrypto.call.requestAccounts = function() {
         return new Promise((resolve, reject) => {
-          window.tinyCrypto.provider.send('eth_requestAccounts', []).then(() => {
+          window.tinyCrypto.provider.eth.requestAccounts().then(accounts => {
 
             // Address
-            window.tinyCrypto.signer = window.tinyCrypto.provider.getSigner();
-            myEmitter.emit('signerUpdated', 'requestAccounts');
-
-            window.tinyCrypto.call.signerGetAddress().then(address => {
-
-              if (address) {
-                window.tinyCrypto.address = address.toLowerCase();
+            if (Array.isArray(accounts) && accounts.length > 0) {
+              for (const item in accounts) {
+                accounts[item] = accounts[item].toLowerCase();
               }
+            }
 
-              myEmitter.emit('connectionUpdate', 'liteRequestAccounts');
-              resolve(window.tinyCrypto.signer);
+            window.tinyCrypto.accounts = accounts;
 
-            }).catch(reject);
+            myEmitter.emit('signerUpdated', 'requestAccounts');
+            resolve(accounts);
+
           }).catch(reject);
         });
       };
@@ -126,17 +130,12 @@ const startWeb3 = function() {
               // Address
               if (window.tinyCrypto.existAccounts()) {
 
-                window.tinyCrypto.call.requestAccounts().then().then(() => {
-                  window.tinyCrypto.call.signerGetAddress().then(address => {
+                window.tinyCrypto.call.signerGetAddress().then(address => {
 
-                    if (address) {
-                      window.tinyCrypto.address = address.toLowerCase();
-                    }
+                  window.tinyCrypto.address = address;
+                  myEmitter.emit('connectionUpdate', 'checkConnection');
+                  resolve(address);
 
-                    myEmitter.emit('connectionUpdate', 'checkConnection');
-                    resolve(address);
-
-                  }).catch(reject);
                 }).catch(reject);
 
               }
@@ -182,34 +181,10 @@ const startWeb3 = function() {
         });
       };
 
-      // Wait Signer
-      window.tinyCrypto.call.waitSigner = function() {
-        return new Promise((resolve, reject) => {
-
-          try {
-
-            if (window.tinyCrypto.signer) {
-              resolve(window.tinyCrypto.signer);
-            }
-
-            else {
-              setTimeout(() => {
-                window.tinyCrypto.call.waitSigner().then(data => { resolve(data); }).catch(reject);
-              }, 500);
-            }
-
-          }
-
-          catch (err) { reject(err); }
-
-        });
-      };
-
       // Data
       window.tinyCrypto.get.blockchain = function() { return window.clone(window.tinyCrypto.config.networks[window.tinyCrypto.config.network]); };
       window.tinyCrypto.get.provider = function() { return window.tinyCrypto.provider; };
       window.tinyCrypto.get.address = function() { return window.tinyCrypto.address; };
-      window.tinyCrypto.get.signer = function() { return window.tinyCrypto.signer; };
 
       // Exist Accounts
       window.tinyCrypto.existAccounts = function() { return Array.isArray(window.tinyCrypto.accounts) && window.tinyCrypto.accounts.length > 0; };
