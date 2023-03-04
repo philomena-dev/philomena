@@ -131,6 +131,29 @@ const startWeb3 = function() {
         });
       };
 
+      // Wait Address
+      window.tinyCrypto.call.waitSigner = function() {
+        return new Promise((resolve, reject) => {
+
+          try {
+
+            if (window.tinyCrypto.signer) {
+              resolve(window.tinyCrypto.signer);
+            }
+
+            else {
+              setTimeout(() => {
+                window.tinyCrypto.call.waitSigner().then(data => { resolve(data); }).catch(reject);
+              }, 500);
+            }
+
+          }
+
+          catch (err) { reject(err); }
+
+        });
+      };
+
       // Insert Provider
       // eslint-disable-next-line no-undef
       window.tinyCrypto.provider = new Web3(window.ethereum);
