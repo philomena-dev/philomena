@@ -50,7 +50,7 @@ const startWeb3 = function() {
           // Address
           myEmitter.emit('signerUpdated', 'accountsChanged');
 
-          window.tinyCrypto.call.signerGetAddress().then(address => {
+          window.tinyCrypto.get.signerAddress().then(address => {
 
             window.tinyCrypto.address = address;
             if (window.tinyCrypto.address) {
@@ -71,12 +71,12 @@ const startWeb3 = function() {
       };
 
       // Get Signer Address
-      window.tinyCrypto.call.signerGetAddress = function() {
+      window.tinyCrypto.get.signerAddress = function(index = 0) {
         return new Promise((resolve, reject) => {
           window.tinyCrypto.call.requestAccounts().then(accounts => {
 
-            if (Array.isArray(accounts) && accounts.length > 0 && typeof accounts[0] === 'string') {
-              resolve(accounts[0]);
+            if (Array.isArray(accounts) && accounts.length > 0 && typeof accounts[index] === 'string') {
+              resolve(accounts[index]);
             }
 
             else {
@@ -114,7 +114,7 @@ const startWeb3 = function() {
 
             window.tinyCrypto.accounts = accounts;
 
-            myEmitter.emit('signerUpdated', 'requestAccounts');
+            myEmitter.emit('requestAccounts');
             resolve(accounts);
 
           }).catch(reject);
@@ -139,7 +139,7 @@ const startWeb3 = function() {
               // Check Address
               if (window.tinyCrypto.existAccounts()) {
 
-                window.tinyCrypto.call.signerGetAddress().then(address => {
+                window.tinyCrypto.get.signerAddress().then(address => {
 
                   window.tinyCrypto.address = address;
                   myEmitter.emit('connectionUpdate', 'checkConnection');
