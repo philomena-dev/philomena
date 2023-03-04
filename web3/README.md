@@ -1,7 +1,9 @@
-# Web3 API
+## Web3 API
 ### Under development
 
 <hr/>
+
+# Javascript
 
 ## Events
 ```
