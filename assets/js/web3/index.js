@@ -131,7 +131,7 @@ const startWeb3 = function() {
         });
       };
 
-      // Wait Address
+      // Wait Signer
       window.tinyCrypto.call.waitSigner = function() {
         return new Promise((resolve, reject) => {
 
