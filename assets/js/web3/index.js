@@ -73,10 +73,10 @@ const startWeb3 = function() {
       // Coming Soon
       window.tinyCrypto.call.signerGetAddress = function() {
         return new Promise((resolve, reject) => {
-          window.tinyCrypto.call.requestAccounts().then(address => {
+          window.tinyCrypto.call.requestAccounts().then(accounts => {
 
-            if (Array.isArray(address) && address.length > 0 && typeof address[0] === 'string') {
-              resolve(address[0]);
+            if (Array.isArray(accounts) && accounts.length > 0 && typeof accounts[0] === 'string') {
+              resolve(accounts[0]);
             }
 
             else {
@@ -125,9 +125,18 @@ const startWeb3 = function() {
       window.tinyCrypto.call.checkConnection = function() {
         return new Promise((resolve, reject) => {
           if (window.tinyCrypto.providerConnected) {
-            window.tinyCrypto.provider.send('eth_accounts', []).then(accounts => {
-              window.tinyCrypto.accounts = accounts;
+            window.tinyCrypto.provider.eth.getAccounts().then(accounts => {
+
               // Address
+              if (Array.isArray(accounts) && accounts.length > 0) {
+                for (const item in accounts) {
+                  accounts[item] = accounts[item].toLowerCase();
+                }
+              }
+
+              window.tinyCrypto.accounts = accounts;
+
+              // Check Address
               if (window.tinyCrypto.existAccounts()) {
 
                 window.tinyCrypto.call.signerGetAddress().then(address => {
