@@ -15,6 +15,10 @@ const startWeb3 = function() {
     providerConnected: false,
     protocol: null,
 
+    constants: {
+      HexZero: '0x0000000000000000000000000000000000000000000000000000000000000000'
+    },
+
     config: web3Cfg(),
     call: {},
     get: {},
