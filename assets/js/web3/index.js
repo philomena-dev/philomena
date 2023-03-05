@@ -24,6 +24,11 @@ const startWeb3 = function() {
     get: {},
     contracts: {},
 
+    errors: {
+      noWallet: () => { return new Error('No wallet connected detected.'); },
+      noProvider: () => { return new Error('No provider connected detected.'); },
+    },
+
   };
 
   // Web3 Enabled on the website
@@ -160,7 +165,7 @@ const startWeb3 = function() {
             });
           }
           else {
-            resolve(null);
+            reject(window.tinyCrypto.errors.noProvider());
           }
 
         });
@@ -224,7 +229,7 @@ const startWeb3 = function() {
 
           }
 
-          else { resolve(null); }
+          else { reject(window.tinyCrypto.errors.noWallet()); }
 
         });
       };
@@ -274,8 +279,10 @@ const startWeb3 = function() {
                 /** Create token transfer value as (10 ** token_decimal) * user_supplied_value
                 * @dev BigNumber instead of BN to handle decimal user_supplied_value
                 */
-                const base = new window.tinyCrypto.provider.utils.BN(10);
-                const valueToTransfer = base.pow(tinyContract.decimals).times(String(amount));
+
+                const BN = window.tinyCrypto.provider.utils.BN;
+                const base = new BN(10);
+                const valueToTransfer = base.pow(new BN(tinyContract.decimals)).mul(new BN(amount));
 
                 // Transaction
                 window.tinyCrypto.call.executeContract(tinyContract.value, {
@@ -313,7 +320,7 @@ const startWeb3 = function() {
           }
 
           else {
-            resolve(null);
+            reject(window.tinyCrypto.errors.noWallet());
           }
 
         });
@@ -339,7 +346,7 @@ const startWeb3 = function() {
           }
 
           else {
-            resolve(null);
+            reject(window.tinyCrypto.errors.noWallet());
           }
 
         });
