@@ -15,21 +15,21 @@ const startWeb3 = function() {
     providerConnected: false,
     protocol: null,
 
-    constants: {
+    constants: Object.freeze({
       HexZero: '0x0000000000000000000000000000000000000000000000000000000000000000'
-    },
+    }),
 
-    config: web3Cfg(),
+    config: Object.freeze(web3Cfg()),
     call: {},
     get: {},
     contracts: {},
 
-    errors: {
+    errors: Object.freeze({
       noWallet: () => { return new Error('No wallet connected detected.'); },
       noProvider: () => { return new Error('No provider connected detected.'); },
-    },
+    }),
 
-    decimals: {
+    decimals: Object.freeze({
       0: 'wei',
       3: 'kwei',
       6: 'mwei',
@@ -41,7 +41,7 @@ const startWeb3 = function() {
       24: 'mether',
       27: 'gether',
       30: 'tether',
-    },
+    }),
 
   };
 
@@ -62,6 +62,9 @@ const startWeb3 = function() {
       window.tinyCrypto.once = function(where, callback) {
         return myEmitter.once(where, callback);
       };
+
+      window.tinyCrypto.on = Object.freeze(window.tinyCrypto.on);
+      window.tinyCrypto.once = Object.freeze(window.tinyCrypto.once);
 
       // Calls
 
@@ -393,6 +396,10 @@ const startWeb3 = function() {
       });
 
     }
+
+    // Freeze
+    window.tinyCrypto.call = Object.freeze(window.tinyCrypto.call);
+    window.tinyCrypto.get = Object.freeze(window.tinyCrypto.get);
 
     // Start More Modules
     configWeb3();
