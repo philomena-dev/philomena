@@ -283,16 +283,8 @@ const startWeb3 = function() {
               // Token Mode
               if (contract) {
 
-                // Contract Value
-                let tinyContract = contract;
-
-                // Connect to the contract
-                if (typeof tinyContract === 'string') { tinyContract = { value: contract, decimals: 18 }; }
-                if (typeof tinyContract.value !== 'string') { tinyContract.value = ''; }
-                if (typeof tinyContract.decimals !== 'number') { tinyContract.decimals = 18; }
-
                 // Transaction
-                window.tinyCrypto.call.executeContract(tinyContract.value, {
+                window.tinyCrypto.call.executeContract(contract, {
                   type: 'function',
                   name: 'transfer',
                   stateMutability: 'nonpayable',
@@ -308,7 +300,7 @@ const startWeb3 = function() {
                   }]
                 }, [
                   tinyAddress,
-                  window.tinyCrypto.provider.utils.toWei(String(amount), window.tinyCrypto.decimals[tinyContract.decimals])
+                  window.tinyCrypto.provider.utils.toWei(String(amount))
                 ], gasLimit).then(resolve).catch(reject);
 
               }
