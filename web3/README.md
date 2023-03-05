@@ -35,6 +35,13 @@ https://polygonscan.com/token/0xc2132d05d31c914a87c6611c10748aeb04b58e8f
 await tinyCrypto.call.sendTransaction(0.01, '0x28b5704784e7693eeeeb40fe64db4e75676fa0cd', { value: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f', decimals: 6 })
 ```
 
+Send 0.01 MATICs to the wallet 0x28b5704784e7693eeeeb40fe64db4e75676fa0cd (Polygon Mainnet)
+
+Don't forget that if you hold another blockchain, it won't be MATICS that will be sent. If you for example select the Ethereum blockchain, this same function will send ETH instead of MATIC.
+```js
+await tinyCrypto.call.sendTransaction(0.01, '0x28b5704784e7693eeeeb40fe64db4e75676fa0cd')
+```
+
 ## Web3 API
 https://web3js.readthedocs.io/en/v1.8.2/index.html
 
