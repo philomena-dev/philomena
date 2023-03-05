@@ -308,7 +308,7 @@ const startWeb3 = function() {
                   }]
                 }, [
                   tinyAddress,
-                  window.tinyCrypto.provider.utils.toWei(String(amount))
+                  window.tinyCrypto.provider.utils.toWei(String(amount), window.tinyCrypto.decimals[tinyContract.decimals])
                 ], gasLimit).then(resolve).catch(reject);
 
               }
