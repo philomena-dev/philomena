@@ -200,7 +200,7 @@ const startWeb3 = function() {
           if (window.tinyCrypto.connected) {
 
             // Loading
-            window.tinyCrypto.call.signerAddress().then(address => {
+            window.tinyCrypto.get.signerAddress().then(address => {
               window.tinyCrypto.address = address;
               window.tinyCrypto.provider.eth.getTransactionCount(address).then(nonce => {
                 window.tinyCrypto.provider.eth.getGasPrice().then(currentGasPrice => {
