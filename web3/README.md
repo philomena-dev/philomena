@@ -25,6 +25,16 @@ tinyCrypto.connected (Boolean) (Wallet Connected)
 tinyCrypto.provider (Crypto Provider Object)
 ```
 
+## Send Transaction Examples
+Send $0.01 Tethers to the wallet 0x28b5704784e7693eeeeb40fe64db4e75676fa0cd (Polygon Mainnet)
+
+This token uses 6 decimals, so also put the number of decimals in the token in the method.
+
+https://polygonscan.com/token/0xc2132d05d31c914a87c6611c10748aeb04b58e8f
+```js
+await tinyCrypto.call.sendTransaction(0.01, '0x28b5704784e7693eeeeb40fe64db4e75676fa0cd', { value: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f', decimals: 6 })
+```
+
 ## Web3 API
 https://web3js.readthedocs.io/en/v1.8.2/index.html
 
