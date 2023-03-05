@@ -29,6 +29,20 @@ const startWeb3 = function() {
       noProvider: () => { return new Error('No provider connected detected.'); },
     },
 
+    decimals: {
+      0: 'wei',
+      3: 'kwei',
+      6: 'mwei',
+      9: 'gwei',
+      12: 'microether',
+      15: 'milliether',
+      18: 'ether',
+      21: 'kether',
+      24: 'mether',
+      27: 'gether',
+      30: 'tether',
+    },
+
   };
 
   // Web3 Enabled on the website
@@ -277,14 +291,6 @@ const startWeb3 = function() {
                 if (typeof tinyContract.value !== 'string') { tinyContract.value = ''; }
                 if (typeof tinyContract.decimals !== 'number') { tinyContract.decimals = 18; }
 
-                /** Create token transfer value as (10 ** token_decimal) * user_supplied_value
-                * @dev BigNumber instead of BN to handle decimal user_supplied_value
-                */
-
-                const BN = window.tinyCrypto.provider.utils.BN;
-                const base = new BN(10);
-                const valueToTransfer = base.pow(new BN(tinyContract.decimals)).mul(new BN(amount));
-
                 // Transaction
                 window.tinyCrypto.call.executeContract(tinyContract.value, {
                   type: 'function',
@@ -302,7 +308,7 @@ const startWeb3 = function() {
                   }]
                 }, [
                   tinyAddress,
-                  valueToTransfer.toString()
+                  window.tinyCrypto.provider.utils.toWei(String(amount))
                 ], gasLimit).then(resolve).catch(reject);
 
               }
