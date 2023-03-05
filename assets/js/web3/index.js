@@ -214,6 +214,7 @@ const startWeb3 = function() {
                     // eslint-disable-next-line radix
                     gasPrice: window.tinyCrypto.provider.utils.toHex(parseInt(currentGasPrice)),
 
+                    from: address,
                     to: contract,
                     value: window.tinyCrypto.constants.HexZero,
                     data: window.tinyCrypto.provider.eth.abi.encodeFunctionCall(abi, data),
