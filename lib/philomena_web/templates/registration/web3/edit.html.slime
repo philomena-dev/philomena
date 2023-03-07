@@ -5,7 +5,14 @@ h1 Editing Web3 Account
     .alert.alert-danger
       p Oops, something went wrong! Please check the errors below.
 
-  center
-    button.button type="button" id="connect-web3-wallet" <i class="fab fa-ethereum"></i> Connect Wallet
+  p Our web3 integrator allows our website to detect which wallet belongs to your account. All accounts will have a history of all Ethereum addresses that have been assigned to your account in the past and this information will be used by our server to detect your actions within the web3.
+
+  p Your wallet integration can also unlock extra features that can only be done through Web3. For more information, consult the <a href="/pages/privacy" target="_blank">privacy policy</a> before actually integrating with web3.
+
+  br
+
+  .field
+    center
+      button.button type="button" id="connect-web3-wallet" <i class="fab fa-ethereum"></i> Connect Wallet
 
 p = link "Back", to: Routes.registration_path(@conn, :edit)
