@@ -6,11 +6,11 @@ defmodule PhilomenaWeb.ManifestController do
     data = %{
 
       name: "Derpibooru",
-      description: "Test",
+      description: "Derpibooru is a linear imagebooru which lets you share, find and discover new art and media surrounding the show My Little Pony: Friendship is Magic",
       short_name: "Derpibooru",
 
       start_url: "/",
-      theme_color: "#e89c3d",
+      theme_color: "#618fc3",
       background_color: "#ffffff",
 
       gcm_sender_id: "",
