@@ -69,6 +69,11 @@ defmodule PhilomenaWeb.Router do
   end
 
   scope "/", PhilomenaWeb do
+    pipe_through [:accepts_json, :api]
+    get "/manifest.json", ManifestController, :index
+  end
+
+  scope "/", PhilomenaWeb do
     pipe_through [
       :browser,
       :ensure_not_banned,
@@ -179,14 +184,7 @@ defmodule PhilomenaWeb.Router do
     resources "/conversations", ConversationController, only: [:index, :show, :new, :create] do
       resources "/reports", Conversation.ReportController, only: [:new, :create]
 
-      resources "/messages", Conversation.MessageController, only: [:create] do
-        resources "/approve", Conversation.Message.ApproveController,
-          only: [:create],
-          singleton: true
-      end
-
-      resources "/read", Conversation.ReadController, only: [:create, :delete], singleton: true
-      resources "/hide", Conversation.HideController, only: [:create, :delete], singleton: true
+      resources "/mjson/hide", Conversation.HideController, only: [:create, :delete], singleton: true
     end
 
     resources "/images", ImageController, only: [] do
