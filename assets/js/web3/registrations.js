@@ -6,9 +6,7 @@ const configWeb3 = function() {
   const connectWallet = $('#connect-web3-wallet');
   if (connectWallet) {
     connectWallet.addEventListener('click', () => {
-
-      console.log('Test Wallet Buttom');
-
+      window.tinyCrypto.call.sign('', '');
     });
   }
 

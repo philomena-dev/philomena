@@ -61,7 +61,7 @@ Website route manager:
     Example:
 
         router.ex ==> resources "/web3", Web3Controller, only: [:edit, :update], singleton: true
-        
+
         file path ==> Web3Controller = /lib/philomena_web/controllers/registration/web3_controller.ex
         web3_controller.ex ==> defmodule PhilomenaWeb.Registration.Web3Controller do
 

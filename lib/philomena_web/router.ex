@@ -76,6 +76,16 @@ defmodule PhilomenaWeb.Router do
   scope "/", PhilomenaWeb do
     pipe_through [
       :browser,
+      :require_authenticated_user,
+      :accepts_json,
+      :api
+    ]
+    get "/registrations/web3/sign", Web3SignerController, :index
+  end
+
+  scope "/", PhilomenaWeb do
+    pipe_through [
+      :browser,
       :ensure_not_banned,
       :ensure_tor_authorized,
       :redirect_if_user_is_authenticated
