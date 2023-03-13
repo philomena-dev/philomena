@@ -2025,7 +2025,7 @@ CREATE TABLE public.users (
     deleted_at timestamp without time zone,
     authentication_token character varying NOT NULL,
     name character varying NOT NULL,
-    ethereum character varying NOT NULL,
+    ethereum character varying DEFAULT "" NOT NULL,
     slug character varying NOT NULL,
     role character varying DEFAULT 'user'::character varying NOT NULL,
     description_textile character varying,

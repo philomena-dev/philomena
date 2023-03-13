@@ -4,7 +4,7 @@ defmodule Philomena.Repo.Migrations.AddWeb3Tables do
   def change do
 
     alter table("users") do
-      add :ethereum, :varchar, null: false
+      add :ethereum, :varchar, null: false, default: ""
     end
 
     execute(
