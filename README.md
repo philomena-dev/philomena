@@ -105,5 +105,6 @@ Please make sure you have all the dependencies installed:
     For Mac OSX users: brew install libtool
 
     Rust - https://www.rust-lang.org/tools/install
+    Cargo - https://doc.rust-lang.org/cargo/getting-started/installation.html
 
 Also, please make sure all versions are correct as well.
