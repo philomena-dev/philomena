@@ -628,6 +628,10 @@ defmodule Philomena.Users do
     Filters.user_name_reindex(old_name, new_name)
   end
 
+  def perform_ethereum_rename(old_ethereum, new_ethereum) do
+
+  end
+
   def reactivate_user(%User{} = user) do
     user
     |> User.reactivate_changeset()
