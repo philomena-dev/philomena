@@ -75,3 +75,13 @@ This is the credentials to access the admin panel of this project repository.
 
     user: admin@example.com
     password: philomena123
+
+## Mint Error Fix
+
+If you are seeing this when trying to type "sudo mix ecto.gen.migration"...
+
+    could not compile dependency :mint, "mix compile" failed. You can recompile this dependency with "mix deps.compile mint", update it with "mix deps.update mint" or clean it with "mix deps.clean mint"
+
+You need to type this to fix the script
+
+    sudo apt-get install erlang
