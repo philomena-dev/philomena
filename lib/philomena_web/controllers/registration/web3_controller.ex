@@ -1,11 +1,8 @@
 defmodule PhilomenaWeb.Registration.Web3Controller do
   use PhilomenaWeb, :controller
 
-  alias Philomena.Search.Parser
   alias Philomena.Web3
-  alias Philomena.Repo
   alias PhilomenaWeb.Web3SignerData
-
   plug PhilomenaWeb.FilterBannedUsersPlug
 
   def edit(conn, params) do
