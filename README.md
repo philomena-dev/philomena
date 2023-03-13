@@ -76,6 +76,9 @@ This is the credentials to access the admin panel of this project repository.
     user: admin@example.com
     password: philomena123
 
+## Migrations Build
+https://hexdocs.pm/ecto_sql/Mix.Tasks.Ecto.Gen.Migration.html
+
 ## Mint Error Fix
 
 If you are seeing this when trying to type "sudo mix ecto.gen.migration"...
@@ -85,3 +88,22 @@ If you are seeing this when trying to type "sudo mix ecto.gen.migration"...
 You need to type this to fix the script
 
     sudo apt-get install erlang
+
+## More Errors
+
+Please make sure you have all the dependencies installed:
+
+    Erlang/OTP
+    Elixir
+    Postgres
+    Node.js
+
+    Automake
+    For Mac OSX users: brew install automake
+
+    Libtool
+    For Mac OSX users: brew install libtool
+
+    Rust - https://www.rust-lang.org/tools/install
+
+Also, please make sure all versions are correct as well.
