@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.1
--- Dumped by pg_dump version 14.1
+-- Dumped from database version 15.2
+-- Dumped by pg_dump version 15.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -540,6 +540,32 @@ CREATE SEQUENCE public.duplicate_reports_id_seq
 --
 
 ALTER SEQUENCE public.duplicate_reports_id_seq OWNED BY public.duplicate_reports.id;
+
+
+--
+-- Name: ethereum_changes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.ethereum_changes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ethereum_changes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ethereum_changes (
+    id integer DEFAULT nextval('public.ethereum_changes_id_seq'::regclass) NOT NULL,
+    user_id bigint NOT NULL,
+    ethereum character varying NOT NULL,
+    sign_data character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
 
 
 --
@@ -1840,38 +1866,6 @@ ALTER SEQUENCE public.user_ips_id_seq OWNED BY public.user_ips.id;
 
 
 --
--- Name: ethereum_changes; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.ethereum_changes (
-    id integer NOT NULL,
-    user_id bigint NOT NULL,
-    ethereum character varying NOT NULL,
-    sign_data character varying NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
---
--- Name: ethereum_changes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.ethereum_changes_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: ethereum_changes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.ethereum_changes_id_seq OWNED BY public.ethereum_changes.id;
-
-
---
 -- Name: user_name_changes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2025,7 +2019,6 @@ CREATE TABLE public.users (
     deleted_at timestamp without time zone,
     authentication_token character varying NOT NULL,
     name character varying NOT NULL,
-    ethereum character varying DEFAULT "" NOT NULL,
     slug character varying NOT NULL,
     role character varying DEFAULT 'user'::character varying NOT NULL,
     description_textile character varying,
@@ -2089,7 +2082,8 @@ CREATE TABLE public.users (
     scratchpad character varying,
     bypass_rate_limits boolean DEFAULT false,
     scale_large_images character varying(255) DEFAULT 'true'::character varying NOT NULL,
-    verified boolean DEFAULT false
+    verified boolean DEFAULT false,
+    ethereum character varying DEFAULT ''::character varying NOT NULL
 );
 
 
@@ -2467,12 +2461,6 @@ ALTER TABLE ONLY public.user_ips ALTER COLUMN id SET DEFAULT nextval('public.use
 
 
 --
--- Name: ethereum_changes id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.ethereum_changes ALTER COLUMN id SET DEFAULT nextval('public.ethereum_changes_id_seq'::regclass);
-
---
 -- Name: user_name_changes id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2608,6 +2596,14 @@ ALTER TABLE ONLY public.donations
 
 ALTER TABLE ONLY public.duplicate_reports
     ADD CONSTRAINT duplicate_reports_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ethereum_changes ethereum_changes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ethereum_changes
+    ADD CONSTRAINT ethereum_changes_pkey PRIMARY KEY (id);
 
 
 --
@@ -2864,14 +2860,6 @@ ALTER TABLE ONLY public.user_fingerprints
 
 ALTER TABLE ONLY public.user_ips
     ADD CONSTRAINT user_ips_pkey PRIMARY KEY (id);
-
-
---
--- Name: ethereum_changes ethereum_changes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.ethereum_changes
-    ADD CONSTRAINT ethereum_changes_pkey PRIMARY KEY (id);
 
 
 --
@@ -3256,6 +3244,13 @@ CREATE INDEX index_duplicate_reports_on_state_filtered ON public.duplicate_repor
 --
 
 CREATE INDEX index_duplicate_reports_on_user_id ON public.duplicate_reports USING btree (user_id);
+
+
+--
+-- Name: index_ethereum_changes_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_ethereum_changes_on_user_id ON public.ethereum_changes USING btree (user_id);
 
 
 --
@@ -3991,13 +3986,6 @@ CREATE INDEX index_user_ips_on_user_id_and_updated_at ON public.user_ips USING b
 --
 
 CREATE INDEX index_user_name_changes_on_user_id ON public.user_name_changes USING btree (user_id);
-
-
---
--- Name: index_ethereum_changes_on_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_ethereum_changes_on_user_id ON public.ethereum_changes USING btree (user_id);
 
 
 --
