@@ -7,10 +7,10 @@ defmodule Philomena.Web3 do
   alias Philomena.EthereumRenameWorker
 
   def change_address(%User{} = user) do
-    User.changeset(user, %{})
+    EthereumChange.changeset(user, %{})
   end
 
-  def update_address(%User{} = user, data) do
+  def update_address(%User{} = user, user_params) do
     old_ethereum = user.ethereum
 
     ethereum_change = EthereumChange.changeset(%EthereumChange{user_id: user.id}, user.ethereum)

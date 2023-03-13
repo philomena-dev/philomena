@@ -161,6 +161,13 @@ defmodule Philomena.Users.User do
     |> validate_length(:name, max: 50)
   end
 
+  defp validate_ethereum(changeset) do
+    changeset
+    |> update_change(:ethereum, &String.trim/1)
+    |> validate_required([:ethereum])
+    |> validate_length(:name, max: 50)
+  end
+
   defp validate_email(changeset) do
     changeset
     |> validate_required([:email])
@@ -386,6 +393,17 @@ defmodule Philomena.Users.User do
     |> put_slug()
     |> unique_constraints()
     |> put_change(:last_renamed_at, now)
+  end
+
+  def ethereum_changeset(user, attrs) do
+    now = DateTime.utc_now() |> DateTime.truncate(:second)
+
+    user
+    |> cast(attrs, [:ethereum])
+    |> validate_ethereum()
+    |> put_slug()
+    |> unique_constraints()
+    |> put_change(:last_ethereum_renamed_at, now)
   end
 
   def avatar_changeset(user, attrs) do
