@@ -113,4 +113,4 @@ Also, please make sure all versions are correct as well.
 
 ## Add Migration File
 
-    sudo docker exec philomena_app_1 mix  ecto.gen.migration <file-name> -r Philomena.Repo
+    sudo docker exec philomena_app_1 mix ecto.gen.migration <file-name> -r Philomena.Repo
