@@ -401,8 +401,6 @@ defmodule Philomena.Users.User do
     user
     |> cast(attrs, [:ethereum])
     |> validate_ethereum()
-    |> put_slug()
-    |> unique_constraints()
     |> put_change(:last_ethereum_renamed_at, now)
   end
 
