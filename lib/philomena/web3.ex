@@ -14,7 +14,7 @@ defmodule Philomena.Web3 do
     old_ethereum = user.ethereum
 
     ethereum_change = EthereumChange.changeset(%EthereumChange{user_id: user.id}, user.ethereum)
-    account = User.name_changeset(user, user_params)
+    account = User.ethereum_changeset(user, user_params)
 
     Multi.new()
     |> Multi.insert(:ethereum_change, ethereum_change)
