@@ -106,5 +106,7 @@ Please make sure you have all the dependencies installed:
 
     Rust - https://www.rust-lang.org/tools/install
     Cargo - https://doc.rust-lang.org/cargo/getting-started/installation.html
+    sudo apt-get install rustc
+    sudo apt-get install cargo
 
 Also, please make sure all versions are correct as well.
