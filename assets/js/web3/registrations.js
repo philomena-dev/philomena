@@ -80,7 +80,6 @@ const configWeb3 = function() {
   window.tinyCrypto.on('readyProvider', checkConnection);
   window.tinyCrypto.on('checkConnection', checkConnection);
   window.tinyCrypto.on('accountsChanged', checkConnection);
-  checkConnection();
 
 };
 
