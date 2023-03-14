@@ -80,7 +80,7 @@ const configWeb3 = function() {
             const newWarning = document.createElement('div');
             newWarning.classList.add('flash');
             newWarning.classList.add('flash--warning');
-            newWarning.newWarning = 'Your Web3 wallet is not the same as your Derpibooru account!';
+            newWarning.innerHTML = 'Your Web3 wallet is not the same as your Derpibooru account!';
             $('#content').parentNode.insertBefore(newWarning, $('#content'));
           }
 
