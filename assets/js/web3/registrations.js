@@ -2,6 +2,7 @@
 import { $ } from '../utils/dom';
 const configWeb3 = function() {
 
+  // Insert Web3 Alert into the top page
   const insertWeb3Warn = function(where, text, flashName = 'flash--warning') {
     if (!window.tinyCrypto.warn[where]) {
       window.tinyCrypto.warn[where] = true;
@@ -65,33 +66,46 @@ const configWeb3 = function() {
     const existMetaEthereum = $('meta[name="user-ethereum-address"]');
     if (existMetaEthereum) {
 
-      if (window.ethereum && window.ethereum._isUnlocked) {
+      if (window.ethereum) {
 
-        // Allow Actions
-        window.tinyCrypto.allowActions = true;
+        if (window.ethereum._isUnlocked) {
 
-        // Update Data
-        if (!window.tinyCrypto.yourDerpiAddress) {
-          window.tinyCrypto.yourDerpiAddress = existMetaEthereum.attributes.content.value.toLowerCase();
-        }
+          // Allow Actions
+          window.tinyCrypto.allowActions = true;
 
-        // Check Data and Insert Warn
-        if (window.tinyCrypto.yourDerpiAddress !== window.tinyCrypto.address) {
-
-          $('#web3_header').style.color = 'red';
-          $('#web3_header').style.opacity = 0.7;
-          $('#web3_header').title = 'Your Web3 wallet is not the same as your Derpibooru account.';
-          insertWeb3Warn('notSameWallet', 'Your Web3 wallet is not the same as your Derpibooru account!');
-
-          if (connectWallet) {
-            connectWallet.innerHTML = '<i class="fab fa-ethereum"></i> Your wallet does not share the same value as your Derpibooru account. You can click here to try to reconnect a new address.';
+          // Update Data
+          if (!window.tinyCrypto.yourDerpiAddress) {
+            window.tinyCrypto.yourDerpiAddress = existMetaEthereum.attributes.content.value.toLowerCase();
           }
 
+          // Check Data and Insert Warn
+          if (window.tinyCrypto.yourDerpiAddress !== window.tinyCrypto.address) {
+
+            $('#web3_header').style.color = 'red';
+            $('#web3_header').style.opacity = 0.7;
+            $('#web3_header').title = 'Your Web3 wallet is not the same as your Derpibooru account.';
+            insertWeb3Warn('notSameWallet', 'Your Web3 wallet is not the same as your Derpibooru account!');
+
+            if (connectWallet) {
+              connectWallet.innerHTML = '<i class="fab fa-ethereum"></i> Your wallet does not share the same value as your Derpibooru account. You can click here to try to reconnect a new address.';
+            }
+
+          }
+
+        }
+
+        else {
+          insertWeb3Warn('notWeb3', 'Please unlock your crypto wallet to use the Web3 features.');
+          window.tinyCrypto.allowActions = false;
+          $('#web3_header').style.color = 'yellow';
+          $('#web3_header').style.opacity = 0.7;
+          $('#web3_header').title = 'Please unlock your crypto wallet.';
         }
 
       }
 
       else {
+        insertWeb3Warn('notWalletSoftware', 'You don\'t have a Web3 Wallet installed in your browser!');
         window.tinyCrypto.allowActions = false;
         $('#web3_header').style.color = 'red';
         $('#web3_header').style.opacity = 0.7;
