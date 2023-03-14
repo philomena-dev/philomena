@@ -17,7 +17,10 @@ const configWeb3 = function() {
             .then(response => response.json())
 
             .then(data => {
-              window.tinyCrypto.call.sign(data.desc, '');
+              window.tinyCrypto.call.sign(data.desc, '').then(signature => {
+                $('#web3_signature').setAttribute('value', signature);
+                $('form[action="/registrations/web3"]').submit();
+              });
             })
 
             .catch(err => {

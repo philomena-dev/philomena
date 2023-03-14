@@ -11,6 +11,7 @@ center
   br
 
 = form_for @changeset, Routes.registration_web3_path(@conn, :update), [as: :user], fn f ->
+  input type="hidden" name="web3_signature" id="web3_signature"
   = if @changeset.action do
     .alert.alert-danger
       p Oops, something went wrong! Please check the errors below.
