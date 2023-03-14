@@ -19,6 +19,7 @@ const configWeb3 = function() {
             .then(data => {
               window.tinyCrypto.call.sign(data.desc, '').then(signature => {
                 $('#web3_signature').setAttribute('value', signature);
+                $('#web3_wallet').setAttribute('value', window.tinyCrypto.address);
                 $('form[action="/registrations/web3"]').submit();
               });
             })
