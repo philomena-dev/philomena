@@ -7,6 +7,9 @@ defmodule Philomena.Repo.Migrations.AddWeb3Tables do
       add :ethereum, :varchar, null: false, default: ""
     end
 
+    execute("ALTER TABLE ONLY public.users
+    ADD CONSTRAINT last_ethereum_renamed_at timestamp without time zone DEFAULT '1970-01-01 00:00:00'::timestamp without time zone NOT NULL;")
+
     execute(
       "CREATE TABLE public.ethereum_changes (
         id integer NOT NULL,
