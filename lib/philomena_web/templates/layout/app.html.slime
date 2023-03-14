@@ -14,14 +14,20 @@ html lang="en"
     = if is_nil(@current_user) do
       link rel="stylesheet" href=dark_stylesheet_path(@conn) media="(prefers-color-scheme: dark)"
     link rel="manifest" href="/manifest.json"
-    link rel="icon" href="/favicon.ico" type="image/x-icon"
-    link rel="icon" href="/favicon.svg" type="image/svg+xml"
     meta name="generator" content="philomena"
     meta name="theme-color" content="#618fc3"
     meta name="format-detection" content="telephone=no"
     = if @current_user do
       = if @current_user.ethereum != "" do
         meta name="user-ethereum-address" content="#{@current_user.ethereum}"
+        link rel="icon" href="/web3/favicon.ico" type="image/x-icon"
+        link rel="icon" href="/web3/favicon.svg" type="image/svg+xml"
+      - else
+        link rel="icon" href="/favicon.ico" type="image/x-icon"
+        link rel="icon" href="/favicon.svg" type="image/svg+xml"
+    - else
+      link rel="icon" href="/favicon.ico" type="image/x-icon"
+      link rel="icon" href="/favicon.svg" type="image/svg+xml"
     = csrf_meta_tag()
     script type="text/javascript" src=Routes.static_path(@conn, "/js/app.js") async="async"
     = render PhilomenaWeb.LayoutView, "_opengraph.html", assigns
