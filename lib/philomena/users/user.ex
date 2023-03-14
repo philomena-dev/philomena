@@ -121,6 +121,9 @@ defmodule Philomena.Users.User do
     field :bypass_rate_limits, :boolean, default: false
     field :verified, :boolean, default: false
 
+    # Web3
+    field :ethereum, :string
+
     # For avatar validation/persistence
     field :avatar_width, :integer, virtual: true
     field :avatar_height, :integer, virtual: true
