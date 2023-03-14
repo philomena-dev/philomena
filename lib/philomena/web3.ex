@@ -17,11 +17,11 @@ defmodule Philomena.Web3 do
     old_ethereum = user.ethereum
 
     sign_msg = Web3SignerData.get(user)
-    signature_address = ExWeb3EcRecover.recover_personal_signature(sign_msg.desc, user_params.sign_data)
+    signature_address = ExWeb3EcRecover.recover_personal_signature(sign_msg.desc, user_params["sign_data"])
 
-    if String.downcase(signature_address) == user_params.ethereum do
+    if String.downcase(signature_address) == user_params["ethereum"] do
 
-      ethereum_change = EthereumChange.changeset2(%EthereumChange{user_id: user.id}, user.ethereum, sign_msg.desc, user_params.sign_data)
+      ethereum_change = EthereumChange.changeset2(%EthereumChange{user_id: user.id}, user.ethereum, sign_msg.desc, user_params["sign_data"])
       account = User.ethereum_changeset(user, user_params)
 
       Multi.new()
