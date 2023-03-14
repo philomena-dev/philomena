@@ -2,6 +2,7 @@
 import { EventEmitter } from 'events';
 import { web3Cfg } from '../../../web3/client.side.config';
 import { configWeb3 } from './registrations';
+import { profileWeb3 } from './profile';
 import * as web3 from 'web3';
 
 // Module
@@ -401,6 +402,7 @@ const startWeb3 = function() {
 
   // Start More Modules
   configWeb3();
+  profileWeb3();
 
 };
 

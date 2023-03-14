@@ -101,6 +101,14 @@
                 br
                 ' Hidden
 
+    = if @user.ethereum != "" do
+      .block
+        .block__header
+          span.block__header__title Web3
+        .block__content.flex.flex--centered.flex--center-distributed.alternating-color.no-overflow
+          .flex__grow.center id="web3_profile_data"
+            small id="address" = @user.ethereum
+
     .block
       = if manages_awards?(@conn) and not hide_staff_tools?(@conn) do
         a.block__header--single-item href=Routes.profile_award_path(@conn, :new, @user) Badges
