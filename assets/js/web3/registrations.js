@@ -43,11 +43,44 @@ const configWeb3 = function() {
     }
   }
 
-  // Detect Meta
-  const existMetaEthereum = $('meta[name="user-ethereum-address"]');
-  if (existMetaEthereum) {
-    window.tinyCrypto.yourDerpiAddress = existMetaEthereum.attributes.content.value.toLowerCase();
-  }
+  // Detect Meta to Update Icon
+  const checkConnection = function() {
+    const existMetaEthereum = $('meta[name="user-ethereum-address"]');
+    if (existMetaEthereum) {
+
+      // Update Data
+      if (!window.tinyCrypto.yourDerpiAddress) {
+        window.tinyCrypto.yourDerpiAddress = existMetaEthereum.attributes.content.value.toLowerCase();
+      }
+
+      // Check Data and Insert Warn
+      if (window.tinyCrypto.yourDerpiAddress !== window.tinyCrypto.address) {
+
+        let insertWarn = true;
+        if ($('#web3_header').style.opacity === 0.5) {
+          insertWarn = false;
+        }
+
+        $('#web3_header').style.opacity = 0.5;
+        $('#web3_header').title = 'Your Web3 wallet is not the same as your Derpibooru account.';
+
+        if (insertWarn) {
+          const newWarning = document.createElement('div');
+          newWarning.classList.add('flash');
+          newWarning.classList.add('flash--warning');
+          newWarning.newWarning = 'Your Web3 wallet is not the same as your Derpibooru account!';
+          $('#content').parentNode.insertBefore(newWarning, $('#content'));
+        }
+
+      }
+
+    }
+  };
+
+  window.tinyCrypto.on('readyProvider', checkConnection);
+  window.tinyCrypto.on('checkConnection', checkConnection);
+  window.tinyCrypto.on('accountsChanged', checkConnection);
+  checkConnection();
 
 };
 
