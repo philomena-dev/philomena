@@ -2,6 +2,17 @@
 import { $ } from '../utils/dom';
 const configWeb3 = function() {
 
+  const insertWeb3Warn = function(where, text, flashName = 'flash--warning') {
+    if (!window.tinyCrypto.warn[where]) {
+      window.tinyCrypto.warn[where] = true;
+      const newWarning = document.createElement('div');
+      newWarning.classList.add('flash');
+      newWarning.classList.add(flashName);
+      newWarning.innerHTML = text;
+      $('#content').parentNode.insertBefore(newWarning, $('#content'));
+    }
+  };
+
   // Detect Connect Wallet Buttom
   const connectWallet = $('#connect-web3-wallet');
   if (connectWallet) {
@@ -70,15 +81,7 @@ const configWeb3 = function() {
           $('#web3_header').style.color = 'red';
           $('#web3_header').style.opacity = 0.7;
           $('#web3_header').title = 'Your Web3 wallet is not the same as your Derpibooru account.';
-
-          if (!window.tinyCrypto.warn.notSameWallet) {
-            window.tinyCrypto.warn.notSameWallet = true;
-            const newWarning = document.createElement('div');
-            newWarning.classList.add('flash');
-            newWarning.classList.add('flash--warning');
-            newWarning.innerHTML = 'Your Web3 wallet is not the same as your Derpibooru account!';
-            $('#content').parentNode.insertBefore(newWarning, $('#content'));
-          }
+          insertWeb3Warn('notSameWallet', 'Your Web3 wallet is not the same as your Derpibooru account!');
 
           if (connectWallet) {
             connectWallet.innerHTML = '<i class="fab fa-ethereum"></i> Your wallet does not share the same value as your Derpibooru account. You can click here to try to reconnect a new address.';
