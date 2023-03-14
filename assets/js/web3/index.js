@@ -11,6 +11,8 @@ const startWeb3 = function() {
   window.web3 = web3;
   window.tinyCrypto = {
 
+    warn: {},
+
     connected: false,
     providerConnected: false,
     protocol: null,
