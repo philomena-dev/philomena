@@ -19,22 +19,29 @@ defmodule Philomena.Web3 do
     sign_msg = Web3SignerData.get(user)
     signature_address = ExWeb3EcRecover.recover_personal_signature(sign_msg.desc, user_params.sign_data)
 
-    ethereum_change = EthereumChange.changeset(%EthereumChange{user_id: user.id}, user.ethereum)
-    account = User.ethereum_changeset(user, user_params)
+    if signature_address == user_params.ethereum do
 
-    Multi.new()
-    |> Multi.insert(:ethereum_change, ethereum_change)
-    |> Multi.update(:account, account)
-    |> Repo.transaction()
-    |> case do
-      {:ok, %{account: %{ethereum: new_ethereum} = account}} ->
-        Exq.enqueue(Exq, "indexing", EthereumRenameWorker, [old_ethereum, new_ethereum])
+      ethereum_change = EthereumChange.changeset(%EthereumChange{user_id: user.id}, user.ethereum)
+      account = User.ethereum_changeset(user, user_params)
 
-        {:ok, account}
+      Multi.new()
+      |> Multi.insert(:ethereum_change, ethereum_change)
+      |> Multi.update(:account, account)
+      |> Repo.transaction()
+      |> case do
+        {:ok, %{account: %{ethereum: new_ethereum} = account}} ->
+          Exq.enqueue(Exq, "indexing", EthereumRenameWorker, [old_ethereum, new_ethereum])
 
-      {:error, :account, changeset, _changes} ->
-        {:error, changeset}
+          {:ok, account}
+
+        {:error, :account, changeset, _changes} ->
+          {:error, changeset}
+      end
+
+    else
+      {:error, %{}}
     end
+
   end
 
 end
