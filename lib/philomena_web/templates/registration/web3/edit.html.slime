@@ -25,7 +25,7 @@ center
   hr
   br
 
-  = if @current_user.ethereum do
+  = if @current_user.ethereum != "" do
 
     center = "Your current connected wallet is #{@current_user.ethereum}"
     br

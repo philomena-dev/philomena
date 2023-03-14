@@ -38,6 +38,7 @@ const configWeb3 = function() {
       });
     }
     else {
+      connectWallet.innerHTML = '<i class="fab fa-ethereum"></i> You don\'t have a Web3 Wallet installed in your browser!';
       connectWallet.setAttribute('disabled', true);
     }
   }
