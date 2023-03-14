@@ -39,7 +39,7 @@ const configWeb3 = function() {
         });
       }
       else {
-        connectWallet.innerHTML = '<i class="fab fa-ethereum"></i> Please unlock your crypto wallet.';
+        connectWallet.innerHTML = '<i class="fab fa-ethereum"></i> Please unlock your crypto wallet';
         connectWallet.setAttribute('disabled', true);
       }
     }
