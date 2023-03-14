@@ -1,6 +1,8 @@
 defmodule Philomena.Web3 do
 
   import Ecto.Query, warn: false
+  alias Ecto.Multi
+
   alias Philomena.Repo
   alias Philomena.Users.{User}
   alias Philomena.EthereumChanges.EthereumChange

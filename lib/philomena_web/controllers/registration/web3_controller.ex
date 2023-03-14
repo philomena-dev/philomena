@@ -14,7 +14,7 @@ defmodule PhilomenaWeb.Registration.Web3Controller do
       {:ok, user} ->
         conn
         |> put_flash(:info, "Web3 Address successfully updated.")
-        |> redirect(to: Routes.registration_web3_path(conn, :show, user))
+        |> redirect(to: Routes.profile_path(conn, :show, user))
 
       {:error, changeset} ->
         render(conn, "edit.html", changeset: changeset)
