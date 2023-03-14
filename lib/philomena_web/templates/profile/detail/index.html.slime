@@ -30,7 +30,7 @@ table.table
       = if nc.ethereum != "" do
         tr
           td = nc.ethereum
-          td class="line-break-anywhere" = nc.sign_data
+          td <textarea class="input input--text input--resize-vertical" readOnly>#{nc.sign_data}</textarea>
           td = pretty_time nc.created_at
 
 h4 More Details
