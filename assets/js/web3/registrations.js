@@ -57,11 +57,12 @@ const configWeb3 = function() {
       if (window.tinyCrypto.yourDerpiAddress !== window.tinyCrypto.address) {
 
         let insertWarn = true;
-        if ($('#web3_header').style.opacity === 0.5) {
+        if ($('#web3_header').style.opacity === 0.7) {
           insertWarn = false;
         }
 
-        $('#web3_header').style.opacity = 0.5;
+        $('#web3_header').style.color = 'red';
+        $('#web3_header').style.opacity = 0.7;
         $('#web3_header').title = 'Your Web3 wallet is not the same as your Derpibooru account.';
 
         if (insertWarn) {
