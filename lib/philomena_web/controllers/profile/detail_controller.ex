@@ -2,6 +2,7 @@ defmodule PhilomenaWeb.Profile.DetailController do
   use PhilomenaWeb, :controller
 
   alias Philomena.UserNameChanges.UserNameChange
+  alias Philomena.EthereumChanges.EthereumChange
   alias Philomena.ModNotes.ModNote
   alias PhilomenaWeb.MarkdownRenderer
   alias Philomena.Polymorphic
@@ -39,10 +40,17 @@ defmodule PhilomenaWeb.Profile.DetailController do
       |> order_by(desc: :id)
       |> Repo.all()
 
+      ethereum_changes =
+      EthereumChange
+      |> where(user_id: ^user.id)
+      |> order_by(desc: :id)
+      |> Repo.all()
+
     render(conn, "index.html",
       title: "Profile Details for User `#{user.name}'",
       mod_notes: mod_notes,
-      name_changes: name_changes
+      name_changes: name_changes,
+      ethereum_changes: ethereum_changes
     )
   end
 end

@@ -18,6 +18,19 @@ table.table
         td = nc.name
         td = pretty_time nc.created_at
 
+h4 Ethereum Address History
+table.table
+  thead
+    tr
+      th Address
+      th Changed
+  tbody
+    = for nc <- @ethereum_changes do
+      = if nc.ethereum != "" do
+        tr
+          td = nc.ethereum
+          td = pretty_time nc.created_at
+
 h4 More Details
 ul
   li = link "IP Address Usage History", to: Routes.profile_ip_history_path(@conn, :index, @user)
