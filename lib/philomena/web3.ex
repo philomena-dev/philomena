@@ -21,7 +21,7 @@ defmodule Philomena.Web3 do
 
     if signature_address == user_params.ethereum do
 
-      ethereum_change = EthereumChange.changeset(%EthereumChange{user_id: user.id}, user.ethereum)
+      ethereum_change = EthereumChange.changeset2(%EthereumChange{user_id: user.id}, user.ethereum, sign_msg.desc, user_params.sign_data)
       account = User.ethereum_changeset(user, user_params)
 
       Multi.new()
