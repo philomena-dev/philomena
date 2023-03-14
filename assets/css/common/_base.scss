@@ -424,6 +424,10 @@ code {
   padding: 0 $header_spacing;
 }
 
+.line-break-anywhere {
+  line-break: anywhere;
+}
+
 i.favicon-home {
   background-image: url("/favicon.svg");
   background-size: contain;
