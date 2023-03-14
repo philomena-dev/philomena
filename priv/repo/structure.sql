@@ -2083,7 +2083,8 @@ CREATE TABLE public.users (
     bypass_rate_limits boolean DEFAULT false,
     scale_large_images character varying(255) DEFAULT 'true'::character varying NOT NULL,
     verified boolean DEFAULT false,
-    ethereum character varying DEFAULT ''::character varying NOT NULL
+    ethereum character varying DEFAULT ''::character varying NOT NULL,
+    last_ethereum_renamed_at timestamp without time zone DEFAULT '1970-01-01 00:00:00'::timestamp without time zone NOT NULL
 );
 
 
