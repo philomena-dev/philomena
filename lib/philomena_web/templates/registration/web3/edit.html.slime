@@ -22,6 +22,13 @@ center
   p Your wallet integration can also unlock extra features that can only be done through Web3. For more information, consult the <a href="/pages/privacy" target="_blank">privacy policy</a> before actually integrating with web3.
 
   br
+  hr
+  br
+
+  = if @current_user.ethereum do
+  center = "Your current connected wallet is #{@current_user.ethereum}"
+
+  br
 
   .field
     center
