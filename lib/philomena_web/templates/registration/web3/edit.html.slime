@@ -26,12 +26,22 @@ center
   br
 
   = if @current_user.ethereum do
-  center = "Your current connected wallet is #{@current_user.ethereum}"
+
+    center = "Your current connected wallet is #{@current_user.ethereum}"
+    br
+
+    .field
+      center
+        button.button type="button" id="connect-web3-wallet" <i class="fab fa-ethereum"></i> Connect New Wallet
+
+  - else
+
+    .field
+      center
+        button.button type="button" id="connect-web3-wallet" <i class="fab fa-ethereum"></i> Connect Wallet
 
   br
 
-  .field
-    center
-      button.button type="button" id="connect-web3-wallet" <i class="fab fa-ethereum"></i> Connect Wallet
+
 
 p = link "Back", to: Routes.registration_path(@conn, :edit)
