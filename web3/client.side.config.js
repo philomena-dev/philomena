@@ -17,7 +17,8 @@ const web3Cfg = function () {
                     symbol: 'ETH',
                     decimals: 18
                 },
-                blockExplorerUrls: ['https://etherscan.com/']
+                blockExplorerUrls: ['https://etherscan.com/'],
+                blockExplorerApis:  ['https://api.etherscan.io/'],
             },
 
             // Polygon (MATIC)
@@ -31,7 +32,8 @@ const web3Cfg = function () {
                     symbol: 'MATIC',
                     decimals: 18
                 },
-                blockExplorerUrls: ['https://polygonscan.com/']
+                blockExplorerUrls: ['https://polygonscan.com/'],
+                blockExplorerApis:  ['https://api.polygonscan.com/'],
             },
 
             // Binsnace Smart Chain (BEP20)
@@ -45,7 +47,8 @@ const web3Cfg = function () {
                     symbol: 'BNB',
                     decimals: 18
                 },
-                blockExplorerUrls: ['https://bscscan.com/']
+                blockExplorerUrls: ['https://bscscan.com/'],
+                blockExplorerApis:  ['https://api.bscscan.com/'],
             },
 
         }
