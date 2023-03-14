@@ -43,6 +43,12 @@ const configWeb3 = function() {
     }
   }
 
+  // Detect Meta
+  const existMetaEthereum = $('meta[name="user-ethereum-address"]');
+  if (existMetaEthereum) {
+    window.tinyCrypto.yourDerpiAddress = existMetaEthereum.attributes.content.value.toLowerCase();
+  }
+
 };
 
 export { configWeb3 };
