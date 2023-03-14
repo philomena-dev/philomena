@@ -362,7 +362,6 @@ const startWeb3 = function() {
     };
 
     // Data
-    window.tinyCrypto.get.blockchain = function() { return window.clone(window.tinyCrypto.config.networks[window.tinyCrypto.config.network]); };
     window.tinyCrypto.get.provider = function() { return window.tinyCrypto.provider; };
     window.tinyCrypto.get.address = function() { return window.tinyCrypto.address; };
     window.tinyCrypto.get.call = function() { return window.tinyCrypto.call; };
