@@ -123,6 +123,7 @@ defmodule Philomena.Users.User do
 
     # Web3
     field :ethereum, :string
+    field :last_ethereum_renamed_at, :utc_datetime
 
     # For avatar validation/persistence
     field :avatar_width, :integer, virtual: true
