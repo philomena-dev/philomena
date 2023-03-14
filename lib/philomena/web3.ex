@@ -6,12 +6,18 @@ defmodule Philomena.Web3 do
   alias Philomena.EthereumChanges.EthereumChange
   alias Philomena.EthereumRenameWorker
 
+  alias PhilomenaWeb.Web3SignerData
+  import ExWeb3EcRecover
+
   def change_address(%User{} = user) do
     EthereumChange.changeset(user, %{})
   end
 
   def update_address(%User{} = user, user_params) do
     old_ethereum = user.ethereum
+
+    sign_msg = Web3SignerData.get(conn.assigns.current_user)
+    signature_address = ExWeb3EcRecover.recover_personal_signature(sign_msg.desc, user_params.sign_data)
 
     ethereum_change = EthereumChange.changeset(%EthereumChange{user_id: user.id}, user.ethereum)
     account = User.ethereum_changeset(user, user_params)
