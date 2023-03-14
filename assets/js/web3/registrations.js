@@ -34,7 +34,7 @@ const configWeb3 = function() {
       });
     }
     else {
-      connectWallet.attr('disabled', true);
+      connectWallet.setAttribute('disabled', true);
     }
   }
 
