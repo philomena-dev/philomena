@@ -7,6 +7,7 @@ const profileWeb3 = function() {
     // QRcode
     const address = $('#web3_profile_data #address').innerText.trim();
     $('#web3_profile_data #wallet_qr_code > a').addEventListener('click', e => {
+
       if (!window.tinyCrypto.warn.addressCanvas) {
         window.tinyCrypto.warn.addressCanvas = true;
 
@@ -20,9 +21,10 @@ const profileWeb3 = function() {
           if (err) { console.error(err); }
         });
 
-        e.preventDefault();
-
       }
+
+      e.preventDefault();
+
     });
 
     // Get User Amount
