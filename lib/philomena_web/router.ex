@@ -69,7 +69,7 @@ defmodule PhilomenaWeb.Router do
   end
 
   scope "/", PhilomenaWeb do
-    pipe_through [:accepts_json, :api]
+    pipe_through [:accepts_json]
     get "/manifest.json", ManifestController, :index
   end
 
