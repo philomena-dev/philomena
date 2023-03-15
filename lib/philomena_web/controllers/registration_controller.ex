@@ -3,6 +3,7 @@ defmodule PhilomenaWeb.RegistrationController do
 
   alias Philomena.Users
   alias Philomena.Users.User
+  alias PhilomenaWeb.Web3Cfg
 
   plug PhilomenaWeb.CaptchaPlug when action in [:new, :create]
   plug PhilomenaWeb.CheckCaptchaPlug when action in [:create]
@@ -36,7 +37,7 @@ defmodule PhilomenaWeb.RegistrationController do
   end
 
   def edit(conn, _params) do
-    render(conn, "edit.html", title: "Account Settings")
+    render(conn, "edit.html", title: "Account Settings", web3Cfg: Web3Cfg.get())
   end
 
   defp assign_email_and_password_changesets(conn, _opts) do
