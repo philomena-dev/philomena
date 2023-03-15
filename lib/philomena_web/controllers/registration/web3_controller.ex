@@ -3,7 +3,6 @@ defmodule PhilomenaWeb.Registration.Web3Controller do
 
   alias Philomena.Web3
   alias PhilomenaWeb.Web3Cfg
-  plug PhilomenaWeb.FilterBannedUsersPlug
 
   def edit(conn, params) do
     tinyWeb3Cfg = Web3Cfg.get()
