@@ -25,7 +25,7 @@ defmodule PhilomenaWeb.ContentSecurityPolicyPlug do
       csp_config = [
         {:default_src, ["'self'"]},
         {:script_src, ["'self'" | script_src]},
-        {:style_src, ["'self'" | style_src]},
+        {:style_src, ["'self' 'unsafe-inline'" | style_src]},
         {:object_src, ["'none'"]},
         {:frame_ancestors, ["'none'"]},
         {:frame_src, frame_src || ["'none'"]},
