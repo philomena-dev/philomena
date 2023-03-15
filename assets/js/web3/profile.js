@@ -16,19 +16,21 @@ const profileWeb3 = function() {
         target: `#pf-crypto-menu-${network}`,
         menuItems: [
           {
-            content: 'Item 1',
+            content: 'Copy URL',
             events: {
-              click: e => console.log(e, 'Copy Button Click')
-              // You can use any event listener from here
+              click: () => {
+
+              }
             }
           },
-          { content: 'Item 2' },
-          { content: 'Item 3' },
-          { content: 'Item 4' },
           {
-            content: 'Item 5',
-            divider: 'top' // top, bottom, top-bottom
-          }
+            content: 'Get User Amount',
+            events: {
+              click: () => {
+
+              }
+            }
+          },
         ]
       });
 
