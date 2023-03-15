@@ -37,9 +37,11 @@ import { pollOptionCreator }    from './poll';
 import { warnAboutPMs }         from './pmwarning';
 import { startWeb3 }            from './web3';
 import { startCloneModule }     from './clone';
+import { contextMenu }          from './ContextMenu';
 
 whenReady(() => {
 
+  contextMenu();
   startCloneModule();
   startWeb3();
   showOwnedComments();
