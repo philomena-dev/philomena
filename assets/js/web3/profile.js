@@ -15,14 +15,29 @@ const profileWeb3 = function() {
 
       // Create Div
       const contentDiv = document.createElement('div');
-      contentDiv.innerHTML = `<br/><a id="pf-crypto-menu-${network}" href="#" target="_blank">${window.tinyCrypto.config.networks[network].chainName}</a><br/><small>Powered by <a href="${window.tinyCrypto.config.networks[network].blockExplorerUrls[0]}address/${address}" target="_blank">${window.tinyCrypto.config.networks[network].blockExplorerUrls[0]}</small><br/>`;
+      contentDiv.innerHTML = `<br/><a id="pf-crypto-menu-${network}" href="#" target="_blank">${window.tinyCrypto.config.networks[network].chainName}</a><br/><small id="powered_by_${network}">Powered by <a href="${window.tinyCrypto.config.networks[network].blockExplorerUrls[0]}address/${address}" target="_blank">${window.tinyCrypto.config.networks[network].blockExplorerUrls[0]}</small><br/>`;
       profileHeadBase.appendChild(contentDiv);
 
       // Get User Amount
       const getUserAmount = function() {
-        fetch(`${window.tinyCrypto.config.networks[network].blockExplorerApis[0]}api?module=account&action=balance&address=${address}&tag=latest`).then(response => response.json()).then(data => {
-          console.log(data);
-        }).catch(console.error);
+        if (!window.tinyCrypto.warn[`${network}_profile_click`]) {
+          window.tinyCrypto.warn[`${network}_profile_click`] = true;
+          fetch(`${window.tinyCrypto.config.networks[network].blockExplorerApis[0]}api?module=account&action=balance&address=${address}&tag=latest`).then(response => response.json()).then(data => {
+
+            const newWarning = document.createElement('div');
+
+            if (data.status === 1) {
+              newWarning.innerHTML = data.result;
+            }
+
+            else {
+              newWarning.innerHTML = data.message;
+            }
+
+            profileHeadBase.insertBefore(newWarning, $(`#powered_by_${network}`));
+
+          }).catch(console.error);
+        }
       };
 
       $(`#pf-crypto-menu-${network}`).addEventListener('click', e => {
