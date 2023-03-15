@@ -13,38 +13,45 @@ const profileWeb3 = function() {
       if (err) { console.error(err); }
     });
 
+
+    // Get User Amount
+    // eslint-disable-next-line no-loop-func
+    const getUserAmount = function(contentDiv, cryptoCfg, network) {
+      console.log(network);
+      if (!window.tinyCrypto.warn[`${network}_profile_click`]) {
+        window.tinyCrypto.warn[`${network}_profile_click`] = true;
+        fetch(`${cryptoCfg.blockExplorerApis[0]}api?module=account&action=balance&address=${address}&tag=latest`).then(response => response.json()).then(data => {
+
+          const newWarning = document.createElement('div');
+
+          if (String(data.status) === '1') {
+            // eslint-disable-next-line no-undef
+            newWarning.innerHTML = `${Web3.utils.toWei(String(data.result), 'ether')} ${cryptoCfg.nativeCurrency.symbol}`;
+          }
+
+          else {
+            newWarning.innerHTML = data.message;
+          }
+
+          contentDiv.insertBefore(newWarning, $(`#web3_profile_information_${network} #powered_by`));
+
+        }).catch(console.error);
+      }
+    };
+
     for (const network in window.tinyCrypto.config.networks) {
+
+      // Crypto Config
+      const cryptoCfg = window.tinyCrypto.config.networks[network];
 
       // Create Div
       const contentDiv = document.createElement('div');
       contentDiv.id = `web3_profile_information_${network}`;
-      contentDiv.innerHTML = `<br/><a id="pf-crypto-menu" href="#" target="_blank">${window.tinyCrypto.config.networks[network].chainName}</a><br/><small id="powered_by">Powered by <a href="${window.tinyCrypto.config.networks[network].blockExplorerUrls[0]}address/${address}" target="_blank">${window.tinyCrypto.config.networks[network].blockExplorerUrls[0]}</small><br/>`;
+      contentDiv.innerHTML = `<br/><a id="pf-crypto-menu" href="#" target="_blank">${cryptoCfg.chainName}</a><br/><small id="powered_by">Powered by <a href="${cryptoCfg.blockExplorerUrls[0]}address/${address}" target="_blank">${cryptoCfg.blockExplorerUrls[0]}</small><br/>`;
       profileHeadBase.appendChild(contentDiv);
 
-      // Get User Amount
-      const getUserAmount = function() {
-        if (!window.tinyCrypto.warn[`${network}_profile_click`]) {
-          window.tinyCrypto.warn[`${network}_profile_click`] = true;
-          fetch(`${window.tinyCrypto.config.networks[network].blockExplorerApis[0]}api?module=account&action=balance&address=${address}&tag=latest`).then(response => response.json()).then(data => {
-
-            const newWarning = document.createElement('div');
-
-            if (data.status === 1) {
-              newWarning.innerHTML = data.result;
-            }
-
-            else {
-              newWarning.innerHTML = data.message;
-            }
-
-            contentDiv.insertBefore(newWarning, $('#powered_by'));
-
-          }).catch(console.error);
-        }
-      };
-
       $(`#web3_profile_information_${network} #pf-crypto-menu`).addEventListener('click', e => {
-        getUserAmount();
+        getUserAmount(contentDiv, cryptoCfg, network);
         e.preventDefault();
       });
 
@@ -56,14 +63,14 @@ const profileWeb3 = function() {
             content: 'Copy URL',
             events: {
               click: () => {
-                navigator.clipboard.writeText(`${window.tinyCrypto.config.networks[network].blockExplorerUrls[0]}address/${address}`).catch(console.error);
+                navigator.clipboard.writeText(`${cryptoCfg.blockExplorerUrls[0]}address/${address}`).catch(console.error);
               }
             }
           },
           {
             content: 'Get User Amount',
             events: {
-              click: () => { getUserAmount(); }
+              click: () => { getUserAmount(contentDiv, cryptoCfg, network); }
             }
           },
         ]
