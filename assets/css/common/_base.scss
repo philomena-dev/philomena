@@ -521,10 +521,10 @@ span.stat {
   border-bottom: 1px solid;
 }
 .contextMenu-item[data-divider] {
-  border-color: var(--item-border);
+  border-color: $contextMenu_item_border;
 }
 .contextMenu-button {
-  color: var(--item-color);
+  color: $contextMenu_item_color;
   background: 0;
   border: 0;
   white-space: nowrap;
@@ -537,25 +537,25 @@ span.stat {
   font-size: 14px;
   width: 100%;
   -webkit-animation: menuItemAnimation 0.2s 0s both;
-          animation: menuItemAnimation 0.2s 0s both;
+  animation: menuItemAnimation 0.2s 0s both;
   font-family: "Inter", sans-serif;
   cursor: pointer;
 }
 .contextMenu-button:hover {
-  background-color: var(--item-bg-hover);
+  background-color: $contextMenu_item_bg_hover;
 }
 
 .contextMenu {
   height: 0;
   overflow: hidden;
-  background: var(--menu-bg);
+  background: $contextMenu_menu_bg;
   -webkit-backdrop-filter: blur(5px);
-          backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
   position: fixed;
   top: var(--top);
   left: var(--left);
   -webkit-animation: menuAnimation 0.4s 0s both;
-          animation: menuAnimation 0.4s 0s both;
+  animation: menuAnimation 0.4s 0s both;
   transform-origin: left;
   list-style: none;
   margin: 4px;
@@ -563,31 +563,7 @@ span.stat {
   display: flex;
   flex-direction: column;
   z-index: 999999999;
-  box-shadow: 0 0 0 1px var(--menu-border), 0 2px 2px rgba(0, 0, 0, 0.03), 0 4px 4px rgba(0, 0, 0, 0.04), 0 10px 8px rgba(0, 0, 0, 0.05), 0 15px 15px rgba(0, 0, 0, 0.06), 0 30px 30px rgba(0, 0, 0, 0.07), 0 70px 65px rgba(0, 0, 0, 0.09);
-}
-
-.contextMenu[data-theme=dark] {
-  --menu-border: rgba(255, 255, 255, 0.08);
-  --menu-bg: linear-gradient(
-    45deg,
-    rgba(10, 20, 28, 0.2) 0%,
-    rgba(10, 20, 28, 0.7) 100%
-  );
-  --item-border: rgba(255, 255, 255, 0.1);
-  --item-color: #fff;
-  --item-bg-hover: rgba(255, 255, 255, 0.1);
-}
-
-.contextMenu[data-theme=light] {
-  --menu-bg: linear-gradient(
-    45deg,
-    rgba(255, 255, 255, 0.45) 0%,
-    rgba(255, 255, 255, 0.85) 100%
-  );
-  --menu-border: rgba(0, 0, 0, 0.08);
-  --item-border: rgba(0, 0, 0, 0.1);
-  --item-color: rgb(10, 20, 28);
-  --item-bg-hover: rgba(10, 20, 28, 0.09);
+  box-shadow: 0 0 0 1px $contextMenu_menu_border, 0 2px 2px rgba(0, 0, 0, 0.03), 0 4px 4px rgba(0, 0, 0, 0.04), 0 10px 8px rgba(0, 0, 0, 0.05), 0 15px 15px rgba(0, 0, 0, 0.06), 0 30px 30px rgba(0, 0, 0, 0.07), 0 70px 65px rgba(0, 0, 0, 0.09);
 }
 
 @-webkit-keyframes menuAnimation {
