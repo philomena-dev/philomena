@@ -32,22 +32,24 @@ const profileWeb3 = function() {
     const getUserAmount = function(contentDiv, cryptoCfg, network) {
       if (!window.tinyCrypto.warn[`${network}_profile_click`]) {
         window.tinyCrypto.warn[`${network}_profile_click`] = true;
-        fetch(`${cryptoCfg.blockExplorerApis[0]}api?module=account&action=balance&address=${address}&tag=latest`).then(response => response.json()).then(data => {
+        if (Array.isArray(cryptoCfg.blockExplorerApis) && typeof cryptoCfg.blockExplorerApis[0] === 'string') {
+          fetch(`${cryptoCfg.blockExplorerApis[0]}api?module=account&action=balance&address=${address}&tag=latest`).then(response => response.json()).then(data => {
 
-          const newWarning = document.createElement('div');
+            const newWarning = document.createElement('div');
 
-          if (String(data.status) === '1') {
-            // eslint-disable-next-line no-undef
-            newWarning.innerHTML = `<small>${Number(Web3.utils.fromWei(String(data.result))).toFixed(9)} ${cryptoCfg.nativeCurrency.symbol}</small>`;
-          }
+            if (String(data.status) === '1') {
+              // eslint-disable-next-line no-undef
+              newWarning.innerHTML = `<small>${Number(Web3.utils.fromWei(String(data.result))).toFixed(9)} ${cryptoCfg.nativeCurrency.symbol}</small>`;
+            }
 
-          else {
-            newWarning.innerHTML = data.message;
-          }
+            else {
+              newWarning.innerHTML = data.message;
+            }
 
-          contentDiv.insertBefore(newWarning, $(`#web3_profile_information_${network} #powered_by`));
+            contentDiv.insertBefore(newWarning, $(`#web3_profile_information_${network} #powered_by`));
 
-        }).catch(console.error);
+          }).catch(console.error);
+        }
       }
     };
 
