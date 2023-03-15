@@ -138,11 +138,10 @@
     = if @user.ethereum != "" do
       .block
         .block__header
-          span.block__header__title Web3
+          span.block__header__title Web3 Address
         .block__content.flex.flex--centered.flex--center-distributed.alternating-color.no-overflow
           .flex__grow.center id="web3_profile_data"
             small id="address" = @user.ethereum
-            br
             br
 
     = if can_read_mod_notes?(@conn) and not hide_staff_tools?(@conn) do

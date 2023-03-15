@@ -15,7 +15,7 @@ const profileWeb3 = function() {
 
       // Create Div
       const contentDiv = document.createElement('div');
-      contentDiv.innerHTML = `<a id="pf-crypto-menu-${network}" href="${window.tinyCrypto.config.networks[network].blockExplorerUrls[0]}address/${address}" target="_blank">${window.tinyCrypto.config.networks[network].chainName}</a>`;
+      contentDiv.innerHTML = `<br/><a id="pf-crypto-menu-${network}" href="#" target="_blank">${window.tinyCrypto.config.networks[network].chainName}</a><br/><small>Powered by <a href="${window.tinyCrypto.config.networks[network].blockExplorerUrls[0]}address/${address}" target="_blank">${window.tinyCrypto.config.networks[network].blockExplorerUrls[0]}</small><br/>`;
       profileHeadBase.appendChild(contentDiv);
 
       // eslint-disable-next-line no-undef
@@ -26,7 +26,7 @@ const profileWeb3 = function() {
             content: 'Copy URL',
             events: {
               click: () => {
-
+                navigator.clipboard.writeText(`${window.tinyCrypto.config.networks[network].blockExplorerUrls[0]}address/${address}`).catch(console.error);
               }
             }
           },
@@ -34,7 +34,8 @@ const profileWeb3 = function() {
             content: 'Get User Amount',
             events: {
               click: () => {
-
+                fetch(`${window.tinyCrypto.config.networks[network].blockExplorerApis[0]}api?module=account&action=balance&address=${address}&tag=latest`).then(response => response.json())
+                  .then(console.log).catch(console.error)
               }
             }
           },

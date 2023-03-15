@@ -23,7 +23,13 @@ defmodule PhilomenaWeb.ContentSecurityPolicyPlug do
       frame_src = Keyword.get(config, :frame_src, nil)
 
       csp_config = [
-        {:default_src, ["'self'"]},
+
+        {:default_src, ["'self'",
+          "https://api.bscscan.com/",
+          "https://api.etherscan.io/",
+          "https://api.polygonscan.com/"
+        ]},
+
         {:script_src, ["'self'" | script_src]},
         {:style_src, ["'self' 'unsafe-inline'" | style_src]},
         {:object_src, ["'none'"]},
@@ -34,6 +40,7 @@ defmodule PhilomenaWeb.ContentSecurityPolicyPlug do
         {:img_src, ["'self'", "blob:", "data:", cdn_uri, camo_uri]},
         {:media_src, ["'self'", "blob:", "data:", cdn_uri, camo_uri]},
         {:block_all_mixed_content, []}
+
       ]
 
       csp_value =
