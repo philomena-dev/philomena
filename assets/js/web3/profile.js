@@ -17,7 +17,6 @@ const profileWeb3 = function() {
     // Get User Amount
     // eslint-disable-next-line no-loop-func
     const getUserAmount = function(contentDiv, cryptoCfg, network) {
-      console.log(network);
       if (!window.tinyCrypto.warn[`${network}_profile_click`]) {
         window.tinyCrypto.warn[`${network}_profile_click`] = true;
         fetch(`${cryptoCfg.blockExplorerApis[0]}api?module=account&action=balance&address=${address}&tag=latest`).then(response => response.json()).then(data => {
@@ -26,7 +25,8 @@ const profileWeb3 = function() {
 
           if (String(data.status) === '1') {
             // eslint-disable-next-line no-undef
-            newWarning.innerHTML = `${Web3.utils.toWei(String(data.result), 'ether')} ${cryptoCfg.nativeCurrency.symbol}`;
+            newWarning.innerHTML = `<small>${Number(Web3.utils.fromWei(String(data.result))).toFixed(9)} ${cryptoCfg.nativeCurrency.symbol}</small>`;
+            console.log(data);
           }
 
           else {
@@ -39,6 +39,7 @@ const profileWeb3 = function() {
       }
     };
 
+    // Read Networks
     for (const network in window.tinyCrypto.config.networks) {
 
       // Crypto Config
