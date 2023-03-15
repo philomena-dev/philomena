@@ -4,12 +4,11 @@ const profileWeb3 = function() {
   const profileHeadBase = $('#web3_profile_data');
   if (profileHeadBase) {
 
-    const contentDiv = document.createElement('div');
-    contentDiv.innerHTML = 'yay';
-
-    profileHeadBase.insertBefore(contentDiv, $('#web3_profile_data #address'));
-
+    const ethAddressQRCode = document.createElement('canvas');
     const address = $('#web3_profile_data #address').innerText.trim();
+    profileHeadBase.insertBefore(ethAddressQRCode, $('#web3_profile_data #address'));
+    window.qrcode.toCanvas(ethAddressQRCode, address, console.error);
+
     for (const network in window.tinyCrypto.config.networks) {
 
       // Create Div
