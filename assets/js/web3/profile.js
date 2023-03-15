@@ -5,6 +5,8 @@ const profileWeb3 = function() {
   if (profileHeadBase) {
 
     const ethAddressQRCode = document.createElement('canvas');
+    ethAddressQRCode.id = 'web3_wallet_qr_code';
+
     const address = $('#web3_profile_data #address').innerText.trim();
     profileHeadBase.insertBefore(ethAddressQRCode, $('#web3_profile_data #address'));
     window.qrcode.toCanvas(ethAddressQRCode, address, err => {
@@ -15,7 +17,8 @@ const profileWeb3 = function() {
 
       // Create Div
       const contentDiv = document.createElement('div');
-      contentDiv.innerHTML = `<br/><a id="pf-crypto-menu-${network}" href="#" target="_blank">${window.tinyCrypto.config.networks[network].chainName}</a><br/><small id="powered_by_${network}">Powered by <a href="${window.tinyCrypto.config.networks[network].blockExplorerUrls[0]}address/${address}" target="_blank">${window.tinyCrypto.config.networks[network].blockExplorerUrls[0]}</small><br/>`;
+      contentDiv.id = `web3_profile_information_${network}`;
+      contentDiv.innerHTML = `<br/><a id="pf-crypto-menu" href="#" target="_blank">${window.tinyCrypto.config.networks[network].chainName}</a><br/><small id="powered_by">Powered by <a href="${window.tinyCrypto.config.networks[network].blockExplorerUrls[0]}address/${address}" target="_blank">${window.tinyCrypto.config.networks[network].blockExplorerUrls[0]}</small><br/>`;
       profileHeadBase.appendChild(contentDiv);
 
       // Get User Amount
@@ -34,20 +37,20 @@ const profileWeb3 = function() {
               newWarning.innerHTML = data.message;
             }
 
-            profileHeadBase.insertBefore(newWarning, $(`#powered_by_${network}`));
+            contentDiv.insertBefore(newWarning, $('#powered_by'));
 
           }).catch(console.error);
         }
       };
 
-      $(`#pf-crypto-menu-${network}`).addEventListener('click', e => {
+      $(`#web3_profile_information_${network} #pf-crypto-menu`).addEventListener('click', e => {
         getUserAmount();
         e.preventDefault();
       });
 
       // eslint-disable-next-line no-undef
       const myMenu = new ContextMenu({
-        target: `#pf-crypto-menu-${network}`,
+        target: `#web3_profile_information_${network} #pf-crypto-menu`,
         menuItems: [
           {
             content: 'Copy URL',
