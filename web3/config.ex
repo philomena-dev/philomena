@@ -1,4 +1,4 @@
-# If you are afraid of web3. Disable all settings here.
+# If you are afraid about web3 or need to make difficult decisions. Disable all settings here.
 # I don't recommend you activate the NFT option unless you are ready to take on this kind of responsibility. Find more information in the repository docs before actually activating it.
 defmodule PhilomenaWeb.Web3Cfg do
   use PhilomenaWeb, :controller
