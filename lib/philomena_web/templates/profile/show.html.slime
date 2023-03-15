@@ -108,6 +108,8 @@
         .block__content.flex.flex--centered.flex--center-distributed.alternating-color.no-overflow
           .flex__grow.center id="web3_profile_data"
             small id="address" = @user.ethereum
+            br
+            br
 
     .block
       = if manages_awards?(@conn) and not hide_staff_tools?(@conn) do
