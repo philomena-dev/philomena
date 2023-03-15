@@ -101,16 +101,6 @@
                 br
                 ' Hidden
 
-    = if @user.ethereum != "" do
-      .block
-        .block__header
-          span.block__header__title Web3
-        .block__content.flex.flex--centered.flex--center-distributed.alternating-color.no-overflow
-          .flex__grow.center id="web3_profile_data"
-            small id="address" = @user.ethereum
-            br
-            br
-
     .block
       = if manages_awards?(@conn) and not hide_staff_tools?(@conn) do
         a.block__header--single-item href=Routes.profile_award_path(@conn, :new, @user) Badges
@@ -144,6 +134,16 @@
           span.block__header__title About Me
 
       = render PhilomenaWeb.ProfileView, "_about_me.html", user: @user, about_me: @about_me, conn: @conn
+
+    = if @user.ethereum != "" do
+      .block
+        .block__header
+          span.block__header__title Web3
+        .block__content.flex.flex--centered.flex--center-distributed.alternating-color.no-overflow
+          .flex__grow.center id="web3_profile_data"
+            small id="address" = @user.ethereum
+            br
+            br
 
     = if can_read_mod_notes?(@conn) and not hide_staff_tools?(@conn) do
       .block
