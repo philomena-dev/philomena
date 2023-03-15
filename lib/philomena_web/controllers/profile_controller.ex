@@ -1,7 +1,6 @@
 defmodule PhilomenaWeb.ProfileController do
   use PhilomenaWeb, :controller
 
-  alias PhilomenaWeb.Web3Cfg
   alias PhilomenaWeb.ImageLoader
   alias Philomena.Elasticsearch
   alias PhilomenaWeb.MarkdownRenderer
@@ -164,7 +163,6 @@ defmodule PhilomenaWeb.ProfileController do
     render(
       conn,
       "show.html",
-      web3Cfg: Web3Cfg.get(),
       user: user,
       interactions: interactions,
       commission_information: commission_information,

@@ -10,6 +10,7 @@ defmodule PhilomenaWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :fetch_current_user
+    plug PhilomenaWeb.Web3Plug
     plug PhilomenaWeb.ContentSecurityPolicyPlug
     plug PhilomenaWeb.CurrentFilterPlug
     plug PhilomenaWeb.ImageFilterPlug

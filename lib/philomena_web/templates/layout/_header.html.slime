@@ -47,9 +47,10 @@ header.header
             span.header__counter.hidden
               | 0
 
-        = if @current_user.ethereum != "" do
-          a.header__link href="/registrations/web3/edit" id="web3_header" title="Web3 Connected"
-            i.fab.fa-ethereum>
+        = if @web3Cfg.enable_profile == true do
+          = if @current_user.ethereum != "" do
+            a.header__link href="/registrations/web3/edit" id="web3_header" title="Web3 Connected"
+              i.fab.fa-ethereum>
 
         a.header__link.hide-mobile href="/filters" title="Filters"
           i.fa.fa-filter
