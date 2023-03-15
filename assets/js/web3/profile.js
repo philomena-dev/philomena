@@ -18,6 +18,18 @@ const profileWeb3 = function() {
       contentDiv.innerHTML = `<br/><a id="pf-crypto-menu-${network}" href="#" target="_blank">${window.tinyCrypto.config.networks[network].chainName}</a><br/><small>Powered by <a href="${window.tinyCrypto.config.networks[network].blockExplorerUrls[0]}address/${address}" target="_blank">${window.tinyCrypto.config.networks[network].blockExplorerUrls[0]}</small><br/>`;
       profileHeadBase.appendChild(contentDiv);
 
+      // Get User Amount
+      const getUserAmount = function() {
+        fetch(`${window.tinyCrypto.config.networks[network].blockExplorerApis[0]}api?module=account&action=balance&address=${address}&tag=latest`).then(response => response.json()).then(data => {
+          console.log(data);
+        }).catch(console.error);
+      };
+
+      $(`#pf-crypto-menu-${network}`).addEventListener('click', () => {
+        getUserAmount();
+        return false;
+      });
+
       // eslint-disable-next-line no-undef
       const myMenu = new ContextMenu({
         target: `#pf-crypto-menu-${network}`,
@@ -33,10 +45,7 @@ const profileWeb3 = function() {
           {
             content: 'Get User Amount',
             events: {
-              click: () => {
-                fetch(`${window.tinyCrypto.config.networks[network].blockExplorerApis[0]}api?module=account&action=balance&address=${address}&tag=latest`).then(response => response.json())
-                  .then(console.log).catch(console.error)
-              }
+              click: () => { getUserAmount(); }
             }
           },
         ]
