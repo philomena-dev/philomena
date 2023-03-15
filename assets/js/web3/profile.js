@@ -7,7 +7,7 @@ const profileWeb3 = function() {
     for (const network in window.tinyCrypto.config.networks) {
 
       const contentDiv = document.createElement('div');
-      contentDiv.innerHTML = `<a href="${window.tinyCrypto.config.networks[network].chainName.blockExplorerUrls[0]}address/${address}" target="_blank">${window.tinyCrypto.config.networks[network].chainName}</a>`;
+      contentDiv.innerHTML = `<a href="${window.tinyCrypto.config.networks[network].blockExplorerUrls[0]}address/${address}" target="_blank">${window.tinyCrypto.config.networks[network].chainName}</a>`;
 
       profileHeadBase.appendChild(contentDiv);
 
