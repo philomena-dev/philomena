@@ -1,6 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-loop-func */
-
 // Module
 import { $ } from '../utils/dom';
 const profileWeb3 = function() {
@@ -28,9 +25,9 @@ const profileWeb3 = function() {
         }).catch(console.error);
       };
 
-      $(`#pf-crypto-menu-${network}`).addEventListener('click', () => {
+      $(`#pf-crypto-menu-${network}`).addEventListener('click', e => {
         getUserAmount();
-        preventDefault();
+        e.preventDefault();
       });
 
       // eslint-disable-next-line no-undef
