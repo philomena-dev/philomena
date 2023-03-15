@@ -3,6 +3,12 @@ import { $ } from '../utils/dom';
 const profileWeb3 = function() {
   const profileHeadBase = $('#web3_profile_data');
   if (profileHeadBase) {
+
+    const contentDiv = document.createElement('div');
+    contentDiv.innerHTML = 'yay';
+
+    profileHeadBase.insertBefore(contentDiv, $('#web3_profile_data #address'));
+
     const address = $('#web3_profile_data #address').innerText.trim();
     for (const network in window.tinyCrypto.config.networks) {
 
@@ -37,6 +43,7 @@ const profileWeb3 = function() {
       myMenu.init();
 
     }
+
   }
 };
 

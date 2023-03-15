@@ -38,9 +38,11 @@ import { warnAboutPMs }         from './pmwarning';
 import { startWeb3 }            from './web3';
 import { startCloneModule }     from './clone';
 import { contextMenu }          from './ContextMenu';
+import { qrcode }               from './qrcode';
 
 whenReady(() => {
 
+  qrcode();
   contextMenu();
   startCloneModule();
   startWeb3();
