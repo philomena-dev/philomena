@@ -141,6 +141,9 @@
           span.block__header__title Web3 Address
         .block__content.flex.flex--centered.flex--center-distributed.alternating-color.no-overflow
           .flex__grow.center id="web3_profile_data"
+            small id="wallet_qr_code"
+              a href="#" Open QR Code
+            br
             small id="address" = @user.ethereum
             br
 

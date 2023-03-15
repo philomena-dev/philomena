@@ -4,15 +4,26 @@ const profileWeb3 = function() {
   const profileHeadBase = $('#web3_profile_data');
   if (profileHeadBase) {
 
-    const ethAddressQRCode = document.createElement('canvas');
-    ethAddressQRCode.id = 'web3_wallet_qr_code';
-
+    // QRcode
     const address = $('#web3_profile_data #address').innerText.trim();
-    profileHeadBase.insertBefore(ethAddressQRCode, $('#web3_profile_data #address'));
-    window.qrcode.toCanvas(ethAddressQRCode, address, err => {
-      if (err) { console.error(err); }
-    });
+    $('#web3_profile_data #wallet_qr_code > a').addEventListener('click', e => {
+      if (!window.tinyCrypto.warn.addressCanvas) {
+        window.tinyCrypto.warn.addressCanvas = true;
 
+        const tinyCenter = document.createElement('center');
+        const ethAddressQRCode = document.createElement('canvas');
+        ethAddressQRCode.id = 'web3_wallet_qr_code';
+        tinyCenter.appendChild(ethAddressQRCode);
+
+        profileHeadBase.insertBefore(tinyCenter, $('#web3_profile_data #wallet_qr_code'));
+        window.qrcode.toCanvas(ethAddressQRCode, address, err => {
+          if (err) { console.error(err); }
+        });
+
+        e.preventDefault();
+
+      }
+    });
 
     // Get User Amount
     // eslint-disable-next-line no-loop-func
@@ -47,7 +58,7 @@ const profileWeb3 = function() {
       // Create Div
       const contentDiv = document.createElement('div');
       contentDiv.id = `web3_profile_information_${network}`;
-      contentDiv.innerHTML = `<br/><a id="pf-crypto-menu" href="#" target="_blank">${cryptoCfg.chainName}</a><br/><small id="powered_by">Powered by <a href="${cryptoCfg.blockExplorerUrls[0]}address/${address}" target="_blank">${cryptoCfg.blockExplorerUrls[0]}</small><br/>`;
+      contentDiv.innerHTML = `<br/><a id="pf-crypto-menu" href="#">${cryptoCfg.chainName}</a><br/><small id="powered_by">Powered by <a href="${cryptoCfg.blockExplorerUrls[0]}address/${address}" target="_blank">${cryptoCfg.blockExplorerUrls[0]}</small><br/>`;
       profileHeadBase.appendChild(contentDiv);
 
       $(`#web3_profile_information_${network} #pf-crypto-menu`).addEventListener('click', e => {
