@@ -12,9 +12,10 @@ p
   ' Looking to change your avatar?
   = link "Click here!", to: Routes.avatar_path(@conn, :edit)
 
-p
-  ' Looking to change your web3 address?
-  = link "Click here!", to: Routes.registration_web3_path(@conn, :edit)
+= if @web3Cfg.enable_profile == true do
+  p
+    ' Looking to change your web3 address?
+    = link "Click here!", to: Routes.registration_web3_path(@conn, :edit)
 
 = if can?(@conn, :change_username, @current_user) do
   p
