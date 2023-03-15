@@ -26,7 +26,6 @@ const profileWeb3 = function() {
           if (String(data.status) === '1') {
             // eslint-disable-next-line no-undef
             newWarning.innerHTML = `<small>${Number(Web3.utils.fromWei(String(data.result))).toFixed(9)} ${cryptoCfg.nativeCurrency.symbol}</small>`;
-            console.log(data);
           }
 
           else {
