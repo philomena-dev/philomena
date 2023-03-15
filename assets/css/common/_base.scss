@@ -506,35 +506,7 @@ span.stat {
   display: none !important;
 }
 
-.contextMenu {
-  --menu-border: rgba(255, 255, 255, 0.08);
-  --menu-bg: linear-gradient(
-    45deg,
-    rgba(10, 20, 28, 0.2) 0%,
-    rgba(10, 20, 28, 0.7) 100%
-  );
-  --item-border: rgba(255, 255, 255, 0.1);
-  --item-color: #fff;
-  --item-bg-hover: rgba(255, 255, 255, 0.1);
-  height: 0;
-  overflow: hidden;
-  background: var(--menu-bg);
-  -webkit-backdrop-filter: blur(5px);
-          backdrop-filter: blur(5px);
-  position: fixed;
-  top: var(--top);
-  left: var(--left);
-  -webkit-animation: menuAnimation 0.4s 0s both;
-          animation: menuAnimation 0.4s 0s both;
-  transform-origin: left;
-  list-style: none;
-  margin: 4px;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  z-index: 999999999;
-  box-shadow: 0 0 0 1px var(--menu-border), 0 2px 2px rgba(0, 0, 0, 0.03), 0 4px 4px rgba(0, 0, 0, 0.04), 0 10px 8px rgba(0, 0, 0, 0.05), 0 15px 15px rgba(0, 0, 0, 0.06), 0 30px 30px rgba(0, 0, 0, 0.07), 0 70px 65px rgba(0, 0, 0, 0.09);
-}
+
 .contextMenu-item {
   padding: 4px;
 }
@@ -572,6 +544,40 @@ span.stat {
 .contextMenu-button:hover {
   background-color: var(--item-bg-hover);
 }
+
+.contextMenu {
+  height: 0;
+  overflow: hidden;
+  background: var(--menu-bg);
+  -webkit-backdrop-filter: blur(5px);
+          backdrop-filter: blur(5px);
+  position: fixed;
+  top: var(--top);
+  left: var(--left);
+  -webkit-animation: menuAnimation 0.4s 0s both;
+          animation: menuAnimation 0.4s 0s both;
+  transform-origin: left;
+  list-style: none;
+  margin: 4px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 999999999;
+  box-shadow: 0 0 0 1px var(--menu-border), 0 2px 2px rgba(0, 0, 0, 0.03), 0 4px 4px rgba(0, 0, 0, 0.04), 0 10px 8px rgba(0, 0, 0, 0.05), 0 15px 15px rgba(0, 0, 0, 0.06), 0 30px 30px rgba(0, 0, 0, 0.07), 0 70px 65px rgba(0, 0, 0, 0.09);
+}
+
+.contextMenu[data-theme=dark] {
+  --menu-border: rgba(255, 255, 255, 0.08);
+  --menu-bg: linear-gradient(
+    45deg,
+    rgba(10, 20, 28, 0.2) 0%,
+    rgba(10, 20, 28, 0.7) 100%
+  );
+  --item-border: rgba(255, 255, 255, 0.1);
+  --item-color: #fff;
+  --item-bg-hover: rgba(255, 255, 255, 0.1);
+}
+
 .contextMenu[data-theme=light] {
   --menu-bg: linear-gradient(
     45deg,

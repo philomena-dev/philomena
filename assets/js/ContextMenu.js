@@ -2,7 +2,7 @@
 /* eslint-disable no-else-return */
 /* eslint-disable brace-style */
 class ContextMenu {
-  constructor({ target = null, menuItems = [], mode = 'dark' }) {
+  constructor({ target = null, menuItems = [], mode = '' }) {
     this.target = target;
     this.menuItems = menuItems;
     this.mode = mode;
@@ -67,7 +67,10 @@ class ContextMenu {
     const menuContainer = document.createElement('UL');
 
     menuContainer.classList.add('contextMenu');
-    menuContainer.setAttribute('data-theme', this.mode);
+
+    if (this.mode !== '') {
+      menuContainer.setAttribute('data-theme', this.mode);
+    }
 
     this.menuItemsNode.forEach(item => menuContainer.appendChild(item));
 
