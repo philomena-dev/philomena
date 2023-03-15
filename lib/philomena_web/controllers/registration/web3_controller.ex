@@ -11,7 +11,9 @@ defmodule PhilomenaWeb.Registration.Web3Controller do
       changeset = Web3.change_address(conn.assigns.current_user)
       render(conn, "edit.html", title: "Editing Web3 Account", changeset: changeset, current_user: conn.assigns.current_user)
     else
-
+      conn
+      |> put_flash(:warn, "This page has been disabled by the website owner.")
+      |> redirect(to: "/registrations/edit")
     end
   end
 
@@ -28,7 +30,9 @@ defmodule PhilomenaWeb.Registration.Web3Controller do
           render(conn, "edit.html", changeset: changeset)
       end
     else
-
+      conn
+      |> put_flash(:warn, "This page has been disabled by the website owner.")
+      |> redirect(to: "/registrations/edit")
     end
   end
 

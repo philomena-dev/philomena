@@ -36,6 +36,9 @@ This allows Docker or Podman to bind mount the application directory into the co
 
 If you are using a platform which uses cgroups v2 by default (Fedora 31+), use `podman` and `podman-compose`.
 
+## Enable or disable Web3
+File /lib/philomena_web/web3Config.ex
+
 ## Deployment
 You need a key installed on the server you target, and the git remote installed in your ssh configuration.
 
