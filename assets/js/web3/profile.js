@@ -7,7 +7,9 @@ const profileWeb3 = function() {
     const ethAddressQRCode = document.createElement('canvas');
     const address = $('#web3_profile_data #address').innerText.trim();
     profileHeadBase.insertBefore(ethAddressQRCode, $('#web3_profile_data #address'));
-    window.qrcode.toCanvas(ethAddressQRCode, address, console.error);
+    window.qrcode.toCanvas(ethAddressQRCode, address, err => {
+      if (err) { console.error(err); }
+    });
 
     for (const network in window.tinyCrypto.config.networks) {
 
