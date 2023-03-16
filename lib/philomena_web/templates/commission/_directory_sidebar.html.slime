@@ -19,6 +19,13 @@
       br
 
       .field = label f, :price_min, "Price:"
+
+      = if web3Cfg.enable_comissions == true do
+        = select f, :currency, currencies(), class: "input"
+
+        br
+        br
+
       .field = number_input f, :price_min, class: "input input--short", placeholder: "At Least", step: "any", min: 0
       .field = number_input f, :price_max, class: "input input--short", placeholder: "At Most", step: "any", min: 0
 

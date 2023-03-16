@@ -34,4 +34,13 @@ defmodule PhilomenaWeb.Web3Cfg do
     }
   end
 
+  def currencies do
+    [
+      "USD",
+      "MATIC",
+      "ETH",
+      "BNB"
+    ]
+  end
+
 end
