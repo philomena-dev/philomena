@@ -26,7 +26,7 @@
         br
         br
 
-        = select f, :currency, currencies_type(), class: "input"
+        = select f, :currency_type, currencies_type(), class: "input"
 
         br
         br
