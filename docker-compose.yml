@@ -1,7 +1,7 @@
 version: '3'
 volumes:
   postgres_data: {}
-  elastic_data: {}
+  opensearch_data: {}
 
 services:
   app:
@@ -27,7 +27,7 @@ services:
       - IMAGE_URL_ROOT=/img
       - BADGE_URL_ROOT=/badge-img
       - TAG_URL_ROOT=/tag-img
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - OPENSEARCH_URL=https://admin:admin@opensearch:9200
       - REDIS_HOST=redis
       - DATABASE_URL=ecto://postgres:postgres@postgres/philomena_dev
       - CDN_HOST=localhost
@@ -46,7 +46,7 @@ services:
       - .:/srv/philomena
     depends_on:
       - postgres
-      - elasticsearch
+      - opensearch
       - redis
 
   postgres:
@@ -58,10 +58,10 @@ services:
     logging:
       driver: "none"
 
-  elasticsearch:
-    image: elasticsearch:7.9.3
+  opensearch:
+    image: opensearchproject/opensearch:2.6.0
     volumes:
-      - elastic_data:/usr/share/elasticsearch/data
+      - opensearch_data:/usr/share/opensearch/data
     logging:
       driver: "none"
     environment:
