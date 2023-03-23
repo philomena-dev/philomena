@@ -103,7 +103,10 @@ const configWeb3 = function() {
                 connectWallet.innerHTML = `${ethIcon} ${tinyMessage}`;
               }
 
-              window.tinyCrypto.call.requestAccounts();
+              window.tinyCrypto.call.requestAccounts().then(() => { location.reload(); }).catch(err => {
+                console.error(err);
+                alert(err.message);
+              });
 
             }
 
