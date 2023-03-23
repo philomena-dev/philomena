@@ -75,13 +75,30 @@ const configWeb3 = function() {
           // Check Data and Insert Warn
           if (window.tinyCrypto.yourDerpiAddress !== window.tinyCrypto.address) {
 
-            $('#web3_header').style.color = 'red';
-            $('#web3_header').style.opacity = 0.7;
-            $('#web3_header').title = 'Your Web3 wallet is not the same as your Derpibooru account.';
-            insertWeb3Warn('notSameWallet', 'Your Web3 wallet is not the same as your Derpibooru account!');
+            if (window.tinyCrypto.accounts.length > 0) {
 
-            if (connectWallet) {
-              connectWallet.innerHTML = '<i class="fab fa-ethereum"></i> Your wallet does not share the same value as your Derpibooru account. You can click here to try to reconnect a new address.';
+              $('#web3_header').style.color = 'red';
+              $('#web3_header').style.opacity = 0.7;
+              $('#web3_header').title = 'Your Web3 wallet is not the same as your Derpibooru account.';
+              insertWeb3Warn('notSameWallet', 'Your Web3 wallet is not the same as your Derpibooru account!');
+
+              if (connectWallet) {
+                connectWallet.innerHTML = '<i class="fab fa-ethereum"></i> Your wallet does not share the same value as your Derpibooru account. You can click here to try to reconnect a new address.';
+              }
+
+            }
+
+            else {
+
+              $('#web3_header').style.color = 'yellow';
+              $('#web3_header').style.opacity = 0.7;
+              $('#web3_header').title = 'Please reconnect your crypto wallet! A new window will open to redo this.';
+              insertWeb3Warn('notSameWallet', 'Please reconnect your crypto wallet! A new window will open to redo this.');
+
+              if (connectWallet) {
+                connectWallet.innerHTML = '<i class="fab fa-ethereum"></i> Please reconnect your crypto wallet. A new window will open to redo this.';
+              }
+
             }
 
           }
