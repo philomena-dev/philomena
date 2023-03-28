@@ -322,7 +322,8 @@ CREATE TABLE public.commission_items (
     updated_at timestamp without time zone NOT NULL,
     description character varying,
     add_ons character varying,
-    currency character varying DEFAULT 'usd'::character varying NOT NULL
+    currency character varying DEFAULT 'usd'::character varying NOT NULL,
+    allow_crypto boolean DEFAULT false NOT NULL
 );
 
 
