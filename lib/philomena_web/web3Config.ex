@@ -13,7 +13,8 @@ defmodule PhilomenaWeb.Web3Cfg do
       currencies: %{
         polygon: "MATIC",
         ethereum: "ETH",
-        bsc: "BNB"
+        bsc: "BNB",
+        usd: "USD"
       },
 
       usd: %{

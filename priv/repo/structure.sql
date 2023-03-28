@@ -321,7 +321,8 @@ CREATE TABLE public.commission_items (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     description character varying,
-    add_ons character varying
+    add_ons character varying,
+    currency character varying DEFAULT 'usd'::character varying NOT NULL
 );
 
 
@@ -5035,3 +5036,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20211107130226);
 INSERT INTO public."schema_migrations" (version) VALUES (20211219194836);
 INSERT INTO public."schema_migrations" (version) VALUES (20220321173359);
 INSERT INTO public."schema_migrations" (version) VALUES (20230313183010);
+INSERT INTO public."schema_migrations" (version) VALUES (20230328005708);

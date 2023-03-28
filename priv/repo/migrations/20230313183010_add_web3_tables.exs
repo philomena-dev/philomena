@@ -42,5 +42,8 @@ defmodule Philomena.Repo.Migrations.AddWeb3Tables do
       "CREATE INDEX index_ethereum_changes_on_user_id ON public.ethereum_changes USING btree (user_id);"
     )
 
+    execute("ALTER TABLE public.commission_items
+    ADD COLUMN currency character varying DEFAULT 'usd' NOT NULL;")
+
   end
 end
