@@ -120,7 +120,7 @@ Also, please make sure all versions are correct as well.
     sudo docker exec philomena_app_1 mix ecto.migrate
 
 ## Remove Migration File
-DELETE FROM public.schema_migrations WHERE version = [version]
+    DELETE FROM public.schema_migrations WHERE version = [version]
 
 ## Access Postgres
 
