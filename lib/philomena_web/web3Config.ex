@@ -8,7 +8,7 @@ defmodule PhilomenaWeb.Web3Cfg do
 
       enable_profile: true,
       enable_comissions: true,
-      enable_nft: false,
+      #enable_nft: false,
 
       currencies: %{
         polygon: "MATIC",
