@@ -12,9 +12,7 @@
     => label f, :base_price, "Base Price:"
     = number_input f, :base_price, class: "input", placeholder: "20.00", step: "any", min: 0
     = if web3Cfg.enable_comissions == true do
-      br
       = select f, :currency, currencies(), class: "input"
-      = select f, :currency_type, currencies_type(), class: "input"
     = error_tag f, :base_price
   br
   .field
