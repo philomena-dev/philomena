@@ -13,8 +13,11 @@
     = number_input f, :base_price, class: "input", placeholder: "20.00", step: "any", min: 0
     = if web3Cfg.enable_comissions == true do
       = select f, :currency, currencies(), class: "input"
+      br
+      => checkbox f, :allow_crypto
     - else
       = hidden_input f, :currency, value: "USD"
+      = hidden_input f, :allow_crypto, value: false
     = error_tag f, :base_price
   br
   .field
