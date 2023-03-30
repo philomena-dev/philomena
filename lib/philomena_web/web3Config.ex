@@ -44,8 +44,8 @@ defmodule PhilomenaWeb.Web3Cfg do
   def currenciesType do
     [
       "USD Only",
-      "All USD Currencies",
       "Crypto USD Only",
+      "All USD Currencies"
     ]
   end
 
