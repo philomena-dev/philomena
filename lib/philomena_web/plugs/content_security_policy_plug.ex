@@ -27,7 +27,8 @@ defmodule PhilomenaWeb.ContentSecurityPolicyPlug do
         {:default_src, ["'self'",
           "https://api.bscscan.com/",
           "https://api.etherscan.io/",
-          "https://api.polygonscan.com/"
+          "https://api.polygonscan.com/",
+          "https://api.gnosisscan.io/"
         ]},
 
         {:script_src, ["'self'" | script_src]},

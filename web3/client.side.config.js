@@ -51,6 +51,21 @@ const web3Cfg = function () {
                 blockExplorerApis:  ['https://api.bscscan.com/'],
             },
 
+            // Gnosis Chain (USD)
+            bsc: {
+                chainId: '100',
+                chainIdInt: 100,
+                rpcUrls: ['https://rpc.gnosischain.com/'],
+                chainName: 'Gnosis',
+                nativeCurrency: {
+                    name: 'xDai',
+                    symbol: 'xDAI',
+                    decimals: 18
+                },
+                blockExplorerUrls: ['https://gnosisscan.io/'],
+                blockExplorerApis:  ['https://api.gnosisscan.io/'],
+            },
+
         }
 
     };
