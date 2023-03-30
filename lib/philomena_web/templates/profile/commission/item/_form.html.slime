@@ -18,7 +18,7 @@
     = error_tag f, :base_price
   br
   .field
-    => label f, :allow_crypto, "Do you agree to receive payment in crypto:"
+    => label f, :allow_crypto, "Do you agree to receive USD payment in crypto:"
     = if web3Cfg.enable_comissions == true do
       => checkbox f, :allow_crypto
     - else
