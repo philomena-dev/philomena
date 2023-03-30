@@ -19,6 +19,11 @@ defmodule PhilomenaWeb.Web3Cfg do
 
       usd: %{
 
+        dai: %{
+          ethereum: "0x6b175474e89094c44da98b954eedeac495271d0f",
+          polygon: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063"
+        },
+
         usdt: %{
           ethereum: "0xdac17f958d2ee523a2206206994597c13d831ec7",
           polygon: "0xc2132d05d31c914a87c6611c10748aeb04b58e8f"
