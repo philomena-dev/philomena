@@ -43,7 +43,7 @@ defmodule Philomena.Repo.Migrations.AddWeb3Tables do
     )
 
     execute("ALTER TABLE public.commission_items
-    ADD COLUMN currency character varying DEFAULT 'usd' NOT NULL
+    ADD COLUMN currency character varying DEFAULT 'USD' NOT NULL
     ADD COLUMN allow_crypto boolean DEFAULT false NOT NULL;")
 
   end
