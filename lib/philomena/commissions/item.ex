@@ -24,6 +24,7 @@ defmodule Philomena.Commissions.Item do
     item
     |> cast(attrs, [:item_type, :description, :currency, :base_price, :allow_crypto, :add_ons, :example_image_id])
     |> validate_required([:commission_id, :allow_crypto, :currency, :base_price, :item_type, :description])
+    |> validate_length(:currency, max: 5, count: :bytes)
     |> validate_length(:description, max: 300, count: :bytes)
     |> validate_length(:add_ons, max: 500, count: :bytes)
     |> validate_number(:base_price, greater_than_or_equal_to: 0, less_than_or_equal_to: 99_999)
