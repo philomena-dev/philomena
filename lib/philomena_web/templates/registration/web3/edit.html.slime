@@ -24,7 +24,7 @@ main class="layout--narrow"
 
       p Our web3 integrator allows our website to detect which wallet belongs to your account. All accounts will have a history of all Ethereum addresses that have been assigned to your account in the past and this information will be used by our server to detect your actions within the web3. This information will also be used for Derpibooru users to know if you really are the owner of a certain crypto wallet when receiving a commission payment.
 
-      p Your wallet integration can also unlock extra features that can only be done through Web3. For more information, consult the <a href="/pages/privacy" target="_blank">privacy policy</a> before actually integrating with web3.
+      p This feature has only been tested on crypto wallets that use the Metamask protocol. Other protocols like WalletConnect, exchanges, among others will not work here. Your wallet integration can also unlock extra features that can only be done through Web3. For more information, consult the <a href="/pages/privacy" target="_blank">privacy policy</a> before actually integrating with web3.
 
       br
       hr
