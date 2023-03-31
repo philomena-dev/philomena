@@ -8,7 +8,7 @@ defmodule PhilomenaWeb.Registration.Web3Controller do
     tinyWeb3Cfg = Web3Cfg.get()
     if tinyWeb3Cfg.enable_profile do
       changeset = Web3.change_address(conn.assigns.current_user)
-      render(conn, "edit.html", title: "Editing Web3 Account", changeset: changeset, current_user: conn.assigns.current_user)
+      render(conn, "edit.html", title: "Editing Web3 Account", changeset: changeset, current_user: conn.assigns.current_user, host: PhilomenaWeb.Endpoint.url() )
     else
       conn
       |> put_flash(:warn, "This page has been disabled by the website owner.")
