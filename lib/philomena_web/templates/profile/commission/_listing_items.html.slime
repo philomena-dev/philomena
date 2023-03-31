@@ -47,6 +47,9 @@
               = if item.currency == "USD" do
                 | $
                 = Decimal.round(item.base_price, 2)
+                = if item.allow_crypto == true do
+                  br
+                  | Accepting payment in crypto dollar token
               - else
                 = Decimal.round(item.base_price, 5)
                 = " " <> item.currency
