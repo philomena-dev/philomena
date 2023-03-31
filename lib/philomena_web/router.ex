@@ -86,6 +86,13 @@ defmodule PhilomenaWeb.Router do
   scope "/", PhilomenaWeb do
     pipe_through [
       :browser,
+    ]
+    get "/ethereum/profiles", EthereumProfileController, :index, singleton: true
+  end
+
+  scope "/", PhilomenaWeb do
+    pipe_through [
+      :browser,
       :ensure_not_banned,
       :ensure_tor_authorized,
       :redirect_if_user_is_authenticated
