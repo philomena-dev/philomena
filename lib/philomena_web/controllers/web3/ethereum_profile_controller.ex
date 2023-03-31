@@ -10,11 +10,21 @@ defmodule PhilomenaWeb.EthereumProfileController do
     user =
       User
       |> where(ethereum: ^id)
-      |> preload([:slug])
       |> Repo.one()
 
-    conn
-    |> redirect(to: "/profiles/" <> user.slug)
+    if user do
+      if user.slug do
+        conn
+        |> redirect(to: "/profiles/" <> user.slug)
+      else
+        conn
+        |> redirect(to: "/")
+      end
+
+    else
+      conn
+      |> redirect(to: "/")
+    end
 
   end
 end
