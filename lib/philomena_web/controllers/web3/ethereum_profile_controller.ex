@@ -20,7 +20,6 @@ defmodule PhilomenaWeb.EthereumProfileController do
         conn
         |> redirect(to: "/")
       end
-
     else
       conn
       |> redirect(to: "/")
