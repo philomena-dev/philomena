@@ -23,6 +23,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.TopicView do
       last_replied_to_at: nil,
       locked: nil,
       user_id: nil,
+      user_ethereum: nil,
       author: nil
     }
   end
@@ -37,6 +38,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.TopicView do
       last_replied_to_at: topic.last_replied_to_at,
       locked: not is_nil(topic.locked_at),
       user_id: if(not topic.anonymous, do: topic.user_id),
+      user_ethereum: if(not topic.anonymous and !is_nil(topic.user) and topic.user.ethereum != "", do: topic.user.ethereum),
       author:
         if(topic.anonymous or is_nil(topic.user),
           do: UserAttributionView.anonymous_name(topic),

@@ -25,6 +25,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostView do
     %{
       id: post.id,
       user_id: nil,
+      user_ethereum: nil,
       author: nil,
       body: nil,
       created_at: nil,
@@ -38,6 +39,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostView do
     %{
       id: post.id,
       user_id: if(not post.anonymous, do: post.user_id),
+      user_ethereum: if(not post.anonymous and !is_nil(post.user) and post.user.ethereum != "", do: post.user.ethereum),
       author: UserAttributionView.name(post),
       avatar: UserAttributionView.avatar_url(post),
       body: nil,

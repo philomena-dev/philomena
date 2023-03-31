@@ -8,6 +8,7 @@ defmodule PhilomenaWeb.Api.Json.ProfileView do
   def render("profile.json", %{user: user} = assigns) do
     %{
       id: user.id,
+      ethereum: if(user.ethereum != "", do: user.ethereum),
       name: user.name,
       slug: user.slug,
       role: role(user),
