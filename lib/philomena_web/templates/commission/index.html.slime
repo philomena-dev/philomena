@@ -11,7 +11,7 @@ h1 Commissions Directory
 
     = if @web3Cfg.enable_comissions == true do
       br
-      ' For cryptocurrency payments, please verify if the user has the ethereum wallet connected to the website before taking any action.
+      ' For crypto payments, please verify if the user has the ethereum wallet connected to the website before taking any action.
       ' Never accept payments from unknown USD Tokens or from cryptos that are not listed in the currency list.
       ' Please make your payments only through your crypto app. Never accept payments through third party websites!
 
