@@ -13,6 +13,7 @@
     "@types/web": "^0.0.91",
     "@typescript-eslint/eslint-plugin": "^5.52.0",
     "@typescript-eslint/parser": "^5.52.0",
+    "@uniswap/v3-sdk": "^3.9.0",
     "acorn": "^8.8.2",
     "autoprefixer": "^10.4.13",
     "brunch": "^4.0.2",
