@@ -5,27 +5,16 @@ defmodule PhilomenaWeb.EthereumProfileController do
   alias Philomena.Repo
   import Ecto.Query
 
-  def index(conn, params) do
+  def index(conn, %{"id" => id}) do
 
-    # Get Ethereum Address
-    id = conn.params["id"]
+    user =
+      User
+      |> where(ethereum: ^id)
+      |> preload([:slug])
+      |> Repo.one()
 
-    # No Ethereum Address
-    if is_nil(id) do
-      conn
-      |> redirect(to: "/")
-
-    # Yes
-    else
-      user =
-        User
-        |> where(ethereum: ^id)
-        |> preload([:slug])
-        |> Repo.one()
-
-      conn
-      |> redirect(to: "/profiles/" <> user.slug)
-    end
+    conn
+    |> redirect(to: "/profiles/" <> user.slug)
 
   end
 end
