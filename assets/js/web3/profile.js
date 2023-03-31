@@ -1,12 +1,12 @@
 // Module
 import { $ } from '../utils/dom';
 const profileWeb3 = function() {
-  const profileHeadBase = $('#web3_profile_data');
-  if (profileHeadBase) {
+
+  const insertQRCode = function(profileHeadBase, where) {
 
     // QRcode
-    const address = $('#web3_profile_data #address').innerText.trim();
-    $('#web3_profile_data #wallet_qr_code > a').addEventListener('click', e => {
+    const address = $(`#${where} #address`).innerText.trim();
+    $(`#${where} #wallet_qr_code > a`).addEventListener('click', e => {
 
       if (!window.tinyCrypto.warn.addressCanvas) {
         window.tinyCrypto.warn.addressCanvas = true;
@@ -16,7 +16,7 @@ const profileWeb3 = function() {
         ethAddressQRCode.id = 'web3_wallet_qr_code';
         tinyCenter.appendChild(ethAddressQRCode);
 
-        profileHeadBase.insertBefore(tinyCenter, $('#web3_profile_data #wallet_qr_code'));
+        profileHeadBase.insertBefore(tinyCenter, $(`#${where} #wallet_qr_code`));
         window.qrcode.toCanvas(ethAddressQRCode, address, err => {
           if (err) { console.error(err); }
         });
@@ -26,6 +26,17 @@ const profileWeb3 = function() {
       e.preventDefault();
 
     });
+
+    return address;
+
+  };
+
+  // User Profile
+  let profileHeadBase = $('#web3_profile_data');
+  if (profileHeadBase) {
+
+    // Get Address
+    const address = insertQRCode(profileHeadBase, 'web3_profile_data');
 
     // Get User Amount
     // eslint-disable-next-line no-loop-func
@@ -96,6 +107,18 @@ const profileWeb3 = function() {
     }
 
   }
+
+  // Other Places
+  else {
+
+    // Commission Page
+    profileHeadBase = $('#web3_profile_data_commission');
+    if (profileHeadBase) {
+      insertQRCode(profileHeadBase, 'web3_profile_data_commission');
+    }
+
+  }
+
 };
 
 export { profileWeb3 };
