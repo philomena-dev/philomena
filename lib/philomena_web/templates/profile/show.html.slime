@@ -105,7 +105,7 @@
       = if @user.ethereum != "" do
         .block
           .block__header
-            span.block__header__title Web3 Address
+            span.block__header__title Ethereum Address
           .block__content.flex.flex--centered.flex--center-distributed.alternating-color.no-overflow
             .flex__grow.center id="web3_profile_data"
               small id="wallet_qr_code"

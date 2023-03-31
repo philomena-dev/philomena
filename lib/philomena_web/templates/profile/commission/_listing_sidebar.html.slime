@@ -31,7 +31,7 @@
   = if @user.ethereum != "" do
     .block
       .block__header
-        span.block__header__title Web3 Address
+        span.block__header__title Ethereum Address
       .block__content.commission__block_body
         div id="web3_profile_data_commission"
           small id="wallet_qr_code"
