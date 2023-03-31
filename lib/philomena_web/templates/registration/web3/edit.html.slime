@@ -46,7 +46,7 @@ main class="layout--narrow"
                 a href="#" data-click-copy="#ethereum_url"
                   i.fa.fa-clipboard>
                   ' Copy
-                input id="ethereum_url" type="text" value="#{@host}/ethereum/profiles?id=#{@current_user.ethereum}" class="input input--wide input--separate-top" readonly="true"
+                input id="ethereum_url" type="text" value="#{@host}/ethereum/profiles?id=#{@current_user.ethereum}" class="input input--wide input--center input--separate-top" readonly="true"
 
         br
 
