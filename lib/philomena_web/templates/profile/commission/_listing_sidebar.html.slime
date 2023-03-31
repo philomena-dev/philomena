@@ -26,6 +26,15 @@
 
     == @rendered.information
 
+/ Web3 information block
+= if @web3Cfg.enable_comissions == true do
+  = if @user.ethereum != "" do
+    .block
+      .block__header
+        span.block__header__title Web3 Address
+      .block__content.commission__block_body
+
+
 / Contact information block
 .block
   .block__header
