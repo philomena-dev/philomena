@@ -11,7 +11,6 @@ html lang="en"
       - else
         ' Derpibooru
     link rel="stylesheet" href=stylesheet_path(@conn, @current_user)
-    link rel="stylesheet" href="/cryptofont/cryptofont.min.css"
     = if is_nil(@current_user) do
       link rel="stylesheet" href=dark_stylesheet_path(@conn) media="(prefers-color-scheme: dark)"
     link rel="manifest" href="/manifest.json"

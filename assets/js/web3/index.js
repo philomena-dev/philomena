@@ -4,14 +4,12 @@ import { web3Cfg } from '../../../web3/client.side.config';
 import { configWeb3 } from './registrations';
 import { profileWeb3 } from './profile';
 import * as web3 from 'web3';
-//import * as uniswap from '@uniswap/v3-sdk';
 
 // Module
 const startWeb3 = function() {
 
   // Prepare Web3 Object
   window.web3 = web3;
-  //window.uniswap = uniswap;
 
   // Tiny Crypto Place
   window.tinyCrypto = {
