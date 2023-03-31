@@ -32,7 +32,10 @@ main class="layout--narrow"
 
       = if @current_user.ethereum != "" do
 
-        center = "Your current connected wallet is #{@current_user.ethereum}"
+        center
+          | Your current connected wallet is
+          strong
+            = " " <> @current_user.ethereum
 
         br
 
