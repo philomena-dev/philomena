@@ -48,6 +48,13 @@ main class="layout--narrow"
                   ' Copy
                 input id="ethereum_url" type="text" value="#{@host}/ethereum/profiles?id=#{@current_user.ethereum}" class="input input--wide input--center input--separate-top" readonly="true"
 
+              .field
+                label> for="ethereum_url_api" API URL
+                a href="#" data-click-copy="#ethereum_url_api"
+                  i.fa.fa-clipboard>
+                  ' Copy
+                input id="ethereum_url_api" type="text" value="#{@host}/ethereum/profiles?page=api&id=#{@current_user.ethereum}" class="input input--wide input--center input--separate-top" readonly="true"
+
         br
 
         .field

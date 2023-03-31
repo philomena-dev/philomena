@@ -5,17 +5,32 @@ defmodule PhilomenaWeb.EthereumProfileController do
   alias Philomena.Repo
   import Ecto.Query
 
-  def index(conn, %{"id" => id}) do
+  def index(conn, params) do
 
     user =
       User
-      |> where(ethereum: ^id)
+      |> where(ethereum: ^conn.params["id"])
       |> Repo.one()
 
     if user do
+
       if user.slug do
-        conn
-        |> redirect(to: "/profiles/" <> user.slug)
+
+        if conn.params["page"] != "api" do
+          conn
+          |> redirect(to: "/profiles/" <> user.slug)
+        else
+
+          api_version = "1"
+          if !is_nil(conn.params["api_version"]) do
+            api_version = conn.params["api_version"]
+          end
+
+          conn
+          |> redirect(to: "/api/" <> api_version <> "/json/profiles/" <> user.id)
+
+        end
+
       else
         conn
         |> redirect(to: "/")
