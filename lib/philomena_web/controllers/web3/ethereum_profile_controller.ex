@@ -27,7 +27,7 @@ defmodule PhilomenaWeb.EthereumProfileController do
           end
 
           conn
-          |> redirect(to: "/api/" <> api_version <> "/json/profiles/" <> user.id)
+          |> redirect(to: "/api/v#{api_version}/json/profiles/#{user.id}")
 
         end
 
