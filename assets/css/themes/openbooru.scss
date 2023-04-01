@@ -30,6 +30,11 @@ $header_secondary_color: #e2ebf2;
 
 $input_color_active: #ffffff;
 
+$block_header_light_color: #e4eef5;
+
+$background_odd_color: #f2f8fc;
+$background_even_color: #ffffff;
+
 $primary_color: #c1e4f9;
 $success_color: #bde9a3; /* tag added, currently banned, view post history--added */
 $danger_color: #ebc0bb; /* tag removed, currently not banned, view post history--deleted */
@@ -87,7 +92,6 @@ $header_admin_hover_color: mix($vote_down_color, $background_color, 30%);
 $block_header_hover_color: desaturate(lighten($base_color, 20%), 5%);
 $block_header_link_text_hover_color: darken($header_color, 15%);
 
-$block_header_light_color: desaturate(lighten($base_color, 31%), 16%);
 $block_header_light_hover_color: lighten($header_secondary_hover_color, 2%);
 $block_header_light_link_text_color: darken($block_header_light_color, 42%);
 $block_header_light_link_text_hover_color: darken($block_header_light_color, 52%);
@@ -110,9 +114,6 @@ $link_hover_dark_color: darken($link_hover_color, 20%);
 $image_show_link_color: $link_color;
 $image_show_link_hover_color: $link_hover_color;
 
-/* In default theme, except odd color to be darker! */
-$background_odd_color: lighten($base_color, 35%); //also used as 'alt background color' in various places
-$background_even_color: $background_color;
 /* Depending on the theme, you may want to swap even and odd colors */
 $success_odd_color: saturate(darken($success_light_color, 3%), 8%);
 $success_even_color: lighten($success_color, 13%);
