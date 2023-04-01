@@ -92,14 +92,20 @@ defmodule PhilomenaWeb.UserAttributionView do
   def team_data_for_user(user) do
     user = Repo.preload(user, :game_profiles)
     game_profile = Repo.preload(user.game_profiles, :team) |> Enum.at(0)
+    if game_profile do
 
-    %{
-      name: if(game_profile.team.id == 1, do: "NLR", else: "SE"),
-      icon: if(game_profile.team.id == 1, do: "/nlr.svg", else: "/se.svg"),
-      points: game_profile.points,
-      style:
-        if(game_profile.team.id == 1, do: "game__team_banner--nlr", else: "game__team_banner--se")
-    }
+      %{
+        enabled: true,
+        name: if(game_profile.team.id == 1, do: "NLR", else: "SE"),
+        icon: if(game_profile.team.id == 1, do: "/nlr.svg", else: "/se.svg"),
+        points: game_profile.points,
+        style:
+          if(game_profile.team.id == 1, do: "game__team_banner--nlr", else: "game__team_banner--se")
+      }
+
+    else
+      %{ enabled: false }
+    end
   end
 
   def rank_for_user(user) do

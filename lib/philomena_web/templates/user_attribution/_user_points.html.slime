@@ -1,7 +1,8 @@
 = if !!@object.user do
   - team_data = team_data_for_user(@object.user)
-  .game__team_banner class=team_data.style
-    span
-      img src=team_data.icon
-      =<> team_data.name
-    .game__team_banner_separator
+  = if team_data.enabled == true do
+    .game__team_banner class=team_data.style
+      span
+        img src=team_data.icon
+        =<> team_data.name
+      .game__team_banner_separator
