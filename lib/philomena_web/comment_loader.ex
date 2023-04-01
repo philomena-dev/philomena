@@ -9,7 +9,7 @@ defmodule PhilomenaWeb.CommentLoader do
     Comment
     |> where(image_id: ^image.id)
     |> order_by([{^pref, :created_at}])
-    |> preload([:image, :deleted_by, user: [awards: :badge, game_profiles: :team]])
+    |> preload([:image, :deleted_by, user: [awards: :badge]])
     |> Repo.paginate(conn.assigns.comment_scrivener)
   end
 
