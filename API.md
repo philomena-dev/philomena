@@ -13,8 +13,10 @@
 <p>If images are used, the artist must always be credited (if provided) and the original source URL must be displayed alongside the image, either in textual form or as a link. A link to the Derpibooru page is optional but recommended; we recommend the derpibooru.org domain as a canonical domain. The <code>https:</code> protocol must be specified on all URLs.</p>
 
 <h2 id="parameters">Parameters</h2>
+
 <p>This is a list of general parameters that are useful when working with the API. Not all parameters may be used in every request.</p>
-<table class="table">
+
+<table>
   <thead>
     <tr>
       <th>Name</th>
@@ -52,9 +54,12 @@
     </tr>
   </tbody>
 </table>
+
 <h2 id="routes">Routes</h2>
+
 <p>The interested reader may find the implementations of these endpoints <a href="https://github.com/derpibooru/philomena/tree/master/lib/philomena_web/controllers/api">here</a>. For the purposes of this document, a brief overview is given.</p>
-<table class="table">
+
+<table>
   <thead>
     <tr>
       <th>Method</th>
@@ -252,12 +257,19 @@
     </tr>
   </tbody>
 </table>
+
 <h2 id="posting-images">Posting Images</h2>
+
 <p>Posting images should be done via request body parameters. An example with all parameters included is shown below.</p>
+
 <p>You are <em>strongly recommended</em> to test code using this endpoint using a local copy of the website's source code. Abuse of the endpoint <strong>will result in a ban</strong>.</p>
+
 <p>You <em>must</em> provide the direct link to the image in the <code>url</code> parameter.</p>
+
 <p>You <em>must</em> set the <code>content-type</code> header to <code>application/json</code> for the site to process your request.</p>
+
 <pre>POST /api/v1/json/images?key=API_KEY</pre>
+
 <pre class="literal">{
 "image": {
   "description": "[bq]Hey there this is a test post![/bq]\nDescriptions are *weird*.\nHave a >>0 re-upload :)\n",
@@ -266,8 +278,10 @@
 },
 "url": "https://derpicdn.net/img/view/2012/1/2/0.jpg"
 }</pre>
+
 <h2 id="image-response">Image Responses</h2>
-<table class="table">
+
+<table>
   <thead>
     <tr>
       <th>Field</th>
@@ -322,11 +336,7 @@
       <td>The number of seconds the image lasts, if animated, otherwise .04.</td>
     </tr>
     <tr>
-      <td><code>faves</code></td>
-      <td>Integer</td>
-      <td>The number of faves the image has.</td>
-    </tr>
-    <tr>
+      <td><code>faves</code></td>startUniswap
       <td><code>first_seen_at</code></td>
       <td>RFC3339 datetime</td>
       <td>The time, in UTC, the image was first seen (before any duplicate merging).</td>
@@ -463,8 +473,10 @@
     </tr>
   </tbody>
 </table>
+
 <h2 id="comment-response">Comment Responses</h2>
-<table class="table">
+
+<table>
   <thead>
     <tr>
       <th>Field</th>
@@ -525,8 +537,10 @@
     </tr>
   </tbody>
 </table>
+
 <h2 id="forum-response">Forum Responses</h2>
-<table class="table">
+
+<table>
   <thead>
     <tr>
       <th>Field</th>
@@ -562,8 +576,10 @@
     </tr>
   </tbody>
 </table>
+
 <h2 id="topic-response">Topic Responses</h2>
-<table class="table">
+
+<table>
   <thead>
     <tr>
       <th>Field</th>
@@ -619,8 +635,10 @@
     </tr>
   </tbody>
 </table>
+
 <h2 id="post-response">Post Responses</h2>
-<table class="table">
+
+<table>
   <thead>
     <tr>
       <th>Field</th>
@@ -676,8 +694,10 @@
     </tr>
   </tbody>
 </table>
+
 <h2 id="tag-response">Tag Responses</h2>
-<table class="table">
+
+<table>
   <thead>
     <tr>
       <th>Field</th>
@@ -763,8 +783,10 @@
     </tr>
   </tbody>
 </table>
+
 <h2 id="user-response">User Responses</h2>
-<table class="table">
+
+<table>
   <thead>
     <tr>
       <th>Field</th>
@@ -840,8 +862,10 @@
     </tr>
   </tbody>
 </table>
+
 <h2 id="filter-response">Filter Responses</h2>
-<table class="table">
+
+<table>
   <thead>
     <tr>
       <th>Field</th>
@@ -907,8 +931,10 @@
     </tr>
   </tbody>
 </table>
+
 <h2 id="links-response">Links Responses</h2>
-<table class="table">
+
+<table>
   <thead>
     <tr>
       <th>Field</th>
@@ -939,8 +965,10 @@
     </tr>
   </tbody>
 </table>
+
 <h2 id="awards-response">Awards Responses</h2>
-<table class="table">
+
+<table>
   <thead>
     <tr>
       <th>Field</th>
@@ -976,8 +1004,10 @@
     </tr>
   </tbody>
 </table>
+
 <h2 id="gallery-response">Gallery Responses</h2>
-<table class="table">
+
+<table>
   <thead>
     <tr>
       <th>Field</th>
@@ -1023,9 +1053,12 @@
     </tr>
   </tbody>
 </table>
+
 <h2 id="image-errors-response">Image Errors Responses</h2>
+
 <p>Each field is optional and is an <code>Array</code> of <code>String</code>s.</p>
-<table class="table">
+
+<table>
   <thead>
     <tr>
       <th>Field</th>
@@ -1096,8 +1129,10 @@
     </tr>
   </tbody>
 </table>
+
 <h2 id="oembed-response">Oembed Responses</h2>
-<table class="table">
+
+<table>
   <thead>
     <tr>
       <th>Field</th>
