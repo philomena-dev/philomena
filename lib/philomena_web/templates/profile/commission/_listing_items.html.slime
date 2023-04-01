@@ -51,8 +51,8 @@
                 = Decimal.round(item.base_price, 5)
                 = " " <> item.currency
               = if item.allow_crypto == true do
-              br
-              | Accepting payment in crypto dollar token
+                br
+                | Accepting payment in crypto dollar token
 
             td
               == add_ons
