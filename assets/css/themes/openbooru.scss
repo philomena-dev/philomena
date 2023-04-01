@@ -6,6 +6,10 @@
 // ///// SECTION 1 - MAIN COLORS /////
 // ///////////////////////////////////
 
+i.favicon-home {
+  background-image: url("/web3/favicon.svg") !important;
+}
+
 $contextMenu_menu_border: rgba(0, 0, 0, 0.08);
 $contextMenu_menu_bg: linear-gradient(
   45deg,
