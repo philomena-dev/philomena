@@ -6,13 +6,13 @@
 
 <p>Note that if you are looking to <em>continuously scrape the entire website</em>, we offer <a href="/pages/data_dumps">nightly database dumps</a> instead. Consider if these suit your needs first, then rely on the API if they do not.</p>
 
-<h2 id="licensing">Licensing</h2>
+<h2>Licensing</h2>
 
 <p>Anyone may use the API. Users making abusively high numbers of requests or excessively expensive requests will be asked to stop, and banned if they do not. Your application must properly cache, and respect server-side cache expiry times. Your client must gracefully back off if requests fail, preferably exponentially or fatally.</p>
 
 <p>If images are used, the artist must always be credited (if provided) and the original source URL must be displayed alongside the image, either in textual form or as a link. A link to the Derpibooru page is optional but recommended; we recommend the derpibooru.org domain as a canonical domain. The <code>https:</code> protocol must be specified on all URLs.</p>
 
-<h2 id="parameters">Parameters</h2>
+<h2>Parameters</h2>
 
 <p>This is a list of general parameters that are useful when working with the API. Not all parameters may be used in every request.</p>
 
@@ -55,7 +55,7 @@
   </tbody>
 </table>
 
-<h2 id="routes">Routes</h2>
+<h2>Routes</h2>
 
 <p>The interested reader may find the implementations of these endpoints <a href="https://github.com/derpibooru/philomena/tree/master/lib/philomena_web/controllers/api">here</a>. For the purposes of this document, a brief overview is given.</p>
 
@@ -258,7 +258,7 @@
   </tbody>
 </table>
 
-<h2 id="posting-images">Posting Images</h2>
+<h2>Posting Images</h2>
 
 <p>Posting images should be done via request body parameters. An example with all parameters included is shown below.</p>
 
@@ -270,7 +270,7 @@
 
 <pre>POST /api/v1/json/images?key=API_KEY</pre>
 
-<pre class="literal">{
+<pre>{
 "image": {
   "description": "[bq]Hey there this is a test post![/bq]\nDescriptions are *weird*.\nHave a >>0 re-upload :)\n",
   "tag_input": "artist needed, safe, derpy hooves, pegasus, pony, adventure in the comments, bag, building, chair, cigar, derpibooru legacy, eyes, featured image, female, grin, gritted teeth, hilarious in hindsight, image macro, it begins, j. jonah jameson, letter, mail, male, mare, meme, muffin, necktie, paper, parody, phone, ponified, sitting, smiling, smoking, song in the comments, spider-man, stallion, swinging",
@@ -279,7 +279,7 @@
 "url": "https://derpicdn.net/img/view/2012/1/2/0.jpg"
 }</pre>
 
-<h2 id="image-response">Image Responses</h2>
+<h2>Image Responses</h2>
 
 <table>
   <thead>
@@ -474,7 +474,7 @@
   </tbody>
 </table>
 
-<h2 id="comment-response">Comment Responses</h2>
+<h2>Comment Responses</h2>
 
 <table>
   <thead>
@@ -538,7 +538,7 @@
   </tbody>
 </table>
 
-<h2 id="forum-response">Forum Responses</h2>
+<h2>Forum Responses</h2>
 
 <table>
   <thead>
@@ -577,7 +577,7 @@
   </tbody>
 </table>
 
-<h2 id="topic-response">Topic Responses</h2>
+<h2>Topic Responses</h2>
 
 <table>
   <thead>
@@ -636,7 +636,7 @@
   </tbody>
 </table>
 
-<h2 id="post-response">Post Responses</h2>
+<h2>Post Responses</h2>
 
 <table>
   <thead>
@@ -695,7 +695,7 @@
   </tbody>
 </table>
 
-<h2 id="tag-response">Tag Responses</h2>
+<h2>Tag Responses</h2>
 
 <table>
   <thead>
@@ -784,7 +784,7 @@
   </tbody>
 </table>
 
-<h2 id="user-response">User Responses</h2>
+<h2>User Responses</h2>
 
 <table>
   <thead>
@@ -863,7 +863,7 @@
   </tbody>
 </table>
 
-<h2 id="filter-response">Filter Responses</h2>
+<h2>Filter Responses</h2>
 
 <table>
   <thead>
@@ -932,7 +932,7 @@
   </tbody>
 </table>
 
-<h2 id="links-response">Links Responses</h2>
+<h2>Links Responses</h2>
 
 <table>
   <thead>
@@ -966,7 +966,7 @@
   </tbody>
 </table>
 
-<h2 id="awards-response">Awards Responses</h2>
+<h2>Awards Responses</h2>
 
 <table>
   <thead>
@@ -1005,7 +1005,7 @@
   </tbody>
 </table>
 
-<h2 id="gallery-response">Gallery Responses</h2>
+<h2>Gallery Responses</h2>
 
 <table>
   <thead>
@@ -1054,7 +1054,7 @@
   </tbody>
 </table>
 
-<h2 id="image-errors-response">Image Errors Responses</h2>
+<h2>Image Errors Responses</h2>
 
 <p>Each field is optional and is an <code>Array</code> of <code>String</code>s.</p>
 
@@ -1130,7 +1130,7 @@
   </tbody>
 </table>
 
-<h2 id="oembed-response">Oembed Responses</h2>
+<h2>Oembed Responses</h2>
 
 <table>
   <thead>
