@@ -145,6 +145,7 @@ defmodule PhilomenaWeb.Router do
       resources "/featured", FeaturedController, only: [:show], singleton: true
     end
 
+    resources "/user", UserController, only: [:index]
     resources "/images", ImageController, only: [:show, :create]
 
     scope "/search", Search, as: :search do
