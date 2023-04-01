@@ -779,6 +779,103 @@ CREATE TABLE public.gallery_subscriptions (
 
 
 --
+-- Name: game_players; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.game_players (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    game_id bigint NOT NULL,
+    team_id bigint NOT NULL,
+    points integer DEFAULT 0,
+    created_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
+);
+
+
+--
+-- Name: game_players_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.game_players_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: game_players_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.game_players_id_seq OWNED BY public.game_players.id;
+
+
+--
+-- Name: game_teams; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.game_teams (
+    id bigint NOT NULL,
+    game_id bigint NOT NULL,
+    name character varying NOT NULL,
+    points integer DEFAULT 0,
+    created_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
+);
+
+
+--
+-- Name: game_teams_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.game_teams_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: game_teams_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.game_teams_id_seq OWNED BY public.game_teams.id;
+
+
+--
+-- Name: games; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.games (
+    id bigint NOT NULL,
+    name character varying NOT NULL,
+    created_at timestamp(0) without time zone NOT NULL
+);
+
+
+--
+-- Name: games_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.games_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: games_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.games_id_seq OWNED BY public.games.id;
+
+
+--
 -- Name: image_faves; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2282,6 +2379,27 @@ ALTER TABLE ONLY public.gallery_interactions ALTER COLUMN id SET DEFAULT nextval
 
 
 --
+-- Name: game_players id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.game_players ALTER COLUMN id SET DEFAULT nextval('public.game_players_id_seq'::regclass);
+
+
+--
+-- Name: game_teams id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.game_teams ALTER COLUMN id SET DEFAULT nextval('public.game_teams_id_seq'::regclass);
+
+
+--
+-- Name: games id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.games ALTER COLUMN id SET DEFAULT nextval('public.games_id_seq'::regclass);
+
+
+--
 -- Name: image_features id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2647,6 +2765,30 @@ ALTER TABLE ONLY public.galleries
 
 ALTER TABLE ONLY public.gallery_interactions
     ADD CONSTRAINT gallery_interactions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: game_players game_players_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.game_players
+    ADD CONSTRAINT game_players_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: game_teams game_teams_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.game_teams
+    ADD CONSTRAINT game_teams_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: games games_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.games
+    ADD CONSTRAINT games_pkey PRIMARY KEY (id);
 
 
 --
@@ -4966,6 +5108,38 @@ ALTER TABLE ONLY public.gallery_subscriptions
 
 
 --
+-- Name: game_players game_players_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.game_players
+    ADD CONSTRAINT game_players_game_id_fkey FOREIGN KEY (game_id) REFERENCES public.games(id) ON DELETE CASCADE;
+
+
+--
+-- Name: game_players game_players_team_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.game_players
+    ADD CONSTRAINT game_players_team_id_fkey FOREIGN KEY (team_id) REFERENCES public.game_teams(id) ON DELETE CASCADE;
+
+
+--
+-- Name: game_players game_players_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.game_players
+    ADD CONSTRAINT game_players_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: game_teams game_teams_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.game_teams
+    ADD CONSTRAINT game_teams_game_id_fkey FOREIGN KEY (game_id) REFERENCES public.games(id) ON DELETE CASCADE;
+
+
+--
 -- Name: image_sources image_sources_image_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5037,3 +5211,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20211107130226);
 INSERT INTO public."schema_migrations" (version) VALUES (20211219194836);
 INSERT INTO public."schema_migrations" (version) VALUES (20220321173359);
 INSERT INTO public."schema_migrations" (version) VALUES (20230313183010);
+INSERT INTO public."schema_migrations" (version) VALUES (20230330155026);
