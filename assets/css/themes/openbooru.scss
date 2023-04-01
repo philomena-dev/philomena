@@ -22,10 +22,13 @@ $page_background_color: #f8fafc;
 $foreground_color: #041034;
 
 $base_color: #1e537a;
+
 $block_header_color: #d5e7f5;
 $block_header_link_text_color: #4f95db;
 
 $header_secondary_color: #e2ebf2;
+
+$input_color_active: #ffffff;
 
 $primary_color: #c1e4f9;
 $success_color: #bde9a3; /* tag added, currently banned, view post history--added */
@@ -130,7 +133,6 @@ $admin_links_hover_color: mix($vote_down_color, $background_color, 48%);
 $input_text_color: $foreground_color;
 $input_color: $meta_color;
 $input_border: $meta_border_color;
-$input_color_active: desaturate(lighten($base_color, 30%), 16%);
 $input_border_active: lighten($base_color, 10%);
 
 $tag_normal_background: desaturate(lighten($tag_normal_color, 44%), 28%);
@@ -165,7 +167,7 @@ $site_notice_link_hover_color: $block_header_hover_color;
 
 $button_text_color: $foreground_color;
 $button_background_color: rgba($meta_color, 0.2);
-$button_hover_background_color: $input_color_active;
+$button_hover_background_color: desaturate(lighten($base_color, 30%), 16%);
 $button_hover_border_color: $input_border_active;
 $button_border_color: $meta_border_color;
 
