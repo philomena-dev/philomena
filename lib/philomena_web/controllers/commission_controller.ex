@@ -27,6 +27,8 @@ defmodule PhilomenaWeb.CommissionController do
     keywords = presence(attrs["keywords"])
     price_min = to_f(presence(attrs["price_min"]) || 0)
     price_max = to_f(presence(attrs["price_max"]) || 9999)
+    currency_type = presence(attrs["currency_type"])
+    currency = presence(attrs["currency"])
 
     query =
       commission_search(nil)
