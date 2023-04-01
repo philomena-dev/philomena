@@ -4,7 +4,7 @@
 
 <p>Derpibooru provides a JSON API for major site functionality, which can be freely used by anyone wanting to produce tools for the site or other web applications that use the data provided within Derpibooru.</p>
 
-<p>Note that if you are looking to <em>continuously scrape the entire website</em>, we offer <a href="/pages/data_dumps">nightly database dumps</a> instead. Consider if these suit your needs first, then rely on the API if they do not.</p>
+<p>Note that if you are looking to <em>continuously scrape the entire website</em>, we offer <a href="https://derpibooru.org/pages/data_dumps">nightly database dumps</a> instead. Consider if these suit your needs first, then rely on the API if they do not.</p>
 
 <h2>Licensing</h2>
 
@@ -30,7 +30,7 @@
     </tr>
     <tr>
       <td><code>key</code></td>
-      <td>An optional authentication token. If omitted, no user will be authenticated.<br/><br/>You can find your authentication token in your <a href="/registration/edit">account settings</a>.</td>
+      <td>An optional authentication token. If omitted, no user will be authenticated.<br/><br/>You can find your authentication token in your <a href="https://derpibooru.org/registration/edit">account settings</a>.</td>
     </tr>
     <tr>
       <td><code>page</code></td>
@@ -77,7 +77,7 @@
       <td></td>
       <td>Fetches a <em>comment response</em> for the comment ID referenced by the <code>comment_id</code> URL parameter.</td>
       <td><code>{"comment":<a href="#comment-response">comment-response</a>}</code></td>
-      <td><a href="/api/v1/json/comments/1000"><code>/api/v1/json/comments/1000</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/comments/1000"><code>/api/v1/json/comments/1000</code></a></td>
     </tr>
     <tr>
       <td><code>GET</code></td>
@@ -85,7 +85,7 @@
       <td><code>key, filter_id</code></td>
       <td>Fetches an <em>image response</em> for the image ID referenced by the <code>image_id</code> URL parameter.</td>
       <td><code>{"image":<a href="#image-response">image-response</a>}</code></td>
-      <td><a href="/api/v1/json/images/1"><code>/api/v1/json/images/1</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/images/1"><code>/api/v1/json/images/1</code></a></td>
     </tr>
     <tr>
       <td><code>POST</code></td>
@@ -101,7 +101,7 @@
       <td><code></code></td>
       <td>Fetches an <em>image response</em> for the for the current featured image.</td>
       <td><code>{"image":<a href="#image-response">image-response</a>}</code></td>
-      <td><a href="/api/v1/json/images/featured"><code>/api/v1/json/images/featured</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/images/featured"><code>/api/v1/json/images/featured</code></a></td>
     </tr>
     <tr>
       <td><code>GET</code></td>
@@ -109,7 +109,7 @@
       <td><code></code></td>
       <td>Fetches a <em>tag response</em> for the <em>tag slug</em> given by the <code>tag_id</code> URL parameter. The tag's ID is <em>not</em> used.</td>
       <td><code>{"tag":<a href="#tag-response">tag-response</a>}</code></td>
-      <td><a href="/api/v1/json/tags/artist-colon-atryl"><code>/api/v1/json/tags/artist-colon-atryl</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/tags/artist-colon-atryl"><code>/api/v1/json/tags/artist-colon-atryl</code></a></td>
     </tr>
     <tr>
       <td><code>GET</code></td>
@@ -117,7 +117,7 @@
       <td><code></code></td>
       <td>Fetches a <em>post response</em> for the post ID given by the <code>post_id</code> URL parameter.</td>
       <td><code>{"post":<a href="#post-response">post-response</a>}</code></td>
-      <td><a href="/api/v1/json/posts/2730144"><code>/api/v1/json/posts/2730144</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/posts/2730144"><code>/api/v1/json/posts/2730144</code></a></td>
     </tr>
     <tr>
       <td><code>GET</code></td>
@@ -125,7 +125,7 @@
       <td><code></code></td>
       <td>Fetches a <em>profile response</em> for the user ID given by the <code>user_id</code> URL parameter.</td>
       <td><code>{"user":<a href="#user-response">user-response</a>}</code></td>
-      <td><a href="/api/v1/json/profiles/216494"><code>/api/v1/json/profiles/216494</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/profiles/216494"><code>/api/v1/json/profiles/216494</code></a></td>
     </tr>
     <tr>
       <td><code>GET</code></td>
@@ -133,7 +133,7 @@
       <td><code>key</code></td>
       <td>Fetches a <em>filter response</em> for the filter ID given by the <code>filter_id</code> URL parameter.</td>
       <td><code>{"filter":<a href="#filter-response">filter-response</a>}</code></td>
-      <td><a href="/api/v1/json/filters/56027"><code>/api/v1/json/filters/56027</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/filters/56027"><code>/api/v1/json/filters/56027</code></a></td>
     </tr>
     <tr>
       <td><code>GET</code></td>
@@ -141,7 +141,7 @@
       <td><code>page</code></td>
       <td>Fetches a list of <em>filter responses</em> that are flagged as being <em>system</em> filters (and thus usable by anyone).</td>
       <td><code>{"filters":[<a href="#filter-response">filter-response</a>]}</code></td>
-      <td><a href="/api/v1/json/filters/system"><code>/api/v1/json/filters/system</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/filters/system"><code>/api/v1/json/filters/system</code></a></td>
     </tr>
     <tr>
       <td><code>GET</code></td>
@@ -149,7 +149,7 @@
       <td><code>key, page</code></td>
       <td>Fetches a list of <em>filter responses</em> that belong to the user given by <em>key</em>. If no <em>key</em> is given or it is invalid, will return a <em>403 Forbidden</em> error.</td>
       <td><code>{"filters":[<a href="#filter-response">filter-response</a>]}</code></td>
-      <td><a href="/api/v1/json/filters/user"><code>/api/v1/json/filters/user</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/filters/user"><code>/api/v1/json/filters/user</code></a></td>
     </tr>
     <tr>
       <td><code>GET</code></td>
@@ -157,7 +157,7 @@
       <td><code>url</code></td>
       <td>Fetches an <em>oEmbed response</em> for the given app link or CDN URL.</td>
       <td><code><a href="#oembed-response">oembed-response</a></code></td>
-      <td><a href="/api/v1/json/oembed?url=https://derpicdn.net/img/2012/1/2/3/full.png"><code>/api/v1/json/oembed?url=https://derpicdn.net/img/2012/1/2/3/full.png</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/oembed?url=https://derpicdn.net/img/2012/1/2/3/full.png"><code>/api/v1/json/oembed?url=https://derpicdn.net/img/2012/1/2/3/full.png</code></a></td>
     </tr>
     <tr>
       <td><code>GET</code></td>
@@ -165,7 +165,7 @@
       <td><code>key, page</code></td>
       <td>Executes the search given by the <code>q</code> query parameter, and returns <em>comment responses</em> sorted by descending creation time.</td>
       <td><code>{"comments":[<a href="#comment-response">comment-response</a>]}</code></td>
-      <td><a href="/api/v1/json/search/comments?q=image_id:1000000"><code>/api/v1/json/search/comments?q=image_id:1000000</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/search/comments?q=image_id:1000000"><code>/api/v1/json/search/comments?q=image_id:1000000</code></a></td>
     </tr>
     <tr>
       <td><code>GET</code></td>
@@ -173,7 +173,7 @@
       <td><code>key, page</code></td>
       <td>Executes the search given by the <code>q</code> query parameter, and returns <em>gallery responses</em> sorted by descending creation time.</td>
       <td><code>{"galleries":[<a href="#gallery-response">gallery-response</a>]}</code></td>
-      <td><a href="/api/v1/json/search/galleries?q=title:mean*"><code>/api/v1/json/search/galleries?q=title:mean*</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/search/galleries?q=title:mean*"><code>/api/v1/json/search/galleries?q=title:mean*</code></a></td>
     </tr>
     <tr>
       <td><code>GET</code></td>
@@ -181,7 +181,7 @@
       <td><code>key, page</code></td>
       <td>Executes the search given by the <code>q</code> query parameter, and returns <em>post responses</em> sorted by descending creation time.</td>
       <td><code>{"posts":[<a href="#post-response">post-response</a>]}</code></td>
-      <td><a href="/api/v1/json/search/posts?q=subject:time wasting thread"><code>/api/v1/json/search/posts?q=subject:time wasting thread</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/search/posts?q=subject:time wasting thread"><code>/api/v1/json/search/posts?q=subject:time wasting thread</code></a></td>
     </tr>
     <tr>
       <td><code>GET</code></td>
@@ -189,7 +189,7 @@
       <td><code>key, filter_id, page, per_page, q, sd, sf</code></td>
       <td>Executes the search given by the <code>q</code> query parameter, and returns <em>image responses</em>.</td>
       <td><code>{"images":[<a href="#image-response">image-response</a>]}</code></td>
-      <td><a href="/api/v1/json/search/images?q=safe"><code>/api/v1/json/search/images?q=safe</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/search/images?q=safe"><code>/api/v1/json/search/images?q=safe</code></a></td>
     </tr>
     <tr>
       <td><code>GET</code></td>
@@ -197,7 +197,7 @@
       <td><code>page</code></td>
       <td>Executes the search given by the <code>q</code> query parameter, and returns <em>tag responses</em> sorted by descending image count.</td>
       <td><code>{"tags":[<a href="#tag-response">tag-response</a>]}</code></td>
-      <td><a href="/api/v1/json/search/tags?q=analyzed_name:wing"><code>/api/v1/json/search/tags?q=analyzed_name:wing</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/search/tags?q=analyzed_name:wing"><code>/api/v1/json/search/tags?q=analyzed_name:wing</code></a></td>
     </tr>
     <tr>
       <td><code>POST</code></td>
@@ -205,7 +205,7 @@
       <td><code>key, url, distance</code></td>
       <td>Returns <em>image responses</em> based on the results of reverse-searching the image given by the <code>url</code> query parameter.</td>
       <td><code>{"images":[<a href="#image-response">image-response</a>]}</code></td>
-      <td><a href="/api/v1/json/search/reverse?url=https://derpicdn.net/img/2019/12/24/2228439/full.jpg" data-method="post"><code>/api/v1/json/search/reverse?url=https://derpicdn.net/img/2019/12/24/2228439/full.jpg</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/search/reverse?url=https://derpicdn.net/img/2019/12/24/2228439/full.jpg" data-method="post"><code>/api/v1/json/search/reverse?url=https://derpicdn.net/img/2019/12/24/2228439/full.jpg</code></a></td>
     </tr>
     <tr>
       <td><code>GET</code></td>
@@ -213,7 +213,7 @@
       <td></td>
       <td>Fetches a list of <em>forum responses</em>.</td>
       <td><code>{"forums":<a href="#forum-response">forum-response</a>}</code></td>
-      <td><a href="/api/v1/json/forums"><code>/api/v1/json/forums</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/forums"><code>/api/v1/json/forums</code></a></td>
     </tr>
     <tr>
       <td><code>GET</code></td>
@@ -221,7 +221,7 @@
       <td></td>
       <td>Fetches a <em>forum response</em> for the abbreviated name given by the <code>short_name</code> URL parameter.</td>
       <td><code>{"forum":<a href="#forum-response">forum-response</a>}</code></td>
-      <td><a href="/api/v1/json/forums/dis"><code>/api/v1/json/forums/dis</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/forums/dis"><code>/api/v1/json/forums/dis</code></a></td>
     </tr>
     <tr>
       <td><code>GET</code></td>
@@ -229,7 +229,7 @@
       <td><code>page</code></td>
       <td>Fetches a list of <em>topic responses</em> for the abbreviated forum name given by the <code>short_name</code> URL parameter.</td>
       <td><code>{"topics":<a href="#topic-response">topic-response</a>}</code></td>
-      <td><a href="/api/v1/json/forums/dis/topics"><code>/api/v1/json/forums/dis/topics</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/forums/dis/topics"><code>/api/v1/json/forums/dis/topics</code></a></td>
     </tr>
     <tr>
       <td><code>GET</code></td>
@@ -237,7 +237,7 @@
       <td></td>
       <td>Fetches a <em>topic response</em> for the abbreviated forum name given by the <code>short_name</code> and topic given by <code>topic_slug</code> URL parameters.</td>
       <td><code>{"topic":<a href="#topic-response">topic-response</a>}</code></td>
-      <td><a href="/api/v1/json/forums/dis/topics/ask-the-mods-anything"><code>/api/v1/json/forums/dis/topics/ask-the-mods-anything</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/forums/dis/topics/ask-the-mods-anything"><code>/api/v1/json/forums/dis/topics/ask-the-mods-anything</code></a></td>
     </tr>
     <tr>
       <td><code>GET</code></td>
@@ -245,7 +245,7 @@
       <td><code>page</code></td>
       <td>Fetches a list of <em>post responses</em> for the abbreviated forum name given by the <code>short_name</code> and topic given by <code>topic_slug</code> URL parameters.</td>
       <td><code>{"posts":<a href="#post-response">post-response</a>}</code></td>
-      <td><a href="/api/v1/json/forums/dis/topics/ask-the-mods-anything/posts"><code>/api/v1/json/forums/dis/topics/ask-the-mods-anything/posts</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/forums/dis/topics/ask-the-mods-anything/posts"><code>/api/v1/json/forums/dis/topics/ask-the-mods-anything/posts</code></a></td>
     </tr>
     <tr>
       <td><code>GET</code></td>
@@ -253,7 +253,7 @@
       <td></td>
       <td>Fetches a <em>post response</em> for the abbreviated forum name given by the <code>short_name</code>, topic given by <code>topic_slug</code> and post given by <code>post_id</code> URL parameters.</td>
       <td><code>{"post":<a href="#post-response">post-response</a>}</code></td>
-      <td><a href="/api/v1/json/forums/dis/topics/ask-the-mods-anything/posts/2761095"><code>/api/v1/json/forums/dis/topics/ask-the-mods-anything/posts/2761095</code></a></td>
+      <td><a href="https://derpibooru.org/api/v1/json/forums/dis/topics/ask-the-mods-anything/posts/2761095"><code>/api/v1/json/forums/dis/topics/ask-the-mods-anything/posts/2761095</code></a></td>
     </tr>
   </tbody>
 </table>
