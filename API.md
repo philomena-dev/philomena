@@ -1,5 +1,3 @@
-/api/v1/json/user?key=APIKEY
-
 <h1>API</h1>
 
 <p>Derpibooru provides a JSON API for major site functionality, which can be freely used by anyone wanting to produce tools for the site or other web applications that use the data provided within Derpibooru.</p>
@@ -150,6 +148,14 @@
       <td>Fetches a list of <em>filter responses</em> that belong to the user given by <em>key</em>. If no <em>key</em> is given or it is invalid, will return a <em>403 Forbidden</em> error.</td>
       <td><code>{"filters":[<a href="#filter-response">filter-response</a>]}</code></td>
       <td><a href="https://derpibooru.org/api/v1/json/filters/user"><code>/api/v1/json/filters/user</code></a></td>
+    </tr>
+    <tr>
+      <td><code>GET</code></td>
+      <td><code>/api/v1/json/user</code></td>
+      <td><code>key</code></td>
+      <td>Fetches the basic user data that belong to the user given by <em>key</em>. If no <em>key</em> is given or it is invalid, will return a <em>403 Forbidden</em> error.</td>
+      <td><code>{"user":<a href="#user-response">user-response</a>}</code></td>
+      <td><a href="https://derpibooru.org/api/v1/json/user"><code>/api/v1/json/user</code></a></td>
     </tr>
     <tr>
       <td><code>GET</code></td>
