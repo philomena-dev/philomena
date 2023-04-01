@@ -7,3 +7,10 @@
       img src=team_data.icon
       =<> team_data.name
     .game__team_banner_separator
+    span
+      ' Rank:
+      strong = rank
+    .game__team_banner_separator
+    span
+      => team_data.points
+      ' points
