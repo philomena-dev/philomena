@@ -29,10 +29,19 @@ defmodule PhilomenaWeb.CommissionController do
     price_max = to_f(presence(attrs["price_max"]) || 9999)
     currency_type = presence(attrs["currency_type"])
     currency = presence(attrs["currency"])
+    currency = String.split(currency, " ")
 
     query =
       commission_search(nil)
       |> where([_c, ci], ci.base_price > ^price_min and ci.base_price < ^price_max)
+
+    query =
+      if currency do
+        query
+        |> where([c, _ci], fragment("? @> ?", c.currencies, ^currency))
+      else
+        query
+      end
 
     query =
       if item_type do
