@@ -92,6 +92,22 @@ defmodule Philomena.Commissions do
 
   alias Philomena.Commissions.Item
 
+  def update_commission_currency(commission_id) do
+
+    c = Commission
+      |> where(id: ^commission_id)
+      |> Repo.one()
+
+    ci = Item
+      |> where(commission_id: ^commission_id)
+      |> Repo.all()
+
+    #Commission
+    #|> where(id: ^item.commission_id)
+    #|> update()
+
+  end
+
   @doc """
   Gets a single item.
 
@@ -139,6 +155,7 @@ defmodule Philomena.Commissions do
         {:error, changeset}
 
       result ->
+        update_commission_currency(result.commission_id)
         result
     end
   end
@@ -156,9 +173,11 @@ defmodule Philomena.Commissions do
 
   """
   def update_item(%Item{} = item, attrs) do
-    item
+    result = item
     |> Item.changeset(attrs)
     |> Repo.update()
+    update_commission_currency(item.commission_id)
+    result
   end
 
   @doc """
@@ -179,10 +198,12 @@ defmodule Philomena.Commissions do
       |> where(id: ^item.commission_id)
       |> update(inc: [commission_items_count: -1])
 
-    Multi.new()
+    result = Multi.new()
     |> Multi.delete(:item, item)
     |> Multi.update_all(:commission, update, [])
     |> Repo.transaction()
+    update_commission_currency(item.commission_id)
+    result
   end
 
   @doc """
