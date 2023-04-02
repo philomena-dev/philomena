@@ -109,6 +109,10 @@ defmodule Philomena.Commissions do
         ci.currency
 
       end
+      |> Enum.frequencies()
+      |> Enum.map(&elem(&1, 0))
+
+      currencies = "{" <> Enum.join(currencies, ",") <> "}"
 
       allow_crypto =
       for ci <- citems do
@@ -126,7 +130,8 @@ defmodule Philomena.Commissions do
     # I lost patience in trying to do this the right way. Go for vanilla anyway. c':
     Repo.query!(
       "UPDATE public.commissions SET
-        allow_crypto=#{allow_crypto}
+        allow_crypto=#{allow_crypto},
+        currencies='#{currencies}'
       WHERE id=#{commission_id}"
     )
 
