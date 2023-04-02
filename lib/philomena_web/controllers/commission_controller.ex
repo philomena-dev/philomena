@@ -43,6 +43,24 @@ defmodule PhilomenaWeb.CommissionController do
         query
       end
 
+      query =
+        if currency_type do
+          query =
+            if currency_type == "all" do
+              query
+              |> where([c, _ci], c.allow_crypto == true)
+            else
+              query = if currency_type == "usd_only" do
+                query
+                |> where([c, _ci], c.allow_crypto == false)
+              else
+                query
+              end
+            end
+        else
+          query
+        end
+
     query =
       if item_type do
         query
