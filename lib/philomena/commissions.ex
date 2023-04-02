@@ -94,17 +94,25 @@ defmodule Philomena.Commissions do
 
   def update_commission_currency(commission_id) do
 
-    c = Commission
-      |> where(id: ^commission_id)
-      |> Repo.one()
-
-    ci = Item
+    citems = Item
       |> where(commission_id: ^commission_id)
       |> Repo.all()
 
-    #Commission
-    #|> where(id: ^item.commission_id)
-    #|> update()
+    allow_crypto = false
+    currencies =
+      for ci <- citems do
+
+        if allow_crypto == false do
+          allow_crypto = ci.allow_crypto
+        end
+
+        ci.currency
+
+      end
+
+    Commission
+    |> where(id: ^item.commission_id)
+    |> update(set: [allow_crypto: ^allow_crypto])
 
   end
 
