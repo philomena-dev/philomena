@@ -123,9 +123,12 @@ defmodule Philomena.Commissions do
 
     allow_crypto = Enum.member?(allow_crypto, true)
 
-    update = Commission
-    |> where(id: ^commission_id)
-    |> update(set: [allow_crypto: ^allow_crypto])
+    # I lost patience in trying to do this the right way. Go for vanilla anyway. c':
+    Repo.query!(
+      "UPDATE public.commissions SET
+        allow_crypto=#{allow_crypto}
+      WHERE id=#{commission_id}"
+    )
 
   end
 
