@@ -34,13 +34,8 @@ defmodule PhilomenaWeb.CommissionController do
     query =
       if currency_string do
         query =
-          if currency_string == "USD" do
-            commission_search(nil)
-            |> where([_c, ci], ci.base_price > ^price_min and ci.base_price < ^price_max)
-          else
-            commission_search(nil)
-            |> where([_c, ci], ci.currency == ^currency_string and ci.base_price > ^price_min and ci.base_price < ^price_max)
-          end
+          commission_search(nil)
+          |> where([_c, ci], ci.currency == ^currency_string and ci.base_price > ^price_min and ci.base_price < ^price_max)
       else
         commission_search(nil)
           |> where([_c, ci], ci.base_price > ^price_min and ci.base_price < ^price_max)
