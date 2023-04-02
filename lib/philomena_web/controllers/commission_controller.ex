@@ -28,12 +28,23 @@ defmodule PhilomenaWeb.CommissionController do
     price_min = to_f(presence(attrs["price_min"]) || 0)
     price_max = to_f(presence(attrs["price_max"]) || 9999)
     currency_type = presence(attrs["currency_type"])
-    currency = presence(attrs["currency"])
-    currency = String.split(currency, " ")
+    currency_string = presence(attrs["currency"])
+    currency = String.split(currency_string, " ")
 
     query =
-      commission_search(nil)
-      |> where([_c, ci], ci.base_price > ^price_min and ci.base_price < ^price_max)
+      if currency_string do
+        query =
+          if currency_string == "USD" do
+            commission_search(nil)
+            |> where([_c, ci], ci.base_price > ^price_min and ci.base_price < ^price_max)
+          else
+            commission_search(nil)
+            |> where([_c, ci], ci.currency == ^currency_string and ci.base_price > ^price_min and ci.base_price < ^price_max)
+          end
+      else
+        commission_search(nil)
+          |> where([_c, ci], ci.base_price > ^price_min and ci.base_price < ^price_max)
+      end
 
     query =
       if currency do
