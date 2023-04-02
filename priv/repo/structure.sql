@@ -367,7 +367,7 @@ CREATE TABLE public.commissions (
     contact character varying,
     will_create character varying,
     will_not_create character varying,
-    currencies character varying[] DEFAULT '{}'::character varying[] NOT NULL,
+    currencies character varying[] DEFAULT '{USD}'::character varying[] NOT NULL,
     allow_crypto boolean DEFAULT false NOT NULL
 );
 
