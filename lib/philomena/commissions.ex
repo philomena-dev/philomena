@@ -110,9 +110,9 @@ defmodule Philomena.Commissions do
 
       end
 
-    Commission
-    |> where(id: ^item.commission_id)
-    |> update(set: [allow_crypto: ^allow_crypto])
+    #Commission
+    #|> where(id: ^item.commission_id)
+    #|> update(set: [allow_crypto: ^allow_crypto])
 
   end
 
