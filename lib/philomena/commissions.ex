@@ -98,6 +98,7 @@ defmodule Philomena.Commissions do
       |> where(commission_id: ^commission_id)
       |> Repo.all()
 
+
     allow_crypto = false
     currencies =
       for ci <- citems do
@@ -109,9 +110,12 @@ defmodule Philomena.Commissions do
         ci.currency
 
       end
+    |> Enum.frequencies()
+    |> Enum.map(&elem(&1, 0))
 
-    #Commission
-    #|> where(id: ^item.commission_id)
+    #IO.puts "[YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAY]" <> allow_crypto
+    #update = Commission
+    #|> where(id: ^commission_id)
     #|> update(set: [allow_crypto: ^allow_crypto])
 
   end
