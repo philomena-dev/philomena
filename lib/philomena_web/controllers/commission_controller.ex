@@ -33,10 +33,10 @@ defmodule PhilomenaWeb.CommissionController do
     query =
       if currency != "all" do
         commission_search_init(currency)
-        |> where([_c, ci], ci.base_price > ^price_min and ci.base_price < ^price_max)
+        |> where([_c, ci], ci.base_price >= ^price_min and ci.base_price <= ^price_max)
       else
         commission_search(nil)
-        |> where([_c, ci], ci.base_price > ^price_min and ci.base_price < ^price_max)
+        |> where([_c, ci], ci.base_price >= ^price_min and ci.base_price <= ^price_max)
       end
 
       query =
