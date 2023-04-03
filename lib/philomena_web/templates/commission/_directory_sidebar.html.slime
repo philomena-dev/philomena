@@ -31,6 +31,10 @@
         br
         br
 
+      - else
+        = hidden_input f, :currency, value: "USD"
+        = hidden_input f, :allow_crypto, value: false
+
       .field = number_input f, :price_min, class: "input input--short", placeholder: "At Least", step: "any", min: 0
       .field = number_input f, :price_max, class: "input input--short", placeholder: "At Most", step: "any", min: 0
 
