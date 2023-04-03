@@ -28,7 +28,9 @@
     p Loading...
   .block__tab.hidden data-tab="sharing"
     #embed_options
+
       - source_link = if @image.source_url in [nil, ""], do: " (Original source unknown at time of posting)", else: " - [url=#{@image.source_url}]Original source[/url]"
+
       h5 Derpibooru
       p
         strong> Small thumbnail
@@ -48,25 +50,28 @@
         a< href="#" data-click-copy="#embed_preview_tag"
           i.fa.fa-clipboard>
           | Copy
-      h5 IPFS
-      p
-        strong> URL
-        input.input#ipfs_code_tag_url type="text" value="ipfs://#{@image.ipfs}" cols="10" readonly="readonly"
-        a< href="#" data-click-copy="#ipfs_code_tag_url"
-          i.fa.fa-clipboard>
-          | Copy
-      p
-        strong> Page
-        input.input#ipfs_code_tag_page type="text" value="#{host}/ipfs/#{@image.ipfs}" cols="10" readonly="readonly"
-        a< href="#" data-click-copy="#ipfs_code_tag_page"
-          i.fa.fa-clipboard>
-          | Copy
-      p
-        strong> Hash
-        input.input#ipfs_code_tag type="text" value="#{@image.ipfs}" cols="10" readonly="readonly"
-        a< href="#" data-click-copy="#ipfs_code_tag"
-          i.fa.fa-clipboard>
-          | Copy
+
+      = if web3Cfg.ipfs == true do
+        h5 IPFS
+        p
+          strong> URL
+          input.input#ipfs_code_tag_url type="text" value="ipfs://#{@image.ipfs}" cols="10" readonly="readonly"
+          a< href="#" data-click-copy="#ipfs_code_tag_url"
+            i.fa.fa-clipboard>
+            | Copy
+        p
+          strong> Page
+          input.input#ipfs_code_tag_page type="text" value="#{host}/ipfs/#{@image.ipfs}" cols="10" readonly="readonly"
+          a< href="#" data-click-copy="#ipfs_code_tag_page"
+            i.fa.fa-clipboard>
+            | Copy
+        p
+          strong> Hash
+          input.input#ipfs_code_tag type="text" value="#{@image.ipfs}" cols="10" readonly="readonly"
+          a< href="#" data-click-copy="#ipfs_code_tag"
+            i.fa.fa-clipboard>
+            | Copy
+
       h5 BBCode
       p
         strong> Full size BBcode
