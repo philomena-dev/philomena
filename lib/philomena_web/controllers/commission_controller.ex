@@ -29,7 +29,6 @@ defmodule PhilomenaWeb.CommissionController do
     price_max = to_f(presence(attrs["price_max"]) || 9999)
     currency_type = presence(attrs["currency_type"])
     currency_string = presence(attrs["currency"])
-    currency = String.split(currency_string, " ")
 
     query =
       if currency_string != "all" do
@@ -38,14 +37,6 @@ defmodule PhilomenaWeb.CommissionController do
       else
         commission_search(nil)
         |> where([_c, ci], ci.base_price > ^price_min and ci.base_price < ^price_max)
-      end
-
-    query =
-      if currency_string != "all" and currency do
-        query
-        |> where([c, _ci], fragment("? @> ?", c.currencies, ^currency))
-      else
-        query
       end
 
       query =
@@ -116,7 +107,7 @@ defmodule PhilomenaWeb.CommissionController do
       where: c.open == true,
       where: c.commission_items_count > 0,
       inner_join: ci in Item,
-      on: ci.commission_id == c.id and ci.currency == ^currency_string,
+      on: ci.currency == ^currency_string and ci.commission_id == c.id,
       inner_join: ui in UserIp,
       on: ui.user_id == c.user_id,
       where: ui.updated_at >= ago(2, "week"),
