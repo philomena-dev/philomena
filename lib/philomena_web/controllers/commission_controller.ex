@@ -32,8 +32,13 @@ defmodule PhilomenaWeb.CommissionController do
     currency = String.split(currency_string, " ")
 
     query =
-      commission_search_init(currency_string)
-      |> where([_c, ci], ci.base_price > ^price_min and ci.base_price < ^price_max)
+      if currency_string do
+        commission_search_init(currency_string)
+        |> where([_c, ci], ci.base_price > ^price_min and ci.base_price < ^price_max)
+      else
+        commission_search(nil)
+        |> where([_c, ci], ci.base_price > ^price_min and ci.base_price < ^price_max)
+      end
 
     query =
       if currency do
