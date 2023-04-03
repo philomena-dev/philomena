@@ -8,11 +8,18 @@
       = if Enum.any?(@user.commission.items) do
         strong> Price Range:
         - {min, max} = Enum.min_max_by(@user.commission.items, &Decimal.to_float(&1.base_price))
-        | $
-        => Decimal.round(min.base_price || 0, 2) |> Decimal.to_string()
-        | - $
-        => Decimal.round(max.base_price || 0, 2) |> Decimal.to_string()
-        ' USD
+
+        = if web3Cfg.enable_comissions == true and @user.ethereum != "" do
+          => Decimal.round(min.base_price, 5) |> Decimal.to_string()
+          => " - #{Decimal.round(max.base_price, 5) |> Decimal.to_string()}"
+
+        - else
+          | $
+          => Decimal.round(min.base_price || 0, 2) |> Decimal.to_string()
+          | - $
+          => Decimal.round(max.base_price || 0, 2) |> Decimal.to_string()
+          ' USD
+
         br
 
       / Lotta space here

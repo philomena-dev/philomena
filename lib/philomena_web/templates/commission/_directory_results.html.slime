@@ -34,11 +34,15 @@ elixir:
 
                   p
                     strong> Price Range:
-                    | $
-                    => Decimal.round(min.base_price, 2) |> Decimal.to_string()
-                    | - $
-                    => Decimal.round(max.base_price, 2) |> Decimal.to_string()
-                    ' USD
+                    = if web3Cfg.enable_comissions == true and @conn.assigns.current_user.ethereum != "" do
+                      => Decimal.round(min.base_price, 5) |> Decimal.to_string()
+                      => " - #{Decimal.round(max.base_price, 5) |> Decimal.to_string()}"
+                    - else
+                      | $
+                      => Decimal.round(min.base_price, 2) |> Decimal.to_string()
+                      | - $
+                      => Decimal.round(max.base_price, 2) |> Decimal.to_string()
+                      ' USD
 
                   p
                     strong> Categories:

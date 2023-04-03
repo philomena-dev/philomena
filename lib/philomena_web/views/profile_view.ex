@@ -1,5 +1,6 @@
 defmodule PhilomenaWeb.ProfileView do
   use PhilomenaWeb, :view
+  alias PhilomenaWeb.Web3Cfg
 
   def award_order(awards) do
     Enum.sort_by(awards, &{&1.badge.priority, DateTime.to_unix(&1.awarded_on)}, &>=/2)
@@ -11,6 +12,8 @@ defmodule PhilomenaWeb.ProfileView do
 
   def current?(%{id: id}, %{id: id}), do: true
   def current?(_user1, _user2), do: false
+
+  def web3Cfg, do: Web3Cfg.get()
 
   def manages_awards?(conn),
     do: can?(conn, :create, Philomena.Badges.Award)
