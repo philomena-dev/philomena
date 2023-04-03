@@ -791,7 +791,8 @@ CREATE TABLE public.game_players (
     team_id bigint NOT NULL,
     points integer DEFAULT 0,
     created_at timestamp(0) without time zone NOT NULL,
-    updated_at timestamp(0) without time zone NOT NULL
+    updated_at timestamp(0) without time zone NOT NULL,
+    rank_override character varying
 );
 
 
@@ -5214,3 +5215,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20211219194836);
 INSERT INTO public."schema_migrations" (version) VALUES (20220321173359);
 INSERT INTO public."schema_migrations" (version) VALUES (20230313183010);
 INSERT INTO public."schema_migrations" (version) VALUES (20230330155026);
+INSERT INTO public."schema_migrations" (version) VALUES (20230403162048);
