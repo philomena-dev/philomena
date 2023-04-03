@@ -7,6 +7,8 @@ defmodule PhilomenaWeb.ImageView do
   def show_vote_counts?(%{hide_vote_counts: true}), do: false
   def show_vote_counts?(_user), do: true
 
+  def host, do: PhilomenaWeb.Endpoint.url()
+
   def title_text(image) do
     tags = Tag.display_order(image.tags) |> Enum.map_join(", ", & &1.name)
 
