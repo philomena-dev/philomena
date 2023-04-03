@@ -12,7 +12,7 @@
         => Decimal.round(min.base_price || 0, 2) |> Decimal.to_string()
         | - $
         => Decimal.round(max.base_price || 0, 2) |> Decimal.to_string()
-        ' USD 1
+        ' USD
         br
 
       / Lotta space here
