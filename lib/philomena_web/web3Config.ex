@@ -29,4 +29,14 @@ defmodule PhilomenaWeb.Web3Cfg do
     ]
   end
 
+  def currenciesSearch do
+    [
+      "All": "all",
+      USD: "USD",
+      MATIC: "MATIC",
+      ETH: "ETH",
+      BNB: "BNB"
+    ]
+  end
+
 end
