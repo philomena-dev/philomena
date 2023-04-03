@@ -28,18 +28,20 @@ defmodule PhilomenaWeb.CommissionController do
     price_min = to_f(presence(attrs["price_min"]) || 0)
     price_max = to_f(presence(attrs["price_max"]) || 9999)
     currency_type = presence(attrs["currency_type"])
-    currency = presence(attrs["currency"])
+    currency_string = presence(attrs["currency"])
+    currency = String.split(currency_string, " ")
 
     query =
-      if currency != "all" do
-        query =
-          commission_search_init(currency)
-          |> where([_c, ci], ci.base_price >= ^price_min and ci.base_price <= ^price_max)
-      else
-        query =
-          commission_search(nil)
-          |> where([_c, ci], ci.base_price >= ^price_min and ci.base_price <= ^price_max)
-      end
+      commission_search(nil)
+      |> where([_c, ci], ci.base_price >= ^price_min and ci.base_price <= ^price_max)
+
+      query =
+        if currency_string != "all" and currency do
+          query
+          |> where([c, _ci], fragment("? @> ?", c.currencies, ^currency))
+        else
+          query
+        end
 
       query =
         if currency_type do
@@ -96,20 +98,6 @@ defmodule PhilomenaWeb.CommissionController do
       where: c.commission_items_count > 0,
       inner_join: ci in Item,
       on: ci.commission_id == c.id,
-      inner_join: ui in UserIp,
-      on: ui.user_id == c.user_id,
-      where: ui.updated_at >= ago(2, "week"),
-      group_by: c.id,
-      order_by: [asc: fragment("random()")],
-      preload: [user: [awards: :badge], items: [example_image: [tags: :aliases]]]
-  end
-
-  defp commission_search_init(currency) do
-    from c in Commission,
-      where: c.open == true,
-      where: c.commission_items_count > 0,
-      inner_join: ci in Item,
-      on: ci.currency == ^currency and ci.commission_id == c.id,
       inner_join: ui in UserIp,
       on: ui.user_id == c.user_id,
       where: ui.updated_at >= ago(2, "week"),
