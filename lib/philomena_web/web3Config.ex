@@ -6,6 +6,7 @@ defmodule PhilomenaWeb.Web3Cfg do
   def get() do
     %{
 
+      ipfs: true,
       enable_profile: true,
       enable_comissions: true
       #enable_nft: false
