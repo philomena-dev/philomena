@@ -28,11 +28,11 @@ defmodule PhilomenaWeb.CommissionController do
     price_min = to_f(presence(attrs["price_min"]) || 0)
     price_max = to_f(presence(attrs["price_max"]) || 9999)
     currency_type = presence(attrs["currency_type"])
-    currency_string = presence(attrs["currency"])
+    currency = presence(attrs["currency"])
 
     query =
-      if currency_string != "all" do
-        commission_search_init(currency_string)
+      if currency != "all" do
+        commission_search_init(currency)
         |> where([_c, ci], ci.base_price > ^price_min and ci.base_price < ^price_max)
       else
         commission_search(nil)
@@ -102,12 +102,12 @@ defmodule PhilomenaWeb.CommissionController do
       preload: [user: [awards: :badge], items: [example_image: [tags: :aliases]]]
   end
 
-  defp commission_search_init(currency_string) do
+  defp commission_search_init(currency) do
     from c in Commission,
       where: c.open == true,
       where: c.commission_items_count > 0,
       inner_join: ci in Item,
-      on: ci.currency == ^currency_string and ci.commission_id == c.id,
+      on: ci.currency == ^currency and ci.commission_id == c.id,
       inner_join: ui in UserIp,
       on: ui.user_id == c.user_id,
       where: ui.updated_at >= ago(2, "week"),
