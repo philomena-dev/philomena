@@ -5,6 +5,7 @@ defmodule PhilomenaWeb.ImageController do
   alias PhilomenaWeb.CommentLoader
   alias PhilomenaWeb.NotificationCountPlug
   alias PhilomenaWeb.MarkdownRenderer
+  alias Philomena.IPFS
 
   alias Philomena.{
     Images,
@@ -85,6 +86,11 @@ defmodule PhilomenaWeb.ImageController do
     watching = Images.subscribed?(image, conn.assigns.current_user)
 
     user_galleries = user_galleries(image, conn.assigns.current_user)
+
+    # No IPFS Data detected
+    if is_nil(image.ipfs) do
+
+    end
 
     assigns = [
       image: image,
