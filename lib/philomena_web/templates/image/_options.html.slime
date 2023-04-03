@@ -48,6 +48,13 @@
         a< href="#" data-click-copy="#embed_preview_tag"
           i.fa.fa-clipboard>
           | Copy
+      h5 IPFS
+      p
+        strong> URL
+        input.input#ipfs_code_tag type="text" value="ipfs://#{@image.ipfs}" cols="10" readonly="readonly"
+        a< href="#" data-click-copy="#ipfs_code_tag"
+          i.fa.fa-clipboard>
+          | Copy
       h5 BBCode
       p
         strong> Full size BBcode

@@ -83,6 +83,7 @@ defmodule Philomena.Images.Image do
     field :scratchpad, :string
     field :hides_count, :integer, default: 0
     field :approved, :boolean
+    field :ipfs, :string
 
     # todo: can probably remove these now
     field :tag_list_cache, :string
