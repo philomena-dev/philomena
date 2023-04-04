@@ -34,7 +34,7 @@ elixir:
 
                   p
                     strong> Price Range:
-                    = if web3Cfg.enable_comissions == true and @conn.assigns.current_user.ethereum != "" do
+                    = if web3Cfg.enable_comissions == true and c.user.ethereum != "" do
                       => Decimal.round(min.base_price, 5) |> Decimal.to_string()
                       => " - #{Decimal.round(max.base_price, 5) |> Decimal.to_string()}"
                     - else
