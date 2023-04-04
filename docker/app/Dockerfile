@@ -1,5 +1,8 @@
 FROM elixir:1.14.3-alpine
 
+RUN apk add git
+RUN apk add make
+
 ADD https://api.github.com/repos/philomena-dev/FFmpeg/git/refs/heads/release/5.1 /tmp/ffmpeg_version.json
 RUN (echo "https://github.com/philomena-dev/prebuilt-ffmpeg/raw/master"; cat /etc/apk/repositories) > /tmp/repositories \
     && cp /tmp/repositories /etc/apk/repositories \
@@ -19,6 +22,7 @@ RUN git clone --depth 1 https://github.com/philomena-dev/mediatools /tmp/mediato
     && cd /tmp/mediatools \
     && make -j$(nproc) install
 
+ENV EX_IPFS_API_URL=:"http://172.18.0.1:5001"
 COPY docker/app/run-development /usr/local/bin/run-development
 COPY docker/app/run-test /usr/local/bin/run-test
 COPY docker/app/safe-rsvg-convert /usr/local/bin/safe-rsvg-convert
