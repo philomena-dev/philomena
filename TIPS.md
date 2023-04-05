@@ -15,13 +15,6 @@ Website route manager:
 
         def edit(conn, _params) do ==> /lib/philomena_web/templates/registration/web3/edit.html.slime
 
-
-## Admin Login
-This is the credentials to access the admin panel of this project repository.
-
-    user: admin@example.com
-    password: philomena123
-
 ## Migrations Build
 https://hexdocs.pm/ecto_sql/Mix.Tasks.Ecto.Gen.Migration.html
 
