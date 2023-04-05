@@ -7,10 +7,10 @@ defmodule PhilomenaWeb.Web3Cfg do
     %{
 
       enable_profile: true,
-      enable_comissions: true
+      enable_comissions: true,
 
       # These features are undeveloped, please keep disabled.
-      #ipfs: false,
+      ipfs: false
       #enable_nft: false
 
     }

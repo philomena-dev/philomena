@@ -5,8 +5,8 @@ defmodule PhilomenaWeb.ImageController do
   alias PhilomenaWeb.CommentLoader
   alias PhilomenaWeb.NotificationCountPlug
   alias PhilomenaWeb.MarkdownRenderer
-  #alias PhilomenaWeb.Web3Cfg
-  #alias ExIpfs, as: Ipfs
+  alias PhilomenaWeb.Web3Cfg
+  alias ExIpfs, as: Ipfs
 
   alias Philomena.{
     Images,
@@ -89,7 +89,7 @@ defmodule PhilomenaWeb.ImageController do
     user_galleries = user_galleries(image, conn.assigns.current_user)
 
     # No IPFS Data detected
-    #tinyWeb3Cfg = Web3Cfg.get()
+    tinyWeb3Cfg = Web3Cfg.get()
     #if tinyWeb3Cfg.ipfs == true and is_nil(image.ipfs) do
     #  helloworld = Ipfs.cat("QmZ4tDuvesekSs4qM5ZBKpXiZGun7S2CYtEZRB3DYXkjGx")
     #  IO.puts("🍮 " <> helloworld)
