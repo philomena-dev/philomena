@@ -94,8 +94,6 @@ defmodule Philomena.MixProject do
       {:neotoma, "~> 1.7.3", manager: :rebar3, override: true},
       {:hut, "~> 1.4.0", manager: :rebar3, override: true},
 
-      {:telemetry, "~> 1.0"},
-
       # Web3
       {:ex_web3_ec_recover, "~> 0.3.0"},
       {:ex_ipfs, "~> 0.1.4"}
