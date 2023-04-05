@@ -95,7 +95,7 @@ defmodule PhilomenaWeb.StatsUpdater do
       |> where([u], u.created_at > ago(1, "day"))
       |> Repo.aggregate(:count, :id)
 
-      {total, last_24h}
+    {total, last_24h}
   end
 
   defp galleries do
@@ -138,8 +138,10 @@ defmodule PhilomenaWeb.StatsUpdater do
       |> Repo.all()
 
     response_time =
-      closed_reports
-      |> Enum.reduce(0, &(&2 + DateTime.diff(&1.updated_at, &1.created_at, :second)))
+      closed_reports<<<<<<< HEAD
+
+      =======
+      >>>>>>> upstream/masterat, &1.created_at, :second)))
       |> Kernel./(safe_length(closed_reports) * 3600)
       |> trunc()
 
