@@ -35,6 +35,7 @@ defmodule Philomena.Images do
   alias Philomena.Galleries.Gallery
   alias Philomena.Galleries.Interaction
   alias Philomena.Users.User
+  alias Philomena.Limits
 
   @doc """
   Gets a single image.
@@ -384,6 +385,9 @@ defmodule Philomena.Images do
           error
       end
     end)
+    |> Multi.run(:check_limits, fn _repo, %{image: {image, _added, _removed}} ->
+      check_tag_change_limits_before_commit(image, attribution)
+    end)
     |> Multi.run(:added_tag_changes, fn repo, %{image: {image, added_tags, _removed}} ->
       tag_changes =
         added_tags
@@ -427,6 +431,44 @@ defmodule Philomena.Images do
         {:ok, count}
     end)
     |> Repo.transaction()
+    |> case do
+      {:ok, %{image: {image, _added, _removed}}} = res ->
+        update_tag_change_limits_after_commit(image, attribution)
+
+        res
+
+      err ->
+        err
+    end
+  end
+
+  defp check_tag_change_limits_before_commit(image, attribution) do
+    user = attribution[:user]
+    ip = attribution[:ip]
+
+    cond do
+      Limits.is_limited_for_tag_count?(user, ip) ->
+        {:error, "Limit exceeded"}
+
+      Limits.is_limited_for_rating_count?(user, ip) ->
+        {:error, "Limit exceeded"}
+
+      is_nil(user) and length(image.added_tags) + length(image.removed_tags) > 100 ->
+        {:error, "Limit exceeded"}
+
+      true ->
+        {:ok, 0}
+    end
+  end
+
+  def update_tag_change_limits_after_commit(image, attribution) do
+    tag_changed_count = length(image.added_tags) + length(image.removed_tags)
+    rating_changed_count = image.ratings_changed
+    user = attribution[:user]
+    ip = attribution[:ip]
+
+    Limits.update_tag_count_after_update(user, ip, tag_changed_count)
+    Limits.update_rating_count_after_update(user, ip, rating_changed_count)
   end
 
   defp tag_change_attributes(attribution, image, tag, added, user) do
