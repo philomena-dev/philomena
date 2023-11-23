@@ -1,0 +1,45 @@
+.communication__toolbar {
+  font-size: var(--font-size);
+  background: var(--secondary-color);
+  padding: 0 var(--padding-small);
+  line-height: var(--block-header-height);
+  border: 1px solid var(--secondary-border-color);
+  border-bottom: 0;
+  box-sizing: border-box;
+}
+
+.communication__toolbar__button {
+  color: var(--text-color);
+  background: 0;
+  border: 0;
+  padding: var(--padding-small);
+
+  &:hover {
+    background: var(--secondary-muted-color);
+  }
+}
+
+.communication-edit__actions {
+  @extend .flex__row;
+  line-height: var(--block-header-height);
+  border: 0;
+  margin: var(--padding-normal);
+  margin-top: 0;
+  gap: var(--padding-normal);
+}
+
+.communication__anonymous {
+  @extend .flex__row;
+  line-height: ar(--block-header-height);
+  background: var(--secondary-color);
+  border: 1px solid var(--secondary-border-color);
+}
+
+.communication__anonymous--checkbox {
+  padding: 0 var(--padding-small);
+  border-right: 1px solid var(--secondary-border-color);
+}
+
+.communication__anonymous--label {
+  padding: 0 var(--padding-small);
+}

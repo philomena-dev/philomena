@@ -1,0 +1,19 @@
+tr
+  td
+    i.fa.fa-user>
+    ' Uploader
+  td
+    => render PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @image, awards: true, conn: @conn
+= if can?(@conn, :show, :ip_address) and not hide_staff_tools?(@conn) do
+  tr
+    td
+      i.fa.fa-network-wired>
+      ' IP
+    td
+      => link_to_ip(@conn, @image.ip)
+  tr
+    td
+      i.fa.fa-desktop>
+      ' FP
+    td
+      => link_to_fingerprint(@conn, @image.fingerprint)

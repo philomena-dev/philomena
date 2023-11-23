@@ -1,0 +1,14 @@
+.table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.table td, th {
+  padding: var(--padding-small);
+  border: 1px solid var(--secondary-muted-color);
+  text-align: left;
+}
+
+.table th {
+  background: var(--secondary-color);
+}

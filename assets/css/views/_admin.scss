@@ -1,0 +1,12 @@
+.header__counter__admin {
+  position: absolute;
+  background: var(--danger-color);
+  border: 1px solid var(--danger-border-color);
+  border-radius: var(--border-radius-inner);
+  min-width: var(--number-badge-size);
+  line-height: var(--number-badge-size);
+  font-size: var(--number-badge-size);
+  padding: var(--number-badge-padding);
+  top: var(--number-badge-lower-offset);
+  left: 0.25rem;
+}

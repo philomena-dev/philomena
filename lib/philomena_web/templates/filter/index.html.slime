@@ -18,7 +18,7 @@
   h2 So how do these work?
   p
     ' You can select any filter you can see. This will become your
-    strong 
+    strong
       ' active filter
     ' and will affect how you see the site. You can edit filters if you own them - you can create a filter from scratch with the link under "My Filters" (if you're logged in, of course) or by clicking "Customize", which will copy an existing filter for you to edit.
   p
@@ -72,7 +72,7 @@
           .block__header.block__header--light.page__header
             .page__pagination = pagination
             .page__info
-              span.block__header__title
+              span
                 = render PhilomenaWeb.PaginationView, "_pagination_info.html", page: @filters, conn: @conn
 
       - assigns[:error] ->

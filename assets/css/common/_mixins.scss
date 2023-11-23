@@ -1,0 +1,58 @@
+@mixin if-desktop {
+  @media (min-width: $min-desktop-width + 1) {
+    @content;
+  }
+}
+
+@mixin if-tablet {
+  @media (max-width: $min-desktop-width) and (min-width: $max-phone-width + 1) {
+    @content;
+  }
+}
+
+@mixin if-phone {
+  @media (max-width: $max-phone-width) {
+    @content;
+  }
+}
+
+@mixin if-mobile {
+  @media (max-width: $min-desktop-width) {
+    @content;
+  }
+}
+
+@mixin even-odd-type($type) {
+  &:nth-child(odd).#{$type},
+  &:nth-child(odd) .#{$type} {
+    background: var(--#{$type}-color);
+  }
+  &:nth-child(even).#{$type},
+  &:nth-child(even) .#{$type} {
+    background: var(--#{$type}-dark-color);
+  }
+  &:nth-child(even) &:nth-child(odd).#{$type},
+  &:nth-child(even) &:nth-child(odd) .#{$type} {
+    background: var(--#{$type}-color);
+  }
+}
+
+@mixin even-odd {
+  &:nth-child(odd) {
+    background: var(--secondary-dark-color);
+  }
+  &:nth-child(even) {
+    background: var(--secondary-muted-color);;
+  }
+
+  @include even-odd-type(primary);
+  @include even-odd-type(success);
+  @include even-odd-type(warning);
+  @include even-odd-type(danger);
+  @include even-odd-type(information);
+  @include even-odd-type(purple);
+}
+
+@mixin animated-transition {
+  transition: color var(--transition-animation-duration) ease, background var(--transition-animation-duration) ease;
+}

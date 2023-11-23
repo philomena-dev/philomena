@@ -1,38 +1,60 @@
 - params = assigns[:params] || []
 
 = if @page.total_pages > 1 do
-  nav.pagination.hide-mobile-t
+  nav.pagination.hidden--mobile
     = if not first_page?(@page) do
-      = link("« First", to: first_page_path(@page, @route, params))
-      = link("‹ Prev", to: prev_page_path(@page, @route, params), class: "js-prev")
+      = link to: first_page_path(@page, @route, params) do
+        i.fa.fa-backward>
+        ' First
+      .separator--vertical.separator--secondary
+      = link to: prev_page_path(@page, @route, params), class: "js-prev" do
+        i.fa.fa-chevron-left>
+        ' Prev
+      .separator--vertical.separator--secondary
 
     = if left_gap?(@page) do
-      span.page.gap
+      span
         ' …
 
     = for number <- left_page_numbers(@page) do
       = link(number, to: page_path(@route, params, number))
 
-    span.page-current = @page.page_number
+    span = @page.page_number
 
     = for number <- right_page_numbers(@page) do
       = link(number, to: page_path(@route, params, number))
 
     = if right_gap?(@page) do
-      span.page.gap
+      span
         ' …
 
     = if not last_page?(@page) do
-      = link("Next ›", to: next_page_path(@page, @route, params), class: "js-next")
-      = link("Last »", to: last_page_path(@page, @route, params))
+      .separator--vertical.separator--secondary
+      = link to: next_page_path(@page, @route, params), class: "js-next" do
+        ' Next
+        i.fa.fa-chevron-right
+      .separator--vertical.separator--secondary
+      = link to: last_page_path(@page, @route, params) do
+        ' Last
+        i.fa.fa-fast-forward
 
-  nav.pagination.hide-desktop-t
+  nav.pagination.hidden--desktop
     = if first_page?(@page) do
-      span « First
-      span ‹ Prev
+      span
+        i.fa.fa-backward>
+        ' First
+      .separator--vertical.separator--secondary
+      span
+        i.fa.fa-chevron-left>
+        ' Prev
+      .separator--vertical.separator--secondary
     - else
-      = link("« First", to: first_page_path(@page, @route, params))
-      = link("‹ Prev", to: prev_page_path(@page, @route, params), class: "js-prev")
+      = link to: first_page_path(@page, @route, params) do
+        i.fa.fa-backward>
+        ' First
+      = link to: prev_page_path(@page, @route, params), class: "js-prev" do
+        i.fa.fa-chevron-left>
+        ' Prev
 
     .dropdown
       a.page-current.pagination__dropdown
@@ -41,24 +63,36 @@
 
       .dropdown__content
         = if left_gap?(@page) do
-          span.page.gap.header__span
+          span
             ' …
 
         = for number <- left_page_numbers(@page) do
           = link(number, to: page_path(@route, params, number))
 
-        span.page-current.header__span = @page.page_number
+        span = @page.page_number
 
         = for number <- right_page_numbers(@page) do
           = link(number, to: page_path(@route, params, number))
 
         = if right_gap?(@page) do
-          span.page.gap.header__span
+          span
             ' …
 
     = if last_page?(@page) do
-      span Next ›
-      span Last »
+      .separator--vertical.separator--secondary
+      span
+        ' Next
+        i.fa.fa-chevron-right
+      .separator--vertical.separator--secondary
+      span
+        ' Last
+        i.fa.fa-fast-forward
     - else
-      = link("Next ›", to: next_page_path(@page, @route, params), class: "js-next")
-      = link("Last »", to: last_page_path(@page, @route, params))
+      .separator--vertical.separator--secondary
+      = link to: next_page_path(@page, @route, params), class: "js-next" do
+        ' Next
+        i.fa.fa-chevron-right
+      .separator--vertical.separator--secondary
+      = link to: last_page_path(@page, @route, params) do
+        ' Last
+        i.fa.fa-fast-forward

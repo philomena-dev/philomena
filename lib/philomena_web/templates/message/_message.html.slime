@@ -14,7 +14,7 @@ article.block.communication
                   ' Approve
 
   .block__content.flex.flex--no-wrap
-    .flex__fixed.spacing-right
+    .flex__fixed.spacing--right
       = render PhilomenaWeb.UserAttributionView, "_user_avatar.html", object: %{user: @message.from}, conn: @conn, class: "avatar--100px"
 
     .flex__grow.communication__body

@@ -33,7 +33,7 @@ h1 Reverse Search
 
 = cond do
   - is_nil(@images) ->
-  
+
   - Enum.any?(@images) ->
     h2 Results
 
@@ -42,7 +42,7 @@ h1 Reverse Search
         th &nbsp;
         th Image
         th &nbsp;
-      
+
       = for match <- @images do
         tr
           th

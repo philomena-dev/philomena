@@ -22,7 +22,7 @@ article.block.communication id="post_#{@post.id}"
               = submit "Delete", class: "button"
 
   .block__content.flex.flex--no-wrap class=communication_body_class(@post)
-    .flex__fixed.spacing-right
+    .flex__fixed.spacing--right
       = render PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html", object: @post, conn: @conn
     .flex__grow.communication__body
       span.communication__body__sender-name = render PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @post, awards: true, conn: @conn

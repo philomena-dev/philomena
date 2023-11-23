@@ -37,7 +37,7 @@ h1 = @topic.title
       .flex.flex--wrap.block__header.block__header--light.page__header
         .flex--fixed.page__pagination
           = pagination
-        .flex--fixed.block__header__item.page__options
+        .flex--fixed.block__header__item.page__info
           ' Started by
           => render PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @topic, conn: @conn
         .page__info

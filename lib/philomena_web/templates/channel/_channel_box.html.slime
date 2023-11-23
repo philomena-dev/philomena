@@ -6,7 +6,7 @@
 
   .media-box__header.media-box__header--channel
     = if @channel.is_live do
-      .spacing-right.label.label--success.label--block.label--small: strong LIVE NOW
+      .spacing--right.label.label--success.label--block.label--small: strong LIVE NOW
       => @channel.viewers
       => pluralize "viewer", "viewers", @channel.viewers
     - else

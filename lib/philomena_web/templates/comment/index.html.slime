@@ -24,14 +24,14 @@ h2 Search Results
       .block__header.block__header--light.page__header
         .page__pagination = pagination
         .page__info
-          span.block__header__title
+          span
             = render PhilomenaWeb.PaginationView, "_pagination_info.html", page: @comments, conn: @conn
 
   - assigns[:error] ->
     p
       ' Oops, there was an error evaluating your query:
     pre = assigns[:error]
-  
+
   - true ->
     p
       ' No comments found!

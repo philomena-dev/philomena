@@ -1,6 +1,6 @@
 .block
   .block__header
-    .block__header__title.approval-grid
+    .approval-grid
       .approval-items--main
         span ID
         span Image

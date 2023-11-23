@@ -12,7 +12,7 @@ h2 Do-Not-Post Requests
   .block__header
     = pagination
 
-    span.block__header__title Display Only:
+    span Display Only:
     => link "All Open", to: Routes.admin_dnp_entry_path(@conn, :index, states: ~W(requested claimed rescinded acknowledged))
     => link "Listed", to: Routes.admin_dnp_entry_path(@conn, :index, states: ~W(listed))
     => link "Rescinded", to: Routes.admin_dnp_entry_path(@conn, :index, states: ~W(rescinded acknowledged))

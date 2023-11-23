@@ -1,6 +1,6 @@
 article.block.communication id="comment_#{@comment.id}"
   .block__content.flex.flex--no-wrap class=communication_body_class(@comment)
-    .flex__fixed.spacing-right
+    .flex__fixed.spacing--right
       .post-image-container
         = render PhilomenaWeb.ImageView, "_image_container.html", image: @comment.image, size: :thumb_tiny, conn: @conn
 

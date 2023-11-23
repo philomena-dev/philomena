@@ -2,7 +2,7 @@
 
 .profile-top
   .profile-top__avatar
-    .tag-info__image.thumb-tiny-container
+    .tag-info__image.media-tiny-container
       = if @tag.image do
         img src=tag_image(@tag) alt="spoiler image" width=50 height=50
       - else

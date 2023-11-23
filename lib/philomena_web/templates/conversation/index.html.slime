@@ -25,7 +25,7 @@ h1 My Conversations
             td.table--communication-list__name
               => link c.title, to: Routes.conversation_path(@conn, :show, c)
 
-              .small-text.hide-mobile
+              .small-text.hidden--mobile
                 => count
                 = pluralize("message", "messages", count)
                 ' ; started

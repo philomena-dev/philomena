@@ -25,7 +25,7 @@ defmodule PhilomenaWeb.DuplicateReport.AcceptController do
 
       _error ->
         conn
-        |> put_flash(:error, "Failed to accept report! Maybe someone else already accepted it.")
+        |> put_flash(:warning, "Failed to accept report! Maybe someone else already accepted it.")
         |> redirect(to: Routes.duplicate_report_path(conn, :index))
     end
   end

@@ -1,0 +1,31 @@
+.textile-syntax-reference {
+  @extend .flex__row;
+  line-height: var(--block-header-height);
+  vertical-align: center;
+  margin-bottom: var(--padding-small);
+  flex-wrap: wrap;
+}
+
+.textile-syntax-reference > span,
+.textile-syntax-reference > button {
+  margin-left: var(--padding-normal);
+}
+
+.textile_help {
+  width: 100%;
+  margin-top: var(--padding-normal);
+}
+
+.spoiler, .spoiler a {
+  color: var(--spoiler-color);
+  background: var(--spoiler-color)
+}
+
+.spoiler-revealed, .spoiler:hover {
+  color: var(--text-color);
+  background: var(--spoiler-revealed-color);
+}
+
+.spoiler-revealed a, .spoiler:hover a {
+  color: var(--link-color);
+}

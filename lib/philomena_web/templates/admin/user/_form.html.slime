@@ -5,7 +5,7 @@
 
   .block
     .block__header
-      span.block__header__title Essential user details
+      span Essential user details
     label.table-list__label
       .table-list__label__text Name:
       .table-list__label__input
@@ -38,7 +38,7 @@
 
   .block
     .block__header
-      span.block__header__title General user flags
+      span General user flags
     ul
       p
         strong> Be careful when issuing these permissions to staff members!
@@ -47,12 +47,12 @@
 
   .block
     .block__header.warning
-      span.block__header__title Special roles for assistants
+      span Special roles for assistants
     ul = collection_checkboxes f, :roles, filtered_roles(assistant_permissions(), @roles), mapper: &checkbox_mapper/6
 
   .block
     .block__header.danger
-      span.block__header__title Special roles for moderators
+      span Special roles for moderators
     ul = collection_checkboxes f, :roles, filtered_roles(moderator_permissions(), @roles), mapper: &checkbox_mapper/6
 
   = submit "Save User", class: "button"

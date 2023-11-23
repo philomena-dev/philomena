@@ -1,0 +1,88 @@
+@mixin tag-color($tag_type) {
+  &[data-tag-category=#{$tag_type}] {
+    color: var(--tag-#{$tag_type}-text-color);
+    background: var(--tag-#{$tag_type}-color);
+    border-color: var(--tag-#{$tag_type}-border-color);
+
+    .tag__state {
+      color: var(--tag-#{$tag_type}-text-color);
+    }
+
+    .tag__name {
+      color: var(--tag-#{$tag_type}-text-color);
+    }
+
+    .tag__count {
+      background: var(--tag-#{$tag_type}-border-color);
+    }
+  }
+}
+
+.tag-list {
+  @extend .flex__row;
+  flex-wrap: wrap;
+  margin-bottom: var(--padding-normal);
+}
+
+.tag {
+  display: inline-table;
+  width: fit-content;
+  line-height: var(--padding-large);
+  margin-right: var(--padding-small);
+  margin-bottom: var(--padding-small);
+  color: var(--tag-default-text-color);
+  background: var(--tag-default-color);
+  border: 1px solid var(--tag-default-border-color);
+  font-weight: bold;
+
+  a {
+    color: inherit;
+  }
+
+  @include tag-color(error);
+  @include tag-color(rating);
+  @include tag-color(origin);
+  @include tag-color(character);
+  @include tag-color(oc);
+  @include tag-color(species);
+  @include tag-color(body-type);
+  @include tag-color(content-fanmade);
+  @include tag-color(content-official);
+  @include tag-color(spoiler);
+}
+
+.tag > span {
+  display: table-cell;
+  white-space: pre;
+}
+
+.tag__state {
+  color: var(--tag-default-text-color);
+  padding-left: var(--padding-small);
+}
+
+.tag__name {
+  color: var(--tag-default-text-color);
+  padding-right: var(--padding-small);
+}
+
+.tag__count {
+  background: var(--tag-default-border-color);
+  color: var(--text-color);
+  padding: 0 var(--padding-small);
+}
+
+.tag__dropdown__link {
+  background-color: var(--primary-muted-color);
+  padding: 0 var(--padding-small);
+
+  &:hover {
+    background-color: var(--primary-dark-color);
+  }
+}
+
+.tag-info__image {
+  border: 1px solid var(--secondary-color);
+  font-size: var(--font-tiny-size);
+  text-align: center;
+}

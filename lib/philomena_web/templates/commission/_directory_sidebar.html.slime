@@ -1,6 +1,6 @@
 .block
   .block__header
-    span.block__header__title Search
+    span Search
   .block__content
     = form_for @conn, Routes.commission_path(@conn, :index), [as: :commission, method: "get", class: "hform"], fn f ->
       .field = label f, :categories, "Art Categories:"

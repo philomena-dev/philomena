@@ -6,20 +6,20 @@ h1 Reports
 = if Enum.any?(@my_reports) do
   .block
     .block__header
-      span.block__header__title Your Reports
+      span Your Reports
     .block__content
       = render PhilomenaWeb.Admin.ReportView, "_reports.html", reports: @my_reports, conn: @conn
 
 = if Enum.any?(@system_reports) do
   .block
     .block__header.block--danger
-      span.block__header__title System Reports
+      span System Reports
     .block__content
       = render PhilomenaWeb.Admin.ReportView, "_reports.html", reports: @system_reports, conn: @conn
 
 .block
   .block__header
-    span.block__header__title All Reports
+    span All Reports
     = pagination
   .block__content
     = if Enum.any?(@reports) do

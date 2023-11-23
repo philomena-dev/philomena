@@ -1,53 +1,57 @@
-.block--fixed
-  i.fa.fa-fw.fa-calendar>
-  ' Account created
-  = @user.created_at
+.block.block--danger
+  .block__header
+    i.fa.fa-tools
+    | Admin
+  .block__content
+    i.fa.fa-fw.fa-calendar>
+    ' Account created
+    = @user.created_at
 
-  br
-  i.fa.fa-fw.fa-filter>
-  ' Current Filter:
-  = if @filter do
-    = link @filter.name, to: Routes.filter_path(@conn, :show, @filter)
-  - else
-    em
-      ' (none)
+    br
+    i.fa.fa-fw.fa-filter>
+    ' Current Filter:
+    = if @filter do
+      = link @filter.name, to: Routes.filter_path(@conn, :show, @filter)
+    - else
+      em
+        ' (none)
 
-  br
-  i.far.fa-fw.fa-clock>
-  ' Last seen
-  = if @last_ip do
-    => pretty_time(@last_ip.updated_at)
-    ' from
-    => link_to_ip(@conn, @last_ip.ip)
+    br
+    i.far.fa-fw.fa-clock>
+    ' Last seen
+    = if @last_ip do
+      => pretty_time(@last_ip.updated_at)
+      ' from
+      => link_to_ip(@conn, @last_ip.ip)
 
-    = if @last_fp do
-      => link_to_fingerprint(@conn, @last_fp.fingerprint)
-  - else
-    em
-      ' (never)
+      = if @last_fp do
+        => link_to_fingerprint(@conn, @last_fp.fingerprint)
+    - else
+      em
+        ' (never)
 
-  br
-  i.fas.fa-fw.fa-key>
-  ' Two factor auth:
-  strong = enabled_text(@user.otp_required_for_login)
+    br
+    i.fas.fa-fw.fa-key>
+    ' Two factor auth:
+    strong = enabled_text(@user.otp_required_for_login)
 
-  br
+    br
 
-  = if @user.locked_at do
-    i.fas.fa-fw.fa-lock>
-    strong.comment_deleted>
-      ' Account locked,
-      => @user.failed_attempts
-      ' failed login attempts
-  - else
-    i.fas.fa-fw.fa-unlock>
-    ' Not currently locked
+    = if @user.locked_at do
+      i.fas.fa-fw.fa-lock>
+      strong.comment_deleted>
+        ' Account locked,
+        => @user.failed_attempts
+        ' failed login attempts
+    - else
+      i.fas.fa-fw.fa-unlock>
+      ' Not currently locked
 
-br
+    hr.separator.separator--secondary
 
-a.label.label--primary.label--block href="#" data-click-toggle=".js-admin__options__toggle" title="Toggle Controls"
-  i.fa.fa-fw.fa-bars
-  span Toggle Controls
+    a.button.button--warning href="#" data-click-toggle=".js-admin__options__toggle" title="Toggle Controls"
+      i.fa.fa-fw.fa-bars
+      span Toggle Controls
 
 .profile-top__options.js-admin__options__toggle.hidden
   ul.profile-admin__options__column
@@ -104,22 +108,17 @@ a.label.label--primary.label--block href="#" data-click-toggle=".js-admin__optio
 
       = if @forced do
         li
-          = link to: Routes.admin_user_force_filter_path(@conn, :delete, @user), data: [confirm: "Are you really, really sure?", method: "delete"] do
-            i.fas.fa-fw.fa-filter
-            span.admin__button Remove Force Filter
-
-      = if @user.deleted_at do
+          = link to: Routes.profile_detail_path(@conn, :index, @user) do
+            i.fa.fa-fw.fa-eye
+            span.admin__button View Details
         li
-          = link to: Routes.admin_user_activation_path(@conn, :create, @user), data: [confirm: "Are you really, really sure?", method: "post"] do
-            i.fa.fa-fw.fa-check
-            span.admin__button Reactivate Account
-      - else
+          = link to: Routes.search_path(@conn, :index, q: "upvoted_by_id:#{@user.id}") do
+            i.fa.fa-fw.fa-arrow-up
+            span.admin__button Upvotes
         li
-          = link to: Routes.admin_user_activation_path(@conn, :delete, @user), data: [confirm: "Are you really, really sure?", method: "delete"] do
-            i.fa.fa-fw.fa-times
-            span.admin__button Deactivate Account
-
-      = if @user.locked_at do
+          = link to: Routes.search_path(@conn, :index, q: "downvoted_by_id:#{@user.id}") do
+            i.fa.fa-fw.fa-arrow-down
+            span.admin__button Downvotes
         li
           = link to: Routes.admin_user_unlock_path(@conn, :create, @user), data: [method: "post"] do
             i.fas.fa-fw.fa-unlock
@@ -136,11 +135,10 @@ a.label.label--primary.label--block href="#" data-click-toggle=".js-admin__optio
           i.fa.fa-fw.fa-link
           span.admin__button Add Artist Link
 
-    = if can?(@conn, :create, Philomena.Bans.User) do
-      li
-        = link to: Routes.admin_user_ban_path(@conn, :new, username: @user.name) do
-          i.fa.fa-fw.fa-ban
-          span.admin__button Ban this sucker
+          li
+            = link to: Routes.admin_user_force_filter_path(@conn, :new, @user) do
+              i.fas.faw-fw.fa-filter
+              span.admin__button Force Filter
 
   ul.profile-admin__options__column
     = if can?(@conn, :index, Philomena.Users.User) do

@@ -5,14 +5,13 @@
 // the compiled file.
 //
 
-// Third-party code, polyfills
-import './vendor/promise.polyfill';
-import './vendor/fetch.polyfill';
-import './vendor/closest.polyfill';
-import './vendor/customevent.polyfill';
-import './vendor/es6.polyfill';
-import './vendor/values-entries.polyfill';
-
 // Our code
 import './ujs';
 import './when-ready';
+
+// Base stylesheet.
+import '../css/application.scss';
+
+// Themes.
+import '../css/themes/dark-blue.scss';
+import '../css/themes/dark-purple.scss';

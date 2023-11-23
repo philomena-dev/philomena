@@ -3,7 +3,7 @@ h1 New Conversation
   .block__header
     => link "Conversations", to: Routes.conversation_path(@conn, :index)
     ' &raquo;
-    span.block__header__title New Conversation
+    span New Conversation
 
 = case DateTime.compare(DateTime.utc_now(), DateTime.add(@conn.assigns.current_user.created_at, 1_209_600)) do
   - :lt ->

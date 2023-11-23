@@ -1,0 +1,66 @@
+@mixin fix-interaction($type) {
+  .interaction--#{$type} {
+    padding: var(--padding-tiny) var(--padding-small);
+  }
+}
+
+@include if-phone {
+  .metabar__interactions {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(5, 1fr);
+
+    @include fix-interaction(fave);
+    @include fix-interaction(upvote);
+    @include fix-interaction(downvote);
+    @include fix-interaction(hide);
+  }
+
+  .metabar__interactions * {
+    align-self: center;
+    justify-self: center;
+  }
+
+  .metabar__mobile-separator {
+    height: 1px;
+    width: 100%;
+    margin-top: var(--padding-small);
+    margin-bottom: var(--padding-normal);
+    background: var(--primary-color);
+  }
+
+  .metabar__navigation {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: var(--padding-small);
+  }
+
+  .metabar__navigation a {
+    align-self: center;
+    justify-self: center;
+  }
+}
+
+.metabar {
+  @extend .flex__row--centered;
+  line-height: var(--block-header-height);
+}
+
+.metabar a,
+.metabar .score {
+  padding: var(--padding-small);
+}
+
+.metabar__user-credit {
+  box-sizing: border-box;
+}
+
+.metabar__mobile-info {
+  & td {
+    padding: var(--padding-small);
+  }
+}
+
+.badges {
+  display: inline-block;
+}

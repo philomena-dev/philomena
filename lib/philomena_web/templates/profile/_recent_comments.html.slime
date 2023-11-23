@@ -1,7 +1,7 @@
 = if Enum.any?(@comments) do
   .block
     .block__header
-      span.block__header__title Recent Comments
+      span Recent Comments
       = link "View all", to: Routes.comment_path(@conn, :index, cq: "user_id:#{@user.id}")
 
     .block__content

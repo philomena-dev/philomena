@@ -8,5 +8,5 @@ h1 Updating Moderation Scratchpad
     div
       = render PhilomenaWeb.MarkdownView, "_input.html", conn: @conn, f: f, action_text: "Scratchpad", placeholder: "Scratchpad Contents", name: :scratchpad, required: false
 
-    .block__content.communication-edit__actions
-      => submit "Update", class: "button"
+    .block.communication-edit__actions
+      => submit "Update", class: "button button--important button--success"

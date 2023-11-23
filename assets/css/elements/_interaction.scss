@@ -1,0 +1,34 @@
+@mixin interaction-type($type) {
+  .interaction--#{$type} {
+    position: relative;
+    color: var(--#{$type}-color) !important;
+    padding: 0 var(--padding-tiny);
+    width: 1rem;
+
+    &.active, &:hover {
+      color: var(--text-color) !important;
+      background-color: var(--#{$type}-color);
+    }
+  }
+}
+
+@include interaction-type(fave);
+@include interaction-type(upvote);
+@include interaction-type(downvote);
+@include interaction-type(comment);
+@include interaction-type(hide);
+
+.comments_count {
+  position: absolute;
+  background: var(--background-color);
+  border: var(--number-badge-border) solid var(--background-color);
+  border-radius: 100%;
+  padding: var(--number-badge-padding);
+  line-height: var(--number-badge-size);
+  min-width: var(--number-badge-size);
+  top: var(--number-badge-lower-offset);
+}
+
+.interaction--comment:hover > .comments_count {
+  visibility: hidden;
+}

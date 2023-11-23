@@ -11,7 +11,7 @@ defmodule PhilomenaWeb.Admin.User.DownvoteController do
     Exq.enqueue(Exq, "indexing", UserUnvoteWorker, [conn.assigns.user.id, false])
 
     conn
-    |> put_flash(:info, "Downvote wipe started.")
+    |> put_flash(:alert, "Downvote wipe started.")
     |> redirect(to: Routes.profile_path(conn, :show, conn.assigns.user))
   end
 

@@ -1,6 +1,6 @@
 .block
   .block__header
-    span.block__header__title Available Items and Prices
+    span Available Items and Prices
 
     = if current?(@user, @conn.assigns.current_user) do
       = link "Add an item", to: Routes.profile_commission_item_path(@conn, :new, @user)

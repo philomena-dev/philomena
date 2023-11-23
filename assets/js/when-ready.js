@@ -2,10 +2,10 @@
  * Functions to execute when the DOM is ready
  */
 
-import { whenReady }            from './utils/dom';
+import { whenReady } from './utils/dom';
 
-import { showOwnedComments }    from './communications/comment';
-import { showOwnedPosts }       from './communications/post';
+import { showOwnedComments } from './communications/comment';
+import { showOwnedPosts } from './communications/post';
 
 import { listenAutocomplete }   from './autocomplete';
 import { loadBooruData }        from './booru';
@@ -22,7 +22,6 @@ import { setupEvents }          from './misc';
 import { setupNotifications }   from './notifications';
 import { setupPreviews }        from './preview';
 import { setupQuickTag }        from './quick-tag';
-import { initializeListener }   from './resizablemedia';
 import { setupSettings }        from './settings';
 import { listenForKeys }        from './shortcuts';
 import { initTagDropdown }      from './tags';
@@ -56,7 +55,6 @@ whenReady(() => {
   setupNotifications();
   setupPreviews();
   setupQuickTag();
-  initializeListener();
   setupSettings();
   listenForKeys();
   initTagDropdown();

@@ -21,7 +21,7 @@ defmodule PhilomenaWeb.ConfirmationController do
     # Regardless of the outcome, show an impartial success/error message.
     conn
     |> put_flash(
-      :info,
+      :alert,
       "If your email is in our system and it has not been confirmed yet, " <>
         "you will receive an email with instructions shortly."
     )
@@ -39,7 +39,7 @@ defmodule PhilomenaWeb.ConfirmationController do
 
       :error ->
         conn
-        |> put_flash(:error, "Confirmation link is invalid or it has expired.")
+        |> put_flash(:warning, "Confirmation link is invalid or it has expired.")
         |> redirect(to: "/")
     end
   end

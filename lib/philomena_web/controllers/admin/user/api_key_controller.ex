@@ -11,7 +11,7 @@ defmodule PhilomenaWeb.Admin.User.ApiKeyController do
     {:ok, user} = Users.reset_api_key(conn.assigns.user)
 
     conn
-    |> put_flash(:info, "API token successfully reset.")
+    |> put_flash(:info, "API token was successfully reset.")
     |> redirect(to: Routes.profile_path(conn, :show, user))
   end
 

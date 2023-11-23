@@ -23,12 +23,14 @@
   button.communication__toolbar__button tabindex="-1" type="button" title="subscript" data-syntax-id="subscript"
     sub
       | sub
+  .separator--vertical.separator--secondary
   button.communication__toolbar__button tabindex="-1" type="button" title="insert blockquote" data-syntax-id="quote"
     i.fa.fa-quote-right
   button.communication__toolbar__button tabindex="-1" type="button" title="insert hyperlink (ctrl+l)" data-syntax-id="link"
     i.fa.fa-link
   button.communication__toolbar__button tabindex="-1" type="button" title="insert image (ctrl+k)" data-syntax-id="image"
     i.fa.fa-image
+  .separator--vertical.separator--secondary
   button.communication__toolbar__button tabindex="-1" type="button" title="Text you want the parser to ignore" data-syntax-id="escape"
     span
       | escape

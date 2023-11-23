@@ -1,7 +1,7 @@
 / General information block
 .block
   .block__header
-    span.block__header__title General information
+    span General information
   .block__content.commission__block_body
     strong> Profile:
     = render PhilomenaWeb.UserAttributionView, "_user.html", object: @commission, conn: @conn
@@ -29,14 +29,14 @@
 / Contact information block
 .block
   .block__header
-    span.block__header__title Contact information
+    span Contact information
   .block__content.commission__block_body
     == @rendered.contact
 
 / Categories block
 .block
   .block__header
-    span.block__header__title Art Categories
+    span Art Categories
   .block__content
     = for cat <- @commission.categories do
       span.commission__category
@@ -46,7 +46,7 @@
 = if @commission.will_create not in [nil, ""] do
   .block
     .block__header
-      span.block__header__title Will draw/create
+      span Will draw/create
     .block__content.commission__block_body
       == @rendered.will_create
 
@@ -54,13 +54,13 @@
 = if @commission.will_not_create not in [nil, ""] do
   .block
     .block__header
-      span.block__header__title Will not draw/create
+      span Will not draw/create
     .block__content.commission__block_body
       == @rendered.will_not_create
 
 / Artist link block
 /.block
-  .block__header: span.block__header__title Artist Links
+  .block__header: span Artist Links
   - is_current = (current_user && current_user.id == @user.id)
   - if @links.present? || is_current
     = render partial: 'profiles/artist_link_area'
@@ -68,7 +68,7 @@
 / Options block
 .block
   .block__header
-    span.block__header__title Options
+    span Options
   .block__content
     = if can?(@conn, :edit, @commission) do
       = link "Edit this listing", to: Routes.profile_commission_path(@conn, :edit, @user)
@@ -80,7 +80,7 @@
 / Share block
 .block
   .block__header
-    span.block__header__title Share this listing
+    span Share this listing
   .block__content
     - url = Routes.profile_commission_url(@conn, :show, @user)
 

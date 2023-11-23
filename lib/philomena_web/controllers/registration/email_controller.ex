@@ -16,7 +16,7 @@ defmodule PhilomenaWeb.Registration.EmailController do
 
         conn
         |> put_flash(
-          :info,
+          :alert,
           "A link to confirm your email change has been sent to the new address."
         )
         |> redirect(to: Routes.registration_path(conn, :edit))
@@ -37,7 +37,7 @@ defmodule PhilomenaWeb.Registration.EmailController do
 
       :error ->
         conn
-        |> put_flash(:error, "Email change link is invalid or it has expired.")
+        |> put_flash(:warning, "Email change link is invalid or it has expired.")
         |> redirect(to: Routes.registration_path(conn, :edit))
     end
   end

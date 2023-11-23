@@ -2,8 +2,9 @@
 
 h1 Notification Area
 .walloftext
-  .block__header
-    = render PhilomenaWeb.PaginationView, "_pagination.html", page: @notifications, route: route, conn: @conn
+  = if @notifications.total_pages > 1 do
+    .block__header
+      = render PhilomenaWeb.PaginationView, "_pagination.html", page: @notifications, route: route, conn: @conn
 
   = cond do
     - Enum.any?(@notifications) ->

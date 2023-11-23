@@ -1,22 +1,44 @@
 = for notice <- @conn.assigns.site_notices do
-  .flash.flash--site-notice
-    strong>
-      = notice.title
-    => notice.text
-    = if notice.link not in [nil, ""] do
-      a href=notice.link
-        = notice.link_text
+  .flash.flash--purple
+    .flash__icon
+      i.fa.fa-info-circle
+    .flash__message
+      strong>
+        = notice.title
+      => notice.text
+      = if notice.link not in [nil, ""] do
+        a href=notice.link
+          = notice.link_text
 
 noscript.flash.flash--warning
-  strong You don't appear to have Javascript enabled
-  ' If you're using an add-on like NoScript, please allow
-  => cdn_host()
-  ' for the site to work properly.
+  .flash__icon
+    i.fa.fa-check
+  .flash__message
+    strong You don't appear to have Javascript enabled
+    ' If you're using an add-on like NoScript, please allow
+    => cdn_host()
+    ' for the site to work properly.
 = if get_flash(@conn, :info) do
-  .flash.flash--success = get_flash(@conn, :info)
+  .flash.flash--success
+    .flash__icon
+      i.fa.fa-check
+    .flash__message
+      = get_flash(@conn, :info)
 = if get_flash(@conn, :alert) do
-  .flash.flash--warning = get_flash(@conn, :alert)
+  .flash.flash--information
+    .flash__icon
+      i.fa.fa-info-circle
+    .flash__message
+      = get_flash(@conn, :alert)
 = if get_flash(@conn, :error) do
-  .flash.flash--warning = get_flash(@conn, :error)
+  .flash.flash--danger
+    .flash__icon
+      i.fa.fa-exclamation-triangle
+    .flash__message
+      = get_flash(@conn, :error)
 = if get_flash(@conn, :warning) do
-  .flash.flash--warning = get_flash(@conn, :warning)
+  .flash.flash--warning
+    .flash__icon
+      i.fa.fa-exclamation-circle
+    .flash__message
+      = get_flash(@conn, :warning)

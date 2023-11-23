@@ -12,7 +12,7 @@ export function setupGalleryEditing() {
 
   const [ rearrangeEl, saveEl ] = $$('.rearrange-button');
   const sortableEl = $('#sortable');
-  const containerEl = $('.js-resizable-media-container');
+  const containerEl = $('.media-list');
 
   // Copy array
   let oldImages = window.booru.galleryImages.slice();

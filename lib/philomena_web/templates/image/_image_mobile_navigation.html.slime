@@ -1,0 +1,10 @@
+.block.block__content.hidden--desktop.hidden--tablet
+  .metabar__navigation
+    a.js-prev href=Routes.image_navigate_path(@conn, :index, @image, [rel: "prev"] ++ scope(@conn)) title="Previous Image (j)"
+      i.fa.fa-chevron-left
+    a.js-rand href=Routes.image_random_path(@conn, :index, scope(@conn)) title="Random (r)"
+      i.fa.fa-random
+    a.js-up href=Routes.image_navigate_path(@conn, :index, @image, [rel: "find"] ++ scope(@conn)) title="Find this image in the global image list (i)"
+      i.fa.fa-chevron-up
+    a.js-next href=Routes.image_navigate_path(@conn, :index, @image, [rel: "next"] ++ scope(@conn)) title="Next Image (k)"
+      i.fa.fa-chevron-right
