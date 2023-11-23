@@ -1,12 +1,7 @@
 @mixin flash-type($type) {
   .flash--#{$type} {
     border: 1px solid var(--#{$type}-border-color);
-    box-shadow: 0 -1px var(--#{$type}-dark-color) inset;
     background: var(--#{$type}-color);
-
-    .flash__icon {
-      border-right: 1px solid var(--#{$type}-dark-color);
-    }
 
     .flash__message {
       border-left: 1px solid var(--#{$type}-border-color);
@@ -27,6 +22,7 @@
   grid-template-columns: auto 1fr;
   margin: var(--padding-normal);
   margin-bottom: 0;
+  border-radius: var(--border-radius-inner);
 }
 
 @include if-phone {

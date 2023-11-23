@@ -12,6 +12,7 @@ body {
 
 main {
   padding: var(--padding-normal);
+  flex-grow: 1;
 }
 
 @include if-mobile {

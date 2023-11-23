@@ -1,0 +1,14 @@
+footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--padding-large);
+  padding: var(--padding-normal);
+  background: var(--primary-dark-color);
+  justify-content: center;
+}
+
+footer > span {
+  order: 1;
+  width: 100%;
+  text-align: center;
+}
