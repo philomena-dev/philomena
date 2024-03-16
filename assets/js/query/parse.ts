@@ -1,5 +1,5 @@
 import { matchAll, matchAny, matchNone, matchNot } from './boolean';
-import { AstMatcher, TokenList } from './types';
+import { AstMatcher, ParseError, TokenList } from './types';
 
 export function parseTokens(lexicalArray: TokenList): AstMatcher {
   const operandStack: AstMatcher[] = [];
@@ -16,7 +16,7 @@ export function parseTokens(lexicalArray: TokenList): AstMatcher {
       const op1 = operandStack.pop();
 
       if (typeof op1 === 'undefined' || typeof op2 === 'undefined') {
-        throw new Error('Missing operand.');
+        throw new ParseError('Missing operand.');
       }
 
       if (token === 'and_op') {
@@ -39,7 +39,7 @@ export function parseTokens(lexicalArray: TokenList): AstMatcher {
   });
 
   if (operandStack.length > 1) {
-    throw new Error('Missing operator.');
+    throw new ParseError('Missing operator.');
   }
 
   const op1 = operandStack.pop();

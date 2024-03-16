@@ -1,5 +1,5 @@
 import { assertNotNull, assertNotUndefined } from '../utils/assert';
-import { AstMatcher, TokenList } from './types';
+import { AstMatcher, ParseError, TokenList } from './types';
 
 type TokenName = string;
 type Token = [TokenName, RegExp];
@@ -181,7 +181,7 @@ export function generateLexArray(searchStr: string, parseTerm: ParseTerm): Token
   pushTerm();
 
   if (opQueue.indexOf('rparen') !== -1 || opQueue.indexOf('lparen') !== -1) {
-    throw new Error('Mismatched parentheses.');
+    throw new ParseError('Mismatched parentheses.');
   }
 
   // Concatenatte remaining operators to the token stack.

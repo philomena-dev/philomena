@@ -8,3 +8,5 @@ export type FieldMatcher = (value: FieldValue, name: FieldName, documentId: numb
 
 export type AstMatcher = (e: HTMLElement) => boolean;
 export type TokenList = (string | AstMatcher)[];
+
+export class ParseError extends Error {}

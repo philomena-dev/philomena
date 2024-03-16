@@ -1,4 +1,4 @@
-import { FieldMatcher, RangeEqualQualifier } from './types';
+import { FieldMatcher, ParseError, RangeEqualQualifier } from './types';
 
 type Year = number;
 type Month = number;
@@ -55,7 +55,7 @@ function makeRelativeDateMatcher(dateVal: string, qual: RangeEqualQualifier): Fi
     return makeMatcher(bottomDate, topDate, qual);
   }
 
-  throw new Error(`Cannot parse date string: ${dateVal}`);
+  throw new ParseError(`Cannot parse date string: ${dateVal}`);
 }
 
 function makeAbsoluteDateMatcher(dateVal: string, qual: RangeEqualQualifier): FieldMatcher {
@@ -108,12 +108,12 @@ function makeAbsoluteDateMatcher(dateVal: string, qual: RangeEqualQualifier): Fi
       localDateVal = localDateVal.substring(componentMatch[0].length);
     }
     else {
-      throw new Error(`Cannot parse date string: ${origDateVal}`);
+      throw new ParseError(`Cannot parse date string: ${origDateVal}`);
     }
   }
 
   if (localDateVal.length > 0) {
-    throw new Error(`Cannot parse date string: ${origDateVal}`);
+    throw new ParseError(`Cannot parse date string: ${origDateVal}`);
   }
 
   // Apply the user-specified time zone offset. The JS Date constructor
@@ -136,7 +136,7 @@ export function makeDateMatcher(dateVal: string, qual: RangeEqualQualifier): Fie
   try {
     return makeAbsoluteDateMatcher(dateVal, qual);
   }
-  catch (_) {
+  catch {
     return makeRelativeDateMatcher(dateVal, qual);
   }
 }
