@@ -1,3 +1,4 @@
+import { assertNotNull } from '../utils/assert';
 import { FieldMatcher, ParseError, RangeEqualQualifier } from './types';
 
 type Year = number;
@@ -32,8 +33,10 @@ function makeMatcher(bottomDate: PosixTimeMs, topDate: PosixTimeMs, qual: RangeE
   }
 }
 
+const relativeDateMatch = /(\d+) (second|minute|hour|day|week|month|year)s? ago/;
+
 function makeRelativeDateMatcher(dateVal: string, qual: RangeEqualQualifier): FieldMatcher {
-  const match = /(\d+) (second|minute|hour|day|week|month|year)s? ago/.exec(dateVal);
+  const match = assertNotNull(relativeDateMatch.exec(dateVal));
   const bounds: Record<string, number> = {
     second: 1000,
     minute: 60000,
@@ -44,18 +47,14 @@ function makeRelativeDateMatcher(dateVal: string, qual: RangeEqualQualifier): Fi
     year: 31536000000
   };
 
-  if (match) {
-    const amount = parseInt(match[1], 10);
-    const scale = bounds[match[2]];
+  const amount = parseInt(match[1], 10);
+  const scale = bounds[match[2]];
 
-    const now = new Date().getTime();
-    const bottomDate = new Date(now - amount * scale).getTime();
-    const topDate = new Date(now - (amount - 1) * scale).getTime();
+  const now = new Date().getTime();
+  const bottomDate = new Date(now - amount * scale).getTime();
+  const topDate = new Date(now - (amount - 1) * scale).getTime();
 
-    return makeMatcher(bottomDate, topDate, qual);
-  }
-
-  throw new ParseError(`Cannot parse date string: ${dateVal}`);
+  return makeMatcher(bottomDate, topDate, qual);
 }
 
 function makeAbsoluteDateMatcher(dateVal: string, qual: RangeEqualQualifier): FieldMatcher {
@@ -133,10 +132,9 @@ function makeAbsoluteDateMatcher(dateVal: string, qual: RangeEqualQualifier): Fi
 }
 
 export function makeDateMatcher(dateVal: string, qual: RangeEqualQualifier): FieldMatcher {
-  try {
-    return makeAbsoluteDateMatcher(dateVal, qual);
-  }
-  catch {
+  if (relativeDateMatch.test(dateVal)) {
     return makeRelativeDateMatcher(dateVal, qual);
   }
+
+  return makeAbsoluteDateMatcher(dateVal, qual);
 }
