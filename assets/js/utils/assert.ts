@@ -1,0 +1,26 @@
+export function assertNotNull<T>(value: T | null): T {
+  if (value === null) {
+    throw new Error('Expected non-null value');
+  }
+
+  return value;
+}
+
+export function assertNotUndefined<T>(value: T | undefined): T {
+  // eslint-disable-next-line no-undefined
+  if (value === undefined) {
+    throw new Error('Expected non-undefined value');
+  }
+
+  return value;
+}
+
+type Constructor<T> = { new (...args: any[]): T };
+
+export function assertType<T>(value: any, c: Constructor<T>): T {
+  if (value instanceof c) {
+    return value;
+  }
+
+  throw new Error(`Expected value of type '${c}'`);
+}

@@ -2,12 +2,14 @@
  * Hamburger menu.
  */
 
-function switchClasses(element, oldClass, newClass) {
+import { assertNotNull, assertType } from './utils/assert';
+
+function switchClasses(element: HTMLElement, oldClass: string, newClass: string) {
   element.classList.remove(oldClass);
   element.classList.add(newClass);
 }
 
-function open(burger, content, body, root) {
+function open(burger: HTMLElement, content: HTMLElement, body: HTMLElement, root: HTMLElement) {
   switchClasses(content, 'close', 'open');
   switchClasses(burger, 'close', 'open');
 
@@ -15,23 +17,23 @@ function open(burger, content, body, root) {
   body.classList.add('no-overflow');
 }
 
-function close(burger, content, body, root) {
+function close(burger: HTMLElement, content: HTMLElement, body: HTMLElement, root: HTMLElement) {
   switchClasses(content, 'open', 'close');
   switchClasses(burger, 'open', 'close');
 
-  /* the CSS animation closing the menu finishes in 300ms */
+  // The CSS animation closing the menu finishes in 300ms
   setTimeout(() => {
     root.classList.remove('no-overflow-x');
     body.classList.remove('no-overflow');
   }, 300);
 }
 
-function copyArtistLinksTo(burger) {
-  const copy = links => {
+function copyArtistLinksTo(burger: HTMLElement) {
+  const copy = (links: HTMLCollection) => {
     burger.appendChild(document.createElement('hr'));
 
-    [].slice.call(links).forEach(link => {
-      const burgerLink = link.cloneNode(true);
+    [...links].forEach(link => {
+      const burgerLink = assertType(link.cloneNode(true), HTMLElement);
 
       burgerLink.className = '';
       burger.appendChild(burgerLink);
@@ -40,13 +42,13 @@ function copyArtistLinksTo(burger) {
 
   const linksContainers = document.querySelectorAll('.js-burger-links');
 
-  [].slice.call(linksContainers).forEach(container => copy(container.children));
+  [...linksContainers].forEach(container => copy(container.children));
 }
 
 function setupBurgerMenu() {
-  const burger = document.getElementById('burger');
-  const toggle = document.getElementById('js-burger-toggle');
-  const content = document.getElementById('container');
+  const burger = assertNotNull(document.getElementById('burger'));
+  const toggle = assertNotNull(document.getElementById('js-burger-toggle'));
+  const content = assertNotNull(document.getElementById('container'));
   const body = document.body;
   const root = document.documentElement;
 

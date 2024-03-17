@@ -9,7 +9,8 @@ export interface PhilomenaAvailableEventsMap {
   drop: DragEvent,
   click: MouseEvent,
   submit: Event,
-  reset: Event
+  reset: Event,
+  fetchcomplete: CustomEvent,
 }
 
 export interface PhilomenaEventElement {
