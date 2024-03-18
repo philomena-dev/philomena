@@ -296,10 +296,10 @@ defmodule Philomena.Search.Parser do
   end
 
   defp maybe_downcase(value, parser, field_name) do
-    unless Enum.member?(parser.no_downcase_fields, field_name) do
-      String.downcase(value)
-    else
+    if Enum.member?(parser.no_downcase_fields, field_name) do
       value
+    else
+      String.downcase(value)
     end
   end
 
