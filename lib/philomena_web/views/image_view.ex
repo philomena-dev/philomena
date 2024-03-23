@@ -318,8 +318,7 @@ defmodule PhilomenaWeb.ImageView do
         "fab fa-twitter"
 
       u
-      when u in ["deviantart.com", "sta.sh", "www.sta.sh"] or
-             String.ends_with?(u, ".deviantart.com") ->
+      when u in ["deviantart.com", "sta.sh", "www.sta.sh"] ->
         "fab fa-deviantart"
 
       u
@@ -332,7 +331,7 @@ defmodule PhilomenaWeb.ImageView do
       u when u in ["pillowfort.social", "www.pillowfort.social"] ->
         "fa fa-bed"
 
-      u when u in ["vk.com", "vk.ru"] or String.ends_with?(u, ".userapi.com") ->
+      u when u in ["vk.com", "vk.ru"] ->
         "fab fa-vk"
 
       u when u in ["pixiv.net", "www.pixiv.net", "artfight.net", "www.artfight.net"] ->
@@ -373,8 +372,9 @@ defmodule PhilomenaWeb.ImageView do
              "furbooru.org",
              "inkbunny.net",
              "e621.net",
-             "e926.net"
-           ] or String.ends_with?(u, ".sofurry.com") ->
+             "e926.net",
+             "sofurry.com"
+           ] ->
         "fa fa-paw"
 
       u
@@ -400,15 +400,18 @@ defmodule PhilomenaWeb.ImageView do
         "fab fa-mastodon"
 
       u
-      when u in ["tumbex.com", "www.tumbex.com", "tumblr.com"] or
-             String.ends_with?(u, ".tumblr.com") ->
+      when u in ["tumbex.com", "www.tumbex.com", "tumblr.com"] ->
         "fab fa-tumblr"
 
-      u when Enum.member?(site_domains, u) ->
-        "favicon-home"
-
-      _ ->
-        "fa fa-link"
+      link ->
+        cond do
+          Enum.member?(site_domains, link) -> "favicon-home"
+          String.ends_with?(link, ".tumblr.com") -> "fab fa-tumblr"
+          String.ends_with?(link, ".deviantart.com") -> "fab fa-deviantart"
+          String.ends_with?(link, ".sofurry.com") -> "fa fa-paw"
+          String.ends_with?(link, ".userapi.com") -> "fab fa-vk"
+          true -> "fa fa-link"
+        end
     end
   end
 end
