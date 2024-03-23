@@ -305,13 +305,25 @@ defmodule PhilomenaWeb.ImageView do
     uri = URI.parse(source)
 
     case uri.host do
-      u when u in ["twitter.com", "www.twitter.com", "pbs.twimg.com", "twimg.com"] ->
+      u
+      when u in [
+             "twitter.com",
+             "www.twitter.com",
+             "mobile.twitter.com",
+             "x.com",
+             "mobile.x.com",
+             "pbs.twimg.com",
+             "twimg.com"
+           ] ->
         "fab fa-twitter"
 
-      u when u in ["deviantart.com", "www.deviantart.com", "sta.sh", "www.sta.sh"] ->
+      u
+      when u in ["deviantart.com", "sta.sh", "www.sta.sh"] or
+             String.ends_with?(u, ".deviantart.com") ->
         "fab fa-deviantart"
 
-      u when u in ["cdn.discordapp.com", "discordapp.com", "discord.com"] ->
+      u
+      when u in ["cdn.discordapp.com", "discordapp.com", "discord.com", "media.discordapp.net"] ->
         "fab fa-discord"
 
       u when u in ["youtube.com", "www.youtube.com"] ->
@@ -320,7 +332,7 @@ defmodule PhilomenaWeb.ImageView do
       u when u in ["pillowfort.social", "www.pillowfort.social"] ->
         "fa fa-bed"
 
-      u when u in ["vk.com", "vk.ru"] ->
+      u when u in ["vk.com", "vk.ru"] or String.ends_with?(u, ".userapi.com") ->
         "fab fa-vk"
 
       u when u in ["pixiv.net", "www.pixiv.net", "artfight.net", "www.artfight.net"] ->
@@ -329,7 +341,14 @@ defmodule PhilomenaWeb.ImageView do
       u when u in ["patreon.com", "www.patreon.com"] ->
         "fab fa-patreon"
 
-      u when u in ["ych.art", "ych.commishes.com", "commishes.com"] ->
+      u
+      when u in [
+             "ych.art",
+             "ych.commishes.com",
+             "commishes.com",
+             "portfolio.commishes.com",
+             "commishes.io"
+           ] ->
         "fa fa-palette"
 
       u when u in ["artstation.com", "www.artstation.com"] ->
@@ -355,7 +374,7 @@ defmodule PhilomenaWeb.ImageView do
              "inkbunny.net",
              "e621.net",
              "e926.net"
-           ] ->
+           ] or String.ends_with?(u, ".sofurry.com") ->
         "fa fa-paw"
 
       u
@@ -373,18 +392,23 @@ defmodule PhilomenaWeb.ImageView do
              "vulpine.club",
              "yiff.life",
              "socel.net",
-             "octodon.social"
+             "octodon.social",
+             "filly.social",
+             "pone.social",
+             "hooves.social"
            ] ->
         "fab fa-mastodon"
 
-      link ->
-        cond do
-          Enum.member?(site_domains, link) -> "favicon-home"
-          String.contains?(link, "tumblr") -> "fab fa-tumblr"
-          String.contains?(link, "deviantart") -> "fab fa-deviantart"
-          String.contains?(link, "sofurry") -> "fa fa-paw"
-          true -> "fa fa-link"
-        end
+      u
+      when u in ["tumbex.com", "www.tumbex.com", "tumblr.com"] or
+             String.ends_with?(u, ".tumblr.com") ->
+        "fab fa-tumblr"
+
+      u when Enum.member?(site_domains, u) ->
+        "favicon-home"
+
+      _ ->
+        "fa fa-link"
     end
   end
 end
