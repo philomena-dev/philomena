@@ -161,7 +161,11 @@ function listenAutocomplete() {
         }
         else {
           // inputField could get overwritten while the suggestions are being fetched - use event.target
-          getSuggestions(fetchedTerm).then(suggestions => showAutocomplete(suggestions, fetchedTerm, event.target));
+          getSuggestions(fetchedTerm).then(suggestions => {
+            if (fetchedTerm === event.target.value) {
+              showAutocomplete(suggestions, fetchedTerm, event.target);
+            }
+          });
         }
       }
     }, 300);
