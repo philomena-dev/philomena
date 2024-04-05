@@ -23,8 +23,9 @@ defmodule Philomena.Scrapers.Twitter do
       end)
 
     %{
-      source_url: "https://twitter.com/#{user}/status/#{status_id}",
-      author_name: user,
+      source_url: json["url"],
+      author_name: json["author"]["screen_name"],
+      description: json["text"],
       images: images
     }
   end
