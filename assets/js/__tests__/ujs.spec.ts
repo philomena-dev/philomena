@@ -45,6 +45,7 @@ describe('Remote utilities', () => {
 
     it('should call native fetch with the correct parameters (without body)', () => {
       submitA({ setMethod: true });
+      expect(fetch).toHaveBeenCalledTimes(1);
       expect(fetch).toHaveBeenNthCalledWith(1, mockEndpoint, {
         method: mockVerb,
         credentials: 'same-origin',
@@ -57,6 +58,7 @@ describe('Remote utilities', () => {
 
     it('should call native fetch for a get request without explicit method', () => {
       submitA({ setMethod: false });
+      expect(fetch).toHaveBeenCalledTimes(1);
       expect(fetch).toHaveBeenNthCalledWith(1, mockEndpoint, {
         method: 'GET',
         credentials: 'same-origin',
@@ -113,9 +115,10 @@ describe('Remote utilities', () => {
 
   describe('form[data-remote]', () => {
     // https://www.benmvp.com/blog/mocking-window-location-methods-jest-jsdom/
-    const oldWindowLocation = window.location;
+    let oldWindowLocation: Location;
 
     beforeAll(() => {
+      oldWindowLocation = window.location;
       delete (window as any).location;
 
       (window as any).location = Object.defineProperties(
@@ -156,6 +159,7 @@ describe('Remote utilities', () => {
 
     it('should call native fetch with the correct parameters (with body)', () => {
       submitForm();
+      expect(fetch).toHaveBeenCalledTimes(1);
       expect(fetch).toHaveBeenNthCalledWith(1, mockEndpoint, {
         method: mockVerb,
         credentials: 'same-origin',
@@ -171,6 +175,7 @@ describe('Remote utilities', () => {
       const form = configureForm();
       form.dataset.method = 'put';
       form.submit();
+      expect(fetch).toHaveBeenCalledTimes(1);
       expect(fetch).toHaveBeenNthCalledWith(1, mockEndpoint, {
         method: 'PUT',
         credentials: 'same-origin',
@@ -194,17 +199,15 @@ describe('Remote utilities', () => {
     }));
 
     it('should reload the page on 300 multiple choices response', () => {
-      function multipleChoicesResponse() {
-        return {
-          then(cb: (r: Response) => void) {
-            if (cb) {
-              cb(new Response('', { status: 300 }));
-            }
+      const promiseLike = {
+        then(cb: (r: Response) => void) {
+          if (cb) {
+            cb(new Response('', { status: 300 }));
           }
-        };
-      }
+        }
+      };
 
-      jest.spyOn(global, 'fetch').mockImplementation(multipleChoicesResponse as any);
+      jest.spyOn(global, 'fetch').mockReturnValue(promiseLike as any);
 
       submitForm();
       expect(window.location.reload).toHaveBeenCalledTimes(1);
@@ -272,55 +275,60 @@ describe('Form utilities', () => {
       return [ form, button ];
     };
 
+    const submitText = 'Submit';
+    const loadingText = 'Loading...';
+    const submitMarkup = '<em>Submit</em>';
+    const loadingMarkup = '<em>Loading...</em>';
+
     it('should disable submit button containing a text child on click', () => {
-      const [ , button ] = createFormAndButton('Submit', 'Loading...');
+      const [ , button ] = createFormAndButton(submitText, loadingText);
       button.click();
 
       expect(button.textContent).toEqual(' Loading...');
-      expect(button.dataset.enableWith).toEqual('Submit');
+      expect(button.dataset.enableWith).toEqual(submitText);
     });
 
     it('should disable submit button containing element children on click', () => {
-      const [ , button ] = createFormAndButton('<em>Submit</em>', '<em>Loading...</em>');
+      const [ , button ] = createFormAndButton(submitMarkup, loadingMarkup);
       button.click();
 
-      expect(button.innerHTML).toEqual('<em>Loading...</em>');
-      expect(button.dataset.enableWith).toEqual('<em>Submit</em>');
+      expect(button.innerHTML).toEqual(loadingMarkup);
+      expect(button.dataset.enableWith).toEqual(submitMarkup);
     });
 
     it('should not disable anything when the form is invalid', () => {
-      const [ form, button ] = createFormAndButton('Submit', 'Loading...');
+      const [ form, button ] = createFormAndButton(submitText, loadingText);
       form.insertAdjacentHTML('afterbegin', '<input type="text" name="valid" required="true" />');
       button.click();
 
-      expect(button.textContent).toEqual('Submit');
+      expect(button.textContent).toEqual(submitText);
       expect(button.dataset.enableWith).not.toBeDefined();
     });
 
     it('should reset submit button containing a text child on completion', () => {
-      const [ form, button ] = createFormAndButton('Submit', 'Loading...');
+      const [ form, button ] = createFormAndButton(submitText, loadingText);
       button.click();
       fireEvent(form, new CustomEvent('reset', { bubbles: true }));
 
-      expect(button.textContent).toEqual(' Submit');
+      expect(button.textContent?.trim()).toEqual(submitText);
       expect(button.dataset.enableWith).not.toBeDefined();
     });
 
     it('should reset submit button containing element children on completion', () => {
-      const [ form, button ] = createFormAndButton('<em>Submit</em>', '<em>Loading...</em>');
+      const [ form, button ] = createFormAndButton(submitMarkup, loadingMarkup);
       button.click();
       fireEvent(form, new CustomEvent('reset', { bubbles: true }));
 
-      expect(button.innerHTML).toEqual('<em>Submit</em>');
+      expect(button.innerHTML).toEqual(submitMarkup);
       expect(button.dataset.enableWith).not.toBeDefined();
     });
 
     it('should reset disabled form elements on pageshow', () => {
-      const [ , button ] = createFormAndButton('Submit', 'Loading...');
+      const [ , button ] = createFormAndButton(submitText, loadingText);
       button.click();
       fireEvent(window, new CustomEvent('pageshow'));
 
-      expect(button.textContent).toEqual(' Submit');
+      expect(button.textContent?.trim()).toEqual(submitText);
       expect(button.dataset.enableWith).not.toBeDefined();
     });
   });
