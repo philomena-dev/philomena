@@ -7,14 +7,13 @@ html lang="en"
     title
       = if assigns[:title] do
         => assigns[:title]
-        ' - Derpibooru
+        ' - CubFur
       - else
-        ' Derpibooru
+        ' CubFur
     link rel="stylesheet" href=stylesheet_path(@conn, @current_user)
     = if is_nil(@current_user) do
       link rel="stylesheet" href=dark_stylesheet_path(@conn) media="(prefers-color-scheme: dark)"
     link rel="icon" href="/favicon.ico" type="image/x-icon"
-    link rel="icon" href="/favicon.svg" type="image/svg+xml"
     meta name="generator" content="philomena"
     meta name="theme-color" content="#618fc3"
     meta name="format-detection" content="telephone=no"
