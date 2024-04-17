@@ -1,17 +1,9 @@
 = form_for @changeset, Routes.image_path(@conn, :create), [multipart: true], fn f ->
-  .dnp-warning
-    h4
-      ' Read the
-      a> href="/pages/rules" site rules
-      ' and check our
-      a> href="/dnp" do-not-post list
-    p
-      ' Don't post content the artist doesn't want here (or shared in general),
-      strong including commercial content.
-
   p
     strong
-      ' Please check it isn't already here with
+      ' Please check if the artist is on the 
+      a> href="/dnp" do-not-post list
+      ' and that this image isn't already here with
       a href="/search/reverse" reverse search.
 
   / todo: extract this
@@ -31,7 +23,7 @@
       = error_tag f, :image_orig_sha512_hash
 
     .field.field--inline
-      = url_input f, :scraper_url, class: "input input--wide js-scraper", placeholder: "Link a deviantART page, a Tumblr post, or the image directly"
+      = url_input f, :scraper_url, class: "input input--wide js-scraper", placeholder: "Link a deviantART page, a Tumblr post, an X post, or the image directly"
       button.button.button--separate-left#js-scraper-preview(type="button" title="Fetch the image at the specified URL" data-disable-with="Fetch" disabled)
         ' Fetch
 
