@@ -16,6 +16,8 @@ defmodule Philomena.Tags.Tag do
     "ask",
     "blog",
     "colorist",
+    "writer",
+    "director",
     "comic",
     "editor",
     "fanfic",
@@ -32,6 +34,8 @@ defmodule Philomena.Tags.Tag do
   @namespace_categories %{
     "artist" => "origin",
     "art pack" => "content-fanmade",
+    "writer" => "origin",
+    "director" => "origin",
     "colorist" => "origin",
     "comic" => "content-fanmade",
     "editor" => "origin",
@@ -48,6 +52,8 @@ defmodule Philomena.Tags.Tag do
     "colorist:",
     "editor:",
     "oc:",
+    "writer:",
+    "director:",
     "photographer:"
   ]
 
@@ -156,15 +162,15 @@ defmodule Philomena.Tags.Tag do
     |> Enum.sort_by(
       &{
         &1.category != "error",
-        &1.category != "rating",
         &1.category != "origin",
         &1.category != "character",
         &1.category != "oc",
         &1.category != "species",
         &1.category != "body-type",
-        &1.category != "content-fanmade",
         &1.category != "content-official",
+        &1.category != "content-fanmade",
         &1.category != "spoiler",
+        &1.category != "rating",
         &1.name
       }
     )
@@ -173,7 +179,6 @@ defmodule Philomena.Tags.Tag do
   def categories do
     [
       "error",
-      "rating",
       "origin",
       "character",
       "oc",
@@ -181,7 +186,8 @@ defmodule Philomena.Tags.Tag do
       "body-type",
       "content-fanmade",
       "content-official",
-      "spoiler"
+      "spoiler",
+      "rating"
     ]
   end
 
