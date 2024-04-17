@@ -1,6 +1,25 @@
+import { AstMatcher } from 'query/types';
+
 type SpoilerType = 'click' | 'hover' | 'static' | 'off';
 
+type InteractionType = 'voted' | 'faved' | 'hidden';
+type InteractionValue = 'up' | 'down' | null;
+
+interface Interaction {
+  image_id: number;
+  user_id: number;
+  interaction_type: InteractionType;
+  value: 'up' | 'down' | null;
+}
+
 interface BooruObject {
+  /**
+   * Automatic timestamp recalculation function for userscript use
+   */
+  timeAgo: (args: HTMLTimeElement[]) => void;
+  /**
+   * Anti-forgery token sent by the server
+   */
   csrfToken: string;
   /**
    * One of the specified values, based on user setting
@@ -36,24 +55,20 @@ interface BooruObject {
    */
   userCanEditFilter: boolean;
   /**
-   * SearchAST instance for hidden tags, converted from raw AST data in {@see import('../js/booru.js')}
+   * AST matcher instance for filter hidden query
    *
-   * TODO Properly type after TypeScript migration
-   *
-   * @type {import('../js/match_query.js').SearchAST}
    */
-  hiddenFilter: unknown;
+  hiddenFilter: AstMatcher;
   /**
-   * SearchAST instance for spoilered tags, converted from raw AST data in {@see import('../js/booru.js')}
-   *
-   * TODO Properly type after TypeScript migration
-   *
-   * @type {import('../js/match_query.js').SearchAST}
+   * AST matcher instance for filter spoilered query
    */
-  spoileredFilter: unknown;
+  spoileredFilter: AstMatcher;
   tagsVersion: number;
+  interactions: Interaction[];
 }
 
-interface Window {
-  booru: BooruObject;
+declare global {
+  interface Window {
+    booru: BooruObject;
+  }
 }

@@ -73,7 +73,7 @@ defmodule Philomena.Images.Query do
       float_fields: ~W(aspect_ratio wilson_score duration),
       date_fields: ~W(created_at updated_at first_seen_at),
       literal_fields:
-        ~W(faved_by orig_sha512_hash sha512_hash uploader source_url original_format mime_type),
+        ~W(faved_by orig_sha512_hash sha512_hash uploader source_url original_format mime_type file_name),
       bool_fields: ~W(animated processed thumbnails_generated),
       ngram_fields: ~W(description),
       custom_fields: ~W(gallery_id),
@@ -82,7 +82,8 @@ defmodule Philomena.Images.Query do
       aliases: %{
         "faved_by" => "favourited_by_users",
         "faved_by_id" => "favourited_by_user_ids"
-      }
+      },
+      no_downcase_fields: ~W(file_name)
     ]
   end
 
