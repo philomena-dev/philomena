@@ -1,7 +1,7 @@
 header {
   display: flex;
   line-height: var(--navbar-size);
-  padding: 0 var(--padding-normal);
+  padding: 0 var(--padding-large);
   font-size: var(--font-header-size);
   gap: var(--padding-large);
   align-items: center;
@@ -18,7 +18,7 @@ header {
 }
 
 .header__logo {
-  font-size: var(--font-h1-size)
+  font-size: var(--font-h2-size)
 }
 
 .header__search {
@@ -71,7 +71,7 @@ header {
 nav.header__secondary {
   display: flex;
   line-height: var(--navbar-secondary-size);
-  padding: 0 var(--padding-normal);
+  padding: 0 var(--padding-large);
   font-size: var(--font-header-size);
   gap: var(--padding-large);
   align-items: center;
@@ -87,6 +87,7 @@ nav.dropdown__content {
     gap: var(--padding-normal);
     flex-wrap: wrap;
     margin-bottom: var(--padding-normal);
+    padding: 0 var(--padding-normal);
   }
 
   nav.header__secondary {

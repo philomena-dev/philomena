@@ -47,9 +47,9 @@
       i.fas.fa-fw.fa-unlock>
       ' Not currently locked
 
-    hr.separator.separator--secondary
+    hr.separator.separator--danger
 
-    a.button.button--warning href="#" data-click-toggle=".js-admin__options__toggle" title="Toggle Controls"
+    a.button.button--danger href="#" data-click-toggle=".js-admin__options__toggle" title="Toggle Controls"
       i.fa.fa-fw.fa-bars
       span Toggle Controls
 

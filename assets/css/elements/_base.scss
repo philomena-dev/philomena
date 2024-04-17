@@ -8,10 +8,11 @@ body {
   margin: 0;
   background: var(--background-color);
   color: var(--text-color);
+  line-height: var(--default-line-height);
 }
 
 main {
-  padding: var(--padding-normal);
+  padding: var(--padding-large);
   flex-grow: 1;
 }
 
@@ -32,4 +33,11 @@ a:hover {
 
 .hidden {
   display: none !important;
+}
+
+p, .paragraph {
+  hyphens: none;
+  line-height: var(--readable-line-height);
+  margin: var(--padding-small);
+  margin-right: 0;
 }

@@ -2,18 +2,18 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   grid-auto-rows: 1fr;
-  grid-gap: 0.5em;
+  grid-gap: 0.5rem;
 }
 
 .staff-block__user-card {
   display: grid;
-  grid-template-columns: auto 8em;
+  grid-template-columns: auto 8rem;
 }
 
 .staff-block__user {
   flex-grow: 1;
   width: auto;
-  padding: 1em;
+  padding: 1rem;
 }
 
 .staff-block__info {
@@ -27,15 +27,16 @@
 }
 
 .staff-block__description {
-  margin: 1em 0;
+  margin: 1rem 0;
 }
 
 .staff-block__separator {
-  margin: 0.75em 0.5em;
+  margin: 0.75rem 0.5rem;
+  border-color: var(--primary-color);
 }
 
 .staff-block__category {
-  margin-top: 1em;
+  margin-top: 1rem;
 }
 
 .staff-block__user-description {

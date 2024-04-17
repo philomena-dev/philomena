@@ -103,6 +103,15 @@
 .block--fixed {
   padding: var(--padding-normal);
   border-radius: var(--border-radius-inner);
+  background: var(--primary-muted-color);
+}
+
+.block__content > *:last-child, .block--fixed > *:last-child {
+  margin-bottom: 0;
+}
+
+.block__content > *:first-child, .block--fixed > *:first-child {
+  margin-top: 0;
 }
 
 .block__tab {

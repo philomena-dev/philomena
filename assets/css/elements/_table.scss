@@ -3,6 +3,18 @@
   width: 100%;
 }
 
+.table > thead {
+  border-radius: var(--border-radius-inner);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.table > tbody {
+  border-radius: var(--border-radius-inner);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
 .table td, th {
   padding: var(--padding-small);
   border: 1px solid var(--secondary-muted-color);

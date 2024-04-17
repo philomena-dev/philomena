@@ -1,6 +1,8 @@
 .statistics {
   @extend .flex__column;
-  border: 1px solid var(--secondary-color);
+  border: 1.5px solid var(--secondary-color);
+  border-radius: var(--border-radius-inner);
+  overflow: hidden;
 }
 
 .statistics__statistic {
