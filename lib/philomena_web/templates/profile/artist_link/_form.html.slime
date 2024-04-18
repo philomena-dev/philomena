@@ -7,16 +7,16 @@
     .field
       p
         label for="tag_name"
-          ' Artist Link validation is intended for artists. Validating your link will give you control over your content on the site, allowing you to create a 
+          ' Artist/OC Link validation is intended for artists and OC owners. Validating your link will give you control over your content on the site, allowing you to create a 
           a> href="/commissions" commissions
-          ' listing and request takedowns or DNPs. Do not request a link if the source contains no artwork which you have created.
-      = text_input f, :tag_name, value: assigns[:tag_name], class: "input", autocomplete: "off", placeholder: "artist:your-name", data: [ac: "true", ac_min_length: "3", ac_source: "/autocomplete/tags?term="]
+          ' listing and request takedowns or DNPs (if you're the artist). Do not request a link if the source contains no artwork by or for you.
+      = text_input f, :tag_name, value: assigns[:tag_name], class: "input", autocomplete: "off", placeholder: "your-name", data: [ac: "true", ac_min_length: "3", ac_source: "/autocomplete/tags?term="]
       = error_tag f, :tag
 
   .field
     label for="uri"
       ' URL of your art webpage (may be your CubFur.Gay profile page if you have no other sources)
-    = url_input f, :uri, class: "input input--wide", placeholder: "https://www.deviantart.com/your-name", required: true
+    = url_input f, :uri, class: "input input--wide", placeholder: "https://inkbunny.net/your-name", required: true
     = error_tag f, :uri
 
   elixir:
@@ -32,7 +32,7 @@
   p
     strong Review details carefully as only site staff can edit later.
   p
-    strong> For quick results, put the LINKVALIDATION code on your linked webpage after submission.
+    strong> For quick results, put the CUBFUR.GAY-LV code on your linked webpage after submission.
     | We'll message you there otherwise.
   .actions
     = submit "Submit", class: "button"

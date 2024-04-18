@@ -65,7 +65,7 @@
 
     .block
       = if current?(@user, @conn.assigns.current_user) or manages_links?(@conn, @user) do
-        a.block__header--single-item href=Routes.profile_artist_link_path(@conn, :new, @user) Artist Links
+        a.block__header--single-item href=Routes.profile_artist_link_path(@conn, :new, @user) Artist/OC Links
       - else
         .block__header
           span.block__header__title Artist Links

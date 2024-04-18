@@ -1,9 +1,9 @@
-h1 Artist Links
+h1 Artist/OC Links
 p
   a.button href=Routes.profile_artist_link_path(@conn, :new, @user)
     ' Request a link
 p
-  ' Artist links associate your account on CubFur.Gay with tags about content you create and with accounts on sites elsewhere. This allows users to easily identify artists and staff to act more rapidly on takedown requests.
+  ' Artist/OC links associate your account on CubFur.Gay with tags about content you create and with accounts on sites elsewhere. This allows users to easily identify artists, OCs, etc. and for staff to act rapidly on takedown requests.
 
 table.table
   thead

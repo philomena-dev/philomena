@@ -63,8 +63,8 @@ defmodule Philomena.ArtistLinks.ArtistLink do
   def validate_category(changeset) do
     tag = get_field(changeset, :tag)
 
-    if not is_nil(tag) and tag.category not in ["origin", "content-fanmade"] do
-      add_error(changeset, :tag, "must be a creator tag")
+    if not is_nil(tag) and tag.category not in ["origin", "oc", "director", "writer", "colorist", "content-fanmade"] do
+      add_error(changeset, :tag, "must be a creator, fanmade, or oc tag")
     else
       changeset
     end
@@ -103,7 +103,7 @@ defmodule Philomena.ArtistLinks.ArtistLink do
 
   defp put_verification_code(changeset) do
     code = :crypto.strong_rand_bytes(5) |> Base.encode16()
-    change(changeset, verification_code: "DERPI-LINKVALIDATION-#{code}")
+    change(changeset, verification_code: "CUBFUR.GAY-VAL-#{code}")
   end
 
   defp put_next_check_at(changeset) do
