@@ -111,8 +111,8 @@ h1 Search
         br
         br
         em<> Example:
-        | to find images from DeviantArt, you would use
-        code<> source_url:*deviantart.com*
+        | to find images from InkBunny, you would use
+        code<> source_url:*inkbunny.net*
         | .
 
   #js-search-tags.hidden

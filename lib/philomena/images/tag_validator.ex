@@ -108,8 +108,8 @@ defmodule Philomena.Images.TagValidator do
     |> MapSet.new()
   end
 
-  defp safe_rating, do: MapSet.new(["safe"])
-  defp sexual_ratings, do: MapSet.new(["suggestive", "questionable", "explicit"])
+  defp safe_rating, do: MapSet.new(["clean"])
+  defp sexual_ratings, do: MapSet.new(["suggestive", "nude only", "explicit"])
   defp horror_ratings, do: MapSet.new(["semi-grimdark", "grimdark"])
   defp gross_rating, do: MapSet.new(["grotesque"])
 end

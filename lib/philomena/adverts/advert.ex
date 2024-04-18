@@ -62,6 +62,6 @@ defmodule Philomena.Adverts.Advert do
     |> validate_inclusion(:image_mime_type, ["image/png", "image/jpeg", "image/gif"])
     |> validate_inclusion(:image_width, 699..729)
     |> validate_inclusion(:image_height, 79..91)
-    |> validate_inclusion(:image_size, 0..750_000)
+    |> validate_inclusion(:image_size, 0..950_000)
   end
 end
