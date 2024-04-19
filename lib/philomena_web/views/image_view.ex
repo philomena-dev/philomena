@@ -328,9 +328,11 @@ defmodule PhilomenaWeb.ImageView do
              "fav.me"
            ] ->
         "fab fa-deviantart"
+      u
       when u in [
           "inkbunny.net",
-          "*.ib.metapix.net"
+          "ib.metapix.net",
+          "tx.ib.metapix.net"
         ] ->
      "fa-solid fa-carrot"
       u
