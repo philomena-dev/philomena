@@ -24,4 +24,7 @@ defmodule Philomena.Scrapers.Inkbunny do
       images: images
     }
   end
+  defp inkbunny_sid do
+    Application.get_env(:philomena, :inkbunny_sid)
+  end
 end
