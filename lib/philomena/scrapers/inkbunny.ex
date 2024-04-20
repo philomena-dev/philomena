@@ -1,5 +1,5 @@
 defmodule Philomena.Scrapers.Inkbunny do
-  @url_regex ~r|\Ahttps?://inkbunny.net/s/([\d]+)/?|
+  @url_regex ~r|\Ahttps?://inkbunny\.net/s/([0-9]+)|
 
   @spec can_handle?(URI.t(), String.t()) :: true | false
   def can_handle?(_uri, url) do
