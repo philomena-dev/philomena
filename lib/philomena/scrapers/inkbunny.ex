@@ -16,13 +16,13 @@ defmodule Philomena.Scrapers.Inkbunny do
 
     images = for x <- submission["files"] do
       %{
-        url: "#{x["file_url_preview"]}:orig",
+        url: "#{x["file_url_full"]}",
         camo_url: Camo.Image.image_url(x["file_url_preview"])
       }
     end
 
     %{
-      source_url: submission["url"],
+      source_url: url,
       author_name: submission["username"],
       description: submission["description"],
       images: images
