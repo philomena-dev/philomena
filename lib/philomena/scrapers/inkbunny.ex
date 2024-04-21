@@ -13,9 +13,12 @@ defmodule Philomena.Scrapers.Inkbunny do
 
     json = Jason.decode!(body)
     [submission] = json["submissions"]
-    
+
     images = for x <- submission["files"] do
-      x["file_url_full"]
+      %{
+        url: "#{x["file_url_preview"]}:orig",
+        camo_url: Camo.Image.image_url(x["file_url_preview"])
+      }
     end
 
     %{
