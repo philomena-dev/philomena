@@ -1,14 +1,11 @@
 defmodule Philomena.Scrapers.Inkbunny do
-  @url_regex ~r|\Ahttps?://inkbunny\.net/s/([0-9]+)|
+def match_submission_id("https://inkbunny.net/s/" <> id), do: id
+def match_submission_id(_), do: nil
 
-  @spec can_handle?(URI.t(), String.t()) :: true | false
-  def can_handle?(_uri, url) do
-    String.match?(url, @url_regex)
-  end
-
-  def scrape(_uri, url) do
-    [submission_id] = Regex.run(@url_regex, url, capture: :all)
-
+iex(1)> Test.match_submission_id("test")
+nil
+iex(2)> Test.match_submission_id("https://inkbunny.net/s/123456789")
+"123456789"
     api_url = "https://inkbunny.net/api_submissions.php?show_description=yes&sid=#{inkbunny_sid()}&submission_ids=#{submission_id}"
     {:ok, %Tesla.Env{status: 200, body: body}} = Philomena.Http.get(api_url)
 
