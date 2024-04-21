@@ -11,12 +11,20 @@ defmodule Philomena.Scrapers.Furaffinity do
     api_url = "https://faexport.spangle.org.uk/submission/#{submission_id}.json"
     {:ok, %Tesla.Env{status: 200, body: body}} = Philomena.Http.get(api_url)
 
-    submission = Jason.decode!(body)
+    submission = Jason.decode!(body) |> IO.inspect
+
+    rating = case submission["rating"] do
+      "General" -> "safe"
+      "Mature" -> "suggestive"
+      "Adult" -> "explicit"
+      _ -> nil
+    end
 
     %{
       source_url: url,
       author_name: submission["name"],
       description: submission["description"],
+      tags: [rating],
       images: [
         %{
           url: "#{submission["download"]}",
