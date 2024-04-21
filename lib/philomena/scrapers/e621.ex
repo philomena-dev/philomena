@@ -11,11 +11,11 @@ defmodule Philomena.Scrapers.E621 do
     {:ok, %Tesla.Env{status: 200, body: body}} = Philomena.Http.get(api_url)
 
     json = Jason.decode!(body)
-    [submission] = json["post"]
+    submission = json["post"]
 
     %{
       source_url: url,
-      author_name: Enum.join(submission["tags"]["artist"], ", "),
+      author_name: hd(submission["tags"]["artist"]),
       description: submission["description"],
       images: [%{
         url: "#{submission["file"]["url"]}",
