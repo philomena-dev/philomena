@@ -7,7 +7,7 @@ defmodule Philomena.Scrapers.Inkbunny do
   end
 
   def scrape(_uri, url) do
-    [submission_id] = Regex.run(@url_regex, url, capture: :all_but_last)
+submission_id = Regex.run(@url_regex, url, capture: :all) |> hd() |> List.last()
 
     api_url = "https://inkbunny.net/api_submissions.php?show_description=yes&sid=#{inkbunny_sid()}&submission_ids=#{submission_id}"
     {:ok, %Tesla.Env{status: 200, body: body}} = Philomena.Http.get(api_url)
