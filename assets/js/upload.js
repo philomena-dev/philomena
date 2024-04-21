@@ -35,6 +35,7 @@ function setupImageUpload() {
   const descrEl = $('.js-image-descr-input', form);
   const tagsEl = $('.js-image-tags-input', form);
   const sourceEl = $$('.js-source-url', form).find(input => input.value === '');
+  const sourceAdd = $('.js-image-add-source');
   const fetchButton = $('#js-scraper-preview');
   if (!fetchButton) return;
 
@@ -116,6 +117,24 @@ function setupImageUpload() {
       if (descrEl) descrEl.value = descrEl.value || data.description || '';
       // Add author
       if (tagsEl && data.author_name) addTag(tagsEl, `artist:${data.author_name.toLowerCase()}`);
+      // Add multiple authors if provided
+      if (tagsEl && data.authors) data.authors.forEach(item => addTag(tagsEl, `artist:${item.toLowerCase()}`));
+      // Add Tags
+      if (tagsEl && data.tags) data.tags.forEach(item => addTag(tagsEl, `${item.toLowerCase()}`));
+      // Add multiple sources
+      if (sourceAdd && data.sources && data.sources.length > 0) {
+        data.sources.forEach(() => {
+          sourceAdd.dispatchEvent(new Event('click'));
+        });
+
+        let index;
+        const inps = document.querySelectorAll('.js-image-source input:placeholder-shown');
+
+        data.sources.forEach(item => {
+          index = data.sources.indexOf(item);
+          if (inps[index]) inps[index].value = item;
+        });
+      }
       // Clear selected file, if any
       fileField.value = '';
       showImages(data.images);

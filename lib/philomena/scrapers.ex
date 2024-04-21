@@ -6,6 +6,7 @@ defmodule Philomena.Scrapers do
     Philomena.Scrapers.Tumblr,
     Philomena.Scrapers.Inkbunny,
     Philomena.Scrapers.E621,
+    Philomena.Scrapers.Furaffinity,
     Philomena.Scrapers.Raw
   ]
 
