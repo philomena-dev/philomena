@@ -12,9 +12,11 @@ defmodule Philomena.Scrapers.Inkbunny do
     {:ok, %Tesla.Env{status: 200, body: body}} = Philomena.Http.get(api_url)
 
     json = Jason.decode!(body)
-    submission = json["submissions"]
-
-    images = submission["files"]["file_url_full"]
+    [submission] = json["submissions"]
+    
+    images = for x <- submission["files"] do
+      x["file_url_full"]
+    end
 
     %{
       source_url: submission["url"],
