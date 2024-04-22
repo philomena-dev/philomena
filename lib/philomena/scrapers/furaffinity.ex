@@ -20,10 +20,17 @@ defmodule Philomena.Scrapers.Furaffinity do
       _ -> nil
     end
 
+    description = submission["description"]
+    |> HtmlSanitizeEx.strip_tags()
+    |> String.replace(~r/  +/, " ")
+    |> String.replace(~r/\n \n +/, "\n")
+    |> String.replace(~r/\n /, "\n")
+    |> String.trim()
+
     %{
       source_url: url,
       author_name: submission["name"],
-      description: submission["description"],
+      description: description,
       tags: [rating],
       images: [
         %{
