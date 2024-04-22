@@ -13,9 +13,25 @@ defmodule Philomena.Scrapers.E621 do
     json = Jason.decode!(body)
     submission = json["post"]
 
+    tags = submission["tags"]["general"] ++ submission["tags"]["species"]
+    tags = for x <- tags do
+      String.replace(x, "_", " ")
+    end
+
+    rating = case submission["rating"] do
+      "s" -> "safe"
+      "q" -> "suggestive"
+      "e" -> "explicit"
+      _ -> nil
+    end
+
+    tags = if is_nil(rating), do: tags, else: [rating | tags]
+
     %{
       source_url: url,
-      author_name: hd(submission["tags"]["artist"]),
+      authors: submission["tags"]["artist"],
+      tags: tags,
+      sources: submission["sources"],
       description: submission["description"],
       images: [%{
         url: "#{submission["file"]["url"]}",
