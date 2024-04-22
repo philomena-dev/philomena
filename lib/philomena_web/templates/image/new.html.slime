@@ -10,7 +10,7 @@
   h4 Select an image
   .image-other
     #js-image-upload-previews
-p Upload a file from your computer, or provide a link to the page containing the image and click Fetch.
+    p Upload a file from your computer, or provide a link to the page containing the image and click Fetch.
     .field
       = file_input f, :image, class: "input js-scraper"
       = error_tag f, :image
