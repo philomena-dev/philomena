@@ -1,4 +1,4 @@
-{
+ {
   "tabs": [
     "Main",
     "Species",
@@ -58,6 +58,7 @@
       "traditional",
       "vector",
       "ai assisted",
+      "ai generated",
       "ai enhanced"
     ],
     "Common": [
