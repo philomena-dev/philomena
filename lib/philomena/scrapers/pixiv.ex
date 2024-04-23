@@ -15,17 +15,17 @@ defmodule Philomena.Scrapers.Pixiv do
     submission = json["body"]
 
     description = submission["illust_details"]["comment"]
-
+    images = for x <- submission["illust_details"]["manga_a"] do
+      %{
+        url: "#{x["url_big"]}",
+        camo_url: Camo.Image.image_url(x["url"])
+      }
+    end
     %{
       source_url: url,
       author_name: submission["author_details"]["user_account"],
       description: description,
-      images: [
-        %{
-          url: "#{submission["illust_details"]["manga_a"]["url_big"]}",
-          camo_url: Camo.Image.image_url(submission["illust_details"]["manga_a"]["url"])
-        }
-      ]
+      images: images
     }
   end
 end
