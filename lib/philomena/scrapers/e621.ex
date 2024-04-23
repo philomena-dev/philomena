@@ -7,7 +7,7 @@ defmodule Philomena.Scrapers.E621 do
   end
 
   def scrape(_uri, url) do
-    api_url = "#{url}.json&login=#{e621_user()}&api_key=#{e621_apikey()}"
+    api_url = "#{url}.json?login=#{e621_user()}&api_key=#{e621_apikey()}"
     {:ok, %Tesla.Env{status: 200, body: body}} = Philomena.Http.get(api_url)
 
     json = Jason.decode!(body)
