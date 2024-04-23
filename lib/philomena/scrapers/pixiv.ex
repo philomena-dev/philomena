@@ -1,5 +1,5 @@
 defmodule Philomena.Scrapers.Pixiv do
-  @url_regex ~r|\Ahttps?://pixiv\.net/en/artworks/([0-9]+)|
+  @url_regex ~r|\Ahttps?://www\.pixiv\.net/en/artworks/([0-9]+)|
 
   @spec can_handle?(URI.t(), String.t()) :: true | false
   def can_handle?(_uri, url) do
@@ -11,14 +11,10 @@ defmodule Philomena.Scrapers.Pixiv do
     api_url = "https://www.pixiv.net/touch/ajax/illust/details?illust_id=#{submission_id}"
     {:ok, %Tesla.Env{status: 200, body: body}} = Philomena.Http.get(api_url)
 
-    submission = Jason.decode!(body)
+    json = Jason.decode!(body)
+    submission = json["body"]
 
     description = submission["illust_details"]["comment"]
-    |> HtmlSanitizeEx.strip_tags()
-    |> String.replace(~r/  +/, " ")
-    |> String.replace(~r/\n \n +/, "\n")
-    |> String.replace(~r/\n /, "\n")
-    |> String.trim()
 
     %{
       source_url: url,
