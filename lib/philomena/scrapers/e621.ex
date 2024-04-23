@@ -7,7 +7,7 @@ defmodule Philomena.Scrapers.E621 do
   end
 
   def scrape(_uri, url) do
-    api_url = "#{url}.json"
+    api_url = "#{url}.json&login=#{e621_user()}&api_key=#{e621_apikey()}"
     {:ok, %Tesla.Env{status: 200, body: body}} = Philomena.Http.get(api_url)
 
     json = Jason.decode!(body)
@@ -38,5 +38,11 @@ defmodule Philomena.Scrapers.E621 do
         camo_url: Camo.Image.image_url(submission["file"]["url"])
       }]
     }
+  end
+  defp e621_user do
+    Application.get_env(:philomena, :e621_user)
+  end
+  defp e621_apikey do
+    Application.get_env(:philomena, :e621_apikey)
   end
 end
