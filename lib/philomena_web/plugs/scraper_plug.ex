@@ -20,6 +20,15 @@ defmodule PhilomenaWeb.ScraperPlug do
 
       _ ->
         conn
+        headers = if String.contains?(url, "pximg.net") do
+          [{"Referer", "https://pixiv.net/"}]
+        else
+          []
+        end
+
+        url
+        |> Philomena.Http.get(headers)
+        |> maybe_fixup_params(url, opts, conn)
     end
   end
 

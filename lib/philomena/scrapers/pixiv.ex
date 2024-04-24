@@ -15,12 +15,28 @@ defmodule Philomena.Scrapers.Pixiv do
     submission = json["body"]
 
     description = submission["illust_details"]["comment"]
-    images = for x <- submission["illust_details"] do
+
+    images = if submission["illust_details"]["manga_a"] do
+      submission["illust_details"]["manga_a"]
+    else
+      [submission["illust_details"]]
+    end
+
+    images = for x <- images do
+      pre = x["url_small"] || x["url_ss"]
+      {:ok, %Tesla.Env{status: 200, body: body, headers: headers}}
+        = Philomena.Http.get(pre, [{"Referer", "https://pixiv.net/"}])
+
+      type = headers
+      |> Enum.into(%{})
+      |> Map.get("content-type")
+
       %{
-        url: "#{x["url_big"]}",
-        camo_url: Camo.Image.image_url(x["url"])
+        url: x["url"],
+        camo_url: "data:#{type};base64,#{Base.encode64(body)}"
       }
     end
+
     %{
       source_url: url,
       author_name: submission["author_details"]["user_account"],
