@@ -28,10 +28,16 @@ defmodule PhilomenaWeb.Profile.TagChangeController do
       |> order_by(desc: :id)
       |> Repo.paginate(conn.assigns.scrivener)
 
+    # params.permit(:added, :only_tag) ...
+    pagination_params =
+      [added: conn.params["added"], only_tag: conn.params["only_tag"]]
+      |> Keyword.filter(fn {k, _v} -> Map.has_key?(conn.params, "#{k}") end)
+
     render(conn, "index.html",
       title: "Tag Changes for User `#{user.name}'",
       user: user,
-      tag_changes: tag_changes
+      tag_changes: tag_changes,
+      pagination_params: pagination_params
     )
   end
 
