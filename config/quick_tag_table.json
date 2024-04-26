@@ -1,4 +1,4 @@
- {
+{
   "tabs": [
     "Main",
     "Species",
@@ -28,7 +28,7 @@
       "trans-male",
       "trans-female",
       "intersex",
-      "ambiguous sex"
+      "ambiguous sex",
       "woman",
       "man",
       "girl",
@@ -242,7 +242,7 @@
       "Groupings": [
         "solo",
         "duo",
-        "trio"'
+        "trio","",
         "solo focus",
         "duo focus",
         "trio focus",
