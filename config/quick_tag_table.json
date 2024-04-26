@@ -19,6 +19,7 @@
       "suggestive",
       "nude only",
       "explicit",
+      "grotesque",
       "grimdark"
     ],
     "Sex (Appearance)": [
@@ -26,8 +27,16 @@
       "female",
       "trans-male",
       "trans-female",
-      "altersex",
+      "intersex",
       "ambiguous sex"
+      "woman",
+      "man",
+      "girl",
+      "boy",
+      "solo male",
+      "solo female",
+      "males only",
+      "females only"
     ],
     "Body": [
       "anthro",
@@ -37,6 +46,7 @@
       "adult",
       "teen",
       "cub",
+      "child",
       "muscular",
       "chubby",
       "slender",
@@ -48,7 +58,7 @@
     "Media": [
       "digital",
       "colored",
-      "shaded",
+      "fully shaded",
       "cel shaded",
       "flat colored",
       "lines",
@@ -62,7 +72,7 @@
       "ai enhanced"
     ],
     "Common": [
-      "clothed",
+      "clothing",
       "nude",
       "topless",
       "bottomless",
@@ -72,6 +82,7 @@
       "undressing another",
       "wardrobe malfunction",
       "blushing",
+      "winking",
       "eyes closed",
       "one eye closed",
       "smiling",
@@ -167,7 +178,7 @@
         "hair",
         "skin",
         "tail",
-	"butt",
+	       "butt",
         "pecs",
         "abs",
         "nipples",
@@ -231,8 +242,10 @@
       "Groupings": [
         "solo",
         "duo",
+        "trio"'
         "solo focus",
         "duo focus",
+        "trio focus",
         "group",
         "1boy",
         "1girl",
@@ -270,7 +283,11 @@
         "trans/male",
         "trans/female",
         "trans/trans",
-	"bisexual",
+        "male/intersex",
+        "female/intersex",
+        "trans/intersex",
+        "intersex/intersex",
+       	"bisexual",
         "man/boy",
         "boy/boy",
         "woman/girl",
@@ -285,9 +302,8 @@
         "sex",
         "sexual intercourse",
         "anal sex",
-	"vaginal sex",
+       	"vaginal sex",
         "oral sex",
-	"vaginal sex",
         "masturbating",
         "handjob",
         "fingering",
