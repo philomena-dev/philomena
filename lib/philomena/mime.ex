@@ -30,7 +30,7 @@ defmodule Philomena.Mime do
   def true_mime("audio/webm"), do: {:ok, "video/webm"}
 
   def true_mime(mime)
-      when mime in ~W(image/gif image/jpeg image/png image/webp image/svg+xml video/webm),
+      when mime in ~W(image/gif image/jpeg image/png image/svg+xml video/webm),
       do: {:ok, mime}
 
   def true_mime(mime), do: {:unsupported_mime, mime}

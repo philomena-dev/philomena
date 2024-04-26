@@ -1,5 +1,5 @@
 defmodule Philomena.Scrapers.Raw do
-  @mime_types ["image/gif", "image/jpeg", "image/png", "image/svg", "image/webp", "image/svg+xml", "video/webm"]
+  @mime_types ["image/gif", "image/jpeg", "image/png", "image/svg", "image/svg+xml", "video/webm"]
 
   @spec can_handle?(URI.t(), String.t()) :: true | false
   def can_handle?(_uri, url) do

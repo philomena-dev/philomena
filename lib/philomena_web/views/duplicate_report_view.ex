@@ -3,7 +3,7 @@ defmodule PhilomenaWeb.DuplicateReportView do
 
   alias PhilomenaWeb.ImageView
 
-  @formats_order ~W(video/webm image/svg+xml image/png image/gif image/jpeg image/webp other)
+  @formats_order ~W(video/webm image/svg+xml image/png image/gif image/jpeg other)
 
   def comparison_url(conn, image),
     do: ImageView.thumb_url(image, can?(conn, :show, image), :full)
