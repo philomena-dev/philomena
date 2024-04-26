@@ -410,7 +410,7 @@ defmodule Philomena.Users.User do
     |> validate_number(:avatar_size, greater_than: 0, less_than_or_equal_to: 300_000)
     |> validate_number(:avatar_width, greater_than: 0, less_than_or_equal_to: 1000)
     |> validate_number(:avatar_height, greater_than: 0, less_than_or_equal_to: 1000)
-    |> validate_inclusion(:avatar_mime_type, ~W(image/gif image/jpeg image/png image/webp))
+    |> validate_inclusion(:avatar_mime_type, ~W(image/gif image/jpeg image/png))
   end
 
   def remove_avatar_changeset(user) do
