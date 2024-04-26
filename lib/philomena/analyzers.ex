@@ -9,6 +9,7 @@ defmodule Philomena.Analyzers do
   alias Philomena.Analyzers.Jpeg
   alias Philomena.Analyzers.Png
   alias Philomena.Analyzers.Svg
+  alias Philomena.Analyzers.Webp
   alias Philomena.Analyzers.Webm
 
   @doc """
@@ -33,6 +34,7 @@ defmodule Philomena.Analyzers do
   def analyzer("image/jpeg"), do: {:ok, Jpeg}
   def analyzer("image/png"), do: {:ok, Png}
   def analyzer("image/svg+xml"), do: {:ok, Svg}
+  def analyzer("image/webp"), do: {:ok, Webp}
   def analyzer("video/webm"), do: {:ok, Webm}
   def analyzer(_content_type), do: :error
 

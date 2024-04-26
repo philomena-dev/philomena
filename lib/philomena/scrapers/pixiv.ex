@@ -23,7 +23,7 @@ defmodule Philomena.Scrapers.Pixiv do
     end
 
     images = for x <- images do
-      pre = x["url_small"] || x["url_ss"]
+      pre = x["url_small"] || x["url_s"]
       {:ok, %Tesla.Env{status: 200, body: body, headers: headers}}
         = Philomena.Http.get(pre, [{"Referer", "https://pixiv.net/"}])
 
