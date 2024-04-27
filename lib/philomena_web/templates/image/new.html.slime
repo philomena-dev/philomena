@@ -56,8 +56,11 @@
   .field
     label for="image[tag_input]"
       ' Describe with
-      strong> 3+
-      ' tags, including ratings and applicable artist tags
+      strong> 6+
+      ' tags, including ratings and applicable artist tags. If importing an image from another website, please verify all tags are accurate. If an OC posted this, it will mark them as the artist. Check the description to get the artist name. Do not use underscores, and separate tags with commas.
+
+      p For artists: prefix with artist: If you don't know the artist, put unknown artist.
+      p For original characters, prefix with oc:
 
     = render PhilomenaWeb.TagView, "_tag_editor.html", f: f, name: :tag_input, type: :upload
     = error_tag f, :tag_input
