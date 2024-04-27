@@ -99,7 +99,7 @@ defmodule Philomena.Images.Image do
 
     field :uploaded_image, :string, virtual: true
     field :removed_image, :string, virtual: true
-
+    field :tag_input, :string, virtual: true
     timestamps(inserted_at: :created_at, type: :utc_datetime)
   end
 
