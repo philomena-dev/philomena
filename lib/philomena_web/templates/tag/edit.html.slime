@@ -44,10 +44,10 @@ br
   label for="tag-management" Tag Processing
   .toggle-box-container
     .toggle-box-container__content
-      = button_to "Rebuild index", Routes.tag_reindex_path(@conn, :create, @tag), method: "post", class: "button", data: [confirm: "Are you really, really sure?", disable_with: raw("Reindexing&hellip;")]
+      = button_to "Rebuild index", Routes.tag_reindex_path(@conn, :create, @tag), method: "post", class: "button", data: [confirm: "Is chu weawwy~ weawwy suwe?", disable_with: raw("Reindexing&hellip;")]
       p Use this if the tag displays the wrong number of images or returns the wrong search results.
 
-      = button_to "Destroy tag", Routes.tag_path(@conn, :delete, @tag), method: "delete", class: "button button--state-danger", data: [confirm: "Are you really, really sure?", disable_with: raw("Deleting&hellip;")]
+      = button_to "Destroy tag", Routes.tag_path(@conn, :delete, @tag), method: "delete", class: "button button--state-danger", data: [confirm: "Is chu weawwy~ weawwy suwe?", disable_with: raw("Deleting&hellip;")]
       p
         strong Irreversible. Use with extreme caution!
       ul

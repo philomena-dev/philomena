@@ -13,6 +13,10 @@
       = link "Usage", to: Routes.tag_detail_path(@conn, :index, @tag), class: "detail-link"
     = if manages_dnp?(@conn) do
       = link "Create new DNP entry", to: Routes.dnp_entry_path(@conn, :new, tag_id: @tag.id), class: "detail-link"
+    = if manages_tags?(@conn) do
+      = link "Edit spoiler image", to: Routes.tag_image_path(@conn, :edit, @tag)
+    = if can?(@conn, :alias, @tag) do
+      = link "Edit aliases", to: Routes.tag_alias_path(@conn, :edit, @tag)
 
     br
   
