@@ -1,5 +1,5 @@
 import fetchMock from 'jest-fetch-mock';
-import { fireEvent } from '@testing-library/dom';
+import { fireEvent, waitFor } from '@testing-library/dom';
 import { assertType } from '../utils/assert';
 import '../ujs';
 
@@ -117,6 +117,7 @@ describe('Remote utilities', () => {
     // https://www.benmvp.com/blog/mocking-window-location-methods-jest-jsdom/
     let oldWindowLocation: Location;
 
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     beforeAll(() => {
       oldWindowLocation = window.location;
       delete (window as any).location;
@@ -136,6 +137,7 @@ describe('Remote utilities', () => {
     beforeEach(() => {
       (window.location.reload as any).mockReset();
     });
+    /* eslint-enable @typescript-eslint/no-explicit-any */
 
     afterAll(() => {
       // restore window.location to the jsdom Location object
@@ -199,18 +201,10 @@ describe('Remote utilities', () => {
     }));
 
     it('should reload the page on 300 multiple choices response', () => {
-      const promiseLike = {
-        then(cb: (r: Response) => void) {
-          if (cb) {
-            cb(new Response('', { status: 300 }));
-          }
-        }
-      };
-
-      jest.spyOn(global, 'fetch').mockReturnValue(promiseLike as any);
+      jest.spyOn(global, 'fetch').mockResolvedValue(new Response('', { status: 300}));
 
       submitForm();
-      expect(window.location.reload).toHaveBeenCalledTimes(1);
+      return waitFor(() => expect(window.location.reload).toHaveBeenCalledTimes(1));
     });
   });
 });
