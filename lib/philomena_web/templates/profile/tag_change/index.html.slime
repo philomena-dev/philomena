@@ -17,3 +17,6 @@ h1
       = link "All", to: Routes.profile_tag_change_path(@conn, :index, @user, Keyword.delete(@pagination_params, :added))
 
   = render PhilomenaWeb.TagChangeView, "index.html", conn: @conn, tag_changes: @tag_changes, pagination: pagination
+
+  ' Total affected images:
+  = @image_count
