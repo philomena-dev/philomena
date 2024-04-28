@@ -14,11 +14,15 @@
 
 .pagination a {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: auto;
   gap: var(--padding-tiny);
   align-items: center;
   padding: 0 var(--padding-small);
   font-weight: bold;
+}
+
+.pagination .with-icon {
+  grid-template-columns: auto auto;
 }
 
 .page__info {

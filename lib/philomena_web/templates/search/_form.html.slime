@@ -120,7 +120,7 @@ h1 Search
       = PhilomenaWeb.TagView.quick_tags(@conn)
 
   .field.field--inline.flex-wrap
-    = submit "Search", class: "button button--state-primary"
+    = submit "Search", class: "button button--primary"
     /= submit_tag "I'm Feeling Poni", class: 'button button--separate-left spacing-right', name: 'random_image'
 
     elixir:

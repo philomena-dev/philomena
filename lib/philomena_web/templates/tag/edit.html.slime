@@ -35,7 +35,7 @@ p = link "Edit image", to: Routes.tag_image_path(@conn, :edit, @tag)
     = render PhilomenaWeb.TagView, "_tag_editor.html", f: f, name: :implied_tag_list, type: :edit, conn: @conn
 
   br
-  = submit "Save Tag", class: "button button--state-primary"
+  = submit "Save Tag", class: "button button--primary"
 
 br
 br
@@ -47,7 +47,7 @@ br
       = button_to "Rebuild index", Routes.tag_reindex_path(@conn, :create, @tag), method: "post", class: "button", data: [confirm: "Are you really, really sure?", disable_with: raw("Reindexing&hellip;")]
       p Use this if the tag displays the wrong number of images or returns the wrong search results.
 
-      = button_to "Destroy tag", Routes.tag_path(@conn, :delete, @tag), method: "delete", class: "button button--state-danger", data: [confirm: "Are you really, really sure?", disable_with: raw("Deleting&hellip;")]
+      = button_to "Destroy tag", Routes.tag_path(@conn, :delete, @tag), method: "delete", class: "button button--danger", data: [confirm: "Are you really, really sure?", disable_with: raw("Deleting&hellip;")]
       p
         strong Irreversible. Use with extreme caution!
       ul

@@ -1,14 +1,17 @@
 @mixin button-type($type) {
   .button--#{$type} {
+    color: var(--#{$type}-link-color) !important;
     border-color: var(--#{$type}-border-color);
+    background: var(--#{$type}-dark-color);
 
     &.button--important {
-      background: var(--#{$type}-color) !important;
+      color: var(--text-color) !important;
+      background: var(--#{$type}-color);
       box-shadow: 0 -1px var(--#{$type}-dark-color) inset;
     }
 
-    &.button:hover {
-      background: var(--#{$type}-dark-color) !important;
+    &:hover {
+      background: var(--#{$type}-muted-color) !important;
     }
   }
 
@@ -30,23 +33,29 @@
 
 .button {
   @include animated-transition;
-  display: block;
+  display: flex;
+  flex: 0 1 auto;
   width: fit-content;
   font-weight: bold;
-  background: var(--background-color);
-  color: var(--text-color) !important;
-  font-size: var(--padding-normal);
-  padding: var(--padding-small);
+  font-size: var(--font-size);
+  background: var(--primary-dark-color);
+  color: var(--text-color);
   border: 1px solid var(--primary-border-color);
   border-radius: var(--border-radius-inner);
-  box-sizing: border-box;
+  padding: 0 var(--padding-small);
   overflow: hidden;
+  line-height: var(--button-height);
+  align-items: center;
 
   &:hover {
     @include animated-transition;
-    background: var(--primary-dark-color);
+    background: var(--primary-muted-color);
     cursor: pointer;
   }
+}
+
+.button > i {
+  margin-right: var(--padding-small);
 }
 
 .button--important {
@@ -114,6 +123,16 @@
 
 .button--borderless {
   border-width: 0;
+}
+
+.block__header__buttons .button {
+  color: var(--link-color);
+  border-width: 0 !important;
+  background: 0;
+
+  &:hover {
+    background: var(--primary-muted-color);
+  }
 }
 
 @include button-type(success);

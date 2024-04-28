@@ -6,4 +6,4 @@ h1
   .field
     => text_input f, :forced_filter_id, placeholder: "Filter ID", class: "input", required: true
   .field
-    = submit "Force", class: "button button--state-primary"
+    = submit "Force", class: "button button--primary"

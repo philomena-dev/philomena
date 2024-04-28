@@ -21,18 +21,18 @@
 .tag-list {
   @extend .flex__row;
   flex-wrap: wrap;
+  gap: var(--padding-small);
   margin-bottom: var(--padding-normal);
 }
 
 .tag {
   display: inline-table;
   width: fit-content;
-  line-height: var(--padding-large);
-  margin-right: var(--padding-small);
-  margin-bottom: var(--padding-small);
+  line-height: var(--tag-height);
   color: var(--tag-default-text-color);
   background: var(--tag-default-color);
-  border: 1px solid var(--tag-default-border-color);
+  border-radius: var(--border-radius-tag);
+  border: var(--tag-border-width) solid var(--tag-default-border-color);
   font-weight: bold;
 
   a {
@@ -70,6 +70,9 @@
   background: var(--tag-default-border-color);
   color: var(--text-color);
   padding: 0 var(--padding-small);
+  overflow: hidden;
+  border-top-right-radius: var(--border-radius-tag);
+  border-bottom-right-radius: var(--border-radius-tag);
 }
 
 .tag__dropdown__link {
@@ -85,4 +88,16 @@
   border: 1px solid var(--secondary-color);
   font-size: var(--font-tiny-size);
   text-align: center;
+}
+
+.tag-info__controls {
+  display: flex;
+}
+
+.tag-info__controls > .tag {
+  margin-right: var(--padding-normal);
+}
+
+.js-imagelist-info {
+  margin-bottom: var(--padding-normal);
 }

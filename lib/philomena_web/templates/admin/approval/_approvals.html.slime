@@ -26,9 +26,9 @@
           span = pretty_time(image.created_at)
         .approval-items--footer
           = if can?(@conn, :approve, image) do
-            = button_to "Approve", Routes.image_approve_path(@conn, :create, image), method: "post", class: "button button--state-success"
+            = button_to "Approve", Routes.image_approve_path(@conn, :create, image), method: "post", class: "button button--success"
           = if can?(@conn, :hide, image) do
             = form_for :image, Routes.image_delete_path(@conn, :create, image), [method: "post"], fn f ->
               .field.field--inline
                 = text_input f, :deletion_reason, class: "input input--wide", placeholder: "Rule violation", required: true
-                = submit "Delete", class: "button button--state-danger button--separate-left"
+                = submit "Delete", class: "button button--danger button--separate-left"

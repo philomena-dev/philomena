@@ -85,6 +85,7 @@
   line-height: var(--block-header-height);
   padding: 0 var(--padding-normal);
   font-size: var(--font-header-size);
+  margin-bottom: var(--padding-small);
 
   & > .fa {
     margin-right: var(--padding-normal);
@@ -98,6 +99,14 @@
   box-sizing: border-box;
   font-weight: bold;
   color: var(--link-color) !important;
+}
+
+.block__header__buttons {
+  display: flex;
+  gap: var(--padding-normal);
+  line-height: var(--block-header-height);
+  font-size: var(--font-size);
+  padding: 0 var(--padding-normal);
 }
 
 .block--fixed {

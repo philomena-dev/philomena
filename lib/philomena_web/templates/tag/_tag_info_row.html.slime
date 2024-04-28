@@ -6,13 +6,14 @@
       | no spoiler image
 
   .flex__grow
-    = render PhilomenaWeb.TagView, "_tag.html", tag: @tag, conn: @conn
-    .flex__row
+    .tag-info__controls 
+      = render PhilomenaWeb.TagView, "_tag.html", tag: @tag, conn: @conn
       .button__group--standalone
         = link "Tag changes", to: Routes.tag_tag_change_path(@conn, :index, @tag), class: "detail-link"
       = if manages_tags?(@conn) do
         .button__group--standalone.button__group--warning
           = link "Edit details", to: Routes.tag_path(@conn, :edit, @tag), class: "detail-link"
+          .separator--vertical.separator--warning
           = link "Usage", to: Routes.tag_detail_path(@conn, :index, @tag), class: "detail-link"
       = if manages_dnp?(@conn) do
         .button__group--standalone.button__group--danger

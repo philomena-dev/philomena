@@ -3,11 +3,11 @@
 = if @page.total_pages > 1 do
   nav.pagination.hidden--mobile
     = if not first_page?(@page) do
-      = link to: first_page_path(@page, @route, params) do
+      = link to: first_page_path(@page, @route, params), class: "with-icon" do
         i.fa.fa-backward>
         ' First
       .separator--vertical.separator--secondary
-      = link to: prev_page_path(@page, @route, params), class: "js-prev" do
+      = link to: prev_page_path(@page, @route, params), class: "js-prev with-icon" do
         i.fa.fa-chevron-left>
         ' Prev
       .separator--vertical.separator--secondary
@@ -30,11 +30,11 @@
 
     = if not last_page?(@page) do
       .separator--vertical.separator--secondary
-      = link to: next_page_path(@page, @route, params), class: "js-next" do
+      = link to: next_page_path(@page, @route, params), class: "js-next with-icon" do
         ' Next
         i.fa.fa-chevron-right
       .separator--vertical.separator--secondary
-      = link to: last_page_path(@page, @route, params) do
+      = link to: last_page_path(@page, @route, params), class: "with-icon" do
         ' Last
         i.fa.fa-fast-forward
 
@@ -49,10 +49,10 @@
         ' Prev
       .separator--vertical.separator--secondary
     - else
-      = link to: first_page_path(@page, @route, params) do
+      = link to: first_page_path(@page, @route, params), class: "with-icon" do
         i.fa.fa-backward>
         ' First
-      = link to: prev_page_path(@page, @route, params), class: "js-prev" do
+      = link to: prev_page_path(@page, @route, params), class: "js-prev with-icon" do
         i.fa.fa-chevron-left>
         ' Prev
 
@@ -89,10 +89,10 @@
         i.fa.fa-fast-forward
     - else
       .separator--vertical.separator--secondary
-      = link to: next_page_path(@page, @route, params), class: "js-next" do
+      = link to: next_page_path(@page, @route, params), class: "js-next with-icon" do
         ' Next
         i.fa.fa-chevron-right
       .separator--vertical.separator--secondary
-      = link to: last_page_path(@page, @route, params) do
+      = link to: last_page_path(@page, @route, params), class: "with-icon" do
         ' Last
         i.fa.fa-fast-forward

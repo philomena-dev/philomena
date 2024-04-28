@@ -27,7 +27,7 @@ elixir:
             => select f, :sd, ["Descending": "desc", "Ascending": "asc"], class: "input"
 
           .field
-          = submit "Search", class: "button button--state-primary"
+          = submit "Search", class: "button button--primary"
     .block
       .block__header
         a href="/galleries/new" title="Create Gallery"

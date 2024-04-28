@@ -31,6 +31,6 @@
   .block__tab.hidden data-tab="voters"
     p Loading&hellip;
   .block__tab.hidden data-tab="administration"
-    a.button.button--state-warning.js-staff-action> href=Routes.forum_topic_poll_path(@conn, :edit, @forum, @topic)
+    a.button.button--warning.js-staff-action> href=Routes.forum_topic_poll_path(@conn, :edit, @forum, @topic)
       i.fa.fa-edit>
       | Edit
