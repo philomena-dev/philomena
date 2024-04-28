@@ -16,11 +16,7 @@ config :philomena, PhilomenaWeb.Endpoint,
   check_origin: false,
   watchers: [
     node: [
-      "node_modules/webpack/bin/webpack.js",
-      "--mode",
-      "development",
-      "--watch",
-      "--watch-options-stdin",
+      "node_modules/vite/bin/vite.js",
       cd: Path.expand("../assets", __DIR__)
     ]
   ]
