@@ -8,7 +8,7 @@ defmodule Philomena.Scrapers do
     Philomena.Scrapers.E621,
     Philomena.Scrapers.Furaffinity,
     Philomena.Scrapers.Pixiv,
-    Philomena.SCrapers.Derpibooru,
+    Philomena.Scrapers.Derpibooru,
     Philomena.Scrapers.Raw
   ]
 
