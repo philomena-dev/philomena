@@ -8,4 +8,3 @@
 // Our code
 import './ujs';
 import './when-ready';
-import '../css/themes/default.scss';

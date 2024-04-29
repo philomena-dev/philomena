@@ -1,13 +1,14 @@
 import fs from 'fs';
 import path from 'path';
-import rollupPluginMultiEntry from '@rollup/plugin-multi-entry';
-import { defineConfig } from "vite";
+import autoprefixer from 'autoprefixer';
+import { defineConfig, UserConfig, ConfigEnv } from 'vite';
 
-export default defineConfig(({ command }: any) => {
-  const isDev = command !== "build";
+export default defineConfig(({ command }: ConfigEnv): UserConfig => {
+  const isDev = command !== 'build';
 
   if (isDev) {
-    process.stdin.on("close", () => {
+    process.stdin.on('close', () => {
+      // eslint-disable-next-line no-process-exit
       process.exit(0);
     });
 
@@ -15,11 +16,12 @@ export default defineConfig(({ command }: any) => {
   }
 
   const themeNames =
-    fs.readdirSync(path.resolve(__dirname, 'css/themes')).map(name => {
+    fs.readdirSync(path.resolve(__dirname, 'css/themes/')).map(name => {
       const m = name.match(/([-a-z]+).scss/);
 
-      if (m) m[1]
-}   );
+      if (m) { return m[1]; }
+      return null;
+    });
 
   const themes = new Map();
 
@@ -28,8 +30,8 @@ export default defineConfig(({ command }: any) => {
   }
 
   return {
-    publicDir: "static",
-    plugins: [rollupPluginMultiEntry()],
+    publicDir: 'static',
+    plugins: [],
     resolve: {
       alias: {
         common: path.resolve(__dirname, 'css/common/'),
@@ -37,21 +39,27 @@ export default defineConfig(({ command }: any) => {
       }
     },
     build: {
-      target: "es2020",
+      target: 'es2020',
       outDir: path.resolve(__dirname, '../priv/static'),
-      emptyOutDir: true,
+      emptyOutDir: false,
       sourcemap: isDev,
       manifest: false,
+      cssCodeSplit: true,
       rollupOptions: {
         input: {
-          'js/app.js': "./js/app.js",
-          ...themes
+          'js/app': './js/app.js',
+          ...Object.fromEntries(themes)
         },
         output: {
-          entryFileNames: "assets/[name].js", // remove hash
-          chunkFileNames: "assets/[name].js",
-          assetFileNames: "assets/[name][extname]"
+          entryFileNames: 'assets/[name].js',
+          chunkFileNames: '[name].js',
+          assetFileNames: 'assets/[name][extname]'
         }
+      }
+    },
+    css: {
+      postcss:  {
+        plugins: [autoprefixer]
       }
     }
   };
