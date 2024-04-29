@@ -1,4 +1,4 @@
-defmodule Philomena.Scrapers.Inkbunny do
+defmodule Philomena.Scrapers.Derpibooru do
   @url_regex ~r|\Ahttps?://derpibooru\.org/images/([0-9]+)|
 
   @spec can_handle?(URI.t(), String.t()) :: true | false
