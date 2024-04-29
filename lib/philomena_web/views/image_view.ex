@@ -315,7 +315,7 @@ defmodule PhilomenaWeb.ImageView do
              "pbs.twimg.com",
              "twimg.com"
            ] ->
-        "fab fa-twitter"
+        "fa-brands fa-twitter"
 
       u
       when u in [
@@ -450,6 +450,9 @@ defmodule PhilomenaWeb.ImageView do
 
       u when u in ["etsy.com", "www.etsy.com"] ->
         "fab fa-etsy"
+        
+      u when u in ["derpibooru.org", "derpicdn.net"] ->
+        "fa-solid fa-horse-head"
 
       link ->
         cond do
