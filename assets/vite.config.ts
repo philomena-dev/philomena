@@ -70,8 +70,6 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
       environment: 'jsdom',
       // TODO Jest --randomize CLI flag equivalent, consider enabling in the future
       // sequence: { shuffle: true },
-      // TODO Remove after figuring out what causes process to hang
-      // reporters: ['hanging-process'],
       setupFiles: './test/vitest-setup.ts',
       coverage: {
         reporter: ['text', 'html'],
@@ -86,12 +84,12 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
           branches: 0,
           functions: 0,
           lines: 0,
-          // '**/utils/**/*.ts': {
-          //   statements: 100,
-          //   branches: 100,
-          //   functions: 100,
-          //   lines: 100,
-          // },
+          '**/utils/**/*.ts': {
+            statements: 100,
+            branches: 100,
+            functions: 100,
+            lines: 100,
+          },
         }
       }
     }
