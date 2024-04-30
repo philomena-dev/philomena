@@ -119,10 +119,10 @@ defmodule PhilomenaWeb.UserAttributionView do
     do: [{"label--success", "Moderator"} | labels]
 
   defp staff_role(labels, %{hide_default_role: false, role: "assistant", senior_staff: true}),
-    do: [{"label--purple", "Senior Assistant"} | labels]
+    do: [{"label--special", "Senior Assistant"} | labels]
 
   defp staff_role(labels, %{hide_default_role: false, role: "assistant"}),
-    do: [{"label--purple", "Assistant"} | labels]
+    do: [{"label--special", "Assistant"} | labels]
 
   defp staff_role(labels, _user),
     do: labels

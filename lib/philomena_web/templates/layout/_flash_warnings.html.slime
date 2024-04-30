@@ -1,5 +1,5 @@
 = for notice <- @conn.assigns.site_notices do
-  .flash.flash--purple
+  .flash.flash--special
     .flash__icon
       i.fa.fa-info-circle
     .flash__message

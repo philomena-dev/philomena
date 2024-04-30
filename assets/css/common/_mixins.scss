@@ -50,7 +50,7 @@
   @include even-odd-type(warning);
   @include even-odd-type(danger);
   @include even-odd-type(information);
-  @include even-odd-type(purple);
+  @include even-odd-type(special);
 }
 
 @mixin animated-transition {

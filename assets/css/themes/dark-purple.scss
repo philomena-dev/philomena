@@ -7,7 +7,7 @@ $danger-color: #57261f;
 $warning-color: #5c472a;
 $success-color: #255339;
 $information-color: #1f5057;
-$purple-color: #501f57;
+$special-color: #501f57;
 
 $upvote-color: #5b9b26;
 $downvote-color: #da3412;
@@ -73,7 +73,7 @@ $spoiler-color: #0f0f0f;
   @include type-color(warning, $warning-color);
   @include type-color(danger, $danger-color);
   @include type-color(information, $information-color);
-  @include type-color(purple, $purple-color);
+  @include type-color(special, $special-color);
 
   @include tag-color(default, $tag-default-color);
   @include tag-color(error, $tag-error-color, 37%);

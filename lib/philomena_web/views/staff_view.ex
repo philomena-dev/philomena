@@ -32,7 +32,7 @@ defmodule PhilomenaWeb.StaffView do
   def category_class("Technical Team"), do: "block--warning"
   def category_class("Public Relations"), do: "block--warning"
   def category_class("Moderators"), do: "block--success"
-  def category_class("Assistants"), do: "block--purple"
+  def category_class("Assistants"), do: "block--special"
   def category_class(_), do: ""
 
   def staff_description(%{description: desc}) when desc not in [nil, ""] do
