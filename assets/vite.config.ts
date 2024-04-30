@@ -51,9 +51,9 @@ export default defineConfig(({ command }: ConfigEnv): UserConfig => {
           ...Object.fromEntries(themes)
         },
         output: {
-          entryFileNames: 'assets/[name].js',
+          entryFileNames: '[name].js',
           chunkFileNames: '[name].js',
-          assetFileNames: 'assets/[name][extname]'
+          assetFileNames: '[name][extname]'
         }
       }
     },

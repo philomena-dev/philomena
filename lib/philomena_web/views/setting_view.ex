@@ -6,10 +6,10 @@ defmodule PhilomenaWeb.SettingView do
       [
         key: "Default",
         value: "default",
-        data: [theme_path: Routes.static_path(conn, "/assets/css/default.css")]
+        data: [theme_path: Routes.static_path(conn, "/css/default.css")]
       ],
-      [key: "Dark", value: "dark", data: [theme_path: Routes.static_path(conn, "/assets/css/dark.css")]],
-      [key: "Red", value: "red", data: [theme_path: Routes.static_path(conn, "/assets/css/red.css")]]
+      [key: "Dark", value: "dark", data: [theme_path: Routes.static_path(conn, "/css/dark.css")]],
+      [key: "Red", value: "red", data: [theme_path: Routes.static_path(conn, "/css/red.css")]]
     ]
   end
 
