@@ -11,14 +11,12 @@
       "DOM",
       "DOM.Iterable"
     ],
-
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-
-
-    "strict": true
+    "strict": true,
+    "types": ["vitest/globals"]
   }
 }

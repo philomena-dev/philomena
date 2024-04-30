@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import fs from 'fs';
 import path from 'path';
 import autoprefixer from 'autoprefixer';
@@ -6,8 +7,8 @@ import postcssSimpleVars from 'postcss-simple-vars';
 import postcssRelativeColor from '@csstools/postcss-relative-color-syntax';
 import { defineConfig, UserConfig, ConfigEnv } from 'vite';
 
-export default defineConfig(({ command }: ConfigEnv): UserConfig => {
-  const isDev = command !== 'build';
+export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
+  const isDev = command !== 'build' && mode !== 'test';
   const targets = new Map();
 
   fs.readdirSync(path.resolve(__dirname, 'css/themes/')).forEach(name => {
@@ -58,6 +59,34 @@ export default defineConfig(({ command }: ConfigEnv): UserConfig => {
     css: {
       postcss:  {
         plugins: [postcssMixins(), postcssSimpleVars(), postcssRelativeColor(), autoprefixer]
+      }
+    },
+    test: {
+      globals: true,
+      environment: 'jsdom',
+      // TODO Jest --randomize CLI flag equivalent, consider enabling in the future
+      // sequence: { shuffle: true },
+      setupFiles: './test/vitest-setup.ts',
+      coverage: {
+        reporter: ['text', 'html'],
+        include: ['js/**/*.{js,ts}'],
+        exclude: [
+          'node_modules/',
+          '.*\\.test\\.ts$',
+          '.*\\.d\\.ts$',
+        ],
+        thresholds: {
+          statements: 0,
+          branches: 0,
+          functions: 0,
+          lines: 0,
+          '**/utils/**/*.ts': {
+            statements: 100,
+            branches: 100,
+            functions: 100,
+            lines: 100,
+          },
+        }
       }
     }
   };
