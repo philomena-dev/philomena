@@ -28,7 +28,7 @@
       = url_input f, :scraper_url, class: "input input--wide js-scraper", placeholder: "External Page Link"
       button.button.button--separate-left#js-scraper-preview(type="button" title="Fetch the image at the specified URL" data-disable-with="Fetch" disabled)
         ' Fetch
-    p Supports: DeviantArt, Tumblr, X/Twitter, Furaffinity, Inkbunny, E621 or a direct image link.
+    p Supports: DeviantArt, Tumblr, X/Twitter, Furaffinity, Inkbunny, E621, Furbooru, Derpibooru, or a direct image link.
 
     .field-error-js.hidden.js-scraper
 
@@ -36,7 +36,7 @@
   p
     'The page(s) you found this image on. Images may have a maximum of
     span.js-max-source-count> 10
-    ' source URLs. Leave any sources you don't want to use blank.
+    ' source URLs. Do not list source urls that just go to the artist page. Image should be present on direct source url.
 
   = inputs_for f, :sources, fn fs ->
     .field.js-image-source.field--inline.flex--no-wrap.flex--centered
@@ -61,6 +61,7 @@
 
       p For artists: prefix with artist: If you don't know the artist, put unknown artist.
       p For original characters, prefix with oc:
+      p For AI creators, prefix with director:
 
     = render PhilomenaWeb.TagView, "_tag_editor.html", f: f, name: :tag_input, type: :upload
     = error_tag f, :tag_input

@@ -409,17 +409,25 @@ defmodule PhilomenaWeb.ImageView do
 
       u
       when u in [
-             "furaffinity.net",
              "furbooru.org",
-             "inkbunny.net",
-             "e621.net",
-             "e926.net",
-             "sofurry.com",
+             "sofurry.com"
+           ] ->
+        "fa fa-paw"
+
+      u
+      when u in [
              "weasyl.com",
              "www.weasyl.com",
              "cdn.weasyl.com"
            ] ->
-        "fa fa-paw"
+        "fa-solid fa-otter"
+
+      u
+      when u in [
+             "e621.net",
+             "e926.net"
+           ] ->
+        "fa-solid fa-gavel"
 
       u
       when u in [
@@ -467,9 +475,9 @@ defmodule PhilomenaWeb.ImageView do
           String.ends_with?(link, ".deviantart.com") or String.ends_with?(link, ".deviantart.net") ->
             "fab fa-deviantart"
 
-          String.ends_with?(link, ".furaffinity.net") or String.ends_with?(link, ".sofurry.com") or
+          String.ends_with?(link, ".furaffinity.net") or
               String.ends_with?(link, ".facdn.net") ->
-            "fa fa-paw"
+            "fa-solid fa-dumpster-fire"
 
           String.ends_with?(link, ".userapi.com") or String.ends_with?(link, ".vk.me") ->
             "fab fa-vk"
