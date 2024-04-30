@@ -17,10 +17,10 @@ config :philomena, PhilomenaWeb.Endpoint,
   watchers: [
     node: [
       "node_modules/vite/bin/vite.js",
-      "build",
       "--mode",
       "development",
-      "--watch",
+      "--host",
+      "0.0.0.0",
       "--config",
       "vite.config.ts",
       cd: Path.expand("../assets", __DIR__)

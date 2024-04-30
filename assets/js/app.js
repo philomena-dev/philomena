@@ -8,3 +8,6 @@
 // Our code
 import './ujs';
 import './when-ready';
+
+// Fallback on the dark theme for now
+import '../css/themes/dark.scss';
