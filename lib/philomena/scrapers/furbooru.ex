@@ -19,7 +19,7 @@ defmodule Philomena.Scrapers.Furbooru do
     %{
       source_url: url,
       tags: tags,
-      sources: submission["source_url"],
+      sources: submission["source_urls"],
       description: submission["description"],
       images: [%{
         url: "#{submission["representations"]["full"]}",
