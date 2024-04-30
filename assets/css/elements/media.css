@@ -128,12 +128,12 @@
   max-width: 100%;
 }
 
-.media-tiny-container {
+.media-tiny-container, .media-tiny-container img {
   width: var(--media-tiny-container-width);
   height: var(--media-tiny-container-width);
 }
 
-.thumb_tiny {
+.thumb_tiny, .thumb_tiny img {
   max-width: var(--media-tiny-container-width);
   max-height: var(--media-tiny-container-width);
 }

@@ -23,7 +23,10 @@
 .profile-block {
   display: inline-block;
   vertical-align: top;
-  b { display: block; }
+}
+
+.profile-block b {
+  display: block;
 }
 
 .staff-block__description {

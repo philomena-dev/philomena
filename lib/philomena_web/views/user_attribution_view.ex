@@ -40,7 +40,7 @@ defmodule PhilomenaWeb.UserAttributionView do
     end
   end
 
-  def anonymous_avatar(name, class \\ "avatar--100px") do
+  def anonymous_avatar(name, class \\ "avatar--small") do
     class = Enum.join(["image-constrained", class], " ")
 
     content_tag :div, class: class do
@@ -48,7 +48,7 @@ defmodule PhilomenaWeb.UserAttributionView do
     end
   end
 
-  def user_avatar(object, class \\ "avatar--100px")
+  def user_avatar(object, class \\ "avatar--small")
 
   def user_avatar(%{user: nil} = object, class),
     do: anonymous_avatar(anonymous_name(object), class)

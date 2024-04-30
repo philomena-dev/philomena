@@ -39,6 +39,7 @@
 
 /* Style elements specific to certain pages. */
 @import "views/admin";
+@import "views/approval";
 @import "views/burger";
 @import "views/communication";
 @import "views/footer";

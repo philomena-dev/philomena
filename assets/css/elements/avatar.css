@@ -1,6 +1,21 @@
-.avatar--navbar {
-  width: var(--navbar-avatar-size);
-  height: var(--navbar-avatar-size);
-  border-radius: 100%;
-  overflow: hidden;
+@define-mixin avatar-size $size {
+  .avatar--$(size) {
+    width: var(--avatar-$(size)-size);
+    height: var(--avatar-$(size)-size);
+    border-radius: var(--border-radius-avatar);
+    overflow: hidden;
+  }
+
+  .avatar--$(size) img {
+    max-width: var(--avatar-$(size)-size);
+    height: var(--avatar-$(size)-size);
+  }
 }
+
+.avatar--square {
+  border-radius: 0;
+}
+
+@mixin avatar-size navbar;
+@mixin avatar-size small;
+@mixin avatar-size large;

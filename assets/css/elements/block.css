@@ -23,6 +23,10 @@
   .block--$(type) a:hover {
     color: var(--link-hover-color);
   }
+
+  .block--$(type) hr {
+    border-color: var(--$(type)-border-color);
+  }
 }
 
 .block {
@@ -43,7 +47,11 @@
   border-radius: 0;
 }
 
-.block__content {
+.block--borderless .block__header {
+  padding: 0;
+}
+
+.block__content, .block__tab {
   border: 1px solid var(--primary-border-color);
   border-radius: var(--border-radius-outer);
   padding: var(--padding-normal);
@@ -127,11 +135,18 @@
 .block__header--js-tabbed {
   display: flex;
   padding: 0;
+  gap: var(--padding-normal);
+}
+
+@mixin if-mobile {
+  .block__header--js-tabbed {
+    gap: 0;
+    justify-content: space-between;
+  }
 }
 
 .block__header--js-tabbed a {
   display: block;
-  color: var(--text-color);
   padding: 0 var(--padding-normal);
 }
 

@@ -2,22 +2,25 @@
 
 #image_options_area
   .block__header.block__header--js-tabbed
-    a href="#" data-click-tab="reporting" data-load-tab=Routes.image_reporting_path(@conn, :show, @image)
+    a.button.button--primary href="#" data-click-tab="reporting" data-load-tab=Routes.image_reporting_path(@conn, :show, @image)
       i.fa.fa-exclamation-triangle>
       | Report
-    a href="#" data-click-tab="sharing"
+    a.button.button--primary href="#" data-click-tab="sharing"
       i.fa.fa-share>
       | Share
-    a href="#" data-click-tab="favoriters" data-load-tab=Routes.image_favorite_path(@conn, :index, @image)
+    a.button.button--primary href="#" data-click-tab="favoriters" data-load-tab=Routes.image_favorite_path(@conn, :index, @image)
       i.fa.fa-star>
-      | List favoriters
+      span.hidden--phone
+        | List favoriters
+      span.hidden--desktop.hidden--tablet
+        | Faves
     = if display_mod_tools? and not hide_staff_tools?(@conn) do
-      a href="#" data-click-tab="replace"
-        i.fa.fa-upload>
-        | Replace
-      a href="#" data-click-tab="administration"
-        i.fa.fa-toolbox>
-        | Manage
+      a.button.button--danger href="#" data-click-tab="replace"
+        i.fa.fa-upload
+        span.hidden--phone Replace
+      a.button.button--warning href="#" data-click-tab="administration"
+        i.fa.fa-toolbox
+        span.hidden--phone Manage
         = if present?(@image.scratchpad) do
           i.fa.fa-sticky-note.fa--important<
           i.fa.fa-exclamation.fa--important

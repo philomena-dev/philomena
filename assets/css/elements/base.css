@@ -31,6 +31,10 @@ a:hover {
   color: var(--link-hover-color);
 }
 
+hr {
+  border-color: var(--primary-border-color);
+}
+
 .hidden {
   display: none !important;
 }

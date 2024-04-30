@@ -53,6 +53,7 @@ $spoiler-color: #0f0f0f;
   --primary-border-color: hsl(from $primary-color h calc(s - 20) calc(l + 10));
   --primary-muted-color: hsl(from $primary-color h calc(s - 10) calc(l - 10));
   --primary-dark-color: hsl(from $primary-color h calc(s - 15) calc(l - 20));
+  --primary-link-color: var(--link-color); /* for consistency */
 
   --secondary-color: $secondary-color;
   --secondary-border-color: hsl(from $secondary-color h s calc(l + 10));

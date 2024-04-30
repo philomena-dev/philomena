@@ -19,10 +19,13 @@ $font-family-monospace: "Droid Sans Mono", monospace;
 
   --navbar-size: 4rem;
   --navbar-secondary-size: 2.5rem;
-  --navbar-avatar-size: 2.5rem;
   --navbar-input-size: 2rem;
   --navbar-input-width: 18vw;
   --navbar-input-max-width: 22rem;
+
+  --avatar-navbar-size: 2.5rem;
+  --avatar-small-size: 6rem;
+  --avatar-large-size: 8rem;
 
   --button-height: 2rem;
   --button-group-height: 2rem;
@@ -37,6 +40,7 @@ $font-family-monospace: "Droid Sans Mono", monospace;
   --border-radius-outer: 0.35rem;
   --border-radius-inner: 0.25rem;
   --border-radius-tag: 0.2rem;
+  --border-radius-avatar: 100%;
 
   --media-container-width: 225px;
   --media-tiny-container-width: 50px;

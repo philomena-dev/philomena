@@ -58,6 +58,16 @@
   margin-right: var(--padding-small);
 }
 
+@mixin if-phone {
+  .button > i {
+    margin-right: 0;
+  }
+
+  .button > span {
+    margin-left: var(--padding-small);
+  }
+}
+
 .button--important {
   background: var(--primary-color);
   box-shadow: 0 -1px var(--primary-dark-color) inset;
@@ -132,6 +142,8 @@
   background: var(--primary-muted-color);
 }
 
+@mixin button-type primary;
+@mixin button-type secondary;
 @mixin button-type success;
 @mixin button-type warning;
 @mixin button-type danger;
