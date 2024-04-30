@@ -24,6 +24,16 @@ config :philomena, PhilomenaWeb.Endpoint,
       "--config",
       "vite.config.ts",
       cd: Path.expand("../assets", __DIR__)
+    ],
+    node: [
+      "node_modules/vite/bin/vite.js",
+      "build",
+      "--mode",
+      "development",
+      "--watch",
+      "--config",
+      "vite.config.ts",
+      cd: Path.expand("../assets", __DIR__)
     ]
   ]
 

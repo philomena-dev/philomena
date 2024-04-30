@@ -9,5 +9,11 @@
 import './ujs';
 import './when-ready';
 
-// Fallback on the dark theme for now
-import '../css/themes/dark.scss';
+// When developing CSS, include the relevant CSS you're working on here
+// in order to enable HMR (live reload) on it.
+// Would typically be either the theme file, or any additional file
+// you later intend to put in the <link> tag.
+
+// import '../css/themes/default.scss';
+// import '../css/themes/dark.scss';
+// import '../css/themes/red.scss';
