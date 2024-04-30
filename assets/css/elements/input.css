@@ -5,14 +5,14 @@
   color: var(--text-color);
   box-sizing: border-box;
   font-family: var(--font-family-monospace);
+}
 
-  &:focus {
-    outline: none;
-  }
+.input:focus {
+  outline: none;
+}
 
-  &::placeholder {
-    color: var(--secondary-border-color);
-  }
+.input::placeholder {
+  color: var(--secondary-border-color);
 }
 
 .input--wide {

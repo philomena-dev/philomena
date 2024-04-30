@@ -2,36 +2,27 @@ import fs from 'fs';
 import path from 'path';
 import autoprefixer from 'autoprefixer';
 import postcssMixins from 'postcss-mixins';
-import postcssNested from 'postcss-nested';
 import postcssSimpleVars from 'postcss-simple-vars';
 import postcssRelativeColor from '@csstools/postcss-relative-color-syntax';
 import { defineConfig, UserConfig, ConfigEnv } from 'vite';
 
 export default defineConfig(({ command }: ConfigEnv): UserConfig => {
   const isDev = command !== 'build';
+  const targets = new Map();
 
-  if (isDev) {
-    process.stdin.on('close', () => {
-      // eslint-disable-next-line no-process-exit
-      process.exit(0);
-    });
+  fs.readdirSync(path.resolve(__dirname, 'css/themes/')).forEach(name => {
+    const m = name.match(/([-a-z]+).css/);
 
-    process.stdin.resume();
-  }
+    if (m)
+      targets.set(`css/${m[1]}`, `./css/themes/${m[1]}.css`);
+  });
 
-  const themeNames =
-    fs.readdirSync(path.resolve(__dirname, 'css/themes/')).map(name => {
-      const m = name.match(/([-a-z]+).css/);
+  fs.readdirSync(path.resolve(__dirname, 'css/options/')).forEach(name => {
+    const m = name.match(/([-a-z]+).css/);
 
-      if (m) { return m[1]; }
-      return null;
-    });
-
-  const themes = new Map();
-
-  for (const name of themeNames) {
-    themes.set(`css/${name}`, `./css/themes/${name}.css`);
-  }
+    if (m)
+      targets.set(`css/options/${m[1]}`, `./css/options/${m[1]}.css`);
+  });
 
   return {
     publicDir: 'static',
@@ -55,7 +46,7 @@ export default defineConfig(({ command }: ConfigEnv): UserConfig => {
         input: {
           'js/app': './js/app.js',
           'css/application': './css/application.css',
-          ...Object.fromEntries(themes)
+          ...Object.fromEntries(targets)
         },
         output: {
           entryFileNames: '[name].js',
@@ -66,7 +57,7 @@ export default defineConfig(({ command }: ConfigEnv): UserConfig => {
     },
     css: {
       postcss:  {
-        plugins: [postcssMixins(), postcssNested(), postcssSimpleVars, postcssRelativeColor(), autoprefixer]
+        plugins: [postcssMixins(), postcssSimpleVars(), postcssRelativeColor(), autoprefixer]
       }
     }
   };

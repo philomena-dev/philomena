@@ -7,12 +7,12 @@
 }
 
 .statistics__statistic {
-  @mixin even-odd;
-
   display: grid;
   grid-template-columns: 15% 15% auto;
   background: var(--secondary-color);
 }
+
+@mixin even-odd statistics__statistic;
 
 .statistics__column {
   text-align: center;
@@ -27,8 +27,8 @@
 
 .barline__bar {
   fill: var(--primary-border-color);
+}
 
-  &:hover {
-    fill: var(--danger-color);
-  }
+.barline__bar:hover {
+  fill: var(--danger-color);
 }

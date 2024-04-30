@@ -4,11 +4,11 @@
     color: var(--$(type)-color) !important;
     padding: 0 var(--padding-tiny);
     width: 1rem;
+  }
 
-    &.active, &:hover {
-      color: var(--text-color) !important;
-      background-color: var(--$(type)-color);
-    }
+  .interaction--$(type).active, .interaction--$(type):hover {
+    color: var(--text-color) !important;
+    background-color: var(--$(type)-color);
   }
 }
 

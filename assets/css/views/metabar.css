@@ -1,5 +1,5 @@
 @define-mixin fix-interaction $type {
-  .interaction--$(type) {
+  .metabar__interactions .interaction--$(type) {
     padding: var(--padding-tiny) var(--padding-small);
   }
 }
@@ -9,12 +9,12 @@
     display: grid;
     width: 100%;
     grid-template-columns: repeat(5, 1fr);
-
-    @mixin fix-interaction fave;
-    @mixin fix-interaction upvote;
-    @mixin fix-interaction downvote;
-    @mixin fix-interaction hide;
   }
+
+  @mixin fix-interaction fave;
+  @mixin fix-interaction upvote;
+  @mixin fix-interaction downvote;
+  @mixin fix-interaction hide;
 
   .metabar__interactions * {
     align-self: center;
@@ -58,10 +58,8 @@
   box-sizing: border-box;
 }
 
-.metabar__mobile-info {
-  & td {
-    padding: var(--padding-small);
-  }
+.metabar__mobile-info td {
+  padding: var(--padding-small);
 }
 
 .badges {

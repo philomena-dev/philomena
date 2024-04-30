@@ -1,29 +1,27 @@
 @define-mixin block-type $type {
-  .block--$(type) {
-    .block__content {
-      border-color: var(--$(type)-border-color);
-      background: var(--$(type)-dark-color);
-    }
+  .block--$(type) .block__content {
+    border-color: var(--$(type)-border-color);
+    background: var(--$(type)-dark-color);
+  }
 
-    .block__footer {
-      background: var(--$(type)-color);
-    }
+  .block--$(type) .block__footer {
+    background: var(--$(type)-color);
+  }
 
-    &.block--muted {
-      border-color: var(--$(type)-color);
-    }
+  .block--$(type).block--muted {
+    border-color: var(--$(type)-color);
+  }
 
-    &.block--fixed {
-      background: var(--$(type)-color);
-    }
+  .block--$(type).block--fixed {
+    background: var(--$(type)-color);
+  }
 
-    & a {
-      color: var(--$(type)-link-color);
+  .block--$(type) a {
+    color: var(--$(type)-link-color);
+  }
 
-      &:hover {
-        color: var(--link-hover-color);
-      }
-    }
+  .block--$(type) a:hover {
+    color: var(--link-hover-color);
   }
 }
 
@@ -86,10 +84,10 @@
   padding: 0 var(--padding-normal);
   font-size: var(--font-header-size);
   margin-bottom: var(--padding-small);
+}
 
-  & > .fa {
-    margin-right: var(--padding-normal);
-  }
+.block__header > .fa, .block__header--single-item > .fa {
+  margin-right: var(--padding-normal);
 }
 
 .block__header--single-item {
@@ -129,20 +127,20 @@
 .block__header--js-tabbed {
   display: flex;
   padding: 0;
+}
 
-  & a {
-    display: block;
-    color: var(--text-color);
-    padding: 0 var(--padding-normal);
+.block__header--js-tabbed a {
+  display: block;
+  color: var(--text-color);
+  padding: 0 var(--padding-normal);
+}
 
-    &:hover {
-      background: var(--background-color);
-    }
-  }
+.block__header--js-tabbed a:hover {
+  background: var(--background-color);
+}
 
-  .selected {
-    background: var(--background-color);
-  }
+.block__header--js-tabbed .selected {
+  background: var(--background-color);
 }
 
 .block--spaced-top {

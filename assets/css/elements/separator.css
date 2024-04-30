@@ -1,17 +1,15 @@
 @define-mixin separator-type $type {
   .separator--$(type) {
     border-color: var(--$(type)-border-color);
-
-    &.separator--vertical {
-      background: var(--$(type)-border-color);
-    }
   }
 
-  .button__group--standalone .separator--$(type),
-  .button__group .separator--$(type) {
-    &.separator--vertical {
-      background: var(--$(type)-color) !important;
-    }
+  .separator--$(type).separator--vertical {
+    background: var(--$(type)-border-color);
+  }
+
+  .button__group--standalone .separator--$(type).separator--vertical,
+  .button__group .separator--$(type).separator--vertical {
+    background: var(--$(type)-color) !important;
   }
 }
 

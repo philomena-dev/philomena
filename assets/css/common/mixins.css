@@ -22,35 +22,35 @@
   }
 }
 
-@define-mixin even-odd-type $type {
-  &:nth-child(odd).$(type),
-  &:nth-child(odd) .$(type) {
+@define-mixin even-odd-type $classname, $type {
+  .$(classname):nth-child(odd).$(type),
+  .$(classname):nth-child(odd) .$(type) {
     background: var(--$(type)-color);
   }
-  &:nth-child(even).$(type),
-  &:nth-child(even) .$(type) {
+  .$(classname):nth-child(even).$(type),
+  .$(classname):nth-child(even) .$(type) {
     background: var(--$(type)-dark-color);
   }
-  &:nth-child(even) &:nth-child(odd).$(type),
-  &:nth-child(even) &:nth-child(odd) .$(type) {
+  .$(classname):nth-child(even) .$(classname):nth-child(odd).$(type),
+  .$(classname):nth-child(even) .$(classname):nth-child(odd) .$(type) {
     background: var(--$(type)-color);
   }
 }
 
-@define-mixin even-odd {
-  &:nth-child(odd) {
+@define-mixin even-odd $classname {
+  .$(classname):nth-child(odd) {
     background: var(--secondary-dark-color);
   }
-  &:nth-child(even) {
+  .$(classname):nth-child(even) {
     background: var(--secondary-muted-color);;
   }
 
-  @mixin even-odd-type primary;
-  @mixin even-odd-type success;
-  @mixin even-odd-type warning;
-  @mixin even-odd-type danger;
-  @mixin even-odd-type information;
-  @mixin even-odd-type special;
+  @mixin even-odd-type $classname, primary;
+  @mixin even-odd-type $classname, success;
+  @mixin even-odd-type $classname, warning;
+  @mixin even-odd-type $classname, danger;
+  @mixin even-odd-type $classname, information;
+  @mixin even-odd-type $classname, special;
 }
 
 @define-mixin animated-transition {

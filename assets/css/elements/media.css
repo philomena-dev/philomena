@@ -59,20 +59,18 @@
   position: relative;
   border-radius: 0 0 var(--border-radius-inner) var(--border-radius-inner);
   overflow: hidden;
-
-  .image-container {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-  }
 }
 
-.media-box__content--featured {
-  .media-box__image {
-    max-height: var(--media-featured-width);
-  }
+.media-box__content .image-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.media-box__content--featured .media-box__image {
+  max-height: var(--media-featured-width);
 }
 
 .media-box__overlay {
@@ -105,13 +103,13 @@
 .image-container a {
   display: flex;
   max-height: 100%;
+}
 
-  /* For some reason tall images don't center properly within the container
-     without this hack. I blame CSS. */
-  & > img {
-    max-height: 100%;
-    margin: auto;
-  }
+/* For some reason tall images don't center properly within the container
+    without this hack. I blame CSS. */
+.image-container a > img {
+  max-height: 100%;
+  margin: auto;
 }
 
 .media-box__image {

@@ -14,10 +14,13 @@
     border-bottom-color: var(--$(type)-border-color);
   }
 
-  .block--$(type) {
-    h1, h2, h3, h4, h5, h6 {
-      border-bottom-color: var(--$(type)-border-color);
-    }
+  .block--$(type) h1,
+  .block--$(type) h2,
+  .block--$(type) h3,
+  .block--$(type) h4,
+  .block--$(type) h5,
+  .block--$(type) h6 {
+    border-bottom-color: var(--$(type)-border-color);
   }
 }
 

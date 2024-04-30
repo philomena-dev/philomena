@@ -3,31 +3,31 @@
     color: var(--$(type)-link-color) !important;
     border-color: var(--$(type)-border-color);
     background: var(--$(type)-dark-color);
+  }
 
-    &.button--important {
-      color: var(--text-color) !important;
-      background: var(--$(type)-color);
-      box-shadow: 0 -1px var(--$(type)-dark-color) inset;
-    }
+  .button--$(type).button--important {
+    color: var(--text-color) !important;
+    background: var(--$(type)-color);
+    box-shadow: 0 -1px var(--$(type)-dark-color) inset;
+  }
 
-    &:hover {
-      background: var(--$(type)-muted-color) !important;
-    }
+  .button--$(type):hover {
+    background: var(--$(type)-muted-color) !important;
   }
 
   .button__group--$(type) {
     border-color: var(--$(type)-color);
     background: var(--$(type)-dark-color);
+  }
 
-    & a {
-      color: var(--$(type)-link-color);
+  .button__group--$(type) a {
+    color: var(--$(type)-link-color);
+  }
 
-      &:hover {
-        @mixin animated-transition;
-        color: var(--text-color);
-        background: var(--$(type)-color);
-      }
-    }
+  .button__group--$(type) a:hover {
+    @mixin animated-transition;
+    color: var(--text-color);
+    background: var(--$(type)-color);
   }
 }
 
@@ -46,12 +46,12 @@
   overflow: hidden;
   line-height: var(--button-height);
   align-items: center;
+}
 
-  &:hover {
-    @mixin animated-transition;
-    background: var(--primary-muted-color);
-    cursor: pointer;
-  }
+.button:hover {
+  @mixin animated-transition;
+  background: var(--primary-muted-color);
+  cursor: pointer;
 }
 
 .button > i {
@@ -66,10 +66,10 @@
 .button__row {
   display: flex;
   flex-direction: row;
+}
 
-  & > button {
-    margin-right: var(--padding-small);
-  }
+.button__row > button {
+  margin-right: var(--padding-small);
 }
 
 .button__group, .button__group--single, .button__group--standalone {
@@ -80,10 +80,10 @@
   margin-right: var(--padding-normal);
   background: var(--secondary-dark-color);
   line-height: var(--button-group-height);
+}
 
-  &:last-child {
-    margin: 0;
-  }
+.button__group:last-child, .button__group--single:last-child, .button__group--standalone:last-child {
+  margin: 0;
 }
 
 .button__group--tall {
@@ -97,10 +97,10 @@
 .button__group .button {
   border: 0;
   border-right: var(--secondary-color);
+}
 
-  &:last-child {
-    border-right: 0;
-  }
+.button__group .button:last-child {
+  border-right: 0;
 }
 
 .button__group--single {
@@ -111,11 +111,11 @@
   @mixin animated-transition;
   font-weight: bold;
   padding: 0 var(--padding-small);
+}
 
-  &:hover {
-    @mixin animated-transition;
-    background: var(--secondary-muted-color);
-  }
+.button__group--standalone a:hover {
+  @mixin animated-transition;
+  background: var(--secondary-muted-color);
 }
 
 .button--borderless {
@@ -126,10 +126,10 @@
   color: var(--link-color);
   border-width: 0 !important;
   background: 0;
+}
 
-  &:hover {
-    background: var(--primary-muted-color);
-  }
+.block__header__buttons .button:hover {
+  background: var(--primary-muted-color);
 }
 
 @mixin button-type success;

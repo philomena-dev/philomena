@@ -44,11 +44,9 @@
 }
 
 @mixin if-desktop {
-  .centered-layout {
-    .layout--medium, .layout--narrow {
-      margin-left: auto;
-      margin-right: auto;
-    }
+  .centered-layout .layout--medium, .centered-layout .layout--narrow {
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 

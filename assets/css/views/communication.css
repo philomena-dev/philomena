@@ -13,10 +13,10 @@
   background: 0;
   border: 0;
   padding: var(--padding-small);
+}
 
-  &:hover {
-    background: var(--secondary-muted-color);
-  }
+.communication__toolbar__button:hover {
+  background: var(--secondary-muted-color);
 }
 
 .communication-edit__actions {

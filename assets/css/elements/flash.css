@@ -2,18 +2,18 @@
   .flash--$(type) {
     border: 1px solid var(--$(type)-border-color);
     background: var(--$(type)-color);
+  }
 
-    .flash__message {
-      border-left: 1px solid var(--$(type)-border-color);
-    }
+  .flash--$(type) .flash__message {
+    border-left: 1px solid var(--$(type)-border-color);
+  }
 
-    & a {
-      color: var(--$(type)-link-color);
+  .flash--$(type) a {
+    color: var(--$(type)-link-color);
+  }
 
-      &:hover {
-        color: var(--link-hover-color);
-      }
-    }
+  .flash--$(type) a:hover {
+    color: var(--link-hover-color);
   }
 }
 
