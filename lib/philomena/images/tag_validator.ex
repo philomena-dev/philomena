@@ -4,9 +4,13 @@ defmodule Philomena.Images.TagValidator do
 
   def validate_tags(changeset) do
     blacklist = Config.get(:tag)["blacklist"]
-    tags = changeset |> get_field(:tags) |> Enum.reject(fn x ->
-      x.name in blacklist
-    end)
+
+    tags =
+      changeset
+      |> get_field(:tags)
+      |> Enum.reject(fn x ->
+        x.name in blacklist
+      end)
 
     validate_tag_input(changeset, tags)
   end
@@ -49,9 +53,10 @@ defmodule Philomena.Images.TagValidator do
   end
 
   def strip_bad_words(changeset, tags) do
-    tag_input = tags
-    |> Enum.reduce([], fn x, acc -> [x.name | acc] end)
-    |> Enum.join(", ")
+    tag_input =
+      tags
+      |> Enum.reduce([], fn x, acc -> [x.name | acc] end)
+      |> Enum.join(", ")
 
     changeset
     |> put_change(:tag_input, tag_input)

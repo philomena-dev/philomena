@@ -13,19 +13,21 @@ defmodule Philomena.Scrapers.Furaffinity do
 
     submission = Jason.decode!(body)
 
-    rating = case submission["rating"] do
-      "General" -> "safe"
-      "Mature" -> "suggestive"
-      "Adult" -> "explicit"
-      _ -> nil
-    end
+    rating =
+      case submission["rating"] do
+        "General" -> "safe"
+        "Mature" -> "suggestive"
+        "Adult" -> "explicit"
+        _ -> nil
+      end
 
-    description = submission["description"]
-    |> HtmlSanitizeEx.strip_tags()
-    |> String.replace(~r/  +/, " ")
-    |> String.replace(~r/\n \n +/, "\n")
-    |> String.replace(~r/\n /, "\n")
-    |> String.trim()
+    description =
+      submission["description"]
+      |> HtmlSanitizeEx.strip_tags()
+      |> String.replace(~r/  +/, " ")
+      |> String.replace(~r/\n \n +/, "\n")
+      |> String.replace(~r/\n /, "\n")
+      |> String.trim()
 
     %{
       source_url: url,

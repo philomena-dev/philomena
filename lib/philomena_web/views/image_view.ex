@@ -328,13 +328,15 @@ defmodule PhilomenaWeb.ImageView do
              "fav.me"
            ] ->
         "fab fa-deviantart"
+
       u
       when u in [
-          "inkbunny.net",
-          "ib.metapix.net",
-          "tx.ib.metapix.net"
-        ] ->
-     "fa-solid fa-carrot"
+             "inkbunny.net",
+             "ib.metapix.net",
+             "tx.ib.metapix.net"
+           ] ->
+        "fa-solid fa-carrot"
+
       u
       when u in [
              "cdn.discordapp.com",
@@ -450,7 +452,7 @@ defmodule PhilomenaWeb.ImageView do
 
       u when u in ["etsy.com", "www.etsy.com"] ->
         "fab fa-etsy"
-        
+
       u when u in ["derpibooru.org", "derpicdn.net"] ->
         "fa-solid fa-horse-head"
 

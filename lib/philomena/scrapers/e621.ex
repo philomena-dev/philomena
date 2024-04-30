@@ -14,16 +14,19 @@ defmodule Philomena.Scrapers.E621 do
     submission = json["post"]
 
     tags = submission["tags"]["general"] ++ submission["tags"]["species"]
-    tags = for x <- tags do
-      String.replace(x, "_", " ")
-    end
 
-    rating = case submission["rating"] do
-      "s" -> "safe"
-      "q" -> "suggestive"
-      "e" -> "explicit"
-      _ -> nil
-    end
+    tags =
+      for x <- tags do
+        String.replace(x, "_", " ")
+      end
+
+    rating =
+      case submission["rating"] do
+        "s" -> "safe"
+        "q" -> "suggestive"
+        "e" -> "explicit"
+        _ -> nil
+      end
 
     tags = if is_nil(rating), do: tags, else: [rating | tags]
 
@@ -33,15 +36,19 @@ defmodule Philomena.Scrapers.E621 do
       tags: tags,
       sources: submission["sources"],
       description: submission["description"],
-      images: [%{
-        url: "#{submission["file"]["url"]}",
-        camo_url: Camo.Image.image_url(submission["file"]["url"])
-      }]
+      images: [
+        %{
+          url: "#{submission["file"]["url"]}",
+          camo_url: Camo.Image.image_url(submission["file"]["url"])
+        }
+      ]
     }
   end
+
   defp e621_user do
     Application.get_env(:philomena, :e621_user)
   end
+
   defp e621_apikey do
     Application.get_env(:philomena, :e621_apikey)
   end

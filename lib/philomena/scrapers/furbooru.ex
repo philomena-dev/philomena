@@ -7,24 +7,26 @@ defmodule Philomena.Scrapers.Furbooru do
   end
 
   def scrape(_uri, url) do
-[_, submission_id] = Regex.run(@url_regex, url, capture: :all)
+    [_, submission_id] = Regex.run(@url_regex, url, capture: :all)
     api_url = "https://furbooru.org/api/v1/json/images/#{submission_id}"
     {:ok, %Tesla.Env{status: 200, body: body}} = Philomena.Http.get(api_url)
 
     json = Jason.decode!(body)
     submission = json["image"]
-    
+
     tags = submission["tags"]
-        
+
     %{
       source_url: url,
       tags: tags,
       sources: submission["source_urls"],
       description: submission["description"],
-      images: [%{
-        url: "#{submission["representations"]["full"]}",
-        camo_url: Camo.Image.image_url(submission["representations"]["medium"])
-      }]
+      images: [
+        %{
+          url: "#{submission["representations"]["full"]}",
+          camo_url: Camo.Image.image_url(submission["representations"]["medium"])
+        }
+      ]
     }
   end
 end

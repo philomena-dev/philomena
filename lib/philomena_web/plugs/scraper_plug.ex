@@ -14,11 +14,12 @@ defmodule PhilomenaWeb.ScraperPlug do
         conn
 
       %{"scraper_cache" => url} when not is_nil(url) and url != "" ->
-        headers = if String.contains?(url, "pximg.net") do
-          [{"Referer", "https://pixiv.net/"}]
-        else
-          []
-        end
+        headers =
+          if String.contains?(url, "pximg.net") do
+            [{"Referer", "https://pixiv.net/"}]
+          else
+            []
+          end
 
         url
         |> Philomena.Http.get(headers)
