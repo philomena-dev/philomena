@@ -1,26 +1,26 @@
-// Phones.
-@include if-phone {
+/* Phones. */
+@mixin if-phone {
   .hidden--phone {
     display: none !important;
   }
 }
 
-// Tablets.
-@include if-tablet {
+/* Tablets. */
+@mixin if-tablet {
   .hidden--tablet {
     display: none !important;
   }
 }
 
-// Phones and tablets.
-@include if-mobile {
+/* Phones and tablets. */
+@mixin if-mobile {
   .hidden--mobile {
     display: none !important;
   }
 }
 
-// Anything larger than 1280px (Desktops).
-@include if-desktop {
+/* Anything larger than 1280px (Desktops). */
+@mixin if-desktop {
   .hidden--desktop {
     display: none !important;
   }

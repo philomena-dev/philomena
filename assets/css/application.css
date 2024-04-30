@@ -7,22 +7,20 @@
  *
  */
 
-$fa-font-path: "@fortawesome/fontawesome-free/webfonts";
+@import "@fortawesome/fontawesome-free/css/fontawesome.css";
+@import "@fortawesome/fontawesome-free/css/solid.css";
+@import "@fortawesome/fontawesome-free/css/regular.css";
+@import "@fortawesome/fontawesome-free/css/brands.css";
+@import "normalize.css";
 
-@import "@fortawesome/fontawesome-free/scss/fontawesome.scss";
-@import "@fortawesome/fontawesome-free/scss/solid.scss";
-@import "@fortawesome/fontawesome-free/scss/regular.scss";
-@import "@fortawesome/fontawesome-free/scss/brands.scss";
-@import "normalize-scss/sass/normalize/import-now";
-
-// Import the default theme to act as a fallback.
+/* Import the default theme to act as a fallback. */
 @import "themes/dark-blue";
 
-// Files containing common properties, such as variable definitions.
+/* Files containing common properties, such as variable definitions. */
 @import "common/measurements";
 @import "common/mixins";
 
-// General style elements that are used throughout the project.
+/* General style elements that are used throughout the project. */
 @import "elements/avatar";
 @import "elements/base";
 @import "elements/block";
@@ -39,7 +37,7 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
 @import "elements/separator";
 @import "elements/table";
 
-// Style elements specific to certain pages.
+/* Style elements specific to certain pages. */
 @import "views/admin";
 @import "views/burger";
 @import "views/communication";

@@ -1,5 +1,6 @@
 .textile-syntax-reference {
-  @extend .flex__row;
+  display: flex;
+  flex-direction: row;
   line-height: var(--block-header-height);
   vertical-align: center;
   margin-bottom: var(--padding-small);

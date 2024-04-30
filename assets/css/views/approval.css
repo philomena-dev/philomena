@@ -37,7 +37,7 @@
   line-height: 100%;
 }
 
-@media (max-width: $min_px_width_for_desktop_layout) {
+@mixin if-mobile {
   .approval-grid {
     grid-template-columns: 1fr;
     grid-template-rows: auto;

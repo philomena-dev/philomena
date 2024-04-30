@@ -8,10 +8,3 @@
 // Our code
 import './ujs';
 import './when-ready';
-
-// Base stylesheet.
-import '../css/application.scss';
-
-// Themes.
-import '../css/themes/dark-blue.scss';
-import '../css/themes/dark-purple.scss';

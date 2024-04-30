@@ -1,12 +1,13 @@
 .statistics {
-  @extend .flex__column;
+  display: flex;
+  flex-direction: column;
   border: 1.5px solid var(--secondary-color);
   border-radius: var(--border-radius-inner);
   overflow: hidden;
 }
 
 .statistics__statistic {
-  @include even-odd;
+  @mixin even-odd;
 
   display: grid;
   grid-template-columns: 15% 15% auto;

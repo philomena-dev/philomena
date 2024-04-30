@@ -1,25 +1,26 @@
-@mixin tag-color($tag_type) {
-  &[data-tag-category=#{$tag_type}] {
-    color: var(--tag-#{$tag_type}-text-color);
-    background: var(--tag-#{$tag_type}-color);
-    border-color: var(--tag-#{$tag_type}-border-color);
+@define-mixin tag-color $tagtype {
+  &[data-tag-category=$(tagtype)] {
+    color: var(--tag-$(tagtype)-text-color);
+    background: var(--tag-$(tagtype)-color);
+    border-color: var(--tag-$(tagtype)-border-color);
 
     .tag__state {
-      color: var(--tag-#{$tag_type}-text-color);
+      color: var(--tag-$(tagtype)-text-color);
     }
 
     .tag__name {
-      color: var(--tag-#{$tag_type}-text-color);
+      color: var(--tag-$(tagtype)-text-color);
     }
 
     .tag__count {
-      background: var(--tag-#{$tag_type}-border-color);
+      background: var(--tag-$(tagtype)-border-color);
     }
   }
 }
 
 .tag-list {
-  @extend .flex__row;
+  display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   gap: var(--padding-small);
   margin-bottom: var(--padding-normal);
@@ -39,16 +40,16 @@
     color: inherit;
   }
 
-  @include tag-color(error);
-  @include tag-color(rating);
-  @include tag-color(origin);
-  @include tag-color(character);
-  @include tag-color(oc);
-  @include tag-color(species);
-  @include tag-color(body-type);
-  @include tag-color(content-fanmade);
-  @include tag-color(content-official);
-  @include tag-color(spoiler);
+  @mixin tag-color error;
+  @mixin tag-color rating;
+  @mixin tag-color origin;
+  @mixin tag-color character;
+  @mixin tag-color oc;
+  @mixin tag-color species;
+  @mixin tag-color body-type;
+  @mixin tag-color content-fanmade;
+  @mixin tag-color content-official;
+  @mixin tag-color spoiler;
 }
 
 .tag > span {

@@ -1,0 +1,40 @@
+@define-mixin heading $el {
+  $(el) {
+    font-size: var(--font-$(el)-size);
+    font-weight: bold;
+    font-variant: small-caps;
+    padding: var(--padding-small) 0;
+    margin-top: 0;
+    border-bottom: 1px solid var(--primary-border-color);
+  }
+}
+
+@define-mixin heading-type $type {
+  .heading--$(type) {
+    border-bottom-color: var(--$(type)-border-color);
+  }
+
+  .block--$(type) {
+    h1, h2, h3, h4, h5, h6 {
+      border-bottom-color: var(--$(type)-border-color);
+    }
+  }
+}
+
+@mixin heading h1;
+@mixin heading h2;
+@mixin heading h3;
+@mixin heading h4;
+@mixin heading h5;
+@mixin heading h6;
+
+/* To differentiate between h5 and h6, simply make h6 not bold */
+h6 {
+  font-weight: normal;
+}
+
+@mixin heading-type success;
+@mixin heading-type warning;
+@mixin heading-type danger;
+@mixin heading-type information;
+@mixin heading-type special;

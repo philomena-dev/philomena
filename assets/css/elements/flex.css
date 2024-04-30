@@ -13,13 +13,15 @@
 }
 
 .flex__row--centered {
-  @extend .flex__row;
+  display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
 }
 
 .flex__column--centered {
-  @extend .flex__column;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
@@ -77,13 +79,13 @@
   flex: 1 0 auto;
 }
 
-@include if-desktop {
+@mixin if-desktop {
   .flex--maybe-wrap {
     flex-wrap: nowrap;
   }
 }
 
-@include if-mobile {
+@mixin if-mobile {
   .flex--maybe-wrap {
     flex-wrap: wrap;
   }

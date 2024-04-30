@@ -16,7 +16,7 @@ main {
   flex-grow: 1;
 }
 
-@include if-mobile {
+@mixin if-mobile {
   main {
     padding: var(--padding-small);
   }

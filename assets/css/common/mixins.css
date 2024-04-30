@@ -1,0 +1,58 @@
+@define-mixin if-desktop {
+  @media (min-width: calc($min-desktop-width + 1px)) {
+    @mixin-content;
+  }
+}
+
+@define-mixin if-tablet {
+  @media (max-width: $min-desktop-width) and (min-width: calc($max-phone-width + 1px)) {
+    @mixin-content;
+  }
+}
+
+@define-mixin if-phone {
+  @media (max-width: $max-phone-width) {
+    @mixin-content;
+  }
+}
+
+@define-mixin if-mobile {
+  @media (max-width: $min-desktop-width) {
+    @mixin-content;
+  }
+}
+
+@define-mixin even-odd-type $type {
+  &:nth-child(odd).$(type),
+  &:nth-child(odd) .$(type) {
+    background: var(--$(type)-color);
+  }
+  &:nth-child(even).$(type),
+  &:nth-child(even) .$(type) {
+    background: var(--$(type)-dark-color);
+  }
+  &:nth-child(even) &:nth-child(odd).$(type),
+  &:nth-child(even) &:nth-child(odd) .$(type) {
+    background: var(--$(type)-color);
+  }
+}
+
+@define-mixin even-odd {
+  &:nth-child(odd) {
+    background: var(--secondary-dark-color);
+  }
+  &:nth-child(even) {
+    background: var(--secondary-muted-color);;
+  }
+
+  @mixin even-odd-type primary;
+  @mixin even-odd-type success;
+  @mixin even-odd-type warning;
+  @mixin even-odd-type danger;
+  @mixin even-odd-type information;
+  @mixin even-odd-type special;
+}
+
+@define-mixin animated-transition {
+  transition: color var(--transition-animation-duration) ease, background var(--transition-animation-duration) ease;
+}

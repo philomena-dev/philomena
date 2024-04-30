@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@csstools/postcss-relative-color-syntax": "^2.0.14",
     "@fortawesome/fontawesome-free": "^6.5.2",
+    "@types/postcss-mixins": "^9.0.5",
     "@types/web": "^0.0.143",
     "@typescript-eslint/eslint-plugin": "^7.8.0",
     "@typescript-eslint/parser": "^7.8.0",
@@ -18,8 +20,10 @@
     "cross-env": "^7.0.3",
     "eslint": "^8.34.0",
     "jest-environment-jsdom": "^29.7.0",
-    "normalize-scss": "^8.0.0",
-    "sass": "^1.75.0",
+    "normalize.css": "^8.0.1",
+    "postcss-mixins": "^10.0.1",
+    "postcss-nested": "^6.0.1",
+    "postcss-simple-vars": "^7.0.1",
     "typescript": "^5.4",
     "vite": "^5.2"
   },

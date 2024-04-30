@@ -22,10 +22,9 @@ header {
 }
 
 .header__search {
-  @extend .flex;
-  @extend .flex--no-wrap;
-  @extend .flex--centered;
-
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
   border: 0;
   border-radius: var(--border-radius-inner);
   background: var(--primary-muted-color);
@@ -38,7 +37,7 @@ header {
 }
 
 .header__input {
-  @include animated-transition;
+  @mixin animated-transition;
   height: var(--navbar-input-size);
   font-size: var(--font-size);
   background: 0;
@@ -82,7 +81,7 @@ nav.dropdown__content {
   line-height: var(--navbar-secondary-size);
 }
 
-@include if-mobile {
+@mixin if-mobile {
   header {
     gap: var(--padding-normal);
     flex-wrap: wrap;

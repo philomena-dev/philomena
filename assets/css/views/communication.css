@@ -20,7 +20,8 @@
 }
 
 .communication-edit__actions {
-  @extend .flex__row;
+  display: flex;
+  flex-direction: row;
   line-height: var(--block-header-height);
   border: 0;
   margin: var(--padding-normal);
@@ -29,7 +30,8 @@
 }
 
 .communication__anonymous {
-  @extend .flex__row;
+  display: flex;
+  flex-direction: row;
   line-height: ar(--block-header-height);
   background: var(--secondary-color);
   border: 1px solid var(--secondary-border-color);

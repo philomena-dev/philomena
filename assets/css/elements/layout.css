@@ -1,5 +1,6 @@
 .column-layout {
-  @extend .flex__row;
+  display: flex;
+  flex-direction: row;
   width: 100%;
 }
 
@@ -12,7 +13,7 @@
   flex: 1 0 auto;
 }
 
-@include if-mobile {
+@mixin if-mobile {
   .column-layout {
     flex-direction: column;
   }
@@ -23,7 +24,8 @@
 }
 
 #container {
-  @extend .flex__column;
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
   height: 100%;
   margin: auto;
@@ -41,7 +43,7 @@
   max-width: var(--medium-layout-width);
 }
 
-@include if-desktop {
+@mixin if-desktop {
   .centered-layout {
     .layout--medium, .layout--narrow {
       margin-left: auto;

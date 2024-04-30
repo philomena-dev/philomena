@@ -1,5 +1,8 @@
 .image-constrained {
-  @extend .flex__row--centered;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 
 .media-list {
@@ -17,7 +20,7 @@
   grid-column: 1 / 1;
 }
 
-@include if-phone {
+@mixin if-phone {
   .media-list {
     grid-template-columns: repeat(auto-fill, minmax(var(--media-small-container-width), 1fr));
   }
@@ -93,15 +96,18 @@
 }
 
 .image-container {
-  @extend .flex__column--centered;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .image-container a {
   display: flex;
   max-height: 100%;
 
-  // For some reason tall images don't center properly within the container
-  // without this hack. I blame CSS.
+  /* For some reason tall images don't center properly within the container
+     without this hack. I blame CSS. */
   & > img {
     max-height: 100%;
     margin: auto;

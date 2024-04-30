@@ -1,0 +1,39 @@
+@define-mixin separator-type $type {
+  .separator--$(type) {
+    border-color: var(--$(type)-border-color);
+
+    &.separator--vertical {
+      background: var(--$(type)-border-color);
+    }
+  }
+
+  .button__group--standalone .separator--$(type),
+  .button__group .separator--$(type) {
+    &.separator--vertical {
+      background: var(--$(type)-color) !important;
+    }
+  }
+}
+
+.separator {
+  margin: var(--padding-normal) 0;
+}
+
+.separator--thin {
+  margin: var(--padding-small) 0;
+}
+
+.separator--vertical {
+  width: 1px;
+  height: inherit;
+  margin: 0 var(--padding-small);
+  background: var(--primary-border-color);
+}
+
+@mixin separator-type primary;
+@mixin separator-type secondary;
+@mixin separator-type success;
+@mixin separator-type warning;
+@mixin separator-type danger;
+@mixin separator-type information;
+@mixin separator-type special;

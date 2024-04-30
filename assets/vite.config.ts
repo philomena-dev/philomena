@@ -1,6 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import autoprefixer from 'autoprefixer';
+import postcssMixins from 'postcss-mixins';
+import postcssNested from 'postcss-nested';
+import postcssSimpleVars from 'postcss-simple-vars';
+import postcssRelativeColor from '@csstools/postcss-relative-color-syntax';
 import { defineConfig, UserConfig, ConfigEnv } from 'vite';
 
 export default defineConfig(({ command }: ConfigEnv): UserConfig => {
@@ -17,7 +21,7 @@ export default defineConfig(({ command }: ConfigEnv): UserConfig => {
 
   const themeNames =
     fs.readdirSync(path.resolve(__dirname, 'css/themes/')).map(name => {
-      const m = name.match(/([-a-z]+).scss/);
+      const m = name.match(/([-a-z]+).css/);
 
       if (m) { return m[1]; }
       return null;
@@ -26,7 +30,7 @@ export default defineConfig(({ command }: ConfigEnv): UserConfig => {
   const themes = new Map();
 
   for (const name of themeNames) {
-    themes.set(`css/${name}`, `./css/themes/${name}.scss`);
+    themes.set(`css/${name}`, `./css/themes/${name}.css`);
   }
 
   return {
@@ -50,7 +54,7 @@ export default defineConfig(({ command }: ConfigEnv): UserConfig => {
       rollupOptions: {
         input: {
           'js/app': './js/app.js',
-          'css/application': './css/application.scss',
+          'css/application': './css/application.css',
           ...Object.fromEntries(themes)
         },
         output: {
@@ -62,7 +66,7 @@ export default defineConfig(({ command }: ConfigEnv): UserConfig => {
     },
     css: {
       postcss:  {
-        plugins: [autoprefixer]
+        plugins: [postcssMixins(), postcssNested(), postcssSimpleVars, postcssRelativeColor(), autoprefixer]
       }
     }
   };

@@ -1,22 +1,22 @@
-@mixin interaction-type($type) {
-  .interaction--#{$type} {
+@define-mixin interaction-type $type {
+  .interaction--$(type) {
     position: relative;
-    color: var(--#{$type}-color) !important;
+    color: var(--$(type)-color) !important;
     padding: 0 var(--padding-tiny);
     width: 1rem;
 
     &.active, &:hover {
       color: var(--text-color) !important;
-      background-color: var(--#{$type}-color);
+      background-color: var(--$(type)-color);
     }
   }
 }
 
-@include interaction-type(fave);
-@include interaction-type(upvote);
-@include interaction-type(downvote);
-@include interaction-type(comment);
-@include interaction-type(hide);
+@mixin interaction-type fave;
+@mixin interaction-type upvote;
+@mixin interaction-type downvote;
+@mixin interaction-type comment;
+@mixin interaction-type hide;
 
 .comments_count {
   position: absolute;

@@ -1,24 +1,24 @@
-@mixin block-type($type) {
-  .block--#{$type} {
+@define-mixin block-type $type {
+  .block--$(type) {
     .block__content {
-      border-color: var(--#{$type}-border-color);
-      background: var(--#{$type}-dark-color);
+      border-color: var(--$(type)-border-color);
+      background: var(--$(type)-dark-color);
     }
 
     .block__footer {
-      background: var(--#{$type}-color);
+      background: var(--$(type)-color);
     }
 
     &.block--muted {
-      border-color: var(--#{$type}-color);
+      border-color: var(--$(type)-color);
     }
 
     &.block--fixed {
-      background: var(--#{$type}-color);
+      background: var(--$(type)-color);
     }
 
     & a {
-      color: var(--#{$type}-link-color);
+      color: var(--$(type)-link-color);
 
       &:hover {
         color: var(--link-hover-color);
@@ -56,8 +56,9 @@
   padding: var(--padding-small);
 }
 
-.block__footer {
-  @extend .flex__row;
+.block__footer, .block__footer--small {
+  display: flex;
+  flex-direction: row;
   background: var(--primary-muted-color);
   padding: var(--padding-normal);
   margin: var(--padding-normal);
@@ -65,12 +66,11 @@
 }
 
 .block__footer--small {
-  @extend .block__footer;
   margin: var(--padding-small);
   margin-top: 0;
 }
 
-@include if-phone {
+@mixin if-phone {
   .block__content {
     padding: var(--padding-small);
   }
@@ -81,7 +81,7 @@
   }
 }
 
-.block__header {
+.block__header, .block__header--single-item  {
   line-height: var(--block-header-height);
   padding: 0 var(--padding-normal);
   font-size: var(--font-header-size);
@@ -93,7 +93,6 @@
 }
 
 .block__header--single-item {
-  @extend .block__header;
   display: inline-block;
   width: 100%;
   box-sizing: border-box;
@@ -150,9 +149,9 @@
   margin-top: var(--padding-normal);
 }
 
-@include block-type(secondary);
-@include block-type(success);
-@include block-type(warning);
-@include block-type(danger);
-@include block-type(information);
-@include block-type(special);
+@mixin block-type secondary;
+@mixin block-type success;
+@mixin block-type warning;
+@mixin block-type danger;
+@mixin block-type information;
+@mixin block-type special;

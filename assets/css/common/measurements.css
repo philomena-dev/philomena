@@ -29,7 +29,7 @@ $font-family-monospace: "Droid Sans Mono", monospace;
   --button-group-tall-height: 2.5rem;
   --button-group-small-height: 1.5rem;
 
-  --tag-height: calc(1em * 2);
+  --tag-height: 2em;
   --tag-border-width: 0;
 
   --column-left-width: 360px;
@@ -53,8 +53,8 @@ $font-family-monospace: "Droid Sans Mono", monospace;
   --number-badge-lower-offset: 0.7rem;
   --number-badge-upper-offset: 0.7rem;
 
-  --font-family: #{$font-family-base};
-  --font-family-monospace: #{$font-family-monospace};
+  --font-family: $font-family-base;
+  --font-family-monospace: $font-family-monospace;
 
   --font-size: 14px;
   --font-tiny-size: 12px;
@@ -69,10 +69,10 @@ $font-family-monospace: "Droid Sans Mono", monospace;
 
   --input-text-height: 9rem;
 
-  --min-desktop-width: #{$min-desktop-width};
-  --max-phone-width: #{$max-phone-width};
-  --medium-layout-width: #{$medium-layout-width};
-  --narrow-layout-width: #{$narrow-layout-width};
+  --min-desktop-width: $min-desktop-width;
+  --max-phone-width: $max-phone-width;
+  --medium-layout-width: $medium-layout-width;
+  --narrow-layout-width: $narrow-layout-width;
 
   --transition-animation-duration: 0.15s;
 }
