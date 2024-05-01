@@ -10,7 +10,7 @@ parserOptions:
 
 plugins:
   - '@typescript-eslint'
-  - vitest
+  - jest
 
 globals:
   ga: false
@@ -276,14 +276,12 @@ overrides:
       '@typescript-eslint/no-extra-parens': 2
       no-shadow: 0
       '@typescript-eslint/no-shadow': 2
-  # Unit Tests (also written in TypeScript)
+  # Jest Tests (also written in TypeScript)
   # Disable rules that do not make sense in test files (e.g. testing for undefined input values should be allowed)
   - files:
       - '*.spec.ts'
       - 'test/*.ts'
     extends:
-      - 'plugin:vitest/legacy-recommended'
+      - 'plugin:jest/recommended'
     rules:
       no-undefined: 0
-      no-unused-expressions: 0
-      vitest/valid-expect: 0

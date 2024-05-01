@@ -8,7 +8,7 @@ config :philomena, Philomena.Repo, show_sensitive_data_on_connection_error: true
 #
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
-# with vite to recompile .js and .css sources.
+# with webpack to recompile .js and .css sources.
 config :philomena, PhilomenaWeb.Endpoint,
   http: [port: 4000],
   debug_errors: true,
@@ -16,23 +16,11 @@ config :philomena, PhilomenaWeb.Endpoint,
   check_origin: false,
   watchers: [
     node: [
-      "node_modules/vite/bin/vite.js",
-      "--mode",
-      "development",
-      "--host",
-      "0.0.0.0",
-      "--config",
-      "vite.config.ts",
-      cd: Path.expand("../assets", __DIR__)
-    ],
-    node: [
-      "node_modules/vite/bin/vite.js",
-      "build",
+      "node_modules/webpack/bin/webpack.js",
       "--mode",
       "development",
       "--watch",
-      "--config",
-      "vite.config.ts",
+      "--watch-options-stdin",
       cd: Path.expand("../assets", __DIR__)
     ]
   ]

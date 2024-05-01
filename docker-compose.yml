@@ -51,8 +51,6 @@ services:
       - postgres
       - elasticsearch
       - redis
-    ports:
-      - '5173:5173'
 
   postgres:
     image: postgres:16.2-alpine

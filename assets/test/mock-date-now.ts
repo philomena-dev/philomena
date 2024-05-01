@@ -1,9 +1,9 @@
 export function mockDateNow(initialDateNow: number): void {
   beforeAll(() => {
-    vi.useFakeTimers().setSystemTime(initialDateNow);
+    jest.useFakeTimers().setSystemTime(initialDateNow);
   });
 
   afterAll(() => {
-    vi.useRealTimers();
+    jest.useRealTimers();
   });
 }

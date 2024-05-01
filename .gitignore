@@ -59,6 +59,6 @@ npm-debug.log
 /native/**/target
 /.cargo
 
-# Vitest coverage
+# Jest coverage
 /assets/coverage
 docker/app/Dockerfile
