@@ -117,11 +117,11 @@ describe('Store utilities', () => {
     it('should attach a storage event listener and fire when the provide key changes', () => {
       const mockKey = `mock-watch-key-${getRandomIntBetween(1, 10)}`;
       const mockValue = Math.random();
-      const mockCallback = vi.fn();
+      const mockCallback = jest.fn();
       setStorageValue({
         [mockKey]: JSON.stringify(mockValue),
       });
-      const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
+      const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
 
       const cleanup = store.watch(mockKey, mockCallback);
 

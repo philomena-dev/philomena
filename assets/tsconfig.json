@@ -1,26 +1,16 @@
 {
   "compilerOptions": {
+    "noEmit": true,
     "baseUrl": "./js",
-    "target": "ES2020",
-    "useDefineForClassFields": true,
+    "target": "ES2018",
     "esModuleInterop": true,
+    "moduleResolution": "Node",
     "allowJs": true,
     "skipLibCheck": true,
     "lib": [
-      "ES2020",
-      "DOM",
-      "DOM.Iterable"
+      "ES2018",
+      "DOM"
     ],
-
-    "moduleResolution": "Node",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-
-
-    "strict": true,
-
-    "types": ["vitest/globals"]
+    "strict": true
   }
 }
