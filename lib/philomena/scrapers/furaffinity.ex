@@ -29,6 +29,8 @@ defmodule Philomena.Scrapers.Furaffinity do
       |> String.replace(~r/\n /, "\n")
       |> String.trim()
 
+    description = "##\s#{submission["title"]}\n#{description}"
+
     %{
       source_url: url,
       author_name: submission["name"],
