@@ -1,5 +1,5 @@
 defmodule Philomena.Scrapers.Derpibooru do
-  @url_regex ~r|\Ahttps?://derpibooru\.org/images/([0-9]+)|
+  @url_regex ~r|\A(https\:\/\/derpibooru\.org\/images\/([0-9]+))\?*.+|
 
   @spec can_handle?(URI.t(), String.t()) :: true | false
   def can_handle?(_uri, url) do
@@ -7,8 +7,11 @@ defmodule Philomena.Scrapers.Derpibooru do
   end
 
   def scrape(_uri, url) do
-    [_, submission_id] = Regex.run(@url_regex, url, capture: :all)
-    api_url = "https://derpibooru.org/api/v1/json/images/#{submission_id}"
+    [_, url, submission_id] = Regex.run(@url_regex, url, capture: :all)
+
+    api_url =
+      "https://derpibooru.org/api/v1/json/images/#{submission_id}"
+
     {:ok, %Tesla.Env{status: 200, body: body}} = Philomena.Http.get(api_url)
 
     json = Jason.decode!(body)

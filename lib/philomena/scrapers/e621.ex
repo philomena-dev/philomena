@@ -1,5 +1,5 @@
 defmodule Philomena.Scrapers.E621 do
-  @url_regex ~r|\Ahttps?://e621\.net/posts/([0-9]+)|
+  @url_regex ~r|\A(https\:\/\/e621\.net\/posts\/([0-9]+))\?*.+|
 
   @spec can_handle?(URI.t(), String.t()) :: true | false
   def can_handle?(_uri, url) do
@@ -7,7 +7,11 @@ defmodule Philomena.Scrapers.E621 do
   end
 
   def scrape(_uri, url) do
-    api_url = "#{url}.json?login=#{e621_user()}&api_key=#{e621_apikey()}"
+    [_, url, submission_id] = Regex.run(@url_regex, url, capture: :all)
+
+    api_url =
+      "https://e621.net/posts/#{submission_id}.json?login=#{e621_user()}&api_key=#{e621_apikey()}"
+
     {:ok, %Tesla.Env{status: 200, body: body}} = Philomena.Http.get(api_url)
 
     json = Jason.decode!(body)
