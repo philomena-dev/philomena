@@ -1,5 +1,5 @@
 defmodule Philomena.Scrapers.E621 do
-  @url_regex ~r|\A(https\:\/\/e621\.net\/posts\/([0-9]+))\?*.+|
+  @url_regex ~r/\A(https\:\/\/e621\.net\/posts\/([0-9]+))|\?*.+/
 
   @spec can_handle?(URI.t(), String.t()) :: true | false
   def can_handle?(_uri, url) do

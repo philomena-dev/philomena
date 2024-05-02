@@ -1,5 +1,5 @@
 defmodule Philomena.Scrapers.Furbooru do
-  @url_regex ~r|\A(https\:\/\/furbooru\.org\/images\/([0-9]+))\?*.+|
+  @url_regex ~r/\A(https\:\/\/furbooru\.org\/images\/([0-9]+))|\?*.+/
 
   @spec can_handle?(URI.t(), String.t()) :: true | false
   def can_handle?(_uri, url) do
