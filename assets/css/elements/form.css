@@ -4,20 +4,20 @@ form .field {
   margin-bottom: var(--padding-normal);
 }
 
-form .form--two_column {
+form .form--two-column {
   display: grid;
   grid: inherit;
   grid-template-columns: 1 / -1;
   gap: var(--padding-normal);
 }
 
-form .form--two_column > .field, form .form--two_column > li {
+form .form--two-column > .field, form .form--two-column > li {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: var(--padding-normal);
 }
 
-form .with_error {
+form .with-error {
   display: block;
 }
 

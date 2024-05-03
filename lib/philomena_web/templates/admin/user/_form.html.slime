@@ -7,26 +7,26 @@
     .block__header
       i.fa.fa-user
       span Essential user details
-    .block__content.form--two_column
+    .block__content.form--two-column
       .field
         label Name:
-        .with_error
+        .with-error
           = error_tag f, :name
           = text_input f, :name, class: "input"
       .field
         label Email:
-        .with_error
+        .with-error
           = error_tag f, :email
           = text_input f, :email, class: "input"
       .field
         label Role:
-        .with_error = select f, :role, ["user", "assistant", "moderator", "admin"], class: "input"
+        .with-error = select f, :role, ["user", "assistant", "moderator", "admin"], class: "input"
       .field
         label Secondary banner:
-        .with_error = select f, :secondary_role, [[key: "-", value: ""], "Site Developer", "Devops", "Philomena Contributor", "Public Relations"], class: "input"
+        .with-error = select f, :secondary_role, [[key: "-", value: ""], "Site Developer", "Devops", "Philomena Contributor", "Public Relations"], class: "input"
       .field
         label Avatar
-        .with_error
+        .with-error
           = link to: Routes.admin_user_avatar_path(@conn, :delete, @user), class: "button button--danger", data: [method: "delete", confirm: "Are you really, really sure?"] do
             i.fa.fa-trash
             | Remove
@@ -36,30 +36,30 @@
       i.fa.fa-user-check
       span General user flags
     .block__content
-      ul.form--two_column
+      ul.form--two-column
         li
-          .with_error = checkbox f, :hide_default_role, class: "checkbox"
+          .with-error = checkbox f, :hide_default_role, class: "checkbox"
           label Hide staff banner
         li
-          .with_error = checkbox f, :senior_staff, class: "checkbox"
+          .with-error = checkbox f, :senior_staff, class: "checkbox"
           label Senior staff
         li
-          .with_error = checkbox f, :bypass_rate_limits, class: "checkbox"
+          .with-error = checkbox f, :bypass_rate_limits, class: "checkbox"
           label Bypass rate limits
-      ul.form--two_column = collection_checkboxes f, :roles, filtered_roles(general_permissions(), @roles), mapper: &checkbox_mapper/6
+      ul.form--two-column = collection_checkboxes f, :roles, filtered_roles(general_permissions(), @roles), mapper: &checkbox_mapper/6
 
   .block.block--warning
     .block__header
       i.fa.fa-handshake-angle
       span Special roles for assistants
     .block__content
-      ul.form--two_column = collection_checkboxes f, :roles, filtered_roles(assistant_permissions(), @roles), mapper: &checkbox_mapper/6
+      ul.form--two-column = collection_checkboxes f, :roles, filtered_roles(assistant_permissions(), @roles), mapper: &checkbox_mapper/6
 
   .block.block--danger
     .block__header
       i.fa.fa-gavel
       span Special roles for moderators
     .block__content
-      ul.form--two_column = collection_checkboxes f, :roles, filtered_roles(moderator_permissions(), @roles), mapper: &checkbox_mapper/6
+      ul.form--two-column = collection_checkboxes f, :roles, filtered_roles(moderator_permissions(), @roles), mapper: &checkbox_mapper/6
 
   = submit "Save User", class: "button"
