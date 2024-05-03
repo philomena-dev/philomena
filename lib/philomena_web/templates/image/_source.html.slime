@@ -47,14 +47,14 @@
           ' Sources
 
       .block__header__buttons
-        a.button.button--inline#edit-source data-click-focus=".js-image-source" data-click-hide="#image-source" data-click-show="#source-form" title="Edit source" accessKey="s"
+        a.button#edit-source data-click-focus=".js-image-source" data-click-hide="#image-source" data-click-show="#source-form" title="Edit source" accessKey="s"
           i.fas.fa-edit
           = if has_sources do
             ' Add/Edit
           - else
             ' Add
         = if @source_change_count > 0 do
-          a.button.button--link.button--inline href=Routes.image_source_change_path(@conn, :index, @image) title="Source history"
+          a.button.button--link href=Routes.image_source_change_path(@conn, :index, @image) title="Source history"
             i.fa.fa-history>
             spanspan.hide-mobile> History
             | (
@@ -62,7 +62,7 @@
             | )
         = if can?(@conn, :hide, @image) and not hide_staff_tools?(@conn) do
           = form_for @changeset, Routes.image_source_history_path(@conn, :delete, @image), [method: "delete"], fn _f ->
-            a.button.button--danger.button--inline type="submit" data-confirm="Are you really, really sure?" title="Wipe sources"
+            a.button.button--warning type="submit" data-confirm="Are you really, really sure?" title="Wipe sources"
               i.fas.fa-eraser>
               ' Wipe
     .block__content.flex.flex--wrap.flex--column

@@ -1,0 +1,27 @@
+@define-mixin border-for-flash-type $type {
+  .flash--$(type) {
+    border: 1px solid var(--$(type)-border-color);
+  }
+}
+
+:root {
+  --separator-vertical-size: inherit;
+}
+
+.block__content, .block__tab {
+  border: 1px solid var(--primary-border-color);
+}
+
+.button {
+  border: 1px solid var(--primary-border-color);
+}
+
+.button__group, .button__group--single, .button__group--standalone {
+  border: 1px solid var(--secondary-color);
+}
+
+@mixin border-for-flash-type success;
+@mixin border-for-flash-type warning;
+@mixin border-for-flash-type danger;
+@mixin border-for-flash-type information;
+@mixin border-for-flash-type special;

@@ -31,6 +31,12 @@ $font-family-monospace: "Droid Sans Mono", monospace;
   --button-group-height: 2rem;
   --button-group-tall-height: 2.5rem;
   --button-group-small-height: 1.5rem;
+  
+  --checkbox-width: 3rem;
+  --checkbox-height: 1.5rem;
+  --checkbox-border-width: 2px;
+
+  --separator-vertical-size: 1.3em;
 
   --tag-height: 2em;
   --tag-border-width: 0;
@@ -41,6 +47,7 @@ $font-family-monospace: "Droid Sans Mono", monospace;
   --border-radius-inner: 0.25rem;
   --border-radius-tag: 0.2rem;
   --border-radius-avatar: 100%;
+  --border-radius-checkbox: 1rem;
 
   --media-container-width: 225px;
   --media-tiny-container-width: 50px;
@@ -79,4 +86,5 @@ $font-family-monospace: "Droid Sans Mono", monospace;
   --narrow-layout-width: $narrow-layout-width;
 
   --transition-animation-duration: 0.15s;
+  --transition-long-animation-duration: 0.3s;
 }

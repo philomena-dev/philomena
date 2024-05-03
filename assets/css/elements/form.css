@@ -1,0 +1,28 @@
+form .field {
+  display: flex;
+  gap: var(--padding-normal);
+  margin-bottom: var(--padding-normal);
+}
+
+form .form--two_column {
+  display: grid;
+  grid: inherit;
+  grid-template-columns: 1 / -1;
+  gap: var(--padding-normal);
+}
+
+form .form--two_column > .field, form .form--two_column > li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--padding-normal);
+}
+
+form .field > .with_error {
+  display: block;
+}
+
+form label {
+  display: flex;
+  flex: 1 0 auto;
+  align-self: center;
+}

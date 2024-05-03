@@ -1,19 +1,19 @@
 $background-color: #f7f7f7;
-$text-color: #171717;
+$text-color: #121212;
 
-$primary-color: #62a7d9;
-$secondary-color: #c1e4f9;
+$primary-color: #4b9ad3;
+$secondary-color: #62a7d9;
 $danger-color: #e78f82;
-$warning-color: #f0c180;
+$warning-color: #edb76c;
 $success-color: #8de3b1;
 $information-color: #90dce7;
 $special-color: #dc77e9;
 
-$upvote-color: #5b9b26;
-$downvote-color: #da3412;
-$fave-color: #a18e27;
-$comment-color: #b099dd;
-$hide-color: #da3412;
+$upvote-color: #67af2b;
+$downvote-color: #cf0001;
+$fave-color: #c4b246;
+$comment-color: #9273d0;
+$hide-color: #cf0001;
 
 $tag-default-color: #84dd96;
 $tag-error-color: #eb848c;
@@ -37,28 +37,30 @@ $spoiler-color: #0f0f0f;
 
 @define-mixin type-color $type, $color {
   --$(type)-color: $color;
-  --$(type)-border-color: hsl(from $color h calc(s - 20) calc(l - 10));
-  --$(type)-dark-color: hsl(from $color h calc(s - 25) calc(l + 12));
+  --$(type)-border-color: hsl(from $color h calc(s - 20) calc(l + 5));
+  --$(type)-muted-color: hsl(from $color h calc(s - 7) calc(l - 12));
+  --$(type)-dark-color: hsl(from $color h calc(s - 25) calc(l + 20));
   --$(type)-link-color: hsl(from $color h calc(s + 50) calc(l - 47));
 }
 
 :root {
   --background-color: $background-color;
   --text-color: $text-color;
+  --text-light-color: $background-color;
 
   --link-color: hsl(from $primary-color h calc(s + 25) calc(l - 25));
   --link-hover-color: $text-color;
 
   --primary-color: $primary-color;
-  --primary-border-color: hsl(from $primary-color h calc(s + 20) calc(l - 30));
-  --primary-muted-color: hsl(from $primary-color h calc(s + 7) calc(l + 10));
-  --primary-dark-color: hsl(from $primary-color h calc(s - 10) calc(l + 30));
+  --primary-border-color: hsl(from $primary-color h calc(s + 5) calc(l - 5));
+  --primary-muted-color: hsl(from $primary-color h calc(s + 7) calc(l + 20));
+  --primary-dark-color: hsl(from $primary-color h calc(s + 20) calc(l + 35));
   --primary-link-color: var(--link-color); /* for consistency */
 
   --secondary-color: $secondary-color;
   --secondary-border-color: hsl(from $secondary-color h s calc(l - 45));
-  --secondary-muted-color: hsl(from $secondary-color h calc(s + 5) calc(l - 15));
-  --secondary-dark-color: hsl(from $secondary-color h calc(s - 5) calc(l + 5));
+  --secondary-muted-color: hsl(from $secondary-color h calc(s + 5) calc(l + 18));
+  --secondary-dark-color: hsl(from $secondary-color h calc(s - 5) calc(l + 25));
   --secondary-link-color: hsl(from $secondary-color h s calc(l - 55));
 
   --upvote-color: $upvote-color;
@@ -87,4 +89,23 @@ $spoiler-color: #0f0f0f;
   @mixin tag-color content-fanmade, $tag-content-fanmade-color, 40;
   @mixin tag-color content-official, $tag-content-official-color;
   @mixin tag-color spoiler, $tag-spoiler-color;
+}
+
+header {
+  /* Apparently people will put me on a cross if
+     I don't use Trixie colors, so here you go! */
+  background-color: #e2ebf2; 
+}
+
+/* Sigh... my poor poor pretty CSS... */
+.header__search {
+  background-color: var(--primary-color);
+}
+
+.header__search * {
+  color: var(--text-light-color) !important;
+}
+
+.header__search > .input:hover, .input:focus {
+  color: var(--text-color) !important;
 }

@@ -29,14 +29,12 @@ defmodule PhilomenaWeb.Admin.UserView do
         checked: Enum.member?(Enum.map(Map.get(form.data, field), & &1.id), role.id)
       )
 
-    content_tag(:li, class: "table-list__label") do
-      content_tag(:div) do
-        [
-          checkbox(form, field, input_opts),
-          " ",
-          content_tag(:label, description(role.name, role.resource_type), label_opts)
-        ]
-      end
+    content_tag(:li) do
+      [
+        checkbox(form, field, input_opts),
+        " ",
+        content_tag(:label, description(role.name, role.resource_type), label_opts)
+      ]
     end
   end
 

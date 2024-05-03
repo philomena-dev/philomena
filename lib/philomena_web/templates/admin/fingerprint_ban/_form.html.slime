@@ -23,7 +23,7 @@
 
   br
   .field
-    => checkbox f, :enabled
+    => checkbox f, :enabled, class: "checkbox"
     = label f, :enabled
   br
 

@@ -5,54 +5,62 @@
 
   .block
     .block__header
+      i.fa.fa-user
       span Essential user details
-    label.table-list__label
-      .table-list__label__text Name:
-      .table-list__label__input
-        = error_tag f, :name
-        = text_input f, :name, class: "input"
-    label.table-list__label
-      .table-list__label__text Email:
-      .table-list__label__input
-        = error_tag f, :email
-        = text_input f, :email, class: "input"
-    label.table-list__label
-      .table-list__label__text Role:
-      .table-list__label__input = select f, :role, ["user", "assistant", "moderator", "admin"], class: "input"
-    label.table-list__label
-      .table-list__label__text Secondary banner:
-      .table-list__label__input = select f, :secondary_role, [[key: "-", value: ""], "Site Developer", "Devops", "Philomena Contributor", "Public Relations"], class: "input"
-    label.table-list__label
-      .table-list__label__text Hide staff banner:
-      .table-list__label__input = checkbox f, :hide_default_role, class: "checkbox"
-    label.table-list__label
-      .table-list__label__text Senior staff:
-      .table-list__label__input = checkbox f, :senior_staff, class: "checkbox"
-    label.table-list__label
-      .table-list__label__text Bypass rate limits:
-      .table-list__label__input = checkbox f, :bypass_rate_limits, class: "checkbox"
-    .table-list__label
-      .table-list__label__text Avatar
-      .table-list__label__input
-        = link "Remove avatar", to: Routes.admin_user_avatar_path(@conn, :delete, @user), class: "button", data: [method: "delete", confirm: "Are you really, really sure?"]
+    .block__content.form--two_column
+      .field
+        label Name:
+        .with_error
+          = error_tag f, :name
+          = text_input f, :name, class: "input"
+      .field
+        label Email:
+        .with_error
+          = error_tag f, :email
+          = text_input f, :email, class: "input"
+      .field
+        label Role:
+        .with_error = select f, :role, ["user", "assistant", "moderator", "admin"], class: "input"
+      .field
+        label Secondary banner:
+        .with_error = select f, :secondary_role, [[key: "-", value: ""], "Site Developer", "Devops", "Philomena Contributor", "Public Relations"], class: "input"
+      .field
+        label Hide staff banner:
+        .with_error = checkbox f, :hide_default_role, class: "checkbox"
+      .field
+        label Senior staff:
+        .with_error = checkbox f, :senior_staff, class: "checkbox"
+      .field
+        label Bypass rate limits:
+        .with_error = checkbox f, :bypass_rate_limits, class: "checkbox"
+      .field
+        label Avatar
+        .with_error
+          = link "Remove avatar", to: Routes.admin_user_avatar_path(@conn, :delete, @user), class: "button", data: [method: "delete", confirm: "Are you really, really sure?"]
 
   .block
     .block__header
+      i.fa.fa-user-check
       span General user flags
-    ul
-      p
-        strong> Be careful when issuing these permissions to staff members!
-        | Staff members with relevant roles may have these permissions anyway. Issuing them may break things, such as tag aliasing.
-    ul = collection_checkboxes f, :roles, filtered_roles(general_permissions(), @roles), mapper: &checkbox_mapper/6
+    .block__content
+      ul
+        p
+          strong> Be careful when issuing these permissions to staff members!
+          | Staff members with relevant roles may have these permissions anyway. Issuing them may break things, such as tag aliasing.
+      ul.form--two_column = collection_checkboxes f, :roles, filtered_roles(general_permissions(), @roles), mapper: &checkbox_mapper/6
 
   .block
     .block__header.warning
+      i.fa.fa-handshake-angle
       span Special roles for assistants
-    ul = collection_checkboxes f, :roles, filtered_roles(assistant_permissions(), @roles), mapper: &checkbox_mapper/6
+    .block__content
+      ul.form--two_column = collection_checkboxes f, :roles, filtered_roles(assistant_permissions(), @roles), mapper: &checkbox_mapper/6
 
   .block
     .block__header.danger
+      i.fa.fa-gavel
       span Special roles for moderators
-    ul = collection_checkboxes f, :roles, filtered_roles(moderator_permissions(), @roles), mapper: &checkbox_mapper/6
+    .block__content
+      ul.form--two_column = collection_checkboxes f, :roles, filtered_roles(moderator_permissions(), @roles), mapper: &checkbox_mapper/6
 
   = submit "Save User", class: "button"

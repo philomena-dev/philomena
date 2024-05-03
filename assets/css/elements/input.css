@@ -1,10 +1,15 @@
 .input {
   border: 1px solid var(--secondary-border-color);
-  box-shadow: 0 -1px var(--secondary-dark-color) inset;
+  border-radius: var(--border-radius-inner);
   background: var(--secondary-dark-color);
   color: var(--text-color);
+  padding: var(--padding-small);
   box-sizing: border-box;
   font-family: var(--font-family-monospace);
+}
+
+.input:hover, .input:focus {
+  background: var(--secondary-muted-color);
 }
 
 .input:focus {
@@ -23,4 +28,8 @@
   height: var(--input-text-height);
   padding: var(--padding-normal) var(--padding-small);
   cursor: text;
+}
+
+input[type=file] {
+  padding-top: var(--padding-small);
 }

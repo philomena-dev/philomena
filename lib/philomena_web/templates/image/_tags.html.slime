@@ -62,11 +62,11 @@
         i.fas.fa-tag>
         ' Tags
       .block__header__buttons
-        a.button.button--inline.js-tag-sauce-toggle#edit-tags data-click-toggle=".tagsauce, .js-imageform" data-click-focus=".js-taginput-plain:not(.hidden), .js-taginput-input" title="Edit tags" accessKey="t"
+        a.button.js-tag-sauce-toggle#edit-tags data-click-toggle=".tagsauce, .js-imageform" data-click-focus=".js-taginput-plain:not(.hidden), .js-taginput-input" title="Edit tags" accessKey="t"
           i.fas.fa-edit>
           ' Edit
         = if @tag_change_count > 0 do
-          a.button.button--link.button--inline href=Routes.image_tag_change_path(@conn, :index, @image) title="Tag history"
+          a.button.button--link href=Routes.image_tag_change_path(@conn, :index, @image) title="Tag history"
             i.fa.fa-history>
             | History (
             = @tag_change_count

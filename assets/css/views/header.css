@@ -42,7 +42,6 @@ header {
   font-size: var(--font-size);
   background: 0;
   border: 0;
-  box-shadow: 0;
 }
 
 .header__input--text {
@@ -74,7 +73,11 @@ nav.header__secondary {
   font-size: var(--font-header-size);
   gap: var(--padding-large);
   align-items: center;
-  background: var(--primary-muted-color);
+  background: var(--primary-color);
+}
+
+nav.header__secondary .header__link {
+  color: var(--text-light-color) !important;
 }
 
 nav.dropdown__content {

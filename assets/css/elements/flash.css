@@ -1,6 +1,6 @@
 @define-mixin flash-type $type {
   .flash--$(type) {
-    border: 1px solid var(--$(type)-border-color);
+    border: 0;
     background: var(--$(type)-color);
   }
 

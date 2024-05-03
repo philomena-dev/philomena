@@ -6,6 +6,7 @@
       i.fa.fa-plus
       i.fa.fa-exclamation>
       span.hidden--mobile Show Deleted
+    .separator--vertical.separator--warning
 
   = if del != "only" do
     a.js-staff-action href=@route.(Keyword.put(@params, :del, "only")) title="Only Deleted/Merged Images"
@@ -20,10 +21,14 @@
       span.hidden--mobile Show Non-Deleted
 
   = if present?(del) do
+    .separator--vertical.separator--warning
+
+  = if present?(del) do
     a.js-staff-action href=@route.(Keyword.delete(@params, :del)) title="Hide Deleted/Merged Images"
       i.fa.fa-minus
       i.fa.fa-exclamation>
       span.hidden--mobile Hide Deleted
+    .separator--vertical.separator--warning
 
   = if present?(del) and del != "deleted" do
     a.js-staff-action href=@route.(Keyword.put(@params, :del, "deleted")) title="Only Deleted (Strict)"

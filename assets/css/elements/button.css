@@ -40,7 +40,7 @@
   font-size: var(--font-size);
   background: var(--primary-dark-color);
   color: var(--text-color);
-  border: 1px solid var(--primary-border-color);
+  border: 0;
   border-radius: var(--border-radius-inner);
   padding: 0 var(--padding-small);
   overflow: hidden;
@@ -85,7 +85,7 @@
 .button__group, .button__group--single, .button__group--standalone {
   display: flex;
   flex-direction: row;
-  border: 1px solid var(--secondary-color);
+  border: 0;
   border-radius: var(--border-radius-inner);
   margin-right: var(--padding-normal);
   background: var(--secondary-dark-color);
@@ -135,7 +135,6 @@
 .block__header__buttons .button {
   color: var(--link-color);
   border-width: 0 !important;
-  background: 0;
 }
 
 .block__header__buttons .button:hover {

@@ -23,7 +23,8 @@
 
 .separator--vertical {
   width: 1px;
-  height: inherit;
+  height: var(--separator-vertical-size);
+  align-self: center;
   margin: 0 var(--padding-small);
   background: var(--primary-border-color);
 }

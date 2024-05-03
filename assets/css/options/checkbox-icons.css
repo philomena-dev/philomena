@@ -1,0 +1,7 @@
+.checkbox::after {
+  content: '\f00d';
+}
+
+.checkbox:checked::after {
+  content: '\f00c';
+}
