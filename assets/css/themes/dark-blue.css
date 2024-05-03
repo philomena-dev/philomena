@@ -3,11 +3,11 @@ $text-color: #e0e0e0;
 
 $primary-color: #284371;
 $secondary-color: #546c99;
-$danger-color: #672a21;
-$warning-color: #684f2c;
+$danger-color: #6d2a20;
+$warning-color: #715227;
 $success-color: #25603e;
-$information-color: #205861;
-$special-color: #561e5e;
+$information-color: #1c606a;
+$special-color: #65206e;
 
 $upvote-color: #5b9b26;
 $downvote-color: #da3412;
@@ -61,7 +61,7 @@ $spoiler-color: #0f0f0f;
   --secondary-border-color: hsl(from $secondary-color h s calc(l + 5));
   --secondary-muted-color: hsl(from $secondary-color h s calc(l - 17));
   --secondary-dark-color: hsl(from $secondary-color h calc(s - 5) calc(l - 25));
-  --secondary-link-color: hsl(from $secondary-color h s calc(l + 55));
+  --secondary-link-color: hsl(from $secondary-color h s calc(l + 40));
 
   --upvote-color: $upvote-color;
   --downvote-color: $downvote-color;

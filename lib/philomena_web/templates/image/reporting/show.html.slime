@@ -1,5 +1,5 @@
 a href=Routes.image_report_path(@conn, :new, @image)
-  button.button.button--link
+  button.button
     i.fa.fa-exclamation-triangle>
     ' General reporting
 

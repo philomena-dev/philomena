@@ -25,39 +25,38 @@
         label Secondary banner:
         .with_error = select f, :secondary_role, [[key: "-", value: ""], "Site Developer", "Devops", "Philomena Contributor", "Public Relations"], class: "input"
       .field
-        label Hide staff banner:
-        .with_error = checkbox f, :hide_default_role, class: "checkbox"
-      .field
-        label Senior staff:
-        .with_error = checkbox f, :senior_staff, class: "checkbox"
-      .field
-        label Bypass rate limits:
-        .with_error = checkbox f, :bypass_rate_limits, class: "checkbox"
-      .field
         label Avatar
         .with_error
-          = link "Remove avatar", to: Routes.admin_user_avatar_path(@conn, :delete, @user), class: "button", data: [method: "delete", confirm: "Are you really, really sure?"]
+          = link to: Routes.admin_user_avatar_path(@conn, :delete, @user), class: "button button--danger", data: [method: "delete", confirm: "Are you really, really sure?"] do
+            i.fa.fa-trash
+            | Remove
 
   .block
     .block__header
       i.fa.fa-user-check
       span General user flags
     .block__content
-      ul
-        p
-          strong> Be careful when issuing these permissions to staff members!
-          | Staff members with relevant roles may have these permissions anyway. Issuing them may break things, such as tag aliasing.
+      ul.form--two_column
+        li
+          .with_error = checkbox f, :hide_default_role, class: "checkbox"
+          label Hide staff banner
+        li
+          .with_error = checkbox f, :senior_staff, class: "checkbox"
+          label Senior staff
+        li
+          .with_error = checkbox f, :bypass_rate_limits, class: "checkbox"
+          label Bypass rate limits
       ul.form--two_column = collection_checkboxes f, :roles, filtered_roles(general_permissions(), @roles), mapper: &checkbox_mapper/6
 
-  .block
-    .block__header.warning
+  .block.block--warning
+    .block__header
       i.fa.fa-handshake-angle
       span Special roles for assistants
     .block__content
       ul.form--two_column = collection_checkboxes f, :roles, filtered_roles(assistant_permissions(), @roles), mapper: &checkbox_mapper/6
 
-  .block
-    .block__header.danger
+  .block.block--danger
+    .block__header
       i.fa.fa-gavel
       span Special roles for moderators
     .block__content

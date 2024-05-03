@@ -26,7 +26,9 @@ h1 Staff
     - header = to_string(header)
 
     = if Enum.any?(users) do
-      div class="block block--fixed staff-block__category #{category_class(header)}" = header
+      div class="block block--fixed staff-block__category #{category_class(header)}"
+        i class="fa #{category_icon(header)}"
+        = header
       p.staff-block__description
         i.fa.fa-fw.fa-info-circle>
         = category_description(header)
@@ -42,7 +44,7 @@ h1 Staff
                     p
                       b = user.name
                 .staff-block__info
-                  = link to: Routes.conversation_path(@conn, :new, recipient: user.name), class: "button" do
+                  = link to: Routes.conversation_path(@conn, :new, recipient: user.name), class: "button button--secondary" do
                     i.fa.fa-envelope>
                     ' Send PM
               hr.staff-block__separator

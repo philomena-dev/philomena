@@ -2,7 +2,7 @@
   .button--$(type) {
     color: var(--$(type)-link-color) !important;
     border-color: var(--$(type)-border-color);
-    background: var(--$(type)-dark-color);
+    background: var(--$(type)-muted-color);
   }
 
   .button--$(type).button--important {

@@ -42,6 +42,10 @@
   margin-top: 1rem;
 }
 
+.staff-block__category i {
+  margin-right: var(--padding-normal);
+}
+
 .staff-block__user-description {
   overflow: hidden;
   text-overflow: ellipsis;

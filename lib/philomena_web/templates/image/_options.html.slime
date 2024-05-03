@@ -88,7 +88,7 @@
 
     .block__tab.hidden data-tab="administration"
       .block.block--danger
-        a.button.button--link> href=Routes.image_scratchpad_path(@conn, :edit, @image)
+        a.button> href=Routes.image_scratchpad_path(@conn, :edit, @image)
           i.far.fa-edit
         = if present?(@image.scratchpad) do
           strong> Mod notes:

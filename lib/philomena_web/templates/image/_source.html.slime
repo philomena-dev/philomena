@@ -54,7 +54,7 @@
           - else
             ' Add
         = if @source_change_count > 0 do
-          a.button.button--link href=Routes.image_source_change_path(@conn, :index, @image) title="Source history"
+          a.button href=Routes.image_source_change_path(@conn, :index, @image) title="Source history"
             i.fa.fa-history>
             spanspan.hide-mobile> History
             | (

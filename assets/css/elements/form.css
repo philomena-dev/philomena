@@ -17,7 +17,7 @@ form .form--two_column > .field, form .form--two_column > li {
   gap: var(--padding-normal);
 }
 
-form .field > .with_error {
+form .with_error {
   display: block;
 }
 

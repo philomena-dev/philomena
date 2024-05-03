@@ -35,6 +35,14 @@ defmodule PhilomenaWeb.StaffView do
   def category_class("Assistants"), do: "block--special"
   def category_class(_), do: ""
 
+  def category_icon("Administrators"), do: "fa-medal"
+  def category_icon("Technical Team"), do: "fa-screwdriver-wrench"
+  def category_icon("Public Relations"), do: "fa-comment-medical"
+  def category_icon("Moderators"), do: "fa-gavel"
+  def category_icon("Assistants"), do: "fa-handshake-angle"
+  def category_icon("Others"), do: "fa-user-tie"
+  def category_icon(_), do: ""
+
   def staff_description(%{description: desc}) when desc not in [nil, ""] do
     [part] = Regex.run(@desc_regex, desc, capture: :all_but_first)
     String.slice(part, 0, 240)

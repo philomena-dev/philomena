@@ -102,3 +102,14 @@
 .js-imagelist-info {
   margin-bottom: var(--padding-normal);
 }
+
+.tagsinput {
+  display: flex;
+  gap: var(--padding-small);
+  flex-wrap: wrap;
+  background: var(--primary-dark-color);
+}
+
+.tagsinput .tag {
+  padding: 0 var(--padding-small);
+}

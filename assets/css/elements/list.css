@@ -1,3 +1,9 @@
 ul, ol {
+  padding: 0;
   list-style-type: none;
+}
+
+.horizontal-list {
+  display: flex;
+  gap: var(--padding-normal);
 }

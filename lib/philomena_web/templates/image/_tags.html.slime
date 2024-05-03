@@ -19,7 +19,7 @@
 
         = hidden_input f, :old_tag_input, value: tag_input
 
-        .field
+        .field.flex__column
           = label f, :tag_input do
             ' Separate tags with commas. Use 'artist:name' tags to identify artists. Got questions? Check the
             a> href="/pages/tags" tag guidelines
@@ -31,7 +31,7 @@
           = error_tag f, :tag_input
 
         = if !@conn.assigns.current_user do
-          .block.block--fixed.block--warning
+          .block.block--warning.block--fixed
             strong
               em Hang on a sec&hellip;
             br
@@ -44,9 +44,12 @@
         ul.horizontal-list
           li
             .actions
-              = submit "Save tags", class: "button", id: "edit_save_button", data: [disable_with: raw("Saving&hellip;")]
+              = submit class: "button", id: "edit_save_button", data: [disable_with: raw("Saving&hellip;")] do
+                i.fa.fa-floppy-disk>
+                ' Save tags
           li
             button.button.js-tag-sauce-toggle data-click-toggle=".tagsauce, .js-imageform" data-click-focus=".js-taginput-plain:not(.hidden), .js-taginput-input"
+              i.fa.fa-xmark>
               ' Cancel
 
         .block.js-tagtable data-target="[name=&quot;image[tag_input]&quot;]"
@@ -66,7 +69,7 @@
           i.fas.fa-edit>
           ' Edit
         = if @tag_change_count > 0 do
-          a.button.button--link href=Routes.image_tag_change_path(@conn, :index, @image) title="Tag history"
+          a.button href=Routes.image_tag_change_path(@conn, :index, @image) title="Tag history"
             i.fa.fa-history>
             | History (
             = @tag_change_count

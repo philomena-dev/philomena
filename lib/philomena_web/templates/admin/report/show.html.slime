@@ -35,7 +35,7 @@ article.block.communication
 
 p
   = if @report.user do
-    => link "Send PM", to: Routes.conversation_path(@conn, :new, recipient: @report.user.name), class: "button button--link"
+    => link "Send PM", to: Routes.conversation_path(@conn, :new, recipient: @report.user.name), class: "button"
 
   = if @report.open do
     => link "Close", to: Routes.admin_report_close_path(@conn, :create, @report), class: "button", data: [method: "post"]
