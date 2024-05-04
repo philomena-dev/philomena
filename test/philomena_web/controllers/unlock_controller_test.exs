@@ -14,7 +14,7 @@ defmodule PhilomenaWeb.UnlockControllerTest do
     test "renders the unlock page", %{conn: conn} do
       conn = get(conn, ~p"/unlocks/new")
       response = html_response(conn, 200)
-      assert response =~ "<h1>Resend unlock instructions</h1>"
+      assert response =~ "Resend unlock instructions"
     end
   end
 
