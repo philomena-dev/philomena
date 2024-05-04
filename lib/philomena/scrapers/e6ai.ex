@@ -1,5 +1,5 @@
 defmodule Philomena.Scrapers.E6ai do
-  @url_regex ~r/\A(https\:\/\/e621\.net\/posts\/([0-9]+))(?:.+)?/
+  @url_regex ~r/\A(https\:\/\/e6ai\.net\/posts\/([0-9]+))(?:.+)?/
 
   @spec can_handle?(URI.t(), String.t()) :: true | false
   def can_handle?(_uri, url) do
@@ -49,11 +49,11 @@ defmodule Philomena.Scrapers.E6ai do
     }
   end
 
-  defp e621_user do
+  defp e6ai_user do
     Application.get_env(:philomena, :e6ai_user)
   end
 
-  defp e621_apikey do
+  defp e6ai_apikey do
     Application.get_env(:philomena, :e6ai_apikey)
   end
 end
