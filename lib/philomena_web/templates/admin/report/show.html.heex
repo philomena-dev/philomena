@@ -23,8 +23,7 @@
   <div class="block__content communication__options">
     <div class="flex flex--wrap flex--spaced-out">
       <div>
-        Reported
-        <%= pretty_time(@report.created_at) %>
+        Reported <%= pretty_time(@report.created_at) %>
       </div>
       <div class="flex__right">
         <%= link_to_ip(@conn, @report.ip) %>

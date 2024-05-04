@@ -5,9 +5,7 @@
         This image has been merged into another image
       </h1>
       <p>
-        This image was merged into image
-        <%= link("##{@image.duplicate_id}", to: ~p"/images/#{@image.duplicate_id}") %>
-        because it was determined to be a duplicate of that image.
+        This image was merged into image <%= link("##{@image.duplicate_id}", to: ~p"/images/#{@image.duplicate_id}") %> because it was determined to be a duplicate of that image.
       </p>
     </div>
   </div>
@@ -36,16 +34,10 @@
       <% end %>
     </div>
     <p>
-      If you originally uploaded the file previously located here, please don't re-upload it -
-      <%= link("contact us", to: "/pages/contact") %>
-      if you feel this was in error and we'll talk! We're only human, and mistakes happen.
+      If you originally uploaded the file previously located here, please don't re-upload it - <%= link("contact us", to: "/pages/contact") %> if you feel this was in error and we'll talk! We're only human, and mistakes happen.
     </p>
     <p>
-      Here's the
-      <%= link("tagging guidelines", to: "/pages/tags") %>
-      and
-      <%= link("rules of the site", to: "/pages/rules") %>
-      . Other useful links can be found at the bottom of the page.
+      Here's the <%= link("tagging guidelines", to: "/pages/tags") %> and <%= link("rules of the site", to: "/pages/rules") %> . Other useful links can be found at the bottom of the page.
     </p>
   </div>
 <% end %>

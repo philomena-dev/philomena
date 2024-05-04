@@ -1,6 +1,5 @@
 <h1>
-  Source changes by
-  <%= @ip %>
+  Source changes by <%= @ip %>
 </h1>
 <% route = fn p -> ~p"/ip_profiles/#{to_string(@ip)}/source_changes?#{p}" end %>
 <% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @source_changes, route: route, conn: @conn) %>

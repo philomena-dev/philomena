@@ -6,8 +6,7 @@
 <div class="block">
   <div class="block__header">
     <a href={~p"/admin/site_notices/new"}>
-      <i class="fa fa-plus"></i>
-      New site notice
+      <i class="fa fa-plus"></i> New site notice
     </a>
     <%= pagination %>
   </div>
@@ -50,9 +49,7 @@
               <%= live_text(site_notice) %>
             </td>
             <td>
-              <%= link("Edit", to: ~p"/admin/site_notices/#{site_notice}/edit") %>
-              &bull;
-              <%= link("Destroy", to: ~p"/admin/site_notices/#{site_notice}", data: [confirm: "Are you really, really sure?", method: "delete"]) %>
+              <%= link("Edit", to: ~p"/admin/site_notices/#{site_notice}/edit") %> &bull; <%= link("Destroy", to: ~p"/admin/site_notices/#{site_notice}", data: [confirm: "Are you really, really sure?", method: "delete"]) %>
             </td>
           </tr>
         <% end %>

@@ -1,7 +1,5 @@
 <h1>
-  Users with
-  <%= @badge.title %>
-  badge
+  Users with <%= @badge.title %> badge
 </h1>
 <% route = fn p -> ~p"/admin/badges/#{@badge}/users?#{p}" end %>
 <% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @users, route: route, conn: @conn) %>

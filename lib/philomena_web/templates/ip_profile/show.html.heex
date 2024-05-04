@@ -1,6 +1,5 @@
 <h1>
-  <%= @ip %>
-  's IP profile
+  <%= @ip %> 's IP profile
 </h1>
 <ul>
   <li>
@@ -42,12 +41,10 @@
     <%= link("Revert all tag changes", to: ~p"/tag_changes/full_revert?#{[ip: to_string(@ip)]}", data: [confirm: "Are you really, really sure?", method: "create"]) %>
   </li>
   <li>
-    <%= 
-      link("...the button above didn't work (use carefully, this is resource-intensive)",
-        to: ~p"/tag_changes/full_revert?#{[ip: to_string(@ip), batch_size: 1]}",
-        data: [confirm: "Please confirm that you're aware that this may crash the site and are ready to take on the full wrath of the admins if it does so after you press this button.", method: "create"]
-      )
-    %>
+    <%= link("...the button above didn't work (use carefully, this is resource-intensive)",
+      to: ~p"/tag_changes/full_revert?#{[ip: to_string(@ip), batch_size: 1]}",
+      data: [confirm: "Please confirm that you're aware that this may crash the site and are ready to take on the full wrath of the admins if it does so after you press this button.", method: "create"]
+    ) %>
   </li>
 </ul>
 <h4>
@@ -77,8 +74,7 @@
           <%= link(uip.user.name, to: ~p"/profiles/#{uip.user}") %>
         </td>
         <td>
-          <%= uip.uses %>
-          times
+          <%= uip.uses %> times
         </td>
         <td>
           <%= pretty_time(uip.updated_at) %>

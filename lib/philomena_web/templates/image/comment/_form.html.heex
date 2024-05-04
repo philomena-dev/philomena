@@ -1,11 +1,9 @@
-<% 
-  options =
-    if assigns[:remote] do
-      [data: [remote: "true"], id: "js-comment-form"]
-    else
-      []
-    end
-%>
+<% options =
+  if assigns[:remote] do
+    [data: [remote: "true"], id: "js-comment-form"]
+  else
+    []
+  end %>
 <%= form_for @changeset, ~p"/images/#{@image}/comments", options, fn f -> %>
   <%= if @changeset.action do %>
     <div class="alert alert-danger">

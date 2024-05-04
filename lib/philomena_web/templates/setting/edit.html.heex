@@ -37,9 +37,7 @@
           Watchlist queries and filtering
         </h4>
         <p>
-          The following two areas are for search queries to control what other images show up in your watch list. Lines are ORed together. See
-          <%= link("the syntax guide", to: "/pages/search_syntax") %>
-          for how to write queries.
+          The following two areas are for search queries to control what other images show up in your watch list. Lines are ORed together. See <%= link("the syntax guide", to: "/pages/search_syntax") %> for how to write queries.
         </p>
         <div class="field">
           <%= label(f, :watched_images_query_str, "Watch list search string (images found by this search are added to your watched images list)") %>
@@ -59,8 +57,7 @@
           Other
         </h4>
         <p>
-          RSS feed link (for Newsblur, RSSOwl, Thunderbird, etc.):
-          <br />
+          RSS feed link (for Newsblur, RSSOwl, Thunderbird, etc.): <br />
           <div id="rss-feed-button">
             <code>
               <%= link("Click to show", to: "#", data: [click_show: "#rss-link", click_hide: "#rss-feed-button"]) %>
@@ -69,8 +66,7 @@
           <div class="hidden" id="rss-link">
             <%= url_input(f, :subscribe_url, value: url(~p"/api/v1/rss/watched?#{[key: @conn.assigns.current_user.authentication_token]}"), class: "input input--wide") %>
           </div>
-          <br />
-          Do not share this URL with anyone, it may allow an attacker to compromise your account.
+          <br /> Do not share this URL with anyone, it may allow an attacker to compromise your account.
         </p>
       </div>
       <div class="block__tab hidden flex flex--maybe-wrap" data-tab="display">
@@ -146,9 +142,7 @@
             <%= checkbox(f, :comments_always_jump_to_last) %>
             <div class="fieldlabel">
               <i>
-                This setting takes effect when the previous is disabled. Always jump to the latest page (enabled) or show the first page if the oldest comments are shown at the top of the page.
-                <br />
-                Posting will always direct you to the latest page so that you can see your comment in context.
+                This setting takes effect when the previous is disabled. Always jump to the latest page (enabled) or show the first page if the oldest comments are shown at the top of the page. <br /> Posting will always direct you to the latest page so that you can see your comment in context.
               </i>
             </div>
           </div>
@@ -313,10 +307,8 @@
     <%= if !@conn.assigns.current_user do %>
       <div class="block__tab hidden" data-tab="join-the-herd">
         <p>
-          Consider
-          <%= link("creating an account!", to: ~p"/registrations/new") %>
-          <br />
-          You will be able to customize the number of images and comments you get on a single page, as well as change the appearance of the site with custom themes.
+          Consider <%= link("creating an account!", to: ~p"/registrations/new") %>
+          <br /> You will be able to customize the number of images and comments you get on a single page, as well as change the appearance of the site with custom themes.
         </p>
       </div>
     <% end %>

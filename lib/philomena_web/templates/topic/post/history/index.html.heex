@@ -1,7 +1,5 @@
 <h1>
-  Viewing last 25 versions of post by
-  <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @post, conn: @conn) %>
-  in topic
+  Viewing last 25 versions of post by <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @post, conn: @conn) %> in topic
   <a href={(~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}?#{[post_id: @post.id]}" <> "#post_#{@post.id}")}>
     <%= @post.topic.title %>
   </a>
@@ -40,17 +38,13 @@
       <div class="flex flex--wrap flex--spaced-out">
         <div>
           <%= if version.edit_reason not in [nil, ""] do %>
-            Reason:
-            <%= version.edit_reason %>
+            Reason: <%= version.edit_reason %>
           <% else %>
             No reason given
           <% end %>
         </div>
         <div class="flex__right">
-          Edited
-          <%= pretty_time(version.created_at) %>
-          by
-          <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: version, conn: @conn) %>
+          Edited <%= pretty_time(version.created_at) %> by <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: version, conn: @conn) %>
         </div>
       </div>
     </div>

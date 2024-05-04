@@ -91,18 +91,15 @@
           <%= cond do %>
             <% same_format?(report) -> %>
               <td class="success">
-                Same format
-                <%= file_types(report) %>
+                Same format <%= file_types(report) %>
               </td>
             <% better_format?(report) -> %>
               <td class="warning">
-                Target format better
-                <%= file_types(report) %>
+                Target format better <%= file_types(report) %>
               </td>
             <% true -> %>
               <td class="warning">
-                Source format better
-                <%= file_types(report) %>
+                Source format better <%= file_types(report) %>
               </td>
           <% end %>
         </tr>
@@ -191,24 +188,21 @@
       <div class={"dr__status-options #{background_class}"}>
         <%= String.capitalize(report.state) %>
         <%= if can?(@conn, :edit, report) and not is_nil(report.modifier) do %>
-          by
-          <%= report.modifier.name %>
+          by <%= report.modifier.name %>
         <% end %>
         <%= if can?(@conn, :edit, report) do %>
           <div>
             <%= if report.state == "open" do %>
               <a data-method="post" href={(~p"/duplicate_reports/#{report}/claim" <> "#report_options_#{report.id}")}>
                 <button class="button button--separate-right">
-                  <i class="fa fa-clipboard"></i>
-                  Claim
+                  <i class="fa fa-clipboard"></i> Claim
                 </button>
               </a>
             <% end %>
             <%= if report.state != "rejected" do %>
               <a data-method="post" href={~p"/duplicate_reports/#{report}/reject"}>
                 <button class="button">
-                  <i class="fa fa-times"></i>
-                  Reject
+                  <i class="fa fa-times"></i> Reject
                 </button>
               </a>
             <% end %>
@@ -217,11 +211,9 @@
       </div>
       <div class="dr__status-options">
         <div>
-          Reported
-          <%= pretty_time(report.created_at) %>
+          Reported <%= pretty_time(report.created_at) %>
           <%= if report.user do %>
-            by
-            <%= link(report.user.name, to: ~p"/profiles/#{report.user}") %>
+            by <%= link(report.user.name, to: ~p"/profiles/#{report.user}") %>
           <% end %>
         </div>
         <%= escape_nl2br(report.reason) %>

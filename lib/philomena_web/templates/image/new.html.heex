@@ -69,16 +69,14 @@
       <%= error_tag(fs, :source) %>
       <label class="input--separate-left flex__fixed flex--centered">
         <a class="js-source-remove" href="#">
-          <i class="fa fa-trash"></i>
-          Delete
+          <i class="fa fa-trash"></i> Delete
         </a>
       </label>
     </div>
   <% end %>
   <div class="field">
     <button class="button js-image-add-source" type="button">
-      <i class="fa fa-plus"></i>
-      Add source
+      <i class="fa fa-plus"></i> Add source
     </button>
   </div>
   <div class="field">
@@ -111,18 +109,16 @@
   <div class="field">
     <div class="block">
       <div class="communication-edit__wrap">
-        <%= 
-          render(PhilomenaWeb.MarkdownView, "_input.html",
-            conn: @conn,
-            f: f,
-            action_icon: "pencil-alt",
-            action_text: "Description",
-            placeholder: "Describe this image in plain words - this should generally be info about the image that doesn't belong in the tags or source.",
-            name: :description,
-            class: "js-image-descr-input",
-            required: false
-          )
-        %>
+        <%= render(PhilomenaWeb.MarkdownView, "_input.html",
+          conn: @conn,
+          f: f,
+          action_icon: "pencil-alt",
+          action_text: "Description",
+          placeholder: "Describe this image in plain words - this should generally be info about the image that doesn't belong in the tags or source.",
+          name: :description,
+          class: "js-image-descr-input",
+          required: false
+        ) %>
       </div>
     </div>
   </div>

@@ -3,8 +3,7 @@
 <div class="block">
   <div class="block__header">
     <a href={~p"/admin/adverts/new"}>
-      <i class="fa fa-plus"></i>
-      New advert
+      <i class="fa fa-plus"></i> New advert
     </a>
     <%= pagination %>
   </div>
@@ -77,16 +76,11 @@
               <%= advert.restrictions %>
             </td>
             <td>
-              Impressions:
-              <%= advert.impressions %>
-              <br />
-              Clicks:
-              <%= advert.clicks %>
+              Impressions: <%= advert.impressions %>
+              <br /> Clicks: <%= advert.clicks %>
             </td>
             <td>
-              <%= link("Edit", to: ~p"/admin/adverts/#{advert}/edit") %>
-              &bull;
-              <%= link("Destroy", to: ~p"/admin/adverts/#{advert}", data: [confirm: "Are you really, really sure?", method: "delete"]) %>
+              <%= link("Edit", to: ~p"/admin/adverts/#{advert}/edit") %> &bull; <%= link("Destroy", to: ~p"/admin/adverts/#{advert}", data: [confirm: "Are you really, really sure?", method: "delete"]) %>
             </td>
           </tr>
         <% end %>

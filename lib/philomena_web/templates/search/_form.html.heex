@@ -119,8 +119,7 @@
         <code>
           false
         </code>
-        .
-        <br />
+        . <br />
         <br />
         <em>
           Example:
@@ -149,8 +148,7 @@
         <code>
           lt
         </code>
-        (less than), can be applied to the desired value.
-        <br />
+        (less than), can be applied to the desired value. <br />
         <br />
         <em>
           Example:
@@ -187,8 +185,7 @@
         <code>
           lt
         </code>
-        (less than), can be applied to the desired value.
-        <br />
+        (less than), can be applied to the desired value. <br />
         <br />
         <em>
           Example:
@@ -205,8 +202,7 @@
         <code>
           *
         </code>
-        as a substitute for zero or more characters.
-        <br />
+        as a substitute for zero or more characters. <br />
         <br />
         <em>
           Example:
@@ -227,40 +223,38 @@
   <div class="field field--inline flex-wrap">
     <%= submit("Search", class: "button button--state-primary") %>
     <% # = submit_tag "I'm Feeling Poni", class: 'button button--separate-left spacing-right', name: 'random_image' %>
-    <% 
-      random_is_selected = to_string(@conn.params["sf"]) =~ ~r/\Arandom(:\d+)?\z/
+    <% random_is_selected = to_string(@conn.params["sf"]) =~ ~r/\Arandom(:\d+)?\z/
 
-      random_seed =
-        if random_is_selected do
-          @conn.params["sf"]
-        else
-          "random:#{:rand.uniform(4_294_967_296)}"
-        end
+    random_seed =
+      if random_is_selected do
+        @conn.params["sf"]
+      else
+        "random:#{:rand.uniform(4_294_967_296)}"
+      end
 
-      sort_fields = [
-        "Sort by initial post date": :first_seen_at,
-        "Sort by image ID": :id,
-        "Sort by last modification date": :updated_at,
-        "Sort by aspect ratio": :aspect_ratio,
-        "Sort by fave count": :faves,
-        "Sort by upvotes": :upvotes,
-        "Sort by downvotes": :downvotes,
-        "Sort by score": :score,
-        "Sort by Wilson score": :wilson_score,
-        "Sort by relevance": :_score,
-        "Sort by width": :width,
-        "Sort by height": :height,
-        "Sort by comments": :comment_count,
-        "Sort by tag count": :tag_count,
-        "Sort by pixels": :pixels,
-        "Sort by file size": :size,
-        "Sort by duration": :duration,
-        Random!: random_seed
-      ]
+    sort_fields = [
+      "Sort by initial post date": :first_seen_at,
+      "Sort by image ID": :id,
+      "Sort by last modification date": :updated_at,
+      "Sort by aspect ratio": :aspect_ratio,
+      "Sort by fave count": :faves,
+      "Sort by upvotes": :upvotes,
+      "Sort by downvotes": :downvotes,
+      "Sort by score": :score,
+      "Sort by Wilson score": :wilson_score,
+      "Sort by relevance": :_score,
+      "Sort by width": :width,
+      "Sort by height": :height,
+      "Sort by comments": :comment_count,
+      "Sort by tag count": :tag_count,
+      "Sort by pixels": :pixels,
+      "Sort by file size": :size,
+      "Sort by duration": :duration,
+      Random!: random_seed
+    ]
 
-      sort_directions = [Descending: :desc, Ascending: :asc]
-      sort_hidden = ["Exclude Deleted": "", "Include Deleted/Merged": "1", "Deleted Only": "deleted", "Deleted/Merged Only": "only"]
-    %>
+    sort_directions = [Descending: :desc, Ascending: :asc]
+    sort_hidden = ["Exclude Deleted": "", "Include Deleted/Merged": "1", "Deleted Only": "deleted", "Deleted/Merged Only": "only"] %>
     <%= select(f, :sf, sort_fields, class: "input input--separate-left", name: "sf", autocomplete: "off", selected: @conn.params["sf"]) %>
     <%= select(f, :sd, sort_directions, class: "input input--separate-left", name: "sd", autocomplete: "off", selected: @conn.params["sd"]) %>
     <%= if present?(@conn.params["hidden"]) do %>

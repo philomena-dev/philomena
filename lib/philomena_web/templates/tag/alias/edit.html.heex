@@ -1,6 +1,5 @@
 <h1>
-  Aliasing tag
-  <%= @tag.name %>
+  Aliasing tag <%= @tag.name %>
 </h1>
 <%= form_for @changeset, ~p"/tags/#{@tag}/alias", [method: "put"], fn f -> %>
   <%= if @changeset.action do %>

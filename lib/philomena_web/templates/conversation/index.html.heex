@@ -1,7 +1,5 @@
-<% 
-  route = fn p -> ~p"/conversations?#{p}" end
-  pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @conversations, route: route, conn: @conn)
-%>
+<% route = fn p -> ~p"/conversations?#{p}" end
+pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @conversations, route: route, conn: @conn) %>
 <h1>
   My Conversations
 </h1>
@@ -12,8 +10,7 @@
     </div>
     <div class="page__info">
       <a href={~p"/conversations/new"}>
-        <i class="fa fa-paper-plane"></i>
-        Create New Conversation
+        <i class="fa fa-paper-plane"></i> Create New Conversation
       </a>
     </div>
   </div>
@@ -39,20 +36,14 @@
               <%= link(c.title, to: ~p"/conversations/#{c}") %>
               <div class="small-text hide-mobile">
                 <%= count %>
-                <%= pluralize("message", "messages", count) %>
-                ; started
-                <%= pretty_time(c.created_at) %>
-                , last message
-                <%= pretty_time(c.last_message_at) %>
+                <%= pluralize("message", "messages", count) %> ; started <%= pretty_time(c.created_at) %> , last message <%= pretty_time(c.last_message_at) %>
               </div>
             </td>
             <td class="table--communication-list__stats">
               <%= render(PhilomenaWeb.UserAttributionView, "_user.html", object: %{user: other_party(@current_user, c)}, conn: @conn) %>
             </td>
             <td class="table--communication-list__options">
-              <%= link("Last message", to: last_message_path(c, count)) %>
-              &bull;
-              <%= link("Hide", to: ~p"/conversations/#{c}/hide", data: [method: "post"], data: [confirm: "Are you really, really sure?"]) %>
+              <%= link("Last message", to: last_message_path(c, count)) %> &bull; <%= link("Hide", to: ~p"/conversations/#{c}/hide", data: [method: "post"], data: [confirm: "Are you really, really sure?"]) %>
             </td>
           </tr>
         <% end %>

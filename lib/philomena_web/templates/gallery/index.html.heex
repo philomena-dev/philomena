@@ -1,7 +1,5 @@
-<% 
-  route = fn p -> ~p"/galleries?#{p}" end
-  pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @galleries, route: route, params: [gallery: @conn.params["gallery"]])
-%>
+<% route = fn p -> ~p"/galleries?#{p}" end
+pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @galleries, route: route, params: [gallery: @conn.params["gallery"]]) %>
 <div class="column-layout">
   <div class="column-layout__left">
     <div class="block">

@@ -56,13 +56,8 @@
                 <%= link_state_name(link) %>
               </strong>
               <%= if contacted?(link) do %>
-                <br />
-                by
-                <%= link.contacted_by_user.name %>
-                <br />
-                (
-                <%= pretty_time(link.contacted_at) %>
-                )
+                <br /> by <%= link.contacted_by_user.name %>
+                <br /> ( <%= pretty_time(link.contacted_at) %> )
               <% end %>
             </td>
             <td>
@@ -77,14 +72,10 @@
               <% end %>
             </td>
             <td>
-              <%= link("View", to: ~p"/profiles/#{link.user}/artist_links/#{link}") %>
-              &bull;
-              <%= link("Edit", to: ~p"/profiles/#{link.user}/artist_links/#{link}/edit") %>
+              <%= link("View", to: ~p"/profiles/#{link.user}/artist_links/#{link}") %> &bull; <%= link("Edit", to: ~p"/profiles/#{link.user}/artist_links/#{link}/edit") %>
             </td>
             <td>
-              <%= link("Verify", to: ~p"/admin/artist_links/#{link}/verification", method: :post) %>
-              &bull;
-              <%= link("Reject", to: ~p"/admin/artist_links/#{link}/reject", method: :post) %>
+              <%= link("Verify", to: ~p"/admin/artist_links/#{link}/verification", method: :post) %> &bull; <%= link("Reject", to: ~p"/admin/artist_links/#{link}/reject", method: :post) %>
               <br />
               <%= if not verified?(link) do %>
                 <%= if contacted?(link) do %>

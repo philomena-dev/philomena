@@ -10,13 +10,7 @@
         <strong>
           Price Range:
         </strong>
-        <% {min, max} = Enum.min_max_by(@user.commission.items, &Decimal.to_float(&1.base_price)) %>
-        $
-        <%= Decimal.round(min.base_price || 0, 2) |> Decimal.to_string() %>
-        - $
-        <%= Decimal.round(max.base_price || 0, 2) |> Decimal.to_string() %>
-        USD
-        <br />
+        <% {min, max} = Enum.min_max_by(@user.commission.items, &Decimal.to_float(&1.base_price)) %> $ <%= Decimal.round(min.base_price || 0, 2) |> Decimal.to_string() %> - $ <%= Decimal.round(max.base_price || 0, 2) |> Decimal.to_string() %> USD <br />
       <% end %>
       <% # Lotta space here %>
       <br />
@@ -27,15 +21,11 @@
     <% current?(@user, @conn.assigns.current_user) -> %>
       <%= if Enum.any?(@conn.assigns.user.verified_links) do %>
         <em>
-          You don't have any commission information listed yet.
-          <%= link("Click here", to: ~p"/profiles/#{@user}/commission/new") %>
-          to set it up.
+          You don't have any commission information listed yet. <%= link("Click here", to: ~p"/profiles/#{@user}/commission/new") %> to set it up.
         </em>
       <% else %>
         <em>
-          You must have a verified Artist Link to create a commission page.
-          <%= link("Click here", to: ~p"/profiles/#{@user}/artist_links/new") %>
-          to set one up.
+          You must have a verified Artist Link to create a commission page. <%= link("Click here", to: ~p"/profiles/#{@user}/artist_links/new") %> to set one up.
         </em>
       <% end %>
     <% true -> %>

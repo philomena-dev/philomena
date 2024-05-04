@@ -1,7 +1,5 @@
-<% 
-  route = fn p -> ~p"/commissions?#{p}" end
-  pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @commissions, route: route, conn: @conn, params: [commission: @conn.params["commission"]])
-%>
+<% route = fn p -> ~p"/commissions?#{p}" end
+pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @commissions, route: route, conn: @conn, params: [commission: @conn.params["commission"]]) %>
 <div class="block">
   <div class="block__header page__header">
     <span class="block__header__title page__title">
@@ -39,11 +37,7 @@
                     <strong>
                       Price Range:
                     </strong>
-                    $
-                    <%= Decimal.round(min.base_price, 2) |> Decimal.to_string() %>
-                    - $
-                    <%= Decimal.round(max.base_price, 2) |> Decimal.to_string() %>
-                    USD
+                    $ <%= Decimal.round(min.base_price, 2) |> Decimal.to_string() %> - $ <%= Decimal.round(max.base_price, 2) |> Decimal.to_string() %> USD
                   </p>
                   <p>
                     <strong>

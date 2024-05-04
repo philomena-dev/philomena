@@ -4,8 +4,7 @@
       <%= @about_me %>
     <% current?(@user, @conn.assigns.current_user) -> %>
       <em>
-        Want to
-        <%= link("add some info about yourself?", to: ~p"/profiles/#{@user}/description/edit") %>
+        Want to <%= link("add some info about yourself?", to: ~p"/profiles/#{@user}/description/edit") %>
       </em>
     <% true -> %>
   <% end %>

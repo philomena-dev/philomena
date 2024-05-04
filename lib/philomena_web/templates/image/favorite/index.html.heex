@@ -1,6 +1,5 @@
 <h5>
-  Faved by
-  <%= @image.faves_count %>
+  Faved by <%= @image.faves_count %>
   <%= pluralize("user", "users", @image.faves_count) %>
 </h5>
 <%= for fave <- Enum.sort_by(@image.faves, & String.downcase(&1.user.name)) do %>
@@ -8,8 +7,7 @@
 <% end %>
 <%= if @has_votes do %>
   <h5>
-    Upvoted by
-    <%= @image.upvotes_count %>
+    Upvoted by <%= @image.upvotes_count %>
     <%= pluralize("user", "users", @image.upvotes_count) %>
   </h5>
   <%= for upvote <- Enum.sort_by(@image.upvotes, & String.downcase(&1.user.name)) do %>
@@ -19,8 +17,7 @@
     </span>
   <% end %>
   <h5>
-    Downvoted by
-    <%= @image.downvotes_count %>
+    Downvoted by <%= @image.downvotes_count %>
     <%= pluralize("user", "users", @image.downvotes_count) %>
   </h5>
   <%= for downvote <- Enum.sort_by(@image.downvotes, & String.downcase(&1.user.name)) do %>
@@ -30,8 +27,7 @@
     </span>
   <% end %>
   <h5>
-    Hidden by
-    <%= @image.hides_count %>
+    Hidden by <%= @image.hides_count %>
     <%= pluralize("user", "users", @image.hides_count) %>
   </h5>
   <%= for hide <- Enum.sort_by(@image.hides, & String.downcase(&1.user.name)) do %>

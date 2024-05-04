@@ -1,6 +1,5 @@
 <h2>
-  DNP Listing for Tag
-  <%= @dnp_entry.tag.name %>
+  DNP Listing for Tag <%= @dnp_entry.tag.name %>
 </h2>
 <div class="block">
   <div class="block__header">
@@ -90,21 +89,22 @@
 <%= if can?(@conn, :index, Philomena.DnpEntries.DnpEntry) do %>
   <%= case @dnp_entry.aasm_state do %>
     <% s when s in ["requested", "claimed"] -> %>
-    <%= link("Claim", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "claimed"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %>
-    &bull;
-    <%= link("Approve", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "listed"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %>
-    &bull;
-    <%= link("Close", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "closed"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %>
+      <%= link("Claim", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "claimed"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %> &bull; <%= link("Approve",
+        to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "listed"]}",
+        data: [method: "post", confirm: "Are you really, really sure?"]
+      ) %> &bull; <%= link("Close", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "closed"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %>
     <% "listed" -> %>
-    <%= link("Rescind", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "rescinded"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %>
-    &bull;
-    <%= link("Close", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "closed"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %>
+      <%= link("Rescind", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "rescinded"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %> &bull; <%= link("Close",
+        to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "closed"]}",
+        data: [method: "post", confirm: "Are you really, really sure?"]
+      ) %>
     <% s when s in ["rescinded", "acknowledged"] -> %>
-    <%= link("Claim", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "acknowledged"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %>
-    &bull;
-    <%= link("Close", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "closed"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %>
+      <%= link("Claim", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "acknowledged"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %> &bull; <%= link("Close",
+        to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "closed"]}",
+        data: [method: "post", confirm: "Are you really, really sure?"]
+      ) %>
     <% _state -> %>
-    <%= link("Claim", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "claimed"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %>
+      <%= link("Claim", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "claimed"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %>
   <% end %>
 <% end %>
 <%= if assigns[:mod_notes] do %>

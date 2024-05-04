@@ -25,20 +25,48 @@
               <%= if present do %>
                 <% # Options to remove %>
                 <li id={"gallery_#{gallery.id}"}>
-                  <a class="block__list__link js-gallery-add hidden" data-fetchcomplete-hide={"#gallery_#{gallery.id} .js-gallery-add"} data-fetchcomplete-show={"#gallery_#{gallery.id} .js-gallery-remove"} data-method="post" data-remote="true" href={~p"/galleries/#{gallery}/images?#{[image_id: @image.id]}"}>
+                  <a
+                    class="block__list__link js-gallery-add hidden"
+                    data-fetchcomplete-hide={"#gallery_#{gallery.id} .js-gallery-add"}
+                    data-fetchcomplete-show={"#gallery_#{gallery.id} .js-gallery-remove"}
+                    data-method="post"
+                    data-remote="true"
+                    href={~p"/galleries/#{gallery}/images?#{[image_id: @image.id]}"}
+                  >
                     <%= gallery.title %>
                   </a>
-                  <a class="block__list__link active js-gallery-remove" data-fetchcomplete-hide={"#gallery_#{gallery.id} .js-gallery-remove"} data-fetchcomplete-show={"#gallery_#{gallery.id} .js-gallery-add"} data-method="delete" data-remote="true" href={~p"/galleries/#{gallery}/images?#{[image_id: @image.id]}"}>
+                  <a
+                    class="block__list__link active js-gallery-remove"
+                    data-fetchcomplete-hide={"#gallery_#{gallery.id} .js-gallery-remove"}
+                    data-fetchcomplete-show={"#gallery_#{gallery.id} .js-gallery-add"}
+                    data-method="delete"
+                    data-remote="true"
+                    href={~p"/galleries/#{gallery}/images?#{[image_id: @image.id]}"}
+                  >
                     <%= gallery.title %>
                   </a>
                 </li>
               <% else %>
                 <% # Options to add %>
                 <li id={"gallery_#{gallery.id}"}>
-                  <a class="block__list__link js-gallery-add" data-fetchcomplete-hide={"#gallery_#{gallery.id} .js-gallery-add"} data-fetchcomplete-show={"#gallery_#{gallery.id} .js-gallery-remove"} data-method="post" data-remote="true" href={~p"/galleries/#{gallery}/images?#{[image_id: @image.id]}"}>
+                  <a
+                    class="block__list__link js-gallery-add"
+                    data-fetchcomplete-hide={"#gallery_#{gallery.id} .js-gallery-add"}
+                    data-fetchcomplete-show={"#gallery_#{gallery.id} .js-gallery-remove"}
+                    data-method="post"
+                    data-remote="true"
+                    href={~p"/galleries/#{gallery}/images?#{[image_id: @image.id]}"}
+                  >
                     <%= gallery.title %>
                   </a>
-                  <a class="block__list__link active js-gallery-remove hidden" data-fetchcomplete-hide={"#gallery_#{gallery.id} .js-gallery-remove"} data-fetchcomplete-show={"#gallery_#{gallery.id} .js-gallery-add"} data-method="delete" data-remote="true" href={~p"/galleries/#{gallery}/images?#{[image_id: @image.id]}"}>
+                  <a
+                    class="block__list__link active js-gallery-remove hidden"
+                    data-fetchcomplete-hide={"#gallery_#{gallery.id} .js-gallery-remove"}
+                    data-fetchcomplete-show={"#gallery_#{gallery.id} .js-gallery-add"}
+                    data-method="delete"
+                    data-remote="true"
+                    href={~p"/galleries/#{gallery}/images?#{[image_id: @image.id]}"}
+                  >
                     <%= gallery.title %>
                   </a>
                 </li>

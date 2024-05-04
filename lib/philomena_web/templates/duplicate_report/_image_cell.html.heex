@@ -3,15 +3,12 @@
     <%= if is_nil(@image) do %>
       (Image now hard-deleted)
     <% else %>
-      #
-      <%= @image.id %>
+      # <%= @image.id %>
     <% end %>
   </p>
   <%= render(PhilomenaWeb.ImageView, "_image_container.html", image: @image, size: :thumb_small, conn: @conn) %>
   <p>
-    <%= @image.image_width %>
-    x
-    <%= @image.image_height %>
+    <%= @image.image_width %> x <%= @image.image_height %>
   </p>
   <p>
     <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @image, conn: @conn) %>
@@ -20,15 +17,13 @@
     <%= if @source do %>
       <a data-method="post" href={~p"/duplicate_reports/#{@report}/accept_reverse"}>
         <button class="button">
-          Keep Source
-          <i class="fa fa-arrow-left"></i>
+          Keep Source <i class="fa fa-arrow-left"></i>
         </button>
       </a>
     <% else %>
       <a data-method="post" href={~p"/duplicate_reports/#{@report}/accept"}>
         <button class="button">
-          <i class="fa fa-arrow-right"></i>
-          Keep Target
+          <i class="fa fa-arrow-right"></i> Keep Target
         </button>
       </a>
     <% end %>

@@ -5,9 +5,7 @@
     </strong>
     <br />
     <%= for [name, alias_name] <- maps do %>
-      <%= name %>
-      -
-      <%= tag_link(@tags[alias_name], alias_name) %>
+      <%= name %> - <%= tag_link(@tags[alias_name], alias_name) %>
       <br />
     <% end %>
   </div>

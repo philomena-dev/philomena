@@ -16,13 +16,11 @@
       </span>
       <br />
       <%= @channel.viewers %>
-      <%= 
-        if @channel.viewers == 1 do
-          "viewer"
-        else
-          "viewers"
-        end
-      %>
+      <%= if @channel.viewers == 1 do
+        "viewer"
+      else
+        "viewers"
+      end %>
     <% else %>
       <span class="channel-strip__state label label--narrow label--danger">
         OFF AIR

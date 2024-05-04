@@ -25,16 +25,14 @@
           <%= error_tag(fs, :source) %>
           <label class="input--separate-left flex__fixed flex--centered">
             <a class="js-source-remove" href="#">
-              <i class="fa fa-trash"></i>
-              Delete
+              <i class="fa fa-trash"></i> Delete
             </a>
           </label>
         </div>
       <% end %>
       <div class="field">
         <button class="button js-image-add-source" type="button">
-          <i class="fa fa-plus"></i>
-          Add source
+          <i class="fa fa-plus"></i> Add source
         </button>
         <%= submit("Save sources", class: "button button--separate-left") %>
         <button class="button button--separate-left" data-click-hide="#source-form" data-click-show="#image-source" type="reset">
@@ -73,16 +71,13 @@
             <spanspan class="hide-mobile">
               History
             </spanspan>
-            (
-            <%= @source_change_count %>
-            )
+            ( <%= @source_change_count %> )
           </a>
         <% end %>
         <%= if can?(@conn, :hide, @image) and not hide_staff_tools?(@conn) do %>
           <%= form_for @changeset, ~p"/images/#{@image}/source_history", [method: "delete"], fn _f -> %>
             <a class="button button--state-danger button--inline" data-confirm="Are you really, really sure?" title="Wipe sources" type="submit">
-              <i class="fas fa-eraser"></i>
-              Wipe
+              <i class="fas fa-eraser"></i> Wipe
             </a>
           <% end %>
         <% end %>

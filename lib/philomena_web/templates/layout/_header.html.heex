@@ -17,7 +17,15 @@
       </a>
     </div>
     <%= form_for @conn, ~p"/search", [method: "get", class: "header__search flex flex--no-wrap flex--centered", enforce_utf8: false], fn f -> %>
-      <input autocapitalize="none" class="input header__input header__input--search" id="q" name="q" placeholder="Search" title="For terms all required, separate with ',' or 'AND'; also supports 'OR' for optional terms and '-' or 'NOT' for negation. Search with a blank query for more options or click the ? for syntax help." value={@conn.params["q"]} />
+      <input
+        autocapitalize="none"
+        class="input header__input header__input--search"
+        id="q"
+        name="q"
+        placeholder="Search"
+        title="For terms all required, separate with ',' or 'AND'; also supports 'OR' for optional terms and '-' or 'NOT' for negation. Search with a blank query for more options or click the ? for syntax help."
+        value={@conn.params["q"]}
+      />
       <%= if present?(@conn.params["sf"]) do %>
         <input name="sf" type="hidden" value={@conn.params["sf"]} />
       <% end %>
@@ -83,65 +91,50 @@
               <%= @current_user.name %>
             </a>
             <a class="header__link" href="/search?q=my:watched">
-              <i class="fa fa-fw fa-eye"></i>
-              Watched
+              <i class="fa fa-fw fa-eye"></i> Watched
             </a>
             <a class="header__link" href="/search?q=my:faves">
-              <i class="fa fa-fw fa-star"></i>
-              Faves
+              <i class="fa fa-fw fa-star"></i> Faves
             </a>
             <a class="header__link" href="/search?q=my:upvotes">
-              <i class="fa fa-fw fa-arrow-up"></i>
-              Upvotes
+              <i class="fa fa-fw fa-arrow-up"></i> Upvotes
             </a>
             <a class="header__link" href={~p"/galleries?#{[gallery: [creator: @current_user.name]]}"}>
-              <i class="fa fa-fw fa-image"></i>
-              Galleries
+              <i class="fa fa-fw fa-image"></i> Galleries
             </a>
             <a class="header__link" href="/search?q=my:uploads">
-              <i class="fa fa-fw fa-upload"></i>
-              Uploads
+              <i class="fa fa-fw fa-upload"></i> Uploads
             </a>
             <a class="header__link" href="/comments?cq=my:comments">
-              <i class="fa fa-fw fa-comments"></i>
-              Comments
+              <i class="fa fa-fw fa-comments"></i> Comments
             </a>
             <a class="header__link" href="/posts?pq=my:posts">
-              <i class="fas fa-fw fa-pen-square"></i>
-              Posts
+              <i class="fas fa-fw fa-pen-square"></i> Posts
             </a>
             <a class="header__link" href={~p"/profiles/#{@current_user}/artist_links"}>
-              <i class="fa fa-fw fa-link"></i>
-              Links
+              <i class="fa fa-fw fa-link"></i> Links
             </a>
             <a class="header__link" href="/settings/edit">
-              <i class="fa fa-fw fa-cogs"></i>
-              Settings
+              <i class="fa fa-fw fa-cogs"></i> Settings
             </a>
             <a class="header__link" href="/conversations">
-              <i class="fa fa-fw fa-envelope"></i>
-              Messages
+              <i class="fa fa-fw fa-envelope"></i> Messages
             </a>
             <a class="header__link" href={~p"/registrations/edit"}>
-              <i class="fa fa-fw fa-user"></i>
-              Account
+              <i class="fa fa-fw fa-user"></i> Account
             </a>
             <a class="header__link" data-method="delete" href={~p"/sessions"}>
-              <i class="fa fa-fw fa-sign-out-alt"></i>
-              Logout
+              <i class="fa fa-fw fa-sign-out-alt"></i> Logout
             </a>
           </nav>
         </div>
       <% else %>
         <a class="header__link hide-mobile" href="/filters">
-          Filters (
-          <%= @current_filter.name %>
-          )
+          Filters ( <%= @current_filter.name %> )
         </a>
         <span class="js-burger-links hide-mobile">
           <a class="header__link" href="/settings/edit">
-            <i class="fa fa-fw fa-cogs hide-desktop"></i>
-            Settings
+            <i class="fa fa-fw fa-cogs hide-desktop"></i> Settings
           </a>
         </span>
         <a class="header__link" href={~p"/registrations/new"}>

@@ -1,7 +1,5 @@
-<% 
-  img_bucket = @image_aggs["aggregations"]
-  cmt_bucket = @comment_aggs["aggregations"]
-%>
+<% img_bucket = @image_aggs["aggregations"]
+cmt_bucket = @comment_aggs["aggregations"] %>
 <div class="walloftext">
   <h3>
     Images
@@ -18,9 +16,7 @@
     images were uploaded in the last 24 hours.
   </p>
   <p>
-    This net total excludes the
-    <%= number_with_delimiter(img_bucket["deleted"]["doc_count"]) %>
-    images that have been deleted or marked as duplicates.
+    This net total excludes the <%= number_with_delimiter(img_bucket["deleted"]["doc_count"]) %> images that have been deleted or marked as duplicates.
   </p>
   <h3>
     Comments
@@ -30,9 +26,7 @@
     <span class="stat">
       <%= number_with_delimiter(@comment_aggs["hits"]["total"]["value"]) %>
     </span>
-    comments on the site. Of these,
-    <%= number_with_delimiter(cmt_bucket["deleted"]["doc_count"]) %>
-    have been deleted.
+    comments on the site. Of these, <%= number_with_delimiter(cmt_bucket["deleted"]["doc_count"]) %> have been deleted.
   </p>
   <p>
     In the last 24 hours,
@@ -52,9 +46,7 @@
     Votes
   </h3>
   <p>
-    Out of
-    <%= number_with_delimiter(img_bucket["non_deleted"]["doc_count"]) %>
-    images,
+    Out of <%= number_with_delimiter(img_bucket["non_deleted"]["doc_count"]) %> images,
     <span class="stat">
       <%= number_with_delimiter(img_bucket["non_deleted"]["score_gt_0"]["doc_count"]) %>
     </span>
@@ -72,9 +64,7 @@
     Forums
   </h3>
   <p>
-    In our
-    <%= @forums_count %>
-    forums there have been
+    In our <%= @forums_count %> forums there have been
     <span class="stat">
       <%= number_with_delimiter(@topics_count) %>
     </span>
@@ -145,9 +135,7 @@
     <span class="stat">
       <%= number_with_delimiter(@report_stat_count) %>
     </span>
-    reports. Out of these reports,
-    <%= number_with_delimiter(@open_reports) %>
-    reports are outstanding and awaiting action.
+    reports. Out of these reports, <%= number_with_delimiter(@open_reports) %> reports are outstanding and awaiting action.
   </p>
   <p>
     On the last 250 reports we've received, it's taken us on average

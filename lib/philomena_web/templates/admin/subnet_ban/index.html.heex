@@ -12,8 +12,7 @@
 <div class="block">
   <div class="block__header">
     <a href={~p"/admin/subnet_bans/new"}>
-      <i class="fa fa-plus"></i>
-      New subnet ban
+      <i class="fa fa-plus"></i> New subnet ban
     </a>
     <%= pagination %>
   </div>
@@ -59,8 +58,7 @@
               <%= if present?(ban.note) do %>
                 <p class="block block--fixed">
                   <em>
-                    Note:
-                    <%= ban.note %>
+                    Note: <%= ban.note %>
                   </em>
                 </p>
               <% end %>
@@ -71,8 +69,7 @@
             <td>
               <%= link("Edit", to: ~p"/admin/subnet_bans/#{ban}/edit") %>
               <%= if @current_user.role == "admin" do %>
-                &bull;
-                <%= link("Destroy", to: ~p"/admin/subnet_bans/#{ban}", data: [confirm: "Are you really, really sure?", method: "delete"]) %>
+                &bull; <%= link("Destroy", to: ~p"/admin/subnet_bans/#{ban}", data: [confirm: "Are you really, really sure?", method: "delete"]) %>
               <% end %>
             </td>
           </tr>

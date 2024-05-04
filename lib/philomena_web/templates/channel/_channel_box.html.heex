@@ -44,12 +44,10 @@
   <% end %>
   <%= if can?(@conn, :edit, @channel) do %>
     <a class={link_class} href={~p"/channels/#{@channel}/edit"}>
-      <i class="fas fa-fw fa-edit"></i>
-      Edit
+      <i class="fas fa-fw fa-edit"></i> Edit
     </a>
     <a class={link_class} data-confirm="Are you really, really sure?" data-method="delete" href={~p"/channels/#{@channel}"}>
-      <i class="fas fa-fw fa-trash"></i>
-      Delete
+      <i class="fas fa-fw fa-trash"></i> Delete
     </a>
   <% end %>
   <%= render(PhilomenaWeb.Channel.SubscriptionView, "_subscription.html", conn: @conn, watching: @subscriptions[@channel.id], channel: @channel) %>

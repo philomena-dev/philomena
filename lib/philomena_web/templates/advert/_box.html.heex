@@ -1,17 +1,13 @@
 <div class="block" id="imagespns">
   <div class="spnstxt">
-    Interested in advertising on Derpibooru?
-    <%= link("Click here", to: "/pages/advertising") %>
-    for information!
+    Interested in advertising on Derpibooru? <%= link("Click here", to: "/pages/advertising") %> for information!
   </div>
   <a href={~p"/adverts/#{@advert}"} id="imagespns__link" rel="nofollow" title={@advert.title}>
     <img alt={@advert.title} src={advert_image_url(@advert)} />
   </a>
   <p>
     <strong>
-      Derpibooru costs over $25 a day to operate -
-      <%= link("help support us financially", to: "/pages/donations") %>
-      !
+      Derpibooru costs over $25 a day to operate - <%= link("help support us financially", to: "/pages/donations") %> !
     </strong>
   </p>
 </div>

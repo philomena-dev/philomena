@@ -55,9 +55,7 @@
       </strong>
       <br />
       <%= for artist_link <- @tag.hidden_links do %>
-        <%= link(artist_link.user.name, to: ~p"/profiles/#{artist_link.user}") %>
-        &rarr;
-        <%= link(artist_link.uri, to: artist_link.uri) %>
+        <%= link(artist_link.user.name, to: ~p"/profiles/#{artist_link.user}") %> &rarr; <%= link(artist_link.uri, to: artist_link.uri) %>
         <br />
       <% end %>
     <% end %>
@@ -94,9 +92,7 @@
           <%= for channel <- @tag.channels do %>
             <%= link(channel.title, to: ~p"/channels/#{channel}") %>
             <%= if can?(@conn, :edit, channel) do %>
-              (
-              <%= link("Edit", to: ~p"/channels/#{channel}/edit") %>
-              )
+              ( <%= link("Edit", to: ~p"/channels/#{channel}/edit") %> )
             <% end %>
           <% end %>
           <br />
@@ -130,15 +126,11 @@
         This artist is on the Do-Not-Post List with the following restrictions:
       </strong>
       <%= for {body, entry} <- @dnp_entries do %>
-        <br />
-        &bull;
+        <br /> &bull;
         <strong>
           <%= entry.dnp_type %>
         </strong>
-        <%= body %>
-        (
-        <%= link("more info", to: ~p"/dnp/#{entry}") %>
-        )
+        <%= body %> ( <%= link("more info", to: ~p"/dnp/#{entry}") %> )
       <% end %>
     <% end %>
   </div>

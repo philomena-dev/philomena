@@ -1,7 +1,6 @@
 <div class="block--fixed">
   <i class="fa fa-fw fa-calendar"></i>
-  Account created
-  <%= @user.created_at %>
+  Account created <%= @user.created_at %>
   <br />
   <i class="fa fa-fw fa-filter"></i>
   Current Filter:
@@ -16,9 +15,7 @@
   <i class="far fa-fw fa-clock"></i>
   Last seen
   <%= if @last_ip do %>
-    <%= pretty_time(@last_ip.updated_at) %>
-    from
-    <%= link_to_ip(@conn, @last_ip.ip) %>
+    <%= pretty_time(@last_ip.updated_at) %> from <%= link_to_ip(@conn, @last_ip.ip) %>
     <%= if @last_fp do %>
       <%= link_to_fingerprint(@conn, @last_fp.fingerprint) %>
     <% end %>
@@ -37,13 +34,10 @@
   <%= if @user.locked_at do %>
     <i class="fas fa-fw fa-lock"></i>
     <strong class="comment_deleted">
-      Account locked,
-      <%= @user.failed_attempts %>
-      failed login attempts
+      Account locked, <%= @user.failed_attempts %> failed login attempts
     </strong>
   <% else %>
-    <i class="fas fa-fw fa-unlock"></i>
-    Not currently locked
+    <i class="fas fa-fw fa-unlock"></i> Not currently locked
   <% end %>
 </div>
 <br />

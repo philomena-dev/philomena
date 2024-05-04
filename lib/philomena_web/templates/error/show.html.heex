@@ -5,8 +5,7 @@
     <meta content="IE=edge" http-equiv="X-UA-Compatible" />
     <%= viewport_meta_tag(@conn) %>
     <title>
-      <%= @status %>
-      - Philomena
+      <%= @status %> - Philomena
     </title>
     <link href={stylesheet_path(nil)} rel="stylesheet" />
     <link href={dark_stylesheet_path()} media="(prefers-color-scheme: dark)" rel="stylesheet" />
@@ -16,8 +15,7 @@
   <body class="minimal">
     <div class="minimal__message">
       <h1 class="minimal__message__header">
-        <i class="fa fw favicon-home"></i>
-        Philomena
+        <i class="fa fw favicon-home"></i> Philomena
       </h1>
       <h3>
         <%= @short_msg %>

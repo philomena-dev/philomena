@@ -1,13 +1,10 @@
 <div class="poll-results">
   <h4 class="poll__header">
-    Poll results:
-    <%= @poll.title %>
+    Poll results: <%= @poll.title %>
   </h4>
   <div class="poll-option-list">
-    <% 
-      winning = winning_option(@poll)
-      winners? = @poll.total_votes > 0
-    %>
+    <% winning = winning_option(@poll)
+    winners? = @poll.total_votes > 0 %>
     <%= for option <- ranked_options(@poll) do %>
       <div class={option_class(option, winning, winners?)}>
         <div class="poll-option__text">
@@ -31,9 +28,7 @@
     <% end %>
     <p>
       <%= if active?(@poll) do %>
-        Poll ends
-        <%= pretty_time(@poll.active_until) %>
-        .
+        Poll ends <%= pretty_time(@poll.active_until) %> .
         <%= if @poll.total_votes > 0 do %>
           <%= @poll.total_votes %>
           <%= pluralize("vote", "votes", @poll.total_votes) %>
@@ -42,12 +37,8 @@
         <% end %>
         cast so far.
       <% else %>
-        Poll ended
-        <%= pretty_time(@poll.active_until) %>
-        with
-        <%= @poll.total_votes %>
-        <%= pluralize("vote", "votes", @poll.total_votes) %>
-        .
+        Poll ended <%= pretty_time(@poll.active_until) %> with <%= @poll.total_votes %>
+        <%= pluralize("vote", "votes", @poll.total_votes) %> .
       <% end %>
     </p>
   </div>

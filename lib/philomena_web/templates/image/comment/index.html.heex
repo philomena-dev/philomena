@@ -1,7 +1,5 @@
-<% 
-  route = fn p -> ~p"/images/#{@image}/comments?#{p}" end
-  pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @comments, route: route)
-%>
+<% route = fn p -> ~p"/images/#{@image}/comments?#{p}" end
+pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @comments, route: route) %>
 <div class="block">
   <div class="block__header page__header">
     <div class="page__pagination">
@@ -10,8 +8,7 @@
     <div class="page__info">
       <span class="block__header__title">
         <%= @image.comments_count %>
-        <%= pluralize("comment", "comments", @image.comments_count) %>
-        posted
+        <%= pluralize("comment", "comments", @image.comments_count) %> posted
       </span>
       <button class="button" data-disable-with="..." id="js-refresh-comments" title="Refresh">
         <i class="fa fa-sync"></i>

@@ -1,18 +1,14 @@
 <div>
-  Posted
-  <%= pretty_time(@post.created_at) %>
+  Posted <%= pretty_time(@post.created_at) %>
   <a class="communication__interaction" href={~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/reports/new"}>
-    <i class="fa fa-flag"></i>
-    Report
+    <i class="fa fa-flag"></i> Report
   </a>
   <%= if not is_nil(@post.edited_at) and can?(@conn, :show, @post) do %>
     <br />
     <a href={~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/history"}>
-      Edited
-      <%= pretty_time(@post.edited_at) %>
+      Edited <%= pretty_time(@post.edited_at) %>
       <%= if @post.edit_reason not in [nil, ""] do %>
-        because:
-        <%= @post.edit_reason %>
+        because: <%= @post.edit_reason %>
       <% end %>
     </a>
   <% end %>
@@ -20,32 +16,26 @@
 <div>
   <% link_path = ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}?#{[post_id: @post.id]}" <> "#post_#{@post.id}" %>
   <% safe_author = markdown_safe_author(@post) %>
-  <% 
-    quote_body =
-      if @post.hidden_from_users do
-        ""
-      else
-        @post.body
-      end
-  %>
+  <% quote_body =
+    if @post.hidden_from_users do
+      ""
+    else
+      @post.body
+    end %>
   <a class="communication__interaction" href={link_path} title="Link to post">
-    <i class="fa fa-link"></i>
-    Link
+    <i class="fa fa-link"></i> Link
   </a>
   <a class="communication__interaction post-reply post-reply-quote" data-author={safe_author} data-post={quote_body} data-reply-url={link_path} href={link_path}>
-    <i class="fa fa-quote-right"></i>
-    Quote
+    <i class="fa fa-quote-right"></i> Quote
   </a>
   <a class="communication__interaction post-reply" data-author={safe_author} data-reply-url={link_path} href={link_path}>
-    <i class="fa fa-reply"></i>
-    Reply
+    <i class="fa fa-reply"></i> Reply
   </a>
   <%= if can?(@conn, :edit, @post) do %>
     <span class="owner-options">
       <strong>
         <a class="communication__interaction" href={~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/edit"}>
-          <i class="fas fa-edit"></i>
-          Edit
+          <i class="fas fa-edit"></i> Edit
         </a>
       </strong>
     </span>

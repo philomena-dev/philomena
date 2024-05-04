@@ -1,8 +1,7 @@
 <h1>
   Source changes for
   <a href={~p"/images/#{@image}"}>
-    image #
-    <%= @image.id %>
+    image # <%= @image.id %>
   </a>
 </h1>
 <% route = fn p -> ~p"/images/#{@image}/source_changes?#{p}" end %>

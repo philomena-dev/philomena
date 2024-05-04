@@ -3,22 +3,19 @@
     <div class="block__content">
       <div class="block block--fixed block--danger">
         <p>
-          <i class="fas fa-exclamation-triangle"></i>
-          This comment is pending approval from a staff member.
+          <i class="fas fa-exclamation-triangle"></i> This comment is pending approval from a staff member.
         </p>
         <%= if can?(@conn, :approve, @comment) do %>
           <p>
             <ul class="horizontal-list">
               <li>
                 <%= link(to: ~p"/images/#{@comment.image_id}/comments/#{@comment}/approve", data: [confirm: "Are you sure?"], method: "post", class: "button") do %>
-                  <i class="fas fa-check"></i>
-                  Approve
+                  <i class="fas fa-check"></i> Approve
                 <% end %>
               </li>
               <li>
                 <a class="button togglable-delete-form-link" data-click-toggle={"#inline-reject-form-comment-#{@comment.id}"} href="#">
-                  <i class="fa fa-times"></i>
-                  Reject
+                  <i class="fa fa-times"></i> Reject
                 </a>
               </li>
             </ul>
@@ -44,12 +41,9 @@
       <div class="communication__body__text">
         <%= if @comment.hidden_from_users do %>
           <strong class="comment_deleted">
-            Deletion reason:
-            <%= @comment.deletion_reason %>
+            Deletion reason: <%= @comment.deletion_reason %>
             <%= if can?(@conn, :hide, @comment) and not is_nil(@comment.deleted_by) do %>
-              (
-              <%= @comment.deleted_by.name %>
-              )
+              ( <%= @comment.deleted_by.name %> )
             <% end %>
           </strong>
           <%= if can?(@conn, :hide, @comment) do %>
@@ -78,19 +72,16 @@
         <%= cond do %>
           <% @comment.hidden_from_users and not @comment.destroyed_content -> %>
             <%= link(to: ~p"/images/#{@comment.image_id}/comments/#{@comment}/hide", data: [confirm: "Are you sure?"], method: "delete", class: "communication__interaction") do %>
-              <i class="fas fa-check"></i>
-              Restore
+              <i class="fas fa-check"></i> Restore
             <% end %>
             <%= if can?(@conn, :delete, @comment) do %>
               <%= link(to: ~p"/images/#{@comment.image_id}/comments/#{@comment}/delete", data: [confirm: "Are you sure?"], method: "post", class: "communication__interaction") do %>
-                <i class="fas fa-times"></i>
-                Delete Contents
+                <i class="fas fa-times"></i> Delete Contents
               <% end %>
             <% end %>
           <% not @comment.hidden_from_users and not @comment.destroyed_content -> %>
             <a class="communication__interaction togglable-delete-form-link" data-click-toggle={"#inline-del-form-comment-#{@comment.id}"} href="#">
-              <i class="fas fa-times"></i>
-              Delete
+              <i class="fas fa-times"></i> Delete
             </a>
           <% true -> %>
         <% end %>

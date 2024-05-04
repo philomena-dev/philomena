@@ -7,9 +7,7 @@
     <%= submit("Search", class: "button hform__button") %>
   </div>
 <% end %>
-<%= link("Site staff", to: ~p"/admin/users?#{[staff: 1]}") %>
-&bull;
-<%= link("2FA users", to: ~p"/admin/users?#{[twofactor: 1]}") %>
+<%= link("Site staff", to: ~p"/admin/users?#{[staff: 1]}") %> &bull; <%= link("2FA users", to: ~p"/admin/users?#{[twofactor: 1]}") %>
 <% route = fn p -> ~p"/admin/users?#{p}" end %>
 <% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @users, route: route, conn: @conn, params: page_params(@conn.params)) %>
 <div class="block">
@@ -48,13 +46,11 @@
             <%= cond do %>
               <% user.otp_required_for_login -> %>
                 <span class="banner__2fa success">
-                  <i class="fas fa-check"></i>
-                  2FA
+                  <i class="fas fa-check"></i> 2FA
                 </span>
               <% user.role != "user" and !user.otp_required_for_login -> %>
                 <span class="banner__2fa danger">
-                  <i class="fas fa-times"></i>
-                  2FA
+                  <i class="fas fa-times"></i> 2FA
                 </span>
               <% true -> %>
             <% end %>
@@ -92,8 +88,7 @@
           <td>
             <%= if can?(@conn, :edit, user) do %>
               <%= link to: ~p"/admin/users/#{user}/edit" do %>
-                <i class="fa fa-fw fa-user-edit"></i>
-                Edit
+                <i class="fa fa-fw fa-user-edit"></i> Edit
               <% end %>
             <% end %>
             <% # = if user.deleted_at do %>
@@ -103,14 +98,12 @@
             <% # ' &bull; %>
             <%= if can?(@conn, :index, Philomena.Bans.User) do %>
               <%= link to: ~p"/admin/user_bans/new?#{[username: user.name]}" do %>
-                <i class="fa fa-fw fa-ban"></i>
-                Ban
+                <i class="fa fa-fw fa-ban"></i> Ban
               <% end %>
             <% end %>
             <%= if can?(@conn, :edit, Philomena.ArtistLinks.ArtistLink) do %>
               <%= link to: ~p"/profiles/#{user}/artist_links/new" do %>
-                <i class="fa fa-fw fa-link"></i>
-                Add link
+                <i class="fa fa-fw fa-link"></i> Add link
               <% end %>
             <% end %>
           </td>

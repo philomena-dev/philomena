@@ -1,10 +1,8 @@
-<% 
-  scope = scope(@conn)
-  image_url = fn image, hit -> ~p"/images/#{image}?#{Keyword.put(scope, :sort, hit["sort"])}" end
-  route = fn p -> ~p"/galleries/#{@gallery}?#{p}" end
-  pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @images, route: route, params: scope)
-  info = render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @images)
-%>
+<% scope = scope(@conn)
+image_url = fn image, hit -> ~p"/images/#{image}?#{Keyword.put(scope, :sort, hit["sort"])}" end
+route = fn p -> ~p"/galleries/#{@gallery}?#{p}" end
+pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @images, route: route, params: scope)
+info = render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @images) %>
 <div class={sortable_classes(@conn)} id="sortable">
   <div class="block" id="imagelist-container">
     <section class="block__header flex page__header">
@@ -37,12 +35,10 @@
         <% end %>
         <%= if can?(@conn, :edit, @gallery) do %>
           <a class="rearrange-button js-rearrange" data-click-hide=".js-rearrange" data-click-show=".js-save,#gallery-rearrange-info" href="#">
-            <i class="fa fa-sort"></i>
-            Rearrange
+            <i class="fa fa-sort"></i> Rearrange
           </a>
           <a class="rearrange-button js-save hidden" data-click-hide=".js-save,#gallery-rearrange-info" data-click-show=".js-rearrange" data-reorder-path={~p"/galleries/#{@gallery}/order"} href="#">
-            <i class="fa fa-check"></i>
-            Save
+            <i class="fa fa-check"></i> Save
           </a>
           <a data-confirm="Are you really, really sure?" data-method="delete" href={~p"/galleries/#{@gallery}"}>
             <i class="fa fa-trash"></i>
@@ -60,13 +56,10 @@
       <span class="block__header__title">
         A gallery by
       </span>
-      <%= link(@gallery.creator.name, to: ~p"/profiles/#{@gallery.creator}") %>
-      with
-      <%= @gallery.image_count %>
+      <%= link(@gallery.creator.name, to: ~p"/profiles/#{@gallery.creator}") %> with <%= @gallery.image_count %>
       <%= pluralize("image", "images", @gallery.image_count) %>
       <span class="hide-mobile-t">
-        , last updated
-        <%= pretty_time(@gallery.updated_at) %>
+        , last updated <%= pretty_time(@gallery.updated_at) %>
       </span>
     </div>
     <div class="block__content flex js-imagelist-info">
@@ -89,8 +82,7 @@
     </div>
     <div class="block__content hidden" id="gallery-rearrange-info">
       <div class="block block--fixed block--primary">
-        Click the image and drag.
-        <br />
+        Click the image and drag. <br />
         <strong>
           Note that you may have to wait a couple of seconds before the order is applied.
         </strong>

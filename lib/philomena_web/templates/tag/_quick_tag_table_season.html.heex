@@ -2,9 +2,7 @@
   <div>
     <%= for map <- slice do %>
       <% [header, tag_name] = Enum.to_list(map) %>
-      <%= header %>
-      .
-      <%= tag_link(@tags[tag_name], tag_name) %>
+      <%= header %> . <%= tag_link(@tags[tag_name], tag_name) %>
       <br />
     <% end %>
   </div>

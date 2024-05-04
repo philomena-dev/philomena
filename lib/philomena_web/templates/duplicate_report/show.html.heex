@@ -1,8 +1,6 @@
-<% 
-  source_url = comparison_url(@conn, @duplicate_report.image)
-  target_url = comparison_url(@conn, @duplicate_report.duplicate_of_image)
-  {width, height} = largest_dimensions([@duplicate_report.image, @duplicate_report.duplicate_of_image])
-%>
+<% source_url = comparison_url(@conn, @duplicate_report.image)
+target_url = comparison_url(@conn, @duplicate_report.duplicate_of_image)
+{width, height} = largest_dimensions([@duplicate_report.image, @duplicate_report.duplicate_of_image]) %>
 <h1>
   Difference
 </h1>
