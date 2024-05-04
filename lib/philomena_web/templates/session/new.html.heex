@@ -1,0 +1,45 @@
+<h1>
+  Sign in
+</h1>
+<%= form_for @conn, ~p"/sessions", [as: :user], fn f -> %>
+  <%= if @error_message do %>
+    <div class="alert alert-danger">
+      <p>
+        <%= @error_message %>
+      </p>
+    </div>
+    <p>
+      <%= link("Resend unlock instructions", to: ~p"/unlocks/new") %>
+    </p>
+    <p>
+      <%= link("Resend confirmation email", to: ~p"/confirmations/new") %>
+    </p>
+  <% end %>
+  <p>
+    <%= link("Forgot your password?", to: ~p"/passwords/new") %>
+  </p>
+  <div class="field">
+    <%= email_input(f, :email, class: "input", required: true, placeholder: "Email", autofocus: true, pattern: ~S/[^\s]+@[^\s]+\.[^\s]+/) %>
+    <%= error_tag(f, :email) %>
+  </div>
+  <div class="field">
+    <%= password_input(f, :password, class: "input", required: true, placeholder: "Password") %>
+    <%= error_tag(f, :password) %>
+  </div>
+  <div class="field">
+    <%= checkbox(f, :remember_me) %>
+    <%= label(f, :remember_me, "Remember me") %>
+  </div>
+  <div class="actions">
+    <%= submit("Sign in", class: "button") %>
+  </div>
+<% end %>
+<p>
+  <strong>
+    Haven't read the
+    <a href="/pages/rules">
+      site rules
+    </a>
+    lately? Make sure you read them before posting or editing metadata!
+  </strong>
+</p>

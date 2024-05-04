@@ -1,0 +1,22 @@
+<%= if Enum.any?(@posts) do %>
+  <div class="block">
+    <div class="block__header">
+      <span class="block__header__title">
+        Recent Forum Posts
+      </span>
+      <%= link("View all", to: ~p"/posts?#{[pq: "user_id:#{@user.id}"]}") %>
+    </div>
+    <div class="block__content">
+      <div class="block">
+        <%= for post <- @posts do %>
+          <div class="block__content alternating-color">
+            Post
+            <%= link(pretty_time(post.created_at), to: ~p"/forums/#{post.topic.forum}/topics/#{post.topic}?#{[post_id: post]}" <> "#post_#{post.id}") %>
+            in topic
+            <%= link(post.topic.title, to: ~p"/forums/#{post.topic.forum}/topics/#{post.topic}") %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

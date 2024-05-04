@@ -1,0 +1,4 @@
+<h1>
+  Editing site notice
+</h1>
+<%= render(PhilomenaWeb.Admin.SiteNoticeView, "_form.html", changeset: @changeset, action: ~p"/admin/site_notices/#{@site_notice}", conn: @conn) %>

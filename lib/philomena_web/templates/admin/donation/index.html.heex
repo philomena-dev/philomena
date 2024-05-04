@@ -1,0 +1,16 @@
+<% route = fn p -> ~p"/admin/donations?#{p}" end %>
+<% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @donations, route: route, conn: @conn) %>
+<h1>
+  Donations
+</h1>
+<div class="block">
+  <div class="block__header">
+    <%= pagination %>
+  </div>
+  <div class="block__content">
+    <%= render(PhilomenaWeb.Admin.DonationView, "_table.html", donations: @donations, conn: @conn) %>
+  </div>
+  <div class="block__header block__header--light">
+    <%= pagination %>
+  </div>
+</div>

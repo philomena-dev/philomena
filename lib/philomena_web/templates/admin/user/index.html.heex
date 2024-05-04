@@ -1,0 +1,124 @@
+<h1>
+  Users
+</h1>
+<%= form_for :user, ~p"/admin/users", [method: "get", class: "hform"], fn f -> %>
+  <div class="field">
+    <%= text_input(f, :q, name: "q", class: "hform__text input", placeholder: "Search query") %>
+    <%= submit("Search", class: "button hform__button") %>
+  </div>
+<% end %>
+<%= link("Site staff", to: ~p"/admin/users?#{[staff: 1]}") %>
+&bull;
+<%= link("2FA users", to: ~p"/admin/users?#{[twofactor: 1]}") %>
+<% route = fn p -> ~p"/admin/users?#{p}" end %>
+<% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @users, route: route, conn: @conn, params: page_params(@conn.params)) %>
+<div class="block">
+  <div class="block__header">
+    <%= pagination %>
+  </div>
+  <div class="block__content"></div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>
+          Name
+        </th>
+        <th>
+          Email
+        </th>
+        <th>
+          Activated
+        </th>
+        <th>
+          Role
+        </th>
+        <th>
+          Created
+        </th>
+        <th>
+          Options
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= for user <- @users do %>
+        <tr>
+          <td>
+            <%= link(user.name, to: ~p"/profiles/#{user}") %>
+            <%= cond do %>
+              <% user.otp_required_for_login -> %>
+                <span class="banner__2fa success">
+                  <i class="fas fa-check"></i>
+                  2FA
+                </span>
+              <% user.role != "user" and !user.otp_required_for_login -> %>
+                <span class="banner__2fa danger">
+                  <i class="fas fa-times"></i>
+                  2FA
+                </span>
+              <% true -> %>
+            <% end %>
+          </td>
+          <td>
+            <%= if can?(@conn, :edit, Philomena.Users.User) do %>
+              <%= user.email %>
+            <% else %>
+              <i>
+                N/A
+              </i>
+            <% end %>
+          </td>
+          <td>
+            <%= cond do %>
+              <% user.deleted_at -> %>
+                <strong>
+                  Deactivated
+                </strong>
+                <%= pretty_time(user.deleted_at) %>
+              <% user.confirmed_at -> %>
+                Active
+              <% true -> %>
+                <strong>
+                  Unconfirmed
+                </strong>
+            <% end %>
+          </td>
+          <td>
+            <%= String.capitalize(user.role) %>
+          </td>
+          <td>
+            <%= pretty_time(user.created_at) %>
+          </td>
+          <td>
+            <%= if can?(@conn, :edit, user) do %>
+              <%= link to: ~p"/admin/users/#{user}/edit" do %>
+                <i class="fa fa-fw fa-user-edit"></i>
+                Edit
+              <% end %>
+            <% end %>
+            <% # = if user.deleted_at do %>
+            <% #  => link_to 'Reactivate', admin_user_activation_path(user), data: { confirm: t('are_you_sure') }, method: :create %>
+            <% # - else %>
+            <% #  => link_to 'Deactivate', admin_user_activation_path(user), data: { confirm: t('are_you_sure') }, method: :delete %>
+            <% # ' &bull; %>
+            <%= if can?(@conn, :index, Philomena.Bans.User) do %>
+              <%= link to: ~p"/admin/user_bans/new?#{[username: user.name]}" do %>
+                <i class="fa fa-fw fa-ban"></i>
+                Ban
+              <% end %>
+            <% end %>
+            <%= if can?(@conn, :edit, Philomena.ArtistLinks.ArtistLink) do %>
+              <%= link to: ~p"/profiles/#{user}/artist_links/new" do %>
+                <i class="fa fa-fw fa-link"></i>
+                Add link
+              <% end %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <div class="block__header block__header--light">
+    <%= pagination %>
+  </div>
+</div>

@@ -1,0 +1,118 @@
+<h2>
+  The Do-Not-Post (DNP) List
+</h2>
+<% # Information block %>
+<h3>
+  Information
+</h3>
+<div class="block">
+  <div class="block__header">
+    <span class="block__header__title">
+      About
+    </span>
+  </div>
+  <div class="block__content">
+    <p>
+      This is a list of artists who have asked us to place a restriction on the uploading of their artwork. These restrictions can include anything from requesting that no edits of their work be allowed, to requesting that no uploads be allowed unless uploaded by the artists themselves.
+    </p>
+    <p>
+      We ask that you please respect the wishes of artists in regards to their artworks, and check the list before uploading. Note that just because an artist is not listed may not mean that their artwork is ok to post, especially if they have a note at their "source" that they do not wish for their artwork to be reposted.
+    </p>
+  </div>
+</div>
+<br />
+<div class="block">
+  <div class="block__header">
+    <span class="block__header__title">
+      Manage My Listings
+    </span>
+  </div>
+  <div class="block__content">
+    <%= cond do %>
+      <% not is_nil(@current_user) and Enum.any?(@linked_tags) -> %>
+        <%= link("Create an entry", to: ~p"/dnp/new") %>
+        <br />
+        <%= link("My Listings", to: ~p"/dnp?#{[mine: "1"]}") %>
+      <% not is_nil(@current_user) -> %>
+        You must have a verified artist link to create and manage DNP entries.
+        <%= link("Request an artist link", to: ~p"/profiles/#{@current_user}/artist_links/new") %>
+        .
+      <% true -> %>
+        You must be logged in and have a verified artist link to create and manage DNP entries.
+    <% end %>
+  </div>
+</div>
+<h3>
+  The List
+</h3>
+<div class="block">
+  <% route = fn p -> ~p"/dnp?#{p}" end %>
+  <% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @dnp_entries, route: route, conn: @conn) %>
+  <div class="block__header page__header">
+    <span class="block__header__title page__title">
+      The DNP List
+    </span>
+    <div class="page__pagination">
+      <%= pagination %>
+    </div>
+  </div>
+  <div class="block__content">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>
+            Tag
+          </th>
+          <th>
+            Restriction
+          </th>
+          <th>
+            Conditions
+          </th>
+          <%= if @status_column do %>
+            <th>
+              Status
+            </th>
+            <th>
+              Created
+            </th>
+          <% end %>
+          <th>
+            Options
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for {body, entry} <- @dnp_entries do %>
+          <tr>
+            <td>
+              <%= render(PhilomenaWeb.TagView, "_tag.html", tag: entry.tag, conn: @conn) %>
+            </td>
+            <td>
+              <%= entry.dnp_type %>
+            </td>
+            <td>
+              <%= body %>
+            </td>
+            <%= if @status_column do %>
+              <td>
+                <%= pretty_state(entry) %>
+              </td>
+              <td>
+                <%= pretty_time(entry.created_at) %>
+              </td>
+            <% end %>
+            <td>
+              <%= link("More Info", to: ~p"/dnp/#{entry}") %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="block__header page__header">
+    <div class="page__pagination">
+      <%= pagination %>
+    </div>
+  </div>
+</div>

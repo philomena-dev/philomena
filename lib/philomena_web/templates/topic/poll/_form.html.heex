@@ -1,0 +1,49 @@
+<p>
+  Polls may have a maximum of
+  <span class="js-max-option-count">
+    20
+  </span>
+  options. Leave any options you don't want to use blank.
+  Only registered users will be able to vote.
+</p>
+<div class="field field--block">
+  <%= text_input(@f, :title, class: "input input--wide", placeholder: "Poll title", maxlength: 140) %>
+  <%= error_tag(@f, :title) %>
+</div>
+<p class="fieldlabel">
+  End date
+</p>
+<div class="field field--block">
+  <%= text_input(@f, :until, class: "input input--wide", placeholder: "2 weeks from now", maxlength: 255) %>
+  <%= error_tag(@f, :until) %>
+  <%= error_tag(@f, :active_until) %>
+</div>
+<p class="fieldlabel">
+  Specify when the poll should end. Once the poll ends, no more
+  votes can be cast and the final results will be displayed. Good
+  values to try are "1 week from now" and "24 hours from now". Polls
+  must last for at least 24 hours.
+</p>
+<p class="fieldlabel">
+  Voting method:
+</p>
+<div class="field field--block">
+  <%= select(@f, :vote_method, [-: "", "Single option": :single, "Multiple options": :multiple], class: "input") %>
+  <%= error_tag(@f, :vote_method) %>
+</div>
+<%= inputs_for @f, :options, fn fo -> %>
+  <div class="field js-poll-option field--inline flex--no-wrap flex--centered">
+    <%= text_input(fo, :label, class: "input flex__grow js-option-label", placeholder: "Option") %>
+    <%= error_tag(fo, :label) %>
+    <label class="input--separate-left flex__fixed flex--centered">
+      <a class="js-option-remove" href="#">
+        <i class="fa fa-trash"></i>
+        Delete
+      </a>
+    </label>
+  </div>
+<% end %>
+<button class="button js-poll-add-option" type="button">
+  <i class="fa fa-plus"></i>
+  Add option
+</button>

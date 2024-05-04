@@ -1,0 +1,4 @@
+<h1>
+  Editing user
+</h1>
+<%= render(PhilomenaWeb.Admin.UserView, "_form.html", Map.put(assigns, :action, ~p"/admin/users/#{@user}")) %>

@@ -1,0 +1,17 @@
+<%= cond do %>
+  <% not is_nil(@object.user) and not anonymous?(@object) -> %>
+    <strong>
+      <%= link(@object.user.name, to: ~p"/profiles/#{@object.user}") %>
+    </strong>
+    <%= if assigns[:awards] do %>
+      <%= render(PhilomenaWeb.ProfileView, "_awards.html", awards: @object.user.awards) %>
+    <% end %>
+  <% not is_nil(@object.user) and (can?(@conn, :reveal_anon, @object) and not hide_staff_tools?(@conn)) -> %>
+    <strong>
+      <%= link(anonymous_name(@object, true), to: ~p"/profiles/#{@object.user}") %>
+    </strong>
+  <% true -> %>
+    <strong>
+      <%= anonymous_name(@object) %>
+    </strong>
+<% end %>

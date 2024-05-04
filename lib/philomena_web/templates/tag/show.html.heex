@@ -1,0 +1,2 @@
+<%= render(PhilomenaWeb.ImageView, "index.html", conn: @conn, tags: @tags, images: @images, header: "Images tagged #{@tag.name}", scope: scope(@conn), route: fn p -> ~p"/tags/#{@tag}?#{p}" end) %>
+<%= render(PhilomenaWeb.SearchView, "_form.html", conn: @conn) %>

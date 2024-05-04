@@ -1,0 +1,25 @@
+<h1>
+  Tag changes on tag
+  <a href={~p"/tags/#{@tag}"}>
+    <%= @tag.name %>
+  </a>
+</h1>
+<% route = fn p -> ~p"/tags/#{@tag}/tag_changes?#{p}" end %>
+<% 
+  params =
+    if @conn.params["added"] do
+      [added: @conn.params["added"]]
+    end
+%>
+<% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @tag_changes, route: route, conn: @conn, params: params) %>
+<div class="block">
+  <div class="block__header">
+    <span class="block__header__title">
+      Display only:
+    </span>
+    <%= link("Removed", to: ~p"/tags/#{@tag}/tag_changes?#{[added: 0]}") %>
+    <%= link("Added", to: ~p"/tags/#{@tag}/tag_changes?#{[added: 1]}") %>
+    <%= link("All", to: ~p"/tags/#{@tag}/tag_changes") %>
+  </div>
+  <%= render(PhilomenaWeb.TagChangeView, "index.html", conn: @conn, tag_changes: @tag_changes, pagination: pagination) %>
+</div>

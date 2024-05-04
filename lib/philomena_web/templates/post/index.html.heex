@@ -1,0 +1,319 @@
+<h1>
+  Posts
+</h1>
+<%= form_for :posts, ~p"/posts", [method: "get", class: "hform", enforce_utf8: false], fn f -> %>
+  <div class="field">
+    <%= text_input(f, :pq, name: :pq, value: @conn.params["pq"], class: "input hform__text", placeholder: "Search posts", autocapitalize: "none") %>
+    <%= submit("Search", class: "hform__button button") %>
+  </div>
+  <div class="fieldlabel">
+    For more information, see the
+    <a href="/pages/search_syntax">
+      search syntax documentation
+    </a>
+    . Search results are sorted by creation date.
+  </div>
+<% end %>
+<h2>
+  Search Results
+</h2>
+<%= cond do %>
+  <% Enum.any?(@posts) -> %>
+    <% route = fn p -> ~p"/posts?#{p}" end %>
+    <% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @posts, route: route, params: [pq: @conn.params["pq"]], conn: @conn) %>
+    <%= for {body, post} <- @posts, post.topic.hidden_from_users == false do %>
+      <div>
+        <h3>
+          <%= link(post.topic.forum.name, to: ~p"/forums/#{post.topic.forum}") %>
+          &raquo;
+          <%= link(post.topic.title, to: ~p"/forums/#{post.topic.forum}/topics/#{post.topic}") %>
+          &raquo;
+          <% post_link = ~p"/forums/#{post.topic.forum}/topics/#{post.topic}?#{[post_id: post.id]}" <> "#post_#{post.id}" %>
+          <%= if post.topic_position == 0 do %>
+            <%= link("Topic Opener", to: post_link) %>
+          <% else %>
+            <%= link("Post #{post.topic_position}", to: post_link) %>
+          <% end %>
+        </h3>
+        <%= render(PhilomenaWeb.PostView, "_post.html", body: body, post: post, conn: @conn) %>
+      </div>
+    <% end %>
+    <div class="block">
+      <div class="block__header block__header--light page__header">
+        <div class="page__pagination">
+          <%= pagination %>
+        </div>
+        <div class="page__info">
+          <span class="block__header__title">
+            <%= render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @posts, conn: @conn) %>
+          </span>
+        </div>
+      </div>
+    </div>
+  <% assigns[:error] -> %>
+    <p>
+      Oops, there was an error evaluating your query:
+    </p>
+    <pre>
+      <%= assigns[:error] %>
+    </pre>
+  <% true -> %>
+    <p>
+      No posts found!
+    </p>
+<% end %>
+<h3>
+  Default search
+</h3>
+<p>
+  If you do not specify a field to search over, the search engine will
+  search for posts with a body that is similar to the query's
+  <em>
+    word stems
+  </em>
+  . For example, posts containing the words
+  <code>
+    winged humanization
+  </code>
+  ,
+  <code>
+    wings
+  </code>
+  , and
+  <code>
+    spread wings
+  </code>
+  would all be found by a search for
+  <code>
+    wing
+  </code>
+  , but
+  <code>
+    sewing
+  </code>
+  would not be.
+</p>
+<h3>
+  Allowed fields
+</h3>
+<table class="table">
+  <thead>
+    <tr>
+      <th>
+        Field Selector
+      </th>
+      <th>
+        Type
+      </th>
+      <th>
+        Description
+      </th>
+      <th>
+        Example
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <code>
+          author
+        </code>
+      </td>
+      <td>
+        Literal
+      </td>
+      <td>
+        Matches the author of this post. Anonymous authors will never match this term.
+      </td>
+      <td>
+        <code>
+          <%= link("author:Joey", to: ~p"/posts?#{[pq: "author:Joey"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          body
+        </code>
+      </td>
+      <td>
+        Full Text
+      </td>
+      <td>
+        Matches the body of this post. This is the default field.
+      </td>
+      <td>
+        <code>
+          <%= link("body:test", to: ~p"/posts?#{[pq: "body:test"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          created_at
+        </code>
+      </td>
+      <td>
+        Date/Time Range
+      </td>
+      <td>
+        Matches the creation time of this post.
+      </td>
+      <td>
+        <code>
+          <%= link("created_at:2015", to: ~p"/posts?#{[pq: "created_at:2015"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          id
+        </code>
+      </td>
+      <td>
+        Numeric Range
+      </td>
+      <td>
+        Matches the numeric surrogate key for this post.
+      </td>
+      <td>
+        <code>
+          <%= link("id:1000000", to: ~p"/posts?#{[pq: "id:1000000"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          my
+        </code>
+      </td>
+      <td>
+        Meta
+      </td>
+      <td>
+        <code>
+          my:posts
+        </code>
+        matches posts you have posted if you are signed in.
+      </td>
+      <td>
+        <code>
+          <%= link("my:posts", to: ~p"/posts?#{[pq: "my:posts"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          subject
+        </code>
+      </td>
+      <td>
+        Full Text
+      </td>
+      <td>
+        Matches the title of the topic.
+      </td>
+      <td>
+        <code>
+          <%= link("subject:time wasting thread", to: ~p"/posts?#{[pq: "subject:time wasting thread"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          topic_id
+        </code>
+      </td>
+      <td>
+        Literal
+      </td>
+      <td>
+        Matches the numeric surrogate key for the topic this post belongs to.
+      </td>
+      <td>
+        <code>
+          <%= link("topic_id:7000", to: ~p"/posts?#{[pq: "topic_id:7000"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          topic_position
+        </code>
+      </td>
+      <td>
+        Numeric Range
+      </td>
+      <td>
+        Matches the offset from the beginning of the topic of this post. Positions begin at 0.
+      </td>
+      <td>
+        <code>
+          <%= link("topic_position:0", to: ~p"/posts?#{[pq: "topic_position:0"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          updated_at
+        </code>
+      </td>
+      <td>
+        Date/Time Range
+      </td>
+      <td>
+        Matches the creation or last edit time of this post.
+      </td>
+      <td>
+        <code>
+          <%= link("updated_at.gte:2 weeks ago", to: ~p"/posts?#{[pq: "updated_at.gte:2 weeks ago"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          user_id
+        </code>
+      </td>
+      <td>
+        Literal
+      </td>
+      <td>
+        Matches posts with the specified user_id. Anonymous users will never match this term.
+      </td>
+      <td>
+        <code>
+          <%= link("user_id:211190", to: ~p"/posts?#{[pq: "user_id:211190"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          forum
+        </code>
+      </td>
+      <td>
+        Literal
+      </td>
+      <td>
+        Matches the short name for the forum this post belongs to.
+      </td>
+      <td>
+        <code>
+          <%= link("forum:meta", to: ~p"/posts?#{[pq: "forum:meta"]}") %>
+        </code>
+      </td>
+    </tr>
+  </tbody>
+</table>

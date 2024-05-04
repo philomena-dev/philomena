@@ -1,0 +1,19 @@
+<%= if Enum.any?(@options) do %>
+  <%= for option <- @options do %>
+    <h5>
+      <%= option.label %>
+    </h5>
+    <%= for vote <- option.poll_votes do %>
+      <span class="interaction-user-list-item">
+        <%= link(vote.user.name, to: ~p"/profiles/#{vote.user}") %>
+        <% # = link "(x)", to: ~p"/forums/#{@forum}/topics/#{@topic}/poll/votes/#{vote}" %>
+      </span>
+    <% end %>
+  <% end %>
+<% else %>
+  <p>
+    <em>
+      No votes to display
+    </em>
+  </p>
+<% end %>

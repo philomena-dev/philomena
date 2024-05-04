@@ -1,0 +1,58 @@
+<h1>
+  Viewing last 25 versions of post by
+  <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @post, conn: @conn) %>
+  in topic
+  <a href={(~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}?#{[post_id: @post.id]}" <> "#post_#{@post.id}")}>
+    <%= @post.topic.title %>
+  </a>
+</h1>
+<%= for version <- @versions do %>
+  <article class="block communication">
+    <div class="block__content flex flex--no-wrap">
+      <div class="flex__fixed spacing-right">
+        <%= render(PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html", object: @post, conn: @conn) %>
+      </div>
+      <div class="flex__grow communication__body">
+        <span class="communication__body__sender-name">
+          <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @post, awards: true, conn: @conn) %>
+        </span>
+        <br />
+        <%= render(PhilomenaWeb.UserAttributionView, "_anon_user_title.html", object: @post, conn: @conn) %>
+        <div class="communication__body__text">
+          <%= for edit <- version.difference do %>
+            <%= case edit do %>
+              <% {:eq, value} -> %>
+                <%= escape_nl2br(value) %>
+              <% {:ins, value} -> %>
+                <ins class="differ">
+                  <%= escape_nl2br(value) %>
+                </ins>
+              <% {:del, value} -> %>
+                <del class="differ">
+                  <%= escape_nl2br(value) %>
+                </del>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <div class="block__content communication__options">
+      <div class="flex flex--wrap flex--spaced-out">
+        <div>
+          <%= if version.edit_reason not in [nil, ""] do %>
+            Reason:
+            <%= version.edit_reason %>
+          <% else %>
+            No reason given
+          <% end %>
+        </div>
+        <div class="flex__right">
+          Edited
+          <%= pretty_time(version.created_at) %>
+          by
+          <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: version, conn: @conn) %>
+        </div>
+      </div>
+    </div>
+  </article>
+<% end %>

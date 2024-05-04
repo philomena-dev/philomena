@@ -1,0 +1,122 @@
+<div class="flex flex--centered header--secondary__admin-links stretched-mobile-links js-staff-action">
+  <%= if manages_users?(@conn) do %>
+    <div class="dropdown hide-mobile">
+      <a class="header__link" title="Admin">
+        A
+        <i class="fa fa-caret-down"></i>
+      </a>
+      <div class="dropdown__content js-burger-links">
+        <%= if manages_site_notices?(@conn) do %>
+          <%= link to: ~p"/admin/site_notices", class: "header__link" do %>
+            <i class="fa fa-fw fa-info-circle"></i>
+            Site Notices
+          <% end %>
+        <% end %>
+        <%= if manages_users?(@conn) do %>
+          <%= link to: ~p"/admin/users", class: "header__link" do %>
+            <i class="fa fa-fw fa-users"></i>
+            Users
+          <% end %>
+        <% end %>
+        <%= if manages_forums?(@conn) do %>
+          <%= link to: ~p"/admin/forums", class: "header__link" do %>
+            <i class="fa fa-fw fa-paragraph"></i>
+            Forums
+          <% end %>
+        <% end %>
+        <%= if manages_ads?(@conn) do %>
+          <%= link to: ~p"/admin/adverts", class: "header__link" do %>
+            <i class="fa fa-fw fa-shopping-bag"></i>
+            Adverts
+          <% end %>
+        <% end %>
+        <%= if manages_badges?(@conn) do %>
+          <%= link to: ~p"/admin/badges", class: "header__link" do %>
+            <i class="fa fa-fw fa-trophy"></i>
+            Badges
+          <% end %>
+        <% end %>
+        <%= if manages_static_pages?(@conn) do %>
+          <%= link to: ~p"/pages", class: "header__link" do %>
+            <i class="fa fa-fw fa-sticky-note"></i>
+            Pages
+          <% end %>
+        <% end %>
+        <%= if manages_mod_notes?(@conn) do %>
+          <%= link to: ~p"/admin/mod_notes", class: "header__link" do %>
+            <i class="fa fa-fw fa-clipboard"></i>
+            Mod Notes
+          <% end %>
+        <% end %>
+        <%= if can_see_moderation_log?(@conn) do %>
+          <%= link to: ~p"/moderation_logs", class: "header__link" do %>
+            <i class="fa fa-fw fa-list-alt"></i>
+            Mod Logs
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+  <%= if @pending_approval_count do %>
+    <%= link to: ~p"/admin/approvals", class: "header__link", title: "Approval Queue" do %>
+      Q
+      <span class="header__counter__admin">
+        <%= @pending_approval_count %>
+      </span>
+    <% end %>
+  <% end %>
+  <%= if @duplicate_report_count do %>
+    <%= link to: ~p"/duplicate_reports", class: "header__link", title: "Duplicates" do %>
+      D
+      <span class="header__counter__admin">
+        <%= @duplicate_report_count %>
+      </span>
+    <% end %>
+  <% end %>
+  <%= if @report_count do %>
+    <%= link to: ~p"/admin/reports", class: "header__link", title: "Reports" do %>
+      R
+      <span class="header__counter__admin">
+        <%= @report_count %>
+      </span>
+    <% end %>
+  <% end %>
+  <%= if @artist_link_count do %>
+    <%= link to: ~p"/admin/artist_links", class: "header__link", title: "Artist Links" do %>
+      L
+      <span class="header__counter__admin">
+        <%= @artist_link_count %>
+      </span>
+    <% end %>
+  <% end %>
+  <%= if @dnp_entry_count do %>
+    <%= link to: ~p"/admin/dnp_entries", class: "header__link", title: "DNP Requests" do %>
+      S
+      <span class="header__counter__admin">
+        <%= @dnp_entry_count %>
+      </span>
+    <% end %>
+  <% end %>
+  <%= if manages_bans?(@conn) do %>
+    <div class="dropdown hide-mobile">
+      <a class="header__link" title="Bans">
+        B
+        <i class="fa fa-caret-down"></i>
+      </a>
+      <div class="dropdown__content dropdown__content-right js-burger-links">
+        <%= link to: ~p"/admin/user_bans", class: "header__link" do %>
+          <i class="fa fa-fw fa-user"></i>
+          User Bans
+        <% end %>
+        <%= link to: ~p"/admin/subnet_bans", class: "header__link" do %>
+          <i class="fab fa-fw fa-internet-explorer"></i>
+          IP Bans
+        <% end %>
+        <%= link to: ~p"/admin/fingerprint_bans", class: "header__link" do %>
+          <i class="fa fa-fw fa-desktop"></i>
+          FP Bans
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,7 @@
+<h1>
+  Source changes by
+  <%= @fingerprint %>
+</h1>
+<% route = fn p -> ~p"/fingerprint_profiles/#{@fingerprint}/source_changes?#{p}" end %>
+<% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @source_changes, route: route, conn: @conn) %>
+<%= render(PhilomenaWeb.SourceChangeView, "index.html", conn: @conn, source_changes: @source_changes, pagination: pagination) %>

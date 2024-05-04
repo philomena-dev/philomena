@@ -1,0 +1,82 @@
+<article class="block communication" id={"comment_#{@comment.id}"}>
+  <div class={"block__content flex flex--no-wrap #{communication_body_class(@comment)}"}>
+    <div class="flex__fixed spacing-right">
+      <div class="post-image-container">
+        <%= render(PhilomenaWeb.ImageView, "_image_container.html", image: @comment.image, size: :thumb_tiny, conn: @conn) %>
+      </div>
+    </div>
+    <div class="flex__grow communication__body">
+      <span class="communication__body__sender-name">
+        <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @comment, awards: true, conn: @conn) %>
+      </span>
+      <br />
+      <%= render(PhilomenaWeb.UserAttributionView, "_anon_user_title.html", object: @comment, conn: @conn) %>
+      <div class="communication__body__text">
+        <%= if @comment.hidden_from_users do %>
+          <strong class="comment_deleted">
+            Deletion reason:
+            <%= @comment.deletion_reason %>
+            <%= if can?(@conn, :hide, @comment) and not is_nil(@comment.deleted_by) do %>
+              (
+              <%= @comment.deleted_by.name %>
+              )
+            <% end %>
+          </strong>
+          <%= if can?(@conn, :hide, @comment) do %>
+            <%= if @comment.destroyed_content do %>
+              <br />
+              <strong class="comment_deleted">
+                This comment's contents have been destroyed.
+              </strong>
+            <% else %>
+              <br />
+              <%= @body %>
+            <% end %>
+          <% end %>
+        <% else %>
+          <%= @body %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div class="block__content communication__options">
+    <div class="flex flex--wrap flex--spaced-out">
+      <%= render(PhilomenaWeb.CommentView, "_comment_options.html", comment: @comment, conn: @conn) %>
+    </div>
+    <%= if can?(@conn, :hide, @comment) do %>
+      <div class="js-staff-action">
+        <%= cond do %>
+          <% @comment.hidden_from_users and not @comment.destroyed_content -> %>
+            <%= link(to: ~p"/images/#{@comment.image_id}/comments/#{@comment}/hide", data: [confirm: "Are you sure?"], method: "delete", class: "communication__interaction") do %>
+              <i class="fas fa-check"></i>
+              Restore
+            <% end %>
+            <%= if can?(@conn, :delete, @comment) do %>
+              <%= link(to: ~p"/images/#{@comment.image_id}/comments/#{@comment}/delete", data: [confirm: "Are you sure?"], method: "post", class: "communication__interaction") do %>
+                <i class="fas fa-times"></i>
+                Delete Contents
+              <% end %>
+            <% end %>
+          <% not @comment.hidden_from_users and not @comment.destroyed_content -> %>
+            <a class="communication__interaction togglable-delete-form-link" data-click-toggle={"#inline-del-form-comment-#{@comment.id}"} href="#">
+              <i class="fas fa-times"></i>
+              Delete
+            </a>
+          <% true -> %>
+        <% end %>
+        <%= if can?(@conn, :show, :ip_address) do %>
+          <div class="communication__info js-staff-action">
+            <%= link_to_ip(@conn, @comment.ip) %>
+          </div>
+          <div class="communication__info js-staff-action">
+            <%= link_to_fingerprint(@conn, @comment.fingerprint) %>
+          </div>
+        <% end %>
+        <%= form_for :comment, ~p"/images/#{@comment.image_id}/comments/#{@comment}/hide", [class: "togglable-delete-form hidden flex", id: "inline-del-form-comment-#{@comment.id}"], fn f -> %>
+          <%= text_input(f, :deletion_reason, class: "input input--wide", placeholder: "Deletion Reason", id: "inline-del-reason-comment-#{@comment.id}", required: true) %>
+          <%= submit("Delete", class: "button") %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</article>

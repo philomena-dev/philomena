@@ -1,0 +1,61 @@
+<div class="profile-top">
+  <div class="profile-top__avatar">
+    <%= render(PhilomenaWeb.UserAttributionView, "_user_avatar.html", object: %{user: @current_user}, conn: @conn) %>
+  </div>
+  <div class="profile-top__name-and-links">
+    <div>
+      <h1>
+        Your avatar
+      </h1>
+      <p>
+        Add a new avatar or remove your existing one here.
+      </p>
+      <p>
+        Avatars must be less than 1000px tall and wide, and smaller than 300 kilobytes in size. PNG, JPEG, and GIF are acceptable.
+      </p>
+      <%= form_for @changeset, ~p"/avatar", [method: "put", multipart: true], fn f -> %>
+        <%= if @changeset.action do %>
+          <div class="alert alert-danger">
+            <p>
+              Oops, something went wrong! Please check the errors below.
+            </p>
+          </div>
+        <% end %>
+        <% # todo: extract this %>
+        <h4>
+          Select an image
+        </h4>
+        <div class="image-other">
+          <div id="js-image-upload-previews"></div>
+          <p>
+            Upload a file from your computer, or provide a link to the page containing the image and click Fetch.
+          </p>
+          <div class="field">
+            <%= file_input(f, :avatar, class: "input js-scraper") %>
+            <%= error_tag(f, :avatar_size) %>
+            <%= error_tag(f, :avatar_width) %>
+            <%= error_tag(f, :avatar_height) %>
+            <%= error_tag(f, :avatar_mime_type) %>
+          </div>
+          <div class="field field--inline">
+            <%= url_input(f, :scraper_url, class: "input input--wide js-scraper", placeholder: "Link a deviantART page, a Tumblr post, or the image directly") %>
+            <button class="button button--separate-left" data-disable-with="Fetch" disabled id="js-scraper-preview" title="Fetch the image at the specified URL" type="button">
+              Fetch
+            </button>
+          </div>
+          <div class="field-error-js hidden js-scraper"></div>
+          <br />
+          <%= submit("Update my avatar", class: "button") %>
+        </div>
+      <% end %>
+      <br />
+      <%= button_to("Remove my avatar", ~p"/avatar", method: "delete", class: "button", data: [confirm: "Are you really, really sure?"]) %>
+    </div>
+    <br />
+    <%= if blank?(@conn.params["profile"]) do %>
+      <%= link("Back", to: ~p"/registrations/edit") %>
+    <% else %>
+      <%= link("Back", to: ~p"/profiles/#{@current_user}") %>
+    <% end %>
+  </div>
+</div>

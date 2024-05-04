@@ -1,0 +1,61 @@
+<%= if @image.duplicate_id do %>
+  <div class="walloftext">
+    <div class="block block--fixed block--warning">
+      <h1>
+        This image has been merged into another image
+      </h1>
+      <p>
+        This image was merged into image
+        <%= link("##{@image.duplicate_id}", to: ~p"/images/#{@image.duplicate_id}") %>
+        because it was determined to be a duplicate of that image.
+      </p>
+    </div>
+  </div>
+<% else %>
+  <div class="walloftext">
+    <div class="block block--fixed block--warning">
+      <h1>
+        This image has been deleted
+      </h1>
+      <p>
+        Reason:
+        <strong>
+          <%= @image.deletion_reason || "Unknown (likely deleted in error). Please contact a moderator." %>
+        </strong>
+      </p>
+      <%= if can?(@conn, :hide, @image) do %>
+        <p>
+          <strong>
+            Spoilers!
+          </strong>
+          Done by:
+          <strong>
+            <%= deleter(@image) %>
+          </strong>
+        </p>
+      <% end %>
+    </div>
+    <p>
+      If you originally uploaded the file previously located here, please don't re-upload it -
+      <%= link("contact us", to: "/pages/contact") %>
+      if you feel this was in error and we'll talk! We're only human, and mistakes happen.
+    </p>
+    <p>
+      Here's the
+      <%= link("tagging guidelines", to: "/pages/tags") %>
+      and
+      <%= link("rules of the site", to: "/pages/rules") %>
+      . Other useful links can be found at the bottom of the page.
+    </p>
+  </div>
+<% end %>
+<%= if can?(@conn, :hide, @image) do %>
+  <%= render(PhilomenaWeb.ImageView, "show.html", assigns) %>
+<% else %>
+  <p>
+    <strong>
+      Tags:
+    </strong>
+  </p>
+  <%= render(PhilomenaWeb.TagView, "_tag_list.html", tags: display_order(@image.tags), conn: @conn) %>
+<% end %>

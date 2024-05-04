@@ -1,0 +1,42 @@
+<%= for u <- @aliases do %>
+  <tr>
+    <td>
+      <%= link(u.name, to: ~p"/profiles/#{u}") %>
+    </td>
+    <td>
+      <%= @type %>
+    </td>
+    <%= cond do %>
+      <% younger_than_7_days?(u) -> %>
+        <td class="danger">
+          <%= pretty_time(u.created_at) %>
+        </td>
+      <% younger_than_14_days?(u) -> %>
+        <td class="warning">
+          <%= pretty_time(u.created_at) %>
+        </td>
+      <% true -> %>
+        <td class="success">
+          <%= pretty_time(u.created_at) %>
+        </td>
+    <% end %>
+    <%= cond do %>
+      <% not is_nil(u.deleted_at) -> %>
+        <td class="danger">
+          Account Disabled
+        </td>
+      <% currently_banned?(u) -> %>
+        <td class="danger">
+          Currently Banned
+        </td>
+      <% previously_banned?(u) -> %>
+        <td class="danger">
+          Previously banned
+        </td>
+      <% true -> %>
+        <td class="success">
+          Never banned
+        </td>
+    <% end %>
+  </tr>
+<% end %>

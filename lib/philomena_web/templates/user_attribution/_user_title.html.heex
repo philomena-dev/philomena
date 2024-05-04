@@ -1,0 +1,11 @@
+<%= for {class, label} <- user_labels(@object) do %>
+  <%= if assigns[:large] do %>
+    <div class={"label label--block #{class}"}>
+      <%= label %>
+    </div>
+  <% else %>
+    <div class={"label label--block label--small #{class}"}>
+      <%= label %>
+    </div>
+  <% end %>
+<% end %>

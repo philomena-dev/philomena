@@ -1,0 +1,10 @@
+<%= form_for @changeset, ~p"/conversations/#{@conversation}/messages", fn f -> %>
+  <div class="block">
+    <div class="communication-edit__wrap">
+      <%= render(PhilomenaWeb.MarkdownView, "_input.html", conn: @conn, f: f, action_icon: "pencil-alt", action_text: "Reply") %>
+    </div>
+    <div class="block__content communication-edit__actions">
+      <%= submit("Send", class: "button", autocomplete: "off", data: [disable_with: raw("Sending&hellip;")]) %>
+    </div>
+  </div>
+<% end %>

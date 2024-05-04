@@ -1,0 +1,23 @@
+<%= form_for @changeset, ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}", fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>
+        Oops, something went wrong! Please check the errors below.
+      </p>
+    </div>
+  <% end %>
+  <div class="block">
+    <div class="communication-edit__wrap">
+      <div class="field">
+        <%= render(PhilomenaWeb.MarkdownView, "_input.html", conn: @conn, f: f, placeholder: "Please read the site rules before posting and use ||spoilers|| for NSFW stuff in SFW forums.") %>
+      </div>
+      <div class="block__content field">
+        <%= text_input(f, :edit_reason, class: "input input--wide", placeholder: "Reason for edit") %>
+        <%= error_tag(f, :edit_reason) %>
+      </div>
+    </div>
+    <div class="block__content communication-edit__actions">
+      <%= submit("Edit", class: "button", data: [disable_with: raw("Posting&hellip;")]) %>
+    </div>
+  </div>
+<% end %>

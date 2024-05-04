@@ -1,0 +1,52 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>
+        Oops, something went wrong! Please check the errors below.
+      </p>
+    </div>
+  <% end %>
+  <div class="fieldlabel">
+    The short name of
+    <code>
+      https://picarto.tv/
+      <em>
+        picarto_channel_name
+      </em>
+    </code>
+    is
+    <code>
+      picarto_channel_name
+    </code>
+    .
+  </div>
+  <div class="fieldlabel">
+    The short name of
+    <code>
+      https://piczel.tv/watch/
+      <em>
+        piczel_channel_name
+      </em>
+    </code>
+    is
+    <code>
+      piczel_channel_name
+    </code>
+    .
+    <br />
+    <br />
+  </div>
+  <div class="field">
+    <%= label(f, :short_name, "Short name") %>
+    <%= text_input(f, :short_name, class: "input", placeholder: "Short name", required: true) %>
+  </div>
+  <div class="field">
+    <%= label(f, :type, "Type") %>
+    <%= select(f, :type, ["PicartoChannel", "PiczelChannel"], class: "input") %>
+  </div>
+  <div class="field">
+    <%= label(f, :artist_tag, "Artist tag") %>
+    <%= text_input(f, :artist_tag, class: "input", placeholder: "Artist tag") %>
+  </div>
+  <%= submit("Save", class: "button") %>
+<% end %>

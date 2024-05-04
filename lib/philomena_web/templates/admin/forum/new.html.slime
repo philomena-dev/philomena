@@ -1,5 +1,0 @@
-h2 New Forum
-
-= render "_form.html", Map.put(assigns, :action, ~p"/admin/forums")
-
-= link "Back", to: ~p"/admin/forums"

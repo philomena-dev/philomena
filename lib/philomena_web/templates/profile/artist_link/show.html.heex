@@ -1,0 +1,118 @@
+<h1>
+  Link to
+  <%= link(@artist_link.uri, to: @artist_link.uri) %>
+</h1>
+<h3>
+  Status
+</h3>
+<%= cond do %>
+  <% verified?(@artist_link) -> %>
+    <p>
+      This link has been verified by a member of the administration team.
+    </p>
+    <p>
+      You can now remove the verification text from your website if you have not done so already.
+    </p>
+  <% contacted?(@artist_link) -> %>
+    <p>
+      <strong>
+        This link is awaiting your reply on the linked website in order to be verified.
+      </strong>
+    </p>
+    <p>
+      An administrator
+      <%= "(#{@artist_link.contacted_by_user.name})" %>
+      has manually contacted you at the address above, as your verification code was not found on the website. Please respond to the message from the administrator to confirm your link.
+    </p>
+    <p>
+      The verification code is:
+    </p>
+    <p>
+      <h1>
+        <%= @artist_link.verification_code %>
+      </h1>
+    </p>
+  <% link_verified?(@artist_link) -> %>
+    <p>
+      <strong>
+        This link is pending verification by a member of the administration team.
+      </strong>
+    </p>
+    <p>
+      We've now found the verification code on your website. An administrator still needs to check the tag list before verifying the link. Please leave the code on your website until verification is complete.
+    </p>
+    <p>
+      If you need it again, your verification code is:
+    </p>
+    <p>
+      <h1>
+        <%= @artist_link.verification_code %>
+      </h1>
+    </p>
+  <% unverified?(@artist_link) -> %>
+    <p>
+      <strong>
+        This link is pending verification by a member of the administration team.
+      </strong>
+      <div class="dnp-warning">
+        <h3>
+          To have your link verified as fast as possible, please place this text somewhere on the page you are linking.
+        </h3>
+        <h1>
+          <%= @artist_link.verification_code %>
+        </h1>
+      </div>
+    </p>
+    <p>
+      Otherwise, an administrator will have to contact you to verify your identity.
+    </p>
+    <p>
+      Once the link has been verified you can remove the text; the text simply allows the team to directly check with your website rather than messaging you and waiting for a reply.
+    </p>
+  <% rejected?(@artist_link) -> %>
+    <p>
+      This link has been rejected by a member of the administration team; this is probably because you were not reachable in a timely manner (~1 week) to verify the link.
+    </p>
+<% end %>
+<h3>
+  Visibility
+</h3>
+<%= if public?(@artist_link) do %>
+  <p>
+    This link is public, and will be shown around the site.
+  </p>
+<% else %>
+  <p>
+    This link is not public, and will only be shown to administrators.
+  </p>
+<% end %>
+<h3>
+  Associated tag
+</h3>
+<%= if @artist_link.tag do %>
+  <div class="tag-list">
+    <%= render(PhilomenaWeb.TagView, "_tag.html", tag: @artist_link.tag, conn: @conn) %>
+  </div>
+<% else %>
+  <p>
+    There is no tag associated with this link.
+  </p>
+<% end %>
+<%= if can?(@conn, :index, Philomena.ArtistLinks.ArtistLink) do %>
+  <p>
+    <%= link("Edit", to: ~p"/profiles/#{@user}/artist_links/#{@artist_link}/edit") %>
+    &bull;
+    <%= link("Verify", to: ~p"/admin/artist_links/#{@artist_link}/verification", method: :post) %>
+    &bull;
+    <%= link("Reject", to: ~p"/admin/artist_links/#{@artist_link}/reject", method: :post) %>
+    <%= if not verified?(@artist_link) do %>
+      &bull;
+      <%= if contacted?(@artist_link) do %>
+        Artist contacted
+      <% else %>
+        <%= link("Artist contacted", to: ~p"/admin/artist_links/#{@artist_link}/contact", method: :post) %>
+      <% end %>
+    <% end %>
+  </p>
+<% end %>
+<%= link("Back", to: ~p"/profiles/#{@user}/artist_links") %>

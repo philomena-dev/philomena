@@ -1,0 +1,11 @@
+<h1>
+  Editing Poll
+</h1>
+<%= form_for @changeset, ~p"/forums/#{@forum}/topics/#{@topic}/poll", fn f -> %>
+  <%= render(PhilomenaWeb.Topic.PollView, "_form.html", f: f) %>
+  <br />
+  <br />
+  <div class="action">
+    <%= submit("Save", class: "button", data: [disable_with: raw("Saving&hellip;")]) %>
+  </div>
+<% end %>

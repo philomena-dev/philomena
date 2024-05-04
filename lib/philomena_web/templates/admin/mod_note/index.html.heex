@@ -1,0 +1,16 @@
+<% route = fn p -> ~p"/admin/mod_notes?#{p}" end %>
+<% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @mod_notes, route: route, conn: @conn) %>
+<h2>
+  Mod Notes
+</h2>
+<div class="block">
+  <div class="block__header">
+    <span class="block__header__title">
+      Mod Notes
+    </span>
+    <%= pagination %>
+  </div>
+  <div class="block__content">
+    <%= render(PhilomenaWeb.Admin.ModNoteView, "_table.html", mod_notes: @mod_notes, conn: @conn) %>
+  </div>
+</div>

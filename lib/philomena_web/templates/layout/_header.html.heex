@@ -1,0 +1,164 @@
+<header class="header">
+  <div class="flex flex--centered flex--start-bunched flex--maybe-wrap">
+    <div class="flex flex--centered">
+      <div class="hide-desktop" id="js-burger-toggle">
+        <a class="header__link" href="#">
+          <i class="fa fa-bars"></i>
+        </a>
+      </div>
+      <a class="header__link" href="/">
+        <i class="fa fw favicon-home"></i>
+        <span class="fa__text hide-limited-desktop hide-mobile">
+          Derpibooru
+        </span>
+      </a>
+      <a class="header__link hide-mobile" href="/images/new" title="Upload">
+        <i class="fa fa-upload"></i>
+      </a>
+    </div>
+    <%= form_for @conn, ~p"/search", [method: "get", class: "header__search flex flex--no-wrap flex--centered", enforce_utf8: false], fn f -> %>
+      <input autocapitalize="none" class="input header__input header__input--search" id="q" name="q" placeholder="Search" title="For terms all required, separate with ',' or 'AND'; also supports 'OR' for optional terms and '-' or 'NOT' for negation. Search with a blank query for more options or click the ? for syntax help." value={@conn.params["q"]} />
+      <%= if present?(@conn.params["sf"]) do %>
+        <input name="sf" type="hidden" value={@conn.params["sf"]} />
+      <% end %>
+      <%= if present?(@conn.params["sd"]) do %>
+        <input name="sd" type="hidden" value={@conn.params["sd"]} />
+      <% end %>
+      <%= if present?(@conn.params["hidden"]) do %>
+        <input name="hidden" type="hidden" value={@conn.params["hidden"]} />
+      <% end %>
+      <%= if hides_images?(@conn) do %>
+        <%= select(f, :del, [{"-D", ""}, {"+D", 1}, {"*D", "deleted"}, {"DO", "only"}], name: "del", class: "input header__input js-staff-action", autocomplete: "off") %>
+      <% end %>
+      <button class="header__search__button" title="Search" type="submit">
+        <i class="fas fa-search"></i>
+      </button>
+      <a class="header__search__button" href="/search/reverse" title="Search using an image">
+        <i class="fa-search-button fas fa-camera"></i>
+      </a>
+      <a class="header__search__button" href="/pages/search_syntax" title="Search syntax help">
+        <i class="fa-search-button fas fa-question"></i>
+      </a>
+    <% end %>
+    <div class="flex flex--centered flex--no-wrap header__force-right">
+      <%= if @current_user do %>
+        <a class="header__link" href="/notifications" title="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="js-notification-ticker fa__text header__counter" data-notification-count={@notification_count}>
+            <%= @notification_count %>
+          </span>
+        </a>
+        <a class="header__link" href="/conversations" title="Conversations">
+          <%= if @conversation_count > 0 do %>
+            <i class="fa-unread-icon fas fa-envelope-open"></i>
+            <span class="header__counter">
+              <%= @conversation_count %>
+            </span>
+          <% else %>
+            <i class="fas fa-envelope"></i>
+            <span class="header__counter hidden">
+              0
+            </span>
+          <% end %>
+        </a>
+        <a class="header__link hide-mobile" href="/filters" title="Filters">
+          <i class="fa fa-filter"></i>
+          <span class="hide-limited-desktop">
+            Filters
+          </span>
+        </a>
+        <%= form_for @user_changeset, ~p"/filters/current", [class: "header__filter-form", id: "filter-quick-form"], fn f -> %>
+          <%= select(f, :current_filter_id, @available_filters, name: "id", id: "filter-quick-menu", class: "input header__input", data: [change_submit: "#filter-quick-form"], autocomplete: "off") %>
+        <% end %>
+        <%= form_for @user_changeset, ~p"/filters/spoiler_type", [class: "header__filter-form hide-mobile hide-limited-desktop", id: "spoiler-quick-form"], fn f -> %>
+          <%= select(f, :spoiler_type, @spoiler_types, id: "spoiler-quick-menu", class: "input header__input", data: [change_submit: "#spoiler-quick-form"], autocomplete: "off") %>
+        <% end %>
+        <div class="dropdown header__dropdown">
+          <a class="header__link header__link-user" href={~p"/profiles/#{@current_user}"}>
+            <%= render(PhilomenaWeb.UserAttributionView, "_user_avatar.html", object: %{user: @current_user}, class: "avatar--28px") %>
+            <span class="header__link-user__dropdown-arrow hide-mobile" data-click-preventdefault="true"></span>
+          </a>
+          <nav class="dropdown__content dropdown__content-right hide-mobile js-burger-links">
+            <a class="header__link" href={~p"/profiles/#{@current_user}"}>
+              <%= @current_user.name %>
+            </a>
+            <a class="header__link" href="/search?q=my:watched">
+              <i class="fa fa-fw fa-eye"></i>
+              Watched
+            </a>
+            <a class="header__link" href="/search?q=my:faves">
+              <i class="fa fa-fw fa-star"></i>
+              Faves
+            </a>
+            <a class="header__link" href="/search?q=my:upvotes">
+              <i class="fa fa-fw fa-arrow-up"></i>
+              Upvotes
+            </a>
+            <a class="header__link" href={~p"/galleries?#{[gallery: [creator: @current_user.name]]}"}>
+              <i class="fa fa-fw fa-image"></i>
+              Galleries
+            </a>
+            <a class="header__link" href="/search?q=my:uploads">
+              <i class="fa fa-fw fa-upload"></i>
+              Uploads
+            </a>
+            <a class="header__link" href="/comments?cq=my:comments">
+              <i class="fa fa-fw fa-comments"></i>
+              Comments
+            </a>
+            <a class="header__link" href="/posts?pq=my:posts">
+              <i class="fas fa-fw fa-pen-square"></i>
+              Posts
+            </a>
+            <a class="header__link" href={~p"/profiles/#{@current_user}/artist_links"}>
+              <i class="fa fa-fw fa-link"></i>
+              Links
+            </a>
+            <a class="header__link" href="/settings/edit">
+              <i class="fa fa-fw fa-cogs"></i>
+              Settings
+            </a>
+            <a class="header__link" href="/conversations">
+              <i class="fa fa-fw fa-envelope"></i>
+              Messages
+            </a>
+            <a class="header__link" href={~p"/registrations/edit"}>
+              <i class="fa fa-fw fa-user"></i>
+              Account
+            </a>
+            <a class="header__link" data-method="delete" href={~p"/sessions"}>
+              <i class="fa fa-fw fa-sign-out-alt"></i>
+              Logout
+            </a>
+          </nav>
+        </div>
+      <% else %>
+        <a class="header__link hide-mobile" href="/filters">
+          Filters (
+          <%= @current_filter.name %>
+          )
+        </a>
+        <span class="js-burger-links hide-mobile">
+          <a class="header__link" href="/settings/edit">
+            <i class="fa fa-fw fa-cogs hide-desktop"></i>
+            Settings
+          </a>
+        </span>
+        <a class="header__link" href={~p"/registrations/new"}>
+          Register
+        </a>
+        <a class="header__link" href={~p"/sessions/new"}>
+          Login
+        </a>
+      <% end %>
+    </div>
+  </div>
+</header>
+<nav class="header header--secondary">
+  <div class="flex flex--centered flex--spaced-out flex--wrap">
+    <%= render(PhilomenaWeb.LayoutView, "_header_navigation.html", assigns) %>
+    <%= if !is_nil(@current_user) and @current_user.role != "user" do %>
+      <%= render(PhilomenaWeb.LayoutView, "_header_staff_links.html", assigns) %>
+    <% end %>
+  </div>
+</nav>

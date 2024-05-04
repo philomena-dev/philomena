@@ -1,0 +1,70 @@
+<div class="block">
+  <div class="block__header">
+    <div class="block__header__title approval-grid">
+      <div class="approval-items--main">
+        <span>
+          ID
+        </span>
+        <span>
+          Image
+        </span>
+        <span>
+          Uploader
+        </span>
+        <span>
+          Time
+        </span>
+      </div>
+      <div class="approval-items--footer hide-mobile">
+        <span class="hide-mobile">
+          Actions
+        </span>
+      </div>
+    </div>
+  </div>
+  <%= for image <- @images do %>
+    <div class="block__content alternating-color">
+      <div class="approval-grid">
+        <div class="approval-items--main">
+          <span>
+            <%= link(">>#{image.id}", to: ~p"/images/#{image}") %>
+          </span>
+          <div class={"approval-items__details #{class_for_image(image)}"}>
+            <span>
+              <%= image_thumb(@conn, image) %>
+            </span>
+            <span>
+              <%= warning_text(image) %>
+            </span>
+          </div>
+          <span>
+            <%= if image.user do %>
+              <%= link(image.user.name, to: ~p"/profiles/#{image.user}") %>
+            <% else %>
+              <em>
+                <%= truncated_ip_link(image.ip) %>
+              </em>
+              <%= link_to_fingerprint(@conn, image.fingerprint) %>
+            <% end %>
+          </span>
+          <span>
+            <%= pretty_time(image.created_at) %>
+          </span>
+        </div>
+        <div class="approval-items--footer">
+          <%= if can?(@conn, :approve, image) do %>
+            <%= button_to("Approve", ~p"/images/#{image}/approve", method: "post", class: "button button--state-success") %>
+          <% end %>
+          <%= if can?(@conn, :hide, image) do %>
+            <%= form_for :image, ~p"/images/#{image}/delete", [method: "post"], fn f -> %>
+              <div class="field field--inline">
+                <%= text_input(f, :deletion_reason, class: "input input--wide", placeholder: "Rule violation", required: true) %>
+                <%= submit("Delete", class: "button button--state-danger button--separate-left") %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,72 @@
+<% link = assigns[:link] || ~p"/images/#{@image}" %>
+<%= image_container @conn, @image, @size, fn -> %>
+  <%= cond do %>
+    <% @image.duplicate_id -> %>
+      <div class="media-box__overlay">
+        <strong>
+          Marked Duplicate
+        </strong>
+      </div>
+    <% @image.destroyed_content -> %>
+      <div class="media-box__overlay">
+        <strong>
+          Destroyed Content
+        </strong>
+      </div>
+    <% @image.hidden_from_users -> %>
+      <div class="media-box__overlay">
+        <strong>
+          Deleted:
+        </strong>
+        <%= @image.deletion_reason %>
+      </div>
+    <% true -> %>
+  <% end %>
+  <%= case render_intent(@conn, @image, @size) do %>
+    <% {:hidpi, small_url, medium_url, hover_text} -> %>
+      <div class="media-box__overlay js-spoiler-info-overlay"></div>
+      <a href={link} title={hover_text}>
+        <picture>
+          <img alt={hover_text} src={small_url} srcset={"#{small_url} 1x, #{medium_url} 2x"} />
+        </picture>
+      </a>
+    <% {:image, small_url, hover_text} -> %>
+      <div class="media-box__overlay js-spoiler-info-overlay">
+        <%= if @image.image_mime_type == "video/webm" do %>
+          WebM
+        <% end %>
+      </div>
+      <a href={link} title={hover_text}>
+        <picture>
+          <img alt={hover_text} src={small_url} />
+        </picture>
+      </a>
+    <% {:video, webm, mp4, hover_text} -> %>
+      <div class="media-box__overlay js-spoiler-info-overlay"></div>
+      <a href={link} title={hover_text}>
+        <video alt={hover_text} autoplay="autoplay" loop="loop" muted="muted" playsinline="playsinline">
+          <source src={webm} type="video/webm" />
+          <source src={mp4} type="video/mp4" />
+        </video>
+        <img alt={hover_text} />
+      </a>
+    <% {:filtered_image, hover_text} -> %>
+      <div class="media-box__overlay js-spoiler-info-overlay"></div>
+      <a href={link} title={hover_text}>
+        <picture>
+          <img alt={hover_text} />
+        </picture>
+      </a>
+    <% {:filtered_video, hover_text} -> %>
+      <div class="media-box__overlay js-spoiler-info-overlay"></div>
+      <a href={link} title={hover_text}>
+        <video autoplay="autoplay" loop="loop" muted="muted" playsinline="playsinline"></video>
+        <img alt={hover_text} />
+      </a>
+    <% :not_rendered -> %>
+      <div class="media-box__overlay js-spoiler-info-overlay"></div>
+      <a href={link}>
+        Thumbnails not yet generated
+      </a>
+  <% end %>
+<% end %>

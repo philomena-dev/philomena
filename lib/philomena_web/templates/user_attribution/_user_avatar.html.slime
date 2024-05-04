@@ -1,2 +1,0 @@
-= if !!@object.user do
-  = user_avatar(@object, assigns[:class] || "avatar--100px")

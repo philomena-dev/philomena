@@ -1,0 +1,5 @@
+<div class={"block__content js-imagelist-info flex #{tags_row_class(@conn)}"}>
+  <div class="flex__grow">
+    <%= render(PhilomenaWeb.TagView, "_tag_list.html", tags: @tags, conn: @conn) %>
+  </div>
+</div>

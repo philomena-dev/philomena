@@ -1,0 +1,17 @@
+<%= if Enum.any?(@images) do %>
+  <div class="block">
+    <div class="block__header">
+      <span class="block__header__title">
+        <%= @title %>
+      </span>
+      <%= if assigns[:view_all_path] do %>
+        <%= link("View all", to: assigns[:view_all_path]) %>
+      <% end %>
+    </div>
+    <div class="block__content js-resizable-media-container">
+      <%= for image <- @images do %>
+        <%= render(PhilomenaWeb.ImageView, "_image_box.html", image: image, size: :thumb, conn: @conn) %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

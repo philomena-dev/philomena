@@ -1,0 +1,279 @@
+<div class="block--fixed">
+  <i class="fa fa-fw fa-calendar"></i>
+  Account created
+  <%= @user.created_at %>
+  <br />
+  <i class="fa fa-fw fa-filter"></i>
+  Current Filter:
+  <%= if @filter do %>
+    <%= link(@filter.name, to: ~p"/filters/#{@filter}") %>
+  <% else %>
+    <em>
+      (none)
+    </em>
+  <% end %>
+  <br />
+  <i class="far fa-fw fa-clock"></i>
+  Last seen
+  <%= if @last_ip do %>
+    <%= pretty_time(@last_ip.updated_at) %>
+    from
+    <%= link_to_ip(@conn, @last_ip.ip) %>
+    <%= if @last_fp do %>
+      <%= link_to_fingerprint(@conn, @last_fp.fingerprint) %>
+    <% end %>
+  <% else %>
+    <em>
+      (never)
+    </em>
+  <% end %>
+  <br />
+  <i class="fas fa-fw fa-key"></i>
+  Two factor auth:
+  <strong>
+    <%= enabled_text(@user.otp_required_for_login) %>
+  </strong>
+  <br />
+  <%= if @user.locked_at do %>
+    <i class="fas fa-fw fa-lock"></i>
+    <strong class="comment_deleted">
+      Account locked,
+      <%= @user.failed_attempts %>
+      failed login attempts
+    </strong>
+  <% else %>
+    <i class="fas fa-fw fa-unlock"></i>
+    Not currently locked
+  <% end %>
+</div>
+<br />
+<a class="label label--primary label--block" data-click-toggle=".js-admin__options__toggle" href="#" title="Toggle Controls">
+  <i class="fa fa-fw fa-bars"></i>
+  <span>
+    Toggle Controls
+  </span>
+</a>
+<div class="profile-top__options js-admin__options__toggle hidden">
+  <ul class="profile-admin__options__column">
+    <li>
+      <%= link to: ~p"/profiles/#{@user}/details" do %>
+        <i class="fa fa-fw fa-eye"></i>
+        <span class="admin__button">
+          View Details
+        </span>
+      <% end %>
+    </li>
+    <li>
+      <%= link to: ~p"/search?#{[q: "upvoted_by_id:#{@user.id}"]}" do %>
+        <i class="fa fa-fw fa-arrow-up"></i>
+        <span class="admin__button">
+          Upvotes
+        </span>
+      <% end %>
+    </li>
+    <li>
+      <%= link to: ~p"/search?#{[q: "downvoted_by_id:#{@user.id}"]}" do %>
+        <i class="fa fa-fw fa-arrow-down"></i>
+        <span class="admin__button">
+          Downvotes
+        </span>
+      <% end %>
+    </li>
+    <li>
+      <%= link to: ~p"/search?#{[q: "hidden_by_id:#{@user.id}"]}" do %>
+        <i class="fa fa-fw fa-eye-slash"></i>
+        <span class="admin__button">
+          Hidden Images
+        </span>
+      <% end %>
+    </li>
+    <li>
+      <%= link to: ~p"/admin/reports?#{[rq: "user_id:#{@user.id}"]}" do %>
+        <i class="fa fa-fw fa-exclamation"></i>
+        <span class="admin__button">
+          Reports
+        </span>
+      <% end %>
+    </li>
+    <li>
+      <%= link to: ~p"/profiles/#{@user}/ip_history" do %>
+        <i class="fab fa-fw fa-internet-explorer"></i>
+        <span class="admin__button">
+          IP History
+        </span>
+      <% end %>
+    </li>
+    <li>
+      <%= link to: ~p"/profiles/#{@user}/fp_history" do %>
+        <i class="fa fa-fw fa-desktop"></i>
+        <span class="admin__button">
+          FP History
+        </span>
+      <% end %>
+    </li>
+    <li>
+      <%= link to: ~p"/profiles/#{@user}/aliases" do %>
+        <i class="fa fa-fw fa-users"></i>
+        <span class="admin__button">
+          Potential Aliases
+        </span>
+      <% end %>
+    </li>
+    <%= if can?(@conn, :index, %Philomena.Donations.Donation{}) do %>
+      <li>
+        <%= link to: ~p"/admin/donations/user/#{@user}" do %>
+          <i class="fas fa-fw fa-dollar-sign"></i>
+          <span class="admin__button">
+            Donations
+          </span>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+  <ul class="profile-admin__options__column">
+    <%= if can?(@conn, :edit, @user) do %>
+      <li>
+        <%= link to: ~p"/admin/users/#{@user}/edit" do %>
+          <i class="fas fa-fw fa-edit"></i>
+          <span class="admin__button">
+            Edit User
+          </span>
+        <% end %>
+      </li>
+      <li>
+        <%= link to: ~p"/admin/users/#{@user}/force_filter/new" do %>
+          <i class="fas faw-fw fa-filter"></i>
+          <span class="admin__button">
+            Force Filter
+          </span>
+        <% end %>
+      </li>
+      <%= if @forced do %>
+        <li>
+          <%= link to: ~p"/admin/users/#{@user}/force_filter", data: [confirm: "Are you really, really sure?", method: "delete"] do %>
+            <i class="fas fa-fw fa-filter"></i>
+            <span class="admin__button">
+              Remove Force Filter
+            </span>
+          <% end %>
+        </li>
+      <% end %>
+      <%= if @user.deleted_at do %>
+        <li>
+          <%= link to: ~p"/admin/users/#{@user}/activation", data: [confirm: "Are you really, really sure?", method: "post"] do %>
+            <i class="fa fa-fw fa-check"></i>
+            <span class="admin__button">
+              Reactivate Account
+            </span>
+          <% end %>
+        </li>
+      <% else %>
+        <li>
+          <%= link to: ~p"/admin/users/#{@user}/activation", data: [confirm: "Are you really, really sure?", method: "delete"] do %>
+            <i class="fa fa-fw fa-times"></i>
+            <span class="admin__button">
+              Deactivate Account
+            </span>
+          <% end %>
+        </li>
+      <% end %>
+      <%= if @user.locked_at do %>
+        <li>
+          <%= link to: ~p"/admin/users/#{@user}/unlock", data: [method: "post"] do %>
+            <i class="fas fa-fw fa-unlock"></i>
+            <span class="admin__button">
+              Unlock Account
+            </span>
+          <% end %>
+        </li>
+      <% end %>
+      <li>
+        <%= link to: ~p"/admin/users/#{@user}/wipe", data: [confirm: "This is irreversible, destroying all identifying information including email. Are you sure?", method: "post"] do %>
+          <i class="fas fa-fw fa-eraser"></i>
+          <span class="admin__button">
+            Wipe PII
+          </span>
+        <% end %>
+      </li>
+    <% end %>
+    <%= if can?(@conn, :edit, %Philomena.ArtistLinks.ArtistLink{}) do %>
+      <li>
+        <%= link to: ~p"/profiles/#{@user}/artist_links/new" do %>
+          <i class="fa fa-fw fa-link"></i>
+          <span class="admin__button">
+            Add Artist Link
+          </span>
+        <% end %>
+      </li>
+    <% end %>
+    <%= if can?(@conn, :create, Philomena.Bans.User) do %>
+      <li>
+        <%= link to: ~p"/admin/user_bans/new?#{[username: @user.name]}" do %>
+          <i class="fa fa-fw fa-ban"></i>
+          <span class="admin__button">
+            Ban this sucker
+          </span>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+  <ul class="profile-admin__options__column">
+    <%= if can?(@conn, :index, Philomena.Users.User) do %>
+      <li>
+        <%= link to: ~p"/admin/users/#{@user}/api_key", data: [confirm: "Are you really, really sure?", method: "delete"] do %>
+          <i class="fas fa-fw fa-key"></i>
+          <span class="admin__button">
+            Reset API key
+          </span>
+        <% end %>
+      </li>
+      <li>
+        <%= if @user.verified do %>
+          <%= link to: ~p"/admin/users/#{@user}/verification", data: [confirm: "Are you really, really sure?", method: "delete"] do %>
+            <i class="fas fa-fw fa-user-times"></i>
+            <span class="admin__button">
+              Revoke Verification
+            </span>
+          <% end %>
+        <% else %>
+          <%= link to: ~p"/admin/users/#{@user}/verification", data: [confirm: "Are you really, really sure?", method: "create"] do %>
+            <i class="fas fa-fw fa-user-check"></i>
+            <span class="admin__button">
+              Grant Verification
+            </span>
+          <% end %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+  <ul class="profile-admin__options__column">
+    <%= if can?(@conn, :index, Philomena.Users.User) do %>
+      <li>
+        <%= link to: ~p"/admin/users/#{@user}/votes", data: [confirm: "Are you really, really sure?", method: "delete"] do %>
+          <i class="far fa-fw fa-file-excel"></i>
+          <span class="admin__button">
+            Remove All Votes/Faves
+          </span>
+        <% end %>
+      </li>
+      <li>
+        <%= link to: ~p"/admin/users/#{@user}/downvotes", data: [confirm: "Are you really, really sure?", method: "delete"] do %>
+          <i class="fa fa-fw fa-arrow-down"></i>
+          <span class="admin__button">
+            Remove All Downvotes
+          </span>
+        <% end %>
+      </li>
+    <% end %>
+    <%= if @user.role == "user" and can?(@conn, :revert, Philomena.TagChanges.TagChange) do %>
+      <li>
+        <%= link to: ~p"/tag_changes/full_revert?#{[user_id: @user.id]}", data: [confirm: "Are you really, really sure?", method: "create"] do %>
+          <i class="fa fa-fw fa-tag"></i>
+          <span class="admin__button">
+            Revert All Tag Changes
+          </span>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</div>

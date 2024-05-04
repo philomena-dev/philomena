@@ -1,0 +1,163 @@
+<% 
+  img_bucket = @image_aggs["aggregations"]
+  cmt_bucket = @comment_aggs["aggregations"]
+%>
+<div class="walloftext">
+  <h3>
+    Images
+  </h3>
+  <p>
+    There are
+    <span class="stat">
+      <%= number_with_delimiter(img_bucket["non_deleted"]["doc_count"]) %>
+    </span>
+    non-deleted images total in our database. Of these,
+    <span class="stat">
+      <%= number_with_delimiter(img_bucket["non_deleted"]["last_24h"]["doc_count"]) %>
+    </span>
+    images were uploaded in the last 24 hours.
+  </p>
+  <p>
+    This net total excludes the
+    <%= number_with_delimiter(img_bucket["deleted"]["doc_count"]) %>
+    images that have been deleted or marked as duplicates.
+  </p>
+  <h3>
+    Comments
+  </h3>
+  <p>
+    There are
+    <span class="stat">
+      <%= number_with_delimiter(@comment_aggs["hits"]["total"]["value"]) %>
+    </span>
+    comments on the site. Of these,
+    <%= number_with_delimiter(cmt_bucket["deleted"]["doc_count"]) %>
+    have been deleted.
+  </p>
+  <p>
+    In the last 24 hours,
+    <span class="stat">
+      <%= number_with_delimiter(cmt_bucket["last_24h"]["doc_count"]) %>
+    </span>
+    comments have been posted.
+  </p>
+  <p>
+    There are, on average,
+    <span class="stat">
+      <%= number_with_delimiter(trunc(img_bucket["non_deleted"]["avg_comments"]["value"] || 0)) %>
+    </span>
+    comments on each image on the site.
+  </p>
+  <h3>
+    Votes
+  </h3>
+  <p>
+    Out of
+    <%= number_with_delimiter(img_bucket["non_deleted"]["doc_count"]) %>
+    images,
+    <span class="stat">
+      <%= number_with_delimiter(img_bucket["non_deleted"]["score_gt_0"]["doc_count"]) %>
+    </span>
+    images have a score above 0, and
+    <span class="stat">
+      <%= number_with_delimiter(img_bucket["non_deleted"]["score_lt_0"]["doc_count"]) %>
+    </span>
+    images have a score below 0.
+    <span class="stat">
+      <%= number_with_delimiter(img_bucket["non_deleted"]["faves_gt_0"]["doc_count"]) %>
+    </span>
+    images have been faved by at least one user.
+  </p>
+  <h3>
+    Forums
+  </h3>
+  <p>
+    In our
+    <%= @forums_count %>
+    forums there have been
+    <span class="stat">
+      <%= number_with_delimiter(@topics_count) %>
+    </span>
+    topics started. There have been
+    <span class="stat">
+      <%= number_with_delimiter(@posts_count) %>
+    </span>
+    replies to topics in total.
+  </p>
+  <h3>
+    Users
+  </h3>
+  <p>
+    There are
+    <span class="stat">
+      <%= number_with_delimiter(@users_count) %>
+    </span>
+    users on the site. Of these,
+    <span class="stat">
+      <%= number_with_delimiter(@users_24h) %>
+    </span>
+    have joined in the last 24 hours.
+  </p>
+  <h3>
+    Galleries
+  </h3>
+  <p>
+    There are
+    <span class="stat">
+      <%= number_with_delimiter(@gallery_count) %>
+    </span>
+    existing image galleries on the site, created by
+    <span class="stat">
+      <%= number_with_delimiter(@distinct_creators) %>
+    </span>
+    distinct creators. There are, on average,
+    <span class="stat">
+      <%= number_with_delimiter(@gallery_size) %>
+    </span>
+    images in each gallery.
+  </p>
+  <p>
+    In total, images have been added to galleries
+    <span class="stat">
+      <%= number_with_delimiter(@images_in_galleries) %>
+    </span>
+    times.
+  </p>
+  <h3>
+    Commissions
+  </h3>
+  <p>
+    There are
+    <span class="stat">
+      <%= number_with_delimiter(@open_commissions) %>
+    </span>
+    open commission listings on the site, offering a total of
+    <span class="stat">
+      <%= number_with_delimiter(@commission_items) %>
+    </span>
+    items.
+  </p>
+  <h3>
+    Moderation
+  </h3>
+  <p>
+    We have received
+    <span class="stat">
+      <%= number_with_delimiter(@report_stat_count) %>
+    </span>
+    reports. Out of these reports,
+    <%= number_with_delimiter(@open_reports) %>
+    reports are outstanding and awaiting action.
+  </p>
+  <p>
+    On the last 250 reports we've received, it's taken us on average
+    <span class="stat">
+      <%= @response_time %>
+    </span>
+    hour(s) between a report being made and the report being resolved.
+  </p>
+  <h3>
+    Upload History
+  </h3>
+  <%= upload_graph(img_bucket["non_deleted"]["all_time"]["buckets"]) %>
+</div>

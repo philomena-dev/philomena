@@ -1,0 +1,66 @@
+<% 
+  route = fn p -> ~p"/moderation_logs?#{p}" end
+  pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @moderation_logs, route: route, conn: @conn)
+%>
+<h1>
+  Listing Moderation Logs
+</h1>
+<block>
+  <div class="block__header">
+    <div class="page__pagination">
+      <%= pagination %>
+    </div>
+  </div>
+</block>
+<table>
+  <thead>
+    <tr>
+      <th>
+        Moderator
+      </th>
+      <th>
+        Type
+      </th>
+      <th>
+        Body
+      </th>
+      <th>
+        Creation time
+      </th>
+      <th>
+        Actions
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for log <- @moderation_logs do %>
+      <tr>
+        <td>
+          <%= render(PhilomenaWeb.UserAttributionView, "_user.html", object: %{user: log.user}, conn: @conn) %>
+        </td>
+        <td>
+          <%= log.type %>
+        </td>
+        <td>
+          <%= log.body %>
+        </td>
+        <td>
+          <%= pretty_time(log.created_at) %>
+        </td>
+        <td>
+          <%= link to: log.subject_path do %>
+            <i class="fa fa-eye"></i>
+            View subject
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<block>
+  <div class="block__header">
+    <div class="page__pagination">
+      <%= pagination %>
+    </div>
+  </div>
+</block>

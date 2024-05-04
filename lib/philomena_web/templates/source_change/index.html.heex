@@ -1,0 +1,76 @@
+<div class="block">
+  <div class="block__header">
+    <%= @pagination %>
+  </div>
+  <div class="block__content">
+    <table class="table">
+      <thead>
+        <tr>
+          <th colspan="2">
+            Image
+          </th>
+          <th>
+            Source
+          </th>
+          <th>
+            Action
+          </th>
+          <th>
+            Timestamp
+          </th>
+          <th>
+            User
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for source_change <- @source_changes do %>
+          <tr>
+            <td class="center">
+              <%= link(source_change.image_id, to: ~p"/images/#{source_change.image}") %>
+            </td>
+            <td class="center">
+              <%= render(PhilomenaWeb.ImageView, "_image_container.html", image: source_change.image, size: :thumb_tiny, conn: @conn) %>
+            </td>
+            <td>
+              <%= source_change.source_url %>
+            </td>
+            <%= if source_change.added do %>
+              <td class="success">
+                Added
+              </td>
+            <% else %>
+              <td class="danger">
+                Removed
+              </td>
+            <% end %>
+            <td>
+              <%= pretty_time(source_change.created_at) %>
+            </td>
+            <td class={user_column_class(source_change)}>
+              <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: source_change, conn: @conn) %>
+              <%= if can?(@conn, :show, :ip_address) do %>
+                <%= link_to_ip(@conn, source_change.ip) %>
+                <%= link_to_fingerprint(@conn, source_change.fingerprint) %>
+              <% end %>
+              <%= if staff?(source_change) do %>
+                <br />
+                <small>
+                  <strong>
+                    Stop!
+                  </strong>
+                  This user is a staff member.
+                  <br />
+                  Ask them before reverting their changes.
+                </small>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="block__header">
+    <%= @pagination %>
+  </div>
+</div>

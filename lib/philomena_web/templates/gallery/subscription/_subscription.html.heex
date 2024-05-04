@@ -1,0 +1,42 @@
+<% 
+  watch_path = ~p"/galleries/#{@gallery}/subscription"
+
+  watch_class =
+    if @watching do
+      "hidden"
+    else
+      ""
+    end
+
+  unwatch_path = ~p"/galleries/#{@gallery}/subscription"
+
+  unwatch_class =
+    if @watching do
+      ""
+    else
+      "hidden"
+    end
+%>
+<%= if @conn.assigns.current_user do %>
+  <span class="js-subscription-target">
+    <a class={"js-subscription-link #{watch_class}"} data-method="post" data-remote="true" href={watch_path}>
+      <i class="fa fa-bell"></i>
+      <span class="hide-mobile">
+        Subscribe
+      </span>
+    </a>
+    <a class={"js-subscription-link #{unwatch_class}"} data-method="delete" data-remote="true" href={unwatch_path}>
+      <i class="fa fa-bell-slash"></i>
+      <span class="hide-mobile">
+        Unsubscribe
+      </span>
+    </a>
+  </span>
+<% else %>
+  <a href={~p"/sessions/new"}>
+    <i class="fa fa-bell"></i>
+    <span class="hide-mobile">
+      Subscribe
+    </span>
+  </a>
+<% end %>

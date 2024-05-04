@@ -1,0 +1,4 @@
+<h1>
+  Edit Link
+</h1>
+<%= render(PhilomenaWeb.Profile.ArtistLinkView, "_form.html", conn: @conn, changeset: @changeset, tag_name: tag_name(@artist_link), action: ~p"/profiles/#{@artist_link.user}/artist_links/#{@artist_link}") %>

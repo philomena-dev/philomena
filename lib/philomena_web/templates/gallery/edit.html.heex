@@ -1,0 +1,4 @@
+<h1>
+  Editing Gallery
+</h1>
+<%= render(PhilomenaWeb.GalleryView, "_form.html", conn: @conn, changeset: @changeset, action: ~p"/galleries/#{@gallery}") %>

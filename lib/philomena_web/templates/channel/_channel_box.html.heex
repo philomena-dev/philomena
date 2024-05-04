@@ -1,0 +1,56 @@
+<% link_class = "media-box__header media-box__header--channel media-box__header--link" %>
+<div class="media-box">
+  <a class="media-box__header media-box__header--channel media-box__header--link" href={~p"/channels/#{@channel}"} title={@channel.title}>
+    <%= @channel.title || @channel.short_name %>
+  </a>
+  <div class="media-box__header media-box__header--channel">
+    <%= if @channel.is_live do %>
+      <div class="spacing-right label label--success label--block label--small">
+        <strong>
+          LIVE NOW
+        </strong>
+      </div>
+      <%= @channel.viewers %>
+      <%= pluralize("viewer", "viewers", @channel.viewers) %>
+    <% else %>
+      <div class="label label--danger label--block label--small">
+        <strong>
+          OFF AIR
+        </strong>
+      </div>
+    <% end %>
+  </div>
+  <%= if @channel.nsfw do %>
+    <div class="media-box__overlay">
+      NSFW
+    </div>
+  <% end %>
+  <div class="media-box__content media-box__content--channel">
+    <a href={~p"/channels/#{@channel}"}>
+      <div class="image-constrained media-box__content--channel">
+        <img alt={@channel.title} src={channel_image(@channel)} />
+      </div>
+    </a>
+  </div>
+  <%= if @channel.associated_artist_tag do %>
+    <a class={link_class} href={~p"/tags/#{@channel.associated_artist_tag}"}>
+      <i class="fa fa-fw fa-tags"></i>
+      <%= @channel.associated_artist_tag.name %>
+    </a>
+  <% else %>
+    <div class="media-box__header media-box__header--channel">
+      No artist tag
+    </div>
+  <% end %>
+  <%= if can?(@conn, :edit, @channel) do %>
+    <a class={link_class} href={~p"/channels/#{@channel}/edit"}>
+      <i class="fas fa-fw fa-edit"></i>
+      Edit
+    </a>
+    <a class={link_class} data-confirm="Are you really, really sure?" data-method="delete" href={~p"/channels/#{@channel}"}>
+      <i class="fas fa-fw fa-trash"></i>
+      Delete
+    </a>
+  <% end %>
+  <%= render(PhilomenaWeb.Channel.SubscriptionView, "_subscription.html", conn: @conn, watching: @subscriptions[@channel.id], channel: @channel) %>
+</div>

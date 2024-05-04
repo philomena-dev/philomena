@@ -1,0 +1,124 @@
+<div class="block block__header">
+  <div class="flex flex--wrap image-metabar center--layout" id={"image_meta_#{@image.id}"}>
+    <div class="stretched-mobile-links">
+      <a class="js-prev" href={~p"/images/#{@image}/navigate?#{[rel: "prev"] ++ scope(@conn)}"} title="Previous Image (j)">
+        <i class="fa fa-chevron-left"></i>
+      </a>
+      <a class="js-up" href={~p"/images/#{@image}/navigate?#{[rel: "find"] ++ scope(@conn)}"} title="Find this image in the global image list (i)">
+        <i class="fa fa-chevron-up"></i>
+      </a>
+      <a class="js-next" href={~p"/images/#{@image}/navigate?#{[rel: "next"] ++ scope(@conn)}"} title="Next Image (k)">
+        <i class="fa fa-chevron-right"></i>
+      </a>
+      <a class="js-rand" href={~p"/images/random?#{scope(@conn)}"} title="Random (r)">
+        <i class="fa fa-random"></i>
+      </a>
+    </div>
+    <div class="stretched-mobile-links">
+      <a class="interaction--fave" data-image-id={@image.id} href="#" rel="nofollow">
+        <span class="favorites" data-image-id={@image.id} title="Favorites">
+          <%= @image.faves_count %>
+        </span>
+        <span class="fave-span" title="Fave!">
+          <i class="fa fa-star"></i>
+        </span>
+      </a>
+      <a class="interaction--upvote" data-image-id={@image.id} href="#" rel="nofollow">
+        <%= if show_vote_counts?(@conn.assigns.current_user) do %>
+          <span class="upvotes" data-image-id={@image.id} title="Upvotes">
+            <%= @image.upvotes_count %>
+          </span>
+        <% end %>
+        <span class="upvote-span" title="Yay!">
+          <i class="fa fa-arrow-up"></i>
+        </span>
+      </a>
+      <span class="score block__header__title" data-image-id={@image.id}>
+        <%= @image.score %>
+      </span>
+      <a class="interaction--downvote" data-image-id={@image.id} href="#" rel="nofollow">
+        <span class="downvote-span" title="Neigh!">
+          <i class="fa fa-arrow-down"></i>
+        </span>
+        <%= if show_vote_counts?(@conn.assigns.current_user) do %>
+          <span class="downvotes" data-image-id={@image.id} title="Downvotes">
+            <%= @image.downvotes_count %>
+          </span>
+        <% end %>
+      </a>
+      <a class="interaction--comments" href="#comments" title="Comments">
+        <i class="fa fa-comments"></i>
+        <span class="comments_count" data-image-id={@image.id}>
+          <%= @image.comments_count %>
+        </span>
+      </a>
+      <a class="interaction--hide" data-image-id={@image.id} href="#" rel="nofollow">
+        <span class="hide-span" title="Hide">
+          <i class="fa fa-eye-slash"></i>
+        </span>
+      </a>
+    </div>
+    <div class="stretched-mobile-links">
+      <%= render(PhilomenaWeb.Image.SubscriptionView, "_subscription.html", watching: @watching, image: @image, conn: @conn) %>
+      <%= render(PhilomenaWeb.ImageView, "_add_to_gallery_dropdown.html", image: @image, user_galleries: @user_galleries, conn: @conn) %>
+      <a href={~p"/images/#{@image}/related"} title="Related Images">
+        <i class="fa fa-sitemap"></i>
+        <span class="hide-limited-desktop hide-mobile">
+          Related
+        </span>
+      </a>
+    </div>
+    <div class="stretched-mobile-links">
+      <a href={pretty_url(@image, false, false)} rel="nofollow" title="View (tags in filename)">
+        <i class="fa fa-eye"></i>
+        View
+      </a>
+      <a href={pretty_url(@image, true, false)} rel="nofollow" title="View (no tags in filename)">
+        <i class="fa fa-eye"></i>
+        VS
+      </a>
+      <a href={pretty_url(@image, false, true)} rel="nofollow" title="Download (tags in filename)">
+        <i class="fa fa-download"></i>
+        Download
+      </a>
+      <a href={pretty_url(@image, true, true)} title="Download (no tags in filename)">
+        <i class="fa fa-download"></i>
+        DS
+      </a>
+    </div>
+  </div>
+  <div class="image-metabar flex flex--wrap block__header--user-credit center--layout" id="extrameta">
+    <div>
+      Uploaded
+      <%= pretty_time(@image.created_at) %>
+      <%= render(PhilomenaWeb.ImageView, "_uploader.html", assigns) %>
+    </div>
+    <span class="image-size">
+      &nbsp;
+      <%= @image.image_width %>
+      x
+      <%= @image.image_height %>
+      <%= if not is_nil(@image.image_duration) and @image.image_is_animated and @image.image_duration > 0 do %>
+        <span class="image-size" title={@image.image_duration}>
+          &nbsp;
+          <% dur = trunc(@image.image_duration) %>
+          <% ms = trunc((@image.image_duration - dur) * 100) %>
+          <% {mm, ss} = {div(dur, 60), rem(dur, 60)} %>
+          <%= :io_lib.format("~2..0B:~2..0B.~2..0B", [mm, ss, ms]) %>
+        </span>
+      <% end %>
+      <%= String.upcase(to_string(@image.image_format)) %>
+      <% size_kb = div(@image.image_size, 1000) %>
+      <% size_mb = Float.round(size_kb / 1000.0, 2) %>
+      <span title={"#{size_kb} kB"}>
+        <%= if size_kb <= 1000 do %>
+          <%= size_kb %>
+          kB
+        <% else %>
+          <%= size_mb %>
+          MB
+        <% end %>
+      </span>
+    </span>
+  </div>
+</div>

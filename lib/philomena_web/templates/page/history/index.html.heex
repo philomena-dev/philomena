@@ -1,0 +1,56 @@
+<h1>
+  Revision history for
+  <%= link(@static_page.title, to: ~p"/pages/#{@static_page}") %>
+</h1>
+<table class="table">
+  <thead>
+    <tr>
+      <th>
+        User
+      </th>
+      <th>
+        Date
+      </th>
+      <th>
+        Body
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for version <- @versions do %>
+      <tr>
+        <td>
+          <%= link(version.user.name, to: ~p"/profiles/#{version.user}") %>
+        </td>
+        <td>
+          <%= pretty_time(version.created_at) %>
+        </td>
+        <td class="static-page__diff">
+          <%= for diff <- version.difference do %>
+            <%= case diff do %>
+              <% {:eq, lines} -> %>
+                <%= for line <- lines do %>
+                  <%= line %>
+                  <%= "\n" %>
+                <% end %>
+              <% {:ins, lines} -> %>
+                <ins class="differ">
+                  <%= for line <- lines do %>
+                    <%= line %>
+                    <%= "\n" %>
+                  <% end %>
+                </ins>
+              <% {:del, lines} -> %>
+                <del class="differ">
+                  <%= for line <- lines do %>
+                    <%= line %>
+                    <%= "\n" %>
+                  <% end %>
+                </del>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

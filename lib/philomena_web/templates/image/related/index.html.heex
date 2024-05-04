@@ -1,0 +1,16 @@
+<div class="block" id="imagelist-container">
+  <div class="block__header">
+    <div class="block__header__title hide-mobile">
+      Viewing related images for
+      <strong>
+        #
+        <%= @image.id %>
+      </strong>
+    </div>
+  </div>
+  <div class="block__content js-resizable-media-container">
+    <%= for image <- @images do %>
+      <%= render(PhilomenaWeb.ImageView, "_image_box.html", image: image, link: ~p"/images/#{image}", size: :thumb, conn: @conn) %>
+    <% end %>
+  </div>
+</div>

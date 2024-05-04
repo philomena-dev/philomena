@@ -1,0 +1,28 @@
+<h2>
+  Listing Forums
+</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th>
+        Name
+      </th>
+      <th>
+        Options
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for forum <- @forums do %>
+      <tr>
+        <td>
+          <%= link(forum.name, to: ~p"/forums/#{forum}") %>
+        </td>
+        <td class="text-right">
+          <%= link("Edit", to: ~p"/admin/forums/#{forum}/edit") %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<%= link("New Forum", to: ~p"/admin/forums/new") %>

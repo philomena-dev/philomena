@@ -1,0 +1,27 @@
+<div class="block">
+  <div class="block__header flex">
+    <span class="block__header__title">
+      <i class="fas fa-file-lines"></i>
+      Description
+    </span>
+    <%= if can?(@conn, :edit_description, @image) do %>
+      <div class="block__header__buttons">
+        <a accessKey="d" class="button button--inline" data-click-focus="#description" data-click-hide=".image-description" data-click-show="#description-form" href="#" id="edit-description" title="Edit description">
+          <i class="fas fa-edit"></i>
+          Edit
+        </a>
+      </div>
+    <% end %>
+  </div>
+  <div class="block__content">
+    <p>
+      <%= if String.length(@image.description) > 0 do %>
+        <%= @body %>
+      <% else %>
+        <em>
+          No description provided.
+        </em>
+      <% end %>
+    </p>
+  </div>
+</div>

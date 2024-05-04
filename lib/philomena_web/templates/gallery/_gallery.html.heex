@@ -1,0 +1,12 @@
+<% link = ~p"/galleries/#{@gallery}" %>
+<div class="media-box">
+  <a class="media-box__header media-box__header--link" href={link} title={@gallery.title}>
+    <%= @gallery.title %>
+    <div class="media-box__overlay">
+      <%= @gallery.spoiler_warning %>
+    </div>
+  </a>
+  <div class="media-box__content media-box__content--large">
+    <%= render(PhilomenaWeb.ImageView, "_image_container.html", image: @gallery.thumbnail, size: :thumb, conn: @conn, link: link) %>
+  </div>
+</div>

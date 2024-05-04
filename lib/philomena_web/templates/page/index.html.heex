@@ -1,0 +1,23 @@
+<h1>
+  Pages
+</h1>
+<table class="table">
+  <thead>
+    <tr>
+      <th>
+        Title
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for static_page <- @static_pages do %>
+      <tr>
+        <td>
+          <%= link(static_page.title, to: ~p"/pages/#{static_page}") %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<br />
+<%= link("New static page", to: ~p"/pages/new") %>

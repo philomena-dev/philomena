@@ -1,0 +1,52 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>
+        Oops, something went wrong! Please check the errors below.
+      </p>
+    </div>
+  <% end %>
+  <div class="field">
+    <div class="field">
+      <p>
+        <label for="tag_name">
+          Artist Link validation is intended for artists. Validating your link will give you control over your content on the site, allowing you to create a
+          <a href="/commissions">
+            commissions
+          </a>
+          listing and request takedowns or DNPs. Do not request a link if the source contains no artwork which you have created.
+        </label>
+      </p>
+      <%= text_input(f, :tag_name, value: assigns[:tag_name], class: "input", autocomplete: "off", placeholder: "artist:your-name", data: [ac: "true", ac_min_length: "3", ac_source: "/autocomplete/tags?term="]) %>
+      <%= error_tag(f, :tag) %>
+    </div>
+  </div>
+  <div class="field">
+    <label for="uri">
+      URL of your art webpage (may be your Derpibooru profile page if you have no other sources)
+    </label>
+    <%= url_input(f, :uri, class: "input input--wide", placeholder: "https://www.deviantart.com/your-name", required: true) %>
+    <%= error_tag(f, :uri) %>
+  </div>
+  <% options = [{"Visible to everyone", true}, {"Visible only to site staff", false}] %>
+  <div class="field">
+    <%= select(f, :public, options, class: "input", autocomplete: "off") %>
+  </div>
+  <h4>
+    Instructions
+  </h4>
+  <p>
+    <strong>
+      Review details carefully as only site staff can edit later.
+    </strong>
+  </p>
+  <p>
+    <strong>
+      For quick results, put the LINKVALIDATION code on your linked webpage after submission.
+    </strong>
+    We'll message you there otherwise.
+  </p>
+  <div class="actions">
+    <%= submit("Submit", class: "button") %>
+  </div>
+<% end %>

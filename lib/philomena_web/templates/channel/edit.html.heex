@@ -1,0 +1,4 @@
+<h1>
+  Editing Channel
+</h1>
+<%= render(PhilomenaWeb.ChannelView, "_form.html", changeset: @changeset, action: ~p"/channels/#{@channel}", conn: @conn) %>

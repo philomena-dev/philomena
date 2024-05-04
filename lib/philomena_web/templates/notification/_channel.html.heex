@@ -1,0 +1,17 @@
+<div class="flex flex--centered flex__grow">
+  <div>
+    <strong>
+      <%= link(@notification.actor.title, to: ~p"/channels/#{@notification.actor}") %>
+    </strong>
+    <%= @notification.action %>
+    <%= pretty_time(@notification.updated_at) %>
+  </div>
+</div>
+<div class="flex flex--centered flex--no-wrap">
+  <a class="button button--separate-right" data-fetchcomplete-hide={"#notification-#{@notification.id}"} data-method="post" data-remote="true" href={~p"/channels/#{@notification.actor}/read"} title="Delete">
+    <i class="fa fa-trash"></i>
+  </a>
+  <a class="button" data-fetchcomplete-hide={"#notification-#{@notification.id}"} data-method="delete" data-remote="true" href={~p"/channels/#{@notification.actor}/subscription"} title="Unsubscribe">
+    <i class="fa fa-bell-slash"></i>
+  </a>
+</div>

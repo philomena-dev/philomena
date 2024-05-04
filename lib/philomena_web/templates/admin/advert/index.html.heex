@@ -1,0 +1,99 @@
+<% route = fn p -> ~p"/admin/adverts?#{p}" end %>
+<% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @adverts, route: route) %>
+<div class="block">
+  <div class="block__header">
+    <a href={~p"/admin/adverts/new"}>
+      <i class="fa fa-plus"></i>
+      New advert
+    </a>
+    <%= pagination %>
+  </div>
+  <div class="block__content">
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="table--adverts__image">
+            Image
+          </th>
+          <th>
+            Ad Information
+          </th>
+          <th>
+            Start
+          </th>
+          <th>
+            Finish
+          </th>
+          <th>
+            Enabled
+          </th>
+          <th>
+            Restriction
+          </th>
+          <th>
+            Statistics
+          </th>
+          <th>
+            Options
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for advert <- @adverts do %>
+          <tr>
+            <td>
+              <img src={advert_image_url(advert)} />
+            </td>
+            <td>
+              <strong>
+                URL:
+              </strong>
+              <%= link(advert.link, to: advert.link) %>
+              <br />
+              <strong>
+                Title:
+              </strong>
+              <em>
+                <%= advert.title %>
+              </em>
+              <%= if present?(advert.notes) do %>
+                <br />
+                <strong>
+                  Notes:
+                </strong>
+                <%= advert.notes %>
+              <% end %>
+            </td>
+            <td class={time_column_class(advert.start_date)}>
+              <%= pretty_time(advert.start_date) %>
+            </td>
+            <td class={time_column_class(advert.finish_date)}>
+              <%= pretty_time(advert.finish_date) %>
+            </td>
+            <td>
+              <%= live_text(advert) %>
+            </td>
+            <td>
+              <%= advert.restrictions %>
+            </td>
+            <td>
+              Impressions:
+              <%= advert.impressions %>
+              <br />
+              Clicks:
+              <%= advert.clicks %>
+            </td>
+            <td>
+              <%= link("Edit", to: ~p"/admin/adverts/#{advert}/edit") %>
+              &bull;
+              <%= link("Destroy", to: ~p"/admin/adverts/#{advert}", data: [confirm: "Are you really, really sure?", method: "delete"]) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="block__header block__header--light">
+    <%= pagination %>
+  </div>
+</div>

@@ -1,0 +1,4 @@
+<h1>
+  Editing award
+</h1>
+<%= render(PhilomenaWeb.Profile.AwardView, "_form.html", changeset: @changeset, badges: @badges, action: ~p"/profiles/#{@user}/awards/#{@award}", conn: @conn) %>

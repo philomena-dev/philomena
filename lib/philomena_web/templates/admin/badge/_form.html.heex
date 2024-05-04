@@ -1,0 +1,43 @@
+<%= form_for @changeset, @action, [multipart: true], fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>
+        Oops, something went wrong! Please check the errors below.
+      </p>
+    </div>
+  <% end %>
+  <div class="field">
+    <%= label(f, :title, "Badge name:") %>
+    <%= text_input(f, :title, class: "input input--wide", placeholder: "Name", required: true) %>
+    <%= error_tag(f, :title) %>
+  </div>
+  <div class="field">
+    <%= label(f, :description, "An optional short description:") %>
+    <%= text_input(f, :description, class: "input input--wide", placeholder: "Description") %>
+    <%= error_tag(f, :description) %>
+  </div>
+  <div class="field">
+    <%= checkbox(f, :disable_award, class: "checkbox") %>
+    <%= label(f, :disable_award, "Prevent image from appearing in \"Badge to award\" list") %>
+  </div>
+  <div class="field">
+    <%= checkbox(f, :priority, class: "checkbox") %>
+    <%= label(f, :priority, "Displays before badges that don't have this checkbox checked") %>
+  </div>
+  <%= if @changeset.data.__meta__.state != :loaded do %>
+    <h4>
+      Image
+    </h4>
+    <div class="field">
+      <%= label(f, :image, "Upload SVG image:") %>
+      <%= file_input(f, :image, class: "input input--wide") %>
+      <%= error_tag(f, :image) %>
+      <%= error_tag(f, :image_mime_type) %>
+    </div>
+  <% else %>
+    <div class="field">
+      <%= link("Change image", to: ~p"/admin/badges/#{@changeset.data}/image/edit", class: "button") %>
+    </div>
+  <% end %>
+  <%= submit("Save Badge", class: "button", data: [disable_with: raw("Saving&hellip;")]) %>
+<% end %>

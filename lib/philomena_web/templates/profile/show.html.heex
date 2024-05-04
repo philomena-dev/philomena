@@ -1,0 +1,269 @@
+<div class="profile-top">
+  <div class="profile-top__avatar">
+    <% avatar = render(PhilomenaWeb.UserAttributionView, "_user_avatar.html", object: %{user: @user}, class: "avatar--125px") %>
+    <%= if current?(@user, @conn.assigns.current_user) do %>
+      <%= link(avatar, to: ~p"/avatar/edit?#{[profile: true]}", title: "Change avatar") %>
+    <% else %>
+      <%= avatar %>
+    <% end %>
+  </div>
+  <div class="profile-top__name-and-links">
+    <div>
+      <h1 class="profile-top__name-header">
+        <%= @user.name %>
+        's profile
+      </h1>
+      <%= render(PhilomenaWeb.UserAttributionView, "_user_title.html", object: %{user: @user}, large: true) %>
+      <br />
+      <%= if can?(@conn, :edit_description, @user) do %>
+        <%= link("Edit Personal Title", to: ~p"/profiles/#{@user}/description/edit") %>
+        <br />
+      <% end %>
+      <span>
+        Member since
+        <%= pretty_time(@user.created_at) %>
+      </span>
+    </div>
+    <div class="profile-top__options">
+      <ul class="profile-top__options__column">
+        <li>
+          <%= link("Send message", to: ~p"/conversations/new?#{[recipient: @user.name]}") %>
+        </li>
+        <li>
+          <%= link("Our conversations", to: ~p"/conversations?#{[with: @user.id]}") %>
+        </li>
+        <li>
+          <%= link("Report this user", to: ~p"/profiles/#{@user}/reports/new") %>
+        </li>
+      </ul>
+      <ul class="profile-top__options__column">
+        <li>
+          <%= link("Uploads", to: ~p"/search?#{[q: "uploader_id:#{@user.id}"]}") %>
+        </li>
+        <li>
+          <%= link("Comments", to: ~p"/comments?#{[cq: "user_id:#{@user.id}"]}") %>
+        </li>
+        <li>
+          <%= link("Posts", to: ~p"/posts?#{[pq: "user_id:#{@user.id}"]}") %>
+        </li>
+        <%= if current?(@user, @conn.assigns.current_user) do %>
+          <li>
+            <%= link("My reports", to: ~p"/reports") %>
+          </li>
+        <% end %>
+      </ul>
+      <ul class="profile-top__options__column">
+        <li>
+          <%= link("Favorites", to: ~p"/search?#{[q: "faved_by_id:#{@user.id}"]}") %>
+        </li>
+        <li>
+          <%= link("Tag changes", to: ~p"/profiles/#{@user}/tag_changes") %>
+        </li>
+        <li>
+          <%= link("Source changes", to: ~p"/profiles/#{@user}/source_changes") %>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+<%= if can_index_user?(@conn) do %>
+  <div class="js-staff-action">
+    <%= render(PhilomenaWeb.ProfileView, "_admin_block.html", assigns) %>
+  </div>
+<% end %>
+<%= if @forced && (current?(@user, @conn.assigns.current_user) or can_index_user?(@conn)) do %>
+  <div class="block">
+    <i class="fa fa-fw fa-filter"></i>
+    <strong class="comment_deleted">
+      Forced Filter:
+    </strong>
+    <%= link(@forced.name, to: ~p"/filters/#{@forced}") %>
+  </div>
+<% end %>
+<%= if (current?(@user, @conn.assigns.current_user) or can?(@conn, :index, Philomena.Bans.User)) and Enum.any?(@bans) do %>
+  <div class="block">
+    <div class="block__header--single-item">
+      Ban History
+    </div>
+    <div class="block__content">
+      <%= render(PhilomenaWeb.BanView, "_bans.html", bans: @bans, conn: @conn) %>
+    </div>
+  </div>
+<% end %>
+<div class="column-layout">
+  <div class="column-layout__left">
+    <div class="block">
+      <div class="block__header">
+        <span class="block__header__title">
+          Commissions
+        </span>
+      </div>
+      <%= render(PhilomenaWeb.ProfileView, "_commission.html", user: @user, commission_information: @commission_information, conn: @conn) %>
+    </div>
+    <div class="block">
+      <%= if current?(@user, @conn.assigns.current_user) or manages_links?(@conn, @user) do %>
+        <a class="block__header--single-item" href={~p"/profiles/#{@user}/artist_links/new"}>
+          Artist Links
+        </a>
+      <% else %>
+        <div class="block__header">
+          <span class="block__header__title">
+            Artist Links
+          </span>
+        </div>
+      <% end %>
+      <%= for link <- @user.verified_links, should_see_link?(@conn, @user, link) do %>
+        <% 
+          watchers =
+            if link.tag do
+              @watcher_counts[link.tag.id] || 0
+            else
+              0
+            end
+        %>
+        <div class={"block__content alternating-color break-word #{link_block_class(link)}"}>
+          <div class="center">
+            <%= if link.tag do %>
+              <div class="tag_list">
+                <%= render(PhilomenaWeb.TagView, "_tag.html", tag: link.tag, conn: @conn) %>
+              </div>
+            <% end %>
+            <%= link(link.uri, to: link.uri) %>
+            <%= if current?(@user, @conn.assigns.current_user) or manages_links?(@conn, @user) do %>
+              <br />
+              Watched by
+              <%= watchers %>
+              <%= pluralize("user", "users", watchers) %>
+            <% end %>
+            <%= if manages_links?(@conn, @user) do %>
+              <br />
+              <%= if link.public do %>
+                Public
+              <% else %>
+                Hidden
+              <% end %>
+              &bull;
+              <a href={~p"/profiles/#{@user}/artist_links/#{link}/edit"}>
+                Edit
+              </a>
+              &bull;
+              <a data-method="post" href={~p"/admin/artist_links/#{link}/reject"}>
+                Reject
+              </a>
+            <% else %>
+              <%= unless link.public do %>
+                <br />
+                Hidden
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <div class="block">
+      <%= if manages_awards?(@conn) and not hide_staff_tools?(@conn) do %>
+        <a class="block__header--single-item" href={~p"/profiles/#{@user}/awards/new"}>
+          Badges
+        </a>
+      <% else %>
+        <div class="block__header">
+          <span class="block__header__title">
+            Badges
+          </span>
+        </div>
+      <% end %>
+      <%= for award <- award_order(@user.awards) do %>
+        <div class="block__content flex flex--centered flex--center-distributed alternating-color no-overflow" title={award.label}>
+          <div class="flex__grow center">
+            <div class="badge">
+              <%= badge_image(award.badge, alt: award.label, width: "32", height: "32") %>
+            </div>
+            <br />
+            <%= award_title(award) %>
+          </div>
+          <div class="flex__grow center">
+            <%= pretty_time(award.awarded_on) %>
+            <%= if manages_awards?(@conn) do %>
+              <%= user_abbrv(award.awarded_by) %>
+            <% end %>
+          </div>
+          <%= if manages_awards?(@conn) do %>
+            <div class="flex__grow center">
+              <a data-confirm="Are you really, really sure?" data-method="delete" href={~p"/profiles/#{@user}/awards/#{award}"}>
+                Remove
+              </a>
+              <br />
+              <a href={~p"/profiles/#{@user}/awards/#{award}/edit"}>
+                Edit
+              </a>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+    <div class="block">
+      <div class="block__header">
+        <%= if can?(@conn, :edit_description, @user) do %>
+          <a class="block__header--single-item" href={~p"/profiles/#{@user}/description/edit"}>
+            About Me
+          </a>
+        <% else %>
+          <span class="block__header__title">
+            About Me
+          </span>
+        <% end %>
+      </div>
+      <%= render(PhilomenaWeb.ProfileView, "_about_me.html", user: @user, about_me: @about_me, conn: @conn) %>
+    </div>
+    <%= if can_read_mod_notes?(@conn) and not hide_staff_tools?(@conn) do %>
+      <div class="block">
+        <a class="block__header--single-item" href={~p"/profiles/#{@user}/details"}>
+          Mod Notes
+        </a>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>
+                Note
+              </th>
+              <th>
+                Created
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <%= for {body, mod_note} <- @mod_notes do %>
+              <tr>
+                <td>
+                  <%= body %>
+                </td>
+                <td>
+                  <%= pretty_time(mod_note.created_at) %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+    <%= if can_index_user?(@conn) do %>
+      <div class="block">
+        <a class="block__header--single-item" href={~p"/profiles/#{@user}/scratchpad/edit"}>
+          Moderation Scratchpad
+        </a>
+        <div class="block__content profile-about">
+          <%= @scratchpad %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  <div class="column-layout__main">
+    <%= render(PhilomenaWeb.ProfileView, "_statistics.html", user: @user, statistics: @statistics, conn: @conn) %>
+    <%= render(PhilomenaWeb.ProfileView, "_recent_images.html", title: "Recent Artwork", images: @recent_artwork, view_all_path: ~p"/search?#{[q: tag_disjunction(@tags)]}", conn: @conn) %>
+    <%= render(PhilomenaWeb.ProfileView, "_recent_images.html", title: "Recent Uploads", images: @recent_uploads, view_all_path: ~p"/search?#{[q: "uploader_id:#{@user.id}"]}", conn: @conn) %>
+    <%= render(PhilomenaWeb.ProfileView, "_recent_images.html", title: "Recent Favorites", images: @recent_faves, view_all_path: ~p"/search?#{[q: "faved_by_id:#{@user.id}"]}", conn: @conn) %>
+    <%= render(PhilomenaWeb.ProfileView, "_recent_galleries.html", galleries: @recent_galleries, user: @user, conn: @conn) %>
+    <%= render(PhilomenaWeb.ProfileView, "_recent_comments.html", comments: @recent_comments, user: @user, conn: @conn) %>
+    <%= render(PhilomenaWeb.ProfileView, "_recent_posts.html", posts: @recent_posts, user: @user, conn: @conn) %>
+  </div>
+</div>

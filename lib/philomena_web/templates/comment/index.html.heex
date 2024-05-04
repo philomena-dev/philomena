@@ -1,0 +1,233 @@
+<h1>
+  Comments
+</h1>
+<%= form_for :comments, ~p"/comments", [method: "get", class: "hform", enforce_utf8: false], fn f -> %>
+  <div class="field">
+    <%= text_input(f, :cq, name: :cq, value: @conn.params["cq"], class: "input hform__text", placeholder: "Search comments", autocapitalize: "none") %>
+    <%= submit("Search", class: "hform__button button") %>
+  </div>
+  <div class="fieldlabel">
+    For more information, see the
+    <a href="/pages/search_syntax">
+      search syntax documentation
+    </a>
+    . Search results are sorted by creation date.
+  </div>
+<% end %>
+<h2>
+  Search Results
+</h2>
+<%= cond do %>
+  <% Enum.any?(@comments) -> %>
+    <% route = fn p -> ~p"/comments?#{p}" end %>
+    <% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @comments, route: route, params: [cq: @conn.params["cq"]], conn: @conn) %>
+    <%= for {body, comment} <- @comments, comment.image.hidden_from_users == false do %>
+      <%= render(PhilomenaWeb.CommentView, "_comment_with_image.html", body: body, comment: comment, conn: @conn) %>
+    <% end %>
+    <div class="block">
+      <div class="block__header block__header--light page__header">
+        <div class="page__pagination">
+          <%= pagination %>
+        </div>
+        <div class="page__info">
+          <span class="block__header__title">
+            <%= render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @comments, conn: @conn) %>
+          </span>
+        </div>
+      </div>
+    </div>
+  <% assigns[:error] -> %>
+    <p>
+      Oops, there was an error evaluating your query:
+    </p>
+    <pre>
+      <%= assigns[:error] %>
+    </pre>
+  <% true -> %>
+    <p>
+      No comments found!
+    </p>
+<% end %>
+<h3>
+  Default search
+</h3>
+<p>
+  If you do not specify a field to search over, the search engine will
+  search for comments with a body that is similar to the query's
+  <em>
+    word stems
+  </em>
+  . For example, comments containing the words
+  <code>
+    winged humanization
+  </code>
+  ,
+  <code>
+    wings
+  </code>
+  , and
+  <code>
+    spread wings
+  </code>
+  would all be found by a search for
+  <code>
+    wing
+  </code>
+  , but
+  <code>
+    sewing
+  </code>
+  would not be.
+</p>
+<h3>
+  Allowed fields
+</h3>
+<table class="table">
+  <thead>
+    <tr>
+      <th>
+        Field Selector
+      </th>
+      <th>
+        Type
+      </th>
+      <th>
+        Description
+      </th>
+      <th>
+        Example
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <code>
+          author
+        </code>
+      </td>
+      <td>
+        Literal
+      </td>
+      <td>
+        Matches the author of this comment. Anonymous authors will never match this term.
+      </td>
+      <td>
+        <code>
+          <%= link("author:Joey", to: ~p"/comments?#{[cq: "author:Joey"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          body
+        </code>
+      </td>
+      <td>
+        Full Text
+      </td>
+      <td>
+        Matches the body of this comment. This is the default field.
+      </td>
+      <td>
+        <code>
+          <%= link("body:test", to: ~p"/comments?#{[cq: "body:test"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          created_at
+        </code>
+      </td>
+      <td>
+        Date/Time Range
+      </td>
+      <td>
+        Matches the creation time of this comment.
+      </td>
+      <td>
+        <code>
+          <%= link("created_at:2015", to: ~p"/comments?#{[cq: "created_at:2015"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          id
+        </code>
+      </td>
+      <td>
+        Numeric Range
+      </td>
+      <td>
+        Matches the numeric surrogate key for this comment.
+      </td>
+      <td>
+        <code>
+          <%= link("id:1000000", to: ~p"/comments?#{[cq: "id:1000000"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          image_id
+        </code>
+      </td>
+      <td>
+        Literal
+      </td>
+      <td>
+        Matches the numeric surrogate key for the image this comment belongs to.
+      </td>
+      <td>
+        <code>
+          <%= link("image_id:1000000", to: ~p"/comments?#{[cq: "image_id:1000000"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          my
+        </code>
+      </td>
+      <td>
+        Meta
+      </td>
+      <td>
+        <code>
+          my:comments
+        </code>
+        matches comments you have posted if you are signed in.
+      </td>
+      <td>
+        <code>
+          <%= link("my:comments", to: ~p"/comments?#{[cq: "my:comments"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          user_id
+        </code>
+      </td>
+      <td>
+        Literal
+      </td>
+      <td>
+        Matches comments with the specified user_id. Anonymous users will never match this term.
+      </td>
+      <td>
+        <code>
+          <%= link("user_id:211190", to: ~p"/comments?#{[cq: "user_id:211190"]}") %>
+        </code>
+      </td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,80 @@
+<h1>
+  Viewing full filter details for
+  <%= @filter.name %>
+</h1>
+<div class="filter">
+  <div class="filter-options">
+    <ul>
+      <li>
+        Spoilers
+        <%= number_with_delimiter(length(@filter.spoilered_tag_ids)) %>
+        <%= pluralize("tag", "tags", length(@filter.spoilered_tag_ids)) %>
+        and hides
+        <%= number_with_delimiter(length(@filter.hidden_tag_ids)) %>
+        <%= pluralize("tag", "tags", length(@filter.hidden_tag_ids)) %>
+      </li>
+      <%= if @filter.id == @conn.assigns.current_filter.id do %>
+        <li>
+          <strong>
+            Your current filter
+          </strong>
+        </li>
+      <% else %>
+        <li>
+          <%= button_to("Use this filter", ~p"/filters/current?#{[id: @filter]}", method: "put", class: "button") %>
+        </li>
+      <% end %>
+      <%= if can?(@conn, :edit, @filter) do %>
+        <li>
+          <%= link("Edit this filter", to: ~p"/filters/#{@filter}/edit", class: "button") %>
+        </li>
+      <% end %>
+      <%= if can?(@conn, :delete, @filter) do %>
+        <%= button_to("Destroy this filter", ~p"/filters/#{@filter}", method: "delete", class: "button", data: [confirm: "Are you really, really sure?"]) %>
+      <% end %>
+    </ul>
+  </div>
+  <%= if @filter.user do %>
+    <p class="filter-maintainer">
+      This filter is maintained by
+      <%= render(PhilomenaWeb.UserAttributionView, "_user.html", object: @filter, conn: @conn) %>
+    </p>
+  <% end %>
+  <p class="filter-description">
+    <%= @filter.description %>
+  </p>
+  <%= if length(@spoilered_tags) > 0 or !!@filter.spoilered_complex_str do %>
+    <h5>
+      This filter spoilers...
+    </h5>
+    <%= for tag <- @spoilered_tags do %>
+      <%= render(PhilomenaWeb.TagView, "_tag.html", tag: tag, conn: @conn) %>
+    <% end %>
+    <pre class="spoiler-filter-code">
+      <%= @filter.spoilered_complex_str %>
+    </pre>
+  <% else %>
+    <p>
+      This filter doesn't spoiler any tags.
+    </p>
+  <% end %>
+  <%= if length(@hidden_tags) > 0 or !!@filter.hidden_complex_str do %>
+    <h5>
+      This filter hides...
+    </h5>
+    <%= for tag <- @hidden_tags do %>
+      <%= render(PhilomenaWeb.TagView, "_tag.html", tag: tag, conn: @conn) %>
+    <% end %>
+    <pre class="spoiler-filter-code">
+      <%= @filter.hidden_complex_str %>
+    </pre>
+  <% else %>
+    <p>
+      This filter doesn't hide any tags.
+    </p>
+  <% end %>
+</div>
+<% # p = link("Report filter to moderators", new_report_path(reportable_class: 'filter', reportable_id: @filter.id) %>
+<p>
+  <%= link("Back to filters", to: ~p"/filters") %>
+</p>

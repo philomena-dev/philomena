@@ -1,0 +1,32 @@
+<div class="block__content flex alternating-color">
+  <div class="flex__grow">
+    <% # TODO %>
+    <a href={~p"/channels/#{@channel}"}>
+      <% # - if channel.channel_image.present? %>
+      <% #  => image_tag channel.uploaded_channel_image.url, width: 32, height: 32, alt: "#{channel.title}'s logo'", class: 'channel-strip__image' %>
+      <% # - else %>
+      <% #  => image_tag 'no_avatar_original.svg', width: 32, height: 32, alt: "#{channel.title}'s logo'", class: 'channel-strip__image' %>
+      <%= @channel.title || @channel.short_name %>
+    </a>
+  </div>
+  <div class="flex__fixed flex__right">
+    <%= if @channel.is_live do %>
+      <span class="channel-strip__state label label--narrow label--success">
+        LIVE NOW
+      </span>
+      <br />
+      <%= @channel.viewers %>
+      <%= 
+        if @channel.viewers == 1 do
+          "viewer"
+        else
+          "viewers"
+        end
+      %>
+    <% else %>
+      <span class="channel-strip__state label label--narrow label--danger">
+        OFF AIR
+      </span>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,49 @@
+<span class="tag dropdown" data-tag-category={@tag.category} data-tag-id={@tag.id} data-tag-name={@tag.name} data-tag-slug={@tag.slug}>
+  <% # The order of tag states and dropdown links is important for tags.js %>
+  <span>
+    <span class="tag__state hidden" title="Unwatched">
+      +
+    </span>
+    <span class="tag__state hidden" title="Watched">
+      -
+    </span>
+    <span class="tag__state hidden" title="Spoilered">
+      S
+    </span>
+    <span class="tag__state hidden" title="Hidden">
+      H
+    </span>
+    <a class="tag__name" href={pretty_tag_path(@tag)} title={@tag.short_description}>
+      <%= @tag.name %>
+    </a>
+  </span>
+  <div class="dropdown__content">
+    <a class="tag__dropdown__link hidden" data-method="delete" data-remote="true" data-tag-action="unwatch" href={~p"/tags/#{@tag}/watch"}>
+      Unwatch
+    </a>
+    <a class="tag__dropdown__link hidden" data-method="post" data-remote="true" data-tag-action="watch" href={~p"/tags/#{@tag}/watch"}>
+      Watch
+    </a>
+    <a class="tag__dropdown__link hidden" data-method="delete" data-remote="true" data-tag-action="unspoiler" href={~p"/filters/spoiler?#{[tag: @tag]}"}>
+      Unspoiler
+    </a>
+    <a class="tag__dropdown__link hidden" data-method="post" data-remote="true" data-tag-action="spoiler" href={~p"/filters/spoiler?#{[tag: @tag]}"}>
+      Spoiler
+    </a>
+    <a class="tag__dropdown__link hidden" data-method="delete" data-remote="true" data-tag-action="unhide" href={~p"/filters/hide?#{[tag: @tag]}"}>
+      Unhide
+    </a>
+    <a class="tag__dropdown__link hidden" data-method="post" data-remote="true" data-tag-action="hide" href={~p"/filters/hide?#{[tag: @tag]}"}>
+      Hide
+    </a>
+    <a class="tag__dropdown__link hidden" href="/sessions/new">
+      Sign in to Watch
+    </a>
+    <a class="tag__dropdown__link hidden" href="/filters">
+      Filter
+    </a>
+  </div>
+  <span class="tag__count">
+    <%= @tag.images_count %>
+  </span>
+</span>

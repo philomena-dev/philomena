@@ -1,0 +1,10 @@
+<%= if @notification.actor do %>
+  <div class="block block--fixed flex" id={"notification-#{@notification.id}"}>
+    <%= if @notification.actor_type == "Image" and @notification.actor do %>
+      <div class="flex flex--centered flex__fixed thumb-tiny-container spacing-right">
+        <%= render(PhilomenaWeb.ImageView, "_image_container.html", image: @notification.actor, size: :thumb_tiny, conn: @conn) %>
+      </div>
+    <% end %>
+    <%= render(PhilomenaWeb.NotificationView, notification_template_path(@notification.actor_type), notification: @notification, conn: @conn) %>
+  </div>
+<% end %>

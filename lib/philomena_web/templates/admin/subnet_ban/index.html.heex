@@ -1,0 +1,86 @@
+<h1>
+  Subnet Bans
+</h1>
+<% route = fn p -> ~p"/admin/subnet_bans?#{p}" end %>
+<% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @subnet_bans, route: route, params: page_params(@conn.params)) %>
+<%= form_for :subnet_ban, ~p"/admin/subnet_bans", [method: "get", class: "hform"], fn f -> %>
+  <div class="field">
+    <%= text_input(f, :q, name: "q", class: "hform__text input", placeholder: "Search") %>
+    <%= submit("Search", class: "button hform__button") %>
+  </div>
+<% end %>
+<div class="block">
+  <div class="block__header">
+    <a href={~p"/admin/subnet_bans/new"}>
+      <i class="fa fa-plus"></i>
+      New subnet ban
+    </a>
+    <%= pagination %>
+  </div>
+  <div class="block__content">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>
+            Specification
+          </th>
+          <th>
+            Created
+          </th>
+          <th>
+            Expires
+          </th>
+          <th>
+            Reason/Note
+          </th>
+          <th>
+            Ban ID
+          </th>
+          <th>
+            Options
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for ban <- @subnet_bans do %>
+          <tr>
+            <td>
+              <%= link(ban.specification, to: ~p"/ip_profiles/#{to_string(ban.specification)}") %>
+            </td>
+            <td>
+              <%= pretty_time(ban.created_at) %>
+              <%= user_abbrv(ban.banning_user) %>
+            </td>
+            <td class={ban_row_class(ban)}>
+              <%= pretty_time(ban.valid_until) %>
+            </td>
+            <td>
+              <%= ban.reason %>
+              <%= if present?(ban.note) do %>
+                <p class="block block--fixed">
+                  <em>
+                    Note:
+                    <%= ban.note %>
+                  </em>
+                </p>
+              <% end %>
+            </td>
+            <td>
+              <%= ban.generated_ban_id %>
+            </td>
+            <td>
+              <%= link("Edit", to: ~p"/admin/subnet_bans/#{ban}/edit") %>
+              <%= if @current_user.role == "admin" do %>
+                &bull;
+                <%= link("Destroy", to: ~p"/admin/subnet_bans/#{ban}", data: [confirm: "Are you really, really sure?", method: "delete"]) %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="block__header block__header--light">
+    <%= pagination %>
+  </div>
+</div>

@@ -1,0 +1,86 @@
+<h1>
+  Editing Tag
+</h1>
+<p>
+  <%= link("Edit image", to: ~p"/tags/#{@tag}/image/edit") %>
+</p>
+<%= if can?(@conn, :alias, @tag) do %>
+  <p>
+    <%= link("Edit aliases", to: ~p"/tags/#{@tag}/alias/edit") %>
+  </p>
+<% end %>
+<%= form_for @changeset, ~p"/tags/#{@tag}", [class: "form"], fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>
+        Oops, something went wrong! Please check the errors below.
+      </p>
+    </div>
+  <% end %>
+  <h2>
+    <%= @tag.name %>
+  </h2>
+  <div class="field">
+    Category:
+    <%= select(f, :category, tag_categories(), class: "input") %>
+  </div>
+  <h4>
+    Description
+  </h4>
+  <div class="field">
+    <%= label(f, :short_description, "Short description:") %>
+    <%= text_input(f, :short_description, class: "input input--wide") %>
+  </div>
+  <div class="field">
+    <%= label(f, :description, "Long description:") %>
+    <%= textarea(f, :description, class: "input input--wide") %>
+  </div>
+  <div class="field">
+    <%= label(f, :mod_notes, "Mod notes:") %>
+    <%= textarea(f, :mod_notes, class: "input input--wide") %>
+  </div>
+  <h4>
+    Implied Tags
+  </h4>
+  <div class="fieldlabel">
+    Tags in this list will be added when this tag is added to an image.
+  </div>
+  <div class="field">
+    <%= render(PhilomenaWeb.TagView, "_tag_editor.html", f: f, name: :implied_tag_list, type: :edit, conn: @conn) %>
+  </div>
+  <br />
+  <%= submit("Save Tag", class: "button button--state-primary") %>
+<% end %>
+<br />
+<br />
+<%= if can?(@conn, :alias, @tag) do %>
+  <input checked="false" class="toggle-box" id="tag-management" type="checkbox" />
+  <label for="tag-management">
+    Tag Processing
+  </label>
+  <div class="toggle-box-container">
+    <div class="toggle-box-container__content">
+      <%= button_to("Rebuild index", ~p"/tags/#{@tag}/reindex", method: "post", class: "button", data: [confirm: "Are you really, really sure?", disable_with: raw("Reindexing&hellip;")]) %>
+      <p>
+        Use this if the tag displays the wrong number of images or returns the wrong search results.
+      </p>
+      <%= button_to("Destroy tag", ~p"/tags/#{@tag}", method: "delete", class: "button button--state-danger", data: [confirm: "Are you really, really sure?", disable_with: raw("Deleting&hellip;")]) %>
+      <p>
+        <strong>
+          Irreversible. Use with extreme caution!
+        </strong>
+      </p>
+      <ul>
+        <li>
+          Intended use is removing garbage tags.
+        </li>
+        <li>
+          Will remove tag changes on the tag, but not on images or profiles.
+        </li>
+        <li>
+          Will unset the alias if this tag is an alias target, and will automatically remove any implications that exist to it.
+        </li>
+      </ul>
+    </div>
+  </div>
+<% end %>

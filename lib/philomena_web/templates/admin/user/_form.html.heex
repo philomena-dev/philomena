@@ -1,0 +1,121 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>
+        Oops, something went wrong! Please check the errors below.
+      </p>
+    </div>
+  <% end %>
+  <div class="block">
+    <div class="block__header">
+      <span class="block__header__title">
+        Essential user details
+      </span>
+    </div>
+    <label class="table-list__label">
+      <div class="table-list__label__text">
+        Name:
+      </div>
+      <div class="table-list__label__input">
+        <%= error_tag(f, :name) %>
+        <%= text_input(f, :name, class: "input") %>
+      </div>
+    </label>
+    <label class="table-list__label">
+      <div class="table-list__label__text">
+        Email:
+      </div>
+      <div class="table-list__label__input">
+        <%= error_tag(f, :email) %>
+        <%= text_input(f, :email, class: "input") %>
+      </div>
+    </label>
+    <label class="table-list__label">
+      <div class="table-list__label__text">
+        Role:
+      </div>
+      <div class="table-list__label__input">
+        <%= select(f, :role, ["user", "assistant", "moderator", "admin"], class: "input") %>
+      </div>
+    </label>
+    <label class="table-list__label">
+      <div class="table-list__label__text">
+        Secondary banner:
+      </div>
+      <div class="table-list__label__input">
+        <%= select(f, :secondary_role, [[key: "-", value: ""], "Site Developer", "Devops", "Philomena Contributor", "Public Relations"], class: "input") %>
+      </div>
+    </label>
+    <label class="table-list__label">
+      <div class="table-list__label__text">
+        Hide staff banner:
+      </div>
+      <div class="table-list__label__input">
+        <%= checkbox(f, :hide_default_role, class: "checkbox") %>
+      </div>
+    </label>
+    <label class="table-list__label">
+      <div class="table-list__label__text">
+        Senior staff:
+      </div>
+      <div class="table-list__label__input">
+        <%= checkbox(f, :senior_staff, class: "checkbox") %>
+      </div>
+    </label>
+    <label class="table-list__label">
+      <div class="table-list__label__text">
+        Bypass rate limits:
+      </div>
+      <div class="table-list__label__input">
+        <%= checkbox(f, :bypass_rate_limits, class: "checkbox") %>
+      </div>
+    </label>
+    <div class="table-list__label">
+      <div class="table-list__label__text">
+        Avatar
+      </div>
+      <div class="table-list__label__input">
+        <%= link("Remove avatar", to: ~p"/admin/users/#{@user}/avatar", class: "button", data: [method: "delete", confirm: "Are you really, really sure?"]) %>
+      </div>
+    </div>
+  </div>
+  <div class="block">
+    <div class="block__header">
+      <span class="block__header__title">
+        General user flags
+      </span>
+    </div>
+    <ul>
+      <p>
+        <strong>
+          Be careful when issuing these permissions to staff members!
+        </strong>
+        Staff members with relevant roles may have these permissions anyway. Issuing them may break things, such as tag aliasing.
+      </p>
+    </ul>
+    <ul>
+      <%= collection_checkboxes(f, :roles, filtered_roles(general_permissions(), @roles), mapper: &checkbox_mapper/6) %>
+    </ul>
+  </div>
+  <div class="block">
+    <div class="block__header warning">
+      <span class="block__header__title">
+        Special roles for assistants
+      </span>
+    </div>
+    <ul>
+      <%= collection_checkboxes(f, :roles, filtered_roles(assistant_permissions(), @roles), mapper: &checkbox_mapper/6) %>
+    </ul>
+  </div>
+  <div class="block">
+    <div class="block__header danger">
+      <span class="block__header__title">
+        Special roles for moderators
+      </span>
+    </div>
+    <ul>
+      <%= collection_checkboxes(f, :roles, filtered_roles(moderator_permissions(), @roles), mapper: &checkbox_mapper/6) %>
+    </ul>
+  </div>
+  <%= submit("Save User", class: "button") %>
+<% end %>

@@ -1,0 +1,15 @@
+<%= if Enum.any?(@galleries) do %>
+  <div class="block">
+    <div class="block__header">
+      <span class="block__header__title">
+        Recent Galleries
+      </span>
+      <%= link("View all", to: ~p"/galleries?#{[gallery: [creator: @user.name]]}") %>
+    </div>
+    <div class="block__content js-resizable-media-container">
+      <%= for gallery <- @galleries do %>
+        <%= render(PhilomenaWeb.GalleryView, "_gallery.html", gallery: gallery, conn: @conn) %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

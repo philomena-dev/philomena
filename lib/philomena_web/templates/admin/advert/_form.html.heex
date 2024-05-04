@@ -1,0 +1,59 @@
+<%= form_for @changeset, @action, [multipart: true], fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>
+        Oops, something went wrong! Please check the errors below.
+      </p>
+    </div>
+  <% end %>
+  <%= if @changeset.data.__meta__.state != :loaded do %>
+    <div class="field">
+      <%= label(f, :image, "Upload image:") %>
+      <%= file_input(f, :image, class: "input input--wide") %>
+      <%= error_tag(f, :image) %>
+      <%= error_tag(f, :image_mime_type) %>
+      <%= error_tag(f, :image_size) %>
+      <%= error_tag(f, :image_width) %>
+      <%= error_tag(f, :image_height) %>
+    </div>
+  <% else %>
+    <div class="field">
+      <%= link("Change image", to: ~p"/admin/adverts/#{@changeset.data}/image/edit", class: "button") %>
+    </div>
+  <% end %>
+  <div class="field">
+    <%= label(f, :link, "Link which the advert should take users to:") %>
+    <%= url_input(f, :link, class: "input input--wide", placeholder: "Link", required: true) %>
+    <%= error_tag(f, :link) %>
+  </div>
+  <div class="field">
+    <%= label(f, :title, "Title/alt-text for the advert:") %>
+    <%= text_input(f, :title, class: "input input--wide", placeholder: "Title", required: true) %>
+    <%= error_tag(f, :title) %>
+  </div>
+  <div class="field">
+    <%= label(f, :start_time, "Start time for the advert (usually \"now\"):") %>
+    <%= text_input(f, :start_time, class: "input input--wide", placeholder: "Start") %>
+    <%= error_tag(f, :start_time) %>
+  </div>
+  <div class="field">
+    <%= label(f, :finish_time, "Finish time for the advert (e.g. \"2 weeks from now\"):") %>
+    <%= text_input(f, :finish_time, class: "input input--wide", placeholder: "Finish") %>
+    <%= error_tag(f, :finish_time) %>
+  </div>
+  <div class="field">
+    <%= label(f, :notes, "Notes (Payment details, contact info, etc):") %>
+    <%= text_input(f, :notes, class: "input input--wide", placeholder: "Notes") %>
+    <%= error_tag(f, :notes) %>
+  </div>
+  <div class="field">
+    <%= label(f, :restrictions, "Restriction:") %>
+    <%= select(f, :restrictions, restrictions(), class: "input") %>
+    <%= error_tag(f, :restrictions) %>
+  </div>
+  <div class="field">
+    <%= checkbox(f, :live, class: "checkbox") %>
+    <%= label(f, :live, "Live") %>
+  </div>
+  <%= submit("Save Advert", class: "button") %>
+<% end %>

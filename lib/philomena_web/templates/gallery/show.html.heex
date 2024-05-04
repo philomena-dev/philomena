@@ -1,0 +1,113 @@
+<% 
+  scope = scope(@conn)
+  image_url = fn image, hit -> ~p"/images/#{image}?#{Keyword.put(scope, :sort, hit["sort"])}" end
+  route = fn p -> ~p"/galleries/#{@gallery}?#{p}" end
+  pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @images, route: route, params: scope)
+  info = render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @images)
+%>
+<div class={sortable_classes(@conn)} id="sortable">
+  <div class="block" id="imagelist-container">
+    <section class="block__header flex page__header">
+      <span class="block__header__title page__title">
+        <span>
+          Viewing gallery
+          <strong>
+            <%= @gallery.title %>
+          </strong>
+        </span>
+      </span>
+      <div class="page__pagination">
+        <%= pagination %>
+      </div>
+      <div class="flex__right page__options">
+        <%= render(PhilomenaWeb.ImageView, "_random_button.html", conn: @conn, params: scope) %>
+        <a href={~p"/galleries/#{@gallery}/reports/new"}>
+          <i class="fa fa-exclamation-triangle"></i>
+          <span class="hide-mobile">
+            Report
+          </span>
+        </a>
+        <%= if can?(@conn, :edit, @gallery) do %>
+          <a href={~p"/galleries/#{@gallery}/edit"}>
+            <i class="fas fa-edit"></i>
+            <span class="hide-mobile">
+              Edit
+            </span>
+          </a>
+        <% end %>
+        <%= if can?(@conn, :edit, @gallery) do %>
+          <a class="rearrange-button js-rearrange" data-click-hide=".js-rearrange" data-click-show=".js-save,#gallery-rearrange-info" href="#">
+            <i class="fa fa-sort"></i>
+            Rearrange
+          </a>
+          <a class="rearrange-button js-save hidden" data-click-hide=".js-save,#gallery-rearrange-info" data-click-show=".js-rearrange" data-reorder-path={~p"/galleries/#{@gallery}/order"} href="#">
+            <i class="fa fa-check"></i>
+            Save
+          </a>
+          <a data-confirm="Are you really, really sure?" data-method="delete" href={~p"/galleries/#{@gallery}"}>
+            <i class="fa fa-trash"></i>
+            <span class="hide-mobile">
+              Delete
+            </span>
+          </a>
+        <% end %>
+        <%= if show_subscription_link?(@gallery.creator, @conn.assigns.current_user) do %>
+          <%= render(PhilomenaWeb.Gallery.SubscriptionView, "_subscription.html", watching: @watching, gallery: @gallery, conn: @conn) %>
+        <% end %>
+      </div>
+    </section>
+    <div class="block__header block__header--light block__header--sub">
+      <span class="block__header__title">
+        A gallery by
+      </span>
+      <%= link(@gallery.creator.name, to: ~p"/profiles/#{@gallery.creator}") %>
+      with
+      <%= @gallery.image_count %>
+      <%= pluralize("image", "images", @gallery.image_count) %>
+      <span class="hide-mobile-t">
+        , last updated
+        <%= pretty_time(@gallery.updated_at) %>
+      </span>
+    </div>
+    <div class="block__content flex js-imagelist-info">
+      <div class="flex__fixed thumb-tiny-container spacing-right">
+        <%= render(PhilomenaWeb.ImageView, "_image_container.html", image: @gallery.thumbnail, size: :thumb_tiny, conn: @conn) %>
+      </div>
+      <div class="flex__grow">
+        <%= if @gallery.spoiler_warning not in [nil, ""] do %>
+          <strong>
+            Warning:
+          </strong>
+          <%= @gallery.spoiler_warning %>
+        <% end %>
+        <%= if @gallery.description not in [nil, ""] do %>
+          <p>
+            <%= @gallery.description %>
+          </p>
+        <% end %>
+      </div>
+    </div>
+    <div class="block__content hidden" id="gallery-rearrange-info">
+      <div class="block block--fixed block--primary">
+        Click the image and drag.
+        <br />
+        <strong>
+          Note that you may have to wait a couple of seconds before the order is applied.
+        </strong>
+      </div>
+    </div>
+    <div class="block__content js-resizable-media-container">
+      <%= for {image, hit} <- @gallery_images do %>
+        <%= render(PhilomenaWeb.ImageView, "_image_box.html", image: image, link: image_url.(image, hit), size: :thumb, conn: @conn) %>
+      <% end %>
+    </div>
+    <div class="block__header block__header--light flex page__header">
+      <div class="page__pagination">
+        <%= pagination %>
+      </div>
+      <span class="block__header__title page__info">
+        <%= info %>
+      </span>
+    </div>
+  </div>
+</div>
