@@ -1,6 +1,6 @@
 <div class="walloftext">
   <h1>
-    <%= @user.name %> 's Donations
+    <%= @user.name %>'s Donations
   </h1>
   <%= render(PhilomenaWeb.Admin.DonationView, "_table.html", donations: @donations, conn: @conn) %>
   <h1>

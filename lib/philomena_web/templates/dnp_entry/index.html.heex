@@ -34,7 +34,7 @@
         <br />
         <%= link("My Listings", to: ~p"/dnp?#{[mine: "1"]}") %>
       <% not is_nil(@current_user) -> %>
-        You must have a verified artist link to create and manage DNP entries. <%= link("Request an artist link", to: ~p"/profiles/#{@current_user}/artist_links/new") %> .
+        You must have a verified artist link to create and manage DNP entries. <%= link("Request an artist link", to: ~p"/profiles/#{@current_user}/artist_links/new") %>.
       <% true -> %>
         You must be logged in and have a verified artist link to create and manage DNP entries.
     <% end %>

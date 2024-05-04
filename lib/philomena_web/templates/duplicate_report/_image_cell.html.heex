@@ -3,12 +3,12 @@
     <%= if is_nil(@image) do %>
       (Image now hard-deleted)
     <% else %>
-      # <%= @image.id %>
+      #<%= @image.id %>
     <% end %>
   </p>
   <%= render(PhilomenaWeb.ImageView, "_image_container.html", image: @image, size: :thumb_small, conn: @conn) %>
   <p>
-    <%= @image.image_width %> x <%= @image.image_height %>
+    <%= @image.image_width %>x<%= @image.image_height %>
   </p>
   <p>
     <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @image, conn: @conn) %>

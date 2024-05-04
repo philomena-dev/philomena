@@ -92,7 +92,7 @@
           <%= for channel <- @tag.channels do %>
             <%= link(channel.title, to: ~p"/channels/#{channel}") %>
             <%= if can?(@conn, :edit, channel) do %>
-              ( <%= link("Edit", to: ~p"/channels/#{channel}/edit") %> )
+              (<%= link("Edit", to: ~p"/channels/#{channel}/edit") %>)
             <% end %>
           <% end %>
           <br />
@@ -130,7 +130,7 @@
         <strong>
           <%= entry.dnp_type %>
         </strong>
-        <%= body %> ( <%= link("more info", to: ~p"/dnp/#{entry}") %> )
+        <%= body %> (<%= link("more info", to: ~p"/dnp/#{entry}") %>)
       <% end %>
     <% end %>
   </div>

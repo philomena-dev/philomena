@@ -28,7 +28,7 @@
     <% end %>
     <p>
       <%= if active?(@poll) do %>
-        Poll ends <%= pretty_time(@poll.active_until) %> .
+        Poll ends <%= pretty_time(@poll.active_until) %>.
         <%= if @poll.total_votes > 0 do %>
           <%= @poll.total_votes %>
           <%= pluralize("vote", "votes", @poll.total_votes) %>
@@ -38,7 +38,7 @@
         cast so far.
       <% else %>
         Poll ended <%= pretty_time(@poll.active_until) %> with <%= @poll.total_votes %>
-        <%= pluralize("vote", "votes", @poll.total_votes) %> .
+        <%= pluralize("vote", "votes", @poll.total_votes) %>.
       <% end %>
     </p>
   </div>

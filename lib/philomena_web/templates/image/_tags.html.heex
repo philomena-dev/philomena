@@ -90,7 +90,7 @@
         </a>
         <%= if @tag_change_count > 0 do %>
           <a class="button button--link button--inline" href={~p"/images/#{@image}/tag_changes"} title="Tag history">
-            <i class="fa fa-history"></i> History ( <%= @tag_change_count %> )
+            <i class="fa fa-history"></i> History (<%= @tag_change_count %>)
           </a>
         <% end %>
       </div>

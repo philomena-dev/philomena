@@ -89,7 +89,7 @@
       <%= render(PhilomenaWeb.ImageView, "_uploader.html", assigns) %>
     </div>
     <span class="image-size">
-      &nbsp; <%= @image.image_width %> x <%= @image.image_height %>
+      &nbsp; <%= @image.image_width %>x<%= @image.image_height %>
       <%= if not is_nil(@image.image_duration) and @image.image_is_animated and @image.image_duration > 0 do %>
         <span class="image-size" title={@image.image_duration}>
           &nbsp; <% dur = trunc(@image.image_duration) %>
