@@ -41,11 +41,6 @@ config :philomena, Philomena.Native,
   crate: "philomena",
   mode: :release
 
-config :phoenix, :template_engines,
-  slim: PhoenixSlime.Engine,
-  slime: PhoenixSlime.Engine,
-  slimleex: PhoenixSlime.LiveViewEngine
-
 config :tesla, adapter: Tesla.Adapter.Mint
 
 # Configures Elixir's Logger
