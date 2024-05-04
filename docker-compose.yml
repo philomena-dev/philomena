@@ -19,6 +19,8 @@ services:
       - INKBUNNY_SID=4X88ktV7jxywp65Ng40ez1qTJd
       - E621_USER=hexerade
       - E621_APIKEY=merpmarp
+      - E6AI_USER=hexerade
+      - E6AI_APIKEY=merpmarp
       - OTP_SECRET_KEY=Wn7O/8DD+qxL0X4X7bvT90wOkVGcA90bIHww4twR03Ci//zq7PnMw8ypqyyT/b/C
       - ADVERT_FILE_ROOT=adverts
       - AVATAR_FILE_ROOT=avatars
