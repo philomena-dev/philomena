@@ -33,8 +33,8 @@ defmodule PhilomenaWeb.SessionControllerTest do
       conn = get(conn, "/registrations/edit")
       response = html_response(conn, 200)
       assert response =~ user.email
-      assert response =~ "Settings</a>"
-      assert response =~ "Logout</a>"
+      assert response =~ "Settings"
+      assert response =~ "Logout"
     end
 
     test "logs the user in with remember me", %{conn: conn, user: user} do

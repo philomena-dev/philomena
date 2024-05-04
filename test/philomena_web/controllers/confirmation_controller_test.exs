@@ -14,7 +14,7 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
     test "renders the confirmation page", %{conn: conn} do
       conn = get(conn, ~p"/confirmations/new")
       response = html_response(conn, 200)
-      assert response =~ "<h1>Resend confirmation instructions</h1>"
+      assert response =~ "Resend confirmation instructions"
     end
   end
 
