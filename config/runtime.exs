@@ -141,7 +141,4 @@ if config_env() == :prod do
 else
   # Don't send email in development
   config :philomena, Philomena.Mailer, adapter: Bamboo.LocalAdapter
-
-  # Use this to debug slime templates
-  # config :slime, :keep_lines, true
 end
