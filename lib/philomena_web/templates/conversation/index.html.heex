@@ -36,7 +36,7 @@ pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @conv
               <%= link(c.title, to: ~p"/conversations/#{c}") %>
               <div class="small-text hide-mobile">
                 <%= count %>
-                <%= pluralize("message", "messages", count) %> ; started <%= pretty_time(c.created_at) %> , last message <%= pretty_time(c.last_message_at) %>
+                <%= pluralize("message", "messages", count) %>; started <%= pretty_time(c.created_at) %>, last message <%= pretty_time(c.last_message_at) %>
               </div>
             </td>
             <td class="table--communication-list__stats">

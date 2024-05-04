@@ -71,7 +71,7 @@
             <spanspan class="hide-mobile">
               History
             </spanspan>
-            ( <%= @source_change_count %> )
+            (<%= @source_change_count %>)
           </a>
         <% end %>
         <%= if can?(@conn, :hide, @image) and not hide_staff_tools?(@conn) do %>

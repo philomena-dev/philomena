@@ -9,7 +9,7 @@
       <%= img_tag(static_path(@conn, "/images/tagblocked.svg"), width: 250, height: 250, data: [click_unfilter: @image.id]) %>
     </p>
     <span class="filter-explanation"></span>
-    <%= link("your current filter", to: ~p"/filters/#{@conn.assigns.current_filter}", class: "filter-link") %> .
+    <%= link("your current filter", to: ~p"/filters/#{@conn.assigns.current_filter}", class: "filter-link") %>.
   </div>
   <%= if size == :full and not embed_display do %>
     <div

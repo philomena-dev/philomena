@@ -57,10 +57,7 @@ info = render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @image
         A gallery by
       </span>
       <%= link(@gallery.creator.name, to: ~p"/profiles/#{@gallery.creator}") %> with <%= @gallery.image_count %>
-      <%= pluralize("image", "images", @gallery.image_count) %>
-      <span class="hide-mobile-t">
-        , last updated <%= pretty_time(@gallery.updated_at) %>
-      </span>
+      <%= pluralize("image", "images", @gallery.image_count) %><span class="hide-mobile-t">, last updated <%= pretty_time(@gallery.updated_at) %></span>
     </div>
     <div class="block__content flex js-imagelist-info">
       <div class="flex__fixed thumb-tiny-container spacing-right">

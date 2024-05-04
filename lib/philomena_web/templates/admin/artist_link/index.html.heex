@@ -57,7 +57,7 @@
               </strong>
               <%= if contacted?(link) do %>
                 <br /> by <%= link.contacted_by_user.name %>
-                <br /> ( <%= pretty_time(link.contacted_at) %> )
+                <br /> (<%= pretty_time(link.contacted_at) %>)
               <% end %>
             </td>
             <td>

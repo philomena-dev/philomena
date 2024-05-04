@@ -43,7 +43,7 @@
           <strong class="comment_deleted">
             Deletion reason: <%= @comment.deletion_reason %>
             <%= if can?(@conn, :hide, @comment) and not is_nil(@comment.deleted_by) do %>
-              ( <%= @comment.deleted_by.name %> )
+              (<%= @comment.deleted_by.name %>)
             <% end %>
           </strong>
           <%= if can?(@conn, :hide, @comment) do %>

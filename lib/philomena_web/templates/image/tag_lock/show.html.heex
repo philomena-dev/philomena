@@ -1,6 +1,6 @@
 <% tag_input = Enum.map_join(@image.locked_tags, ", ", & &1.name) %>
 <h1>
-  Editing locked tags on image # <%= @image.id %>
+  Editing locked tags on image #<%= @image.id %>
 </h1>
 <%= form_for @changeset, ~p"/images/#{@image}/tag_lock", fn f -> %>
   <div class="field">
