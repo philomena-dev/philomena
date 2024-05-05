@@ -86,10 +86,7 @@ function pickAndResize(elem) {
     clearEl(elem);
   }
 
-  let muted = 'muted';
-  if (store.get('unmute_videos')) {
-    muted = '';
-  }
+  const muted = store.get('unmute_videos') ? '' : 'muted';
 
   if (imageFormat === 'mp4') {
     elem.classList.add('full-height');
