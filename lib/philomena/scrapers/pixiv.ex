@@ -36,7 +36,7 @@ defmodule Philomena.Scrapers.Pixiv do
           |> Map.get("content-type")
 
         %{
-          url: x["url"],
+          url: x["url_big"],
           camo_url: "data:#{type};base64,#{Base.encode64(body)}"
         }
       end
