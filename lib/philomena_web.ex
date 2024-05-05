@@ -50,6 +50,10 @@ defmodule PhilomenaWeb do
       # Wrong way around for convenience
       import PhilomenaWeb.AppView
 
+      # Use functional components
+      use Phoenix.Component
+      import PhilomenaWeb.CoreComponents
+
       unquote(verified_routes())
     end
   end

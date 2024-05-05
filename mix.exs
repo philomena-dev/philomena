@@ -42,7 +42,7 @@ defmodule Philomena.MixProject do
       {:phoenix_html, "~> 3.3"},
       {:phoenix_view, "~> 2.0"},
       {:phoenix_live_reload, "~> 1.4", only: :dev},
-      {:phoenix_live_view, "~> 0.20.2"},
+      {:phoenix_live_view, "~> 0.20.2", github: "liamwhite/phoenix_live_view", ref: "c65dc1b1c0f2b7e23048f119a2fea48df139eb06"},
       {:gettext, "~> 0.22"},
       {:jason, "~> 1.4"},
       {:ranch, "~> 2.1", override: true},

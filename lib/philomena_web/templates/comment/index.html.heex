@@ -1,15 +1,15 @@
 <h1>
   Comments
 </h1>
-<%= form_for :comments, ~p"/comments", [method: "get", class: "hform", enforce_utf8: false], fn f -> %>
+<.form :let={f} for={%{}} method="get" class="hform" action={~p"/comments"}>
   <div class="field">
-    <%= text_input(f, :cq, name: :cq, value: @conn.params["cq"], class: "input hform__text", placeholder: "Search comments", autocapitalize: "none") %>
-    <%= submit("Search", class: "hform__button button") %>
+    <.input type="text" field={f[:cq]} value={@conn.params["cq"]} class={"input hform__text"} placeholder="Search comments" autocapitalize="none" />
+    <button class="hform__button button">Search</button>
   </div>
   <div class="fieldlabel">
     For more information, see the <a href="/pages/search_syntax">search syntax documentation</a>. Search results are sorted by creation date.
   </div>
-<% end %>
+</.form>
 <h2>
   Search Results
 </h2>
