@@ -1,6 +1,7 @@
 .block__content.profile-about
-  = if @user.description not in [nil, ""] do
-    = @about_me
+  = cond do
+    - @user.description not in [nil, ""] ->
+      = @about_me
 
   = if can?(@conn, :edit_description, @user) do
     = if @user.description not in [nil, ""] do

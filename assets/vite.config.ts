@@ -37,7 +37,7 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
       }
     },
     build: {
-      target: 'es2020',
+      target: ['es2016', 'chrome67', 'firefox62', 'edge18', 'safari12'],
       outDir: path.resolve(__dirname, '../priv/static'),
       emptyOutDir: false,
       sourcemap: isDev,

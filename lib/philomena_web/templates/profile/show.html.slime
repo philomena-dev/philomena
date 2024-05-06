@@ -155,7 +155,7 @@
           tbody
             = for {body, mod_note} <- @mod_notes do
               tr
-                td == body
+                td = body
                 td = pretty_time(mod_note.created_at)
         .block__content
           a.button href=Routes.profile_detail_path(@conn, :index, @user)
@@ -167,7 +167,7 @@
           i.fa.fa-clipboard
           | Moderation Scratchpad
         .block__content.profile-about
-          == @scratchpad
+          = @scratchpad
         .block__content
           a.button href=Routes.profile_scratchpad_path(@conn, :edit, @user)
             i.fa.fa-edit>
