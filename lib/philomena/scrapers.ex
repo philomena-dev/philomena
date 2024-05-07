@@ -3,6 +3,7 @@ defmodule Philomena.Scrapers do
     Philomena.Scrapers.Deviantart,
     Philomena.Scrapers.Pillowfort,
     Philomena.Scrapers.Twitter,
+    Philomena.Scrapers.Baraag,
     Philomena.Scrapers.Tumblr,
     Philomena.Scrapers.Inkbunny,
     Philomena.Scrapers.E621,
