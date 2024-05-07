@@ -38,18 +38,15 @@
         i.fa.fa-sitemap>
         span.hide-limited-desktop.hide-mobile Related
     .stretched-mobile-links
-      a href="#{pretty_url(@image, false, false)}" rel="nofollow" title="View (tags in filename)"
+      a href="#{pretty_url(@image, true, false)}" rel="nofollow" title="View full image"
         i.fa.fa-eye>
         | View
-      a href="#{pretty_url(@image, true, false)}" rel="nofollow" title="View (no tags in filename)"
-        i.fa.fa-eye>
-        | VS
-      a href="#{pretty_url(@image, false, true)}" rel="nofollow" title="Download (tags in filename)"
+      a href="#{pretty_url(@image, false, true)}" rel="nofollow" title="Download file"
         i.fa.fa-download>
         | Download
-      a href="#{pretty_url(@image, true, true)}" title="Download (no tags in filename)"
-        i.fa.fa-download>
-        | DS
+      a href="https://saucenao.com/search.php?#{PhilomenaWeb.Endpoint.url() <> pretty_url(@image, true, true)}" title="Reverse image lookup"
+        i.fa-solid.fa-hat-wizard>
+        | SauceNao
   .image-metabar.flex.flex--wrap.block__header--user-credit.center--layout#extrameta
     div
       ' Uploaded
