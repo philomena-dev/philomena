@@ -46,7 +46,9 @@ defmodule PhilomenaWeb.Admin.UserView do
 
   def description("moderator", "Tag"), do: "Manage tag details"
   def description("admin", "Tag"), do: "Alias tags"
-  def description("batch_update", "Tag"), do: "Update tags in batches (do not issue to staff members)"
+
+  def description("batch_update", "Tag"),
+    do: "Update tags in batches (do not issue to staff members)"
 
   def description("moderator", "User"), do: "Manage users and wipe votes"
   def description("admin", "Role"), do: "Manage permissions"

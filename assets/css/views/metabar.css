@@ -4,6 +4,16 @@
   }
 }
 
+.metabar__interactions {
+  display: block;
+}
+
+.metabar__interactions .comments_count {
+  background: 0;
+  border: 0;
+  position: static;
+}
+
 @mixin if-phone {
   .metabar__interactions {
     display: grid;
@@ -55,7 +65,25 @@
 }
 
 .metabar__user-credit {
+  display: flex;
   box-sizing: border-box;
+  gap: var(--padding-small);
+}
+
+.metabar__user-credit .image_uploader {
+  display: flex;
+  align-self: center;
+  align-items: center;
+  vertical-align: center;
+  gap: var(--padding-small);
+}
+
+/* For some bizarre reason the icon appears to have
+ * comically large gap on desktop */
+@mixin if-desktop {
+  .image_uploader > .username-with-icon {
+    gap: 0;
+  }
 }
 
 .metabar__mobile-info td {

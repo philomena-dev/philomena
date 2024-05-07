@@ -22,33 +22,7 @@ article.block.communication id="post_#{@post.id}"
               = submit "Delete", class: "button"
 
   .block__content.flex.flex--no-wrap class=communication_body_class(@post)
-    .flex__fixed.spacing--right
-      = render PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html", object: @post, conn: @conn
-    .flex__grow.communication__body
-      span.communication__body__sender-name = render PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @post, awards: true, conn: @conn
-      br
-      = render PhilomenaWeb.UserAttributionView, "_anon_user_title.html", object: @post, conn: @conn
-      .communication__body__text
-        = if @post.hidden_from_users do
-          strong.comment_deleted
-            ' Deletion reason:
-            => @post.deletion_reason
-            = if can?(@conn, :hide, @post) and not is_nil(@post.deleted_by) do
-              | (
-              = @post.deleted_by.name
-              | )
-
-          = if can?(@conn, :hide, @post) do
-            = if @post.destroyed_content do
-              br
-              strong.comment_deleted>
-                | This post's contents have been destroyed.
-            - else
-              br
-              =<> @body
-
-        - else
-          =<> @body
+    = render PhilomenaWeb.CommunicationView, "_body.html", object: @post, body: @body, conn: @conn, name: "post"
 
   .block__content.communication__options
     .flex.flex--wrap.flex--spaced-out

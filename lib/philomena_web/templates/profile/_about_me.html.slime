@@ -2,6 +2,8 @@
   = cond do
     - @user.description not in [nil, ""] ->
       = @about_me
+    - true ->
+      | No description provided.
 
   = if can?(@conn, :edit_description, @user) do
     = if @user.description not in [nil, ""] do

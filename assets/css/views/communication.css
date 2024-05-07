@@ -45,3 +45,101 @@
 .communication__anonymous--label {
   padding: 0 var(--padding-small);
 }
+
+.communication > .block__content:first-of-type {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.communication > .block__content:last-of-type {
+  background: var(--primary-muted-color);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.communication__body {
+  display: block;
+  overflow: hidden;
+}
+
+.communication__body__text {
+  border-radius: var(--border-radius-inner);
+  word-wrap: break-word;
+}
+
+.communication__sender-name {
+  display: flex;
+  align-items: center;
+  gap: var(--padding-normal);
+}
+
+.communication__sender-block {
+  display: flex;
+  flex-direction: column;
+  background: var(--primary-muted-color);
+  border-radius: var(--border-radius-inner);
+  padding: var(--padding-small);
+}
+
+@mixin if-mobile {
+  .communication__body__text {
+    margin-top: var(--padding-normal);
+  }
+
+  .communication__sender-block {
+    flex-direction: row;
+    gap: var(--padding-normal);
+    align-items: center;
+  }
+
+  .communication__sender-block > .image-constrained {
+    min-height: var(--avatar-small-size);
+    min-width: var(--avatar-small-size);
+  }
+}
+
+.communication__interaction {
+  display: inline-block;
+  background: var(--secondary-muted-color);
+  color: var(--secondary-link-color) !important;
+  padding: var(--padding-tiny);
+  border-radius: var(--border-radius-inner);
+  margin-left: var(--padding-small);
+}
+
+.communication__interaction:first-child {
+  margin: 0;
+}
+
+.communication__info {
+  display: inline-block;
+  background: var(--information-muted-color);
+  padding: var(--padding-tiny);
+  border-radius: var(--border-radius-inner);
+  margin-left: var(--padding-small);
+}
+
+.communication__info > a {
+  color: var(--information-link-color);
+}
+
+.togglable-delete-form, .togglable-delete-form-link {
+  margin-top: var(--padding-small) !important;
+}
+
+.togglable-delete-form-link {
+  background: var(--danger-muted-color);
+  color: var(--danger-link-color) !important;
+}
+
+.owner-options {
+  margin-left: var(--padding-small);
+}
+
+@mixin if-mobile {
+  .communication__options > *:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: var(--padding-small);
+  }
+}

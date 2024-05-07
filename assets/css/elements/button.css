@@ -8,11 +8,11 @@
   .button--$(type).button--important {
     color: var(--text-color) !important;
     background: var(--$(type)-color);
-    box-shadow: 0 -1px var(--$(type)-dark-color) inset;
   }
 
-  .button--$(type):hover {
-    background: var(--$(type)-muted-color) !important;
+  .button--$(type):hover, .button--$(type):active, .button--$(type).selected {
+    background: var(--$(type)-dark-color) !important;
+    border-radius: var(--border-radius-inner);
   }
 
   .button__group--$(type) {
@@ -28,6 +28,7 @@
     @mixin animated-transition;
     color: var(--text-color);
     background: var(--$(type)-color);
+    border-radius: var(--border-radius-inner);
   }
 }
 
@@ -40,17 +41,18 @@
   font-size: var(--font-size);
   background: var(--primary-dark-color);
   color: var(--text-color);
-  border: 0;
   border-radius: var(--border-radius-inner);
   padding: 0 var(--padding-small);
   overflow: hidden;
   line-height: var(--button-height);
   align-items: center;
+  border-width: 0;
 }
 
-.button:hover {
+.button:hover, .button:active {
   @mixin animated-transition;
-  background: var(--primary-muted-color);
+  background: var(--primary-dark-color);
+  border-radius: var(--border-radius-inner);
   cursor: pointer;
 }
 
@@ -70,7 +72,6 @@
 
 .button--important {
   background: var(--primary-color);
-  box-shadow: 0 -1px var(--primary-dark-color) inset;
 }
 
 .button__row {
@@ -85,7 +86,6 @@
 .button__group, .button__group--single, .button__group--standalone {
   display: flex;
   flex-direction: row;
-  border: 0;
   border-radius: var(--border-radius-inner);
   margin-right: var(--padding-normal);
   background: var(--secondary-dark-color);
@@ -126,6 +126,7 @@
 .button__group--standalone a:hover {
   @mixin animated-transition;
   background: var(--secondary-muted-color);
+  border-radius: var(--border-radius-inner);
 }
 
 .button--borderless {
@@ -139,6 +140,7 @@
 
 .block__header__buttons .button:hover {
   background: var(--primary-muted-color);
+  border-radius: var(--border-radius-inner);
 }
 
 @mixin button-type primary;

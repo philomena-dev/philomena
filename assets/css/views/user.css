@@ -1,0 +1,35 @@
+.badges {
+  display: grid;
+  grid-template-columns: repeat(6, var(--badge-small-size));
+  gap: var(--padding-small);
+}
+
+.badge {
+  width: var(--badge-small-size);
+  height: var(--badge-small-size);
+}
+
+.badge__overflow {
+  background: var(--information-color);
+  border-radius: var(--border-radius-inner);
+  text-align: center;
+  vertical-align: center;
+  line-height: calc(var(--badge-small-size) * 1.2);
+  width: calc(var(--badge-small-size) * 1.2);
+  height: calc(var(--badge-small-size) * 1.2);
+  font-size: calc(var(--font-size) * 0.8);
+}
+
+.username-with-icon {
+  display: inline-flex;
+  gap: var(--padding-tiny);
+  align-items: center;
+}
+
+.user-title {
+  display: flex;
+  flex-direction: row;
+  gap: var(--padding-small);
+  flex-wrap: wrap;
+  margin-top: var(--padding-small);
+}

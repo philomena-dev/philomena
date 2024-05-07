@@ -1,10 +1,10 @@
-$background-color: #0f161e;
+$background-color: #15121a;
 $text-color: #e0e0e0;
 
-$primary-color: #284371;
-$secondary-color: #546c99;
+$primary-color: #36274e;
+$secondary-color: #785b99;
 $danger-color: #6d2a20;
-$warning-color: #6d421a;
+$warning-color: #715227;
 $success-color: #25603e;
 $information-color: #1c606a;
 $special-color: #65206e;
@@ -48,13 +48,13 @@ $spoiler-color: #0f0f0f;
   --text-color: $text-color;
   --text-light-color: $text-color;
 
-  --link-color: hsl(from $primary-color h calc(s + 10) calc(l + 40));
+  --link-color: hsl(from $primary-color h calc(s + 10) calc(l + 50));
   --link-hover-color: $text-color;
 
   --primary-color: $primary-color;
   --primary-border-color: hsl(from $primary-color h calc(s - 20) calc(l + 5));
-  --primary-muted-color: hsl(from $primary-color h calc(s - 10) calc(l - 10));
-  --primary-dark-color: hsl(from $primary-color h calc(s - 15) calc(l - 15));
+  --primary-muted-color: hsl(from $primary-color h calc(s - 10) calc(l - 5));
+  --primary-dark-color: hsl(from $primary-color h calc(s - 15) calc(l - 9));
   --primary-link-color: var(--link-color); /* for consistency */
 
   --secondary-color: $secondary-color;

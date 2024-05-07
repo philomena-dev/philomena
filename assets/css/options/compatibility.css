@@ -1,0 +1,38 @@
+/* An attempt to make stylesheets less broken on
+ * pre-2020 browsers like Chrome 67.
+ *
+ * Note: browsers newer than Chrome 84 will not need this.
+ *
+ * The main thing about those is that they don't support
+ * the "gap" property in flexboxes, so that has to be polyfilled
+ * with margin tags.
+ */
+
+@import "common/measurements";
+@import "common/mixins";
+
+@define-mixin legacy-flex-gap $classname, $size {
+  .$(classname) > * {
+    margin-bottom: $(size);
+    margin-right: $(size);
+  }
+}
+
+header > *, nav.header__secondary > * {
+  margin-left: var(--padding-large);
+}
+
+@mixin if-mobile {
+  header > * {
+    margin-left: var(--padding-normal);
+  }
+}
+
+@mixin legacy-flex-gap block__header__buttons, var(--padding-normal);
+@mixin legacy-flex-gap block__header--js-tabbed, var(--padding-normal);
+@mixin legacy-flex-gap field, var(--padding-normal);
+@mixin legacy-flex-gap horizontal-list, var(--padding-normal);
+@mixin legacy-flex-gap communication-edit__actions, var(--padding-normal);
+@mixin legacy-flex-gap header__link--user, var(--padding-normal);
+@mixin legacy-flex-gap tag-list, var(--padding-small);
+@mixin legacy-flex-gap tagsinput, var(--padding-small);

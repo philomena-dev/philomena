@@ -51,12 +51,15 @@ $font-family-monospace: "Droid Sans Mono", monospace;
 
   --media-container-width: 225px;
   --media-tiny-container-width: 50px;
-  --media-small-container-width: 125px;
+  --media-small-container-width: 150px;
   --media-medium-container-width: 250px;
   --media-large-container-width: 500px;
   --media-full-container-width: 100%;
   --media-featured-width: 358px;
   --media-header-height: 2rem;
+
+  --badge-small-size: 1.1rem;
+  --badge-normal-size: 2rem;
 
   --number-badge-size: 0.6rem;
   --number-badge-padding: 0.1rem;

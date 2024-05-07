@@ -70,12 +70,12 @@ defmodule PhilomenaWeb.ContentSecurityPolicyPlug do
   defp cdn_uri, do: Application.get_env(:philomena, :cdn_host) |> to_uri()
   defp camo_uri, do: Application.get_env(:philomena, :camo_host) |> to_uri()
 
-  defp default_script_src, do: vite_hmr?(do: "'self' localhost:5173", else: "'self'")
+  defp default_script_src, do: vite_hmr?(do: "*", else: "'self'")
 
   defp default_connect_src,
-    do: vite_hmr?(do: "'self' localhost:5173 ws://localhost:5173", else: "'self'")
+    do: vite_hmr?(do: "*", else: "'self'")
 
-  defp default_style_src, do: vite_hmr?(do: "'self' 'unsafe-inline'", else: "'self'")
+  defp default_style_src, do: vite_hmr?(do: "*", else: "'self'")
 
   defp to_uri(host) when host in [nil, ""], do: ""
   defp to_uri(host), do: URI.to_string(%URI{scheme: "https", host: host})

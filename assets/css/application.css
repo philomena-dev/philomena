@@ -32,7 +32,7 @@
 @import "elements/form";
 @import "elements/heading";
 @import "elements/input";
-@import "elements/interaction";
+@import "elements/label";
 @import "elements/layout";
 @import "elements/list";
 @import "elements/media";
@@ -48,9 +48,11 @@
 @import "views/footer";
 @import "views/header";
 @import "views/image";
+@import "views/interaction";
 @import "views/markdown";
 @import "views/metabar";
 @import "views/pagination";
 @import "views/staff";
 @import "views/statistics";
 @import "views/tag";
+@import "views/user";

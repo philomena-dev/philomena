@@ -67,6 +67,18 @@
   justify-content: space-between;
 }
 
+.flex--small-gap {
+  gap: var(--padding-small);
+}
+
+.flex--normal-gap {
+  gap: var(--padding-normal);
+}
+
+.flex--large-gap {
+  gap: var(--padding-large);
+}
+
 .flex--start-bunched {
   justify-content: flex-start;
 }

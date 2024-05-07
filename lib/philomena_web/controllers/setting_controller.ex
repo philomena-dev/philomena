@@ -56,10 +56,18 @@ defmodule PhilomenaWeb.SettingController do
     )
   end
 
+  defp determine_theme(%{"theme" => "light", "light_theme" => name} = attrs) when name != nil,
+    do: Map.replace(attrs, "theme", name)
+
+  defp determine_theme(%{"dark_theme" => name} = attrs) when name != nil,
+    do: Map.replace(attrs, "theme", name)
+
+  defp determine_theme(attrs), do: Map.replace(attrs, "theme", "dark-blue")
+
   defp maybe_update_user(conn, nil, _user_params), do: {:ok, conn}
 
   defp maybe_update_user(conn, user, user_params) do
-    case Users.update_settings(user, user_params) do
+    case Users.update_settings(user, determine_theme(user_params)) do
       {:ok, _user} ->
         {:ok, conn}
 

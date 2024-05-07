@@ -1,5 +1,5 @@
 /**
- * Fingerprints
+ * Thanks uBlock for breaking our JS!
  */
 
 // http://stackoverflow.com/a/34842797
@@ -8,7 +8,7 @@ function hashCode(str) {
     ((prevHash << 5) - prevHash) + currVal.charCodeAt(0), 0) >>> 0;
 }
 
-function createFingerprint() {
+function createFp() {
   const prints = [
     navigator.userAgent,
     navigator.cpuClass,
@@ -33,19 +33,19 @@ function createFingerprint() {
   return hashCode(prints.join(''));
 }
 
-function setFingerprintCookie() {
-  let fingerprint;
+function setFpCookie() {
+  let fp;
 
   // The prepended 'c' acts as a crude versioning mechanism.
   try {
-    fingerprint = `c${createFingerprint()}`;
+    fp = `c${createFp()}`;
   }
-  // If fingerprinting fails, use fakeprint "c1836832948" as a last resort.
+  // If it fails, use fakeprint "c1836832948" as a last resort.
   catch (err) {
-    fingerprint = 'c1836832948';
+    fp = 'c1836832948';
   }
 
-  document.cookie = `_ses=${fingerprint}; path=/; SameSite=Lax`;
+  document.cookie = `_ses=${fp}; path=/; SameSite=Lax`;
 }
 
-export { setFingerprintCookie };
+export { setFpCookie };

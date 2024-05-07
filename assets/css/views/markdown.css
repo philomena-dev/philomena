@@ -30,3 +30,7 @@
 .spoiler-revealed a, .spoiler:hover a {
   color: var(--link-color);
 }
+
+.walloftext {
+  line-height: var(--readable-line-height);
+}

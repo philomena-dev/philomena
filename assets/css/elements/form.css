@@ -17,6 +17,36 @@ form .form--two-column > .field, form .form--two-column > li {
   gap: var(--padding-normal);
 }
 
+form .form--three-items {
+  display: grid;
+  grid: inherit;
+  grid-template-columns: 1 / -1;
+  gap: var(--padding-normal);
+}
+
+form .form--three-items > .field {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 1fr auto;
+  gap: var(--padding-normal);
+}
+
+form .form--three-items > .field > *:nth-child(1) {
+  grid-area: 1 / 1 / 2 / 2;
+}
+
+form .form--three-items > .field > *:nth-child(2) {
+  grid-area: 1 / 2 / 2 / 3;
+}
+
+form .form--three-items > .field > *:nth-child(3) {
+  grid-area: 2 / 1 / 3 / 3;
+}
+
+form .form--three-items select {
+  width: fit-content;
+}
+
 form .with-error {
   display: block;
 }

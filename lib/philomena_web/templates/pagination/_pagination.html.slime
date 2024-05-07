@@ -40,11 +40,11 @@
 
   nav.pagination.hidden--desktop
     = if first_page?(@page) do
-      span
+      span.with-icon
         i.fa.fa-backward>
         ' First
       .separator--vertical.separator--secondary
-      span
+      span.with-icon
         i.fa.fa-chevron-left>
         ' Prev
       .separator--vertical.separator--secondary
@@ -52,12 +52,14 @@
       = link to: first_page_path(@page, @route, params), class: "with-icon" do
         i.fa.fa-backward>
         ' First
+      .separator--vertical.separator--secondary
       = link to: prev_page_path(@page, @route, params), class: "js-prev with-icon" do
         i.fa.fa-chevron-left>
         ' Prev
+      .separator--vertical.separator--secondary
 
     .dropdown
-      a.page-current.pagination__dropdown
+      a.with-icon.page-current.pagination__dropdown
         => @page.page_number
         i.fa.fa-caret-down
 
@@ -80,11 +82,11 @@
 
     = if last_page?(@page) do
       .separator--vertical.separator--secondary
-      span
+      span.with-icon
         ' Next
         i.fa.fa-chevron-right
       .separator--vertical.separator--secondary
-      span
+      span.with-icon
         ' Last
         i.fa.fa-fast-forward
     - else

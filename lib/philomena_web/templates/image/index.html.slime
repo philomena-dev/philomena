@@ -14,7 +14,7 @@ elixir:
     .block__header.page__header
       => header
 
-  .block.block--borderless.flex__row.flex--spaced-out
+  .block.block--borderless.flex__row.flex--spaced-out.flex--wrap
     = if @images.total_pages > 1 do
       .button__group--standalone
         .page__pagination = pagination
@@ -41,17 +41,15 @@ elixir:
         - image ->
           = render PhilomenaWeb.ImageView, "_image_box.html", image: image, link: image_url.(image), size: assigns[:size] || :thumb, conn: @conn
 
-  .block.block--borderless.block--spaced-top.flex__row
+  br
+
+  .block.block--borderless.flex__row.flex--normal-gap.flex--wrap
     .button__group--standalone
       .page__pagination = pagination
-
-    span.page__info
-      = info
-
-    .flex__spacer
-
     .page__info.button__group--standalone
       a href="/settings/edit" title="Display Settings"
         i.fa.fa-cog
         span.hidden--mobile<>
           ' Display Settings
+    span.page__info
+      = info

@@ -69,17 +69,32 @@ defmodule PhilomenaWeb.LayoutView do
     Config.get(:footer)
   end
 
-  # def stylesheet_path(conn, %{theme: "dark"}),
-  #   do: Routes.static_path(conn, "/css/dark.css")
-
-  # def stylesheet_path(conn, %{theme: "red"}),
-  #   do: Routes.static_path(conn, "/css/red.css")
+  def stylesheet_path(conn, %{theme: theme})
+      when theme in [
+             "dark-blue",
+             "dark-red",
+             "dark-green",
+             "dark-purple",
+             "dark-pink",
+             "dark-yellow",
+             "dark-cyan",
+             "dark-grey",
+             "light-blue",
+             "light-red",
+             "light-green",
+             "light-purple",
+             "light-pink",
+             "light-yellow",
+             "light-cyan",
+             "light-grey"
+           ],
+      do: Routes.static_path(conn, "/css/#{theme}.css")
 
   def stylesheet_path(conn, _user),
     do: Routes.static_path(conn, "/css/dark-blue.css")
 
-  def dark_stylesheet_path(conn),
-    do: Routes.static_path(conn, "/css/dark-blue.css")
+  def light_stylesheet_path(conn),
+    do: Routes.static_path(conn, "/css/light-blue.css")
 
   def theme_name(%{theme: theme}), do: theme
   def theme_name(_user), do: "default"

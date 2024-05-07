@@ -61,10 +61,9 @@
       a href="#{pretty_url(@image, true, true)}" title="Download (no tags in filename)"
         i.fa.fa-download
   .metabar.metabar__user-credit.hidden--phone.layout--centered#extrameta
-    div
-      ' Uploaded
-      => pretty_time(@image.created_at)
-      = render PhilomenaWeb.ImageView, "_uploader.html", assigns
+    ' Uploaded
+    => pretty_time(@image.created_at)
+    = render PhilomenaWeb.ImageView, "_uploader.html", assigns
 
     span.image-size
       | &nbsp;

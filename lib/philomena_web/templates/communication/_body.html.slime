@@ -1,0 +1,60 @@
+- anon = is_nil(assigns[:noanon]) or @noanon == false
+
+- avatar = cond do
+  - not is_nil(assigns[:image]) ->
+    .post-image-container
+      = render PhilomenaWeb.ImageView, "_image_container.html", image: @image, size: :thumb_tiny, conn: @conn
+  - anon ->
+    = render PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html", object: @object, conn: @conn
+  - true ->
+    = render PhilomenaWeb.UserAttributionView, "_user_avatar.html", object: @object, conn: @conn, class: "avatar--small"
+
+- username = if anon do
+  = render PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @object, awards: true, conn: @conn
+- else
+  = render PhilomenaWeb.UserAttributionView, "_user.html", object: @object, badges: true, conn: @conn
+
+- title = if anon do
+  = render PhilomenaWeb.UserAttributionView, "_anon_user_title.html", object: @object, conn: @conn
+- else
+  = render PhilomenaWeb.UserAttributionView, "_user_title.html", object: @object, conn: @conn
+
+- contents = if Map.has_key?(@object, :hidden_from_users) and @object.hidden_from_users == true do
+  strong.comment_deleted
+    ' Deletion reason:
+    =<> @object.deletion_reason
+    = if can?(@conn, :hide, @object) and not is_nil(@object.deleted_by) do
+      | (
+      = @object.deleted_by.name
+      | )
+  = if can?(@conn, :hide, @object) do
+    = if @object.destroyed_content do
+      br
+      strong.comment_deleted>
+        | This #{@name}'s contents have been destroyed.
+    - else
+      br
+      =<> @body
+- else
+  =<> @body
+
+.flex.flex__grow.hidden--mobile
+  .flex.flex__fixed.spacing--right
+    = avatar
+  .flex__grow.communication__body
+    .communication__sender-block
+      span.communication__sender-name
+        = username
+      = title
+    .communication__body__text
+      = contents
+.flex.flex__column.flex__grow.hidden--desktop
+  .communication__sender-block
+    = avatar
+    .flex__column.flex--small-gap
+      span.communication__sender-name
+        = username
+      = title
+  .communication__body.communication__body__text
+    = contents
+  

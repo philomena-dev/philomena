@@ -81,6 +81,13 @@ defmodule PhilomenaWeb.UserAttributionView do
     "data:image/svg+xml;base64," <> Base.encode64(svg)
   end
 
+  def user_icon(%{secondary_role: sr}) when sr in ["Site Developer", "Devops"], do: "fa-screwdriver-wrench"
+  def user_icon(%{secondary_role: sr}) when sr in ["Public Relations"], do: "fa-bullhorn"
+  def user_icon(%{hide_default_role: true}), do: nil
+  def user_icon(%{role: role}) when role in ["admin", "moderator"], do: "fa-gavel"
+  def user_icon(%{role: "assistant"}), do: "fa-handshake-angle"
+  def user_icon(_), do: nil
+
   def user_labels(%{user: user}) do
     []
     |> personal_title(user)

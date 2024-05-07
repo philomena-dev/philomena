@@ -56,36 +56,54 @@ h1 Content Settings
           ' Do not share this URL with anyone, it may allow an attacker to compromise your account.
 
       .block__tab.hidden.flex.flex--maybe-wrap data-tab="display"
-        div
+        .form--three-items
           .field
             => label f, :use_centered_layout
-            => checkbox f, :use_centered_layout, class: "checkbox"
+            .with-error
+              => checkbox f, :use_centered_layout, class: "checkbox"
             .fieldlabel: i Align content to the center of the page - try this option out if you browse the site on a tablet or a fairly wide screen.
           .field
             => label f, :show_sidebar_and_watched_images
-            => checkbox f, :show_sidebar_and_watched_images, class: "checkbox"
+            .with-error
+              => checkbox f, :show_sidebar_and_watched_images, class: "checkbox"
             .fieldlabel: i Show the sidebar and new watched images on the homepage (the default) or hide it.
           .field
             => label f, :hide_vote_counts
-            => checkbox f, :hide_vote_counts, class: "checkbox"
+            .with-error
+              => checkbox f, :hide_vote_counts, class: "checkbox"
             .fieldlabel: i Hide upvote and downvote counts on images, showing only the overall score
           .field
             => label f, :images_per_page
-            => number_input f, :images_per_page, min: 1, max: 50, step: 1, class: "input"
-            = error_tag f, :images_per_page
+            .with-error
+              => number_input f, :images_per_page, min: 1, max: 50, step: 1, class: "input"
+              = error_tag f, :images_per_page
             .fieldlabel
               i
                 ' This is the number of images per page that are displayed on image listings and searches, up to a maximum of 50.
                 ' For 1080p monitors, try 24.
           .field
-            => label f, :theme
-            => select f, :theme, theme_options(@conn), class: "input"
-            = error_tag f, :theme
+            label Theme
+            select.input#js-theme-selector name="user[theme]" id="user_theme"
+              option value="dark" Dark
+              option value="light" Light
+            .fieldlabel: i General appearance of the theme
+          .field#js-theme-dark
+            label Theme color
+            .with-error
+              => select f, :dark_theme, theme_options(@conn), class: "input"
+              = error_tag f, :dark_theme
+            .fieldlabel: i Color of the theme, don't forget to save settings to apply the theme
+          .field.hidden#js-theme-light
+            label Theme color
+            .with-error
+              => select f, :light_theme, light_theme_options(@conn), class: "input"
+              = error_tag f, :light_theme
             .fieldlabel: i Preview themes by selecting one from the dropdown. Saving sets the currently selected theme.
           .field
             => label f, :scale_large_images
-            => select f, :scale_large_images, scale_options(), class: "input"
-            = error_tag f, :scale_large_images
+            .with-error
+              => select f, :scale_large_images, scale_options(), class: "input"
+              = error_tag f, :scale_large_images
 
       .block__tab.hidden.flex.flex--maybe-wrap data-tab="comments"
         div
