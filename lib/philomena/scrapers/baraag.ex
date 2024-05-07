@@ -13,19 +13,16 @@ defmodule Philomena.Scrapers.Baraag do
 
     toot = Jason.decode!(body)
 
-    images =
-      Enum.map(toot["media_attachments"], fn p ->
-        %{
-          url: ["url"],
-          camo_url: Camo.Image.image_url(p["preview_url"])
-        }
-      end)
-
     %{
       source_url: toot["url"],
       author_name: toot["account"]["username"],
       description: toot["content"],
-      images: images
+      images: [
+        %{
+          url: "#{toot["media_attachments"]["url"]}",
+          camo_url: Camo.Image.image_url(toot["media_attachments"]["preview_url"])
+        }
+      ]
     }
   end
 end
