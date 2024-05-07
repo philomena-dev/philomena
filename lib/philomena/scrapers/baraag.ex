@@ -11,8 +11,7 @@ defmodule Philomena.Scrapers.Baraag do
     api_url = "https://baraag.net/api/v1/statuses/#{status_id}"
     {:ok, %Tesla.Env{status: 200, body: body}} = Philomena.Http.get(api_url)
 
-    json = Jason.decode!(body)
-    toot = json
+    toot = Jason.decode!(body)
 
     images =
       Enum.map(toot["media_attachments"], fn p ->
