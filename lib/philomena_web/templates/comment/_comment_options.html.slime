@@ -1,14 +1,14 @@
-div
-  ' Posted
-  => pretty_time(@comment.created_at)
+.communication__options__post-time
+  span
+    ' Posted
+    => pretty_time(@comment.created_at)
 
-  a.communication__interaction href=Routes.image_comment_report_path(@conn, :new, @comment.image, @comment)
+  a.button.button--primary href=Routes.image_comment_report_path(@conn, :new, @comment.image, @comment)
     i.fa.fa-flag>
     ' Report
 
   = if not is_nil(@comment.edited_at) and can?(@conn, :show, @comment) do
-    br
-    a href=Routes.image_comment_history_path(@conn, :index, @comment.image, @comment)
+    a.communication__options__edit-time href=Routes.image_comment_history_path(@conn, :index, @comment.image, @comment)
       ' Edited
       => pretty_time(@comment.edited_at)
 
@@ -16,26 +16,26 @@ div
         ' because:
         => @comment.edit_reason
 
-div
+.flex.flex--normal-gap.flex--centered
   - link_path = Routes.image_path(@conn, :show, @comment.image) <> "#comment_#{@comment.id}"
   - safe_author = PhilomenaWeb.PostView.markdown_safe_author(@comment)
   - quote_body = if @comment.hidden_from_users, do: "", else: @comment.body
 
-  a.communication__interaction title="Link to comment" href=link_path
-    i.fa.fa-link>
+  a.button.button--primary title="Link to comment" href=link_path
+    i.fa.fa-link
     ' Link
 
-  a.communication__interaction.post-reply.post-reply-quote href=link_path data-reply-url=link_path data-author=safe_author data-post=quote_body
-    i.fa.fa-quote-right>
+  a.button.button--primary.post-reply.post-reply-quote href=link_path data-reply-url=link_path data-author=safe_author data-post=quote_body
+    i.fa.fa-quote-right
     ' Quote
 
-  a.communication__interaction.post-reply href=link_path data-reply-url=link_path data-author=safe_author
-    i.fa.fa-reply>
+  a.button.button--primary.post-reply href=link_path data-reply-url=link_path data-author=safe_author
+    i.fa.fa-reply
     ' Reply
 
   = if can?(@conn, :edit, @comment) do
     span.owner-options
       strong
-        a.communication__interaction href=Routes.image_comment_path(@conn, :edit, @comment.image, @comment)
-          i.fas.fa-edit>
+        a.button.button--primary href=Routes.image_comment_path(@conn, :edit, @comment.image, @comment)
+          i.fas.fa-edit
           ' Edit

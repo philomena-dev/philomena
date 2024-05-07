@@ -66,15 +66,13 @@
 
 .metabar__user-credit {
   display: flex;
-  box-sizing: border-box;
+  flex-direction: row;
   gap: var(--padding-small);
 }
 
 .metabar__user-credit .image_uploader {
   display: flex;
-  align-self: center;
   align-items: center;
-  vertical-align: center;
   gap: var(--padding-small);
 }
 

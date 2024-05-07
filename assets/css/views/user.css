@@ -1,6 +1,5 @@
 .badges {
-  display: grid;
-  grid-template-columns: repeat(6, var(--badge-small-size));
+  display: flex;
   gap: var(--padding-small);
 }
 
