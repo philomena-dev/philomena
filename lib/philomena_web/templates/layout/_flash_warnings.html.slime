@@ -10,19 +10,17 @@
         a href=notice.link
           = notice.link_text
 
-/ A lil disclaimer because people love to panic.
-= if not vite_reload?() do
-  .flash.flash--special
-    .flash__icon
-      i.fa.fa-dragon
-    .flash__message
-      strong> Here be dragons!
-      ' This is a work-in-progress branch of the site code. At current state, it is approximately
-      em> 40 percent
-      ' finished. Everything is subject to change, and will probably be changed.
-      ' Keep calm and don't freak out if something looks ugly/broken - it will be fixed.
-      a href="https://derpibooru.org/forums/meta/topics/so-you-found-the-redesign?post_id=5609737"
-        | Check out this topic for more info, the FAQ, and to yell at me about this.
+.flash.flash--special
+  .flash__icon
+    i.fa.fa-dragon
+  .flash__message
+    strong> Here be dragons!
+    ' This is a work-in-progress branch of the site code. At current state, it is approximately
+    em> 40 percent
+    ' finished. Everything is subject to change, and will probably be changed.
+    ' Keep calm and don't freak out if something looks ugly/broken - it will be fixed.
+    a href="https://derpibooru.org/forums/meta/topics/so-you-found-the-redesign?post_id=5609737"
+      | Check out this topic for more info, the FAQ, and to yell at me about this.
 
 noscript.flash.flash--warning
   .flash__icon
