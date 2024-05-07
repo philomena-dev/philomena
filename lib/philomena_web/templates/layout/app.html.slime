@@ -10,7 +10,7 @@ html lang="en"
         ' - Derpibooru
       - else
         ' Derpibooru
-    link rel="stylesheet" href="/css/application.css"
+    link rel="stylesheet" href=Routes.static_path(@conn, "/css/application.css")
     link rel="stylesheet" href=stylesheet_path(@conn, @current_user)
     = if is_nil(@current_user) do
       link rel="stylesheet" href=light_stylesheet_path(@conn) media="(prefers-color-scheme: light)"
