@@ -6,23 +6,34 @@ defmodule Philomena.Scrapers.Baraag do
   end
 
   def scrape(_uri, url) do
-    [user, status_id] = Regex.run(@url_regex, url, capture: :all)
+    [_, status_id] = Regex.run(@url_regex, url, capture: :all)
 
     api_url = "https://baraag.net/api/v1/statuses/#{status_id}"
     {:ok, %Tesla.Env{status: 200, body: body}} = Philomena.Http.get(api_url)
 
     toot = Jason.decode!(body)
 
+    images =
+      for x <- toot["media_attachments"] do
+        %{
+          url: "#{x["url"]}",
+          camo_url: Camo.Image.image_url(x["preview_url"])
+        }
+      end
+
+    description =
+      toot["content"]
+      |> HtmlSanitizeEx.strip_tags()
+      |> String.replace(~r/  +/, " ")
+      |> String.replace(~r/\n \n +/, "\n")
+      |> String.replace(~r/\n /, "\n")
+      |> String.trim()
+
     %{
       source_url: toot["url"],
       author_name: toot["account"]["username"],
-      description: toot["content"],
-      images: [
-        %{
-          url: "#{toot["media_attachments"]["url"]}",
-          camo_url: Camo.Image.image_url(toot["media_attachments"]["preview_url"])
-        }
-      ]
+      description: description,
+      images: images
     }
   end
 end
