@@ -35,7 +35,7 @@ defmodule Philomena.Filters do
   """
   def default_filter do
     Filter
-    |> where(system: true, name: "Default")
+    |> where(system: true, name: "SFW Furry")
     |> Repo.one!()
   end
 
