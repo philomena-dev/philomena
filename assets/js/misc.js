@@ -5,9 +5,22 @@
 import store from './utils/store';
 import { $, $$ } from './utils/dom';
 
+import bbcode from 'bbcode';
+
+function parseBBcode() {
+  let description = document.querySelectorAll('.image-description .block .block__content .paragraph');
+  if (description.length > 0) {
+    description.forEach(el => {
+      el.innerHTML = bbcode.parse(el.innerHTML);
+    });
+  }
+}
+
+parseBBcode();
+
 let touchMoved = false;
 
-function formResult({target, detail}) {
+function formResult({ target, detail }) {
 
   const elements = {
     '#description-form': '.image-description',
@@ -16,6 +29,7 @@ function formResult({target, detail}) {
 
   function showResult(resultEl, formEl, response) {
     resultEl.innerHTML = response;
+    parseBBcode();
     resultEl.classList.remove('hidden');
     formEl.classList.add('hidden');
     formEl.querySelector('input[type="submit"],button').disabled = false;

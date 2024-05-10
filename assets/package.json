@@ -21,7 +21,8 @@
     "normalize-scss": "^8.0.0",
     "sass": "^1.75.0",
     "typescript": "^5.4",
-    "vite": "^5.2"
+    "vite": "^5.2",
+    "bbcode": "^0.1.5"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.1.0",
