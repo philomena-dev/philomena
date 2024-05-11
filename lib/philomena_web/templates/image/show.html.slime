@@ -6,8 +6,8 @@
   = if @conn.assigns.advert do
     = render PhilomenaWeb.AdvertView, "_box.html", advert: @conn.assigns.advert, conn: @conn
   = render PhilomenaWeb.ImageView, "_tags.html", image: @image, tag_change_count: @tag_change_count, changeset: @image_changeset, conn: @conn
-    .image-description
-  = render PhilomenaWeb.ImageView, "_description.html", image: @image, body: @description, conn: @conn
+  .image-description
+    = render PhilomenaWeb.ImageView, "_description.html", image: @image, body: @description, conn: @conn
   = render PhilomenaWeb.Image.DescriptionView, "_form.html", image: @image, changeset: @image_changeset, conn: @conn
   = render PhilomenaWeb.ImageView, "_source.html", image: @image, source_change_count: @source_change_count, changeset: @image_changeset, conn: @conn
   = render PhilomenaWeb.ImageView, "_options.html", image: @image, changeset: @image_changeset, conn: @conn

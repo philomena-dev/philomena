@@ -1,13 +1,13 @@
 .block.block--fixed.block--warning
   h4
-    ' You've been banned!
+    ' You are currently suspended.
   p
-    ' You cannot create comments or posts or update metadata (or do anything but read, really) until
+    ' While you can continue browsing the sites and viewing posts, following tags, etc. you cannot create comments, posts, or update metadata (or do anything but read, really) until
     = pretty_time @conn.assigns.current_ban.valid_until
     ' .
 
   p
-    ' The reason given by the administrator who banned you is:
+    ' The reason given by the administrator is:
     br
     strong>
       = @conn.assigns.current_ban.reason
