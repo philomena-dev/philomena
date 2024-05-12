@@ -17,22 +17,53 @@ defmodule Philomena.Scrapers.Inkbunny do
     json = Jason.decode!(body)
     [submission] = json["submissions"]
 
-    description = "##\s#{submission["title"]}\n#{submission["description"]}"
+    rating = if submission["rating_name"] == "General", do: "safe"
+    r = submission["ratings"]
 
-    images =
-      for x <- submission["files"] do
-        %{
-          url: "#{x["file_url_full"]}",
-          camo_url: Camo.Image.image_url(x["file_url_screen"])
-        }
+    rating =
+      cond do
+        [] = r ->
+          rating
+
+        Enum.find(r, fn x -> x["name"] == "Strong Violence" end) ->
+          false
+
+        Enum.find(r, fn x -> x["name"] == "Sexual Themes" end) ->
+          "explicit"
+
+        Enum.find(r, fn x -> x["name"] == "Violence" end) ->
+          "grimdark"
+
+        Enum.find(r, fn x -> x["name"] == "Nudity" end) ->
+          "nude only"
       end
 
-    %{
-      source_url: url,
-      author_name: submission["username"],
-      description: description,
-      images: images
-    }
+    if rating do
+      description = "##\s#{submission["title"]}\n#{submission["description"]}"
+
+      tags =
+        for x <- submission["keywords"], x["contributed"] == "f" do
+          x["keyword_name"]
+        end
+
+      images =
+        for x <- submission["files"] do
+          %{
+            url: "#{x["file_url_full"]}",
+            camo_url: Camo.Image.image_url(x["file_url_screen"])
+          }
+        end
+
+      %{
+        source_url: url,
+        author_name: submission["username"],
+        description: description,
+        tags: [rating | tags],
+        images: images
+      }
+    else
+      %{errors: ["Requested image does not have an acceptable rating for submission."]}
+    end
   end
 
   defp inkbunny_sid do
