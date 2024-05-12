@@ -9,6 +9,33 @@ ul
 
 = render PhilomenaWeb.BanView, "_bans.html", bans: @subnet_bans, conn: @conn
 
+h4 Geolocation
+= case @geo do
+  - {:ok, data} ->
+    table.table
+      thead
+        tr
+          td Country
+          td City
+          td ASN
+          td Timezone
+      tbody
+        tr
+          td = data["country"]["names"]["en"] || data["registered_country"]["names"]["en"] || "Unavailable"
+          td = data["city"]["names"]["en"] || "Unavailable"
+          td
+            = if {:ok, asn} = @asn do
+              = asn["autonomous_system_organization"]
+          td = data["location"]["time_zone"] || "Unavailable"
+  - :not_found ->
+    p Could not geolocate IP address.
+  - {:error, {:invalid_address, _}} ->
+    p The provided IP address is invalid.
+  - {:error, :database_unknown} ->
+    p GeoIP is not configured on this instance.
+  - _ ->
+    p An error ocurred while geolocating the IP.
+
 h2 Administration Options
 ul
   li = link "View tag changes", to: Routes.ip_profile_tag_change_path(@conn, :index, to_string(@ip))

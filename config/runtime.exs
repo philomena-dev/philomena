@@ -42,6 +42,14 @@ config :philomena,
   camo_key: System.get_env("CAMO_KEY"),
   cdn_host: System.fetch_env!("CDN_HOST")
 
+locus_key =
+  case System.fetch_env("LOCUS_KEY") do
+    {:ok, locus_key} -> locus_key
+    _ -> nil
+  end
+
+config :locus, license_key: locus_key
+
 app_dir = System.get_env("APP_DIR", File.cwd!())
 
 json_config =

@@ -75,6 +75,7 @@ defmodule Philomena.MixProject do
       {:sweet_xml, "~> 0.7"},
       {:inet_cidr, "~> 1.0"},
       {:html_sanitize_ex, "~> 1.4"},
+      {:locus, "~> 2.3"},
 
       # SMTP
       {:tls_certificate_check, "~> 1.21"},

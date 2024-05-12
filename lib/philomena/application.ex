@@ -6,6 +6,20 @@ defmodule Philomena.Application do
   use Application
 
   def start(_type, _args) do
+    locus_key = Application.get_env(:locus, :license_key)
+
+    if locus_key && locus_key != "" do
+      :locus.start_loader(:city, {:maxmind, "GeoLite2-City"},
+        update_period: 86_400 * 1_000,
+        error_retries: [backoff: 3600]
+      )
+
+      :locus.start_loader(:asn, {:maxmind, "GeoLite2-ASN"},
+        update_period: 86_400 * 1_000,
+        error_retries: [backoff: 3600]
+      )
+    end
+
     # List all child processes to be supervised
     children = [
       # Start the Ecto repository

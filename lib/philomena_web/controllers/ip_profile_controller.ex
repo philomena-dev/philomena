@@ -9,6 +9,8 @@ defmodule PhilomenaWeb.IpProfileController do
   plug :authorize_ip
 
   def show(conn, %{"id" => ip}) do
+    geo = :locus.lookup(:city, ip)
+    asn = :locus.lookup(:asn, ip)
     {:ok, ip} = EctoNetwork.INET.cast(ip)
 
     user_ips =
@@ -28,7 +30,9 @@ defmodule PhilomenaWeb.IpProfileController do
       title: "#{ip}'s IP profile",
       ip: ip,
       user_ips: user_ips,
-      subnet_bans: subnet_bans
+      subnet_bans: subnet_bans,
+      geo: geo,
+      asn: asn
     )
   end
 
