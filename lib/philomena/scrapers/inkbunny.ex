@@ -22,7 +22,7 @@ defmodule Philomena.Scrapers.Inkbunny do
 
     rating =
       cond do
-        [] = r ->
+        r == [] ->
           rating
 
         Enum.find(r, fn x -> x["name"] == "Strong Violence" end) ->
