@@ -87,7 +87,7 @@ function pickAndResize(elem) {
   }
 
   const muted = store.get('unmute_videos') ? '' : 'muted';
-  const autoplay = elem.classList.contains('hidden') ? '' : 'autoplay'; // Don't autoplay hidden videos initially
+  const autoplay = elem.classList.contains('hidden') ? '' : 'autoplay'; // Fix for spoilered image pages
 
   if (imageFormat === 'mp4') {
     elem.classList.add('full-height');

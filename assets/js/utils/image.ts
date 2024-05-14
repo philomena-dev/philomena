@@ -69,7 +69,6 @@ export function showBlock(img: HTMLDivElement) {
     imageShowClasses.remove('hidden');
     imageShowClasses.add('spoiler-pending');
 
-    // Play previously paused, spoilered video
     const vidEl = img.querySelector('video');
     if (vidEl) {
       vidEl.play();
