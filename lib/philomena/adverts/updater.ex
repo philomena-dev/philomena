@@ -1,12 +1,12 @@
-defmodule Philomena.AdvertUpdater do
+defmodule Philomena.Adverts.Updater do
   alias Philomena.Adverts.Advert
   alias Philomena.Repo
   import Ecto.Query
 
   def child_spec([]) do
     %{
-      id: Philomena.AdvertUpdater,
-      start: {Philomena.AdvertUpdater, :start_link, [[]]}
+      id: Philomena.Adverts.Updater,
+      start: {Philomena.Adverts.Updater, :start_link, [[]]}
     }
   end
 

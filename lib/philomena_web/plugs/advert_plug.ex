@@ -1,5 +1,5 @@
 defmodule PhilomenaWeb.AdvertPlug do
-  alias Philomena.AdvertUpdater
+  alias Philomena.Adverts.Updater
   alias Philomena.Adverts
   alias Plug.Conn
 
@@ -33,7 +33,7 @@ defmodule PhilomenaWeb.AdvertPlug do
   defp record_impression(nil), do: nil
 
   defp record_impression(advert) do
-    AdvertUpdater.cast(:impression, advert.id)
+    Updater.cast(:impression, advert.id)
 
     advert
   end
