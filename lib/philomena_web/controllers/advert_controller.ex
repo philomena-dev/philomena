@@ -1,7 +1,7 @@
 defmodule PhilomenaWeb.AdvertController do
   use PhilomenaWeb, :controller
 
-  alias PhilomenaWeb.AdvertUpdater
+  alias Philomena.AdvertUpdater
   alias Philomena.Adverts.Advert
 
   plug :load_resource, model: Advert

@@ -1,5 +1,5 @@
 defmodule PhilomenaWeb.AdvertPlug do
-  alias PhilomenaWeb.AdvertUpdater
+  alias Philomena.AdvertUpdater
   alias Philomena.Adverts
   alias Plug.Conn
 

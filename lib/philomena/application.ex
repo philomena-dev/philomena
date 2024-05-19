@@ -26,7 +26,7 @@ defmodule Philomena.Application do
        ]},
 
       # Start the endpoint when the application starts
-      PhilomenaWeb.AdvertUpdater,
+      Philomena.AdvertUpdater,
       PhilomenaWeb.UserFingerprintUpdater,
       PhilomenaWeb.UserIpUpdater,
       PhilomenaWeb.Endpoint,
