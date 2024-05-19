@@ -27,8 +27,8 @@ defmodule Philomena.Application do
 
       # Start the endpoint when the application starts
       Philomena.AdvertUpdater,
-      PhilomenaWeb.UserFingerprintUpdater,
-      PhilomenaWeb.UserIpUpdater,
+      Philomena.UserFingerprintUpdater,
+      Philomena.UserIpUpdater,
       PhilomenaWeb.Endpoint,
 
       # Connection drainer for SIGTERM

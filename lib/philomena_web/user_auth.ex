@@ -2,10 +2,10 @@ defmodule PhilomenaWeb.UserAuth do
   import Plug.Conn
   import Phoenix.Controller
 
-  alias Philomena.Users
   alias PhilomenaWeb.Router.Helpers, as: Routes
-  alias PhilomenaWeb.UserIpUpdater
-  alias PhilomenaWeb.UserFingerprintUpdater
+  alias Philomena.Users
+  alias Philomena.UserIpUpdater
+  alias Philomena.UserFingerprintUpdater
 
   # Make the remember me cookie valid for 365 days.
   # If you want bump or reduce this value, also change
