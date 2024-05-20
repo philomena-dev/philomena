@@ -1,0 +1,251 @@
+diff --git a/docker/web/nginx.conf b/docker/web/nginx.conf
+index 218fe896..468040bd 100644
+--- a/docker/web/nginx.conf
++++ b/docker/web/nginx.conf
+@@ -10,6 +10,7 @@ map $uri $custom_content_type {
+ 	~(.*\.svg)$		"image/svg+xml";
+ 	~(.*\.mp4)$		"video/mp4";
+ 	~(.*\.webm)$	"video/webm";
++	~(.*\.webp)$	"image/webp";
+ }
+ 
+ lua_package_path '/etc/nginx/lua/?.lua;;';
+diff --git a/lib/philomena/analyzers.ex b/lib/philomena/analyzers.ex
+index 1a3961ec..45860a84 100644
+--- a/lib/philomena/analyzers.ex
++++ b/lib/philomena/analyzers.ex
+@@ -10,6 +10,7 @@ defmodule Philomena.Analyzers do
+   alias Philomena.Analyzers.Png
+   alias Philomena.Analyzers.Svg
+   alias Philomena.Analyzers.Webm
++  alias Philomena.Analyzers.Webp
+ 
+   @doc """
+   Returns an {:ok, analyzer} tuple, with the analyzer being a module capable
+@@ -33,6 +34,7 @@ defmodule Philomena.Analyzers do
+   def analyzer("image/jpeg"), do: {:ok, Jpeg}
+   def analyzer("image/png"), do: {:ok, Png}
+   def analyzer("image/svg+xml"), do: {:ok, Svg}
++  def analyzer("image/webp"), do: {:ok, Webp}
+   def analyzer("video/webm"), do: {:ok, Webm}
+   def analyzer(_content_type), do: :error
+ 
+diff --git a/lib/philomena/analyzers/webp.ex b/lib/philomena/analyzers/webp.ex
+new file mode 100644
+index 00000000..40770232
+--- /dev/null
++++ b/lib/philomena/analyzers/webp.ex
+@@ -0,0 +1,35 @@
++defmodule Philomena.Analyzers.Webp do
++  def analyze(file) do
++    stats = stats(file)
++
++    %{
++      extension: "webp",
++      mime_type: "image/webp",
++      animated?: false,
++      duration: stats.duration,
++      dimensions: stats.dimensions
++    }
++  end
++
++  defp stats(file) do
++    ffprobe_opts = [
++      "-v",
++      "error",
++      "-select_streams",
++      "v",
++      "-show_entries",
++      "stream=width,height",
++      "-of",
++      "json",
++      file
++    ]
++
++    with {iodata, 0} <- System.cmd("ffprobe", ffprobe_opts),
++         {:ok, %{"streams" => [%{"width" => width, "height" => height}]}} <- Jason.decode(iodata) do
++      %{dimensions: {width, height}, duration: 1 / 25}
++    else
++      _ ->
++        %{dimensions: {0, 0}, duration: 0.0}
++    end
++  end
++end
+diff --git a/lib/philomena/images/image.ex b/lib/philomena/images/image.ex
+index 7dbe0444..9f10458e 100644
+--- a/lib/philomena/images/image.ex
++++ b/lib/philomena/images/image.ex
+@@ -166,7 +166,7 @@ defmodule Philomena.Images.Image do
+     |> validate_length(:image_name, max: 255, count: :bytes)
+     |> validate_inclusion(
+       :image_mime_type,
+-      ~W(image/gif image/jpeg image/png image/svg+xml video/webm),
++      ~W(image/gif image/jpeg image/png image/svg+xml video/webm image/webp),
+       message: "(#{attrs["image_mime_type"]}) is invalid"
+     )
+     |> check_dimensions()
+diff --git a/lib/philomena/mime.ex b/lib/philomena/mime.ex
+index 08d5dfc1..2341edcb 100644
+--- a/lib/philomena/mime.ex
++++ b/lib/philomena/mime.ex
+@@ -30,7 +30,7 @@ defmodule Philomena.Mime do
+   def true_mime("audio/webm"), do: {:ok, "video/webm"}
+ 
+   def true_mime(mime)
+-      when mime in ~W(image/gif image/jpeg image/png image/svg+xml video/webm),
++      when mime in ~W(image/gif image/jpeg image/png image/svg+xml video/webm image/webp),
+       do: {:ok, mime}
+ 
+   def true_mime(mime), do: {:unsupported_mime, mime}
+diff --git a/lib/philomena/processors.ex b/lib/philomena/processors.ex
+index 202da1d4..3073fd2d 100644
+--- a/lib/philomena/processors.ex
++++ b/lib/philomena/processors.ex
+@@ -25,6 +25,7 @@ defmodule Philomena.Processors do
+   alias Philomena.Processors.Png
+   alias Philomena.Processors.Svg
+   alias Philomena.Processors.Webm
++  alias Philomena.Processors.Webp
+ 
+   @doc """
+   Returns a processor, with the processor being a module capable
+@@ -38,6 +39,7 @@ defmodule Philomena.Processors do
+   def processor("image/png"), do: Png
+   def processor("image/svg+xml"), do: Svg
+   def processor("video/webm"), do: Webm
++  def processor("image/webp"), do: Webp
+   def processor(_content_type), do: nil
+ 
+   @doc """
+diff --git a/lib/philomena/processors/webp.ex b/lib/philomena/processors/webp.ex
+new file mode 100644
+index 00000000..47e213e3
+--- /dev/null
++++ b/lib/philomena/processors/webp.ex
+@@ -0,0 +1,78 @@
++defmodule Philomena.Processors.Webp do
++  alias Philomena.Intensities
++
++  def versions(sizes) do
++    Enum.map(sizes, fn {name, _} -> "#{name}.webp" end)
++  end
++
++  def process(_analysis, file, versions) do
++    stripped = strip(file)
++    preview = preview(file)
++
++    {:ok, intensities} = Intensities.file(preview)
++
++    scaled = Enum.flat_map(versions, &scale(stripped, &1))
++
++    %{
++      replace_original: stripped,
++      intensities: intensities,
++      thumbnails: scaled
++    }
++  end
++
++  def post_process(_analysis, _file), do: %{}
++
++  def intensities(_analysis, file) do
++    {:ok, intensities} = Intensities.file(file)
++    intensities
++  end
++
++  defp preview(file) do
++    preview = Briefly.create!(extname: ".png")
++
++    {_output, 0} =
++      System.cmd("convert", [
++        file,
++        "-auto-orient",
++        "-strip",
++        preview
++      ])
++
++    preview
++  end
++
++  defp strip(file) do
++    stripped = Briefly.create!(extname: ".webp")
++
++    {_output, 0} =
++      System.cmd("convert", [
++        file,
++        "-auto-orient",
++        "-strip",
++        stripped
++      ])
++
++    stripped
++  end
++
++  defp scale(file, {thumb_name, {width, height}}) do
++    scaled = Briefly.create!(extname: ".webp")
++    scale_filter = "scale=w=#{width}:h=#{height}:force_original_aspect_ratio=decrease"
++
++    {_output, 0} =
++      System.cmd("ffmpeg", [
++        "-loglevel",
++        "0",
++        "-y",
++        "-i",
++        file,
++        "-vf",
++        scale_filter,
++        "-q:v",
++        "1",
++        scaled
++      ])
++
++    [{:copy, scaled, "#{thumb_name}.webp"}]
++  end
++end
+diff --git a/lib/philomena/scrapers/raw.ex b/lib/philomena/scrapers/raw.ex
+index 0085f54c..0f6d3388 100644
+--- a/lib/philomena/scrapers/raw.ex
++++ b/lib/philomena/scrapers/raw.ex
+@@ -1,5 +1,13 @@
+ defmodule Philomena.Scrapers.Raw do
+-  @mime_types ["image/gif", "image/jpeg", "image/png", "image/svg", "image/svg+xml", "video/webm"]
++  @mime_types [
++    "image/gif",
++    "image/jpeg",
++    "image/png",
++    "image/svg",
++    "image/svg+xml",
++    "video/webm",
++    "image/webp"
++  ]
+ 
+   @spec can_handle?(URI.t(), String.t()) :: true | false
+   def can_handle?(_uri, url) do
+diff --git a/lib/philomena/tags/tag.ex b/lib/philomena/tags/tag.ex
+index 924d4c4a..1d712bb8 100644
+--- a/lib/philomena/tags/tag.ex
++++ b/lib/philomena/tags/tag.ex
+@@ -118,7 +118,10 @@ defmodule Philomena.Tags.Tag do
+     tag
+     |> cast(attrs, [:image, :image_format, :image_mime_type, :uploaded_image])
+     |> validate_required([:image, :image_format, :image_mime_type])
+-    |> validate_inclusion(:image_mime_type, ~W(image/gif image/jpeg image/png image/svg+xml))
++    |> validate_inclusion(
++      :image_mime_type,
++      ~W(image/gif image/jpeg image/png image/svg+xml image/webp)
++    )
+   end
+ 
+   def remove_image_changeset(tag) do
+diff --git a/lib/philomena_web/views/duplicate_report_view.ex b/lib/philomena_web/views/duplicate_report_view.ex
+index 200e430e..69fbaa8e 100644
+--- a/lib/philomena_web/views/duplicate_report_view.ex
++++ b/lib/philomena_web/views/duplicate_report_view.ex
+@@ -3,7 +3,7 @@ defmodule PhilomenaWeb.DuplicateReportView do
+ 
+   alias PhilomenaWeb.ImageView
+ 
+-  @formats_order ~W(video/webm image/svg+xml image/png image/gif image/jpeg other)
++  @formats_order ~W(video/webm image/svg+xml image/png image/gif image/jpeg image/webp other)
+ 
+   def comparison_url(conn, image),
+     do: ImageView.thumb_url(image, can?(conn, :show, image), :full)

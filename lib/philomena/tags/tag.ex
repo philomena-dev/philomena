@@ -118,7 +118,10 @@ defmodule Philomena.Tags.Tag do
     tag
     |> cast(attrs, [:image, :image_format, :image_mime_type, :uploaded_image])
     |> validate_required([:image, :image_format, :image_mime_type])
-    |> validate_inclusion(:image_mime_type, ~W(image/gif image/jpeg image/png image/svg+xml))
+    |> validate_inclusion(
+      :image_mime_type,
+      ~W(image/gif image/jpeg image/png image/svg+xml image/webp)
+    )
   end
 
   def remove_image_changeset(tag) do
