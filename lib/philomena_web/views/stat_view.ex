@@ -2,7 +2,11 @@ defmodule PhilomenaWeb.StatView do
   use PhilomenaWeb, :view
 
   def upload_graph(data) do
-    data = Enum.sort_by(data, & &1["key"])
+    data =
+      data
+      |> Enum.sort_by(& &1["key"])
+      |> Enum.filter(fn x -> x["doc_count"] > 0 end)
+
     n_buckets = length(data)
 
     {
