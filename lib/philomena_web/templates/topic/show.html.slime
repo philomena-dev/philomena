@@ -32,7 +32,7 @@ h1 = @topic.title
 
     = if not @topic.hidden_from_users or can?(@conn, :hide, @topic) do
       a href=Routes.post_path(@conn, :index, pq: "topic_id:#{@topic.id}")
-        i.fa.fa-fw.fa-search>
+        i.fa.icon--padded.small.fa-search>
         ' Search Posts
       .flex.flex--wrap.block__header.block__header--light.page__header
         .flex--fixed.page__pagination

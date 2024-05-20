@@ -102,7 +102,7 @@ $spoiler-color: #0f0f0f;
 header {
   /* Apparently people will put me on a cross if
      I don't use Trixie colors, so here you go! */
-  background-color: #e2ebf2; 
+  background-color: #e2ebf2;
 }
 
 /* Sigh... my poor poor pretty CSS... */
@@ -114,6 +114,7 @@ header {
   color: var(--text-light-color) !important;
 }
 
-.input:focus, .header__search > .input:hover {
+.input:focus,
+.header__search > .input:hover {
   color: var(--text-color) !important;
 }

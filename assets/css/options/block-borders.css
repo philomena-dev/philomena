@@ -8,7 +8,8 @@
   --separator-vertical-size: inherit;
 }
 
-.block__content, .block__tab {
+.block__content,
+.block__tab {
   border: 1px solid var(--primary-border-color);
 }
 
@@ -16,7 +17,9 @@
   border: 1px solid var(--primary-border-color);
 }
 
-.button__group, .button__group--single, .button__group--standalone {
+.button__group,
+.button__group--single,
+.button__group--standalone {
   border: 1px solid var(--secondary-color);
 }
 

@@ -45,7 +45,7 @@
 
 = if @forced && (current?(@user, @conn.assigns.current_user) or can_index_user?(@conn)) do
   .block
-    i.fa.fa-fw.fa-filter>
+    i.fa.icon--padded.small.fa-filter>
     strong.comment_deleted> Forced Filter:
     = link @forced.name, to: Routes.filter_path(@conn, :show, @forced)
 

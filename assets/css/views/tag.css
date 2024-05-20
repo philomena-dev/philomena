@@ -1,19 +1,19 @@
 @define-mixin tag-color $tagtype {
-  .tag[data-tag-category=$(tagtype)] {
+  .tag[data-tag-category="$(tagtype)"] {
     color: var(--tag-$(tagtype)-text-color);
     background: var(--tag-$(tagtype)-color);
     border-color: var(--tag-$(tagtype)-border-color);
   }
 
-  .tag[data-tag-category=$(tagtype)] .tag__state {
+  .tag[data-tag-category="$(tagtype)"] .tag__state {
     color: var(--tag-$(tagtype)-text-color);
   }
 
-  .tag[data-tag-category=$(tagtype)] .tag__name {
+  .tag[data-tag-category="$(tagtype)"] .tag__name {
     color: var(--tag-$(tagtype)-text-color);
   }
 
-  .tag[data-tag-category=$(tagtype)] .tag__count {
+  .tag[data-tag-category="$(tagtype)"] .tag__count {
     background: var(--tag-$(tagtype)-border-color);
   }
 }

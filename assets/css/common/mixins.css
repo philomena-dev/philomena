@@ -42,7 +42,7 @@
     background: var(--secondary-dark-color);
   }
   .$(classname):nth-child(even) {
-    background: var(--secondary-muted-color);;
+    background: var(--secondary-muted-color);
   }
 
   @mixin even-odd-type $classname, primary;
@@ -54,7 +54,9 @@
 }
 
 @define-mixin animated-transition {
-  transition: color var(--transition-animation-duration) ease, background var(--transition-animation-duration) ease;
+  transition:
+    color var(--transition-animation-duration) ease,
+    background var(--transition-animation-duration) ease;
 }
 
 @define-mixin subgrid {

@@ -2,7 +2,7 @@ h1 Discussion Forums
 .block
   .block__header
     a href=Routes.post_path(@conn, :index)
-      i.fa.fa-fw.fa-search>
+      i.fa.icon--padded.small.fa-search>
       ' Search Posts
     span.block__header__item
       => @topic_count

@@ -74,7 +74,7 @@ $spoiler-color: #0f0f0f;
   --comment-color: $comment-color;
   --hide-color: $hide-color;
 
-   /* Spoiler colors */
+  /* Spoiler colors */
   --spoiler-color: $spoiler-color;
   --spoiler-revealed-color: hsl(from $spoiler-color h s calc(l + 20));
 

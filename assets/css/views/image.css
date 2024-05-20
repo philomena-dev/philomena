@@ -8,7 +8,8 @@
   gap: var(--padding-small);
 }
 
-.image-source__icon, .image-source__link {
+.image-source__icon,
+.image-source__link {
   overflow: hidden;
 }
 

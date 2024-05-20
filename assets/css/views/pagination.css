@@ -12,7 +12,8 @@
   font-size: 0.8rem !important;
 }
 
-.pagination a, .pagination span {
+.pagination a,
+.pagination span {
   display: grid;
   grid-template-columns: auto;
   gap: var(--padding-tiny);

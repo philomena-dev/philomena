@@ -14,7 +14,9 @@
     background: var(--$(type)-color);
   }
 
-  .button--$(type):hover, .button--$(type):active, .button--$(type).selected {
+  .button--$(type):hover,
+  .button--$(type):active,
+  .button--$(type).selected {
     background: var(--$(type)-dark-color) !important;
     border-radius: var(--border-radius-inner);
   }
@@ -53,7 +55,8 @@
   border-width: 0;
 }
 
-.button:hover, .button:active {
+.button:hover,
+.button:active {
   @mixin animated-transition;
   background: var(--primary-dark-color);
   border-radius: var(--border-radius-inner);
@@ -87,7 +90,9 @@
   margin-right: 0;
 }
 
-.button__group, .button__group--single, .button__group--standalone {
+.button__group,
+.button__group--single,
+.button__group--standalone {
   display: flex;
   flex-direction: row;
   border-radius: var(--border-radius-inner);
@@ -96,16 +101,18 @@
   line-height: var(--button-group-height);
 }
 
-.button__group:last-child, .button__group--single:last-child, .button__group--standalone:last-child {
+.button__group:last-child,
+.button__group--single:last-child,
+.button__group--standalone:last-child {
   margin: 0;
 }
 
 .button__group--tall {
-  line-height: var(--button-group-tall-height)
+  line-height: var(--button-group-tall-height);
 }
 
 .button__group--small {
-  line-height: var(--button-group-small-height)
+  line-height: var(--button-group-small-height);
 }
 
 .block__header__buttons .button {

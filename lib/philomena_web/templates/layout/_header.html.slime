@@ -3,7 +3,7 @@ header
     a.header__link href="#"
       i.fa.fa-bars
   a.header__logo.header__link href="/"
-    i.fa--padded.favicon-home>
+    i.icon--padded--right.favicon-home>
     span.hidden--mobile = site_name()
   a.header__link.hidden--mobile href="/images/new" title="Upload"
     i.fa.fa-upload
@@ -59,71 +59,71 @@ header
         a href=Routes.profile_path(@conn, :show, @current_user)
           .dropdown__item
             .dropdown__icon
-              i.fa.fa-fw.fa-user
+              i.fa.icon--padded.small.fa-user
             .dropdown__text
               = @current_user.name
         hr.dropdown__separator
         a href="/search?q=my:watched"
           .dropdown__item
             .dropdown__icon
-              i.fa.fa-fw.fa-eye
+              i.fa.icon--padded.small.fa-eye
             .dropdown__text Watched
         a href="/search?q=my:faves"
           .dropdown__item
             .dropdown__icon
-              i.fa.fa-fw.fa-star
+              i.fa.icon--padded.small.fa-star
             .dropdown__text Faves
         a href="/search?q=my:upvotes"
           .dropdown__item
             .dropdown__icon
-              i.fa.fa-fw.fa-arrow-up
+              i.fa.icon--padded.small.fa-arrow-up
             .dropdown__text Upvotes
         a href=Routes.gallery_path(@conn, :index, gallery: [creator: @current_user.name])
           .dropdown__item
             .dropdown__icon
-              i.fa.fa-fw.fa-image
+              i.fa.icon--padded.small.fa-image
             .dropdown__text Galleries
         a href="/search?q=my:uploads"
           .dropdown__item
             .dropdown__icon
-              i.fa.fa-fw.fa-upload
+              i.fa.icon--padded.small.fa-upload
             .dropdown__text Uploads
         a href="/comments?cq=my:comments"
           .dropdown__item
             .dropdown__icon
-              i.fa.fa-fw.fa-comments
+              i.fa.icon--padded.small.fa-comments
             .dropdown__text Comments
         a href="/posts?pq=my:posts"
           .dropdown__item
             .dropdown__icon
-              i.fa.fa-fw.fa-pen-square
+              i.fa.icon--padded.small.fa-pen-square
             .dropdown__text Posts
         a href=Routes.profile_artist_link_path(@conn, :index, @current_user)
           .dropdown__item
             .dropdown__icon
-              i.fa.fa-fw.fa-link
+              i.fa.icon--padded.small.fa-link
             .dropdown__text Links
         a href="/conversations"
           .dropdown__item
             .dropdown__icon
-              i.fa.fa-fw.fa-envelope
+              i.fa.icon--padded.small.fa-envelope
             .dropdown__text Messages
         hr.dropdown__separator
         a href="/settings/edit"
           .dropdown__item
             .dropdown__icon
-              i.fa.fa-fw.fa-cogs
+              i.fa.icon--padded.small.fa-cogs
             .dropdown__text Settings
         a href=Routes.registration_path(@conn, :edit)
           .dropdown__item
             .dropdown__icon
-              i.fa.fa-fw.fa-user
+              i.fa.icon--padded.small.fa-user
             .dropdown__text Account
         hr.dropdown__separator
         a href=Routes.session_path(@conn, :delete) data-method="delete"
           .dropdown__item
             .dropdown__icon
-              i.fa.fa-fw.fa-sign-out-alt
+              i.fa.icon--padded.small.fa-sign-out-alt
             .dropdown__text Logout
   - else
     a.header__link.hidden--mobile href="/filters"
@@ -132,7 +132,7 @@ header
       | )
     span.js-burger-links.hidden--mobile
       a.header__link href="/settings/edit"
-        i.fa.fa-fw.fa-cogs.hidden--desktop>
+        i.fa.icon--padded.small.fa-cogs.hidden--desktop>
         | Settings
     a.header__link href=Routes.registration_path(@conn, :new)
       | Register

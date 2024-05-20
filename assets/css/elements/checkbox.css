@@ -10,12 +10,13 @@ input[type="checkbox"].checkbox {
   background: var(--danger-color);
   border: var(--checkbox-border-width) solid var(--danger-border-color);
   border-radius: var(--border-radius-checkbox);
-  transition: background var(--transition-long-animation-duration) ease,
-              border-color var(--transition-long-animation-duration) ease;
+  transition:
+    background var(--transition-long-animation-duration) ease,
+    border-color var(--transition-long-animation-duration) ease;
 }
 
 .checkbox:after {
-  content: '';
+  content: "";
   font-family: var(--fa-style-family, "Font Awesome 6 Free");
   font-weight: var(--fa-style, 900);
   text-align: center;
@@ -33,12 +34,13 @@ input[type="checkbox"].checkbox {
 .checkbox:checked {
   background: var(--success-color);
   border-color: var(--success-border-color);
-  transition: background var(--transition-long-animation-duration) ease,
-              border-color var(--transition-long-animation-duration) ease;
+  transition:
+    background var(--transition-long-animation-duration) ease,
+    border-color var(--transition-long-animation-duration) ease;
 }
 
 .checkbox:checked:after {
-  content: '';
+  content: "";
   left: calc(var(--checkbox-width) - var(--checkbox-height));
   transition: left var(--transition-long-animation-duration) ease;
 }

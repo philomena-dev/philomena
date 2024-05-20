@@ -11,17 +11,20 @@
   margin-left: var(--padding-normal);
 }
 
-.spoiler, .spoiler a {
+.spoiler,
+.spoiler a {
   color: var(--spoiler-color);
-  background: var(--spoiler-color)
+  background: var(--spoiler-color);
 }
 
-.spoiler-revealed, .spoiler:hover {
+.spoiler-revealed,
+.spoiler:hover {
   color: var(--text-color);
   background: var(--spoiler-revealed-color);
 }
 
-.spoiler-revealed a, .spoiler:hover a {
+.spoiler-revealed a,
+.spoiler:hover a {
   color: var(--link-color);
 }
 

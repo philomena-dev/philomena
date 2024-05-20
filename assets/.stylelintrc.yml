@@ -1,5 +1,7 @@
 ---
 extends: stylelint-config-recommended
+plugins:
+  - stylelint-prettier
 rules:
   block-no-empty: true
   at-rule-no-unknown:
@@ -73,3 +75,4 @@ rules:
   declaration-block-no-redundant-longhand-properties: true
   shorthand-property-no-redundant-values: true
   comment-whitespace-inside: always
+  prettier/prettier: true

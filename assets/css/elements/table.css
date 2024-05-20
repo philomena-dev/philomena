@@ -15,7 +15,8 @@
   border-top-right-radius: 0;
 }
 
-.table td, th {
+.table td,
+th {
   padding: var(--padding-small);
   border: 1px solid var(--secondary-muted-color);
   text-align: left;

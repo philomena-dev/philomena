@@ -18,7 +18,8 @@
   }
 }
 
-header > *, nav.header__secondary > * {
+header > *,
+nav.header__secondary > * {
   margin-left: var(--padding-large);
 }
 

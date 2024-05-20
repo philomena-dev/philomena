@@ -30,7 +30,7 @@ h1 Staff
         i class="fa #{category_icon(header)}"
         = header
       p.staff-block__description
-        i.fa.fa-fw.fa-info-circle>
+        i.fa.icon--padded.small.fa-info-circle>
         = category_description(header)
 
       .staff-block__grid

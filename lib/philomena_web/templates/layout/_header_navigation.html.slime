@@ -8,7 +8,7 @@
     a href="/images/random"
       .dropdown__item
         .dropdown__icon
-          i.fa.fa-fw.fa-random>
+          i.fa.icon--padded.small.fa-random>
         .dropdown__text Random
 .dropdown.header__dropdown
   a.header__link href="/activity"
@@ -20,7 +20,7 @@
     a href="/comments"
       .dropdown__item
         .dropdown__icon
-          i.fa.fa-fw.fa-comments>
+          i.fa.icon--padded.small.fa-comments>
         .dropdown__text Comments
 .dropdown.header__dropdown
   a.header__link href="/forums"
@@ -37,7 +37,7 @@
     a href="/posts"
       .dropdown__item
         .dropdown__icon
-          i.fa.fa-fw.fa-search>
+          i.fa.icon--padded.small.fa-search>
         .dropdown__text Post Search
 a.header__link href="/tags"
   i.fa.fa-tag>

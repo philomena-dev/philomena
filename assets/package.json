@@ -2,7 +2,7 @@
   "type": "module",
   "scripts": {
     "deploy": "cross-env NODE_ENV=production tsc && cross-env NODE_ENV=production vite build",
-    "lint": "eslint . --ext .js,.ts",
+    "lint": "eslint . --ext .js,.ts && stylelint ./css/**/*.css",
     "test": "vitest run --coverage",
     "test:watch": "vitest watch --coverage",
     "dev": "vite",
@@ -34,8 +34,10 @@
     "chai": "^5",
     "eslint-plugin-vitest": "^0.5.4",
     "jsdom": "^24.0.0",
+    "prettier": "^3.2.5",
     "stylelint": "^16.5.0",
     "stylelint-config-standard": "^36.0.0",
+    "stylelint-prettier": "^5.0.0",
     "vitest": "^1.5.3",
     "vitest-fetch-mock": "^0.2.2"
   }

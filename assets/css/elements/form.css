@@ -11,7 +11,8 @@ form .form--two-column {
   gap: var(--padding-normal);
 }
 
-form .form--two-column > .field, form .form--two-column > li {
+form .form--two-column > .field,
+form .form--two-column > li {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: var(--padding-normal);

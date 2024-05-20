@@ -11,8 +11,8 @@
     = action_text
 
   a href="#" data-click-tab="preview"
-    i.fa.fa-cog.fa-fw.fa-spin.js-preview-loading.hidden> title=raw('Loading preview&hellip;')
-    i.fa.fa-eye.fa-fw.js-preview-idle>
+    i.fa.fa-cog.icon--padded.small.fa-spin.js-preview-loading.hidden> title=raw('Loading preview&hellip;')
+    i.fa.fa-eye.icon--padded.small.js-preview-idle>
     | Preview
 
 .block__tab.communication-edit__tab.selected.js-preview-input-wrapper data-tab="write"

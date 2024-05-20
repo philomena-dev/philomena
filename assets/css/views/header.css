@@ -18,7 +18,7 @@ header {
 }
 
 .header__logo {
-  font-size: var(--font-h2-size)
+  font-size: var(--font-h2-size);
 }
 
 .header__search {

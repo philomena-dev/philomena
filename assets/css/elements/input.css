@@ -8,7 +8,8 @@
   font-family: var(--font-family-monospace);
 }
 
-.input:hover, .input:focus {
+.input:hover,
+.input:focus {
   background: var(--secondary-muted-color);
 }
 

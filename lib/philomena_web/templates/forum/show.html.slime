@@ -7,11 +7,11 @@ h1 = @forum.name
     ' &raquo;
     => link(@forum.name, to: Routes.forum_path(@conn, :show, @forum))
     a href=Routes.forum_topic_path(@conn, :new, @forum)
-      i.fa.fa-fw.fa-edit>
+      i.fa.icon--padded.small.fa-edit>
       ' New Topic
 
     a href=Routes.post_path(@conn, :index, pq: "forum:#{@forum.short_name}")
-      i.fa.fa-fw.fa-search>
+      i.fa.icon--padded.small.fa-search>
       ' Search Posts
     span.spacing--left
       => @forum.topic_count

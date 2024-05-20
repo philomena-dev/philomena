@@ -6,7 +6,8 @@
     width: 1rem;
   }
 
-  .interaction--$(type).active, .interaction--$(type):hover {
+  .interaction--$(type).active,
+  .interaction--$(type):hover {
     color: var(--text-color) !important;
     background-color: var(--$(type)-color);
   }

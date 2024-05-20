@@ -22,7 +22,9 @@ main {
   }
 }
 
-a, a:active, a:visited {
+a,
+a:active,
+a:visited {
   color: var(--link-color);
   text-decoration: none;
 }
@@ -39,19 +41,36 @@ hr {
   display: none !important;
 }
 
-p, .paragraph {
+p,
+.paragraph {
   hyphens: none;
   line-height: var(--readable-line-height);
   margin: var(--padding-small);
   margin-right: 0;
 }
 
-.fa--padded {
+.icon--padded {
   padding: 0 var(--padding-normal);
 }
 
+.icon--padded--right {
+  padding-right: var(--padding-normal);
+}
+
+.icon--padded.small {
+  padding: 0 var(--padding-small);
+}
+
+.icon--padded--right.small {
+  padding-right: var(--padding-small);
+}
+
 @mixin if-mobile {
-  .fa-padded {
+  .icon--padded {
     padding: 0 var(--padding-small);
+  }
+
+  .icon--padded--right {
+    padding-right: var(--padding-normal);
   }
 }

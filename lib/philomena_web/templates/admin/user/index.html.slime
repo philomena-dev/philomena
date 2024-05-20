@@ -72,7 +72,7 @@ h1 Users
           td
             = if can?(@conn, :edit, user) do
               => link to: Routes.admin_user_path(@conn, :edit, user) do
-                i.fa.fa-fw.fa-user-edit
+                i.fa.icon--padded.small.fa-user-edit
                 ' Edit
 
             /= if user.deleted_at do
@@ -83,11 +83,11 @@ h1 Users
 
             = if can?(@conn, :index, Philomena.Bans.User) do
               => link to: Routes.admin_user_ban_path(@conn, :new, username: user.name) do
-                i.fa.fa-fw.fa-ban
+                i.fa.icon--padded.small.fa-ban
                 ' Ban
             = if can?(@conn, :edit, Philomena.ArtistLinks.ArtistLink) do
               => link to: Routes.profile_artist_link_path(@conn, :new, user) do
-                i.fa.fa-fw.fa-link
+                i.fa.icon--padded.small.fa-link
                 ' Add link
 
   .block__header.block__header--light
