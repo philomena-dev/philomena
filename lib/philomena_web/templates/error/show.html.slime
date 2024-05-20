@@ -7,7 +7,8 @@ html lang="en"
 
     title
       => @status
-      | - Philomena
+      ' -
+      = site_name()
     link rel="stylesheet" href=stylesheet_path(@conn, nil)
     link rel="stylesheet" href=light_stylesheet_path(@conn) media="(prefers-color-scheme: light)"
     link rel="icon" href="/favicon.ico" type="image/x-icon"
@@ -17,7 +18,7 @@ html lang="en"
     .minimal__message
       h1.minimal__message__header
         i.fa.fw.favicon-home>
-        ' Philomena
+        = site_name()
 
       h3 = @short_msg
       p = @long_msg

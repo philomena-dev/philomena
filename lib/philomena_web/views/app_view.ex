@@ -1,6 +1,8 @@
 defmodule PhilomenaWeb.AppView do
   use Phoenix.HTML
 
+  import PhilomenaWeb.Gettext
+
   @time_strings %{
     seconds: "less than a minute",
     minute: "about a minute",
@@ -254,4 +256,6 @@ defmodule PhilomenaWeb.AppView do
   def get_flash(%{assigns: %{flash: nil}}, _key), do: %{}
   def get_flash(%{assigns: %{flash: flash}}, key), do: Phoenix.Flash.get(flash, key)
   def get_flash(_, _key), do: %{}
+
+  def site_name, do: gettext("Philomena Site")
 end

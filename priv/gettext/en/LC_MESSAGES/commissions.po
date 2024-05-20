@@ -1,0 +1,41 @@
+## Strings used in the commission listing feature.
+## See default.pot for more documentation.
+
+msgid "Anthro"
+msgstr ""
+
+msgid "Canon Characters"
+msgstr ""
+
+msgid "Comics"
+msgstr ""
+
+msgid "Fetish Art"
+msgstr ""
+
+msgid "Human and Human-like"
+msgstr ""
+
+msgid "NSFW"
+msgstr ""
+
+msgid "Original Characters"
+msgstr ""
+
+msgid "Original Species"
+msgstr ""
+
+msgid "Non-Humanoid"
+msgstr ""
+
+msgid "Requests"
+msgstr ""
+
+msgid "Safe"
+msgstr ""
+
+msgid "Shipping"
+msgstr ""
+
+msgid "Violence and Gore"
+msgstr ""

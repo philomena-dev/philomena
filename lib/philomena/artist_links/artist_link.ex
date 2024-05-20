@@ -2,6 +2,8 @@ defmodule Philomena.ArtistLinks.ArtistLink do
   use Ecto.Schema
   import Ecto.Changeset
 
+  import PhilomenaWeb.Gettext
+
   alias Philomena.Users.User
   alias Philomena.Tags.Tag
 
@@ -103,7 +105,7 @@ defmodule Philomena.ArtistLinks.ArtistLink do
 
   defp put_verification_code(changeset) do
     code = :crypto.strong_rand_bytes(5) |> Base.encode16()
-    change(changeset, verification_code: "DERPI-LINKVALIDATION-#{code}")
+    change(changeset, verification_code: "#{gettext("PHILOMENA-LINKVALIDATION")}-#{code}")
   end
 
   defp put_next_check_at(changeset) do

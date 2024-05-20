@@ -4,7 +4,7 @@ header
       i.fa.fa-bars
   a.header__logo.header__link href="/"
     i.fab.fa-phoenix-framework>
-    span.hidden--mobile Philomena
+    span.hidden--mobile = site_name()
   a.header__link.hidden--mobile href="/images/new" title="Upload"
     i.fa.fa-upload
   = form_for @conn, Routes.search_path(@conn, :index), [method: "get", class: "header__search", enforce_utf8: false], fn f ->

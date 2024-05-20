@@ -7,9 +7,10 @@ html lang="en"
     title
       = if assigns[:title] do
         => assigns[:title]
-        ' - Derpibooru
+        ' -
+        =< site_name()
       - else
-        ' Derpibooru
+        =<> site_name()
     link rel="stylesheet" href=Routes.static_path(@conn, "/css/application.css")
     link rel="stylesheet" href=stylesheet_path(@conn, @current_user)
     = if is_nil(@current_user) do

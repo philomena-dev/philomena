@@ -57,6 +57,7 @@ $font-family-monospace: "Droid Sans Mono", monospace;
   --media-full-container-width: 100%;
   --media-featured-width: 358px;
   --media-header-height: 2rem;
+  --media-small-header-height: 1rem;
 
   --badge-small-size: 1.1rem;
   --badge-normal-size: 2rem;
@@ -72,6 +73,7 @@ $font-family-monospace: "Droid Sans Mono", monospace;
 
   --font-size: 14px;
   --font-tiny-size: 12px;
+  --font-micro-size: 10px;
   --font-header-size: 16px;
   --font-icon-size: 2rem;
   --font-h1-size: 1.75rem;

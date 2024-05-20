@@ -2,6 +2,8 @@ defmodule Philomena.Users.User do
   alias Philomena.Users.Password
   alias Philomena.Slug
 
+  import PhilomenaWeb.Gettext
+
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -523,11 +525,11 @@ defmodule Philomena.Users.User do
     provisioning_uri = %URI{
       scheme: "otpauth",
       host: "totp",
-      path: "/Derpibooru:" <> user.email,
+      path: "/#{gettext("PhilomenaSite")}:" <> user.email,
       query:
         URI.encode_query(%{
           secret: secret,
-          issuer: "Derpibooru"
+          issuer: gettext("PhilomenaSite")
         })
     }
 

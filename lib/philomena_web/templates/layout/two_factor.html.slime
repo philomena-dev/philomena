@@ -5,7 +5,9 @@ html lang="en"
     meta http-equiv="X-UA-Compatible" content="IE=edge"
     = viewport_meta_tag(@conn)
 
-    title Two Factor Authentication - Derpibooru
+    title
+      ' Two Factor Authentication -
+      = site_name()
     link rel="stylesheet" href=stylesheet_path(@conn, nil)
     link rel="stylesheet" href=light_stylesheet_path(@conn) media="(prefers-color-scheme: light)"
     link rel="icon" href="/favicon.ico" type="image/x-icon"

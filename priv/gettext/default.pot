@@ -1,0 +1,29 @@
+## This file is for language string definitions, NOT translations.
+## Do not put translations into this .pot file. Edit the .po file of
+## the relevant language instead.
+## For example, the English file is: priv/gettext/en/LC_MESSAGES/default.po
+
+## Site name, appears throughout all the pages and in the header.
+## Example: msgstr "My New Booru"
+msgid "Philomena Site"
+msgstr ""
+
+## Site name but written without any spaces, special characters,
+## and in English. Used as issuer name and path for TOTP stuff.
+## Example: msgstr "MyNewBooru"
+msgid "PhilomenaSite"
+msgstr ""
+
+## Name for anon users.
+## Example: msgstr "Background Pony"
+msgid "Anonymous"
+msgstr ""
+
+## Description of the site. Used in the meta tag.
+msgid "%{site_name} is a linear imagebooru which lets you share, find and discover new art and media."
+msgstr ""
+
+## Used to generate artist link validation text for artists to put on their page.
+## Should be in English (not translated to other languages), and reflect overall site branding.
+msgid "PHILOMENA-LINKVALIDATION"
+msgstr ""

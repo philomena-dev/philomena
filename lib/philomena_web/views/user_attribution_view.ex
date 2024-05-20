@@ -2,7 +2,6 @@ defmodule PhilomenaWeb.UserAttributionView do
   use PhilomenaWeb, :view
 
   alias Philomena.Attribution
-  alias PhilomenaWeb.AvatarGeneratorView
 
   def anonymous?(object) do
     Attribution.anonymous?(object)
@@ -36,15 +35,15 @@ defmodule PhilomenaWeb.UserAttributionView do
 
     case not is_nil(object.user) and reveal_anon? do
       true -> "#{object.user.name} (##{hash}, hidden)"
-      false -> "Background Pony ##{hash}"
+      false -> "#{gettext("Anonymous")} ##{hash}"
     end
   end
 
-  def anonymous_avatar(name, class \\ "avatar--small") do
+  def anonymous_avatar(_name, class \\ "avatar--small") do
     class = Enum.join(["image-constrained", class], " ")
 
     content_tag :div, class: class do
-      AvatarGeneratorView.generated_avatar(name)
+      raw("<img xlink:href=\"/images/no_avatar.svg\" src=\"/images/no_avatar.svg\">")
     end
   end
 
@@ -72,16 +71,11 @@ defmodule PhilomenaWeb.UserAttributionView do
     avatar_url_root() <> "/" <> avatar
   end
 
-  def anonymous_avatar_url(name) do
-    svg =
-      name
-      |> AvatarGeneratorView.generated_avatar()
-      |> Enum.map_join(&safe_to_string/1)
+  def anonymous_avatar_url(_), do: "/images/no_avatar.svg"
 
-    "data:image/svg+xml;base64," <> Base.encode64(svg)
-  end
+  def user_icon(%{secondary_role: sr}) when sr in ["Site Developer", "Devops"],
+    do: "fa-screwdriver-wrench"
 
-  def user_icon(%{secondary_role: sr}) when sr in ["Site Developer", "Devops"], do: "fa-screwdriver-wrench"
   def user_icon(%{secondary_role: sr}) when sr in ["Public Relations"], do: "fa-bullhorn"
   def user_icon(%{hide_default_role: true}), do: nil
   def user_icon(%{role: role}) when role in ["admin", "moderator"], do: "fa-gavel"

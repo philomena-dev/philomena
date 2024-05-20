@@ -2,7 +2,7 @@
 
 - avatar = cond do
   - not is_nil(assigns[:image]) ->
-    .post-image-container
+    .post-image-container.media__standalone
       = render PhilomenaWeb.ImageView, "_image_container.html", image: @image, size: :thumb_tiny, conn: @conn
   - anon ->
     = render PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html", object: @object, conn: @conn

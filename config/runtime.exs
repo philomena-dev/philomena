@@ -42,7 +42,6 @@ app_dir = System.get_env("APP_DIR", File.cwd!())
 json_config =
   %{
     aggregation: "aggregation.json",
-    avatar: "avatar.json",
     footer: "footer.json",
     quick_tag_table: "quick_tag_table.json",
     tag: "tag.json"
