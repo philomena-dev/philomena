@@ -56,75 +56,62 @@ header
         = render PhilomenaWeb.UserAttributionView, "_user_avatar.html", object: %{user: @current_user}, class: "avatar--navbar"
         i.fa.fa-chevron-down
       nav.dropdown__content.dropdown__content--right.hidden--mobile.js-burger-links
-        a href=Routes.profile_path(@conn, :show, @current_user)
-          .dropdown__item
-            .dropdown__icon
-              i.fa.icon--padded.small.fa-user
-            .dropdown__text
-              = @current_user.name
+        a.dropdown__item href=Routes.profile_path(@conn, :show, @current_user)
+          .dropdown__icon
+            i.fa.icon--fixed.fa-user
+          .dropdown__text
+            = @current_user.name
         hr.dropdown__separator
-        a href="/search?q=my:watched"
-          .dropdown__item
-            .dropdown__icon
-              i.fa.icon--padded.small.fa-eye
-            .dropdown__text Watched
-        a href="/search?q=my:faves"
-          .dropdown__item
-            .dropdown__icon
-              i.fa.icon--padded.small.fa-star
-            .dropdown__text Faves
-        a href="/search?q=my:upvotes"
-          .dropdown__item
-            .dropdown__icon
-              i.fa.icon--padded.small.fa-arrow-up
-            .dropdown__text Upvotes
-        a href=Routes.gallery_path(@conn, :index, gallery: [creator: @current_user.name])
-          .dropdown__item
-            .dropdown__icon
-              i.fa.icon--padded.small.fa-image
-            .dropdown__text Galleries
-        a href="/search?q=my:uploads"
-          .dropdown__item
-            .dropdown__icon
-              i.fa.icon--padded.small.fa-upload
-            .dropdown__text Uploads
-        a href="/comments?cq=my:comments"
-          .dropdown__item
-            .dropdown__icon
-              i.fa.icon--padded.small.fa-comments
-            .dropdown__text Comments
-        a href="/posts?pq=my:posts"
-          .dropdown__item
-            .dropdown__icon
-              i.fa.icon--padded.small.fa-pen-square
-            .dropdown__text Posts
-        a href=Routes.profile_artist_link_path(@conn, :index, @current_user)
-          .dropdown__item
-            .dropdown__icon
-              i.fa.icon--padded.small.fa-link
-            .dropdown__text Links
-        a href="/conversations"
-          .dropdown__item
-            .dropdown__icon
-              i.fa.icon--padded.small.fa-envelope
-            .dropdown__text Messages
+        a.dropdown__item href="/search?q=my:watched"
+          .dropdown__icon
+            i.fa.icon--fixed.fa-eye
+          .dropdown__text Watched
+        a.dropdown__item href="/search?q=my:faves"
+          .dropdown__icon
+            i.fa.icon--fixed.fa-star
+          .dropdown__text Faves
+        a.dropdown__item href="/search?q=my:upvotes"
+          .dropdown__icon
+            i.fa.icon--fixed.fa-arrow-up
+          .dropdown__text Upvotes
+        a.dropdown__item href=Routes.gallery_path(@conn, :index, gallery: [creator: @current_user.name])
+          .dropdown__icon
+            i.fa.icon--fixed.fa-image
+          .dropdown__text Galleries
+        a.dropdown__item href="/search?q=my:uploads"
+          .dropdown__icon
+            i.fa.icon--fixed.fa-upload
+          .dropdown__text Uploads
+        a.dropdown__item href="/comments?cq=my:comments"
+          .dropdown__icon
+            i.fa.icon--fixed.fa-comments
+          .dropdown__text Comments
+        a.dropdown__item href="/posts?pq=my:posts"
+          .dropdown__icon
+            i.fa.icon--fixed.fa-pen-square
+          .dropdown__text Posts
+        a.dropdown__item href=Routes.profile_artist_link_path(@conn, :index, @current_user)
+          .dropdown__icon
+            i.fa.icon--fixed.fa-link
+          .dropdown__text Links
+        a.dropdown__item href="/conversations"
+          .dropdown__icon
+            i.fa.icon--fixed.fa-envelope
+          .dropdown__text Messages
         hr.dropdown__separator
-        a href="/settings/edit"
-          .dropdown__item
-            .dropdown__icon
-              i.fa.icon--padded.small.fa-cogs
-            .dropdown__text Settings
-        a href=Routes.registration_path(@conn, :edit)
-          .dropdown__item
-            .dropdown__icon
-              i.fa.icon--padded.small.fa-user
-            .dropdown__text Account
+        a.dropdown__item href="/settings/edit"
+          .dropdown__icon
+            i.fa.icon--fixed.fa-cogs
+          .dropdown__text Settings
+        a.dropdown__item href=Routes.registration_path(@conn, :edit)
+          .dropdown__icon
+            i.fa.icon--fixed.fa-user
+          .dropdown__text Account
         hr.dropdown__separator
-        a href=Routes.session_path(@conn, :delete) data-method="delete"
-          .dropdown__item
-            .dropdown__icon
-              i.fa.icon--padded.small.fa-sign-out-alt
-            .dropdown__text Logout
+        a.dropdown__item href=Routes.session_path(@conn, :delete) data-method="delete"
+          .dropdown__icon
+            i.fa.icon--fixed.fa-sign-out-alt
+          .dropdown__text Logout
   - else
     a.header__link.hidden--mobile href="/filters"
       | Filters (
@@ -132,7 +119,7 @@ header
       | )
     span.js-burger-links.hidden--mobile
       a.header__link href="/settings/edit"
-        i.fa.icon--padded.small.fa-cogs.hidden--desktop>
+        i.fa.icon--fixed.fa-cogs.hidden--desktop>
         | Settings
     a.header__link href=Routes.registration_path(@conn, :new)
       | Register

@@ -8,7 +8,13 @@ header {
 }
 
 .header__link {
+  @mixin animated-transition;
   color: var(--text-color) !important;
+}
+
+.header__link:hover {
+  @mixin animated-transition;
+  color: var(--primary-link-color) !important;
 }
 
 .header__link--user {
@@ -78,6 +84,10 @@ nav.header__secondary {
 
 nav.header__secondary .header__link {
   color: var(--text-light-color) !important;
+}
+
+nav.header__secondary .header__link:hover {
+  color: var(--primary-link-color) !important;
 }
 
 nav.dropdown__content {

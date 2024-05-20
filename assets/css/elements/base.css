@@ -74,3 +74,12 @@ p,
     padding-right: var(--padding-normal);
   }
 }
+
+/* Apparently this is necessary for dropdowns because
+   we can't have subgrids yet, and subgrids aren't really
+   polyfillable for any pre-late-2023 browsers. Ugh! */
+
+.icon--fixed {
+  width: 1em;
+  padding: var(--padding-small);
+}

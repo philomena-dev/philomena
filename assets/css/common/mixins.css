@@ -58,9 +58,3 @@
     color var(--transition-animation-duration) ease,
     background var(--transition-animation-duration) ease;
 }
-
-@define-mixin subgrid {
-  display: grid;
-  grid-template-columns: 1 / -1;
-  grid-gap: inherit;
-}
