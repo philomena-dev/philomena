@@ -1,7 +1,7 @@
-.checkbox::after {
+.checkbox:after {
   content: '\f00d';
 }
 
-.checkbox:checked::after {
+.checkbox:checked:after {
   content: '\f00c';
 }

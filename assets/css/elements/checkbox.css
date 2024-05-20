@@ -1,4 +1,4 @@
-input[type=checkbox].checkbox {
+input[type="checkbox"].checkbox {
   appearance: none;
 }
 
@@ -14,7 +14,7 @@ input[type=checkbox].checkbox {
               border-color var(--transition-long-animation-duration) ease;
 }
 
-.checkbox::after {
+.checkbox:after {
   content: '';
   font-family: var(--fa-style-family, "Font Awesome 6 Free");
   font-weight: var(--fa-style, 900);
@@ -26,7 +26,7 @@ input[type=checkbox].checkbox {
   width: calc(var(--checkbox-height) - var(--checkbox-border-width) * 2);
   height: calc(var(--checkbox-height) - var(--checkbox-border-width) * 2);
   border-radius: 100%;
-  left: 0px;
+  left: 0;
   transition: left var(--transition-long-animation-duration) ease;
 }
 
@@ -37,7 +37,7 @@ input[type=checkbox].checkbox {
               border-color var(--transition-long-animation-duration) ease;
 }
 
-.checkbox:checked::after {
+.checkbox:checked:after {
   content: '';
   left: calc(var(--checkbox-width) - var(--checkbox-height));
   transition: left var(--transition-long-animation-duration) ease;

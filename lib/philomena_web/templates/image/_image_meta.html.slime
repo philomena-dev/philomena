@@ -27,7 +27,7 @@
           span.downvotes< title="Downvotes" data-image-id=@image.id = @image.downvotes_count
       a.interaction--comment.hidden--phone href="#comments" title="Comments"
         i.fa.fa-comments
-        span.comments_count< data-image-id=@image.id = @image.comments_count
+        span.comments-count< data-image-id=@image.id = @image.comments_count
       a.interaction--hide href="#" rel="nofollow" data-image-id=@image.id
         span.hide-span title="Hide"
           i.fa.fa-eye-slash

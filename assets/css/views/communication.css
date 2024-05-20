@@ -32,7 +32,7 @@
 .communication__anonymous {
   display: flex;
   flex-direction: row;
-  line-height: ar(--block-header-height);
+  line-height: var(--block-header-height);
   background: var(--secondary-color);
   border: 1px solid var(--secondary-border-color);
 }

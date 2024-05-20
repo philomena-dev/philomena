@@ -60,6 +60,5 @@
 @define-mixin subgrid {
   display: grid;
   grid-template-columns: 1 / -1;
-  grid: inherit;
   grid-gap: inherit;
 }

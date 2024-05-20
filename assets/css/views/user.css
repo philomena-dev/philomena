@@ -27,8 +27,7 @@
 
 .user-title {
   display: flex;
-  flex-direction: row;
+  flex-flow: row wrap;
   gap: var(--padding-small);
-  flex-wrap: wrap;
   margin-top: var(--padding-small);
 }

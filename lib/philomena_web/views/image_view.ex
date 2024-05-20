@@ -175,7 +175,7 @@ defmodule PhilomenaWeb.ImageView do
 
   def image_container(conn, image, size, block) do
     content_tag(:div, block.(),
-      class: "image-container #{size}",
+      class: "image-container #{String.replace(to_string(size), "_", "-", global: true)}",
       data: image_container_data(conn, image, size)
     )
   end

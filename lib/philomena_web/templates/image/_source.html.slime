@@ -66,22 +66,22 @@
               i.fas.fa-eraser>
               ' Wipe
     .block__content.flex.flex--wrap.flex--column
-      .image_sources
+      .image-sources
         = if has_sources do
           - [first_source | sources] = @image.sources
-          .image_source__icon
+          .image-source__icon
             i class=image_source_icon(first_source.source)
-          .image_source__link
+          .image-source__link
             a.js-source-link href=first_source.source
               strong = first_source.source
           = for source <- sources do
-            .image_source__icon
+            .image-source__icon
               i class=image_source_icon(source.source)
-            .image_source__link
+            .image-source__link
               a href=source.source
                 strong = source.source
         - else
-          .image_source__icon
+          .image-source__icon
             i.fa.fa-unlink
-          .image_source__link
+          .image-source__link
             em> not provided yet

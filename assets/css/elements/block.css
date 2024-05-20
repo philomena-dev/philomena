@@ -59,10 +59,6 @@
   border-bottom-right-radius: var(--border-radius-outer) !important;
 }
 
-.block--borderless .block__header {
-  padding: 0;
-}
-
 .block__content, .block__tab {
   border-radius: var(--border-radius-outer);
   padding: var(--padding-normal);
@@ -123,6 +119,10 @@
   line-height: var(--block-header-height);
   font-size: var(--font-size);
   padding: 0 var(--padding-normal);
+}
+
+.block--borderless .block__header {
+  padding: 0;
 }
 
 .block--fixed {

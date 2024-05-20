@@ -17,7 +17,7 @@ html lang="en"
   body.minimal
     .minimal__message
       h1.minimal__message__header
-        i.fa.fw.favicon-home>
+        i.fa--padded.favicon-home>
         = site_name()
 
       h3 = @short_msg

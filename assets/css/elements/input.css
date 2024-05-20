@@ -30,6 +30,6 @@
   cursor: text;
 }
 
-input[type=file] {
+input[type="file"] {
   padding-top: var(--padding-small);
 }

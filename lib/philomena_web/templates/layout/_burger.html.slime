@@ -1,6 +1,6 @@
 nav#burger
   a href="/"
-    i.fa-fw.favicon-home<>
+    i.fa--padded.favicon-home<>
     ' Home
   a href="/images/new"
     i.fa.fa-fw.fa-upload<>

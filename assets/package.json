@@ -34,6 +34,8 @@
     "chai": "^5",
     "eslint-plugin-vitest": "^0.5.4",
     "jsdom": "^24.0.0",
+    "stylelint": "^16.5.0",
+    "stylelint-config-standard": "^36.0.0",
     "vitest": "^1.5.3",
     "vitest-fetch-mock": "^0.2.2"
   }

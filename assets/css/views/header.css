@@ -84,6 +84,16 @@ nav.dropdown__content {
   line-height: var(--navbar-secondary-size);
 }
 
+i.favicon-home {
+  background-image: url("/favicon.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  min-width: 1em;
+  height: 1em;
+  display: inline-block;
+}
+
 @mixin if-mobile {
   header {
     gap: var(--padding-normal);

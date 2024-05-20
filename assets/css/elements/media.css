@@ -12,7 +12,7 @@
   grid-gap: var(--padding-small);
 }
 
-.media-list::before {
+.media-list:before {
   content: '';
   width: 0;
   padding-bottom: calc(100% + var(--media-header-height));
@@ -61,12 +61,9 @@
   overflow: hidden;
 }
 
-.media-box__content .image-container {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+.media-box__image {
+  max-width: 100%;
+  height: auto;
 }
 
 .media-box__content--featured .media-box__image {
@@ -93,6 +90,21 @@
   top: var(--media-header-height);
 }
 
+.post-image-container, .post-image-container img {
+  width: var(--media-tiny-container-width);
+  height: var(--media-tiny-container-width);
+}
+
+.media-tiny-container, .media-tiny-container img {
+  width: var(--media-tiny-container-width);
+  height: var(--media-tiny-container-width);
+}
+
+.thumb-tiny, .thumb-tiny img {
+  max-width: var(--media-tiny-container-width);
+  max-height: var(--media-tiny-container-width);
+}
+
 .image-container {
   display: flex;
   flex-direction: column;
@@ -109,6 +121,7 @@
 
 /* For some reason tall images don't center properly within the container
     without this hack. I blame CSS. */
+
 .image-container a img {
   max-height: 100%;
   margin: auto;
@@ -122,26 +135,21 @@
   height: 100%;
 }
 
+.media-box__content .image-container {
+  position: absolute;
+  inset: 0;
+}
+
 .media__standalone {
   position: relative;
 }
 
-.thumb_tiny .media-box__overlay {
+.thumb-tiny .media-box__overlay {
   width: 100%;
   max-width: 100%;
   padding: 0 var(--padding-tiny);
   line-height: var(--media-small-header-height);
   font-size: var(--font-micro-size);
-}
-
-.post-image-container, .post-image-container img {
-  width: var(--media-tiny-container-width);
-  height: var(--media-tiny-container-width);
-}
-
-.media-box__image {
-  max-width: 100%;
-  height: auto;
 }
 
 .media-grid {
@@ -153,14 +161,4 @@
 
 .image-scaled {
   max-width: 100%;
-}
-
-.media-tiny-container, .media-tiny-container img {
-  width: var(--media-tiny-container-width);
-  height: var(--media-tiny-container-width);
-}
-
-.thumb_tiny, .thumb_tiny img {
-  max-width: var(--media-tiny-container-width);
-  max-height: var(--media-tiny-container-width);
 }

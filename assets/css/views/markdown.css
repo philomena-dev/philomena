@@ -1,20 +1,14 @@
 .textile-syntax-reference {
   display: flex;
-  flex-direction: row;
+  flex-flow: row wrap;
   line-height: var(--block-header-height);
   vertical-align: center;
   margin-bottom: var(--padding-small);
-  flex-wrap: wrap;
 }
 
 .textile-syntax-reference > span,
 .textile-syntax-reference > button {
   margin-left: var(--padding-normal);
-}
-
-.textile_help {
-  width: 100%;
-  margin-top: var(--padding-normal);
 }
 
 .spoiler, .spoiler a {

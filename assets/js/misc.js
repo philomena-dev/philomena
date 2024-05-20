@@ -11,7 +11,7 @@ function formResult({target, detail}) {
 
   const elements = {
     '#description-form': '.image-description',
-    '#uploader-form': '.image_uploader'
+    '#uploader-form': '.image-uploader'
   };
 
   function showResult(resultEl, formEl, response) {

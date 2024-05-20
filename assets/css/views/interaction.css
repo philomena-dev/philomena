@@ -18,7 +18,7 @@
 @mixin interaction-type comment;
 @mixin interaction-type hide;
 
-.comments_count {
+.comments-count {
   position: absolute;
   background: var(--background-color);
   border: var(--number-badge-border) solid var(--background-color);
@@ -29,6 +29,6 @@
   top: var(--number-badge-lower-offset);
 }
 
-.interaction--comment:hover > .comments_count {
+.interaction--comment:hover > .comments-count {
   visibility: hidden;
 }

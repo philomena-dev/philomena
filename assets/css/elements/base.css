@@ -45,3 +45,13 @@ p, .paragraph {
   margin: var(--padding-small);
   margin-right: 0;
 }
+
+.fa--padded {
+  padding: 0 var(--padding-normal);
+}
+
+@mixin if-mobile {
+  .fa-padded {
+    padding: 0 var(--padding-small);
+  }
+}

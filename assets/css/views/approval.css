@@ -39,8 +39,7 @@
 
 @mixin if-mobile {
   .approval-grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
+    grid-template: auto / 1fr;
     grid-template-areas:
       "main"
       "footer";

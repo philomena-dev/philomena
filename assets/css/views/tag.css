@@ -20,8 +20,7 @@
 
 .tag-list {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-flow: row wrap;
   gap: var(--padding-small);
   margin-bottom: var(--padding-normal);
 }

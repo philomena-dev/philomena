@@ -4,29 +4,14 @@ defmodule PhilomenaWeb.SettingView do
   def theme_options(conn) do
     [
       [
-        key: "Blue (default)",
-        value: "dark-blue",
-        data: [theme_path: Routes.static_path(conn, "/css/dark-blue.css")]
-      ],
-      [
         key: "Red",
         value: "dark-red",
         data: [theme_path: Routes.static_path(conn, "/css/dark-red.css")]
       ],
       [
-        key: "Green",
-        value: "dark-green",
-        data: [theme_path: Routes.static_path(conn, "/css/dark-green.css")]
-      ],
-      [
-        key: "Purple",
-        value: "dark-purple",
-        data: [theme_path: Routes.static_path(conn, "/css/dark-purple.css")]
-      ],
-      [
-        key: "Pink",
-        value: "dark-pink",
-        data: [theme_path: Routes.static_path(conn, "/css/dark-pink.css")]
+        key: "Orange",
+        value: "dark-orange",
+        data: [theme_path: Routes.static_path(conn, "/css/dark-orange.css")]
       ],
       [
         key: "Yellow",
@@ -34,9 +19,29 @@ defmodule PhilomenaWeb.SettingView do
         data: [theme_path: Routes.static_path(conn, "/css/dark-yellow.css")]
       ],
       [
+        key: "Green",
+        value: "dark-green",
+        data: [theme_path: Routes.static_path(conn, "/css/dark-green.css")]
+      ],
+      [
+        key: "Blue",
+        value: "dark-blue",
+        data: [theme_path: Routes.static_path(conn, "/css/dark-blue.css")]
+      ],
+      [
+        key: "Purple",
+        value: "dark-purple",
+        data: [theme_path: Routes.static_path(conn, "/css/dark-purple.css")]
+      ],
+      [
         key: "Cyan",
         value: "dark-cyan",
         data: [theme_path: Routes.static_path(conn, "/css/dark-cyan.css")]
+      ],
+      [
+        key: "Pink",
+        value: "dark-pink",
+        data: [theme_path: Routes.static_path(conn, "/css/dark-pink.css")]
       ],
       [
         key: "Grey",
@@ -49,29 +54,14 @@ defmodule PhilomenaWeb.SettingView do
   def light_theme_options(conn) do
     [
       [
-        key: "Blue (default)",
-        value: "light-blue",
-        data: [theme_path: Routes.static_path(conn, "/css/light-blue.css")]
-      ],
-      [
         key: "Red",
         value: "light-red",
         data: [theme_path: Routes.static_path(conn, "/css/light-red.css")]
       ],
       [
-        key: "Green",
-        value: "light-green",
-        data: [theme_path: Routes.static_path(conn, "/css/light-green.css")]
-      ],
-      [
-        key: "Purple",
-        value: "light-purple",
-        data: [theme_path: Routes.static_path(conn, "/css/light-purple.css")]
-      ],
-      [
-        key: "Pink",
-        value: "light-pink",
-        data: [theme_path: Routes.static_path(conn, "/css/light-pink.css")]
+        key: "Orange",
+        value: "light-orange",
+        data: [theme_path: Routes.static_path(conn, "/css/light-orange.css")]
       ],
       [
         key: "Yellow",
@@ -79,9 +69,29 @@ defmodule PhilomenaWeb.SettingView do
         data: [theme_path: Routes.static_path(conn, "/css/light-yellow.css")]
       ],
       [
+        key: "Green",
+        value: "light-green",
+        data: [theme_path: Routes.static_path(conn, "/css/light-green.css")]
+      ],
+      [
+        key: "Blue",
+        value: "light-blue",
+        data: [theme_path: Routes.static_path(conn, "/css/light-blue.css")]
+      ],
+      [
+        key: "Purple",
+        value: "light-purple",
+        data: [theme_path: Routes.static_path(conn, "/css/light-purple.css")]
+      ],
+      [
         key: "Cyan",
         value: "light-cyan",
         data: [theme_path: Routes.static_path(conn, "/css/light-cyan.css")]
+      ],
+      [
+        key: "Pink",
+        value: "light-pink",
+        data: [theme_path: Routes.static_path(conn, "/css/light-pink.css")]
       ],
       [
         key: "Grey",

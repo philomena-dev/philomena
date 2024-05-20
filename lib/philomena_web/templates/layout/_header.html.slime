@@ -3,7 +3,7 @@ header
     a.header__link href="#"
       i.fa.fa-bars
   a.header__logo.header__link href="/"
-    i.fab.fa-phoenix-framework>
+    i.fa--padded.favicon-home>
     span.hidden--mobile = site_name()
   a.header__link.hidden--mobile href="/images/new" title="Upload"
     i.fa.fa-upload

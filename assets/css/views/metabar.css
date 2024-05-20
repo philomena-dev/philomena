@@ -8,7 +8,7 @@
   display: block;
 }
 
-.metabar__interactions .comments_count {
+.metabar__interactions .comments-count {
   background: 0;
   border: 0;
   position: static;
@@ -27,8 +27,7 @@
   @mixin fix-interaction hide;
 
   .metabar__interactions * {
-    align-self: center;
-    justify-self: center;
+    place-self: center center;
   }
 
   .metabar__mobile-separator {
@@ -46,8 +45,7 @@
   }
 
   .metabar__navigation a {
-    align-self: center;
-    justify-self: center;
+    place-self: center center;
   }
 }
 
@@ -70,7 +68,7 @@
   gap: var(--padding-small);
 }
 
-.metabar__user-credit .image_uploader {
+.metabar__user-credit .image-uploader {
   display: flex;
   align-items: center;
   gap: var(--padding-small);
@@ -79,7 +77,7 @@
 /* For some bizarre reason the icon appears to have
  * comically large gap on desktop */
 @mixin if-desktop {
-  .image_uploader > .username-with-icon {
+  .image-uploader > .username-with-icon {
     gap: 0;
   }
 }
