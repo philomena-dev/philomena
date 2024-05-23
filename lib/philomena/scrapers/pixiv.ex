@@ -14,7 +14,8 @@ defmodule Philomena.Scrapers.Pixiv do
     json = Jason.decode!(body)
     submission = json["body"]
 
-    description = submission["illust_details"]["comment"]
+    description =
+      "##\s#{submission["illust_details"]["title"]}\n#{submission["illust_details"]["comment"]}"
 
     images =
       if submission["illust_details"]["manga_a"] do
