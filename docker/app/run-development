@@ -38,7 +38,7 @@ npm install
 # if it's not done doing whatever it does yet
 echo -n "Waiting for OpenSearch"
 
-until wget --no-check-certificate -qO - https://admin:admin@opensearch:9200; do
+until wget --no-check-certificate -qO - http://opensearch:9200; do
   echo -n "."
   sleep 2
 done

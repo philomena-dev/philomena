@@ -31,7 +31,7 @@ services:
       - IMAGE_URL_ROOT=/img
       - BADGE_URL_ROOT=/badge-img
       - TAG_URL_ROOT=/tag-img
-      - OPENSEARCH_URL=https://admin:admin@opensearch:9200
+      - OPENSEARCH_URL=http://opensearch:9200
       - REDIS_HOST=valkey
       - DATABASE_URL=ecto://postgres:postgres@postgres/philomena_dev
       - CDN_HOST=localhost
@@ -72,10 +72,9 @@ services:
     image: opensearchproject/opensearch:2.14.0
     volumes:
       - opensearch_data:/usr/share/opensearch/data
+      - ./docker/opensearch/opensearch.yml:/usr/share/opensearch/config/opensearch.yml
     logging:
       driver: "none"
-    environment:
-      - discovery.type=single-node
     ulimits:
       nofile:
         soft: 65536
