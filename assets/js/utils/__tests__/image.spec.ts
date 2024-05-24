@@ -3,6 +3,8 @@ import { getRandomArrayItem } from '../../../test/randomness';
 import { mockStorage } from '../../../test/mock-storage';
 import { createEvent, fireEvent } from '@testing-library/dom';
 import { EventType } from '@testing-library/dom/types/events';
+import { SpoilerType } from '../../../types/booru-object';
+import { beforeEach } from 'vitest';
 
 describe('Image utils', () => {
   const hiddenClass = 'hidden';
@@ -81,6 +83,10 @@ describe('Image utils', () => {
       },
     });
 
+    beforeEach(() => {
+      mockServeHidpiValue = null;
+    });
+
     describe('video thumbnail', () => {
       type CreateMockElementsOptions = {
         extension: string;
@@ -108,7 +114,7 @@ describe('Image utils', () => {
           });
         }
         mockElement.appendChild(mockVideo);
-        const playSpy = jest.spyOn(mockVideo, 'play').mockReturnValue(Promise.resolve());
+        const playSpy = vi.spyOn(mockVideo, 'play').mockReturnValue(Promise.resolve());
 
         const mockSpoilerOverlay = createMockSpoilerOverlay();
         mockElement.appendChild(mockSpoilerOverlay);
@@ -167,7 +173,7 @@ describe('Image utils', () => {
           const { mockElement } = createMockElements({
             extension: 'webm',
           });
-          const jsonParseSpy = jest.spyOn(JSON, 'parse');
+          const jsonParseSpy = vi.spyOn(JSON, 'parse');
 
           mockElement.removeAttribute(missingAttributeName);
 
@@ -363,6 +369,19 @@ describe('Image utils', () => {
       expect(mockShowElement).toHaveClass(spoilerPendingClass);
     });
 
+    it('should play the video if it is present', () => {
+      const mockElement = document.createElement('div');
+      const { mockShowElement } = createImageShowElement(mockElement);
+      const mockVideo = document.createElement('video');
+      mockShowElement.appendChild(mockVideo);
+
+      const playSpy = vi.spyOn(mockVideo, 'play').mockReturnValue(Promise.resolve());
+
+      showBlock(mockElement);
+
+      expect(playSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('should not throw if image-filtered element is missing', () => {
       const mockElement = document.createElement('div');
       createImageShowElement(mockElement);
@@ -381,7 +400,7 @@ describe('Image utils', () => {
       it('should return early if picture AND video elements are missing', () => {
         const mockElement = document.createElement('div');
 
-        const querySelectorSpy = jest.spyOn(mockElement, 'querySelector');
+        const querySelectorSpy = vi.spyOn(mockElement, 'querySelector');
 
         hideThumb(mockElement, mockSpoilerUri, mockSpoilerReason);
 
@@ -398,9 +417,9 @@ describe('Image utils', () => {
         const mockElement = document.createElement('div');
         const mockVideo = document.createElement('video');
         mockElement.appendChild(mockVideo);
-        const pauseSpy = jest.spyOn(mockVideo, 'pause').mockReturnValue(undefined);
+        const pauseSpy = vi.spyOn(mockVideo, 'pause').mockReturnValue(undefined);
 
-        const querySelectorSpy = jest.spyOn(mockElement, 'querySelector');
+        const querySelectorSpy = vi.spyOn(mockElement, 'querySelector');
 
         hideThumb(mockElement, mockSpoilerUri, mockSpoilerReason);
 
@@ -422,7 +441,7 @@ describe('Image utils', () => {
         const mockElement = document.createElement('div');
         const mockVideo = document.createElement('video');
         mockElement.appendChild(mockVideo);
-        const pauseSpy = jest.spyOn(mockVideo, 'pause').mockReturnValue(undefined);
+        const pauseSpy = vi.spyOn(mockVideo, 'pause').mockReturnValue(undefined);
         const mockImage = document.createElement('img');
         mockImage.classList.add(hiddenClass);
         mockElement.appendChild(mockImage);
@@ -451,8 +470,8 @@ describe('Image utils', () => {
       const mockPicture = document.createElement('picture');
       mockElement.appendChild(mockPicture);
 
-      const imgQuerySelectorSpy = jest.spyOn(mockElement, 'querySelector');
-      const pictureQuerySelectorSpy = jest.spyOn(mockPicture, 'querySelector');
+      const imgQuerySelectorSpy = vi.spyOn(mockElement, 'querySelector');
+      const pictureQuerySelectorSpy = vi.spyOn(mockPicture, 'querySelector');
 
       hideThumb(mockElement, mockSpoilerUri, mockSpoilerReason);
 
@@ -492,7 +511,7 @@ describe('Image utils', () => {
   describe('spoilerThumb', () => {
     const testSpoilerThumb = (handlers?: [EventType, EventType]) => {
       const { mockElement, mockSpoilerOverlay, mockSizeImage } = createMockElementWithPicture('jpg');
-      const addEventListenerSpy = jest.spyOn(mockElement, 'addEventListener');
+      const addEventListenerSpy = vi.spyOn(mockElement, 'addEventListener');
 
       spoilerThumb(mockElement, mockSpoilerUri, mockSpoilerReason);
 

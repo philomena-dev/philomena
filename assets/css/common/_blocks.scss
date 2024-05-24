@@ -124,6 +124,8 @@ a.block__header--single-item, .block__header a {
 .block__header--js-tabbed {
   @extend .block__header--light;
   background: transparent;
+  display: flex;
+  flex-wrap: wrap;
 
   border-bottom: $border;
   a {

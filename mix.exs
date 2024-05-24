@@ -11,8 +11,7 @@ defmodule Philomena.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
-      dialyzer: [plt_add_apps: [:mix]],
-      rustler_crates: [philomena: []]
+      dialyzer: [plt_add_apps: [:mix]]
     ]
   end
 
@@ -47,6 +46,8 @@ defmodule Philomena.MixProject do
       {:jason, "~> 1.4"},
       {:ranch, "~> 2.1", override: true},
       {:plug_cowboy, "~> 2.6"},
+      {:slime, "~> 1.3.0",
+       github: "liamwhite/slime", ref: "4c8ad4e9e9dcc792f4db769a9ef2ad7d6eba8f31", override: true},
       {:phoenix_slime, "~> 0.13",
        github: "slime-lang/phoenix_slime", ref: "8944de91654d6fcf6bdcc0aed6b8647fe3398241"},
       {:phoenix_pubsub_redis, "~> 3.0"},
@@ -56,14 +57,12 @@ defmodule Philomena.MixProject do
       {:secure_compare, "~> 0.1"},
       {:elastix, "~> 0.10"},
       {:nimble_parsec, "~> 1.2"},
-      {:canary, "~> 1.1"},
       {:scrivener_ecto, "~> 2.7"},
-      {:pbkdf2, "~> 2.0",
-       github: "code-time/erlang-pbkdf2", ref: "f8f0012a97f58ade9c70ac93260e4259e4ca4b8d"},
+      {:pbkdf2, ">= 0.0.0",
+       github: "basho/erlang-pbkdf2", ref: "7e9bd5fcd3cc3062159e4c9214bb628aa6feb5ca"},
       {:qrcode, "~> 0.1"},
       {:redix, "~> 1.2"},
       {:bamboo, "~> 2.2"},
-      {:bamboo_smtp, "~> 4.2"},
       {:remote_ip, "~> 1.1"},
       {:briefly, "~> 0.4"},
       {:tesla, "~> 1.5"},
@@ -75,6 +74,13 @@ defmodule Philomena.MixProject do
       {:ex_aws_s3, "~> 2.0"},
       {:sweet_xml, "~> 0.7"},
       {:inet_cidr, "~> 1.0"},
+
+      # SMTP
+      {:tls_certificate_check, "~> 1.21"},
+      {:bamboo_smtp, "~> 4.2",
+       github: "botsquad/bamboo_smtp",
+       ref: "c630ccde40070deffc7d78ee6e4a08c9199f145b",
+       override: true},
 
       # Markdown
       {:rustler, "~> 0.27"},
@@ -93,7 +99,11 @@ defmodule Philomena.MixProject do
 
       # Fixes for OTP/25
       {:neotoma, "~> 1.7.3", manager: :rebar3, override: true},
-      {:hut, "~> 1.4.0", manager: :rebar3, override: true}
+      {:hut, "~> 1.4.0", manager: :rebar3, override: true},
+
+      # Fixes for Elixir v1.15+
+      {:canary, "~> 1.1",
+       github: "marcinkoziej/canary", ref: "704debde7a2c0600f78c687807884bf37c45bd79"}
     ]
   end
 

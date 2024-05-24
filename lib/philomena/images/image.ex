@@ -187,7 +187,7 @@ defmodule Philomena.Images.Image do
     height = fetch_field!(changeset, :image_height)
 
     cond do
-      width <= 0 or height <= 0 ->
+      is_nil(width) or is_nil(height) or width <= 0 or height <= 0 ->
         add_error(
           changeset,
           :image,
@@ -379,7 +379,7 @@ defmodule Philomena.Images.Image do
       tags
       |> Enum.map_join("_", & &1.slug)
       |> String.to_charlist()
-      |> Enum.filter(&(&1 in ?a..?z or &1 in '0123456789_-'))
+      |> Enum.filter(&(&1 in ?a..?z or &1 in ~c"0123456789_-"))
       |> List.to_string()
       |> String.slice(0..150)
 

@@ -34,7 +34,7 @@ function setupImageUpload() {
   const [fileField, remoteUrl, scraperError] = $$('.js-scraper', form);
   const descrEl = $('.js-image-descr-input', form);
   const tagsEl = $('.js-image-tags-input', form);
-  const sourceEl = $$('.js-image-source', form).find(input => input.value === '');
+  const sourceEl = $$('.js-source-url', form).find(input => input.value === '');
   const fetchButton = $('#js-scraper-preview');
   if (!fetchButton) return;
 
@@ -132,21 +132,17 @@ function setupImageUpload() {
   });
 
   // Enable/disable the fetch button based on content in the image scraper. Fetching with no URL makes no sense.
-  remoteUrl.addEventListener('input', () => {
+  function setFetchEnabled() {
     if (remoteUrl.value.length > 0) {
       enableFetch();
     }
     else {
       disableFetch();
     }
-  });
+  }
 
-  if (remoteUrl.value.length > 0) {
-    enableFetch();
-  }
-  else {
-    disableFetch();
-  }
+  remoteUrl.addEventListener('input', () => setFetchEnabled());
+  setFetchEnabled();
 
   // Catch unintentional navigation away from the page
 

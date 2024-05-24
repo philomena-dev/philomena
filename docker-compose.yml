@@ -2,6 +2,10 @@ version: '3'
 volumes:
   postgres_data: {}
   opensearch_data: {}
+  app_cargo_data: {}
+  app_build_data: {}
+  app_deps_data: {}
+  app_native_data: {}
 
 services:
   app:
@@ -28,7 +32,7 @@ services:
       - BADGE_URL_ROOT=/badge-img
       - TAG_URL_ROOT=/tag-img
       - OPENSEARCH_URL=https://admin:admin@opensearch:9200
-      - REDIS_HOST=redis
+      - REDIS_HOST=valkey
       - DATABASE_URL=ecto://postgres:postgres@postgres/philomena_dev
       - CDN_HOST=localhost
       - MAILER_ADDRESS=noreply@philomena.local
@@ -44,13 +48,19 @@ services:
     tty: true
     volumes:
       - .:/srv/philomena
+      - app_cargo_data:/srv/philomena/.cargo
+      - app_build_data:/srv/philomena/_build
+      - app_deps_data:/srv/philomena/deps
+      - app_native_data:/srv/philomena/priv/native
     depends_on:
       - postgres
       - opensearch
-      - redis
+      - valkey
+    ports:
+      - '5173:5173'
 
   postgres:
-    image: postgres:15.3-alpine
+    image: postgres:16.2-alpine
     environment:
       - POSTGRES_PASSWORD=postgres
     volumes:
@@ -59,7 +69,7 @@ services:
       driver: "none"
 
   opensearch:
-    image: opensearchproject/opensearch:2.6.0
+    image: opensearchproject/opensearch:2.14.0
     volumes:
       - opensearch_data:/usr/share/opensearch/data
     logging:
@@ -71,13 +81,13 @@ services:
         soft: 65536
         hard: 65536
 
-  redis:
-    image: redis:7.0.11-alpine
+  valkey:
+    image: valkey/valkey:7.2.5-alpine
     logging:
       driver: "none"
 
   files:
-    image: andrewgaul/s3proxy:sha-ba0fd6d
+    image: andrewgaul/s3proxy:sha-ec12ae0
     environment:
       - JCLOUDS_FILESYSTEM_BASEDIR=/srv/philomena/priv/s3
     volumes:

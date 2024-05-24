@@ -2,16 +2,16 @@ defmodule PhilomenaWeb.MarkdownRenderer do
   alias Philomena.Markdown
   alias Philomena.Images.Image
   alias Philomena.Repo
-  import Phoenix.HTML
+  alias PhilomenaWeb.ImageView
   import Phoenix.HTML.Link
   import Ecto.Query
-
-  @image_view Module.concat(["PhilomenaWeb.ImageView"])
 
   def render_one(item, conn) do
     hd(render_collection([item], conn))
   end
 
+  # This is rendered Markdown
+  # sobelow_skip ["XSS.Raw"]
   def render_collection(collection, conn) do
     representations =
       collection
@@ -21,15 +21,21 @@ defmodule PhilomenaWeb.MarkdownRenderer do
       |> render_representations(conn)
 
     Enum.map(collection, fn %{body: text} ->
-      Markdown.to_html(text || "", representations)
+      (text || "")
+      |> Markdown.to_html(representations)
+      |> Phoenix.HTML.raw()
     end)
   end
 
+  # This is rendered Markdown for use on static pages
+  # sobelow_skip ["XSS.Raw"]
   def render_unsafe(text, conn) do
     images = find_images(text)
     representations = render_representations(images, conn)
 
-    Markdown.to_html_unsafe(text, representations)
+    text
+    |> Markdown.to_html_unsafe(representations)
+    |> Phoenix.HTML.raw()
   end
 
   defp find_images(text) do
@@ -79,42 +85,37 @@ defmodule PhilomenaWeb.MarkdownRenderer do
           img != nil ->
             case group do
               [_id, "p"] when not img.hidden_from_users and img.approved ->
-                Phoenix.View.render(@image_view, "_image_target.html",
+                Phoenix.View.render(ImageView, "_image_target.html",
                   embed_display: true,
                   image: img,
-                  size: @image_view.select_version(img, :medium),
+                  size: ImageView.select_version(img, :medium),
                   conn: conn
                 )
-                |> safe_to_string()
 
               [_id, "t"] when not img.hidden_from_users and img.approved ->
-                Phoenix.View.render(@image_view, "_image_target.html",
+                Phoenix.View.render(ImageView, "_image_target.html",
                   embed_display: true,
                   image: img,
-                  size: @image_view.select_version(img, :small),
+                  size: ImageView.select_version(img, :small),
                   conn: conn
                 )
-                |> safe_to_string()
 
               [_id, "s"] when not img.hidden_from_users and img.approved ->
-                Phoenix.View.render(@image_view, "_image_target.html",
+                Phoenix.View.render(ImageView, "_image_target.html",
                   embed_display: true,
                   image: img,
-                  size: @image_view.select_version(img, :thumb_small),
+                  size: ImageView.select_version(img, :thumb_small),
                   conn: conn
                 )
-                |> safe_to_string()
 
               [_id, suffix] when not img.approved ->
                 ">>#{img.id}#{suffix}#{link_suffix(img)}"
 
               [_id, ""] ->
                 link(">>#{img.id}#{link_suffix(img)}", to: "/images/#{img.id}")
-                |> safe_to_string()
 
               [_id, suffix] when suffix in ["t", "s", "p"] ->
                 link(">>#{img.id}#{suffix}#{link_suffix(img)}", to: "/images/#{img.id}")
-                |> safe_to_string()
 
               # This condition should never trigger, but let's leave it here just in case.
               [id, suffix] ->
@@ -125,7 +126,12 @@ defmodule PhilomenaWeb.MarkdownRenderer do
             ">>#{text}"
         end
 
-      [text, rendered]
+      string_contents =
+        rendered
+        |> Phoenix.HTML.Safe.to_iodata()
+        |> IO.iodata_to_binary()
+
+      [text, string_contents]
     end)
     |> Map.new(fn [id, html] -> {id, html} end)
   end

@@ -138,7 +138,7 @@ defmodule PhilomenaWeb.ImageView do
       |> display_order()
       |> Enum.map_join("_", & &1.slug)
       |> String.to_charlist()
-      |> Enum.filter(&(&1 in ?a..?z or &1 in '0123456789_-+'))
+      |> Enum.filter(&(&1 in ?a..?z or &1 in ~c"0123456789_-+"))
       |> List.to_string()
       |> String.slice(0..150)
 
@@ -225,7 +225,11 @@ defmodule PhilomenaWeb.ImageView do
   def hidden_toggle(%{assigns: %{current_user: nil}}, _route, _params), do: nil
 
   def hidden_toggle(conn, route, params) do
-    render(PhilomenaWeb.ImageView, "_hidden_toggle.html", route: route, params: params, conn: conn)
+    render(PhilomenaWeb.ImageView, "_hidden_toggle.html",
+      route: route,
+      params: params,
+      conn: conn
+    )
   end
 
   def deleted_toggle(conn, route, params) do
@@ -301,16 +305,40 @@ defmodule PhilomenaWeb.ImageView do
     uri = URI.parse(source)
 
     case uri.host do
-      u when u in ["twitter.com", "www.twitter.com", "pbs.twimg.com", "twimg.com"] ->
+      u
+      when u in [
+             "twitter.com",
+             "www.twitter.com",
+             "mobile.twitter.com",
+             "x.com",
+             "mobile.x.com",
+             "pbs.twimg.com",
+             "twimg.com"
+           ] ->
         "fab fa-twitter"
 
-      u when u in ["deviantart.com", "www.deviantart.com", "sta.sh", "www.sta.sh"] ->
+      u
+      when u in [
+             "deviantart.com",
+             "sta.sh",
+             "www.sta.sh",
+             "images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com",
+             "wixmp-ed30a86b8c4ca887773594c2.wixmp.com",
+             "api-da.wixmp.com",
+             "fav.me"
+           ] ->
         "fab fa-deviantart"
 
-      u when u in ["cdn.discordapp.com", "discordapp.com", "discord.com"] ->
+      u
+      when u in [
+             "cdn.discordapp.com",
+             "discordapp.com",
+             "discord.com",
+             "discord.gg"
+           ] ->
         "fab fa-discord"
 
-      u when u in ["youtube.com", "www.youtube.com"] ->
+      u when u in ["youtube.com", "www.youtube.com", "youtu.be", "m.youtube.com"] ->
         "fab fa-youtube"
 
       u when u in ["pillowfort.social", "www.pillowfort.social"] ->
@@ -319,14 +347,30 @@ defmodule PhilomenaWeb.ImageView do
       u when u in ["vk.com", "vk.ru"] ->
         "fab fa-vk"
 
-      u when u in ["pixiv.net", "www.pixiv.net", "artfight.net", "www.artfight.net"] ->
+      u
+      when u in ["artfight.net", "www.artfight.net", "newgrounds.com"] ->
         "fa fa-paintbrush"
+
+      u when u in ["pixiv.net", "www.pixiv.net", "pixiv.me"] ->
+        "fab fa-pixiv"
 
       u when u in ["patreon.com", "www.patreon.com"] ->
         "fab fa-patreon"
 
-      u when u in ["ych.art", "ych.commishes.com", "commishes.com"] ->
+      u
+      when u in [
+             "ych.art",
+             "cdn.ych.art",
+             "ych.commishes.com",
+             "commishes.com",
+             "portfolio.commishes.com",
+             "commishes.io"
+           ] ->
         "fa fa-palette"
+
+      u
+      when u in ["ko-fi.com", "storage.ko-fi.com", "buymeacoffee.com", "www.buymeacoffee.com"] ->
+        "fa fa-coffee"
 
       u when u in ["artstation.com", "www.artstation.com"] ->
         "fab fa-artstation"
@@ -334,10 +378,22 @@ defmodule PhilomenaWeb.ImageView do
       u when u in ["instagram.com", "www.instagram.com"] ->
         "fab fa-instagram"
 
-      u when u in ["reddit.com", "www.reddit.com"] ->
+      u when u in ["t.me"] ->
+        "fab fa-telegram"
+
+      u
+      when u in [
+             "reddit.com",
+             "www.reddit.com",
+             "old.reddit.com",
+             "redd.it",
+             "i.redd.it",
+             "v.redd.it",
+             "preview.redd.it"
+           ] ->
         "fab fa-reddit"
 
-      u when u in ["facebook.com", "www.facebook.com", "fb.me", "www.fb.me"] ->
+      u when u in ["facebook.com", "www.facebook.com", "fb.me", "www.fb.me", "m.facebook.com"] ->
         "fab fa-facebook"
 
       u when u in ["tiktok.com", "www.tiktok.com"] ->
@@ -346,11 +402,14 @@ defmodule PhilomenaWeb.ImageView do
       u
       when u in [
              "furaffinity.net",
-             "www.furaffinity.net",
              "furbooru.org",
              "inkbunny.net",
              "e621.net",
-             "e926.net"
+             "e926.net",
+             "sofurry.com",
+             "weasyl.com",
+             "www.weasyl.com",
+             "cdn.weasyl.com"
            ] ->
         "fa fa-paw"
 
@@ -367,17 +426,69 @@ defmodule PhilomenaWeb.ImageView do
              "pettingzoo.co",
              "pony.social",
              "vulpine.club",
-             "yiff.life"
+             "yiff.life",
+             "socel.net",
+             "octodon.social",
+             "filly.social",
+             "pone.social",
+             "hooves.social"
            ] ->
         "fab fa-mastodon"
 
+      u
+      when u in ["tumbex.com", "www.tumbex.com", "tumblr.com", "tmblr.co"] ->
+        "fab fa-tumblr"
+
+      u when u in ["flickr.com", "www.flickr.com"] ->
+        "fab fa-flickr"
+
+      u when u in ["etsy.com", "www.etsy.com"] ->
+        "fab fa-etsy"
+
       link ->
         cond do
-          Enum.member?(site_domains, link) -> "favicon-home"
-          String.contains?(link, "tumblr") -> "fab fa-tumblr"
-          String.contains?(link, "deviantart") -> "fab fa-deviantart"
-          String.contains?(link, "sofurry") -> "fa fa-paw"
-          true -> "fa fa-link"
+          Enum.member?(site_domains, link) ->
+            "favicon-home"
+
+          String.ends_with?(link, ".tumblr.com") ->
+            "fab fa-tumblr"
+
+          String.ends_with?(link, ".deviantart.com") or String.ends_with?(link, ".deviantart.net") ->
+            "fab fa-deviantart"
+
+          String.ends_with?(link, ".furaffinity.net") or String.ends_with?(link, ".sofurry.com") or
+              String.ends_with?(link, ".facdn.net") ->
+            "fa fa-paw"
+
+          String.ends_with?(link, ".userapi.com") or String.ends_with?(link, ".vk.me") ->
+            "fab fa-vk"
+
+          String.ends_with?(link, ".patreonusercontent.com") ->
+            "fab fa-patreon"
+
+          String.ends_with?(link, ".discordapp.net") ->
+            "fab fa-discord"
+
+          String.ends_with?(link, ".ytimg.com") ->
+            "fab fa-youtube"
+
+          String.ends_with?(link, ".fbcdn.net") ->
+            "fab fa-facebook"
+
+          String.ends_with?(link, ".newgrounds.com") or String.ends_with?(link, ".ngfiles.com") ->
+            "fa fa-paintbrush"
+
+          String.ends_with?(link, ".apple.com") ->
+            "fab fa-apple"
+
+          String.ends_with?(link, ".staticflickr.com") ->
+            "fab fa-flickr"
+
+          String.ends_with?(link, ".etsystatic.com") ->
+            "fab fa-etsy"
+
+          true ->
+            "fa fa-link"
         end
     end
   end

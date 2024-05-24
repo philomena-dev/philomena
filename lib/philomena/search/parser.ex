@@ -24,9 +24,12 @@ defmodule Philomena.Search.Parser do
     custom_fields: [],
     transforms: %{},
     aliases: %{},
+    no_downcase_fields: [],
     __fields__: %{},
     __data__: nil
   ]
+
+  @max_clause_count 512
 
   def parser(options) do
     parser = struct(Parser, options)
@@ -193,14 +196,19 @@ defmodule Philomena.Search.Parser do
   # Types which do not support ranges
 
   defp field_type(parser, [{LiteralParser, field_name}, range: :eq, literal: value]),
-    do: {:ok, {%{term: %{field(parser, field_name) => normalize_value(parser, value)}}, []}}
+    do:
+      {:ok,
+       {%{term: %{field(parser, field_name) => normalize_value(parser, field_name, value)}}, []}}
 
   defp field_type(parser, [{LiteralParser, field_name}, range: :eq, literal: value, fuzz: fuzz]),
     do:
       {:ok,
        {%{
           fuzzy: %{
-            field(parser, field_name) => %{value: normalize_value(parser, value), fuzziness: fuzz}
+            field(parser, field_name) => %{
+              value: normalize_value(parser, field_name, value),
+              fuzziness: fuzz
+            }
           }
         }, []}}
 
@@ -208,21 +216,33 @@ defmodule Philomena.Search.Parser do
     do: {:ok, {%{match_all: %{}}, []}}
 
   defp field_type(parser, [{LiteralParser, field_name}, range: :eq, wildcard: value]),
-    do: {:ok, {%{wildcard: %{field(parser, field_name) => normalize_value(parser, value)}}, []}}
+    do:
+      {:ok,
+       {%{wildcard: %{field(parser, field_name) => normalize_value(parser, field_name, value)}},
+        []}}
 
   defp field_type(parser, [{NgramParser, field_name}, range: :eq, literal: value]),
     do:
-      {:ok, {%{match_phrase: %{field(parser, field_name) => normalize_value(parser, value)}}, []}}
+      {:ok,
+       {%{
+          match_phrase: %{field(parser, field_name) => normalize_value(parser, field_name, value)}
+        }, []}}
 
   defp field_type(parser, [{NgramParser, field_name}, range: :eq, literal: value, fuzz: _fuzz]),
     do:
-      {:ok, {%{match_phrase: %{field(parser, field_name) => normalize_value(parser, value)}}, []}}
+      {:ok,
+       {%{
+          match_phrase: %{field(parser, field_name) => normalize_value(parser, field_name, value)}
+        }, []}}
 
   defp field_type(_parser, [{NgramParser, _field_name}, range: :eq, wildcard: "*"]),
     do: {:ok, {%{match_all: %{}}, []}}
 
   defp field_type(parser, [{NgramParser, field_name}, range: :eq, wildcard: value]),
-    do: {:ok, {%{wildcard: %{field(parser, field_name) => normalize_value(parser, value)}}, []}}
+    do:
+      {:ok,
+       {%{wildcard: %{field(parser, field_name) => normalize_value(parser, field_name, value)}},
+        []}}
 
   defp field_type(parser, [{BoolParser, field_name}, range: :eq, bool: value]),
     do: {:ok, {%{term: %{field(parser, field_name) => value}}, []}}
@@ -271,22 +291,32 @@ defmodule Philomena.Search.Parser do
     parser.aliases[field_name] || field_name
   end
 
-  defp normalize_value(_parser, value) do
+  defp normalize_value(parser, field_name, value) do
     value
     |> String.trim()
-    |> String.downcase()
+    |> maybe_downcase(parser, field_name)
+  end
+
+  defp maybe_downcase(value, parser, field_name) do
+    if Enum.member?(parser.no_downcase_fields, field_name) do
+      value
+    else
+      String.downcase(value)
+    end
   end
 
   # Flattens the child of a disjunction or conjunction to improve performance.
   defp flatten_disjunction_child(this_child, %{bool: %{should: next_child}} = child)
-       when child == %{bool: %{should: next_child}} and is_list(next_child),
+       when child == %{bool: %{should: next_child}} and is_list(next_child) and
+              length(next_child) <= @max_clause_count,
        do: %{bool: %{should: [this_child | next_child]}}
 
   defp flatten_disjunction_child(this_child, next_child),
     do: %{bool: %{should: [this_child, next_child]}}
 
   defp flatten_conjunction_child(this_child, %{bool: %{must: next_child}} = child)
-       when child == %{bool: %{must: next_child}} and is_list(next_child),
+       when child == %{bool: %{must: next_child}} and is_list(next_child) and
+              length(next_child) <= @max_clause_count,
        do: %{bool: %{must: [this_child | next_child]}}
 
   defp flatten_conjunction_child(this_child, next_child),
