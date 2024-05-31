@@ -1,29 +1,11 @@
-.communication__options__post-time
-  span
-    ' Posted
-    => pretty_time(@comment.created_at)
-
-  a.button.button--primary href=Routes.image_comment_report_path(@conn, :new, @comment.image, @comment)
-    i.fa.fa-flag>
-    ' Report
-
-  = if not is_nil(@comment.edited_at) and can?(@conn, :show, @comment) do
-    a.communication__options__edit-time href=Routes.image_comment_history_path(@conn, :index, @comment.image, @comment)
-      ' Edited
-      => pretty_time(@comment.edited_at)
-
-      = if @comment.edit_reason not in [nil, ""] do
-        ' because:
-        => @comment.edit_reason
-
 .flex.flex--normal-gap.flex--centered
   - link_path = Routes.image_path(@conn, :show, @comment.image) <> "#comment_#{@comment.id}"
   - safe_author = PhilomenaWeb.PostView.markdown_safe_author(@comment)
   - quote_body = if @comment.hidden_from_users, do: "", else: @comment.body
 
-  a.button.button--primary title="Link to comment" href=link_path
-    i.fa.fa-link
-    ' Link
+  a.button.button--primary href=Routes.image_comment_report_path(@conn, :new, @comment.image, @comment)
+    i.fa.fa-flag>
+    ' Report
 
   a.button.button--primary.post-reply.post-reply-quote href=link_path data-reply-url=link_path data-author=safe_author data-post=quote_body
     i.fa.fa-quote-right

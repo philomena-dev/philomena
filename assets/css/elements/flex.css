@@ -91,6 +91,11 @@
   flex: 1 0 auto;
 }
 
+.flex__break {
+  flex-basis: 100%;
+  width: 0;
+}
+
 @mixin if-desktop {
   .flex--maybe-wrap {
     flex-wrap: nowrap;

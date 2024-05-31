@@ -1,4 +1,5 @@
 - anon = is_nil(assigns[:noanon]) or @noanon == false
+- options = if is_nil(assigns[:options]), do: "", else: @options
 
 - avatar = cond do
   - not is_nil(assigns[:image]) ->
@@ -45,6 +46,11 @@
     .communication__sender-block
       span.communication__sender-name
         = username
+        .flex__spacer
+        span.communication__post-time
+          ' Posted
+          =< pretty_time(@object.created_at)
+          = options
       = title
     .communication__body__text
       = contents
@@ -55,6 +61,10 @@
       span.communication__sender-name
         = username
       = title
+  span.communication__post-time
+    ' Posted
+    = pretty_time(@object.created_at)
+    = options
   .communication__body.communication__body__text
     = contents
   

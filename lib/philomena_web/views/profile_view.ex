@@ -36,25 +36,53 @@ defmodule PhilomenaWeb.ProfileView do
   def commission_status(%{open: true}), do: "Open"
   def commission_status(_commission), do: "Closed"
 
-  def sparkline_data(data) do
+  defp sparkline_y(val, max) do
+    # Filter out negative values
+    calc = max(val, 0)
+
+    # Lerp or 0 if not present
+    height = zero_div(calc * 20, max)
+
+    # In SVG coords, y grows down
+    20 - height
+  end
+
+  def sparkline_data(data, width \\ 375, height \\ 20) do
     # Normalize range
     max = max(Enum.max(data), 0)
+    sx = width / 90
+    sy = height / 20
+    factor = 100 / 90
 
-    content_tag :svg, width: "100%", preserveAspectRatio: "none", viewBox: "0 0 90 20" do
-      for {val, i} <- Enum.with_index(data) do
-        # Filter out negative values
-        calc = max(val, 0)
+    content_tag :svg, id: "js-sparkline-svg", width: "100%", preserveAspectRatio: "xMinYMin", viewBox: "0 0 #{width} #{height}" do
+      first = List.first(data)
+      last = List.last(data)
+      first_y = sparkline_y(first, max) * sy
+      last_y = sparkline_y(last, max) * sy
+      indexed_data = data
+        |> Enum.with_index()
+      points =
+        indexed_data
+        |> Enum.chunk_every(2, 1, :discard)
+        |> Enum.map(fn [{cv, ci}, {nv, ni}] ->
+          cy = sparkline_y(cv, max)
+          ny = sparkline_y(nv, max)
 
-        # Lerp or 0 if not present
-        height = zero_div(calc * 20, max)
+          "C #{(ci * sx) + 0.5 * sx},#{cy * sy} #{(ni * sx) - 0.5 * sx},#{ny * sy} #{ni * sx},#{ny * sy}"
+        end)
+        |> Enum.join("")
 
-        # In SVG coords, y grows down
-        y = 20 - height
+      circles = for {val, i} <- indexed_data do
+        y = sparkline_y(val, max) * sy
 
-        content_tag :rect, class: "barline__bar", x: i, y: y, width: 1, height: height do
+        content_tag :circle, class: "barline__dot", cx: "#{i * factor}%", cy: y * sy + 1.25, r: 2.5 do
           content_tag(:title, val)
         end
       end
+
+      graph = content_tag :path, "", id: "js-barline-graph", class: "barline__bar", d: "M0,#{first_y}#{points}L#{width - sx},#{last_y}L#{width - sx},#{height}L0,#{height}L0,#{first_y}"
+
+      [graph, circles]
     end
   end
 

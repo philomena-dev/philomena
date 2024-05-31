@@ -1,6 +1,8 @@
+- options = render PhilomenaWeb.CommentView, "_comment_link.html", comment: @comment, conn: @conn 
+
 article.block.communication id="comment_#{@comment.id}"
   .block__content.flex.flex--no-wrap class=communication_body_class(@comment)
-    = render PhilomenaWeb.CommunicationView, "_body.html", object: @comment, image: @comment.image, body: @body, conn: @conn, name: "comment"
+    = render PhilomenaWeb.CommunicationView, "_body.html", object: @comment, image: @comment.image, body: @body, conn: @conn, name: "comment", options: options
 
   .block__content.communication__options
     .flex.flex--wrap.flex--spaced-out
@@ -15,21 +17,21 @@ article.block.communication id="comment_#{@comment.id}"
               ' Restore
 
             = if can?(@conn, :delete, @comment) do
-              = link(to: Routes.image_comment_delete_path(@conn, :create, @comment.image_id, @comment), data: [confirm: "Are you sure?"], method: "post", class: "button button--danger") do
+              = link(to: Routes.image_comment_delete_path(@conn, :create, @comment.image_id, @comment), data: [confirm: "Are you sure?"], method: "post", class: "button button--danger button--transparent") do
                 i.fas.fa-times>
                 ' Delete Contents
 
           - not @comment.hidden_from_users and not @comment.destroyed_content ->
-            a.button.button--danger.togglable-delete-form-link href="#" data-click-toggle="#inline-del-form-comment-#{@comment.id}"
+            a.button.button--danger.button--transparent.togglable-delete-form-link href="#" data-click-toggle="#inline-del-form-comment-#{@comment.id}"
               i.fas.fa-times>
               ' Delete
 
           - true ->
 
         = if can?(@conn, :show, :ip_address) do
-          .button.button--warning.js-staff-action
+          .button.button--warning.button--transparent.js-staff-action
             =<> link_to_ip(@conn, @comment.ip)
-          .button.button--information.js-staff-action
+          .button.button--warning.button--transparent.js-staff-action
             =<> link_to_fingerprint(@conn, @comment.fingerprint)
 
         = form_for :comment, Routes.image_comment_hide_path(@conn, :create, @comment.image_id, @comment), [class: "togglable-delete-form hidden flex", id: "inline-del-form-comment-#{@comment.id}"], fn f ->

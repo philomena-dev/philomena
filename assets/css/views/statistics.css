@@ -22,13 +22,33 @@
 .sparkline {
   border-bottom: 1px solid var(--primary-border-color);
   display: flex;
-  height: var(--padding-normal);
+  height: var(--padding-large);
+  padding: var(--padding-tiny);
+  overflow: hidden;
+}
+
+.sparkline svg {
+  overflow: visible;
 }
 
 .barline__bar {
-  fill: var(--primary-border-color);
+  fill: var(--primary-link-color);
 }
 
 .barline__bar:hover {
   fill: var(--danger-color);
+}
+
+.barline__dot {
+  fill: var(--primary-border-color);
+  stroke: var(--link-color);
+  stroke-width: 1px;
+}
+
+.barline__dot:hover {
+  fill: var(--danger-color);
+}
+
+.barline__dot[cy="21.25"] {
+  display: none;
 }

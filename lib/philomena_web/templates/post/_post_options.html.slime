@@ -1,29 +1,11 @@
 div
-  ' Posted
-  => pretty_time(@post.created_at)
-
-  a.communication__interaction href=Routes.forum_topic_post_report_path(@conn, :new, @post.topic.forum, @post.topic, @post)
-    i.fa.fa-flag>
-    ' Report
-
-  = if not is_nil(@post.edited_at) and can?(@conn, :show, @post) do
-    br
-    a href=Routes.forum_topic_post_history_path(@conn, :index, @post.topic.forum, @post.topic, @post)
-      ' Edited
-      => pretty_time(@post.edited_at)
-
-      = if @post.edit_reason not in [nil, ""] do
-        ' because:
-        => @post.edit_reason
-
-div
   - link_path = Routes.forum_topic_path(@conn, :show, @post.topic.forum, @post.topic, post_id: @post.id) <> "#post_#{@post.id}"
   - safe_author = markdown_safe_author(@post)
   - quote_body = if @post.hidden_from_users, do: "", else: @post.body
 
-  a.communication__interaction title="Link to post" href=link_path
-    i.fa.fa-link>
-    ' Link
+  a.communication__interaction href=Routes.forum_topic_post_report_path(@conn, :new, @post.topic.forum, @post.topic, @post)
+    i.fa.fa-flag>
+    ' Report
 
   a.communication__interaction.post-reply.post-reply-quote href=link_path data-reply-url=link_path data-author=safe_author data-post=quote_body
     i.fa.fa-quote-right>

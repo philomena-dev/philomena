@@ -4,6 +4,7 @@ $narrow-layout-width: 960px;
 $medium-layout-width: $min-desktop-width;
 $font-family-base: verdana, arial, helvetica, sans-serif;
 $font-family-monospace: "Droid Sans Mono", monospace;
+$font-family-heading: $font-family-base;
 
 :root {
   /* Paddings */
@@ -84,6 +85,7 @@ $font-family-monospace: "Droid Sans Mono", monospace;
   /* Fonts */
   --font-family: $font-family-base;
   --font-family-monospace: $font-family-monospace;
+  --font-family-heading: $font-family-heading;
   --font-size: 14px;
   --font-tiny-size: 12px;
   --font-micro-size: 10px;

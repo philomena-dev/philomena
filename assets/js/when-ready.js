@@ -35,6 +35,7 @@ import { hideStaffTools }       from './staffhider';
 import { pollOptionCreator }    from './poll';
 import { warnAboutPMs }         from './pmwarning';
 import { imageSourcesCreator }  from './sources';
+import { sizeGraphs }           from './graph';
 
 whenReady(() => {
 
@@ -68,5 +69,6 @@ whenReady(() => {
   pollOptionCreator();
   warnAboutPMs();
   imageSourcesCreator();
+  sizeGraphs();
 
 });

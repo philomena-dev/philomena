@@ -1,3 +1,17 @@
+- post_link = Routes.forum_topic_path(@conn, :show, @post.topic.forum, @post.topic, post_id: @post.id) <> "#post_#{@post.id}"
+- options = if true do
+  .flex__spacer.hidden--desktop
+  a.communication__interaction.hidden--desktop title="Link to post" href=post_link
+    i.fa.fa-link
+  = if not is_nil(@post.edited_at) and can?(@conn, :show, @post) do
+    a href=Routes.forum_topic_post_history_path(@conn, :index, @post.topic.forum, @post.topic, @post)
+      ' Edited
+      => pretty_time(@post.edited_at)
+
+      = if @post.edit_reason not in [nil, ""] do
+        ' because:
+        => @post.edit_reason
+
 article.block.communication id="post_#{@post.id}"
   = if not @post.approved and not @post.hidden_from_users and (can?(@conn, :hide, @post) or @post.user_id == @conn.assigns.current_user.id) do
     .block__content
@@ -22,7 +36,7 @@ article.block.communication id="post_#{@post.id}"
               = submit "Delete", class: "button"
 
   .block__content.flex.flex--no-wrap class=communication_body_class(@post)
-    = render PhilomenaWeb.CommunicationView, "_body.html", object: @post, body: @body, conn: @conn, name: "post"
+    = render PhilomenaWeb.CommunicationView, "_body.html", object: @post, body: @body, conn: @conn, name: "post", options: options
 
   .block__content.communication__options
     .flex.flex--wrap.flex--spaced-out

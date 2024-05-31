@@ -1,0 +1,18 @@
+- comment_link = Routes.image_path(@conn, :show, @comment.image) <> "#comment_#{@comment.id}"
+
+.flex__spacer.hidden--desktop
+a.communication__interaction.hidden--desktop title="Link to comment" href=comment_link
+  i.fa.fa-link
+= if not is_nil(@comment.edited_at) and can?(@conn, :show, @comment) do
+  a.communication__options__edit-time href=Routes.image_comment_history_path(@conn, :index, @comment.image, @comment)
+    span.hidden--mobile> - edited
+    span.hidden--desktop> Edited
+    => pretty_time(@comment.edited_at)
+
+    = if @comment.edit_reason not in [nil, ""] do
+      | (
+      = @comment.edit_reason
+      | )
+.flex__spacer.hidden--mobile
+a.communication__interaction.hidden--mobile title="Link to comment" href=comment_link
+  i.fa.fa-link

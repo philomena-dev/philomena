@@ -11,6 +11,7 @@
 
 .column-layout__main {
   flex: 1 0 auto;
+  max-width: calc(100% - var(--column-left-width) - var(--padding-normal));
 }
 
 @mixin if-mobile {
@@ -20,6 +21,10 @@
 
   .column-layout__left {
     margin-right: 0;
+  }
+
+  .column-layout__main {
+    max-width: 100%;
   }
 }
 

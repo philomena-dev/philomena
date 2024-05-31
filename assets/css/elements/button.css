@@ -150,6 +150,10 @@
   border-radius: var(--border-radius-inner);
 }
 
+.button--transparent {
+  background: 0 !important;
+}
+
 @mixin button-type primary;
 @mixin button-type secondary;
 @mixin button-type success;

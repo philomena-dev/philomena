@@ -1,8 +1,8 @@
 @define-mixin heading $el {
   $(el) {
+    font-family: var(--font-family-heading);
     font-size: var(--font-$(el)-size);
-    font-weight: bold;
-    font-variant: small-caps;
+    font-weight: normal;
     padding: var(--padding-small) 0;
     margin-top: 0;
     border-bottom: 1px solid var(--primary-border-color);
@@ -30,12 +30,6 @@
 @mixin heading h4;
 @mixin heading h5;
 @mixin heading h6;
-
-/* To differentiate between h5 and h6, simply make h6 not bold */
-h6 {
-  font-weight: normal;
-}
-
 @mixin heading-type success;
 @mixin heading-type warning;
 @mixin heading-type danger;
