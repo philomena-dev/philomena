@@ -60,7 +60,11 @@ function setupNotifications() {
   setTimeout(getNewNotifications, NOTIFICATION_INTERVAL);
 
   // Update the current number of notifications based on the latest page load
-  storeNotificationCount($('.js-notification-ticker').dataset.notificationCount);
+  const ticker = $('.js-notification-ticker');
+
+  if (ticker) {
+    storeNotificationCount(ticker.dataset.notificationCount);
+  }
 
   // Update ticker when the stored value changes - this will occur in all open tabs
   store.watch('notificationCount', updateNotificationTicker);
