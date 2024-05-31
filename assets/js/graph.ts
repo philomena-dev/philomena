@@ -16,7 +16,7 @@ function resizeGraphs() {
       const graph: SVGPathElement | null = $<SVGPathElement>('#js-barline-graph', el);
 
       if (graph) {
-        graph.setAttribute('style', `transform: scale(${parent.clientWidth / 375});`);
+        graph.style.transform = `scale(${parent.clientWidth / 375})`;
       }
     }
   });
