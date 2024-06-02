@@ -10,10 +10,7 @@
       <div class="block">
         <%= for post <- @posts do %>
           <div class="block__content alternating-color">
-            Post
-            <%= link(pretty_time(post.created_at), to: ~p"/forums/#{post.topic.forum}/topics/#{post.topic}?#{[post_id: post]}" <> "#post_#{post.id}") %>
-            in topic
-            <%= link(post.topic.title, to: ~p"/forums/#{post.topic.forum}/topics/#{post.topic}") %>
+            Post <%= link(pretty_time(post.created_at), to: ~p"/forums/#{post.topic.forum}/topics/#{post.topic}?#{[post_id: post]}" <> "#post_#{post.id}") %> in topic <%= link(post.topic.title, to: ~p"/forums/#{post.topic.forum}/topics/#{post.topic}") %>
           </div>
         <% end %>
       </div>

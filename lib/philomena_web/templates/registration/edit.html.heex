@@ -8,17 +8,14 @@
   </a>
 </p>
 <p>
-  Looking for two factor authentication?
-  <%= link("Click here!", to: ~p"/registrations/totp/edit") %>
+  Looking for two factor authentication? <%= link("Click here!", to: ~p"/registrations/totp/edit") %>
 </p>
 <p>
-  Looking to change your avatar?
-  <%= link("Click here!", to: ~p"/avatar/edit") %>
+  Looking to change your avatar? <%= link("Click here!", to: ~p"/avatar/edit") %>
 </p>
 <%= if can?(@conn, :change_username, @current_user) do %>
   <p>
-    Looking to change your username?
-    <%= link("Click here!", to: ~p"/registrations/name/edit") %>
+    Looking to change your username? <%= link("Click here!", to: ~p"/registrations/name/edit") %>
   </p>
 <% end %>
 <h3>

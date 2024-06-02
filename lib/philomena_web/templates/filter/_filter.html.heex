@@ -4,8 +4,7 @@
   </h3>
   <%= if @filter.user do %>
     <p>
-      Maintained by
-      <%= render(PhilomenaWeb.UserAttributionView, "_user.html", object: @filter, conn: @conn) %>
+      Maintained by <%= render(PhilomenaWeb.UserAttributionView, "_user.html", object: @filter, conn: @conn) %>
     </p>
   <% end %>
   <%= if @filter.system do %>
@@ -16,10 +15,7 @@
   <div class="filter-options">
     <ul>
       <li>
-        Spoilers
-        <%= length(@filter.spoilered_tag_ids) %>
-        , hides
-        <%= length(@filter.hidden_tag_ids) %>
+        Spoilers <%= length(@filter.spoilered_tag_ids) %> , hides <%= length(@filter.hidden_tag_ids) %>
       </li>
       <li>
         <%= link("View this filter", to: ~p"/filters/#{@filter}", class: "button") %>

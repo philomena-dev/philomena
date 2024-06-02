@@ -1,19 +1,17 @@
-<% 
-  link = assigns[:link] || ~p"/images/#{@image}"
+<% link = assigns[:link] || ~p"/images/#{@image}"
 
-  size_class =
-    case @size do
-      :thumb -> "media-box__content--large"
-      :medium -> "media-box__content--featured"
-      _ -> "media-box__content--small"
-    end
+size_class =
+  case @size do
+    :thumb -> "media-box__content--large"
+    :medium -> "media-box__content--featured"
+    _ -> "media-box__content--small"
+  end
 
-  header_class =
-    case @size do
-      :thumb_small -> "media-box__header--small"
-      _ -> nil
-    end
-%>
+header_class =
+  case @size do
+    :thumb_small -> "media-box__header--small"
+    _ -> nil
+  end %>
 <div class="media-box" data-image-id={@image.id}>
   <div class={"media-box__header media-box__header--link-row #{header_class}"} data-image-id={@image.id}>
     <a class="interaction--fave" data-image-id={@image.id} href="#" rel="nofollow">

@@ -1,6 +1,5 @@
 <h1>
-  Tag Usage for
-  <%= link(@tag.name, to: ~p"/tags/#{@tag}") %>
+  Tag Usage for <%= link(@tag.name, to: ~p"/tags/#{@tag}") %>
 </h1>
 <h3>
   Filters that spoiler this tag:
@@ -11,9 +10,7 @@
 </h3>
 <%= render(PhilomenaWeb.Tag.DetailView, "_filters.html", filters: @filters_hiding, conn: @conn) %>
 <h3>
-  Users that watch this tag (
-  <%= length(@users_watching) %>
-  )
+  Users that watch this tag ( <%= length(@users_watching) %> )
 </h3>
 <%= for u <- @users_watching do %>
   <%= link(u.name, to: ~p"/profiles/#{u}", class: "interaction-user-list-item") %>

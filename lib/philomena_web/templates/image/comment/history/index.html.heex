@@ -1,10 +1,7 @@
 <h1>
-  Viewing last 25 versions of comment by
-  <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @comment, conn: @conn) %>
-  on image
+  Viewing last 25 versions of comment by <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @comment, conn: @conn) %> on image
   <a href={~p"/images/#{@comment.image}"}>
-    #
-    <%= @comment.image_id %>
+    # <%= @comment.image_id %>
   </a>
 </h1>
 <%= for version <- @versions do %>
@@ -41,17 +38,13 @@
       <div class="flex flex--wrap flex--spaced-out">
         <div>
           <%= if version.edit_reason not in [nil, ""] do %>
-            Reason:
-            <%= version.edit_reason %>
+            Reason: <%= version.edit_reason %>
           <% else %>
             No reason given
           <% end %>
         </div>
         <div class="flex__right">
-          Edited
-          <%= pretty_time(version.created_at) %>
-          by
-          <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: version, conn: @conn) %>
+          Edited <%= pretty_time(version.created_at) %> by <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: version, conn: @conn) %>
         </div>
       </div>
     </div>

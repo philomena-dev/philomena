@@ -1,11 +1,9 @@
-<% 
-  form_class =
-    if @changeset.action do
-      ""
-    else
-      "hidden"
-    end
-%>
+<% form_class =
+  if @changeset.action do
+    ""
+  else
+    "hidden"
+  end %>
 <% tags = display_order(@image.tags) %>
 <% tag_input = Enum.map_join(tags, ", ", & &1.name) %>
 <div class="js-tagsauce" id="image_tags_and_source">
@@ -51,8 +49,7 @@
                 Hang on a sec&hellip;
               </em>
             </strong>
-            <br />
-            Make sure you have read and understood our
+            <br /> Make sure you have read and understood our
             <a href="/pages/tags">
               tagging guidelines
             </a>
@@ -85,20 +82,15 @@
   <div class="block tagsauce">
     <div class="block__header flex">
       <span class="block__header__title">
-        <i class="fas fa-tag"></i>
-        Tags
+        <i class="fas fa-tag"></i> Tags
       </span>
       <div class="block__header__buttons">
         <a accessKey="t" class="button button--inline js-tag-sauce-toggle" data-click-focus=".js-taginput-plain:not(.hidden), .js-taginput-input" data-click-toggle=".tagsauce, .js-imageform" id="edit-tags" title="Edit tags">
-          <i class="fas fa-edit"></i>
-          Edit
+          <i class="fas fa-edit"></i> Edit
         </a>
         <%= if @tag_change_count > 0 do %>
           <a class="button button--link button--inline" href={~p"/images/#{@image}/tag_changes"} title="Tag history">
-            <i class="fa fa-history"></i>
-            History (
-            <%= @tag_change_count %>
-            )
+            <i class="fa fa-history"></i> History ( <%= @tag_change_count %> )
           </a>
         <% end %>
       </div>

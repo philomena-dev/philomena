@@ -9,12 +9,12 @@
         <%= for row <- footer_data[column] do %>
           <%= if row["bold"] do %>
             <strong>
-              <a href={row["url"]} target={row["target"]||"_self"}>
+              <a href={row["url"]} target={row["target"] || "_self"}>
                 <%= row["title"] %>
               </a>
             </strong>
           <% else %>
-            <a href={row["url"]} target={row["target"]||"_self"}>
+            <a href={row["url"]} target={row["target"] || "_self"}>
               <%= row["title"] %>
             </a>
           <% end %>
@@ -28,8 +28,6 @@
     <a href="https://github.com/philomena-dev/philomena">
       philomena
     </a>
-    (
-    <%= render_time(@conn) %>
-    ms)
+    ( <%= render_time(@conn) %> ms)
   </div>
 </footer>

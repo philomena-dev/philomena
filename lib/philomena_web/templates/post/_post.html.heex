@@ -3,22 +3,19 @@
     <div class="block__content">
       <div class="block block--fixed block--danger">
         <p>
-          <i class="fas fa-exclamation-triangle"></i>
-          This post is pending approval from a staff member.
+          <i class="fas fa-exclamation-triangle"></i> This post is pending approval from a staff member.
         </p>
         <%= if can?(@conn, :approve, @post) do %>
           <p>
             <ul class="horizontal-list">
               <li>
                 <%= link(to: ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/approve", data: [confirm: "Are you sure?"], method: "post", class: "button") do %>
-                  <i class="fas fa-check"></i>
-                  Approve
+                  <i class="fas fa-check"></i> Approve
                 <% end %>
               </li>
               <li>
                 <a class="button togglable-delete-form-link" data-click-toggle={"#inline-reject-form-post-#{@post.id}"} href="#">
-                  <i class="fa fa-times"></i>
-                  Reject
+                  <i class="fa fa-times"></i> Reject
                 </a>
               </li>
             </ul>
@@ -44,12 +41,9 @@
       <div class="communication__body__text">
         <%= if @post.hidden_from_users do %>
           <strong class="comment_deleted">
-            Deletion reason:
-            <%= @post.deletion_reason %>
+            Deletion reason: <%= @post.deletion_reason %>
             <%= if can?(@conn, :hide, @post) and not is_nil(@post.deleted_by) do %>
-              (
-              <%= @post.deleted_by.name %>
-              )
+              ( <%= @post.deleted_by.name %> )
             <% end %>
           </strong>
           <%= if can?(@conn, :hide, @post) do %>
@@ -81,15 +75,13 @@
             Restore
             <%= if can?(@conn, :delete, @post) do %>
               <%= link(to: ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/delete", data: [confirm: "Are you sure?"], method: "post", class: "communication__interaction") do %>
-                <i class="fas fa-times"></i>
-                Delete Contents
+                <i class="fas fa-times"></i> Delete Contents
               <% end %>
             <% end %>
           <% end %>
         <% not @post.hidden_from_users and not @post.destroyed_content -> %>
           <a class="communication__interaction togglable-delete-form-link" data-click-toggle={"#inline-del-form-post-#{@post.id}"} href="#">
-            <i class="fa fa-times"></i>
-            Delete
+            <i class="fa fa-times"></i> Delete
           </a>
         <% true -> %>
       <% end %>

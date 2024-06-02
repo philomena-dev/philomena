@@ -2,21 +2,17 @@
 <div id="image_options_area">
   <div class="block__header block__header--js-tabbed">
     <a data-click-tab="reporting" data-load-tab={~p"/images/#{@image}/reporting"} href="#">
-      <i class="fa fa-exclamation-triangle"></i>
-      Report
+      <i class="fa fa-exclamation-triangle"></i> Report
     </a>
     <a data-click-tab="sharing" href="#">
-      <i class="fa fa-share"></i>
-      Share
+      <i class="fa fa-share"></i> Share
     </a>
     <a data-click-tab="favoriters" data-load-tab={~p"/images/#{@image}/favorites"} href="#">
-      <i class="fa fa-star"></i>
-      List favoriters
+      <i class="fa fa-star"></i> List favoriters
     </a>
     <%= if display_mod_tools? and not hide_staff_tools?(@conn) do %>
       <a data-click-tab="replace" href="#">
-        <i class="fa fa-upload"></i>
-        Replace
+        <i class="fa fa-upload"></i> Replace
       </a>
       <a data-click-tab="administration" href="#">
         <i class="fa fa-toolbox"></i>
@@ -40,14 +36,12 @@
   </div>
   <div class="block__tab hidden" data-tab="sharing">
     <div id="embed_options">
-      <% 
-        source_link =
-          if image_has_sources(@image) do
-            " - [url=#{image_first_source(@image)}]Original source[/url]"
-          else
-            " (Original source unknown at time of posting)"
-          end
-      %>
+      <% source_link =
+        if image_has_sources(@image) do
+          " - [url=#{image_first_source(@image)}]Original source[/url]"
+        else
+          " (Original source unknown at time of posting)"
+        end %>
       <h5>
         Derpibooru
       </h5>
@@ -57,8 +51,7 @@
         </strong>
         <input class="input" cols="10" id="embed_small_thumbnail_tag" readonly="readonly" type="text" value={">>#{@image.id}s"} />
         <a data-click-copy="#embed_small_thumbnail_tag" href="#">
-          <i class="fa fa-clipboard"></i>
-          Copy
+          <i class="fa fa-clipboard"></i> Copy
         </a>
       </p>
       <p>
@@ -67,8 +60,7 @@
         </strong>
         <input class="input" cols="10" id="embed_thumbnail_tag" readonly="readonly" type="text" value={">>#{@image.id}t"} />
         <a data-click-copy="#embed_thumbnail_tag" href="#">
-          <i class="fa fa-clipboard"></i>
-          Copy
+          <i class="fa fa-clipboard"></i> Copy
         </a>
       </p>
       <p>
@@ -77,8 +69,7 @@
         </strong>
         <input class="input" cols="10" id="embed_preview_tag" readonly="readonly" type="text" value={">>#{@image.id}p"} />
         <a data-click-copy="#embed_preview_tag" href="#">
-          <i class="fa fa-clipboard"></i>
-          Copy
+          <i class="fa fa-clipboard"></i> Copy
         </a>
       </p>
       <h5>
@@ -89,8 +80,7 @@
           Full size BBcode
         </strong>
         <a data-click-copy="#bbcode_embed_full_tag" href="#">
-          <i class="fa fa-clipboard"></i>
-          Copy
+          <i class="fa fa-clipboard"></i> Copy
         </a>
         <br />
         <textarea class="input input--wide input--separate-top" cols="100" id="bbcode_embed_full_tag" readonly="readonly" rows="2">
@@ -105,8 +95,7 @@
           Thumbnailed BBcode
         </strong>
         <a data-click-copy="#bbcode_embed_thumbnail_tag" href="#">
-          <i class="fa fa-clipboard"></i>
-          Copy
+          <i class="fa fa-clipboard"></i> Copy
         </a>
         <br />
         <textarea class="input input--wide input--separate-top" cols="100" id="bbcode_embed_thumbnail_tag" readonly="readonly" rows="2">

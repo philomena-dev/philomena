@@ -70,38 +70,29 @@
     </div>
     <div class="stretched-mobile-links">
       <a href={pretty_url(@image, false, false)} rel="nofollow" title="View (tags in filename)">
-        <i class="fa fa-eye"></i>
-        View
+        <i class="fa fa-eye"></i> View
       </a>
       <a href={pretty_url(@image, true, false)} rel="nofollow" title="View (no tags in filename)">
-        <i class="fa fa-eye"></i>
-        VS
+        <i class="fa fa-eye"></i> VS
       </a>
       <a href={pretty_url(@image, false, true)} rel="nofollow" title="Download (tags in filename)">
-        <i class="fa fa-download"></i>
-        Download
+        <i class="fa fa-download"></i> Download
       </a>
       <a href={pretty_url(@image, true, true)} title="Download (no tags in filename)">
-        <i class="fa fa-download"></i>
-        DS
+        <i class="fa fa-download"></i> DS
       </a>
     </div>
   </div>
   <div class="image-metabar flex flex--wrap block__header--user-credit center--layout" id="extrameta">
     <div>
-      Uploaded
-      <%= pretty_time(@image.created_at) %>
+      Uploaded <%= pretty_time(@image.created_at) %>
       <%= render(PhilomenaWeb.ImageView, "_uploader.html", assigns) %>
     </div>
     <span class="image-size">
-      &nbsp;
-      <%= @image.image_width %>
-      x
-      <%= @image.image_height %>
+      &nbsp; <%= @image.image_width %> x <%= @image.image_height %>
       <%= if not is_nil(@image.image_duration) and @image.image_is_animated and @image.image_duration > 0 do %>
         <span class="image-size" title={@image.image_duration}>
-          &nbsp;
-          <% dur = trunc(@image.image_duration) %>
+          &nbsp; <% dur = trunc(@image.image_duration) %>
           <% ms = trunc((@image.image_duration - dur) * 100) %>
           <% {mm, ss} = {div(dur, 60), rem(dur, 60)} %>
           <%= :io_lib.format("~2..0B:~2..0B.~2..0B", [mm, ss, ms]) %>
@@ -112,11 +103,9 @@
       <% size_mb = Float.round(size_kb / 1000.0, 2) %>
       <span title={"#{size_kb} kB"}>
         <%= if size_kb <= 1000 do %>
-          <%= size_kb %>
-          kB
+          <%= size_kb %> kB
         <% else %>
-          <%= size_mb %>
-          MB
+          <%= size_mb %> MB
         <% end %>
       </span>
     </span>

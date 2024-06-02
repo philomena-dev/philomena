@@ -16,13 +16,11 @@
     </div>
     <%= if @conn.cookies["chan_nsfw"] == "true" do %>
       <a data-method="delete" href={~p"/channels/nsfw"}>
-        <i class="fa fa-eye-slash"></i>
-        Hide NSFW streams
+        <i class="fa fa-eye-slash"></i> Hide NSFW streams
       </a>
     <% else %>
       <a data-method="create" href={~p"/channels/nsfw"}>
-        <i class="fa fa-eye"></i>
-        Show NSFW streams
+        <i class="fa fa-eye"></i> Show NSFW streams
       </a>
     <% end %>
   </div>

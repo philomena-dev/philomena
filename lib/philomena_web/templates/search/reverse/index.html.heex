@@ -76,12 +76,7 @@
           </th>
           <th>
             <h3>
-              <%= match.image_width %>
-              x
-              <%= match.image_height %>
-              -
-              <%= round(match.image_size / 1024) %>
-              KiB
+              <%= match.image_width %> x <%= match.image_height %> - <%= round(match.image_size / 1024) %> KiB
             </h3>
             <%= render(PhilomenaWeb.TagView, "_tag_list.html", tags: Tag.display_order(match.tags), conn: @conn) %>
           </th>

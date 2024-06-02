@@ -1,6 +1,5 @@
 <span class="image_uploader">
-  by
-  <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @image, awards: true, conn: @conn) %>
+  by <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @image, awards: true, conn: @conn) %>
   <%= if can?(@conn, :show, :ip_address) and not hide_staff_tools?(@conn) do %>
     <%= link_to_ip(@conn, @image.ip) %>
     <%= link_to_fingerprint(@conn, @image.fingerprint) %>

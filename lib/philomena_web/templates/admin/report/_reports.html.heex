@@ -57,19 +57,15 @@
           <%= link("Show", to: ~p"/admin/reports/#{report}") %>
           <%= if report.open do %>
             <%= if report.user do %>
-              &bull;
-              <%= link("Send PM", to: ~p"/conversations/new?#{[recipient: report.user.name]}") %>
+              &bull; <%= link("Send PM", to: ~p"/conversations/new?#{[recipient: report.user.name]}") %>
             <% end %>
             <%= if is_nil(report.admin) and not current?(report.admin, @conn.assigns.current_user) do %>
-              &bull;
-              <%= link("Claim", to: ~p"/admin/reports/#{report}/claim", data: [method: "post"]) %>
+              &bull; <%= link("Claim", to: ~p"/admin/reports/#{report}/claim", data: [method: "post"]) %>
             <% end %>
             <%= if current?(report.admin, @conn.assigns.current_user) do %>
-              &bull;
-              <%= link("Release", to: ~p"/admin/reports/#{report}/claim", data: [method: "delete"]) %>
+              &bull; <%= link("Release", to: ~p"/admin/reports/#{report}/claim", data: [method: "delete"]) %>
             <% end %>
-            &bull;
-            <%= link("Close", to: ~p"/admin/reports/#{report}/close", data: [method: "post", confirm: "Are you really, really sure?"]) %>
+            &bull; <%= link("Close", to: ~p"/admin/reports/#{report}/close", data: [method: "post", confirm: "Are you really, really sure?"]) %>
           <% end %>
         </td>
       </tr>

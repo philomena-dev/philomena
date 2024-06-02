@@ -3,16 +3,14 @@
     <div class="block__content">
       <div class="block block--fixed block--danger">
         <p>
-          <i class="fas fa-exclamation-triangle"></i>
-          This private message is pending approval from a staff member.
+          <i class="fas fa-exclamation-triangle"></i> This private message is pending approval from a staff member.
         </p>
         <%= if can?(@conn, :approve, @message) do %>
           <p>
             <ul class="horizontal-list">
               <li>
                 <%= link(to: ~p"/conversations/#{@message.conversation_id}/messages/#{@message}/approve", data: [confirm: "Are you sure?"], method: "post", class: "button") do %>
-                  <i class="fas fa-check"></i>
-                  Approve
+                  <i class="fas fa-check"></i> Approve
                 <% end %>
               </li>
             </ul>
@@ -39,8 +37,7 @@
   <div class="block__content communication__options">
     <div class="flex flex--wrap flex--spaced-out">
       <div>
-        Posted
-        <%= pretty_time(@message.created_at) %>
+        Posted <%= pretty_time(@message.created_at) %>
       </div>
     </div>
   </div>

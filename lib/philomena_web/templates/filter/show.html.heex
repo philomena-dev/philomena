@@ -1,16 +1,12 @@
 <h1>
-  Viewing full filter details for
-  <%= @filter.name %>
+  Viewing full filter details for <%= @filter.name %>
 </h1>
 <div class="filter">
   <div class="filter-options">
     <ul>
       <li>
-        Spoilers
-        <%= number_with_delimiter(length(@filter.spoilered_tag_ids)) %>
-        <%= pluralize("tag", "tags", length(@filter.spoilered_tag_ids)) %>
-        and hides
-        <%= number_with_delimiter(length(@filter.hidden_tag_ids)) %>
+        Spoilers <%= number_with_delimiter(length(@filter.spoilered_tag_ids)) %>
+        <%= pluralize("tag", "tags", length(@filter.spoilered_tag_ids)) %> and hides <%= number_with_delimiter(length(@filter.hidden_tag_ids)) %>
         <%= pluralize("tag", "tags", length(@filter.hidden_tag_ids)) %>
       </li>
       <%= if @filter.id == @conn.assigns.current_filter.id do %>
@@ -36,8 +32,7 @@
   </div>
   <%= if @filter.user do %>
     <p class="filter-maintainer">
-      This filter is maintained by
-      <%= render(PhilomenaWeb.UserAttributionView, "_user.html", object: @filter, conn: @conn) %>
+      This filter is maintained by <%= render(PhilomenaWeb.UserAttributionView, "_user.html", object: @filter, conn: @conn) %>
     </p>
   <% end %>
   <p class="filter-description">

@@ -1,22 +1,20 @@
-<% 
-  watch_path = ~p"/channels/#{@channel}/subscription"
+<% watch_path = ~p"/channels/#{@channel}/subscription"
 
-  watch_class =
-    if @watching do
-      "hidden"
-    else
-      ""
-    end
+watch_class =
+  if @watching do
+    "hidden"
+  else
+    ""
+  end
 
-  unwatch_path = ~p"/channels/#{@channel}/subscription"
+unwatch_path = ~p"/channels/#{@channel}/subscription"
 
-  unwatch_class =
-    if @watching do
-      ""
-    else
-      "hidden"
-    end
-%>
+unwatch_class =
+  if @watching do
+    ""
+  else
+    "hidden"
+  end %>
 <%= if @conn.assigns.current_user do %>
   <span class="js-subscription-target">
     <a class={"js-subscription-link media-box__header media-box__header--channel media-box__header--link #{watch_class}"} data-method="post" data-remote="true" href={watch_path}>

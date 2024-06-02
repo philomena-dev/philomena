@@ -24,11 +24,7 @@
     <%= for {body, post} <- @posts, post.topic.hidden_from_users == false do %>
       <div>
         <h3>
-          <%= link(post.topic.forum.name, to: ~p"/forums/#{post.topic.forum}") %>
-          &raquo;
-          <%= link(post.topic.title, to: ~p"/forums/#{post.topic.forum}/topics/#{post.topic}") %>
-          &raquo;
-          <% post_link = ~p"/forums/#{post.topic.forum}/topics/#{post.topic}?#{[post_id: post.id]}" <> "#post_#{post.id}" %>
+          <%= link(post.topic.forum.name, to: ~p"/forums/#{post.topic.forum}") %> &raquo; <%= link(post.topic.title, to: ~p"/forums/#{post.topic.forum}/topics/#{post.topic}") %> &raquo; <% post_link = ~p"/forums/#{post.topic.forum}/topics/#{post.topic}?#{[post_id: post.id]}" <> "#post_#{post.id}" %>
           <%= if post.topic_position == 0 do %>
             <%= link("Topic Opener", to: post_link) %>
           <% else %>

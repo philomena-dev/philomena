@@ -1,7 +1,5 @@
-<% 
-  route = fn p -> ~p"/moderation_logs?#{p}" end
-  pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @moderation_logs, route: route, conn: @conn)
-%>
+<% route = fn p -> ~p"/moderation_logs?#{p}" end
+pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @moderation_logs, route: route, conn: @conn) %>
 <h1>
   Listing Moderation Logs
 </h1>
@@ -49,8 +47,7 @@
         </td>
         <td>
           <%= link to: log.subject_path do %>
-            <i class="fa fa-eye"></i>
-            View subject
+            <i class="fa fa-eye"></i> View subject
           <% end %>
         </td>
       </tr>

@@ -29,8 +29,7 @@
       </p>
       <p>
         <%= link(to: ~p"/forums/#{@forum}/topics/#{@topic}/hide", method: :delete, class: "button") do %>
-          <i class="fas fa-check"></i>
-          Restore
+          <i class="fas fa-check"></i> Restore
         <% end %>
       </p>
     <% end %>
@@ -39,31 +38,25 @@
 <% # Header section %>
 <div class="block">
   <div class="block__header">
-    <%= link(@forum.name, to: ~p"/forums/#{@forum}") %>
-    &raquo;
-    <%= link(@topic.title, to: ~p"/forums/#{@forum}/topics/#{@topic}") %>
+    <%= link(@forum.name, to: ~p"/forums/#{@forum}") %> &raquo; <%= link(@topic.title, to: ~p"/forums/#{@forum}/topics/#{@topic}") %>
     <%= if not @topic.hidden_from_users or can?(@conn, :hide, @topic) do %>
       <a href={~p"/posts?#{[pq: "topic_id:#{@topic.id}"]}"}>
-        <i class="fa fa-fw fa-search"></i>
-        Search Posts
+        <i class="fa fa-fw fa-search"></i> Search Posts
       </a>
       <div class="flex flex--wrap block__header block__header--light page__header">
         <div class="flex--fixed page__pagination">
           <%= pagination %>
         </div>
         <div class="flex--fixed block__header__item page__options">
-          Started by
-          <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @topic, conn: @conn) %>
+          Started by <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @topic, conn: @conn) %>
         </div>
         <div class="page__info">
           <div class="flex flex--center-distributed">
             <div class="flex--fixed block__header__item">
-              Posted
-              <%= pretty_time(@topic.created_at) %>
+              Posted <%= pretty_time(@topic.created_at) %>
             </div>
             <div class="flex--fixed block__header__item">
-              <%= @topic.post_count - 1 %>
-              replies
+              <%= @topic.post_count - 1 %> replies
             </div>
             <%= if not @topic.hidden_from_users do %>
               <%= render(PhilomenaWeb.Topic.SubscriptionView, "_subscription.html", forum: @forum, topic: @topic, watching: @watching, conn: @conn) %>
@@ -102,8 +95,7 @@
             This topic has been locked to new posts from non-moderators.
           </h4>
           <p>
-            Locked
-            <%= pretty_time(@topic.locked_at) %>
+            Locked <%= pretty_time(@topic.locked_at) %>
           </p>
           <p>
             Lock reason:
@@ -161,27 +153,23 @@
             <%= if not @topic.hidden_from_users do %>
               <%= if @topic.sticky do %>
                 <%= link(to: ~p"/forums/#{@forum}/topics/#{@topic}/stick", method: :delete, class: "button") do %>
-                  <i class="fas fa-thumbtack"></i>
-                  Unstick
+                  <i class="fas fa-thumbtack"></i> Unstick
                 <% end %>
               <% else %>
                 <%= link(to: ~p"/forums/#{@forum}/topics/#{@topic}/stick", method: :post, class: "button") do %>
-                  <i class="fas fa-thumbtack"></i>
-                  Stick
+                  <i class="fas fa-thumbtack"></i> Stick
                 <% end %>
               <% end %>
               <%= if @topic.locked_at do %>
                 <%= link(to: ~p"/forums/#{@forum}/topics/#{@topic}/lock", method: :delete, class: "button") do %>
-                  <i class="fas fa-unlock"></i>
-                  Unlock
+                  <i class="fas fa-unlock"></i> Unlock
                 <% end %>
               <% else %>
                 <%= form_for :topic, ~p"/forums/#{@forum}/topics/#{@topic}/lock", [method: :post, class: "hform"], fn f -> %>
                   <div class="field">
                     <%= text_input(f, :lock_reason, class: "input hform__text", placeholder: "Lock reason", required: true) %>
                     <%= submit class: "hform__button button" do %>
-                      <i class="fas fa-lock"></i>
-                      Lock
+                      <i class="fas fa-lock"></i> Lock
                     <% end %>
                   </div>
                 <% end %>
@@ -190,8 +178,7 @@
                 <div class="field">
                   <%= text_input(f, :title, class: "input hform__text", placeholder: "New Title") %>
                   <%= submit class: "hform__button button" do %>
-                    <i class="fas fa-pen"></i>
-                    Set Title
+                    <i class="fas fa-pen"></i> Set Title
                   <% end %>
                 </div>
               <% end %>
@@ -199,8 +186,7 @@
                 <div class="field">
                   <%= select(f, :target_forum_id, Enum.map(@conn.assigns.forums, &{&1.name, &1.id}), class: "input hform__text") %>
                   <%= submit class: "hform__button button" do %>
-                    <i class="fas fa-truck"></i>
-                    Move
+                    <i class="fas fa-truck"></i> Move
                   <% end %>
                 </div>
               <% end %>
@@ -208,8 +194,7 @@
                 <div class="field">
                   <%= text_input(f, :deletion_reason, class: "input hform__text", placeholder: "Deletion reason", required: true) %>
                   <%= submit class: "hform__button button" do %>
-                    <i class="fas fa-trash"></i>
-                    Delete
+                    <i class="fas fa-trash"></i> Delete
                   <% end %>
                 </div>
               <% end %>

@@ -14,9 +14,7 @@
           You have not added any items to your commissions sheet yet.
         </p>
         <p>
-          Your listing will not appear in search results until you
-          <%= link("list at least one item", to: ~p"/profiles/#{@user}/commission/items/new") %>
-          .
+          Your listing will not appear in search results until you <%= link("list at least one item", to: ~p"/profiles/#{@user}/commission/items/new") %> .
         </p>
       <% else %>
         <p>
@@ -65,8 +63,7 @@
               <%= description %>
             </td>
             <td>
-              $
-              <%= Decimal.round(item.base_price, 2) %>
+              $ <%= Decimal.round(item.base_price, 2) %>
             </td>
             <td>
               <%= add_ons %>

@@ -4,20 +4,15 @@
 </h1>
 <div class="block">
   <div class="block__header">
-    <%= link("Forums", to: ~p"/forums") %>
-    &raquo;
-    <%= link(@forum.name, to: ~p"/forums/#{@forum}") %>
+    <%= link("Forums", to: ~p"/forums") %> &raquo; <%= link(@forum.name, to: ~p"/forums/#{@forum}") %>
     <a href={~p"/forums/#{@forum}/topics/new"}>
-      <i class="fa fa-fw fa-edit"></i>
-      New Topic
+      <i class="fa fa-fw fa-edit"></i> New Topic
     </a>
     <a href={~p"/posts?#{[pq: "forum:#{@forum.short_name}"]}"}>
-      <i class="fa fa-fw fa-search"></i>
-      Search Posts
+      <i class="fa fa-fw fa-search"></i> Search Posts
     </a>
     <span class="spacing-left">
-      <%= @forum.topic_count %>
-      topics
+      <%= @forum.topic_count %> topics
     </span>
   </div>
   <div class="block__header--sub block__header--light page__header">
@@ -61,10 +56,7 @@
               <% end %>
               <%= link(topic.title, to: ~p"/forums/#{@forum}/topics/#{topic}") %>
               <div class="small-text">
-                Posted
-                <%= pretty_time(topic.created_at) %>
-                by
-                <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: topic, conn: @conn) %>
+                Posted <%= pretty_time(topic.created_at) %> by <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: topic, conn: @conn) %>
               </div>
             </td>
             <td class="table--communication-list__stats hide-mobile">
@@ -72,9 +64,7 @@
             </td>
             <td class="table--communication-list__last-post">
               <%= if topic.last_post do %>
-                <%= link("Go to post", to: ~p"/forums/#{topic.forum}/topics/#{topic}?#{[post_id: topic.last_post]}" <> "#post_#{topic.last_post.id}") %>
-                by
-                <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: topic.last_post, conn: @conn) %>
+                <%= link("Go to post", to: ~p"/forums/#{topic.forum}/topics/#{topic}?#{[post_id: topic.last_post]}" <> "#post_#{topic.last_post.id}") %> by <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: topic.last_post, conn: @conn) %>
                 <br />
                 <%= pretty_time(topic.last_post.created_at) %>
               <% end %>

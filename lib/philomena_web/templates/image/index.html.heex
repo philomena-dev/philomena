@@ -1,14 +1,12 @@
-<% 
-  header = assigns[:header] || ""
-  params = assigns[:params] || assigns[:scope] || []
-  scope = assigns[:scope] || []
-  tags = assigns[:tags] || []
-  route = assigns[:route] || fn p -> ~p"/images?#{p}" end
-  image_url = fn image -> ~p"/images/#{image}?#{scope}" end
-  sorted_url = fn image, hit -> ~p"/images/#{image}?#{Keyword.put(scope, :sort, hit["sort"])}" end
-  pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @images, route: route, params: params)
-  info = render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @images)
-%>
+<% header = assigns[:header] || ""
+params = assigns[:params] || assigns[:scope] || []
+scope = assigns[:scope] || []
+tags = assigns[:tags] || []
+route = assigns[:route] || fn p -> ~p"/images?#{p}" end
+image_url = fn image -> ~p"/images/#{image}?#{scope}" end
+sorted_url = fn image, hit -> ~p"/images/#{image}?#{Keyword.put(scope, :sort, hit["sort"])}" end
+pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @images, route: route, params: params)
+info = render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @images) %>
 <div class="block" id="imagelist-container">
   <section class="block__header page__header flex">
     <span class="block__header__title page__title hide-mobile">

@@ -2,56 +2,47 @@
   <%= if manages_users?(@conn) do %>
     <div class="dropdown hide-mobile">
       <a class="header__link" title="Admin">
-        A
-        <i class="fa fa-caret-down"></i>
+        A <i class="fa fa-caret-down"></i>
       </a>
       <div class="dropdown__content js-burger-links">
         <%= if manages_site_notices?(@conn) do %>
           <%= link to: ~p"/admin/site_notices", class: "header__link" do %>
-            <i class="fa fa-fw fa-info-circle"></i>
-            Site Notices
+            <i class="fa fa-fw fa-info-circle"></i> Site Notices
           <% end %>
         <% end %>
         <%= if manages_users?(@conn) do %>
           <%= link to: ~p"/admin/users", class: "header__link" do %>
-            <i class="fa fa-fw fa-users"></i>
-            Users
+            <i class="fa fa-fw fa-users"></i> Users
           <% end %>
         <% end %>
         <%= if manages_forums?(@conn) do %>
           <%= link to: ~p"/admin/forums", class: "header__link" do %>
-            <i class="fa fa-fw fa-paragraph"></i>
-            Forums
+            <i class="fa fa-fw fa-paragraph"></i> Forums
           <% end %>
         <% end %>
         <%= if manages_ads?(@conn) do %>
           <%= link to: ~p"/admin/adverts", class: "header__link" do %>
-            <i class="fa fa-fw fa-shopping-bag"></i>
-            Adverts
+            <i class="fa fa-fw fa-shopping-bag"></i> Adverts
           <% end %>
         <% end %>
         <%= if manages_badges?(@conn) do %>
           <%= link to: ~p"/admin/badges", class: "header__link" do %>
-            <i class="fa fa-fw fa-trophy"></i>
-            Badges
+            <i class="fa fa-fw fa-trophy"></i> Badges
           <% end %>
         <% end %>
         <%= if manages_static_pages?(@conn) do %>
           <%= link to: ~p"/pages", class: "header__link" do %>
-            <i class="fa fa-fw fa-sticky-note"></i>
-            Pages
+            <i class="fa fa-fw fa-sticky-note"></i> Pages
           <% end %>
         <% end %>
         <%= if manages_mod_notes?(@conn) do %>
           <%= link to: ~p"/admin/mod_notes", class: "header__link" do %>
-            <i class="fa fa-fw fa-clipboard"></i>
-            Mod Notes
+            <i class="fa fa-fw fa-clipboard"></i> Mod Notes
           <% end %>
         <% end %>
         <%= if can_see_moderation_log?(@conn) do %>
           <%= link to: ~p"/moderation_logs", class: "header__link" do %>
-            <i class="fa fa-fw fa-list-alt"></i>
-            Mod Logs
+            <i class="fa fa-fw fa-list-alt"></i> Mod Logs
           <% end %>
         <% end %>
       </div>
@@ -100,21 +91,17 @@
   <%= if manages_bans?(@conn) do %>
     <div class="dropdown hide-mobile">
       <a class="header__link" title="Bans">
-        B
-        <i class="fa fa-caret-down"></i>
+        B <i class="fa fa-caret-down"></i>
       </a>
       <div class="dropdown__content dropdown__content-right js-burger-links">
         <%= link to: ~p"/admin/user_bans", class: "header__link" do %>
-          <i class="fa fa-fw fa-user"></i>
-          User Bans
+          <i class="fa fa-fw fa-user"></i> User Bans
         <% end %>
         <%= link to: ~p"/admin/subnet_bans", class: "header__link" do %>
-          <i class="fab fa-fw fa-internet-explorer"></i>
-          IP Bans
+          <i class="fab fa-fw fa-internet-explorer"></i> IP Bans
         <% end %>
         <%= link to: ~p"/admin/fingerprint_bans", class: "header__link" do %>
-          <i class="fa fa-fw fa-desktop"></i>
-          FP Bans
+          <i class="fa fa-fw fa-desktop"></i> FP Bans
         <% end %>
       </div>
     </div>

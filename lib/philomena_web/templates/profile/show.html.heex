@@ -10,8 +10,7 @@
   <div class="profile-top__name-and-links">
     <div>
       <h1 class="profile-top__name-header">
-        <%= @user.name %>
-        's profile
+        <%= @user.name %> 's profile
       </h1>
       <%= render(PhilomenaWeb.UserAttributionView, "_user_title.html", object: %{user: @user}, large: true) %>
       <br />
@@ -20,8 +19,7 @@
         <br />
       <% end %>
       <span>
-        Member since
-        <%= pretty_time(@user.created_at) %>
+        Member since <%= pretty_time(@user.created_at) %>
       </span>
     </div>
     <div class="profile-top__options">
@@ -113,14 +111,12 @@
         </div>
       <% end %>
       <%= for link <- @user.verified_links, should_see_link?(@conn, @user, link) do %>
-        <% 
-          watchers =
-            if link.tag do
-              @watcher_counts[link.tag.id] || 0
-            else
-              0
-            end
-        %>
+        <% watchers =
+          if link.tag do
+            @watcher_counts[link.tag.id] || 0
+          else
+            0
+          end %>
         <div class={"block__content alternating-color break-word #{link_block_class(link)}"}>
           <div class="center">
             <%= if link.tag do %>
@@ -130,9 +126,7 @@
             <% end %>
             <%= link(link.uri, to: link.uri) %>
             <%= if current?(@user, @conn.assigns.current_user) or manages_links?(@conn, @user) do %>
-              <br />
-              Watched by
-              <%= watchers %>
+              <br /> Watched by <%= watchers %>
               <%= pluralize("user", "users", watchers) %>
             <% end %>
             <%= if manages_links?(@conn, @user) do %>
@@ -152,8 +146,7 @@
               </a>
             <% else %>
               <%= unless link.public do %>
-                <br />
-                Hidden
+                <br /> Hidden
               <% end %>
             <% end %>
           </div>

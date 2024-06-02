@@ -4,12 +4,10 @@
 <div class="block">
   <div class="block__header">
     <a href={~p"/posts"}>
-      <i class="fa fa-fw fa-search"></i>
-      Search Posts
+      <i class="fa fa-fw fa-search"></i> Search Posts
     </a>
     <span class="block__header__item">
-      <%= @topic_count %>
-      topics
+      <%= @topic_count %> topics
     </span>
   </div>
   <div class="block__content">
@@ -51,9 +49,7 @@
                   <%= link(forum.last_post.topic.title, to: ~p"/forums/#{forum.last_post.topic.forum}/topics/#{forum.last_post.topic}") %>
                 </strong>
                 <br />
-                <%= link("Go to post", to: ~p"/forums/#{forum.last_post.topic.forum}/topics/#{forum.last_post.topic}?#{[post_id: forum.last_post.id]}" <> "#post_#{forum.last_post.id}") %>
-                by
-                <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: forum.last_post, conn: @conn) %>
+                <%= link("Go to post", to: ~p"/forums/#{forum.last_post.topic.forum}/topics/#{forum.last_post.topic}?#{[post_id: forum.last_post.id]}" <> "#post_#{forum.last_post.id}") %> by <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: forum.last_post, conn: @conn) %>
                 <br />
                 <%= pretty_time(forum.last_post.created_at) %>
               <% end %>

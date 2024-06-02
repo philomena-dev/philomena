@@ -5,8 +5,7 @@
     <%= viewport_meta_tag(@conn) %>
     <title>
       <%= if assigns[:title] do %>
-        <%= assigns[:title] %>
-        - Derpibooru
+        <%= assigns[:title] %> - Derpibooru
       <% else %>
         Derpibooru
       <% end %>
@@ -22,10 +21,13 @@
     <meta content="telephone=no" name="format-detection" />
     <%= csrf_meta_tag() %>
     <%= vite_hmr? do %>
-      <script src="http://localhost:5173/@vite/client" type="module"></script>
-      <script src="http://localhost:5173/js/app.js" type="module"></script>
+      <script src="http://localhost:5173/@vite/client" type="module">
+      </script>
+      <script src="http://localhost:5173/js/app.js" type="module">
+      </script>
     <% else %>
-      <script async="async" src={~p"/js/app.js"} type="text/javascript"></script>
+      <script async="async" src={~p"/js/app.js"} type="text/javascript">
+      </script>
     <% end %>
     <%= render(PhilomenaWeb.LayoutView, "_opengraph.html", assigns) %>
   </head>

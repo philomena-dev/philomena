@@ -1,7 +1,5 @@
-<% 
-  textarea_options = [class: "input input--wide tagsinput js-image-tags-input js-taginput js-taginput-plain js-taginput-#{@name}", placeholder: "Add tags separated with commas", autocomplete: "off"]
-  html_options = Keyword.merge(textarea_options, assigns[:extra] || [])
-%>
+<% textarea_options = [class: "input input--wide tagsinput js-image-tags-input js-taginput js-taginput-plain js-taginput-#{@name}", placeholder: "Add tags separated with commas", autocomplete: "off"]
+html_options = Keyword.merge(textarea_options, assigns[:extra] || []) %>
 <div class={"js-tag-block #{"fancy-tag-#{@type}"}"}>
   <%= textarea(@f, @name, html_options) %>
   <div class="js-taginput input input--wide tagsinput hidden js-taginput-fancy" data-click-focus={".js-taginput-input.js-taginput-#{@name}"}>
@@ -9,8 +7,7 @@
   </div>
 </div>
 <button class="button button--state-primary button--bold js-taginput-show" data-click-focus={".js-taginput-input.js-taginput-#{@name}"} data-click-hide=".js-taginput-plain,.js-taginput-show" data-click-show=".js-taginput-fancy,.js-taginput-hide">
-  <%= hidden_input(:fuck_ie, :fuck_ie, value: "fuck_ie") %>
-  Fancy Editor
+  <%= hidden_input(:fuck_ie, :fuck_ie, value: "fuck_ie") %> Fancy Editor
 </button>
 <button class="hidden button button--state-primary button--bold js-taginput-hide" data-click-focus={".js-taginput-plain.js-taginput-#{@name}"} data-click-hide=".js-taginput-fancy,.js-taginput-hide" data-click-show=".js-taginput-plain,.js-taginput-show">
   Plain Editor

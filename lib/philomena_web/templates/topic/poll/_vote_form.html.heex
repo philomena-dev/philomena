@@ -1,14 +1,11 @@
 <%= form_for :poll_vote, ~p"/forums/#{@forum}/topics/#{@topic}/poll/votes", [class: "poll-vote-form"], fn _f -> %>
   <h4 class="poll__header">
-    Poll:
-    <%= @poll.title %>
+    Poll: <%= @poll.title %>
   </h4>
   <div class="poll-form__options">
-    <% 
-      input_type = input_type(@poll)
-      input_name = input_name(@poll)
-      require_answer? = require_answer?(@poll)
-    %>
+    <% input_type = input_type(@poll)
+    input_name = input_name(@poll)
+    require_answer? = require_answer?(@poll) %>
     <%= for option <- @poll.options do %>
       <label class="poll-form__options__label">
         <input class="button--separate-right" name={input_name} required={require_answer?} type={input_type} value={option.id} />
@@ -20,12 +17,10 @@
   </div>
   <div class="poll-form__status">
     <p>
-      Voting ends
-      <%= pretty_time(@poll.active_until) %>
+      Voting ends <%= pretty_time(@poll.active_until) %>
     </p>
   </div>
   <button class="button button--state-success">
-    <i class="fa fa-check"></i>
-    Vote
+    <i class="fa fa-check"></i> Vote
   </button>
 <% end %>
