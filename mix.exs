@@ -93,6 +93,7 @@ defmodule Philomena.MixProject do
 
       # Static analysis
       {:dialyxir, "~> 1.2", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.30", only: [:dev, :test], runtime: false},
 
       # Fixes for OTP/25
       {:neotoma, "~> 1.7.3", manager: :rebar3, override: true},
