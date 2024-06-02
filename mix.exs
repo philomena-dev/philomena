@@ -11,7 +11,37 @@ defmodule Philomena.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
-      dialyzer: [plt_add_apps: [:mix]]
+      dialyzer: [plt_add_apps: [:mix]],
+      docs: [
+        formatters: ["html"],
+        groups_for_modules: [
+          "Media Processing": [
+            PhilomenaMedia.Analyzers,
+            PhilomenaMedia.Analyzers.Result,
+            PhilomenaMedia.Filename,
+            PhilomenaMedia.Intensities,
+            PhilomenaMedia.Mime,
+            PhilomenaMedia.Objects,
+            PhilomenaMedia.Processors,
+            PhilomenaMedia.Sha512,
+            PhilomenaMedia.Uploader
+          ],
+          "HTTP Proxy": [
+            PhilomenaProxy.Camo,
+            PhilomenaProxy.Http,
+            PhilomenaProxy.Scrapers
+          ],
+          "Search Queries": [
+            PhilomenaQuery.Parse.Evaluator,
+            PhilomenaQuery.Parse.Parser,
+            PhilomenaQuery.Parse.String,
+            PhilomenaQuery.Batch,
+            PhilomenaQuery.RelativeDate,
+            PhilomenaQuery.SearchIndex,
+            PhilomenaQuery.Search
+          ]
+        ]
+      ]
     ]
   end
 
