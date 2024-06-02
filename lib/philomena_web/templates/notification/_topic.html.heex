@@ -1,0 +1,20 @@
+<% topic = @notification.actor %>
+<% post = @notification.actor_child %>
+<div class="flex flex--centered flex__grow">
+  <div>
+    <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: post, conn: @conn) %>
+    <%= @notification.action %>
+    <strong>
+      <%= link(topic.title, to: ~p"/forums/#{topic.forum}/topics/#{topic}?#{[post_id: post.id]}" <> "#post_#{post.id}") %>
+    </strong>
+    <%= pretty_time(@notification.updated_at) %>
+  </div>
+</div>
+<div class="flex flex--centered flex--no-wrap">
+  <a class="button button--separate-right" data-fetchcomplete-hide={"#notification-#{@notification.id}"} data-method="post" data-remote="true" href={~p"/forums/#{topic.forum}/topics/#{topic}/read"} title="Delete">
+    <i class="fa fa-trash"></i>
+  </a>
+  <a class="button" data-fetchcomplete-hide={"#notification-#{@notification.id}"} data-method="delete" data-remote="true" href={~p"/forums/#{topic.forum}/topics/#{topic}/subscription"} title="Unsubscribe">
+    <i class="fa fa-bell-slash"></i>
+  </a>
+</div>

@@ -1,0 +1,59 @@
+<h1>
+  Register
+</h1>
+<%= form_for @changeset, ~p"/registrations", fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>
+        Oops, something went wrong! Please check the errors below.
+      </p>
+    </div>
+  <% end %>
+  <div class="fieldlabel">
+    Non-anonymous posts permanently show your username as of posting time,
+    and may appear on search engines; choose wisely.
+  </div>
+  <div class="field">
+    <%= text_input(f, :name, class: "input", placeholder: "Username", required: true) %>
+    <%= error_tag(f, :name) %>
+  </div>
+  <div class="fieldlabel">
+    You'll use your email address to log in, and we'll use this to get in
+    touch if we need to. Don't worry, we won't share this or spam you.
+  </div>
+  <div class="field">
+    <%= email_input(f, :email, class: "input", placeholder: "Email", required: true, pattern: ~S/[^\s]+@[^\s]+\.[^\s]+/) %>
+    <%= error_tag(f, :email) %>
+  </div>
+  <div class="fieldlabel">
+    Pick a good strong password - longer is better! Minimum of 12 characters.
+  </div>
+  <div class="field">
+    <%= password_input(f, :password, class: "input", placeholder: "Password", required: true, minlength: 12) %>
+    <%= error_tag(f, :password) %>
+  </div>
+  <div class="field">
+    <%= password_input(f, :password_confirmation, class: "input", placeholder: "Confirm password", required: true, minlength: 12) %>
+    <%= error_tag(f, :password_confirmation) %>
+  </div>
+  <%= render(PhilomenaWeb.CaptchaView, "_captcha.html", name: "registration", conn: @conn) %>
+  <br />
+  <div class="block block--fixed block--warning">
+    <p>
+      We won't share your personal information, won't send you spam emails,
+      and take your security and privacy seriously.
+    </p>
+    <p>
+      <strong>
+        Don't forget to read the
+        <a href="/pages/rules">
+          site rules
+        </a>
+        before you dive in - they contain a quick introduction on how to
+        use the site.
+      </strong>
+    </p>
+  </div>
+  <br />
+  <%= submit("Sign Up", class: "button") %>
+<% end %>

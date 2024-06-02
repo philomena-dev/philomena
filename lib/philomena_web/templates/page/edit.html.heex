@@ -1,0 +1,4 @@
+<h1>
+  Editing static page
+</h1>
+<%= render(PhilomenaWeb.PageView, "_form.html", changeset: @changeset, action: ~p"/pages/#{@static_page}", conn: @conn) %>

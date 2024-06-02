@@ -1,0 +1,87 @@
+<div class="block">
+  <div class="block__header">
+    <span class="block__header__title">
+      Available Items and Prices
+    </span>
+    <%= if current?(@user, @conn.assigns.current_user) do %>
+      <%= link("Add an item", to: ~p"/profiles/#{@user}/commission/items/new") %>
+    <% end %>
+  </div>
+  <div class="block__content">
+    <%= if not Enum.any?(@commission.items) do %>
+      <%= if current?(@user, @conn.assigns.current_user) do %>
+        <p>
+          You have not added any items to your commissions sheet yet.
+        </p>
+        <p>
+          Your listing will not appear in search results until you
+          <%= link("list at least one item", to: ~p"/profiles/#{@user}/commission/items/new") %>
+          .
+        </p>
+      <% else %>
+        <p>
+          This artist has not added any items yet. Please check back later.
+        </p>
+      <% end %>
+    <% end %>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>
+            Example
+          </th>
+          <th>
+            Description
+          </th>
+          <th>
+            Base Price
+          </th>
+          <th>
+            Add-Ons
+          </th>
+          <%= if can?(@conn, :edit, @commission) do %>
+            <th>
+              Options
+            </th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for {description, add_ons, item} <- @items do %>
+          <tr>
+            <td>
+              <%= if item.example_image do %>
+                <%= render(PhilomenaWeb.ImageView, "_image_container.html", image: item.example_image, size: :thumb_small, conn: @conn) %>
+              <% else %>
+                (No example)
+              <% end %>
+            </td>
+            <td>
+              <strong>
+                <%= item.item_type %>
+              </strong>
+              <br />
+              <br />
+              <%= description %>
+            </td>
+            <td>
+              $
+              <%= Decimal.round(item.base_price, 2) %>
+            </td>
+            <td>
+              <%= add_ons %>
+            </td>
+            <%= if can?(@conn, :edit, @commission) do %>
+              <td>
+                <%= link("Edit item", to: ~p"/profiles/#{@user}/commission/items/#{item}/edit") %>
+                <br />
+                <br />
+                <%= link("Delete item", to: ~p"/profiles/#{@user}/commission/items/#{item}", data: [confirm: "Are you really, really sure?", method: "delete"]) %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

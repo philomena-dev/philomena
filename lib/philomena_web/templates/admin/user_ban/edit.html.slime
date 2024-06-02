@@ -1,6 +1,0 @@
-h1 Editing ban
-
-= render PhilomenaWeb.Admin.UserBanView, "_form.html", changeset: @changeset, action: ~p"/admin/user_bans/#{@user}", conn: @conn
-
-br
-= link "Back", to: ~p"/admin/user_bans"

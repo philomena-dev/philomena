@@ -1,0 +1,35 @@
+<footer id="footer">
+  <div id="footer_content">
+    <% footer_data = footer_data() %>
+    <%= for column <- footer_data["cols"] do %>
+      <div class="footercol">
+        <h5>
+          <%= column %>
+        </h5>
+        <%= for row <- footer_data[column] do %>
+          <%= if row["bold"] do %>
+            <strong>
+              <a href={row["url"]} target={row["target"]||"_self"}>
+                <%= row["title"] %>
+              </a>
+            </strong>
+          <% else %>
+            <a href={row["url"]} target={row["target"]||"_self"}>
+              <%= row["title"] %>
+            </a>
+          <% end %>
+          <br />
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+  <div id="serving_info">
+    Powered by
+    <a href="https://github.com/philomena-dev/philomena">
+      philomena
+    </a>
+    (
+    <%= render_time(@conn) %>
+    ms)
+  </div>
+</footer>

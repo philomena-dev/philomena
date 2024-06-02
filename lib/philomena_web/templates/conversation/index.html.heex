@@ -1,0 +1,67 @@
+<% 
+  route = fn p -> ~p"/conversations?#{p}" end
+  pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @conversations, route: route, conn: @conn)
+%>
+<h1>
+  My Conversations
+</h1>
+<div class="block">
+  <div class="block__header page__header">
+    <div class="page__pagination">
+      <%= pagination %>
+    </div>
+    <div class="page__info">
+      <a href={~p"/conversations/new"}>
+        <i class="fa fa-paper-plane"></i>
+        Create New Conversation
+      </a>
+    </div>
+  </div>
+  <div class="block__content">
+    <table class="table table--communication-list">
+      <thead>
+        <tr>
+          <th class="table--communication-list__name">
+            Conversation
+          </th>
+          <th class="table--communication-list__stats">
+            With
+          </th>
+          <th class="table--communication-list__options">
+            Options
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for {c, count} <- @conversations do %>
+          <tr class={conversation_class(@conn.assigns.current_user, c)}>
+            <td class="table--communication-list__name">
+              <%= link(c.title, to: ~p"/conversations/#{c}") %>
+              <div class="small-text hide-mobile">
+                <%= count %>
+                <%= pluralize("message", "messages", count) %>
+                ; started
+                <%= pretty_time(c.created_at) %>
+                , last message
+                <%= pretty_time(c.last_message_at) %>
+              </div>
+            </td>
+            <td class="table--communication-list__stats">
+              <%= render(PhilomenaWeb.UserAttributionView, "_user.html", object: %{user: other_party(@current_user, c)}, conn: @conn) %>
+            </td>
+            <td class="table--communication-list__options">
+              <%= link("Last message", to: last_message_path(c, count)) %>
+              &bull;
+              <%= link("Hide", to: ~p"/conversations/#{c}/hide", data: [method: "post"], data: [confirm: "Are you really, really sure?"]) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="block__header block__header--light page__header">
+    <div class="page__pagination">
+      <%= pagination %>
+    </div>
+  </div>
+</div>

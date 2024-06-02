@@ -1,0 +1,42 @@
+<% size = assigns[:size] || :full %>
+<% embed_display = assigns[:embed_display] || false %>
+<%= content_tag :div, [data: image_container_data(@conn, @image, size), class: "image-show-container"] do %>
+  <div class="block block--fixed block--warning block--no-margin image-filtered hidden">
+    <strong>
+      <%= link("This image is blocked by your current filter - click here to display it anyway", to: "#", data: [click_unfilter: @image.id]) %>
+    </strong>
+    <p>
+      <%= img_tag(static_path(@conn, "/images/tagblocked.svg"), width: 250, height: 250, data: [click_unfilter: @image.id]) %>
+    </p>
+    <span class="filter-explanation"></span>
+    <%= link("your current filter", to: ~p"/filters/#{@conn.assigns.current_filter}", class: "filter-link") %>
+    .
+  </div>
+  <%= if size == :full and not embed_display do %>
+    <div class="image-target hidden image-show" data-height={@image.image_height} data-image-size={@image.image_size} data-mime-type={@image.image_mime_type} data-scaled={scaled_value(@conn.assigns.current_user)} data-uris={Jason.encode!(thumb_urls(@image, can?(@conn, :hide, @image)))} data-width={@image.image_width}>
+      <%= if @image.image_mime_type == "video/webm" do %>
+        <video controls></video>
+      <% else %>
+        <picture></picture>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="image-show hidden">
+      <a href={~p"/images/#{@image}"} title={title_text(@image)}>
+        <span class="imgspoiler">
+          <% thumb_url = thumb_url(@image, can?(@conn, :show, @image), size) %>
+          <%= if @image.image_mime_type == "video/webm" do %>
+            <video autoplay="autoplay" data-image-id={@image.id} loop="loop" muted="muted" playsinline="playsinline">
+              <source src={thumb_url} type="video/webm" />
+              <source src={String.replace(thumb_url, ".webm", ".mp4")} type="video/mp4" />
+            </video>
+          <% else %>
+            <picture data-image-id={@image.id}>
+              <img src={thumb_url} />
+            </picture>
+          <% end %>
+        </span>
+      </a>
+    </div>
+  <% end %>
+<% end %>

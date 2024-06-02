@@ -1,0 +1,14 @@
+<h1>
+  Forgot your password?
+</h1>
+<p>
+  Provide the email address you signed up with and we will email you
+  password reset instructions.
+</p>
+<%= form_for :user, ~p"/passwords", fn f -> %>
+  <div class="field">
+    <%= email_input(f, :email, class: "input", placeholder: "Email", required: true) %>
+  </div>
+  <%= render(PhilomenaWeb.CaptchaView, "_captcha.html", name: "password", conn: @conn) %>
+  <%= submit("Send instructions to reset password", class: "button") %>
+<% end %>

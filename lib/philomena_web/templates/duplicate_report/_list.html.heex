@@ -1,0 +1,231 @@
+<div class="grid grid--dupe-report-list">
+  <p>
+    Source image
+  </p>
+  <p>
+    Target image
+  </p>
+  <p>
+    Diff
+  </p>
+  <p>
+    Status/options
+  </p>
+  <%= for report <- @duplicate_reports do %>
+    <% background_class = background_class(report) %>
+    <%= render(PhilomenaWeb.DuplicateReportView, "_image_cell.html", image: report.image, source: true, report: report, conn: @conn) %>
+    <%= render(PhilomenaWeb.DuplicateReportView, "_image_cell.html", image: report.duplicate_of_image, source: false, report: report, conn: @conn) %>
+    <div class="grid--dupe-report-list__cell dr__diff border-vertical">
+      <table class="table">
+        <tr>
+          <%= if same_aspect_ratio?(report) do %>
+            <td class="success">
+              <a href={~p"/duplicate_reports/#{report}"}>
+                Visual diff
+              </a>
+              (Same aspect ratio)
+            </td>
+          <% else %>
+            <td class="warning">
+              Different aspect ratio
+            </td>
+          <% end %>
+        </tr>
+        <tr>
+          <%= cond do %>
+            <% both_are_edits?(report) -> %>
+              <td class="warning">
+                Both are edits
+              </td>
+            <% target_is_edit?(report) -> %>
+              <td class="danger">
+                Target is an edit
+              </td>
+            <% source_is_edit?(report) -> %>
+              <td class="danger">
+                Source is an edit
+              </td>
+            <% true -> %>
+              <td class="success">
+                Neither is an edit
+              </td>
+          <% end %>
+        </tr>
+        <tr>
+          <%= cond do %>
+            <% both_are_alternate_versions?(report) -> %>
+              <td class="warning">
+                Both are alternate versions
+              </td>
+            <% target_is_alternate_version?(report) -> %>
+              <td class="danger">
+                Target is an alternate version
+              </td>
+            <% source_is_alternate_version?(report) -> %>
+              <td class="danger">
+                Source is an alternate version
+              </td>
+            <% true -> %>
+              <td class="success">
+                Neither is an alternate version
+              </td>
+          <% end %>
+        </tr>
+        <tr>
+          <%= cond do %>
+            <% same_res?(report) -> %>
+              <td class="success">
+                Same resolution
+              </td>
+            <% higher_res?(report) -> %>
+              <td class="warning">
+                Target resolution better
+              </td>
+            <% true -> %>
+              <td class="warning">
+                Source resolution better
+              </td>
+          <% end %>
+        </tr>
+        <tr>
+          <%= cond do %>
+            <% same_format?(report) -> %>
+              <td class="success">
+                Same format
+                <%= file_types(report) %>
+              </td>
+            <% better_format?(report) -> %>
+              <td class="warning">
+                Target format better
+                <%= file_types(report) %>
+              </td>
+            <% true -> %>
+              <td class="warning">
+                Source format better
+                <%= file_types(report) %>
+              </td>
+          <% end %>
+        </tr>
+        <tr>
+          <%= cond do %>
+            <% same_artist_tags?(report) -> %>
+              <td class="success">
+                Same artist tags
+              </td>
+            <% more_artist_tags_on_target?(report) -> %>
+              <td class="warning">
+                More artist tags on target
+              </td>
+            <% more_artist_tags_on_source?(report) -> %>
+              <td class="warning">
+                More artist tags on source
+              </td>
+            <% true -> %>
+              <td class="danger">
+                Different artist tags
+              </td>
+          <% end %>
+        </tr>
+        <tr>
+          <%= cond do %>
+            <% neither_have_source?(report) -> %>
+              <td class="warning">
+                Neither have sources
+              </td>
+            <% same_source?(report) -> %>
+              <td class="success">
+                Same sources
+              </td>
+            <% similar_source?(report) -> %>
+              <td class="warning">
+                Same hostname
+              </td>
+            <% source_on_target?(report) -> %>
+              <td class="warning">
+                Target has a source
+              </td>
+            <% source_on_source?(report) -> %>
+              <td class="warning">
+                Source has a source
+              </td>
+            <% true -> %>
+              <td class="danger">
+                Different sources
+              </td>
+          <% end %>
+        </tr>
+        <tr>
+          <%= if same_rating_tags?(report) do %>
+            <td class="success">
+              Same rating tags
+            </td>
+          <% else %>
+            <td class="danger">
+              Different rating tags
+            </td>
+          <% end %>
+        </tr>
+        <tr>
+          <%= cond do %>
+            <% not source_approved?(report) -> %>
+              <td class="danger">
+                Source is not approved
+              </td>
+            <% not target_approved?(report) -> %>
+              <td class="danger">
+                Target is not approved
+              </td>
+            <% forward_merge?(report) -> %>
+              <td class="warning">
+                Target newer
+              </td>
+            <% true -> %>
+              <td class="success">
+                Target older
+              </td>
+          <% end %>
+        </tr>
+      </table>
+    </div>
+    <div class="flex flex--column grid--dupe-report-list__cell border-vertical" id={"report_options_#{report.id}"}>
+      <div class={"dr__status-options #{background_class}"}>
+        <%= String.capitalize(report.state) %>
+        <%= if can?(@conn, :edit, report) and not is_nil(report.modifier) do %>
+          by
+          <%= report.modifier.name %>
+        <% end %>
+        <%= if can?(@conn, :edit, report) do %>
+          <div>
+            <%= if report.state == "open" do %>
+              <a data-method="post" href={(~p"/duplicate_reports/#{report}/claim" <> "#report_options_#{report.id}")}>
+                <button class="button button--separate-right">
+                  <i class="fa fa-clipboard"></i>
+                  Claim
+                </button>
+              </a>
+            <% end %>
+            <%= if report.state != "rejected" do %>
+              <a data-method="post" href={~p"/duplicate_reports/#{report}/reject"}>
+                <button class="button">
+                  <i class="fa fa-times"></i>
+                  Reject
+                </button>
+              </a>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+      <div class="dr__status-options">
+        <div>
+          Reported
+          <%= pretty_time(report.created_at) %>
+          <%= if report.user do %>
+            by
+            <%= link(report.user.name, to: ~p"/profiles/#{report.user}") %>
+          <% end %>
+        </div>
+        <%= escape_nl2br(report.reason) %>
+      </div>
+    </div>
+  <% end %>
+</div>

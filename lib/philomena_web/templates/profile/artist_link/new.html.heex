@@ -1,0 +1,4 @@
+<h1>
+  Request Artist Link
+</h1>
+<%= render(PhilomenaWeb.Profile.ArtistLinkView, "_form.html", changeset: @changeset, action: ~p"/profiles/#{@user}/artist_links", conn: @conn) %>

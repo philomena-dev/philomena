@@ -1,0 +1,134 @@
+<%= form_for @changeset, ~p"/images", [multipart: true], fn f -> %>
+  <div class="dnp-warning">
+    <h4>
+      Read the
+      <a href="/pages/rules">
+        site rules
+      </a>
+      and check our
+      <a href="/dnp">
+        do-not-post list
+      </a>
+    </h4>
+    <p>
+      Don't post content the artist doesn't want here (or shared in general),
+      <strong>
+        including commercial content.
+      </strong>
+    </p>
+  </div>
+  <p>
+    <strong>
+      Please check it isn't already here with
+      <a href="/search/reverse">
+        reverse search.
+      </a>
+    </strong>
+  </p>
+  <% # todo: extract this %>
+  <h4>
+    Select an image
+  </h4>
+  <div class="image-other">
+    <div id="js-image-upload-previews"></div>
+    <p>
+      Upload a file from your computer, or provide a link to the page containing the image and click Fetch.
+    </p>
+    <div class="field">
+      <%= file_input(f, :image, class: "input js-scraper") %>
+      <%= error_tag(f, :image) %>
+      <%= error_tag(f, :image_size) %>
+      <%= error_tag(f, :image_width) %>
+      <%= error_tag(f, :image_height) %>
+      <%= error_tag(f, :image_name) %>
+      <%= error_tag(f, :image_mime_type) %>
+      <%= error_tag(f, :image_duration) %>
+      <%= error_tag(f, :image_orig_sha512_hash) %>
+    </div>
+    <div class="field field--inline">
+      <%= url_input(f, :scraper_url, class: "input input--wide js-scraper", placeholder: "Link a deviantART page, a Tumblr post, or the image directly") %>
+      <button class="button button--separate-left" data-disable-with="Fetch" disabled id="js-scraper-preview" title="Fetch the image at the specified URL" type="button">
+        Fetch
+      </button>
+    </div>
+    <div class="field-error-js hidden js-scraper"></div>
+  </div>
+  <h4>
+    About this image
+  </h4>
+  <p>
+    The page(s) you found this image on. Images may have a maximum of
+    <span class="js-max-source-count">
+      10
+    </span>
+    source URLs. Leave any sources you don't want to use blank.
+  </p>
+  <%= inputs_for f, :sources, fn fs -> %>
+    <div class="field js-image-source field--inline flex--no-wrap flex--centered">
+      <%= text_input(fs, :source, class: "input flex__grow js-source-url", placeholder: "Source URL") %>
+      <%= error_tag(fs, :source) %>
+      <label class="input--separate-left flex__fixed flex--centered">
+        <a class="js-source-remove" href="#">
+          <i class="fa fa-trash"></i>
+          Delete
+        </a>
+      </label>
+    </div>
+  <% end %>
+  <div class="field">
+    <button class="button js-image-add-source" type="button">
+      <i class="fa fa-plus"></i>
+      Add source
+    </button>
+  </div>
+  <div class="field">
+    <label for="image[tag_input]">
+      Describe with
+      <strong>
+        3+
+      </strong>
+      tags, including ratings and applicable artist tags
+    </label>
+    <%= render(PhilomenaWeb.TagView, "_tag_editor.html", f: f, name: :tag_input, type: :upload) %>
+    <%= error_tag(f, :tag_input) %>
+    <button class="button button--state-success button--separate-left button--bold" id="tagsinput-save" title="This button saves the tags listed above to your browser, allowing you to retrieve them again by clicking the Load button" type="button">
+      Save
+    </button>
+    <button class="button button--state-warning button--separate-left button--bold" id="tagsinput-load" title="This button loads any saved tags from your browser" type="button">
+      Load
+    </button>
+    <button class="button button--state-danger button--separate-left button--bold" id="tagsinput-clear" title="This button will clear the list of tags above" type="button">
+      Clear
+    </button>
+    <p>
+      You can mouse over tags below to view a description, and click to add. Short tag names can be used and will expand to full.
+    </p>
+    <div class="block js-tagtable" data-target="[name=&quot;image[tag_input]&quot;]">
+      <%= PhilomenaWeb.TagView.quick_tags(@conn) %>
+    </div>
+  </div>
+  <br />
+  <div class="field">
+    <div class="block">
+      <div class="communication-edit__wrap">
+        <%= 
+          render(PhilomenaWeb.MarkdownView, "_input.html",
+            conn: @conn,
+            f: f,
+            action_icon: "pencil-alt",
+            action_text: "Description",
+            placeholder: "Describe this image in plain words - this should generally be info about the image that doesn't belong in the tags or source.",
+            name: :description,
+            class: "js-image-descr-input",
+            required: false
+          )
+        %>
+      </div>
+    </div>
+  </div>
+  <%= render(PhilomenaWeb.MarkdownView, "_anon_checkbox.html", conn: @conn, f: f, label: "Post anonymously") %>
+  <%= render(PhilomenaWeb.CaptchaView, "_captcha.html", name: "image", conn: @conn) %>
+  <div class="actions">
+    <%= submit("Upload", class: "button input--separate-top", autocomplete: "off", data: [disable_with: "Please wait..."]) %>
+  </div>
+<% end %>

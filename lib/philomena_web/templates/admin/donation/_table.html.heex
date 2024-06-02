@@ -1,0 +1,44 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th>
+        User
+      </th>
+      <th>
+        Email
+      </th>
+      <th>
+        Amount
+      </th>
+      <th>
+        Note
+      </th>
+      <th>
+        At
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for donation <- @donations do %>
+      <tr>
+        <td>
+          <%= if donation.user do %>
+            <%= link(donation.user.name, to: ~p"/profiles/#{donation.user}") %>
+          <% end %>
+        </td>
+        <td>
+          <%= donation.email %>
+        </td>
+        <td>
+          <%= donation.amount %>
+        </td>
+        <td title={donation.note}>
+          <%= String.slice(donation.note, 0, 30) %>
+        </td>
+        <td>
+          <%= pretty_time(donation.created_at) %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

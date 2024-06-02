@@ -1,0 +1,62 @@
+<% route = fn p -> ~p"/admin/reports?#{p}" end %>
+<% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", route: route, page: @reports, conn: @conn, params: [rq: @conn.params["rq"] || "*"]) %>
+<h1>
+  Reports
+</h1>
+<%= if Enum.any?(@my_reports) do %>
+  <div class="block">
+    <div class="block__header">
+      <span class="block__header__title">
+        Your Reports
+      </span>
+    </div>
+    <div class="block__content">
+      <%= render(PhilomenaWeb.Admin.ReportView, "_reports.html", reports: @my_reports, conn: @conn) %>
+    </div>
+  </div>
+<% end %>
+<%= if Enum.any?(@system_reports) do %>
+  <div class="block">
+    <div class="block__header block--danger">
+      <span class="block__header__title">
+        System Reports
+      </span>
+    </div>
+    <div class="block__content">
+      <%= render(PhilomenaWeb.Admin.ReportView, "_reports.html", reports: @system_reports, conn: @conn) %>
+    </div>
+  </div>
+<% end %>
+<div class="block">
+  <div class="block__header">
+    <span class="block__header__title">
+      All Reports
+    </span>
+    <%= pagination %>
+  </div>
+  <div class="block__content">
+    <%= if Enum.any?(@reports) do %>
+      <%= render(PhilomenaWeb.Admin.ReportView, "_reports.html", reports: @reports, conn: @conn) %>
+    <% else %>
+      <p>
+        We couldn't find any reports for you, sorry!
+      </p>
+    <% end %>
+  </div>
+  <div class="block__header block__header--light">
+    <%= pagination %>
+  </div>
+</div>
+<%= form_for :report, ~p"/admin/reports", [method: "get", class: "hform"], fn f -> %>
+  <div class="field">
+    <%= text_input(f, :rq, name: :rq, value: @conn.params["rq"], class: "input hform__text", placeholder: "Search reports", autocapitalize: "none") %>
+    <%= submit("Search", class: "hform__button button") %>
+  </div>
+<% end %>
+<div class="field">
+  <label for="rq">
+    Searchable fields: id, created_at, reason, state, open, user, user_id, admin, admin_id, ip, fingerprint, reportable_type, reportable_id, image_id
+    <br />
+    Report reason is used if you don't specify a field.
+  </label>
+</div>

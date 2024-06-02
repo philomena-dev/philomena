@@ -1,0 +1,361 @@
+<div class="walloftext">
+  <div class="block block--fixed block--warning">
+    <h2>
+      Content Safety
+    </h2>
+    <p>
+      By default, content that is safe and suitable for all ages is all you'll see on the site, and how most of our users browse. The default filters focus on art, so filter out things like memes and what some users would consider "spam".
+    </p>
+    <p>
+      Filters let you customize what content you see on the site. This means that with the appropriate filter selected, you can access content which is not suitable for everyone, such as sexually explicit, grimdark or gory material.
+    </p>
+    <p>
+      <strong>
+        By changing away from the default filters, you accept you are legally permitted to view this content in your jurisdiction. If in doubt, stick with the recommended default filters.
+      </strong>
+    </p>
+  </div>
+  <h1>
+    Browsing Filters
+  </h1>
+  <p>
+    Images posted on the site are tagged, allowing you to easily search for content. You can also filter out content you'd rather not see using filters. Filters are sets of tags - spoilered tags and hidden tags. Spoilers are images that show up as thumbnails instead of the image, letting you click through and find out more about an image before deciding to view it or not. Hidden tags will simply hide images.
+  </p>
+  <p>
+    There are set of global filters to pick from which cover some common use-cases.
+    If you're logged in you can also customize these filters and make your own, as well as quickly switch (via the menu on every page) between them.
+  </p>
+  <h2>
+    So how do these work?
+  </h2>
+  <p>
+    You can select any filter you can see. This will become your
+    <strong>
+      active filter
+    </strong>
+    and will affect how you see the site. You can edit filters if you own them - you can create a filter from scratch with the link under "My Filters" (if you're logged in, of course) or by clicking "Customize", which will copy an existing filter for you to edit.
+  </p>
+  <p>
+    By default all the filters you create are private and only visible by you. You can have as many as you like and switch between them instantly with no limits. You can also create a public filter, which can be seen and used by any user on the site, allowing you to share useful filters with others.
+  </p>
+  <%= if !@conn.params["fq"] do %>
+    <h2>
+      My Filters
+    </h2>
+    <%= if @current_user do %>
+      <p>
+        <%= link("Click here to make a new filter from scratch", to: ~p"/filters/new") %>
+      </p>
+      <%= for filter <- @my_filters do %>
+        <%= render(PhilomenaWeb.FilterView, "_filter.html", conn: @conn, filter: filter) %>
+      <% end %>
+    <% else %>
+      <p>
+        If you're logged in, you can create and maintain custom filters here.
+      </p>
+    <% end %>
+    <h2>
+      Global Filters
+    </h2>
+    <%= for filter <- @system_filters do %>
+      <%= render(PhilomenaWeb.FilterView, "_filter.html", conn: @conn, filter: filter) %>
+    <% end %>
+    <%= if @current_user do %>
+      <h2>
+        Recent Filters
+      </h2>
+      <p>
+        Clicking this button will clear the recent filters list in the header dropdown.
+        <%= button_to("Clear recent filter list", ~p"/filters/clear_recent", method: "delete", class: "button") %>
+      </p>
+    <% end %>
+  <% end %>
+  <h2>
+    Search Filters
+  </h2>
+  <p>
+    Some users maintain custom filters which are publicly shared; you can search these filters with the box below.
+  </p>
+  <%= form_for :filters, ~p"/filters", [method: "get", class: "hform", enforce_utf8: false], fn f -> %>
+    <div class="field">
+      <%= text_input(f, :fq, name: :fq, value: @conn.params["fq"], class: "input hform__text", placeholder: "Search filters", autocapitalize: "none") %>
+      <%= submit("Search", class: "hform__button button") %>
+    </div>
+  <% end %>
+  <div class="fieldlabel">
+    For more information, see the
+    <a href="/pages/search_syntax">
+      search syntax documentation
+    </a>
+    . Search results are sorted alphabetically.
+  </div>
+  <%= if @conn.params["fq"] do %>
+    <h2>
+      Search Results
+    </h2>
+    <%= cond do %>
+      <% Enum.any?(@filters) -> %>
+        <% route = fn p -> ~p"/filters?#{p}" end %>
+        <% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @filters, route: route, params: [fq: @conn.params["fq"]], conn: @conn) %>
+        <%= for filter <- @filters do %>
+          <%= render(PhilomenaWeb.FilterView, "_filter.html", conn: @conn, filter: filter) %>
+        <% end %>
+        <div class="block">
+          <div class="block__header block__header--light page__header">
+            <div class="page__pagination">
+              <%= pagination %>
+            </div>
+            <div class="page__info">
+              <span class="block__header__title">
+                <%= render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @filters, conn: @conn) %>
+              </span>
+            </div>
+          </div>
+        </div>
+      <% assigns[:error] -> %>
+        <p>
+          Oops, there was an error evaluating your query:
+        </p>
+        <pre>
+          <%= assigns[:error] %>
+        </pre>
+      <% true -> %>
+        <p>
+          No filters found!
+        </p>
+    <% end %>
+  <% end %>
+</div>
+<h3>
+  Allowed fields
+</h3>
+<table class="table">
+  <thead>
+    <tr>
+      <th>
+        Field Selector
+      </th>
+      <th>
+        Type
+      </th>
+      <th>
+        Description
+      </th>
+      <th>
+        Example
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <code>
+          creator
+        </code>
+      </td>
+      <td>
+        Literal
+      </td>
+      <td>
+        Matches the creator of this filter.
+      </td>
+      <td>
+        <code>
+          <%= link("creator:AppleDash", to: ~p"/filters?#{[fq: "creator:AppleDash"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          name
+        </code>
+      </td>
+      <td>
+        Literal
+      </td>
+      <td>
+        Matches the name of this filter. This is the default field.
+      </td>
+      <td>
+        <code>
+          <%= link("name:default", to: ~p"/filters?#{[fq: "name:default"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          description
+        </code>
+      </td>
+      <td>
+        Full Text
+      </td>
+      <td>
+        Matches the description of this filter.
+      </td>
+      <td>
+        <code>
+          <%= link("description:the show's rating", to: ~p"/filters?#{[fq: "description:the show's rating"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          created_at
+        </code>
+      </td>
+      <td>
+        Date/Time Range
+      </td>
+      <td>
+        Matches the creation time of this filter.
+      </td>
+      <td>
+        <code>
+          <%= link("created_at:2015", to: ~p"/filters?#{[fq: "created_at:2015"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          id
+        </code>
+      </td>
+      <td>
+        Numeric Range
+      </td>
+      <td>
+        Matches the numeric surrogate key for this filter.
+      </td>
+      <td>
+        <code>
+          <%= link("id:1", to: ~p"/filters?#{[fq: "id:1"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          spoilered_count
+        </code>
+      </td>
+      <td>
+        Numeric Range
+      </td>
+      <td>
+        Matches the number of spoilered tags in this filter.
+      </td>
+      <td>
+        <code>
+          <%= link("spoilered_count:1", to: ~p"/filters?#{[fq: "spoilered_count:1"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          hidden_count
+        </code>
+      </td>
+      <td>
+        Numeric Range
+      </td>
+      <td>
+        Matches the number of hidden tags in this filter.
+      </td>
+      <td>
+        <code>
+          <%= link("hidden_count:1", to: ~p"/filters?#{[fq: "hidden_count:1"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          my
+        </code>
+      </td>
+      <td>
+        Meta
+      </td>
+      <td>
+        <code>
+          my:filters
+        </code>
+        matches filters you have published if you are signed in.
+      </td>
+      <td>
+        <code>
+          <%= link("my:filters", to: ~p"/filters?#{[fq: "my:filters"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          system
+        </code>
+      </td>
+      <td>
+        Boolean
+      </td>
+      <td>
+        Matches system filters
+      </td>
+      <td>
+        <code>
+          <%= link("system:true", to: ~p"/filters?#{[fq: "system:true"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          public
+        </code>
+      </td>
+      <td>
+        Boolean
+      </td>
+      <td>
+        Matches public filters. Note that
+        <code>
+          public:false
+        </code>
+        matches only your own private filters.
+      </td>
+      <td>
+        <code>
+          <%= link("public:false", to: ~p"/filters?#{[fq: "public:false"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          user_id
+        </code>
+      </td>
+      <td>
+        Literal
+      </td>
+      <td>
+        Matches filters with the specified user_id.
+      </td>
+      <td>
+        <code>
+          <%= link("user_id:307505", to: ~p"/filters?#{[fq: "user_id:307505"]}") %>
+        </code>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<%= if @conn.params["fq"] do %>
+  <p>
+    <%= link("Back to filters", to: ~p"/filters") %>
+  </p>
+<% end %>

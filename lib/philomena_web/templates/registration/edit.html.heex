@@ -1,0 +1,94 @@
+<h1>
+  Account Settings
+</h1>
+<p>
+  Looking for your content settings?
+  <a href="/settings/edit">
+    Click here!
+  </a>
+</p>
+<p>
+  Looking for two factor authentication?
+  <%= link("Click here!", to: ~p"/registrations/totp/edit") %>
+</p>
+<p>
+  Looking to change your avatar?
+  <%= link("Click here!", to: ~p"/avatar/edit") %>
+</p>
+<%= if can?(@conn, :change_username, @current_user) do %>
+  <p>
+    Looking to change your username?
+    <%= link("Click here!", to: ~p"/registrations/name/edit") %>
+  </p>
+<% end %>
+<h3>
+  API Key
+</h3>
+<p>
+  Your API key is
+  <div id="api-key-button">
+    <code>
+      <%= link("Click to show", to: "#", data: [click_show: "#api-key", click_hide: "#api-key-button"]) %>
+    </code>
+  </div>
+  <div class="hidden" id="api-key">
+    <code>
+      <%= @current_user.authentication_token %>
+    </code>
+  </div>
+  <p>
+    You can use this to allow API consumers to access your account.
+  </p>
+</p>
+<p>
+  Avoid sharing this key with others, as it could be used to compromise
+  your account.
+</p>
+<h3>
+  Change email
+</h3>
+<%= form_for @email_changeset, ~p"/registrations/email", [method: :post], fn f -> %>
+  <%= if @email_changeset.action do %>
+    <div class="alert alert-danger">
+      <p>
+        Oops, something went wrong! Please check the errors below.
+      </p>
+    </div>
+  <% end %>
+  <div class="field">
+    <%= email_input(f, :email, class: "input", placeholder: "Email", required: true, pattern: ~S/[^\s]+@[^\s]+\.[^\s]+/) %>
+    <%= error_tag(f, :email) %>
+  </div>
+  <div class="field">
+    <%= password_input(f, :current_password, class: "input", required: true, name: "current_password", placeholder: "Current password") %>
+    <%= error_tag(f, :current_password) %>
+  </div>
+  <div>
+    <%= submit("Change email", class: "button") %>
+  </div>
+<% end %>
+<h3>
+  Change password
+</h3>
+<%= form_for @password_changeset, ~p"/registrations/password", fn f -> %>
+  <%= if @password_changeset.action do %>
+    <div class="alert alert-danger">
+      <p>
+        Oops, something went wrong! Please check the errors below.
+      </p>
+    </div>
+  <% end %>
+  <div class="field">
+    <%= password_input(f, :password, class: "input", placeholder: "New password", minlength: 12) %>
+    <%= error_tag(f, :password) %>
+  </div>
+  <div class="field">
+    <%= password_input(f, :password_confirmation, class: "input", placeholder: "Confirm new password", minlength: 12) %>
+    <%= error_tag(f, :password_confirmation) %>
+  </div>
+  <div class="field">
+    <%= password_input(f, :current_password, name: "current_password", class: "input", placeholder: "Current password") %>
+    <%= error_tag(f, :current_password) %>
+  </div>
+  <%= submit("Change password", class: "button") %>
+<% end %>

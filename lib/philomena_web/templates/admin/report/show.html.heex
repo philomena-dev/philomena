@@ -1,0 +1,62 @@
+<h1>
+  Showing Report
+</h1>
+<p>
+  <%= link_to_reported_thing(@report.reportable) %>
+</p>
+<article class="block communication">
+  <div class="block__content flex flex--no-wrap">
+    <div class="flex__fixed spacing-right">
+      <%= render(PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html", object: @report, conn: @conn) %>
+    </div>
+    <div class="flex__grow communication__body">
+      <span class="communication__body__sender-name">
+        <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @report, awards: true, conn: @conn) %>
+      </span>
+      <br />
+      <%= render(PhilomenaWeb.UserAttributionView, "_anon_user_title.html", object: @report, conn: @conn) %>
+      <div class="communication__body__text">
+        <%= @body %>
+      </div>
+    </div>
+  </div>
+  <div class="block__content communication__options">
+    <div class="flex flex--wrap flex--spaced-out">
+      <div>
+        Reported
+        <%= pretty_time(@report.created_at) %>
+      </div>
+      <div class="flex__right">
+        <%= link_to_ip(@conn, @report.ip) %>
+        <%= link_to_fingerprint(@conn, @report.fingerprint) %>
+      </div>
+    </div>
+    <div>
+      User-Agent:
+      <code>
+        <%= @report.user_agent %>
+      </code>
+    </div>
+  </div>
+</article>
+<%= if assigns[:mod_notes] do %>
+  <h4>
+    Mod Notes
+  </h4>
+  <%= render(PhilomenaWeb.Admin.ModNoteView, "_table.html", mod_notes: @mod_notes, conn: @conn) %>
+  <%= link("Add New Note", to: ~p"/admin/mod_notes/new?#{[notable_id: @report.id, notable_type: "Report"]}") %>
+<% end %>
+<p>
+  <%= if @report.user do %>
+    <%= link("Send PM", to: ~p"/conversations/new?#{[recipient: @report.user.name]}", class: "button button--link") %>
+  <% end %>
+  <%= if @report.open do %>
+    <%= link("Close", to: ~p"/admin/reports/#{@report}/close", class: "button", data: [method: "post"]) %>
+    <%= if current?(@report.admin, @conn.assigns.current_user) do %>
+      <%= link("Release", to: ~p"/admin/reports/#{@report}/claim", class: "button", data: [method: "delete"]) %>
+    <% else %>
+      <%= link("Claim", to: ~p"/admin/reports/#{@report}/claim", class: "button", data: [method: "post"]) %>
+    <% end %>
+  <% end %>
+</p>
+<%= link("Back", to: ~p"/admin/reports", class: "button button-link") %>

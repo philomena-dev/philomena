@@ -1,0 +1,22 @@
+<h2>
+  Edit Badge
+</h2>
+<%= form_for @changeset, ~p"/admin/badges/#{@badge}/image", [multipart: true], fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>
+        Oops, something went wrong! Please check the errors below.
+      </p>
+    </div>
+  <% end %>
+  <h4>
+    Image
+  </h4>
+  <div class="field">
+    <%= label(f, :image, "Upload SVG image:") %>
+    <%= file_input(f, :image, class: "input input--wide") %>
+    <%= error_tag(f, :image) %>
+    <%= error_tag(f, :image_mime_type) %>
+  </div>
+  <%= submit("Save Badge", class: "button", data: [disable_with: raw("Saving&hellip;")]) %>
+<% end %>

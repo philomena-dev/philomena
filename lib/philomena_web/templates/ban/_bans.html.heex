@@ -1,0 +1,54 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th>
+        Ban Enacted
+      </th>
+      <th>
+        Ban Expires
+      </th>
+      <th class="hide-mobile">
+        Duration
+      </th>
+      <th>
+        Active?
+      </th>
+      <th>
+        Reason
+      </th>
+      <th>
+        Ban ID
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for b <- @bans do %>
+      <tr>
+        <td>
+          <%= pretty_time(b.created_at) %>
+        </td>
+        <td>
+          <%= pretty_time(b.valid_until) %>
+        </td>
+        <td class="hide-mobile">
+          <%= distance_of_time_in_words(b.created_at, b.valid_until) %>
+        </td>
+        <%= if active?(b) do %>
+          <td class="success">
+            Yes
+          </td>
+        <% else %>
+          <td class="danger">
+            No
+          </td>
+        <% end %>
+        <td>
+          <%= b.reason %>
+        </td>
+        <td>
+          <%= b.generated_ban_id %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

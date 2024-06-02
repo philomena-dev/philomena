@@ -1,0 +1,53 @@
+<div class="filter">
+  <h3>
+    <%= @filter.name %>
+  </h3>
+  <%= if @filter.user do %>
+    <p>
+      Maintained by
+      <%= render(PhilomenaWeb.UserAttributionView, "_user.html", object: @filter, conn: @conn) %>
+    </p>
+  <% end %>
+  <%= if @filter.system do %>
+    <p>
+      Maintained by staff
+    </p>
+  <% end %>
+  <div class="filter-options">
+    <ul>
+      <li>
+        Spoilers
+        <%= length(@filter.spoilered_tag_ids) %>
+        , hides
+        <%= length(@filter.hidden_tag_ids) %>
+      </li>
+      <li>
+        <%= link("View this filter", to: ~p"/filters/#{@filter}", class: "button") %>
+      </li>
+      <li>
+        <%= link("Copy and Customize", to: ~p"/filters/new?#{[based_on: @filter]}", class: "button") %>
+      </li>
+      <%= if can?(@conn, :edit, @filter) do %>
+        <li>
+          <%= link("Edit this filter", to: ~p"/filters/#{@filter}/edit", class: "button") %>
+        </li>
+      <% end %>
+      <%= if @filter.id == @conn.assigns.current_filter.id do %>
+        <li>
+          <strong>
+            Your current filter
+          </strong>
+        </li>
+      <% else %>
+        <li>
+          <%= button_to("Use this filter", ~p"/filters/current?#{[id: @filter]}", method: "put", class: "button") %>
+        </li>
+      <% end %>
+    </ul>
+    <p>
+      <em>
+        <%= @filter.description %>
+      </em>
+    </p>
+  </div>
+</div>

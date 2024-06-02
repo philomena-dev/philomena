@@ -1,0 +1,53 @@
+<div>
+  Posted
+  <%= pretty_time(@comment.created_at) %>
+  <a class="communication__interaction" href={~p"/images/#{@comment.image}/comments/#{@comment}/reports/new"}>
+    <i class="fa fa-flag"></i>
+    Report
+  </a>
+  <%= if not is_nil(@comment.edited_at) and can?(@conn, :show, @comment) do %>
+    <br />
+    <a href={~p"/images/#{@comment.image}/comments/#{@comment}/history"}>
+      Edited
+      <%= pretty_time(@comment.edited_at) %>
+      <%= if @comment.edit_reason not in [nil, ""] do %>
+        because:
+        <%= @comment.edit_reason %>
+      <% end %>
+    </a>
+  <% end %>
+</div>
+<div>
+  <% link_path = ~p"/images/#{@comment.image}" <> "#comment_#{@comment.id}" %>
+  <% safe_author = PhilomenaWeb.PostView.markdown_safe_author(@comment) %>
+  <% 
+    quote_body =
+      if @comment.hidden_from_users do
+        ""
+      else
+        @comment.body
+      end
+  %>
+  <a class="communication__interaction" href={link_path} title="Link to comment">
+    <i class="fa fa-link"></i>
+    Link
+  </a>
+  <a class="communication__interaction post-reply post-reply-quote" data-author={safe_author} data-post={quote_body} data-reply-url={link_path} href={link_path}>
+    <i class="fa fa-quote-right"></i>
+    Quote
+  </a>
+  <a class="communication__interaction post-reply" data-author={safe_author} data-reply-url={link_path} href={link_path}>
+    <i class="fa fa-reply"></i>
+    Reply
+  </a>
+  <%= if can?(@conn, :edit, @comment) do %>
+    <span class="owner-options">
+      <strong>
+        <a class="communication__interaction" href={~p"/images/#{@comment.image}/comments/#{@comment}/edit"}>
+          <i class="fas fa-edit"></i>
+          Edit
+        </a>
+      </strong>
+    </span>
+  <% end %>
+</div>

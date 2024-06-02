@@ -1,0 +1,8 @@
+<%= if !!@object.user do %>
+  <strong>
+    <%= link(@object.user.name, to: ~p"/profiles/#{@object.user}") %>
+  </strong>
+  <%= if assigns[:awards] do %>
+    <%= render(PhilomenaWeb.ProfileView, "_awards.html", awards: @object.user.awards) %>
+  <% end %>
+<% end %>

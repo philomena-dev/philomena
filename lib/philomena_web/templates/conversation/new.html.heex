@@ -1,0 +1,64 @@
+<h1>
+  New Conversation
+</h1>
+<div class="block">
+  <div class="block__header">
+    <%= link("Conversations", to: ~p"/conversations") %>
+    &raquo;
+    <span class="block__header__title">
+      New Conversation
+    </span>
+  </div>
+</div>
+<%= case DateTime.compare(DateTime.utc_now(), DateTime.add(@conn.assigns.current_user.created_at, 1_209_600)) do %>
+  <% :lt -> %>
+    <div class="block block--fixed block--warning hidden js-hidden-warning">
+      <h2>
+        Warning!
+      </h2>
+      <p>
+        <strong>
+          Your account is too new, so your PM will need to be reviewed by staff members.
+        </strong>
+        This is because it contains an external image. If you are not okay with a moderator viewing this PM conversation, please consider linking the image instead of embedding it (change
+        <code>
+          ![
+        </code>
+        to
+        <code>
+          [
+        </code>
+        ).
+      </p>
+    </div>
+  <% _ -> %>
+    <% # Nothing %>
+<% end %>
+<%= form_for @changeset, ~p"/conversations", fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>
+        Oops, something went wrong! Please check the errors below.
+      </p>
+    </div>
+  <% end %>
+  <div class="field">
+    <div class="fieldlabel">
+      Specify any user's exact name here, case-sensitive
+    </div>
+    <%= text_input(f, :recipient, class: "input input--wide", placeholder: "Recipient", required: true) %>
+    <%= error_tag(f, :to) %>
+  </div>
+  <div class="field">
+    <%= text_input(f, :title, class: "input input--wide", placeholder: "Title", required: true) %>
+    <%= error_tag(f, :title) %>
+  </div>
+  <%= inputs_for f, :messages, fn fm -> %>
+    <div>
+      <%= render(PhilomenaWeb.MarkdownView, "_input.html", changeset: @changeset, conn: @conn, f: fm, action_icon: "pencil-alt", action_text: "Compose") %>
+    </div>
+  <% end %>
+  <div class="block__content communication-edit__actions">
+    <%= submit("Send", class: "button", autocomplete: "off", data: [disable_with: "Sending..."]) %>
+  </div>
+<% end %>

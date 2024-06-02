@@ -1,0 +1,38 @@
+<meta content="philomena" name="generator" />
+<meta content="#618fc3" name="theme-color" />
+<meta content="telephone=no" name="format-detection" />
+<%= if opengraph?(@conn) do %>
+  <% image = @conn.assigns.image %>
+  <% filtered = not image.thumbnails_generated %>
+  <% description = "##{image.id} - #{Philomena.Images.tag_list(image)} - Derpibooru" %>
+  <% thumb_large = ImageView.thumb_urls(image, false)[:large] %>
+  <% thumb_rendered = ImageView.thumb_url(image, false, :rendered) %>
+  <meta content={tag_list(image)} name="keywords" />
+  <meta content={description} name="description" />
+  <meta content={description} property="og:title" />
+  <meta content={url(~p"/images/#{image}")} property="og:url" />
+  <%= for tag <- artist_tags(image.tags) do %>
+    <meta content={tag.name_in_namespace} property="dc:creator" />
+  <% end %>
+  <%= if image_has_sources(image) do %>
+    <meta content={image_first_source(image)} property="foaf:primaryTopic" />
+  <% end %>
+  <link href={url(~p"/api/v1/json/oembed?#{[url: ~p"/images/#{image}"]}")} rel="alternate" title="oEmbed JSON Profile" type="application/json+oembed" />
+  <link href={url(~p"/images/#{image}")} rel="canonical" />
+  <%= cond do %>
+    <% image.image_mime_type == "video/webm" and not filtered -> %>
+      <meta content="video.other" property="og:type" />
+      <meta content={thumb_rendered} property="og:image" />
+      <meta content={thumb_large} property="og:video" />
+    <% image.image_mime_type == "image/svg+xml" and not filtered -> %>
+      <meta content="website" property="og:type" />
+      <meta content={thumb_rendered} property="og:image" />
+    <% not filtered -> %>
+      <meta content="website" property="og:type" />
+      <meta content={thumb_large} property="og:image" />
+    <% true -> %>
+      <meta content="website" property="og:type" />
+  <% end %>
+<% else %>
+  <meta content="Derpibooru is a linear imagebooru which lets you share, find and discover new art and media surrounding the show My Little Pony: Friendship is Magic" name="description" />
+<% end %>

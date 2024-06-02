@@ -1,0 +1,108 @@
+<h1>
+  Artist Links
+</h1>
+<p>
+  Link creation is done via the Users menu.
+</p>
+<p>
+  Verifying a link will automatically award an artist badge if the link is public, no artist badge exists, and an "artist:" tag is specified.
+</p>
+<%= form_for :artist_link, ~p"/admin/artist_links", [method: "get", class: "hform"], fn f -> %>
+  <div class="field">
+    <%= text_input(f, :q, name: :q, value: @conn.params["q"], class: "input hform__text", placeholder: "Search query", autocapitalize: "none") %>
+    <%= submit("Search", class: "hform__button button") %>
+  </div>
+<% end %>
+<% route = fn p -> ~p"/admin/artist_links?#{p}" end %>
+<% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @artist_links, route: route, params: link_scope(@conn), conn: @conn) %>
+<div class="block">
+  <div class="block__header">
+    <%= if @conn.params["all"] do %>
+      <%= link("Show unverified only", to: ~p"/admin/artist_links") %>
+    <% else %>
+      <%= link("Show all", to: ~p"/admin/artist_links?#{[all: "true"]}") %>
+    <% end %>
+    <%= pagination %>
+  </div>
+  <div class="block__content">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>
+            State
+          </th>
+          <th>
+            User
+          </th>
+          <th>
+            URL
+          </th>
+          <th>
+            Options
+          </th>
+          <th>
+            Mark
+          </th>
+          <th>
+            Public
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for link <- @artist_links do %>
+          <tr>
+            <td class={link_state_class(link)}>
+              <strong>
+                <%= link_state_name(link) %>
+              </strong>
+              <%= if contacted?(link) do %>
+                <br />
+                by
+                <%= link.contacted_by_user.name %>
+                <br />
+                (
+                <%= pretty_time(link.contacted_at) %>
+                )
+              <% end %>
+            </td>
+            <td>
+              <%= render(PhilomenaWeb.UserAttributionView, "_user.html", object: link, awards: true, conn: @conn) %>
+              <%= render(PhilomenaWeb.TagView, "_tag_list.html", tags: display_order(link.user.linked_tags), conn: @conn) %>
+            </td>
+            <td>
+              <%= link(String.slice(link.uri, 0, 100), to: link.uri) %>
+              <%= if link.tag do %>
+                <br />
+                <%= render(PhilomenaWeb.TagView, "_tag.html", tag: link.tag, conn: @conn) %>
+              <% end %>
+            </td>
+            <td>
+              <%= link("View", to: ~p"/profiles/#{link.user}/artist_links/#{link}") %>
+              &bull;
+              <%= link("Edit", to: ~p"/profiles/#{link.user}/artist_links/#{link}/edit") %>
+            </td>
+            <td>
+              <%= link("Verify", to: ~p"/admin/artist_links/#{link}/verification", method: :post) %>
+              &bull;
+              <%= link("Reject", to: ~p"/admin/artist_links/#{link}/reject", method: :post) %>
+              <br />
+              <%= if not verified?(link) do %>
+                <%= if contacted?(link) do %>
+                  Artist contacted
+                <% else %>
+                  <%= link("Artist contacted", to: ~p"/admin/artist_links/#{link}/contact", method: :post) %>
+                <% end %>
+              <% end %>
+            </td>
+            <td>
+              <%= public_text(link) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="block__header block__header--light">
+    <%= pagination %>
+  </div>
+</div>

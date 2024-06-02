@@ -1,0 +1,4 @@
+<h1>
+  Editing advert
+</h1>
+<%= render(PhilomenaWeb.Admin.AdvertView, "_form.html", changeset: @changeset, action: ~p"/admin/adverts/#{@advert}", conn: @conn) %>

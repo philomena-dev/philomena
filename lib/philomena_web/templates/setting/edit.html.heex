@@ -1,0 +1,336 @@
+<h1>
+  Content Settings
+</h1>
+<%= form_for @changeset, ~p"/settings", [method: "put"], fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>
+        Oops, something went wrong! Please check the errors below.
+      </p>
+    </div>
+  <% end %>
+  <div class="block" id="js-setting-table">
+    <div class="block__header block__header--js-tabbed">
+      <%= if @conn.assigns.current_user do %>
+        <%= link("Watch List", to: "#", class: "selected", data: [click_tab: "watched"]) %>
+        <%= link("Display", to: "#", data: [click_tab: "display"]) %>
+        <%= link("Comments", to: "#", data: [click_tab: "comments"]) %>
+        <%= link("Notifications", to: "#", data: [click_tab: "notifications"]) %>
+        <%= link("Metadata", to: "#", data: [click_tab: "metadata"]) %>
+        <%= link("Local", to: "#", data: [click_tab: "local"]) %>
+      <% else %>
+        <%= link("Local", to: "#", class: "selected", data: [click_tab: "local"]) %>
+        <%= link("More settings", to: "#", data: [click_tab: "join-the-herd"]) %>
+      <% end %>
+    </div>
+    <%= if @conn.assigns.current_user do %>
+      <div class="block__tab" data-tab="watched">
+        <h4>
+          Tags
+        </h4>
+        <div class="field">
+          <%= label(f, :watched_tag_list, "Tags to watch") %>
+          <%= render(PhilomenaWeb.TagView, "_tag_editor.html", f: f, name: :watched_tag_list, type: :edit, conn: @conn) %>
+          <%= error_tag(f, :watched_tag_list) %>
+        </div>
+        <h4>
+          Watchlist queries and filtering
+        </h4>
+        <p>
+          The following two areas are for search queries to control what other images show up in your watch list. Lines are ORed together. See
+          <%= link("the syntax guide", to: "/pages/search_syntax") %>
+          for how to write queries.
+        </p>
+        <div class="field">
+          <%= label(f, :watched_images_query_str, "Watch list search string (images found by this search are added to your watched images list)") %>
+          <%= textarea(f, :watched_images_query_str, class: "input input--wide", autocapitalize: "none") %>
+          <%= error_tag(f, :watched_images_query_str) %>
+        </div>
+        <div class="field">
+          <%= label(f, :watched_images_exclude_str, "Watch list filter string (any images found by this search are removed from your watched images list)") %>
+          <%= textarea(f, :watched_images_exclude_str, class: "input input--wide", autocapitalize: "none") %>
+          <%= error_tag(f, :watched_images_exclude_str) %>
+        </div>
+        <div class="field">
+          <%= checkbox(f, :no_spoilered_in_watched, class: "checkbox") %>
+          <%= label(f, :no_spoilered_in_watched, "Hide images spoilered by filter in watchlist") %>
+        </div>
+        <h4>
+          Other
+        </h4>
+        <p>
+          RSS feed link (for Newsblur, RSSOwl, Thunderbird, etc.):
+          <br />
+          <div id="rss-feed-button">
+            <code>
+              <%= link("Click to show", to: "#", data: [click_show: "#rss-link", click_hide: "#rss-feed-button"]) %>
+            </code>
+          </div>
+          <div class="hidden" id="rss-link">
+            <%= url_input(f, :subscribe_url, value: url(~p"/api/v1/rss/watched?#{[key: @conn.assigns.current_user.authentication_token]}"), class: "input input--wide") %>
+          </div>
+          <br />
+          Do not share this URL with anyone, it may allow an attacker to compromise your account.
+        </p>
+      </div>
+      <div class="block__tab hidden flex flex--maybe-wrap" data-tab="display">
+        <div>
+          <div class="field">
+            <%= label(f, :use_centered_layout) %>
+            <%= checkbox(f, :use_centered_layout, class: "checkbox") %>
+            <div class="fieldlabel">
+              <i>
+                Align content to the center of the page - try this option out if you browse the site on a tablet or a fairly wide screen.
+              </i>
+            </div>
+          </div>
+          <div class="field">
+            <%= label(f, :show_sidebar_and_watched_images) %>
+            <%= checkbox(f, :show_sidebar_and_watched_images, class: "checkbox") %>
+            <div class="fieldlabel">
+              <i>
+                Show the sidebar and new watched images on the homepage (the default) or hide it.
+              </i>
+            </div>
+          </div>
+          <div class="field">
+            <%= label(f, :hide_vote_counts) %>
+            <%= checkbox(f, :hide_vote_counts, class: "checkbox") %>
+            <div class="fieldlabel">
+              <i>
+                Hide upvote and downvote counts on images, showing only the overall score
+              </i>
+            </div>
+          </div>
+          <div class="field">
+            <%= label(f, :images_per_page) %>
+            <%= number_input(f, :images_per_page, min: 1, max: 50, step: 1, class: "input") %>
+            <%= error_tag(f, :images_per_page) %>
+            <div class="fieldlabel">
+              <i>
+                This is the number of images per page that are displayed on image listings and searches, up to a maximum of 50.
+                For 1080p monitors, try 24.
+              </i>
+            </div>
+          </div>
+          <div class="field">
+            <%= label(f, :theme) %>
+            <%= select(f, :theme, theme_options(), class: "input") %>
+            <%= error_tag(f, :theme) %>
+            <div class="fieldlabel">
+              <i>
+                Preview themes by selecting one from the dropdown. Saving sets the currently selected theme.
+              </i>
+            </div>
+          </div>
+          <div class="field">
+            <%= label(f, :scale_large_images) %>
+            <%= select(f, :scale_large_images, scale_options(), class: "input") %>
+            <%= error_tag(f, :scale_large_images) %>
+          </div>
+        </div>
+      </div>
+      <div class="block__tab hidden flex flex--maybe-wrap" data-tab="comments">
+        <div>
+          <div class="field">
+            <%= label(f, :comments_newest_first, "Newest comments first") %>
+            <%= checkbox(f, :comments_newest_first) %>
+            <div class="fieldlabel">
+              <i>
+                Display the newest comments at the top of the page.
+              </i>
+            </div>
+          </div>
+          <div class="field">
+            <%= label(f, :comments_always_jump_to_last, "Show latest comment page") %>
+            <%= checkbox(f, :comments_always_jump_to_last) %>
+            <div class="fieldlabel">
+              <i>
+                This setting takes effect when the previous is disabled. Always jump to the latest page (enabled) or show the first page if the oldest comments are shown at the top of the page.
+                <br />
+                Posting will always direct you to the latest page so that you can see your comment in context.
+              </i>
+            </div>
+          </div>
+          <div class="field">
+            <%= label(f, :comments_per_page) %>
+            <%= number_input(f, :comments_per_page, min: 1, max: 100, step: 1, class: "input") %>
+            <%= error_tag(f, :comments_per_page) %>
+            <div class="fieldlabel">
+              <i>
+                This is the number of comments per page that are displayed on image pages.
+              </i>
+            </div>
+          </div>
+          <div class="field">
+            <%= label(f, :messages_newest_first, "Newest messages first") %>
+            <%= checkbox(f, :messages_newest_first) %>
+            <div class="fieldlabel">
+              <i>
+                Show the newest messages first (enabled) or show the oldest messages at the top of a conversation. Enabling this makes it feel more like a top-posted email quote chain.
+              </i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="block__tab hidden flex flex--maybe-wrap" data-tab="notifications">
+        <div>
+          <div class="field">
+            <%= label(f, :watch_on_reply, "Subscribe on Reply") %>
+            <%= checkbox(f, :watch_on_reply, class: "checkbox") %>
+            <div class="fieldlabel">
+              <i>
+                Subscribe on Reply means you'll be subscribed things (images or topics) automatically as soon as you post a comment or reply, keeping you in the conversation.
+              </i>
+            </div>
+          </div>
+          <div class="field">
+            <%= label(f, :watch_on_upload, "Subscribe on Upload") %>
+            <%= checkbox(f, :watch_on_upload, class: "checkbox") %>
+            <div class="fieldlabel">
+              <i>
+                Subscribe on Upload means you'll be subscribed to images automatically as soon as you upload, to help you keep track of comments.
+              </i>
+            </div>
+          </div>
+          <div class="field">
+            <%= label(f, :watch_on_new_topic, "Subscribe on New Threads") %>
+            <%= checkbox(f, :watch_on_new_topic, class: "checkbox") %>
+            <div class="fieldlabel">
+              <i>
+                Subscribe on New Threads means you'll be subscribed to threads automatically as soon as you post, to help you keep track of replies.
+              </i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="block__tab hidden flex flex--maybe-wrap" data-tab="metadata">
+        <div>
+          <div class="field">
+            <%= label(f, :fancy_tag_field_on_upload, "Fancy tags - uploads") %>
+            <%= checkbox(f, :fancy_tag_field_on_upload, class: "checkbox") %>
+          </div>
+          <div class="field">
+            <%= label(f, :fancy_tag_field_on_edit, "Fancy tags - edits") %>
+            <%= checkbox(f, :fancy_tag_field_on_edit, class: "checkbox") %>
+            <div class="fieldlabel">
+              <i>
+                The fancy tag editor gives you autosuggestions and visual representations of the tags, but is sometimes not desired - for instance when dealing with batch uploads where you might want to copy-paste tags. You can choose which type of editor to use by default here.
+              </i>
+            </div>
+          </div>
+          <div class="field">
+            <%= label(f, :anonymous_by_default) %>
+            <%= checkbox(f, :anonymous_by_default, class: "checkbox") %>
+            <div class="fieldlabel">
+              <i>
+                Check this box to post images and comments as anonymous by default, even if logged in.
+              </i>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+    <div class={"block__tab #{local_tab_class(@conn)}"} data-tab="local">
+      <div class="block block--fixed block--warning">
+        Settings on this tab are saved in the current browser. They are independent of your login.
+      </div>
+      <div class="field">
+        <%= label(f, :hidpi, "Serve HiDPI thumbnails") %>
+        <%= checkbox(f, :hidpi, checked: @conn.cookies["hidpi"] == "true") %>
+        <div class="fieldlabel">
+          <i>
+            Use high quality thumbnails on displays with a high pixel density. Requires more data than regular thumbnails.
+          </i>
+        </div>
+      </div>
+      <div class="field">
+        <%= label(f, :serve_webm, "Serve WebM") %>
+        <%= checkbox(f, :serve_webm, checked: @conn.cookies["serve_webm"] == "true") %>
+        <div class="fieldlabel">
+          <i>
+            Serve WebM/MP4 versions of GIF images when available. Good for lower-bandwidth connections, but the video versions may have missing start/end frames, and do not support transparency.
+          </i>
+        </div>
+      </div>
+      <div class="field">
+        <%= label(f, :webm, "Use video thumbnails") %>
+        <%= checkbox(f, :webm, checked: @conn.cookies["webm"] == "true") %>
+        <div class="fieldlabel">
+          <i>
+            Use video thumbnails for WebM videos. Does not apply to GIF images.
+          </i>
+        </div>
+      </div>
+      <div class="field">
+        <%= label(f, :unmute_videos, "Enable video audio by default") %>
+        <%= checkbox(f, :unmute_videos, checked: @conn.cookies["unmute_videos"] == "true") %>
+        <div class="fieldlabel">
+          <i>
+            Automatically enable audio on video pages when they are loaded.
+          </i>
+        </div>
+      </div>
+      <div class="field">
+        <%= label(f, :hide_uploader) %>
+        <%= checkbox(f, :hide_uploader, checked: @conn.cookies["hide_uploader"] == "true") %>
+        <div class="fieldlabel">
+          <i>
+            Hide the uploader and date posted information on image pages.
+          </i>
+        </div>
+      </div>
+      <div class="field">
+        <%= label(f, :unfilter_tag_suggestions) %>
+        <%= checkbox(f, :unfilter_tag_suggestions, checked: @conn.cookies["unfilter_tag_suggestions"] == "true") %>
+        <div class="fieldlabel">
+          <i>
+            Don't attempt to filter tag suggestions using your current filter.
+          </i>
+        </div>
+      </div>
+      <div class="field">
+        <%= label(f, :hide_score) %>
+        <%= checkbox(f, :hide_score, checked: @conn.cookies["hide_score"] == "true") %>
+        <div class="fieldlabel">
+          <i>
+            Hide score information for images.
+          </i>
+        </div>
+      </div>
+      <div class="field">
+        <%= label(f, :chan_nsfw, "Show NSFW channels") %>
+        <%= checkbox(f, :chan_nsfw, checked: @conn.cookies["chan_nsfw"] == "true") %>
+        <div class="fieldlabel">
+          <i>
+            Show streams marked as NSFW on the channels page.
+          </i>
+        </div>
+      </div>
+      <%= if staff?(@conn.assigns.current_user) do %>
+        <div class="field">
+          <%= label(f, :hide_staff_tools) %>
+          <%= checkbox(f, :hide_staff_tools, checked: @conn.cookies["hide_staff_tools"] == "true") %>
+          <div class="fieldlabel">
+            <i>
+              Hide most of the staff tools (e.g. IPs, anon names) making your site appear as if you weren't staff, this is useful when browsing in public.
+            </i>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <%= if !@conn.assigns.current_user do %>
+      <div class="block__tab hidden" data-tab="join-the-herd">
+        <p>
+          Consider
+          <%= link("creating an account!", to: ~p"/registrations/new") %>
+          <br />
+          You will be able to customize the number of images and comments you get on a single page, as well as change the appearance of the site with custom themes.
+        </p>
+      </div>
+    <% end %>
+  </div>
+  <br />
+  <%= submit("Save My Settings", class: "button") %>
+  <br />
+<% end %>

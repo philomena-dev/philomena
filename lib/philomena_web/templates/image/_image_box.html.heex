@@ -1,0 +1,49 @@
+<% 
+  link = assigns[:link] || ~p"/images/#{@image}"
+
+  size_class =
+    case @size do
+      :thumb -> "media-box__content--large"
+      :medium -> "media-box__content--featured"
+      _ -> "media-box__content--small"
+    end
+
+  header_class =
+    case @size do
+      :thumb_small -> "media-box__header--small"
+      _ -> nil
+    end
+%>
+<div class="media-box" data-image-id={@image.id}>
+  <div class={"media-box__header media-box__header--link-row #{header_class}"} data-image-id={@image.id}>
+    <a class="interaction--fave" data-image-id={@image.id} href="#" rel="nofollow">
+      <span class="fave-span" title="Fave!">
+        <i class="fa fa-star"></i>
+      </span>
+      <span class="favorites" data-image-id={@image.id} title="Favorites">
+        <%= @image.faves_count %>
+      </span>
+    </a>
+    <a class="interaction--upvote" data-image-id={@image.id} href="#" rel="nofollow">
+      <i class="fa fa-arrow-up" title="Yay!"></i>
+    </a>
+    <span class="score" data-image-id={@image.id} title="Score">
+      <%= @image.score %>
+    </span>
+    <a class="interaction--downvote" data-image-id={@image.id} href="#" rel="nofollow">
+      <i class="fa fa-arrow-down" title="Neigh!"></i>
+    </a>
+    <a class="interaction--comments" href={"/#{@image.id}#comments"} title="Comments">
+      <i class="fa fa-comments"></i>
+      <span class="comments_count" data-image-id={@image.id}>
+        <%= @image.comments_count %>
+      </span>
+    </a>
+    <a class="interaction--hide" data-image-id={@image.id} href="#" rel="nofollow">
+      <i class="fa fa-eye-slash" title="Hide"></i>
+    </a>
+  </div>
+  <div class={"media-box__content flex flex--centered flex--center-distributed #{size_class}"}>
+    <%= render(PhilomenaWeb.ImageView, "_image_container.html", link: link, image: @image, size: @size, conn: @conn) %>
+  </div>
+</div>

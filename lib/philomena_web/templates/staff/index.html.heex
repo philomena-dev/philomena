@@ -1,0 +1,83 @@
+<h1>
+  Staff
+</h1>
+<div class="block block--fixed block--warning">
+  <h3>
+    Do you wish to submit a report?
+  </h3>
+  <p>
+    <strong>
+      Do
+      <em>
+        not
+      </em>
+    </strong>
+    PM staff members with your reports. Instead, if you think something breaks
+    <%= link to: "/pages/rules" do %>
+      the rules
+    <% end %>
+    , use the "Report" button, which is included next to all user-created content on the site. This will ensure swift handling of your issue, since most staff members don't check their PMs nearly as vigilantly as the reports queue.
+  </p>
+  <p>
+    Staff PMs are only for general questions or for getting help with using the site.
+  </p>
+</div>
+<div class="block block--fixed">
+  <p>
+    Before contacting any of the staff members, you should try to ask your question in our
+    <%= link to: "/pages/discord" do %>
+      Discord
+    <% end %>
+    or
+    <%= link to: "/pages/irc" do %>
+      IRC channels.
+    <% end %>
+  </p>
+  <p>
+    Keep in mind that all staff are unpaid volunteers who donate their time and effort into making sure this site remains organized and operational. Please do not harass them, and try to keep your PMs constructive. We will happily answer your questions, however receiving plenty of PMs for no reason gets tiring and impacts our ability to tend to more important matters, so please make sure you actually have a need to contact a staff member before doing so.
+  </p>
+</div>
+<div class="staff-block">
+  <%= for {header, users} <- @categories do %>
+    <% header = to_string(header) %>
+    <%= if Enum.any?(users) do %>
+      <div class={"block block--fixed staff-block__category #{category_class(header)}"}>
+        <%= header %>
+      </div>
+      <p class="staff-block__description">
+        <i class="fa fa-fw fa-info-circle"></i>
+        <%= category_description(header) %>
+      </p>
+      <div class="staff-block__grid">
+        <%= for user <- users do %>
+          <div class="block flex flex--column">
+            <div class="block__content staff-block__user">
+              <div class="staff-block__user-card">
+                <div class="staff-block__avatar">
+                  <a class="profile-block" href={~p"/profiles/#{user}"}>
+                    <%= render(PhilomenaWeb.UserAttributionView, "_user_avatar.html", object: %{user: user}, class: "avatar--125px") %>
+                    <p>
+                      <b>
+                        <%= user.name %>
+                      </b>
+                    </p>
+                  </a>
+                </div>
+                <div class="staff-block__info">
+                  <%= link to: ~p"/conversations/new?#{[recipient: user.name]}", class: "button" do %>
+                    <i class="fa fa-envelope"></i>
+                    Send PM
+                  <% end %>
+                </div>
+              </div>
+              <hr class="staff-block__separator" />
+              <p class="staff-block__user-description">
+                <%= staff_description(user) %>
+              </p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

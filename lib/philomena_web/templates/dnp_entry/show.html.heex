@@ -1,0 +1,116 @@
+<h2>
+  DNP Listing for Tag
+  <%= @dnp_entry.tag.name %>
+</h2>
+<div class="block">
+  <div class="block__header">
+    <span class="block__header__title">
+      DNP Information
+    </span>
+    <%= if can?(@conn, :edit, @dnp_entry) do %>
+      <%= link("Edit listing", to: ~p"/dnp/#{@dnp_entry}/edit?#{[tag_id: @dnp_entry.tag_id]}") %>
+    <% end %>
+    <%= link("Back to DNP List", to: ~p"/dnp") %>
+  </div>
+  <div class="block__content">
+    <table class="table">
+      <tbody>
+        <tr>
+          <td>
+            Created:
+          </td>
+          <td>
+            <%= pretty_time(@dnp_entry.created_at) %>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Tag:
+          </td>
+          <td>
+            <%= render(PhilomenaWeb.TagView, "_tag.html", tag: @dnp_entry.tag, conn: @conn) %>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Restriction Type:
+          </td>
+          <td>
+            <%= @dnp_entry.dnp_type %>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Conditions:
+          </td>
+          <td>
+            <%= @conditions %>
+          </td>
+        </tr>
+        <%= if can?(@conn, :show_reason, @dnp_entry) do %>
+          <tr>
+            <td>
+              Reason:
+            </td>
+            <td>
+              <%= @reason %>
+            </td>
+          </tr>
+        <% end %>
+        <%= if can?(@conn, :show_feedback, @dnp_entry) do %>
+          <tr>
+            <td>
+              Instructions:
+            </td>
+            <td>
+              <%= @instructions %>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Feedback:
+            </td>
+            <td>
+              <%= @dnp_entry.feedback %>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Status:
+            </td>
+            <td>
+              <%= String.capitalize(@dnp_entry.aasm_state) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<%= if can?(@conn, :index, Philomena.DnpEntries.DnpEntry) do %>
+  <%= case @dnp_entry.aasm_state do %>
+    <% s when s in ["requested", "claimed"] -> %>
+    <%= link("Claim", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "claimed"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %>
+    &bull;
+    <%= link("Approve", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "listed"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %>
+    &bull;
+    <%= link("Close", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "closed"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %>
+    <% "listed" -> %>
+    <%= link("Rescind", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "rescinded"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %>
+    &bull;
+    <%= link("Close", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "closed"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %>
+    <% s when s in ["rescinded", "acknowledged"] -> %>
+    <%= link("Claim", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "acknowledged"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %>
+    &bull;
+    <%= link("Close", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "closed"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %>
+    <% _state -> %>
+    <%= link("Claim", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "claimed"]}", data: [method: "post", confirm: "Are you really, really sure?"]) %>
+  <% end %>
+<% end %>
+<%= if assigns[:mod_notes] do %>
+  <h4>
+    Mod Notes
+  </h4>
+  <%= render(PhilomenaWeb.Admin.ModNoteView, "_table.html", mod_notes: @mod_notes, conn: @conn) %>
+  <%= link("Add New Note", to: ~p"/admin/mod_notes/new?#{[notable_id: @dnp_entry.id, notable_type: "DnpEntry"]}") %>
+<% end %>

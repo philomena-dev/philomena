@@ -1,0 +1,59 @@
+<h1>
+  Livestreams
+</h1>
+<% route = fn p -> ~p"/channels?#{p}" end %>
+<% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @channels, route: route, conn: @conn, params: [cq: @conn.params["cq"]]) %>
+<%= form_for :channels, ~p"/channels", [method: "get", class: "hform", enforce_utf8: false], fn f -> %>
+  <div class="field">
+    <%= text_input(f, :cq, name: :cq, value: @conn.params["cq"], class: "input hform__text", placeholder: "Search channels", autocapitalize: "none") %>
+    <%= submit("Search", class: "hform__button button") %>
+  </div>
+<% end %>
+<div class="block">
+  <div class="block__header page__header">
+    <div class="page__pagination">
+      <%= pagination %>
+    </div>
+    <%= if @conn.cookies["chan_nsfw"] == "true" do %>
+      <a data-method="delete" href={~p"/channels/nsfw"}>
+        <i class="fa fa-eye-slash"></i>
+        Hide NSFW streams
+      </a>
+    <% else %>
+      <a data-method="create" href={~p"/channels/nsfw"}>
+        <i class="fa fa-eye"></i>
+        Show NSFW streams
+      </a>
+    <% end %>
+  </div>
+  <div class="block__content">
+    <%= for channel <- @channels do %>
+      <%= render(PhilomenaWeb.ChannelView, "_channel_box.html", channel: channel, conn: @conn, subscriptions: @subscriptions) %>
+    <% end %>
+  </div>
+  <div class="block__header page__header">
+    <div class="page__pagination">
+      <%= pagination %>
+    </div>
+  </div>
+</div>
+<br />
+<%= if can?(@conn, :create, Philomena.Channels.Channel) do %>
+  <%= link("New Channel", to: ~p"/channels/new") %>
+<% end %>
+<h2>
+  FAQ
+</h2>
+<p>
+  <strong>
+    Q: Do you host streams?
+  </strong>
+  A: No, we cheat and just link to streams on Picarto since that's where (almost) everyone is already. This is simply a nice way to track streaming artists.
+</p>
+<p>
+  <strong>
+    Q: How do I get my stream/a friend's stream/&lt;artist&gt;'s stream here?
+  </strong>
+  A: Send a private message to a site administrator
+  with a link to the stream and the artist tag if applicable.
+</p>

@@ -1,0 +1,94 @@
+<% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @topics, route: fn p -> ~p"/forums/#{@forum}?#{p}" end) %>
+<h1>
+  <%= @forum.name %>
+</h1>
+<div class="block">
+  <div class="block__header">
+    <%= link("Forums", to: ~p"/forums") %>
+    &raquo;
+    <%= link(@forum.name, to: ~p"/forums/#{@forum}") %>
+    <a href={~p"/forums/#{@forum}/topics/new"}>
+      <i class="fa fa-fw fa-edit"></i>
+      New Topic
+    </a>
+    <a href={~p"/posts?#{[pq: "forum:#{@forum.short_name}"]}"}>
+      <i class="fa fa-fw fa-search"></i>
+      Search Posts
+    </a>
+    <span class="spacing-left">
+      <%= @forum.topic_count %>
+      topics
+    </span>
+  </div>
+  <div class="block__header--sub block__header--light page__header">
+    <div class="page__pagination">
+      <%= pagination %>
+    </div>
+    <div class="page__info">
+      <span class="block__header__title">
+        <%= @forum.description %>
+      </span>
+      <%= render(PhilomenaWeb.Forum.SubscriptionView, "_subscription.html", forum: @forum, watching: @watching, conn: @conn) %>
+    </div>
+  </div>
+  <div class="block__content">
+    <table class="table table--communication-list">
+      <thead>
+        <tr>
+          <th class="table--communication-list__name">
+            Topic
+          </th>
+          <th class="table--communication-list__stats hide-mobile">
+            Posts
+          </th>
+          <th class="table--communication-list__last-post">
+            Last Post
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for topic <- @topics do %>
+          <tr>
+            <td class="table--communication-list__name">
+              <%= if topic.sticky do %>
+                <i class="fa fa-thumbtack"></i>
+              <% end %>
+              <%= if topic.locked_at do %>
+                <i class="fa fa-lock"></i>
+              <% end %>
+              <%= if topic.poll do %>
+                <i class="fas fa-poll-h"></i>
+              <% end %>
+              <%= link(topic.title, to: ~p"/forums/#{@forum}/topics/#{topic}") %>
+              <div class="small-text">
+                Posted
+                <%= pretty_time(topic.created_at) %>
+                by
+                <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: topic, conn: @conn) %>
+              </div>
+            </td>
+            <td class="table--communication-list__stats hide-mobile">
+              <%= topic.post_count %>
+            </td>
+            <td class="table--communication-list__last-post">
+              <%= if topic.last_post do %>
+                <%= link("Go to post", to: ~p"/forums/#{topic.forum}/topics/#{topic}?#{[post_id: topic.last_post]}" <> "#post_#{topic.last_post.id}") %>
+                by
+                <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: topic.last_post, conn: @conn) %>
+                <br />
+                <%= pretty_time(topic.last_post.created_at) %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="block__header block__header--light page__header">
+    <div class="page__pagination">
+      <%= pagination %>
+    </div>
+  </div>
+</div>
+<% # - if current_user %>
+<% #  = render partial: 'topics/form' %>

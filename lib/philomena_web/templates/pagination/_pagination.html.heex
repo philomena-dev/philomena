@@ -1,0 +1,83 @@
+<% params = assigns[:params] || [] %>
+<%= if @page.total_pages > 1 do %>
+  <nav class="pagination hide-mobile-t">
+    <%= if not first_page?(@page) do %>
+      <%= link("« First", to: first_page_path(@page, @route, params)) %>
+      <%= link("‹ Prev", to: prev_page_path(@page, @route, params), class: "js-prev") %>
+    <% end %>
+    <%= if left_gap?(@page) do %>
+      <span class="page gap">
+        …
+      </span>
+    <% end %>
+    <%= for number <- left_page_numbers(@page) do %>
+      <%= link(number, to: page_path(@route, params, number)) %>
+    <% end %>
+    <span class="page-current">
+      <%= @page.page_number %>
+    </span>
+    <%= for number <- right_page_numbers(@page) do %>
+      <%= link(number, to: page_path(@route, params, number)) %>
+    <% end %>
+    <%= if right_gap?(@page) do %>
+      <span class="page gap">
+        …
+      </span>
+    <% end %>
+    <%= if not last_page?(@page) do %>
+      <%= link("Next ›", to: next_page_path(@page, @route, params), class: "js-next") %>
+      <%= link("Last »", to: last_page_path(@page, @route, params)) %>
+    <% end %>
+  </nav>
+  <nav class="pagination hide-desktop-t">
+    <%= if first_page?(@page) do %>
+      <span>
+        « First
+      </span>
+      <span>
+        ‹ Prev
+      </span>
+    <% else %>
+      <%= link("« First", to: first_page_path(@page, @route, params)) %>
+      <%= link("‹ Prev", to: prev_page_path(@page, @route, params), class: "js-prev") %>
+    <% end %>
+    <div class="dropdown">
+      <a class="page-current pagination__dropdown">
+        <%= @page.page_number %>
+        <i class="fa fa-caret-down"></i>
+      </a>
+      <div class="dropdown__content">
+        <%= if left_gap?(@page) do %>
+          <span class="page gap header__span">
+            …
+          </span>
+        <% end %>
+        <%= for number <- left_page_numbers(@page) do %>
+          <%= link(number, to: page_path(@route, params, number)) %>
+        <% end %>
+        <span class="page-current header__span">
+          <%= @page.page_number %>
+        </span>
+        <%= for number <- right_page_numbers(@page) do %>
+          <%= link(number, to: page_path(@route, params, number)) %>
+        <% end %>
+        <%= if right_gap?(@page) do %>
+          <span class="page gap header__span">
+            …
+          </span>
+        <% end %>
+      </div>
+    </div>
+    <%= if last_page?(@page) do %>
+      <span>
+        Next ›
+      </span>
+      <span>
+        Last »
+      </span>
+    <% else %>
+      <%= link("Next ›", to: next_page_path(@page, @route, params), class: "js-next") %>
+      <%= link("Last »", to: last_page_path(@page, @route, params)) %>
+    <% end %>
+  </nav>
+<% end %>

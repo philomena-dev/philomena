@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
+    <%= viewport_meta_tag(@conn) %>
+    <title>
+      <%= if assigns[:title] do %>
+        <%= assigns[:title] %>
+        - Derpibooru
+      <% else %>
+        Derpibooru
+      <% end %>
+    </title>
+    <link href={stylesheet_path(@current_user)} rel="stylesheet" />
+    <%= if is_nil(@current_user) do %>
+      <link href={dark_stylesheet_path()} media="(prefers-color-scheme: dark)" rel="stylesheet" />
+    <% end %>
+    <link href={~p"/favicon.ico"} rel="icon" type="image/x-icon" />
+    <link href={~p"/favicon.svg"} rel="icon" type="image/svg+xml" />
+    <meta content="philomena" name="generator" />
+    <meta content="#618fc3" name="theme-color" />
+    <meta content="telephone=no" name="format-detection" />
+    <%= csrf_meta_tag() %>
+    <%= vite_hmr? do %>
+      <script src="http://localhost:5173/@vite/client" type="module"></script>
+      <script src="http://localhost:5173/js/app.js" type="module"></script>
+    <% else %>
+      <script async="async" src={~p"/js/app.js"} type="text/javascript"></script>
+    <% end %>
+    <%= render(PhilomenaWeb.LayoutView, "_opengraph.html", assigns) %>
+  </head>
+  <body data-theme={theme_name(@current_user)} data-vite-reload={to_string(vite_reload?())}>
+    <%= render(PhilomenaWeb.LayoutView, "_burger.html", assigns) %>
+    <div class={container_class(@current_user)} id="container">
+      <%= render(PhilomenaWeb.LayoutView, "_header.html", assigns) %>
+      <%= render(PhilomenaWeb.LayoutView, "_flash_warnings.html", assigns) %>
+      <main class={layout_class(@conn)} id="content">
+        <%= @inner_content %>
+      </main>
+      <%= render(PhilomenaWeb.LayoutView, "_footer.html", assigns) %>
+      <form class="hidden">
+        <input class="js-interaction-cache" type="hidden" value="{}" />
+      </form>
+      <%= clientside_data(@conn) %>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,35 @@
+<h1>
+  Users with
+  <%= @badge.title %>
+  badge
+</h1>
+<% route = fn p -> ~p"/admin/badges/#{@badge}/users?#{p}" end %>
+<% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @users, route: route, conn: @conn) %>
+<div class="block">
+  <div class="block__header">
+    <%= pagination %>
+  </div>
+  <div class="block__content">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>
+            User
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for user <- @users do %>
+          <tr>
+            <td>
+              <%= link(user.name, to: ~p"/profiles/#{user}") %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="block__header block__header--light">
+    <%= pagination %>
+  </div>
+</div>

@@ -1,0 +1,6 @@
+<h2>
+  New mod note for
+  <%= @conn.params["notable_type"] %>
+  <%= @conn.params["notable_id"] %>
+</h2>
+<%= render(PhilomenaWeb.Admin.ModNoteView, "_form.html", changeset: @changeset, action: ~p"/admin/mod_notes", conn: @conn) %>

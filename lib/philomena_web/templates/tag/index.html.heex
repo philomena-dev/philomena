@@ -1,0 +1,349 @@
+<h1>
+  Tags
+</h1>
+<%= form_for :tags, ~p"/tags", [method: "get", class: "hform", enforce_utf8: false], fn f -> %>
+  <div class="field">
+    <%= text_input(f, :tq, name: :tq, value: @conn.params["tq"] || "*", class: "input hform__text", placeholder: "Search tags", autocapitalize: "none") %>
+    <%= submit("Search", class: "hform__button button") %>
+  </div>
+  <div class="fieldlabel">
+    For more information, see the
+    <a href="/pages/search_syntax">
+      search syntax documentation
+    </a>
+    . Wildcards are supported in all literal fields.
+    Search results are sorted by image count, then by name alphabetically.
+  </div>
+<% end %>
+<h2>
+  Search Results
+</h2>
+<%= cond do %>
+  <% Enum.any?(@tags) -> %>
+    <% route = fn p -> ~p"/tags?#{p}" end %>
+    <% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @tags, route: route, params: [tq: @conn.params["tq"] || "*"]) %>
+    <%= render(PhilomenaWeb.TagView, "_tag_list.html", tags: @tags, conn: @conn) %>
+    <div class="block">
+      <div class="block__header block__header--light page__header">
+        <div class="page__pagination">
+          <%= pagination %>
+        </div>
+        <div class="page__info">
+          <span class="block__header__title">
+            <%= render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @tags) %>
+          </span>
+        </div>
+      </div>
+    </div>
+  <% assigns[:error] -> %>
+    <div class="block block--fixed block--danger">
+      Oops, there was an error parsing your query! Check for mistakes like mismatched parentheses. The error was:
+    </div>
+    <pre>
+      <%= assigns[:error] %>
+    </pre>
+  <% true -> %>
+    <p>
+      No tags found!
+    </p>
+<% end %>
+<h3>
+  Default search
+</h3>
+<p>
+  If you do not specify a field to search over, the search engine will
+  search for tags with a name that is equal to the query string.
+</p>
+<h3>
+  Allowed fields
+</h3>
+<table class="table">
+  <thead>
+    <tr>
+      <th>
+        Field Selector
+      </th>
+      <th>
+        Type
+      </th>
+      <th>
+        Description
+      </th>
+      <th>
+        Example
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <code>
+          alias_of
+        </code>
+      </td>
+      <td>
+        Literal
+      </td>
+      <td>
+        Matches the name of the target tag, if this tag is aliased.
+      </td>
+      <td>
+        <code>
+          <%= link("alias_of:twilight sparkle", to: ~p"/tags?#{[tq: "alias_of:twilight sparkle"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          aliased
+        </code>
+      </td>
+      <td>
+        Boolean
+      </td>
+      <td>
+        Matches when this tag is aliased.
+      </td>
+      <td>
+        <code>
+          <%= link("aliased:true", to: ~p"/tags?#{[tq: "aliased:true"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          aliases
+        </code>
+      </td>
+      <td>
+        Literal
+      </td>
+      <td>
+        Matches the name of any of this tag's aliases.
+      </td>
+      <td>
+        <code>
+          <%= link("aliases:ts", to: ~p"/tags?#{[tq: "aliases:ts"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          analyzed_name
+        </code>
+      </td>
+      <td>
+        Full Text
+      </td>
+      <td>
+        Matches the name of this tag. This is the default field.
+      </td>
+      <td>
+        <code>
+          <%= link("analyzed_name:wing", to: ~p"/tags?#{[tq: "analyzed_name:wing"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          category
+        </code>
+      </td>
+      <td>
+        Literal
+      </td>
+      <td>
+        Matches the category this tag belongs to.
+      </td>
+      <td>
+        <code>
+          <%= link("category:origin", to: ~p"/tags?#{[tq: "category:origin"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          description
+        </code>
+      </td>
+      <td>
+        Full Text
+      </td>
+      <td>
+        Matches the text of the full description for this tag.
+      </td>
+      <td>
+        <code>
+          <%= link("description:species", to: ~p"/tags?#{[tq: "description:species"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          id
+        </code>
+      </td>
+      <td>
+        Numeric Range
+      </td>
+      <td>
+        Matches the numeric surrogate key for this tag.
+      </td>
+      <td>
+        <code>
+          <%= link("id:40482", to: ~p"/tags?#{[tq: "id:40482"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          images
+        </code>
+      </td>
+      <td>
+        Numeric Range
+      </td>
+      <td>
+        Matches tags with the specified image count.
+      </td>
+      <td>
+        <code>
+          <%= link("images.lte:1000", to: ~p"/tags?#{[tq: "images.lte:1000"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          implied_by
+        </code>
+      </td>
+      <td>
+        Literal
+      </td>
+      <td>
+        Matches this tag if it is implied by the given tag.
+      </td>
+      <td>
+        <code>
+          <%= link("implied_by:transparent background", to: ~p"/tags?#{[tq: "implied_by:transparent background"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          implies
+        </code>
+      </td>
+      <td>
+        Literal
+      </td>
+      <td>
+        Matches this tag if it implies the given tag.
+      </td>
+      <td>
+        <code>
+          <%= link("implies:shipping", to: ~p"/tags?#{[tq: "implies:shipping"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          name
+        </code>
+      </td>
+      <td>
+        Literal
+      </td>
+      <td>
+        Matches the exact name of this tag.
+      </td>
+      <td>
+        <code>
+          <%= link("name:safe", to: ~p"/tags?#{[tq: "name:safe"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          name_in_namespace
+        </code>
+      </td>
+      <td>
+        Literal
+      </td>
+      <td>
+        Matches the name of this tag with any namespace component removed.
+      </td>
+      <td>
+        <code>
+          <%= link("name_in_namespace:johnjoseco", to: ~p"/tags?#{[tq: "name_in_namespace:johnjoseco"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          namespace
+        </code>
+      </td>
+      <td>
+        Literal
+      </td>
+      <td>
+        Matches tags with the given namespace.
+      </td>
+      <td>
+        <code>
+          <%= link("namespace:artist", to: ~p"/tags?#{[tq: "namespace:artist"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          short_description
+        </code>
+      </td>
+      <td>
+        Full Text
+      </td>
+      <td>
+        Matches the text of the short description for this tag.
+      </td>
+      <td>
+        <code>
+          <%= link("short_description:gender", to: ~p"/tags?#{[tq: "short_description:gender"]}") %>
+        </code>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <code>
+          slug
+        </code>
+      </td>
+      <td>
+        Literal
+      </td>
+      <td>
+        Matches the slug of this tag.
+      </td>
+      <td>
+        <code>
+          <%= link("slug:-fwslash-mlp-fwslash-", to: ~p"/tags?#{[tq: "slug:-fwslash-mlp-fwslash-"]}") %>
+        </code>
+      </td>
+    </tr>
+  </tbody>
+</table>

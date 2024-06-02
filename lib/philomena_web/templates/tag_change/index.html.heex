@@ -1,0 +1,125 @@
+<div class="block__header">
+  <%= @pagination %>
+</div>
+<%= if reverts_tag_changes?(@conn) do %>
+  <div class="block__header block__header--light block__header--sub">
+    <a data-click-checkall=".tag-changes-form">
+      <i class="fa fa-check"></i>
+      Toggle all
+    </a>
+  </div>
+<% end %>
+<%= form_for :tag_changes, ~p"/tag_changes/revert", [class: "tag-changes-form"], fn _f -> %>
+  <div class="block__content">
+    <table class="table">
+      <thead>
+        <tr>
+          <%= if reverts_tag_changes?(@conn) do %>
+            <th>
+              Revert?
+            </th>
+          <% end %>
+          <th colspan="2">
+            Image
+          </th>
+          <th>
+            Tag
+          </th>
+          <th>
+            Action
+          </th>
+          <th>
+            Timestamp
+          </th>
+          <th>
+            User
+          </th>
+          <th>
+            Retained?
+          </th>
+          <%= if reverts_tag_changes?(@conn) do %>
+            <th>
+              Moderation
+            </th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for tag_change <- @tag_changes do %>
+          <tr>
+            <%= if reverts_tag_changes?(@conn) do %>
+              <td class="center">
+                <input name="ids[]" type="checkbox" value={tag_change.id} />
+              </td>
+            <% end %>
+            <td class="center">
+              <%= link(tag_change.image_id, to: ~p"/images/#{tag_change.image}") %>
+            </td>
+            <td class="center">
+              <%= render(PhilomenaWeb.ImageView, "_image_container.html", image: tag_change.image, size: :thumb_tiny, conn: @conn) %>
+            </td>
+            <td>
+              <%= if tag_change.tag do %>
+                <%= render(PhilomenaWeb.TagView, "_tag.html", tag: tag_change.tag, conn: @conn) %>
+              <% else %>
+                <%= tag_change.tag_name_cache || "Unknown tag" %>
+              <% end %>
+            </td>
+            <%= if tag_change.added do %>
+              <td class="success">
+                Added
+              </td>
+            <% else %>
+              <td class="danger">
+                Removed
+              </td>
+            <% end %>
+            <td>
+              <%= pretty_time(tag_change.created_at) %>
+            </td>
+            <td class={user_column_class(tag_change)}>
+              <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: tag_change, conn: @conn) %>
+              <%= if can?(@conn, :show, :ip_address) do %>
+                <%= link_to_ip(@conn, tag_change.ip) %>
+                <%= link_to_fingerprint(@conn, tag_change.fingerprint) %>
+              <% end %>
+              <%= if staff?(tag_change) do %>
+                <br />
+                <small>
+                  <strong>
+                    Stop!
+                  </strong>
+                  This user is a staff member.
+                  <br />
+                  Ask them before reverting their changes.
+                </small>
+              <% end %>
+            </td>
+            <%= if tag_change_retained(tag_change) do %>
+              <td class="success">
+                Yes
+              </td>
+            <% else %>
+              <td class="danger">
+                No
+              </td>
+            <% end %>
+            <%= if reverts_tag_changes?(@conn) do %>
+              <td>
+                <a data-confirm="Are you really, really sure?" data-method="delete" href={~p"/images/#{tag_change.image}/tag_changes/#{tag_change}"}>
+                  Delete from history
+                </a>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="block__header">
+    <%= @pagination %>
+  </div>
+  <%= if reverts_tag_changes?(@conn) do %>
+    <%= submit("Revert selected", class: "button", data: [confirm: "Are you really, really sure?"]) %>
+  <% end %>
+<% end %>

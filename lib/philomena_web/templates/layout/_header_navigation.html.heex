@@ -1,0 +1,62 @@
+<div class="hide-mobile header__navigation">
+  <div class="dropdown header__dropdown">
+    <a class="header__link" href="/images">
+      Images
+      <span data-click-preventdefault="true">
+        <i class="fa fa-caret-down"></i>
+      </span>
+    </a>
+    <div class="dropdown__content">
+      <a class="header__link" href="/images/random">
+        Random
+      </a>
+    </div>
+  </div>
+  <div class="dropdown header__dropdown">
+    <a class="header__link" href="/activity">
+      Activity
+      <span data-click-preventdefault="true">
+        <i class="fa fa-caret-down"></i>
+      </span>
+    </a>
+    <div class="dropdown__content">
+      <a class="header__link" href="/comments">
+        Comments
+      </a>
+    </div>
+  </div>
+  <div class="dropdown header__dropdown">
+    <a class="header__link" href="/forums">
+      Forums
+      <span data-click-preventdefault="true">
+        <i class="fa fa-caret-down"></i>
+      </span>
+    </a>
+    <div class="dropdown__content">
+      <%= for forum <- @conn.assigns.forums do %>
+        <a class="header__link" href={~p"/forums/#{forum}"}>
+          <%= forum.name %>
+        </a>
+      <% end %>
+      <a class="header__link" href="/posts">
+        <i class="fa fa-fw fa-search"></i>
+        Post Search
+      </a>
+    </div>
+  </div>
+  <a class="header__link" href="/tags">
+    Tags
+  </a>
+  <a class="header__link" href="/channels">
+    Live
+    <span class="header__counter">
+      <%= @conn.assigns.live_channels %>
+    </span>
+  </a>
+  <a class="header__link" href="/galleries">
+    Galleries
+  </a>
+  <a class="header__link" href="/commissions">
+    Commissions
+  </a>
+</div>

@@ -1,0 +1,69 @@
+<div class="dropdown block__header__dropdown-tab">
+  <a href="#">
+    <i class="fa fa-images"></i>
+    <span class="hide-limited-desktop hide-mobile">
+      Galleries
+    </span>
+    <span data-click-preventdefault="true">
+      <i class="fa fa-caret-down"></i>
+    </span>
+  </a>
+  <div class="dropdown__content dropdown__content-right">
+    <div class="block">
+      <div class="block__content add-to-gallery-list">
+        <div class="block__list">
+          <a class="block__list__link primary" href={~p"/galleries?#{[gallery: [include_image: @image.id]]}"}>
+            <i class="fa fa-table"></i>
+            <span class="hide-mobile">
+              Featured in
+            </span>
+          </a>
+        </div>
+        <%= if Enum.any?(@user_galleries) do %>
+          <ul class="block__list js-gallery-list">
+            <%= for {gallery, present} <- @user_galleries do %>
+              <%= if present do %>
+                <% # Options to remove %>
+                <li id={"gallery_#{gallery.id}"}>
+                  <a class="block__list__link js-gallery-add hidden" data-fetchcomplete-hide={"#gallery_#{gallery.id} .js-gallery-add"} data-fetchcomplete-show={"#gallery_#{gallery.id} .js-gallery-remove"} data-method="post" data-remote="true" href={~p"/galleries/#{gallery}/images?#{[image_id: @image.id]}"}>
+                    <%= gallery.title %>
+                  </a>
+                  <a class="block__list__link active js-gallery-remove" data-fetchcomplete-hide={"#gallery_#{gallery.id} .js-gallery-remove"} data-fetchcomplete-show={"#gallery_#{gallery.id} .js-gallery-add"} data-method="delete" data-remote="true" href={~p"/galleries/#{gallery}/images?#{[image_id: @image.id]}"}>
+                    <%= gallery.title %>
+                  </a>
+                </li>
+              <% else %>
+                <% # Options to add %>
+                <li id={"gallery_#{gallery.id}"}>
+                  <a class="block__list__link js-gallery-add" data-fetchcomplete-hide={"#gallery_#{gallery.id} .js-gallery-add"} data-fetchcomplete-show={"#gallery_#{gallery.id} .js-gallery-remove"} data-method="post" data-remote="true" href={~p"/galleries/#{gallery}/images?#{[image_id: @image.id]}"}>
+                    <%= gallery.title %>
+                  </a>
+                  <a class="block__list__link active js-gallery-remove hidden" data-fetchcomplete-hide={"#gallery_#{gallery.id} .js-gallery-remove"} data-fetchcomplete-show={"#gallery_#{gallery.id} .js-gallery-add"} data-method="delete" data-remote="true" href={~p"/galleries/#{gallery}/images?#{[image_id: @image.id]}"}>
+                    <%= gallery.title %>
+                  </a>
+                </li>
+              <% end %>
+            <% end %>
+          </ul>
+        <% end %>
+        <div class="block__list">
+          <%= if @conn.assigns.current_user do %>
+            <a class="block__list__link primary" href={~p"/galleries/new?#{[with_image: @image.id]}"}>
+              <i class="fa fa-plus"></i>
+              <span class="hide-limited-desktop hide-mobile">
+                Create a gallery
+              </span>
+            </a>
+          <% else %>
+            <a class="block__list__link primary" href={~p"/sessions/new"}>
+              <i class="fa fa-user-plus"></i>
+              <span class="hide-limited-desktop hide-mobile">
+                Sign in to create a gallery
+              </span>
+            </a>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

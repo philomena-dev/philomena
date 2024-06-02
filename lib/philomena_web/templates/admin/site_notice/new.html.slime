@@ -1,2 +1,0 @@
-h1 New site notice
-= render PhilomenaWeb.Admin.SiteNoticeView, "_form.html", changeset: @changeset, action: ~p"/admin/site_notices", conn: @conn

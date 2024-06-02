@@ -1,0 +1,46 @@
+<% del = @conn.params["del"] %>
+<%= if blank?(del) do %>
+  <a class="js-staff-action" href={@route.(Keyword.put(@params, :del, 1))} title="Include Deleted/Merged Images">
+    <i class="fa fa-plus"></i>
+    <i class="fa fa-exclamation"></i>
+    <span class="hide-mobile hide-limited-desktop">
+      Show Deleted
+    </span>
+  </a>
+<% end %>
+<%= if del != "only" do %>
+  <a class="js-staff-action" href={@route.(Keyword.put(@params, :del, "only"))} title="Only Deleted/Merged Images">
+    <i class="fa fa-minus"></i>
+    <i class="fa fa-check"></i>
+    <span class="hide-mobile hide-limited-desktop">
+      Only Deleted
+    </span>
+  </a>
+<% end %>
+<%= if del == "only" do %>
+  <a class="js-staff-action" href={@route.(Keyword.put(@params, :del, 1))} title="Include Images Visible to Users">
+    <i class="fa fa-plus"></i>
+    <i class="fa fa-check"></i>
+    <span class="hide-mobile hide-limited-desktop">
+      Show Non-Deleted
+    </span>
+  </a>
+<% end %>
+<%= if present?(del) do %>
+  <a class="js-staff-action" href={@route.(Keyword.delete(@params, :del))} title="Hide Deleted/Merged Images">
+    <i class="fa fa-minus"></i>
+    <i class="fa fa-exclamation"></i>
+    <span class="hide-mobile hide-limited-desktop">
+      Hide Deleted
+    </span>
+  </a>
+<% end %>
+<%= if present?(del) and del != "deleted" do %>
+  <a class="js-staff-action" href={@route.(Keyword.put(@params, :del, "deleted"))} title="Only Deleted (Strict)">
+    <i class="fa fa-minus"></i>
+    <i class="fa fa-object-group"></i>
+    <span class="hide-mobile hide-limited-desktop">
+      Exclude Merges
+    </span>
+  </a>
+<% end %>

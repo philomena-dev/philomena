@@ -1,0 +1,51 @@
+<h2>
+  Badges
+</h2>
+<% route = fn p -> ~p"/admin/badges?#{p}" end %>
+<% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @badges, route: route, conn: @conn) %>
+<div class="block">
+  <div class="block__header">
+    <a href={~p"/admin/badges/new"}>
+      <i class="fa fa-plus"></i>
+      New Badge
+    </a>
+    <%= pagination %>
+  </div>
+  <div class="block__content">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>
+            Badge
+          </th>
+          <th>
+            Image
+          </th>
+          <th>
+            Options
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for badge <- @badges do %>
+          <tr>
+            <td>
+              <%= badge.title %>
+            </td>
+            <td>
+              <%= badge_image(badge, width: 32, height: 32) %>
+            </td>
+            <td>
+              <%= link("Users", to: ~p"/admin/badges/#{badge}/users") %>
+              &bull;
+              <%= link("Edit", to: ~p"/admin/badges/#{badge}/edit") %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="block__header block__header--light">
+    <%= pagination %>
+  </div>
+</div>

@@ -1,0 +1,22 @@
+<div class="flex flex--centered flex__grow">
+  <div>
+    <%= if @notification.actor_child do %>
+      <%= render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @notification.actor_child, conn: @conn) %>
+    <% else %>
+      Someone
+    <% end %>
+    <%= @notification.action %>
+    <strong>
+      <%= link("##{@notification.actor_id}", to: ~p"/images/#{@notification.actor}" <> "#comments") %>
+    </strong>
+    <%= pretty_time(@notification.updated_at) %>
+  </div>
+</div>
+<div class="flex flex--centered flex--no-wrap">
+  <a class="button button--separate-right" data-fetchcomplete-hide={"#notification-#{@notification.id}"} data-method="post" data-remote="true" href={~p"/images/#{@notification.actor}/read"} title="Delete">
+    <i class="fa fa-trash"></i>
+  </a>
+  <a class="button" data-fetchcomplete-hide={"#notification-#{@notification.id}"} data-method="delete" data-remote="true" href={~p"/images/#{@notification.actor}/subscription"} title="Unsubscribe">
+    <i class="fa fa-bell-slash"></i>
+  </a>
+</div>

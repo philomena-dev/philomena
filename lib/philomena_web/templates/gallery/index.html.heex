@@ -1,0 +1,82 @@
+<% 
+  route = fn p -> ~p"/galleries?#{p}" end
+  pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @galleries, route: route, params: [gallery: @conn.params["gallery"]])
+%>
+<div class="column-layout">
+  <div class="column-layout__left">
+    <div class="block">
+      <div class="block__content">
+        <h3>
+          Search Galleries
+        </h3>
+        <%= form_for @conn, ~p"/galleries", [as: :gallery, method: "get", class: "hform"], fn f -> %>
+          <div class="field">
+            <%= label(f, :title, "Title") %>
+          </div>
+          <div class="field">
+            <%= text_input(f, :title, class: "input hform__text", placeholder: "Gallery title (* as wildcard)") %>
+          </div>
+          <div class="field">
+            <%= label(f, :description, "Description") %>
+          </div>
+          <div class="field">
+            <%= textarea(f, :description, class: "input hform__text", placeholder: "Gallery description") %>
+          </div>
+          <div class="field">
+            <%= label(f, :creator, "Creator") %>
+          </div>
+          <div class="field">
+            <%= text_input(f, :creator, class: "input hform__text", placeholder: "Gallery creator (exact match)") %>
+          </div>
+          <div class="field">
+            <%= label(f, :include_image, "Include image") %>
+          </div>
+          <div class="field">
+            <%= number_input(f, :include_image, class: "input hform__text", placeholder: "Image ID (e.g. 100)") %>
+          </div>
+          <div class="field">
+            <%= label(f, :sf, "Sort by") %>
+          </div>
+          <div class="field">
+            <%= select(f, :sf, ["Creation Date": "created_at", "Update Date": "updated_at", "Image Count": "image_count", Relevance: "_score"], class: "input") %>
+            <%= select(f, :sd, [Descending: "desc", Ascending: "asc"], class: "input") %>
+          </div>
+          <div class="field"></div>
+          <%= submit("Search", class: "button button--state-primary") %>
+        <% end %>
+      </div>
+    </div>
+    <div class="block">
+      <div class="block__header">
+        <a href="/galleries/new" title="Create Gallery">
+          Create Gallery
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="column-layout__main">
+    <div class="block">
+      <div class="block__header page__header">
+        <div class="page__pagination">
+          <%= pagination %>
+        </div>
+      </div>
+      <div class="block__content js-resizable-media-container">
+        <%= if Enum.any?(@galleries) do %>
+          <%= for gallery <- @galleries do %>
+            <%= render(PhilomenaWeb.GalleryView, "_gallery.html", gallery: gallery, conn: @conn) %>
+          <% end %>
+        <% else %>
+          <div class="block block--fixed block--no-margin block--warning">
+            No galleries found!
+          </div>
+        <% end %>
+      </div>
+      <div class="block__header block__header--light page__header">
+        <div class="page__pagination">
+          <%= pagination %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

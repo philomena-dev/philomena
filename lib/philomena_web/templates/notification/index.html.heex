@@ -1,0 +1,21 @@
+<% route = fn p -> ~p"/notifications?#{p}" end %>
+<h1>
+  Notification Area
+</h1>
+<div class="walloftext">
+  <div class="block__header">
+    <%= render(PhilomenaWeb.PaginationView, "_pagination.html", page: @notifications, route: route, conn: @conn) %>
+  </div>
+  <%= cond do %>
+    <% Enum.any?(@notifications) -> %>
+      <%= for notification <- @notifications do %>
+        <%= render(PhilomenaWeb.NotificationView, "_notification.html", notification: notification, conn: @conn) %>
+      <% end %>
+    <% true -> %>
+      <p>
+        To get notifications on new comments and forum posts, click the
+        'Subscribe' button in the bar at the top of an image or forum topic.
+        You'll get notifications here for any new posts or comments.
+      </p>
+  <% end %>
+</div>

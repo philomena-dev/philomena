@@ -1,0 +1,233 @@
+<% display_mod_tools? = can?(@conn, :hide, @image) %>
+<div id="image_options_area">
+  <div class="block__header block__header--js-tabbed">
+    <a data-click-tab="reporting" data-load-tab={~p"/images/#{@image}/reporting"} href="#">
+      <i class="fa fa-exclamation-triangle"></i>
+      Report
+    </a>
+    <a data-click-tab="sharing" href="#">
+      <i class="fa fa-share"></i>
+      Share
+    </a>
+    <a data-click-tab="favoriters" data-load-tab={~p"/images/#{@image}/favorites"} href="#">
+      <i class="fa fa-star"></i>
+      List favoriters
+    </a>
+    <%= if display_mod_tools? and not hide_staff_tools?(@conn) do %>
+      <a data-click-tab="replace" href="#">
+        <i class="fa fa-upload"></i>
+        Replace
+      </a>
+      <a data-click-tab="administration" href="#">
+        <i class="fa fa-toolbox"></i>
+        Manage
+        <%= if present?(@image.scratchpad) do %>
+          <i class="fa fa-sticky-note fa--important"></i>
+          <i class="fa fa-exclamation fa--important"></i>
+        <% end %>
+      </a>
+    <% end %>
+  </div>
+  <div class="block__tab hidden" data-tab="favoriters">
+    <p>
+      Loading...
+    </p>
+  </div>
+  <div class="block__tab hidden" data-tab="reporting">
+    <p>
+      Loading...
+    </p>
+  </div>
+  <div class="block__tab hidden" data-tab="sharing">
+    <div id="embed_options">
+      <% 
+        source_link =
+          if image_has_sources(@image) do
+            " - [url=#{image_first_source(@image)}]Original source[/url]"
+          else
+            " (Original source unknown at time of posting)"
+          end
+      %>
+      <h5>
+        Derpibooru
+      </h5>
+      <p>
+        <strong>
+          Small thumbnail
+        </strong>
+        <input class="input" cols="10" id="embed_small_thumbnail_tag" readonly="readonly" type="text" value={">>#{@image.id}s"} />
+        <a data-click-copy="#embed_small_thumbnail_tag" href="#">
+          <i class="fa fa-clipboard"></i>
+          Copy
+        </a>
+      </p>
+      <p>
+        <strong>
+          Thumbnail
+        </strong>
+        <input class="input" cols="10" id="embed_thumbnail_tag" readonly="readonly" type="text" value={">>#{@image.id}t"} />
+        <a data-click-copy="#embed_thumbnail_tag" href="#">
+          <i class="fa fa-clipboard"></i>
+          Copy
+        </a>
+      </p>
+      <p>
+        <strong>
+          Preview
+        </strong>
+        <input class="input" cols="10" id="embed_preview_tag" readonly="readonly" type="text" value={">>#{@image.id}p"} />
+        <a data-click-copy="#embed_preview_tag" href="#">
+          <i class="fa fa-clipboard"></i>
+          Copy
+        </a>
+      </p>
+      <h5>
+        BBCode
+      </h5>
+      <p>
+        <strong>
+          Full size BBcode
+        </strong>
+        <a data-click-copy="#bbcode_embed_full_tag" href="#">
+          <i class="fa fa-clipboard"></i>
+          Copy
+        </a>
+        <br />
+        <textarea class="input input--wide input--separate-top" cols="100" id="bbcode_embed_full_tag" readonly="readonly" rows="2">
+          <%= 
+            "[img]#{thumb_url(@image, false, :full)}[/img]
+            [url=#{url(~p"/images/#{@image}")}]View on Derpibooru[/url]#{source_link}"
+          %>
+        </textarea>
+      </p>
+      <p>
+        <strong>
+          Thumbnailed BBcode
+        </strong>
+        <a data-click-copy="#bbcode_embed_thumbnail_tag" href="#">
+          <i class="fa fa-clipboard"></i>
+          Copy
+        </a>
+        <br />
+        <textarea class="input input--wide input--separate-top" cols="100" id="bbcode_embed_thumbnail_tag" readonly="readonly" rows="2">
+          <%= 
+            "[img]#{thumb_url(@image, false, :medium)}[/img]
+            [url=#{url(~p"/images/#{@image}")}]View on Derpibooru[/url]#{source_link}"
+          %>
+        </textarea>
+      </p>
+    </div>
+  </div>
+  <%= if display_mod_tools? do %>
+    <div class="block__tab hidden" data-tab="replace">
+      <%= form_for @changeset, ~p"/images/#{@image}/file", [method: "put", multipart: true], fn f -> %>
+        <div id="js-image-upload-previews"></div>
+        <p>
+          Upload a file from your computer
+        </p>
+        <div class="field">
+          <%= file_input(f, :image, class: "input js-scraper") %>
+        </div>
+        <div class="field field--inline">
+          <%= url_input(f, :scraper_url, class: "input input--wide js-scraper", placeholder: "Link a deviantART page, a Tumblr post, or the image directly") %>
+          <button class="button button--separate-left" data-disable-with="Fetch" disabled id="js-scraper-preview" title="Fetch the image at the specified URL" type="button">
+            Fetch
+          </button>
+        </div>
+        <div class="field-error-js hidden js-scraper"></div>
+        <%= submit("Save changes", class: "button", data: [disable_with: raw("Replacing&hellip;")]) %>
+      <% end %>
+    </div>
+    <div class="block__tab hidden" data-tab="administration">
+      <div class="block block--danger">
+        <a class="button button--link" href={~p"/images/#{@image}/scratchpad/edit"}>
+          <i class="far fa-edit"></i>
+        </a>
+        <%= if present?(@image.scratchpad) do %>
+          <strong>
+            Mod notes:
+          </strong>
+          <%= escape_nl2br(@image.scratchpad) %>
+        <% else %>
+          <em>
+            No mod notes present
+          </em>
+        <% end %>
+      </div>
+      <%= if not @image.hidden_from_users do %>
+        <%= form_for @changeset, ~p"/images/#{@image}/delete", [method: "post"], fn f -> %>
+          <%= label(f, :deletion_reason, "Deletion reason (cannot be empty)") %>
+          <div class="field field--inline">
+            <%= text_input(f, :deletion_reason, class: "input input--wide", placeholder: "Rule violation", required: true) %>
+            <%= submit("Delete", class: "button button--state-danger button--separate-left") %>
+          </div>
+        <% end %>
+      <% else %>
+        <%= form_for @changeset, ~p"/images/#{@image}/delete", [method: "put"], fn f -> %>
+          <%= label(f, :deletion_reason, "Deletion reason (cannot be empty)") %>
+          <div class="field field--inline">
+            <%= text_input(f, :deletion_reason, class: "input input--wide", placeholder: "Rule violation", required: true) %>
+            <%= submit("Change hide reason", class: "button button--state-danger button--separate-left") %>
+          </div>
+        <% end %>
+      <% end %>
+      <div class="flex flex--spaced-out flex--wrap">
+        <%= if not @image.hidden_from_users do %>
+          <%= form_for @changeset, ~p"/images/#{@image}/feature", [method: "post"], fn _f -> %>
+            <div class="field">
+              <p>
+                Marks the image as featured
+              </p>
+              <%= submit("Feature", data: [confirm: "Are you really, really sure?"], class: "button button--state-success") %>
+            </div>
+          <% end %>
+        <% else %>
+          <%= button_to("Restore", ~p"/images/#{@image}/delete", method: "delete", class: "button button--state-success") %>
+        <% end %>
+        <%= form_for @changeset, ~p"/images/#{@image}/repair", [method: "post"], fn _f -> %>
+          <div class="field">
+            <%= submit("Repair", class: "button button--state-success") %>
+          </div>
+        <% end %>
+        <%= form_for @changeset, ~p"/images/#{@image}/hash", [method: "delete"], fn _f -> %>
+          <div class="field">
+            <p>
+              Allows reuploading the image
+            </p>
+            <div class="flex flex--end-bunched">
+              <%= submit("Clear hash", data: [confirm: "Are you really, really sure?"], class: "button button--state-danger") %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <br />
+      <div class="flex flex--spaced-out">
+        <%= if @image.commenting_allowed do %>
+          <%= button_to("Lock commenting", ~p"/images/#{@image}/comment_lock", method: "post", class: "button") %>
+        <% else %>
+          <%= button_to("Unlock commenting", ~p"/images/#{@image}/comment_lock", method: "delete", class: "button") %>
+        <% end %>
+        <%= if @image.description_editing_allowed do %>
+          <%= button_to("Lock description editing", ~p"/images/#{@image}/description_lock", method: "post", class: "button") %>
+        <% else %>
+          <%= button_to("Unlock description editing", ~p"/images/#{@image}/description_lock", method: "delete", class: "button") %>
+        <% end %>
+        <%= if @image.tag_editing_allowed do %>
+          <%= button_to("Lock tag editing", ~p"/images/#{@image}/tag_lock", method: "post", class: "button") %>
+        <% else %>
+          <%= button_to("Unlock tag editing", ~p"/images/#{@image}/tag_lock", method: "delete", class: "button") %>
+        <% end %>
+      </div>
+      <br />
+      <div class="flex flex--spaced-out">
+        <%= link("Lock specific tags", to: ~p"/images/#{@image}/tag_lock", class: "button") %>
+        <%= if not @image.approved and can?(@conn, :approve, @image) do %>
+          <%= button_to("Approve image", ~p"/images/#{@image}/approve", method: "post", class: "button button--state-success", data: [confirm: "Are you sure?"]) %>
+        <% end %>
+        <%= if @image.hidden_from_users and can?(@conn, :destroy, @image) do %>
+          <%= button_to("Destroy image", ~p"/images/#{@image}/destroy", method: "post", class: "button button--state-danger", data: [confirm: "This action is IRREVERSIBLE. Are you sure?"]) %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

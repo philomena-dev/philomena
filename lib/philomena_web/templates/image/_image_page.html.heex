@@ -1,0 +1,29 @@
+<div class="center--layout--flex">
+  <%= if @image.thumbnails_generated do %>
+    <%= render(PhilomenaWeb.ImageView, "_image_target.html", embed_display: false, image: @image, conn: @conn) %>
+  <% else %>
+    <div class="block block--fixed block--warning layout--narrow" id="thumbnails-not-yet-generated">
+      <h3>
+        Just a moment
+      </h3>
+      <%= if @image.image_mime_type == "video/webm" do %>
+        <p>
+          WEBM uploads may take longer to process, it should appear in up to an hour (depending on file size and video length).
+        </p>
+      <% else %>
+        <p>
+          The image should appear in a few minutes; report it otherwise.
+        </p>
+      <% end %>
+      <p>
+        Implications might have added tags, so check them in the meanwhile.
+      </p>
+    </div>
+  <% end %>
+  <%= if !@image.processed and @image.thumbnails_generated do %>
+    <br />
+    <div class="block block--fixed block--warning layout--narrow" id="image-being-optimized">
+      This image is being processed to optimize the filesize. It should finish shortly.
+    </div>
+  <% end %>
+</div>

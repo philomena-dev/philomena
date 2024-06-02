@@ -1,0 +1,89 @@
+<div class="block">
+  <div class="block__header">
+    <span class="block__header__title">
+      Statistics (Last 90 Days)
+    </span>
+  </div>
+  <div class="block__content">
+    <table class="table table--stats center">
+      <tr>
+        <td class="table--stats__parameter">
+          Uploads
+        </td>
+        <td class="table--stats__value">
+          <%= number_with_delimiter(@user.uploads_count) %>
+        </td>
+        <td class="table--stats__sparkline">
+          <div class="sparkline">
+            <%= sparkline_data(@statistics.uploads) %>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="table--stats__parameter">
+          Favorites
+        </td>
+        <td class="table--stats__value">
+          <%= number_with_delimiter(@user.images_favourited_count) %>
+        </td>
+        <td class="table--stats__sparkline">
+          <div class="sparkline">
+            <%= sparkline_data(@statistics.images_favourited) %>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="table--stats__parameter">
+          Comments
+        </td>
+        <td class="table--stats__value">
+          <%= number_with_delimiter(@user.comments_posted_count) %>
+        </td>
+        <td class="table--stats__sparkline">
+          <div class="sparkline">
+            <%= sparkline_data(@statistics.comments_posted) %>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="table--stats__parameter">
+          Votes
+        </td>
+        <td class="table--stats__value">
+          <%= number_with_delimiter(@user.votes_cast_count) %>
+        </td>
+        <td class="table--stats__sparkline">
+          <div class="sparkline">
+            <%= sparkline_data(@statistics.votes_cast) %>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="table--stats__parameter">
+          Metadata Updates
+        </td>
+        <td class="table--stats__value">
+          <%= number_with_delimiter(@user.metadata_updates_count) %>
+        </td>
+        <td class="table--stats__sparkline">
+          <div class="sparkline">
+            <%= sparkline_data(@statistics.metadata_updates) %>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="table--stats__parameter">
+          Forum Posts
+        </td>
+        <td class="table--stats__value">
+          <%= number_with_delimiter(@user.forum_posts_count) %>
+        </td>
+        <td class="table--stats__sparkline">
+          <div class="sparkline">
+            <%= sparkline_data(@statistics.forum_posts) %>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

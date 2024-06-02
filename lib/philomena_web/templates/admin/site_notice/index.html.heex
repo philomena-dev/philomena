@@ -1,0 +1,65 @@
+<h1>
+  Site Notices
+</h1>
+<% route = fn p -> ~p"/admin/site_notices?#{p}" end %>
+<% pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @admin_site_notices, route: route, conn: @conn) %>
+<div class="block">
+  <div class="block__header">
+    <a href={~p"/admin/site_notices/new"}>
+      <i class="fa fa-plus"></i>
+      New site notice
+    </a>
+    <%= pagination %>
+  </div>
+  <div class="block__content">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>
+            Title
+          </th>
+          <th>
+            Start
+          </th>
+          <th>
+            Finish
+          </th>
+          <th>
+            Live?
+          </th>
+          <th>
+            Options
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for site_notice <- @admin_site_notices do %>
+          <tr>
+            <td>
+              <em>
+                <%= site_notice.title %>
+              </em>
+            </td>
+            <td class={time_column_class(site_notice.start_date)}>
+              <%= pretty_time(site_notice.start_date) %>
+            </td>
+            <td class={time_column_class(site_notice.finish_date)}>
+              <%= pretty_time(site_notice.finish_date) %>
+            </td>
+            <td>
+              <%= live_text(site_notice) %>
+            </td>
+            <td>
+              <%= link("Edit", to: ~p"/admin/site_notices/#{site_notice}/edit") %>
+              &bull;
+              <%= link("Destroy", to: ~p"/admin/site_notices/#{site_notice}", data: [confirm: "Are you really, really sure?", method: "delete"]) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="block__header block__header--light">
+    <%= pagination %>
+  </div>
+</div>

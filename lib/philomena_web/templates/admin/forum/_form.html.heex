@@ -1,0 +1,30 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>
+        Oops, something went wrong! Please check the errors below.
+      </p>
+    </div>
+  <% end %>
+  <div class="field">
+    <%= label(f, :name, "Name:") %>
+    <%= text_input(f, :name, class: "input input--wide") %>
+    <%= error_tag(f, :name) %>
+  </div>
+  <div class="field">
+    <%= label(f, :short_name, "Slug:") %>
+    <%= text_input(f, :short_name, class: "input input--wide") %>
+    <%= error_tag(f, :short_name) %>
+  </div>
+  <div class="field">
+    <%= label(f, :description, "Description:") %>
+    <%= textarea(f, :description, class: "input input--wide") %>
+    <%= error_tag(f, :description) %>
+  </div>
+  <div class="field">
+    <%= label(f, :access_level, "Access level:") %>
+    <%= select(f, :access_level, ["normal", "assistant", "staff"], class: "input") %>
+    <%= error_tag(f, :access_level) %>
+  </div>
+  <%= submit("Save Forum", class: "button") %>
+<% end %>

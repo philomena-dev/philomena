@@ -1,3 +1,0 @@
-h1 Adding Channel
-
-= render PhilomenaWeb.ChannelView, "_form.html", changeset: @changeset, action: ~p"/channels", conn: @conn

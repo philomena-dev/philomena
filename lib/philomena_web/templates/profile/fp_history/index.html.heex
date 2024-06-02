@@ -1,0 +1,23 @@
+<h2>
+  FP History for
+  <%= @user.name %>
+</h2>
+<ul>
+  <%= for ufp <- @user_fps do %>
+    <li>
+      <%= link_to_fingerprint(@conn, ufp.fingerprint) %>
+      <ul>
+        <%= for u <- @other_users[ufp.fingerprint] do %>
+          <li>
+            <%= link(u.user.name, to: ~p"/profiles/#{u.user}") %>
+            (
+            <%= u.uses %>
+            uses, last used
+            <%= pretty_time(u.updated_at) %>
+            )
+          </li>
+        <% end %>
+      </ul>
+    </li>
+  <% end %>
+</ul>

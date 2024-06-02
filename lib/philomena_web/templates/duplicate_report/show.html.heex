@@ -1,0 +1,66 @@
+<% 
+  source_url = comparison_url(@conn, @duplicate_report.image)
+  target_url = comparison_url(@conn, @duplicate_report.duplicate_of_image)
+  {width, height} = largest_dimensions([@duplicate_report.image, @duplicate_report.duplicate_of_image])
+%>
+<h1>
+  Difference
+</h1>
+<div class="difference">
+  <svg class="difference__image" height={height} viewBox={"0 0 #{width} #{height}"}>
+    <defs>
+      <filter id="overlay-diff">
+        <feImage height="100%" id="source" result="source" width="100%" x="0" xlink:href={source_url} y="0"></feImage>
+        <feImage height="100%" id="target" result="target" width="100%" x="0" xlink:href={target_url} y="0"></feImage>
+        <feBlend in="source" in2="target" mode="difference" result="diff"></feBlend>
+        <% # Contrast-boost matrix = (5I|0) [4x5] %>
+        <feColorMatrix in="diff" type="matrix" values="5 0 0 0 0  0 5 0 0 0  0 0 5 0 0  0 0 0 5 0"></feColorMatrix>
+      </filter>
+    </defs>
+    <rect filter="url(#overlay-diff)" height={height} width={width}></rect>
+  </svg>
+</div>
+<h1>
+  Swipe
+</h1>
+<div class="swipe">
+  <svg class="swipe__image" height={height} viewBox={"0 0 #{width} #{height}"}>
+    <defs>
+      <pattern height="16" id="checkerboard" patternUnits="userSpaceOnUse" width="16">
+        <rect fill="#ffffff44" height="8" width="8" x="0" y="0"></rect>
+        <rect fill="#00000044" height="8" width="8" x="0" y="8"></rect>
+        <rect fill="#00000044" height="8" width="8" x="8" y="0"></rect>
+        <rect fill="#ffffff44" height="8" width="8" x="8" y="8"></rect>
+      </pattern>
+      <clipPath id="clip">
+        <rect height={height} width={div(width, 2)}></rect>
+      </clipPath>
+    </defs>
+    <rect fill="url(#checkerboard)" height={height} width={width}></rect>
+    <image height="100%" id="target" width="100%" xlink:href={target_url}></image>
+    <image clip-path="url(#clip)" height="100%" id="source" width="100%" xlink:href={source_url}></image>
+    <rect fill="#000" height={height} id="divider" stroke="#fff" stroke-width="1" width="3" x={div(width, 2)}></rect>
+  </svg>
+</div>
+<h1>
+  Onion Skin
+</h1>
+<div class="onion-skin">
+  <svg class="onion-skin__image" height={height} viewBox={"0 0 #{width} #{height}"}>
+    <defs>
+      <pattern height="16" id="checkerboard" patternUnits="userSpaceOnUse" width="16">
+        <rect fill="#ffffff44" height="8" width="8" x="0" y="0"></rect>
+        <rect fill="#00000044" height="8" width="8" x="0" y="8"></rect>
+        <rect fill="#00000044" height="8" width="8" x="8" y="0"></rect>
+        <rect fill="#ffffff44" height="8" width="8" x="8" y="8"></rect>
+      </pattern>
+    </defs>
+    <rect fill="url(#checkerboard)" height={height} width={width}></rect>
+    <image height="100%" id="source" width="100%" xlink:href={source_url}></image>
+    <image height="100%" id="target" width="100%" xlink:href={target_url}></image>
+  </svg>
+  <input class="onion-skin__slider" max="1" min="0" step="0.01" type="range" />
+</div>
+<p>
+  Left is source, right is target
+</p>

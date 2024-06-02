@@ -1,0 +1,41 @@
+<a href={~p"/images/#{@image}/reports/new"}>
+  <button class="button button--link">
+    <i class="fa fa-exclamation-triangle"></i>
+    General reporting
+  </button>
+</a>
+<div class="report-duplicate">
+  <% checked = Enum.any?(@dupe_reports, &(&1.state == "open")) %>
+  <input checked={checked} class="toggle-box" id="image-dedupe" type="checkbox" />
+  <label for="image-dedupe">
+    Updating/merging
+  </label>
+  <div class="toggle-box-container">
+    <div class="toggle-box-container__content">
+      <%= if @conn.assigns.current_user do %>
+        <%= render(PhilomenaWeb.DuplicateReportView, "_form.html", image: @image, conn: @conn, changeset: @changeset) %>
+      <% else %>
+        <p>
+          You must
+          <a href={~p"/sessions/new"}>
+            log in
+          </a>
+          to report duplicate images.
+        </p>
+      <% end %>
+      <% target_reports = Enum.filter(@dupe_reports, &(&1.duplicate_of_image_id == @image.id)) %>
+      <% source_reports = Enum.filter(@dupe_reports, &(&1.image_id == @image.id)) %>
+      <%= if Enum.any?(@dupe_reports) do %>
+        <h4>
+          Existing duplicate reports
+        </h4>
+        <%= if Enum.any?(target_reports) do %>
+          <%= render(PhilomenaWeb.DuplicateReportView, "_list.html", duplicate_reports: target_reports, conn: @conn) %>
+        <% end %>
+        <%= if Enum.any?(source_reports) do %>
+          <%= render(PhilomenaWeb.DuplicateReportView, "_list.html", duplicate_reports: source_reports, conn: @conn) %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

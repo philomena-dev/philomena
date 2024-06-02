@@ -1,0 +1,110 @@
+<% 
+  form_class =
+    if @changeset.action do
+      ""
+    else
+      "hidden"
+    end
+%>
+<% tags = display_order(@image.tags) %>
+<% tag_input = Enum.map_join(tags, ", ", & &1.name) %>
+<div class="js-tagsauce" id="image_tags_and_source">
+  <div class={"js-imageform #{form_class}"}>
+    <%= if can?(@conn, :edit_metadata, @image) and !@conn.assigns.current_ban do %>
+      <%= if Enum.any?(@image.locked_tags) do %>
+        <div class="block block--fixed block--warning">
+          <i class="fa fa-lock"></i>
+          The following tags have been restricted on this image:
+          <code>
+            <%= Enum.map_join(@image.locked_tags, ", ", & &1.name) %>
+          </code>
+        </div>
+      <% end %>
+      <%= form_for @changeset, ~p"/images/#{@image}/tags", [id: "tags-form", method: "put", data: [remote: "true"]], fn f -> %>
+        <%= if @changeset.action do %>
+          <div class="alert alert-danger">
+            <p>
+              Oops, something went wrong! Please check the errors below.
+            </p>
+          </div>
+        <% end %>
+        <%= hidden_input(f, :old_tag_input, value: tag_input) %>
+        <div class="field">
+          <%= label f, :tag_input do %>
+            Separate tags with commas. Use 'artist:name' tags to identify artists. Got questions? Check the
+            <a href="/pages/tags">
+              tag guidelines
+            </a>
+            or the
+            <a href="/pages/spoilers">
+              spoiler guidelines
+            </a>
+            .
+          <% end %>
+          <%= render(PhilomenaWeb.TagView, "_tag_editor.html", f: f, name: :tag_input, type: :edit, extra: [value: tag_input]) %>
+          <%= error_tag(f, :tag_input) %>
+        </div>
+        <%= if !@conn.assigns.current_user do %>
+          <div class="block block--fixed block--warning">
+            <strong>
+              <em>
+                Hang on a sec&hellip;
+              </em>
+            </strong>
+            <br />
+            Make sure you have read and understood our
+            <a href="/pages/tags">
+              tagging guidelines
+            </a>
+            before editing tags.
+          </div>
+          <%= render(PhilomenaWeb.CaptchaView, "_captcha.html", name: "tags", conn: @conn) %>
+        <% end %>
+        <ul class="horizontal-list">
+          <li>
+            <div class="actions">
+              <%= submit("Save tags", class: "button", id: "edit_save_button", data: [disable_with: raw("Saving&hellip;")]) %>
+            </div>
+          </li>
+          <li>
+            <button class="button js-tag-sauce-toggle" data-click-focus=".js-taginput-plain:not(.hidden), .js-taginput-input" data-click-toggle=".tagsauce, .js-imageform">
+              Cancel
+            </button>
+          </li>
+        </ul>
+        <div class="block js-tagtable" data-target="[name=&quot;image[tag_input]&quot;]">
+          <%= PhilomenaWeb.TagView.quick_tags(@conn) %>
+        </div>
+      <% end %>
+    <% else %>
+      <p>
+        You can't edit the tags on this image.
+      </p>
+    <% end %>
+  </div>
+  <div class="block tagsauce">
+    <div class="block__header flex">
+      <span class="block__header__title">
+        <i class="fas fa-tag"></i>
+        Tags
+      </span>
+      <div class="block__header__buttons">
+        <a accessKey="t" class="button button--inline js-tag-sauce-toggle" data-click-focus=".js-taginput-plain:not(.hidden), .js-taginput-input" data-click-toggle=".tagsauce, .js-imageform" id="edit-tags" title="Edit tags">
+          <i class="fas fa-edit"></i>
+          Edit
+        </a>
+        <%= if @tag_change_count > 0 do %>
+          <a class="button button--link button--inline" href={~p"/images/#{@image}/tag_changes"} title="Tag history">
+            <i class="fa fa-history"></i>
+            History (
+            <%= @tag_change_count %>
+            )
+          </a>
+        <% end %>
+      </div>
+    </div>
+    <div class="block__content block__tagbox">
+      <%= render(PhilomenaWeb.TagView, "_tag_list.html", tags: tags, conn: @conn) %>
+    </div>
+  </div>
+</div>

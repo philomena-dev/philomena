@@ -1,0 +1,53 @@
+<div class="profile-top">
+  <div class="profile-top__avatar">
+    <div class="tag-info__image thumb-tiny-container">
+      <%= if @tag.image do %>
+        <img alt="spoiler image" height="50" src={tag_image(@tag)} width="50" />
+      <% else %>
+        no spoiler image
+      <% end %>
+    </div>
+  </div>
+  <div class="profile-top__name-and-links">
+    <div>
+      <h1>
+        Tag image
+      </h1>
+      <p>
+        Add a new image or remove the existing one here.
+      </p>
+      <p>
+        SVG is preferred.
+      </p>
+      <%= form_for @changeset, ~p"/tags/#{@tag}/image", [method: "put", multipart: true], fn f -> %>
+        <%= if @changeset.action do %>
+          <div class="alert alert-danger">
+            <p>
+              Oops, something went wrong! Please check the errors below.
+            </p>
+          </div>
+        <% end %>
+        <h4>
+          Select an image
+        </h4>
+        <div class="image-other">
+          <div id="js-image-upload-previews"></div>
+          <p>
+            Upload a file from your computer
+          </p>
+          <div class="field">
+            <%= file_input(f, :image, class: "input js-scraper") %>
+            <%= error_tag(f, :image_mime_type) %>
+          </div>
+          <div class="field-error-js hidden js-scraper"></div>
+          <br />
+          <%= submit("Update tag image", class: "button") %>
+        </div>
+      <% end %>
+      <br />
+      <%= button_to("Remove tag image", ~p"/tags/#{@tag}/image", method: "delete", class: "button", data: [confirm: "Are you really, really sure?"]) %>
+    </div>
+    <br />
+    <%= link("Back", to: ~p"/tags/#{@tag}") %>
+  </div>
+</div>

@@ -1,0 +1,137 @@
+<% # General information block %>
+<div class="block">
+  <div class="block__header">
+    <span class="block__header__title">
+      General information
+    </span>
+  </div>
+  <div class="block__content commission__block_body">
+    <strong>
+      Profile:
+    </strong>
+    <%= render(PhilomenaWeb.UserAttributionView, "_user.html", object: @commission, conn: @conn) %>
+    <br />
+    <strong>
+      Status:
+    </strong>
+    <%= 
+      if @commission.open do
+        "Open"
+      else
+        "Closed"
+      end
+    %>
+    <br />
+    <%= if Enum.any?(@commission.items) do %>
+      <strong>
+        Price Range:
+      </strong>
+      <% {min, max} = Enum.min_max_by(@commission.items, &Decimal.to_float(&1.base_price)) %>
+      $
+      <%= Decimal.round(min.base_price, 2) |> Decimal.to_string() %>
+      - $
+      <%= Decimal.round(max.base_price, 2) |> Decimal.to_string() %>
+      USD
+    <% end %>
+    <br />
+    <br />
+    <%= @rendered.information %>
+  </div>
+</div>
+<% # Contact information block %>
+<div class="block">
+  <div class="block__header">
+    <span class="block__header__title">
+      Contact information
+    </span>
+  </div>
+  <div class="block__content commission__block_body">
+    <%= @rendered.contact %>
+  </div>
+</div>
+<% # Categories block %>
+<div class="block">
+  <div class="block__header">
+    <span class="block__header__title">
+      Art Categories
+    </span>
+  </div>
+  <div class="block__content">
+    <%= for cat <- @commission.categories do %>
+      <span class="commission__category">
+        <%= cat %>
+      </span>
+    <% end %>
+  </div>
+</div>
+<% # Will create block %>
+<%= if @commission.will_create not in [nil, ""] do %>
+  <div class="block">
+    <div class="block__header">
+      <span class="block__header__title">
+        Will draw/create
+      </span>
+    </div>
+    <div class="block__content commission__block_body">
+      <%= @rendered.will_create %>
+    </div>
+  </div>
+<% end %>
+<% # Will not create block %>
+<%= if @commission.will_not_create not in [nil, ""] do %>
+  <div class="block">
+    <div class="block__header">
+      <span class="block__header__title">
+        Will not draw/create
+      </span>
+    </div>
+    <div class="block__content commission__block_body">
+      <%= @rendered.will_not_create %>
+    </div>
+  </div>
+<% end %>
+<% # Artist link block %>
+<% # .block %>
+<% # .block__header: span.block__header__title Artist Links %>
+<% # - is_current = (current_user && current_user.id == @user.id) %>
+<% # - if @links.present? || is_current %>
+<% #   = render partial: 'profiles/artist_link_area' %>
+<% #  %>
+<% # Options block %>
+<div class="block">
+  <div class="block__header">
+    <span class="block__header__title">
+      Options
+    </span>
+  </div>
+  <div class="block__content">
+    <%= if can?(@conn, :edit, @commission) do %>
+      <%= link("Edit this listing", to: ~p"/profiles/#{@user}/commission/edit") %>
+      <br />
+      <%= link("Delete this listing", to: ~p"/profiles/#{@user}/commission", data: [confirm: "Are you really, really sure about that?", method: "delete"]) %>
+      <br />
+    <% end %>
+    <%= link("Report this listing", to: ~p"/profiles/#{@user}/commission/reports/new") %>
+  </div>
+</div>
+<% # Share block %>
+<div class="block">
+  <div class="block__header">
+    <span class="block__header__title">
+      Share this listing
+    </span>
+  </div>
+  <div class="block__content">
+    <% url = url(~p"/profiles/#{@user}/commission") %>
+    <div class="field">
+      <label for="commission_url">
+        URL
+      </label>
+      <a data-click-copy="#commission_url" href="#">
+        <i class="fa fa-clipboard"></i>
+        Copy
+      </a>
+      <%= text_input(:commission, :commission_url, value: url, class: "input input--wide input--separate-top", readonly: true) %>
+    </div>
+  </div>
+</div>

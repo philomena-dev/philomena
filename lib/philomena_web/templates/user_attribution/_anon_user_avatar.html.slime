@@ -1,4 +1,0 @@
-= if !!@object.user and !anonymous?(@object) do
-  = user_avatar(@object, assigns[:class] || "avatar--100px")
-- else
-  = anonymous_avatar(anonymous_name(@object), assigns[:class] || "avatar--100px")

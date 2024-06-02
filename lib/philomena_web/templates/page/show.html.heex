@@ -1,0 +1,20 @@
+<h1>
+  <%= @static_page.title %>
+</h1>
+<p>
+  Last updated
+  <%= pretty_time(@static_page.updated_at) %>
+</p>
+<p>
+  <%= link to: ~p"/pages/#{@static_page}/history" do %>
+    <i class="fa fa-history"></i>
+    Revision history
+  <% end %>
+  <%= if can?(@conn, :edit, Philomena.StaticPages.StaticPage) do %>
+    <%= link to: ~p"/pages/#{@static_page}/edit" do %>
+      <i class="fa fa-edit"></i>
+      Edit
+    <% end %>
+  <% end %>
+</p>
+<%= @rendered %>

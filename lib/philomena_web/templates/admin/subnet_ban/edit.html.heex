@@ -1,0 +1,6 @@
+<h1>
+  Editing ban
+</h1>
+<%= render(PhilomenaWeb.Admin.SubnetBanView, "_form.html", changeset: @changeset, action: ~p"/admin/subnet_bans/#{@subnet}", conn: @conn) %>
+<br />
+<%= link("Back", to: ~p"/admin/subnet_bans") %>

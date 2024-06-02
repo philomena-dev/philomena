@@ -1,0 +1,85 @@
+<% 
+  route = fn p -> ~p"/commissions?#{p}" end
+  pagination = render(PhilomenaWeb.PaginationView, "_pagination.html", page: @commissions, route: route, conn: @conn, params: [commission: @conn.params["commission"]])
+%>
+<div class="block">
+  <div class="block__header page__header">
+    <span class="block__header__title page__title">
+      Open Commissions
+    </span>
+    <div class="page__pagination">
+      <%= pagination %>
+    </div>
+    <div class="page__options">
+      <%= cond do %>
+        <% not is_nil(@conn.assigns.current_user) and not is_nil(@conn.assigns.current_user.commission) -> %>
+          <%= link("View my listing", to: ~p"/profiles/#{@conn.assigns.current_user}/commission") %>
+        <% not is_nil(@conn.assigns.current_user) -> %>
+          <%= link("Create my listing", to: ~p"/profiles/#{@conn.assigns.current_user}/commission/new") %>
+        <% true -> %>
+      <% end %>
+    </div>
+  </div>
+  <div class="block__content">
+    <%= cond do %>
+      <% Enum.any?(@commissions) -> %>
+        <%= for c <- @commissions do %>
+          <div class="block commission">
+            <div class="block__content flex flex--no-wrap">
+              <div class="flex__fixed spacing-right">
+                <%= render(PhilomenaWeb.UserAttributionView, "_user_avatar.html", object: c, conn: @conn) %>
+              </div>
+              <div class="flex__grow commission__listing_body">
+                <span class="commission__listing_artist">
+                  <%= render(PhilomenaWeb.UserAttributionView, "_user.html", object: c, badges: true, conn: @conn) %>
+                </span>
+                <div class="commission__listing__body_text">
+                  <% {min, max} = Enum.min_max_by(c.items, &Decimal.to_float(&1.base_price)) %>
+                  <p>
+                    <strong>
+                      Price Range:
+                    </strong>
+                    $
+                    <%= Decimal.round(min.base_price, 2) |> Decimal.to_string() %>
+                    - $
+                    <%= Decimal.round(max.base_price, 2) |> Decimal.to_string() %>
+                    USD
+                  </p>
+                  <p>
+                    <strong>
+                      Categories:
+                    </strong>
+                    <%= Enum.join(c.categories, ", ") %>
+                  </p>
+                  <p>
+                    <strong>
+                      Offers:
+                    </strong>
+                    <%= Enum.map(c.items, & &1.item_type) |> Enum.join(", ") %>
+                  </p>
+                  <p>
+                    <strong>
+                      Example Artwork:
+                    </strong>
+                    <br />
+                    <%= for item <- Enum.take_random(c.items, 5), not is_nil(item.example_image) do %>
+                      <%= render(PhilomenaWeb.ImageView, "_image_container.html", image: item.example_image, size: :thumb_small, conn: @conn) %>
+                    <% end %>
+                  </p>
+                  <p>
+                    <strong>
+                      <%= link("More information", to: ~p"/profiles/#{c.user}/commission") %>
+                    </strong>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% true -> %>
+        <p>
+          We couldn't find any commission listings to display. Sorry!
+        </p>
+    <% end %>
+  </div>
+</div>

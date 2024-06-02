@@ -1,0 +1,41 @@
+<%= for notice <- @conn.assigns.site_notices do %>
+  <div class="flash flash--site-notice">
+    <strong>
+      <%= notice.title %>
+    </strong>
+    <%= notice.text %>
+    <%= if notice.link not in [nil, ""] do %>
+      <a href={notice.link}>
+        <%= notice.link_text %>
+      </a>
+    <% end %>
+  </div>
+<% end %>
+<noscript class="flash flash--warning">
+  <strong>
+    You don't appear to have Javascript enabled
+  </strong>
+  If you're using an add-on like NoScript, please allow
+  <%= cdn_host() %>
+  for the site to work properly.
+</noscript>
+<%= if get_flash(@conn, :info) do %>
+  <div class="flash flash--success">
+    <%= get_flash(@conn, :info) %>
+  </div>
+<% end %>
+<%= if get_flash(@conn, :alert) do %>
+  <div class="flash flash--warning">
+    <%= get_flash(@conn, :alert) %>
+  </div>
+<% end %>
+<%= if get_flash(@conn, :error) do %>
+  <div class="flash flash--warning">
+    <%= get_flash(@conn, :error) %>
+  </div>
+<% end %>
+<%= if get_flash(@conn, :warning) do %>
+  <div class="flash flash--warning">
+    <%= get_flash(@conn, :warning) %>
+  </div>
+<% end %>

@@ -1,0 +1,20 @@
+<h1>
+  Updating Moderation Scratchpad
+</h1>
+<%= form_for @changeset, ~p"/profiles/#{@user}/scratchpad", [method: "put"], fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>
+        Oops, something went wrong! Please check the errors below.
+      </p>
+    </div>
+  <% end %>
+  <div class="block">
+    <div>
+      <%= render(PhilomenaWeb.MarkdownView, "_input.html", conn: @conn, f: f, action_text: "Scratchpad", placeholder: "Scratchpad Contents", name: :scratchpad, required: false) %>
+    </div>
+    <div class="block__content communication-edit__actions">
+      <%= submit("Update", class: "button") %>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,25 @@
+<div class="badges">
+  <% awards = award_order(@awards) %>
+  <% {awards, overflow} = Enum.split(awards, 10) %>
+  <%= for award <- awards do %>
+    <% title = [award_title(award), award.label] |> Enum.join(" - ") %>
+    <div class="badge">
+      <%= badge_image(award.badge, alt: title, title: title, width: "18", height: "18") %>
+    </div>
+  <% end %>
+  <%= if Enum.any?(overflow) do %>
+    <div class="dropdown">
+      <i class="fa fa-caret-down"></i>
+      <div class="dropdown__content block__header">
+        <div class="badges flex--column">
+          <%= for award <- overflow do %>
+            <% title = [award_title(award), award.label] |> Enum.join(" - ") %>
+            <div class="badge">
+              <%= badge_image(award.badge, alt: title, title: title, width: "18", height: "18") %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

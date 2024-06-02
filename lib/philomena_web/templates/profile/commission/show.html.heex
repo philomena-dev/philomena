@@ -1,0 +1,17 @@
+<h1>
+  <%= @commission.user.name %>
+  's Commissions
+</h1>
+<div class="column-layout">
+  <% # Side column %>
+  <div class="column-layout__left">
+    <%= render(PhilomenaWeb.Profile.CommissionView, "_listing_sidebar.html", commission: @commission, user: @user, rendered: @rendered, conn: @conn) %>
+  </div>
+  <% # Main column %>
+  <div class="column-layout__main">
+    <% # Commission sheet block %>
+    <%= render(PhilomenaWeb.Profile.CommissionView, "_listing_sheet.html", commission: @commission, user: @user, conn: @conn) %>
+    <% # Types and prices block %>
+    <%= render(PhilomenaWeb.Profile.CommissionView, "_listing_items.html", commission: @commission, user: @user, items: @items, conn: @conn) %>
+  </div>
+</div>

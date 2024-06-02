@@ -1,0 +1,10 @@
+<h1>
+  Editing moderation notes for image
+  <%= link("##{@image.id}", to: ~p"/images/#{@image}") %>
+</h1>
+<%= form_for @changeset, ~p"/images/#{@image}/scratchpad", fn f -> %>
+  <div class="field">
+    <%= textarea(f, :scratchpad, placeholder: "Scratchpad contents", class: "input input--wide") %>
+  </div>
+  <%= submit("Update", class: "button", data: [disable_with: raw("Saving&hellip;")]) %>
+<% end %>

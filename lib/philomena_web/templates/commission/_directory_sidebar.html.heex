@@ -1,0 +1,46 @@
+<div class="block">
+  <div class="block__header">
+    <span class="block__header__title">
+      Search
+    </span>
+  </div>
+  <div class="block__content">
+    <%= form_for @conn, ~p"/commissions", [as: :commission, method: "get", class: "hform"], fn f -> %>
+      <div class="field">
+        <%= label(f, :categories, "Art Categories:") %>
+      </div>
+      <%= for {name, value} <- categories() do %>
+        <% checked = @conn.params["commission"]["category"] && Atom.to_string(name) in @conn.params["commission"]["category"] %>
+        <div class="field">
+          <%= checkbox(f, value, checked_value: name, checked: checked, name: "commission[category][]", class: "checkbox spacing-right", hidden_input: false) %>
+          <%= label(f, value, name) %>
+        </div>
+      <% end %>
+      <br />
+      <div class="field">
+        <%= label(f, :item_type, "Commission Type:") %>
+      </div>
+      <div class="field">
+        <%= select(f, :item_type, types(), class: "input") %>
+      </div>
+      <br />
+      <div class="field">
+        <%= label(f, :price_min, "Price:") %>
+      </div>
+      <div class="field">
+        <%= number_input(f, :price_min, class: "input input--short", placeholder: "At Least", step: "any", min: 0) %>
+      </div>
+      <div class="field">
+        <%= number_input(f, :price_max, class: "input input--short", placeholder: "At Most", step: "any", min: 0) %>
+      </div>
+      <br />
+      <div class="field">
+        <%= label(f, :keywords, "Search:") %>
+      </div>
+      <div class="field">
+        <%= text_input(f, :keywords, class: "input input--short", placeholder: "Keywords") %>
+      </div>
+      <%= submit("Search", class: "button") %>
+    <% end %>
+  </div>
+</div>
