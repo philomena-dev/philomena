@@ -14,6 +14,17 @@ function scrapeUrl(url) {
     .then(response => response.json());
 }
 
+function embeddedImageDimensions(el) {
+  if (el instanceof HTMLImageElement) {
+    return [el.naturalWidth, el.naturalWidth];
+  }
+  else if (el instanceof HTMLVideoElement) {
+    return [el.videoWidth, el.videoHeight];
+  }
+
+  throw new Error("invalid type");
+}
+
 function elementForEmbeddedImage({ camo_url, type }) {
   // The upload was fetched from the scraper and is a path name
   if (typeof camo_url === 'string') {
@@ -46,6 +57,13 @@ function setupImageUpload() {
       const imgWrap = makeEl('span', { className: 'scraper-preview--image-wrapper' });
       imgWrap.appendChild(img);
 
+      const dimensionLabel = makeEl('span', { className: 'hidden' });
+      img.decode().then(() => {
+        const [ width, height ] = embeddedImageDimensions(img);
+        dimensionLabel.textContent = `${width} x ${height}`;
+        showEl(dimensionLabel);
+      });
+
       const label = makeEl('label', { className: 'scraper-preview--label' });
       const radio = makeEl('input', {
         type: 'radio',
@@ -60,6 +78,7 @@ function setupImageUpload() {
       }
       label.appendChild(radio);
       label.appendChild(imgWrap);
+      label.appendChild(dimensionLabel);
       imgPreviews.appendChild(label);
     });
   }
