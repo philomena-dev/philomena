@@ -3,26 +3,50 @@
   .block__content
     .statistics
       .statistics__statistic
-        .statistics__column Uploads
-        .statistics__column = number_with_delimiter(@user.uploads_count)
-        .statistics__column: .sparkline = sparkline_data(@statistics.uploads)
+        h5 
+          | Uploads (
+          = number_with_delimiter(@user.uploads_count)
+          | )
+        .sparkline#js-upload-graph = sparkline_data(@statistics.uploads)
+        .slider__minmax
+          input#js-graph-slider type="dualrange" min="0" max="100" valuemin="0" valuemax="100" data-target="#js-upload-graph"
       .statistics__statistic
-        .statistics__column Favorites
-        .statistics__column = number_with_delimiter(@user.images_favourited_count)
-        .statistics__column: .sparkline = sparkline_data(@statistics.images_favourited)
+        h5 
+          | Favorites (
+          = number_with_delimiter(@user.images_favourited_count)
+          | )
+        .sparkline#js-favorite-graph = sparkline_data(@statistics.images_favourited)
+        .slider__minmax
+          input#js-graph-slider type="dualrange" min="0" max="100" valuemin="0" valuemax="100" data-target="#js-favorite-graph"
       .statistics__statistic
-        .statistics__column Comments
-        .statistics__column = number_with_delimiter(@user.comments_posted_count)
-        .statistics__column: .sparkline = sparkline_data(@statistics.comments_posted)
+        h5 
+          | Comments (
+          = number_with_delimiter(@user.comments_posted_count)
+          | )
+        .sparkline#js-comment-graph = sparkline_data(@statistics.comments_posted)
+        .slider__minmax
+          input#js-graph-slider type="dualrange" min="0" max="100" valuemin="0" valuemax="100" data-target="#js-comment-graph"
       .statistics__statistic
-        .statistics__column Votes
-        .statistics__column = number_with_delimiter(@user.votes_cast_count)
-        .statistics__column: .sparkline = sparkline_data(@statistics.votes_cast)
+        h5 
+          | Votes (
+          = number_with_delimiter(@user.votes_cast_count)
+          | )
+        .sparkline#js-vote-graph = sparkline_data(@statistics.votes_cast)
+        .slider__minmax
+          input#js-graph-slider type="dualrange" min="0" max="100" valuemin="0" valuemax="100" data-target="#js-vote-graph"
       .statistics__statistic
-        .statistics__column Metadata Updates
-        .statistics__column = number_with_delimiter(@user.metadata_updates_count)
-        .statistics__column: .sparkline = sparkline_data(@statistics.metadata_updates)
+        h5 
+          | Metadata Updates (
+          = number_with_delimiter(@user.metadata_updates_count)
+          | )
+        .sparkline#js-metadata-graph = sparkline_data(@statistics.metadata_updates)
+        .slider__minmax
+          input#js-graph-slider type="dualrange" min="0" max="100" valuemin="0" valuemax="100" data-target="#js-metadata-graph"
       .statistics__statistic
-        .statistics__column Forum Posts
-        .statistics__column = number_with_delimiter(@user.forum_posts_count)
-        .statistics__column: .sparkline = sparkline_data(@statistics.forum_posts)
+        h5 
+          | Forum Posts (
+          = number_with_delimiter(@user.forum_posts_count)
+          | )
+        .sparkline#js-post-graph = sparkline_data(@statistics.forum_posts)
+        .slider__minmax
+          input#js-graph-slider type="dualrange" min="0" max="100" valuemin="0" valuemax="100" data-target="#js-post-graph"

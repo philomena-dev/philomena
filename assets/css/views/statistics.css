@@ -1,29 +1,20 @@
 .statistics {
   display: flex;
-  flex-direction: column;
-  border: 1.5px solid var(--secondary-color);
-  border-radius: var(--border-radius-inner);
-  overflow: hidden;
+  flex-flow: column;
+  gap: var(--padding-small);
 }
 
 .statistics__statistic {
-  display: grid;
-  grid-template-columns: 15% 15% auto;
-  background: var(--secondary-color);
-}
-
-@mixin even-odd statistics__statistic;
-
-.statistics__column {
-  text-align: center;
-  padding: var(--padding-small);
+  display: flex;
+  flex-flow: column;
 }
 
 .sparkline {
-  border-bottom: 1px solid var(--primary-border-color);
+  background: var(--primary-muted-color);
+  border-radius: var(--border-radius-inner);
   display: flex;
   height: var(--padding-large);
-  padding: var(--padding-tiny);
+  padding: var(--padding-small);
   overflow: hidden;
 }
 

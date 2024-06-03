@@ -38,6 +38,7 @@
 @import "elements/media";
 @import "elements/mobile";
 @import "elements/separator";
+@import "elements/slider";
 @import "elements/table";
 
 /* Style elements specific to certain pages. */

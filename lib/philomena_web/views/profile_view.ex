@@ -54,7 +54,7 @@ defmodule PhilomenaWeb.ProfileView do
     sy = height / 20
     factor = 100 / 90
 
-    content_tag :svg, id: "js-sparkline-svg", width: "100%", preserveAspectRatio: "xMinYMin", viewBox: "0 0 #{width} #{height}" do
+    content_tag :svg, id: "js-graph-svg", width: "100%", preserveAspectRatio: "xMinYMin", viewBox: "0 0 #{width} #{height}" do
       first = List.first(data)
       last = List.last(data)
       first_y = sparkline_y(first, max) * sy
@@ -80,7 +80,7 @@ defmodule PhilomenaWeb.ProfileView do
         end
       end
 
-      graph = content_tag :path, "", id: "js-barline-graph", class: "barline__bar", d: "M0,#{first_y}#{points}L#{width - sx},#{last_y}L#{width - sx},#{height}L0,#{height}L0,#{first_y}"
+      graph = content_tag :path, "", id: "js-graph", class: "barline__bar", d: "M0,#{first_y}#{points}L#{width - sx},#{last_y}L#{width - sx},#{height}L0,#{height}L0,#{first_y}"
 
       [graph, circles]
     end
