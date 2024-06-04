@@ -6,7 +6,7 @@ describe('Linear interpolation', () => {
       expect(lerp(0.5, 0, 100)).toEqual(50);
       expect(lerp(0.75, 0, 100)).toEqual(75);
     });
-  
+
     it('should clamp the value between min and max', () => {
       expect(lerp(-999, 0, 100)).toEqual(0);
       expect(lerp(0, 0, 100)).toEqual(0);

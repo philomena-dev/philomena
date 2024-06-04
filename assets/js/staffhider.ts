@@ -6,12 +6,10 @@
 
 import { $$ } from './utils/dom';
 
-function hideStaffTools() {
+export function hideStaffTools() {
   if (window.booru.hideStaffTools === 'true') {
-    $$('.js-staff-action').forEach(el => {
+    $$<HTMLElement>('.js-staff-action').forEach(el => {
       el.classList.add('hidden');
     });
   }
 }
-
-export { hideStaffTools };
