@@ -14,7 +14,7 @@ import { setupBurgerMenu }      from './burger';
 import { bindCaptchaLinks }     from './captcha';
 import { setupComments }        from './comment';
 import { setupDupeReports }     from './duplicate_reports';
-import { setFpCookie }          from './fp';
+import { setSesCookie }         from './fp';
 import { setupGalleryEditing }  from './galleries';
 import { initImagesClientside } from './imagesclientside';
 import { bindImageTarget }      from './image_expansion';
@@ -50,7 +50,7 @@ whenReady(() => {
   initImagesClientside();
   setupComments();
   setupDupeReports();
-  setFpCookie();
+  setSesCookie();
   setupGalleryEditing();
   bindImageTarget();
   setupEvents();
