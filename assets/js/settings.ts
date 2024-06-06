@@ -6,12 +6,11 @@ import { $, $$ } from './utils/dom';
 import store from './utils/store';
 
 export function setupSettings() {
+  if (!$<HTMLElement>('#js-setting-table')) return;
 
-  if (!$('#js-setting-table')) return;
-
-  const localCheckboxes = $$('[data-tab="local"] input[type="checkbox"]');
-  const themeSelect = $('#user_theme');
-  const styleSheet = $('head link[rel="stylesheet"]');
+  const localCheckboxes = $$<HTMLInputElement>('[data-tab="local"] input[type="checkbox"]');
+  const themeSelect = $<HTMLSelectElement>('#user_theme');
+  const styleSheet = $<HTMLLinkElement>('head link[rel="stylesheet"]');
 
   // Local settings
   localCheckboxes.forEach(checkbox => {
@@ -22,7 +21,8 @@ export function setupSettings() {
 
   // Theme preview
   themeSelect && themeSelect.addEventListener('change', () => {
-    styleSheet.href = themeSelect.options[themeSelect.selectedIndex].dataset.themePath;
+    if (styleSheet) {
+      styleSheet.href = themeSelect.options[themeSelect.selectedIndex].dataset.themePath || '#';
+    }
   });
-
 }

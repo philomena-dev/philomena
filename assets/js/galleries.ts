@@ -8,11 +8,13 @@ import { initDraggables } from './utils/draggable';
 import { fetchJson } from './utils/requests';
 
 export function setupGalleryEditing() {
-  if (!$('.rearrange-button')) return;
+  if (!$<HTMLElement>('.rearrange-button')) return;
 
-  const [ rearrangeEl, saveEl ] = $$('.rearrange-button');
-  const sortableEl = $('#sortable');
-  const containerEl = $('.media-list');
+  const [ rearrangeEl, saveEl ] = $$<HTMLElement>('.rearrange-button');
+  const sortableEl = $<HTMLDivElement>('#sortable');
+  const containerEl = $<HTMLDivElement>('.media-list');
+
+  if (!sortableEl || !containerEl || !saveEl || !rearrangeEl) { return; }
 
   // Copy array
   let oldImages = window.booru.galleryImages.slice();
@@ -20,7 +22,7 @@ export function setupGalleryEditing() {
 
   initDraggables();
 
-  $$('.media-box', containerEl).forEach(i => i.draggable = true);
+  $$<HTMLDivElement>('.media-box', containerEl).forEach(i => i.draggable = true);
 
   rearrangeEl.addEventListener('click', () => {
     sortableEl.classList.add('editing');
@@ -31,15 +33,17 @@ export function setupGalleryEditing() {
     sortableEl.classList.remove('editing');
     containerEl.classList.remove('drag-container');
 
-    newImages = $$('.image-container', containerEl).map(i => parseInt(i.dataset.imageId, 10));
+    newImages = $$<HTMLDivElement>('.image-container', containerEl).map(i => parseInt(i.dataset.imageId || '-1', 10));
 
     // If nothing changed, don't bother.
     if (arraysEqual(newImages, oldImages)) return;
 
-    fetchJson('PATCH', saveEl.dataset.reorderPath, {
-      image_ids: newImages,
+    if (saveEl.dataset.reorderPath) {
+      fetchJson('PATCH', saveEl.dataset.reorderPath, {
+        image_ids: newImages,
 
-    // copy the array again so that we have the newly updated set
-    }).then(() => oldImages = newImages.slice());
+      // copy the array again so that we have the newly updated set
+      }).then(() => oldImages = newImages.slice());
+    }
   });
 }

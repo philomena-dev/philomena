@@ -45,7 +45,7 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
       cssCodeSplit: true,
       rollupOptions: {
         input: {
-          'js/app': './js/app.js',
+          'js/app': './js/app.ts',
           'css/application': './css/application.css',
           ...Object.fromEntries(targets)
         },

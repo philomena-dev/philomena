@@ -14,6 +14,7 @@ import './when-ready';
 // Would typically be either the theme file, or any additional file
 // you later intend to put in the <link> tag.
 
-// import '../css/themes/default.scss';
+import '../css/application.css';
+import '../css/themes/dark-blue.css';
 // import '../css/themes/dark.scss';
 // import '../css/themes/red.scss';

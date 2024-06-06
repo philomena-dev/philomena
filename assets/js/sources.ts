@@ -1,4 +1,9 @@
+import { $ } from './utils/dom';
 import { inputDuplicatorCreator } from './input-duplicator';
+
+export interface SourcesEvent extends CustomEvent<Response> {
+  target: HTMLElement,
+}
 
 function setupInputs() {
   inputDuplicatorCreator({
@@ -11,16 +16,17 @@ function setupInputs() {
 
 function imageSourcesCreator() {
   setupInputs();
-  document.addEventListener('fetchcomplete', ({ target, detail }) => {
-    const sourceSauce = document.querySelector('.js-sourcesauce');
 
-    if (target.matches('#source-form')) {
+  document.addEventListener('fetchcomplete', (({ target, detail }: SourcesEvent) => {
+    const sourceSauce = $<HTMLElement>('.js-sourcesauce');
+
+    if (sourceSauce && target && target.matches('#source-form')) {
       detail.text().then(text => {
         sourceSauce.outerHTML = text;
         setupInputs();
       });
     }
-  });
+  }) as EventListener);
 }
 
 export { imageSourcesCreator };

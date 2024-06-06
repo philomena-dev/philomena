@@ -19,9 +19,9 @@ interface RealUserAgentData {
 }
 
 interface RealNavigator extends Navigator {
-  deviceMemory: number,
-  keyboard: RealKeyboard,
-  userAgentData: RealUserAgentData,
+  deviceMemory: number | null,
+  keyboard: RealKeyboard | null,
+  userAgentData: RealUserAgentData | null,
 }
 
 /**
@@ -81,7 +81,7 @@ async function createFp(): Promise<string> {
   }
 
   let width: string | null = store.get('cached_rem_size');
-  const body = $('body');
+  const body = $<HTMLBodyElement>('body');
 
   if (!width && body) {
     const testElement = document.createElement('span');
@@ -127,7 +127,7 @@ async function createFp(): Promise<string> {
 /**
  * Sets the `_ses` cookie.
  *
- * If `cached_ses_value` is present in local storage, uses that instead.
+ * If `cached_ses_value` is present in local storage, uses it to set the `_ses` cookie.
  * Otherwise if the `_ses` cookie already exits, uses its value instead.
  * Otherwise attempts to generate a new value for the `_ses` cookie
  * based on various browser attributes.

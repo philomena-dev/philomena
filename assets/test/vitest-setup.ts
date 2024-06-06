@@ -21,7 +21,8 @@ window.booru = {
   spoileredFilter: matchNone(),
   interactions: [],
   tagsVersion: 5,
-  hideStaffTools: 'false'
+  hideStaffTools: 'false',
+  galleryImages: []
 };
 
 // https://github.com/jsdom/jsdom/issues/1721#issuecomment-1484202038

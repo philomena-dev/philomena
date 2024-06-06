@@ -7,8 +7,8 @@
 import { $ } from './utils/dom';
 
 function warnAboutPMs() {
-  const textarea = $('.js-toolbar-input');
-  const warning = $('.js-hidden-warning');
+  const textarea = $<HTMLTextAreaElement>('.js-toolbar-input');
+  const warning = $<HTMLDivElement>('.js-hidden-warning');
   const imageEmbedRegex = /!+\[/g;
 
   if (!warning || !textarea) return;
