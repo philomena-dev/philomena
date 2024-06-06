@@ -193,6 +193,7 @@ defmodule PhilomenaWeb.UserAuth do
       conn
     else
       conn
+      |> fetch_flash()
       |> put_flash(:warning, "You must log in to access this page.")
       |> maybe_store_return_to()
       |> redirect(to: ~p"/sessions/new")

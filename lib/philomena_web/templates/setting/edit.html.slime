@@ -192,6 +192,10 @@ h1 Content Settings
         => label f, :chan_nsfw, "Show NSFW channels"
         => checkbox f, :chan_nsfw, checked: @conn.cookies["chan_nsfw"] == "true"
         .fieldlabel: i Show streams marked as NSFW on the channels page.
+      .field
+        => label f, :enable_search_ac, "Enable search auto-completion"
+        => checkbox f, :enable_search_ac, checked: @conn.cookies["enable_search_ac"] === "true"
+        .fieldlabel: i Enable the auto-completion of tags in search fields.
       = if staff?(@conn.assigns.current_user) do
         .field
           => label f, :hide_staff_tools

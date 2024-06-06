@@ -3,7 +3,6 @@ defmodule PhilomenaWeb.Admin.ApprovalView do
 
   alias PhilomenaWeb.Admin.ReportView
 
-  # Shamelessly copied from ReportView
   def truncated_ip_link(ip), do: ReportView.truncated_ip_link(ip)
 
   def image_thumb(conn, image) do

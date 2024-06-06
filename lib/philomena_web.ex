@@ -17,7 +17,7 @@ defmodule PhilomenaWeb do
   and import those modules here.
   """
 
-  def static_paths, do: ~w(assets favicon.ico favicon.svg robots.txt)
+  def static_paths, do: ~w(assets css js favicon.ico favicon.svg robots.txt opensearch.xml)
 
   def controller do
     quote do
@@ -27,7 +27,6 @@ defmodule PhilomenaWeb do
       import PhilomenaWeb.Gettext
       import Canary.Plugs
       import PhilomenaWeb.ModerationLogPlug, only: [moderation_log: 2]
-      alias PhilomenaWeb.Router.Helpers, as: Routes
 
       unquote(verified_routes())
     end
@@ -47,7 +46,6 @@ defmodule PhilomenaWeb do
 
       import PhilomenaWeb.ErrorHelpers
       import PhilomenaWeb.Gettext
-      alias PhilomenaWeb.Router.Helpers, as: Routes
 
       # Wrong way around for convenience
       import PhilomenaWeb.AppView
