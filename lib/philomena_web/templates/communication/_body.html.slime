@@ -1,6 +1,9 @@
-- anon = is_nil(assigns[:noanon]) or @noanon == false
-- options = if is_nil(assigns[:options]), do: "", else: @options
-- deleted = Map.has_key?(@object, :hidden_from_users) and @object.hidden_from_users == true
+elixir:
+  anon = is_nil(assigns[:noanon]) or @noanon == false
+  options = if is_nil(assigns[:options]), do: "", else: @options
+  deleted = Map.has_key?(@object, :hidden_from_users) and @object.hidden_from_users == true
+  hidden_if_deleted = if deleted, do: "hidden", else: ""
+  deleted_class = if deleted, do: "communication--deleted", else: ""
 
 - avatar = cond do
   - not is_nil(assigns[:image]) ->
@@ -47,9 +50,6 @@
     =<> @body
 - else
   =<> @body
-
-- hidden_if_deleted = if deleted, do: "hidden", else: ""
-- deleted_class = if deleted, do: "communication--deleted", else: ""
 
 .flex.flex__grow.hidden--mobile class=deleted_class
   .flex.flex__fixed.spacing--right class=hidden_if_deleted
