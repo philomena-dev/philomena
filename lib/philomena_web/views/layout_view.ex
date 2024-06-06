@@ -88,13 +88,13 @@ defmodule PhilomenaWeb.LayoutView do
              "light-cyan",
              "light-grey"
            ],
-      do: Routes.static_path(conn, "/css/#{theme}.css")
+      do: static_path(conn, "/css/#{theme}.css")
 
-  def stylesheet_path(conn, _user),
-    do: Routes.static_path(conn, "/css/dark-blue.css")
+  def stylesheet_path(_conn, _user),
+    do: ~p"/css/dark-blue.css"
 
-  def light_stylesheet_path(conn),
-    do: Routes.static_path(conn, "/css/light-blue.css")
+  def light_stylesheet_path(_conn),
+    do: ~p"/css/light-blue.css"
 
   def theme_name(%{theme: theme}), do: theme
   def theme_name(_user), do: "default"
