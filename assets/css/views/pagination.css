@@ -4,22 +4,20 @@
   line-height: inherit;
 }
 
-.pagination span {
-  padding: 0 var(--padding-small);
-}
-
+/* A hack to center icons */
 .pagination i {
   font-size: 0.8rem !important;
+  height: 0.7rem;
 }
 
 .pagination a,
 .pagination span {
   display: grid;
   grid-template-columns: auto;
-  gap: var(--padding-tiny);
+  gap: var(--padding-small);
   align-items: center;
-  padding: 0 var(--padding-small);
   font-weight: bold;
+  padding: 0 var(--padding-small);
 }
 
 .pagination .with-icon {

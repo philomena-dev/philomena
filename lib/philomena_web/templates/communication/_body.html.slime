@@ -1,5 +1,6 @@
 - anon = is_nil(assigns[:noanon]) or @noanon == false
 - options = if is_nil(assigns[:options]), do: "", else: @options
+- deleted = Map.has_key?(@object, :hidden_from_users) and @object.hidden_from_users == true
 
 - avatar = cond do
   - not is_nil(assigns[:image]) ->
@@ -20,27 +21,38 @@
 - else
   = render PhilomenaWeb.UserAttributionView, "_user_title.html", object: @object, conn: @conn
 
-- contents = if Map.has_key?(@object, :hidden_from_users) and @object.hidden_from_users == true do
-  strong.comment_deleted
-    ' Deletion reason:
-    =<> @object.deletion_reason
+- contents = if deleted do
+  = if @object.destroyed_content and can?(@conn, :hide, @object) do
+    div.communication__body__text--deleted
+      span
+        i.fa.fa-eye-slash>
+        strong
+          ' Not shown to users, this
+          => @name
+          | is destroyed.
+  div.communication__body__text--deleted
+    span
+      i.fa.fa-trash-can>
+      strong This #{@name} has been deleted.
+    span
+      i.fa.fa-circle-info>
+      strong Reason:
+      =<> @object.deletion_reason
     = if can?(@conn, :hide, @object) and not is_nil(@object.deleted_by) do
-      | (
-      = @object.deleted_by.name
-      | )
-  = if can?(@conn, :hide, @object) do
-    = if @object.destroyed_content do
-      br
-      strong.comment_deleted>
-        | This #{@name}'s contents have been destroyed.
-    - else
-      br
-      =<> @body
+      span
+        i.fa.fa-user>
+        strong Moderator:
+        =<> @object.deleted_by.name
+  = if not @object.destroyed_content and can?(@conn, :hide, @object) do
+    =<> @body
 - else
   =<> @body
 
-.flex.flex__grow.hidden--mobile
-  .flex.flex__fixed.spacing--right
+- hidden_if_deleted = if deleted, do: "hidden", else: ""
+- deleted_class = if deleted, do: "communication--deleted", else: ""
+
+.flex.flex__grow.hidden--mobile class=deleted_class
+  .flex.flex__fixed.spacing--right class=hidden_if_deleted
     = avatar
   .flex__grow.communication__body
     .communication__sender-block
@@ -51,16 +63,19 @@
           ' Posted
           =< pretty_time(@object.created_at)
           = options
-      = title
+      div class=hidden_if_deleted
+        = title
     .communication__body__text
       = contents
-.flex.flex__column.flex__grow.hidden--desktop
+.flex.flex__column.flex__grow.hidden--desktop class=deleted_class
   .communication__sender-block
-    = avatar
+    div class=hidden_if_deleted
+      = avatar
     .flex__column.flex--small-gap
       span.communication__sender-name
         = username
-      = title
+      div class=hidden_if_deleted
+        = title
   span.communication__post-time
     ' Posted
     = pretty_time(@object.created_at)

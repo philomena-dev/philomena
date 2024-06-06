@@ -1,39 +1,41 @@
 - options = render PhilomenaWeb.CommentView, "_comment_link.html", comment: @comment, conn: @conn 
+- block_class = if @comment.hidden_from_users, do: "block--danger", else: ""
 
-article.block.communication id="comment_#{@comment.id}"
+article.block.communication id="comment_#{@comment.id}" class=block_class
   .block__content.flex.flex--no-wrap class=communication_body_class(@comment)
     = render PhilomenaWeb.CommunicationView, "_body.html", object: @comment, image: @comment.image, body: @body, conn: @conn, name: "comment", options: options
 
-  .block__content.communication__options
-    .flex.flex--wrap.flex--spaced-out
-      = render PhilomenaWeb.CommentView, "_comment_options.html", comment: @comment, conn: @conn
+  = if not @comment.hidden_from_users or can?(@conn, :edit, @comment) do
+    .block__content.communication__options
+      .flex.flex--wrap.flex--spaced-out
+        = render PhilomenaWeb.CommentView, "_comment_options.html", comment: @comment, conn: @conn
 
-    = if can?(@conn, :hide, @comment) do
-      .flex.flex--normal-gap.flex--centered.js-staff-action
-        = cond do
-          - @comment.hidden_from_users and not @comment.destroyed_content ->
-            = link(to: Routes.image_comment_hide_path(@conn, :delete, @comment.image_id, @comment), data: [confirm: "Are you sure?"], method: "delete", class: "button button--success") do
-              i.fas.fa-check>
-              ' Restore
+      = if can?(@conn, :hide, @comment) do
+        .flex.flex--normal-gap.flex--centered.js-staff-action
+          = cond do
+            - @comment.hidden_from_users and not @comment.destroyed_content ->
+              = link(to: Routes.image_comment_hide_path(@conn, :delete, @comment.image_id, @comment), data: [confirm: "Are you sure?"], method: "delete", class: "button button--success") do
+                i.fas.fa-check>
+                ' Restore
 
-            = if can?(@conn, :delete, @comment) do
-              = link(to: Routes.image_comment_delete_path(@conn, :create, @comment.image_id, @comment), data: [confirm: "Are you sure?"], method: "post", class: "button button--danger button--transparent") do
+              = if can?(@conn, :delete, @comment) do
+                = link(to: Routes.image_comment_delete_path(@conn, :create, @comment.image_id, @comment), data: [confirm: "Are you sure?"], method: "post", class: "button button--danger button--transparent") do
+                  i.fas.fa-times>
+                  ' Delete Contents
+
+            - not @comment.hidden_from_users and not @comment.destroyed_content ->
+              a.button.button--danger.button--transparent.togglable-delete-form-link href="#" data-click-toggle="#inline-del-form-comment-#{@comment.id}"
                 i.fas.fa-times>
-                ' Delete Contents
+                ' Delete
 
-          - not @comment.hidden_from_users and not @comment.destroyed_content ->
-            a.button.button--danger.button--transparent.togglable-delete-form-link href="#" data-click-toggle="#inline-del-form-comment-#{@comment.id}"
-              i.fas.fa-times>
-              ' Delete
+            - true ->
 
-          - true ->
+          = if can?(@conn, :show, :ip_address) do
+            .button.button--warning.button--transparent.js-staff-action
+              =<> link_to_ip(@conn, @comment.ip)
+            .button.button--warning.button--transparent.js-staff-action
+              =<> link_to_fingerprint(@conn, @comment.fingerprint)
 
-        = if can?(@conn, :show, :ip_address) do
-          .button.button--warning.button--transparent.js-staff-action
-            =<> link_to_ip(@conn, @comment.ip)
-          .button.button--warning.button--transparent.js-staff-action
-            =<> link_to_fingerprint(@conn, @comment.fingerprint)
-
-        = form_for :comment, Routes.image_comment_hide_path(@conn, :create, @comment.image_id, @comment), [class: "togglable-delete-form hidden flex", id: "inline-del-form-comment-#{@comment.id}"], fn f ->
-          = text_input f, :deletion_reason, class: "input input--wide", placeholder: "Deletion Reason", id: "inline-del-reason-comment-#{@comment.id}", required: true
-          = submit "Delete", class: "button"
+          = form_for :comment, Routes.image_comment_hide_path(@conn, :create, @comment.image_id, @comment), [class: "togglable-delete-form hidden flex", id: "inline-del-form-comment-#{@comment.id}"], fn f ->
+            = text_input f, :deletion_reason, class: "input input--wide", placeholder: "Deletion Reason", id: "inline-del-reason-comment-#{@comment.id}", required: true
+            = submit "Delete", class: "button"

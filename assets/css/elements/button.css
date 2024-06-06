@@ -6,7 +6,7 @@
   }
 
   .button--$(type) a {
-    color: var(--$(type)-link-color);
+    color: inherit;
   }
 
   .button--$(type).button--important {
@@ -17,7 +17,8 @@
   .button--$(type):hover,
   .button--$(type):active,
   .button--$(type).selected {
-    background: var(--$(type)-dark-color) !important;
+    color: var(--text-color) !important;
+    background: var(--$(type)-dark-color);
     border-radius: var(--border-radius-inner);
   }
 
@@ -38,6 +39,63 @@
   }
 }
 
+@define-mixin button-block-type $type {
+  .block--$(type) .button:not([class*="button--"]) {
+    color: var(--$(type)-link-color) !important;
+    border-color: var(--$(type)-border-color);
+    background: var(--$(type)-muted-color);
+  }
+
+  .block--$(type) .button:not([class*="button--"]) a {
+    color: inherit;
+  }
+
+  .block--$(type) .button--important:not([class*="button--"]) {
+    color: var(--text-color) !important;
+    background: var(--$(type)-color);
+  }
+
+  .block--$(type) .button:not([class*="button--"]):hover,
+  .block--$(type) .button:not([class*="button--"]):active,
+  .block--$(type) .button:not([class*="button--"]).selected {
+    color: var(--text-color) !important;
+    background: var(--$(type)-dark-color);
+    border-radius: var(--border-radius-inner);
+  }
+
+  .block--$(type) .button__group:not([class*="button--"]),
+  .block--$(type)
+    .button__group--single:not([class*="button--"])
+    .block--$(type)
+    .button__group--standalone:not([class*="button--"]) {
+    border-color: var(--$(type)-color);
+    background: var(--$(type)-dark-color);
+  }
+
+  .block--$(type) .button__group:not([class*="button--"]) a,
+  .block--$(type)
+    .button__group--single:not([class*="button--"])
+    a
+    .block--$(type)
+    .button__group--standalone:not([class*="button--"])
+    a {
+    color: var(--$(type)-link-color);
+  }
+
+  .block--$(type) .button__group:not([class*="button--"]) a:hover,
+  .block--$(type)
+    .button__group--single:not([class*="button--"])
+    a:hover
+    .block--$(type)
+    .button__group--standalone:not([class*="button--"])
+    a:hover {
+    @mixin animated-transition;
+    color: var(--text-color);
+    background: var(--$(type)-color);
+    border-radius: var(--border-radius-inner);
+  }
+}
+
 .button {
   @mixin animated-transition;
   display: flex;
@@ -45,8 +103,8 @@
   width: fit-content;
   font-weight: bold;
   font-size: var(--font-size);
-  background: var(--primary-dark-color);
-  color: var(--text-color);
+  background: var(--primary-muted-color);
+  color: var(--link-color);
   border-radius: var(--border-radius-inner);
   padding: 0 var(--padding-small);
   overflow: hidden;
@@ -58,6 +116,7 @@
 .button:hover,
 .button:active {
   @mixin animated-transition;
+  color: var(--text-color);
   background: var(--primary-dark-color);
   border-radius: var(--border-radius-inner);
   cursor: pointer;
@@ -99,6 +158,7 @@
   margin-right: var(--padding-normal);
   background: var(--secondary-dark-color);
   line-height: var(--button-group-height);
+  padding: 0 var(--padding-small);
 }
 
 .button__group:last-child,
@@ -113,11 +173,6 @@
 
 .button__group--small {
   line-height: var(--button-group-small-height);
-}
-
-.block__header__buttons .button {
-  color: var(--link-color);
-  border-width: 0 !important;
 }
 
 .button__group .button {
@@ -145,14 +200,18 @@
   border-width: 0;
 }
 
-.block__header__buttons .button:hover {
-  background: var(--primary-muted-color);
-  border-radius: var(--border-radius-inner);
-}
-
-.button--transparent {
+.button--transparent,
+.button--transparent:hover {
   background: 0 !important;
 }
+
+@mixin button-block-type primary;
+@mixin button-block-type secondary;
+@mixin button-block-type success;
+@mixin button-block-type warning;
+@mixin button-block-type danger;
+@mixin button-block-type information;
+@mixin button-block-type special;
 
 @mixin button-type primary;
 @mixin button-type secondary;

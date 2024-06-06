@@ -105,6 +105,19 @@
   white-space: nowrap;
 }
 
+.communication--deleted .communication__sender-block {
+  background: var(--danger-color);
+}
+
+.communication__body__text--deleted {
+  display: flex;
+  flex-flow: column;
+  margin-top: var(--padding-normal);
+  background: var(--danger-muted-color);
+  padding: var(--padding-normal) var(--padding-small);
+  gap: var(--padding-small);
+}
+
 @mixin if-mobile {
   .communication__options {
     flex-flow: column;
@@ -145,5 +158,17 @@
     display: flex;
     flex-direction: column;
     gap: var(--padding-small);
+  }
+
+  .communication__body__text--deleted {
+    margin-top: 0;
+  }
+
+  .communication__body__text--deleted:first-child {
+    margin-bottom: var(--padding-normal);
+  }
+
+  .communication--deleted > .communication__post-time {
+    background: var(--danger-dark-color);
   }
 }

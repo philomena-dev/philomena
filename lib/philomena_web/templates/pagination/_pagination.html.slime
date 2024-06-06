@@ -4,11 +4,11 @@
   nav.pagination.hidden--mobile
     = if not first_page?(@page) do
       = link to: first_page_path(@page, @route, params), class: "with-icon" do
-        i.fa.fa-backward>
+        i.fa.fa-angles-left>
         ' First
       .separator--vertical.separator--secondary
       = link to: prev_page_path(@page, @route, params), class: "js-prev with-icon" do
-        i.fa.fa-chevron-left>
+        i.fa.fa-angle-left>
         ' Prev
       .separator--vertical.separator--secondary
 
@@ -32,29 +32,29 @@
       .separator--vertical.separator--secondary
       = link to: next_page_path(@page, @route, params), class: "js-next with-icon" do
         ' Next
-        i.fa.fa-chevron-right
+        i.fa.fa-angle-right
       .separator--vertical.separator--secondary
       = link to: last_page_path(@page, @route, params), class: "with-icon" do
         ' Last
-        i.fa.fa-fast-forward
+        i.fa.fa-angles-right
 
   nav.pagination.hidden--desktop
     = if first_page?(@page) do
       span.with-icon
-        i.fa.fa-backward>
+        i.fa.fa-angles-left>
         ' First
       .separator--vertical.separator--secondary
       span.with-icon
-        i.fa.fa-chevron-left>
+        i.fa.fa-angle-left>
         ' Prev
       .separator--vertical.separator--secondary
     - else
       = link to: first_page_path(@page, @route, params), class: "with-icon" do
-        i.fa.fa-backward>
+        i.fa.fa-angles-left>
         ' First
       .separator--vertical.separator--secondary
       = link to: prev_page_path(@page, @route, params), class: "js-prev with-icon" do
-        i.fa.fa-chevron-left>
+        i.fa.fa-angle-left>
         ' Prev
       .separator--vertical.separator--secondary
 
@@ -84,17 +84,17 @@
       .separator--vertical.separator--secondary
       span.with-icon
         ' Next
-        i.fa.fa-chevron-right
+        i.fa.fa-angle-right
       .separator--vertical.separator--secondary
       span.with-icon
         ' Last
-        i.fa.fa-fast-forward
+        i.fa.fa-angles-right
     - else
       .separator--vertical.separator--secondary
       = link to: next_page_path(@page, @route, params), class: "js-next with-icon" do
         ' Next
-        i.fa.fa-chevron-right
+        i.fa.fa-angle-right
       .separator--vertical.separator--secondary
       = link to: last_page_path(@page, @route, params), class: "with-icon" do
         ' Last
-        i.fa.fa-fast-forward
+        i.fa.fa-angles-right
