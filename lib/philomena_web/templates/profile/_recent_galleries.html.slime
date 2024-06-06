@@ -2,7 +2,7 @@
   .block
     .block__header
       span Recent Galleries
-      = link "View all", to: Routes.gallery_path(@conn, :index, gallery: [creator: @user.name])
+      = link "View all", to: ~p"/galleries?#{[gallery: [creator: @user.name]]}"
 
     .media-list
       = for gallery <- @galleries do

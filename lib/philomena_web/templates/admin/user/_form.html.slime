@@ -27,7 +27,7 @@
       .field
         label Avatar
         .with-error
-          = link to: Routes.admin_user_avatar_path(@conn, :delete, @user), class: "button button--danger", data: [method: "delete", confirm: "Are you really, really sure?"] do
+          = link to: ~p"/admin/users/#{@user}/avatar", class: "button button--danger", data: [method: "delete", confirm: "Are you really, really sure?"] do
             i.fa.fa-trash
             | Remove
 

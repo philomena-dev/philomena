@@ -7,7 +7,7 @@ header
     span.hidden--mobile = site_name()
   a.header__link.hidden--mobile href="/images/new" title="Upload"
     i.fa.fa-upload
-  = form_for @conn, Routes.search_path(@conn, :index), [method: "get", class: "header__search", enforce_utf8: false], fn f ->
+  = form_for @conn, ~p"/search", [method: "get", class: "header__search", enforce_utf8: false], fn f ->
     input.input.input--text.header__input.header__input--text#q name="q" title="For terms all required, separate with ',' or 'AND'; also supports 'OR' for optional terms and '-' or 'NOT' for negation. Search with a blank query for more options or click the ? for syntax help." value=@conn.params["q"] placeholder="Search" autocapitalize="none"
 
     = if present?(@conn.params["sf"]) do
@@ -44,19 +44,19 @@ header
       span.hidden--tablet< Filters
 
     .header__search
-      = form_for @user_changeset, Routes.filter_current_path(@conn, :update), [class: "header__filter-form", id: "filter-quick-form"], fn f ->
+      = form_for @user_changeset, ~p"/filters/current", [class: "header__filter-form", id: "filter-quick-form"], fn f ->
         = select f, :current_filter_id, @available_filters, name: "id", id: "filter-quick-menu", class: "input header__input", data: [change_submit: "#filter-quick-form"], autocomplete: "off"
 
     .header__search
-      = form_for @user_changeset, Routes.filter_spoiler_type_path(@conn, :update), [class: "header__filter-form hidden--mobile", id: "spoiler-quick-form"], fn f ->
+      = form_for @user_changeset, ~p"/filters/spoiler_type", [class: "header__filter-form hidden--mobile", id: "spoiler-quick-form"], fn f ->
         = select f, :spoiler_type, @spoiler_types, id: "spoiler-quick-menu", class: "input header__input", data: [change_submit: "#spoiler-quick-form"], autocomplete: "off"
 
     .dropdown
-      a.header__link.header__link--user href=Routes.profile_path(@conn, :show, @current_user)
+      a.header__link.header__link--user href=~p"/profiles/#{@current_user}"
         = render PhilomenaWeb.UserAttributionView, "_user_avatar.html", object: %{user: @current_user}, class: "avatar--navbar"
         i.fa.fa-chevron-down
       nav.dropdown__content.dropdown__content--right.hidden--mobile.js-burger-links
-        a.dropdown__item href=Routes.profile_path(@conn, :show, @current_user)
+        a.dropdown__item href=~p"/profiles/#{@current_user}"
           .dropdown__icon
             i.fa.icon--fixed.fa-user
           .dropdown__text
@@ -74,7 +74,7 @@ header
           .dropdown__icon
             i.fa.icon--fixed.fa-arrow-up
           .dropdown__text Upvotes
-        a.dropdown__item href=Routes.gallery_path(@conn, :index, gallery: [creator: @current_user.name])
+        a.dropdown__item href=~p"/galleries?#{[gallery: [creator: @current_user.name]]}"
           .dropdown__icon
             i.fa.icon--fixed.fa-image
           .dropdown__text Galleries
@@ -90,7 +90,7 @@ header
           .dropdown__icon
             i.fa.icon--fixed.fa-pen-square
           .dropdown__text Posts
-        a.dropdown__item href=Routes.profile_artist_link_path(@conn, :index, @current_user)
+        a.dropdown__item href=~p"/profiles/#{@current_user}/artist_links"
           .dropdown__icon
             i.fa.icon--fixed.fa-link
           .dropdown__text Links
@@ -103,12 +103,12 @@ header
           .dropdown__icon
             i.fa.icon--fixed.fa-cogs
           .dropdown__text Settings
-        a.dropdown__item href=Routes.registration_path(@conn, :edit)
+        a.dropdown__item href=~p"/registrations/edit"
           .dropdown__icon
             i.fa.icon--fixed.fa-user
           .dropdown__text Account
         hr.dropdown__separator
-        a.dropdown__item href=Routes.session_path(@conn, :delete) data-method="delete"
+        a.dropdown__item href=~p"/sessions" data-method="delete"
           .dropdown__icon
             i.fa.icon--fixed.fa-sign-out-alt
           .dropdown__text Logout
@@ -121,9 +121,9 @@ header
       a.header__link href="/settings/edit"
         i.fa.icon--fixed.fa-cogs.hidden--desktop>
         | Settings
-    a.header__link href=Routes.registration_path(@conn, :new)
+    a.header__link href=~p"/registrations/new"
       | Register
-    a.header__link href=Routes.session_path(@conn, :new)
+    a.header__link href=~p"/sessions/new"
       | Login
 nav.header__secondary
   = render PhilomenaWeb.LayoutView, "_header_navigation.html", assigns

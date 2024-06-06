@@ -1,10 +1,10 @@
-- comment_link = Routes.image_path(@conn, :show, @comment.image) <> "#comment_#{@comment.id}"
+- comment_link = ~p"/images/#{@comment.image}" <> "#comment_#{@comment.id}"
 
 .flex__spacer.hidden--desktop
 a.communication__interaction.hidden--desktop title="Link to comment" href=comment_link
   i.fa.fa-link
 = if not is_nil(@comment.edited_at) and can?(@conn, :show, @comment) do
-  a.communication__options__edit-time href=Routes.image_comment_history_path(@conn, :index, @comment.image, @comment)
+  a.communication__options__edit-time href=~p"/images/#{@comment.image}/comments/#{@comment}/history"
     span.hidden--mobile> - edited
     span.hidden--desktop> Edited
     => pretty_time(@comment.edited_at)

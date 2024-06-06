@@ -20,21 +20,21 @@ defmodule PhilomenaWeb.DuplicateReport.AcceptReverseController do
       {:ok, report} ->
         conn
         |> put_flash(:info, "Successfully accepted report in reverse.")
-        |> moderation_log(details: &log_details/3, data: report.duplicate_report)
-        |> redirect(to: Routes.duplicate_report_path(conn, :index))
+        |> moderation_log(details: &log_details/2, data: report.duplicate_report)
+        |> redirect(to: ~p"/duplicate_reports")
 
       _error ->
         conn
         |> put_flash(:warning, "Failed to accept report! Maybe someone else already accepted it.")
-        |> redirect(to: Routes.duplicate_report_path(conn, :index))
+        |> redirect(to: ~p"/duplicate_reports")
     end
   end
 
-  defp log_details(conn, _action, report) do
+  defp log_details(_action, report) do
     %{
       body:
         "Reverse-accepted duplicate report, merged #{report.image.id} into #{report.duplicate_of_image.id}",
-      subject_path: Routes.image_path(conn, :show, report.image)
+      subject_path: ~p"/images/#{report.image}"
     }
   end
 end

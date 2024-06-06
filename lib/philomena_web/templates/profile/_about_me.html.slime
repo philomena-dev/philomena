@@ -8,6 +8,6 @@
   = if can?(@conn, :edit_description, @user) do
     = if @user.description not in [nil, ""] do
       hr.separator.separator--secondary
-    a.button href=Routes.profile_description_path(@conn, :edit, @user)
+    a.button href=~p"/profiles/#{@user}/description/edit"
       i.fa.fa-edit>
       | Edit

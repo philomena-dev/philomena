@@ -9,10 +9,10 @@
         = for post <- @posts do
           .block__content.alternating-color
             ' Post
-            => link pretty_time(post.created_at), to: Routes.forum_topic_path(@conn, :show, post.topic.forum, post.topic, post_id: post) <> "#post_#{post.id}"
+            => link pretty_time(post.created_at), to: ~p"/forums/#{post.topic.forum}/topics/#{post.topic}?#{[post_id: post]}" <> "#post_#{post.id}"
             ' in topic
-            => link post.topic.title, to: Routes.forum_topic_path(@conn, :show, post.topic.forum, post.topic)
+            => link post.topic.title, to: ~p"/forums/#{post.topic.forum}/topics/#{post.topic}"
       hr.separator.separator--secondary
-      a.button href=Routes.post_path(@conn, :index, pq: "user_id:#{@user.id}")
+      a.button href=~p"/posts?#{[pq: "user_id:#{@user.id}"]}"
         i.fa.fa-eye>
         | View all

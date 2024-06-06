@@ -19,10 +19,10 @@ defmodule PhilomenaWeb.Topic.Post.DeleteController do
       {:ok, post} ->
         conn
         |> put_flash(:info, "Post successfully destroyed!")
-        |> moderation_log(details: &log_details/3, data: post)
+        |> moderation_log(details: &log_details/2, data: post)
         |> redirect(
           to:
-            Routes.forum_topic_path(conn, :show, post.topic.forum, post.topic, post_id: post.id) <>
+            ~p"/forums/#{post.topic.forum}/topics/#{post.topic}?#{[post_id: post.id]}" <>
               "#post_#{post.id}"
         )
 
@@ -31,17 +31,17 @@ defmodule PhilomenaWeb.Topic.Post.DeleteController do
         |> put_flash(:error, "Unable to destroy post!")
         |> redirect(
           to:
-            Routes.forum_topic_path(conn, :show, post.topic.forum, post.topic, post_id: post.id) <>
+            ~p"/forums/#{post.topic.forum}/topics/#{post.topic}?#{[post_id: post.id]}" <>
               "#post_#{post.id}"
         )
     end
   end
 
-  defp log_details(conn, _action, post) do
+  defp log_details(_action, post) do
     %{
       body: "Destroyed forum post ##{post.id} in topic '#{post.topic.title}'",
       subject_path:
-        Routes.forum_topic_path(conn, :show, post.topic.forum, post.topic, post_id: post.id) <>
+        ~p"/forums/#{post.topic.forum}/topics/#{post.topic}?#{[post_id: post.id]}" <>
           "#post_#{post.id}"
     }
   end

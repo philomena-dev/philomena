@@ -1,11 +1,11 @@
 = if not @comment.hidden_from_users or can?(@conn, :hide, @comment) do
   .flex.flex--normal-gap.flex--centered
     = if not @comment.hidden_from_users do
-      - link_path = Routes.image_path(@conn, :show, @comment.image) <> "#comment_#{@comment.id}"
+      - link_path = ~p"/images/#{@comment.image}" <> "#comment_#{@comment.id}"
       - safe_author = PhilomenaWeb.PostView.markdown_safe_author(@comment)
       - quote_body = if @comment.hidden_from_users, do: "", else: @comment.body
 
-      a.button href=Routes.image_comment_report_path(@conn, :new, @comment.image, @comment)
+      a.button href=~p"/images/#{@comment.image}/comments/#{@comment}/reports/new"
         i.fa.fa-flag>
         ' Report
 
@@ -18,6 +18,6 @@
         ' Reply
 
     = if not @comment.destroyed_content and can?(@conn, :edit, @comment) do
-      a.button href=Routes.image_comment_path(@conn, :edit, @comment.image, @comment)
+      a.button href=~p"/images/#{@comment.image}/comments/#{@comment}/edit"
         i.fas.fa-edit
         ' Edit

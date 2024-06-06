@@ -7,7 +7,6 @@ defmodule PhilomenaWeb.TotpPlug do
       plug PhilomenaWeb.TotpPlug
   """
 
-  alias PhilomenaWeb.Router.Helpers, as: Routes
   use PhilomenaWeb, :verified_routes
 
   @doc false
@@ -33,7 +32,7 @@ defmodule PhilomenaWeb.TotpPlug do
 
       _falsy ->
         conn
-        |> Phoenix.Controller.redirect(to: Routes.session_totp_path(conn, :new))
+        |> Phoenix.Controller.redirect(to: ~p"/sessions/totp/new")
         |> Plug.Conn.halt()
     end
   end

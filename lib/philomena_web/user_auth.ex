@@ -3,7 +3,6 @@ defmodule PhilomenaWeb.UserAuth do
   import Phoenix.Controller
 
   alias Philomena.Users
-  alias PhilomenaWeb.Router.Helpers, as: Routes
   alias PhilomenaWeb.UserIpUpdater
   alias PhilomenaWeb.UserFingerprintUpdater
 
@@ -196,7 +195,7 @@ defmodule PhilomenaWeb.UserAuth do
       conn
       |> put_flash(:warning, "You must log in to access this page.")
       |> maybe_store_return_to()
-      |> redirect(to: Routes.session_path(conn, :new))
+      |> redirect(to: ~p"/sessions/new")
       |> halt()
     end
   end

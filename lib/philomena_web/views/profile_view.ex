@@ -54,13 +54,20 @@ defmodule PhilomenaWeb.ProfileView do
     sy = height / 20
     factor = 100 / 90
 
-    content_tag :svg, id: "js-graph-svg", width: "100%", preserveAspectRatio: "xMinYMin", viewBox: "0 0 #{width} #{height}" do
+    content_tag :svg,
+      id: "js-graph-svg",
+      width: "100%",
+      preserveAspectRatio: "xMinYMin",
+      viewBox: "0 0 #{width} #{height}" do
       first = List.first(data)
       last = List.last(data)
       first_y = sparkline_y(first, max) * sy
       last_y = sparkline_y(last, max) * sy
-      indexed_data = data
+
+      indexed_data =
+        data
         |> Enum.with_index()
+
       points =
         indexed_data
         |> Enum.chunk_every(2, 1, :discard)
@@ -68,19 +75,30 @@ defmodule PhilomenaWeb.ProfileView do
           cy = sparkline_y(cv, max)
           ny = sparkline_y(nv, max)
 
-          "C #{(ci * sx) + 0.5 * sx},#{cy * sy} #{(ni * sx) - 0.5 * sx},#{ny * sy} #{ni * sx},#{ny * sy}"
+          "C #{ci * sx + 0.5 * sx},#{cy * sy} #{ni * sx - 0.5 * sx},#{ny * sy} #{ni * sx},#{ny * sy}"
         end)
         |> Enum.join("")
 
-      circles = for {val, i} <- indexed_data do
-        y = sparkline_y(val, max) * sy
+      circles =
+        for {val, i} <- indexed_data do
+          y = sparkline_y(val, max) * sy
 
-        content_tag :circle, class: "barline__dot", cx: "#{i * factor}%", cy: y * sy + 1.25, r: 2.5 do
-          content_tag(:title, val)
+          content_tag :circle,
+            class: "barline__dot",
+            cx: "#{i * factor}%",
+            cy: y * sy + 1.25,
+            r: 2.5 do
+            content_tag(:title, val)
+          end
         end
-      end
 
-      graph = content_tag :path, "", id: "js-graph", class: "barline__bar", d: "M0,#{first_y}#{points}L#{width - sx},#{last_y}L#{width - sx},#{height}L0,#{height}L0,#{first_y}"
+      graph =
+        content_tag(:path, "",
+          id: "js-graph",
+          class: "barline__bar",
+          d:
+            "M0,#{first_y}#{points}L#{width - sx},#{last_y}L#{width - sx},#{height}L0,#{height}L0,#{first_y}"
+        )
 
       [graph, circles]
     end
@@ -105,16 +123,16 @@ defmodule PhilomenaWeb.ProfileView do
   def enabled_text(true), do: "Enabled"
   def enabled_text(_else), do: "Disabled"
 
-  def user_abbrv(conn, %{name: name} = user) do
+  def user_abbrv(%{name: name} = user) do
     abbrv =
       String.upcase(initials_abbrv(name) || uppercase_abbrv(name) || first_letters_abbrv(name))
 
     abbrv = "(" <> abbrv <> ")"
 
-    link(abbrv, to: Routes.profile_path(conn, :show, user))
+    link(abbrv, to: ~p"/profiles/#{user}")
   end
 
-  def user_abbrv(_conn, _user), do: content_tag(:span, "(n/a)")
+  def user_abbrv(_user), do: content_tag(:span, "(n/a)")
 
   defp initials_abbrv(name) do
     case String.split(name, " ", parts: 4) do

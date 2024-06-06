@@ -23,8 +23,8 @@ defmodule PhilomenaWeb.Image.TagLockController do
 
     conn
     |> put_flash(:info, "Successfully updated list of locked tags.")
-    |> moderation_log(details: &log_details/3, data: image)
-    |> redirect(to: Routes.image_path(conn, :show, image))
+    |> moderation_log(details: &log_details/2, data: image)
+    |> redirect(to: ~p"/images/#{image}")
   end
 
   def create(conn, _params) do
@@ -32,8 +32,8 @@ defmodule PhilomenaWeb.Image.TagLockController do
 
     conn
     |> put_flash(:info, "Successfully locked tags.")
-    |> moderation_log(details: &log_details/3, data: image)
-    |> redirect(to: Routes.image_path(conn, :show, image))
+    |> moderation_log(details: &log_details/2, data: image)
+    |> redirect(to: ~p"/images/#{image}")
   end
 
   def delete(conn, _params) do
@@ -41,11 +41,11 @@ defmodule PhilomenaWeb.Image.TagLockController do
 
     conn
     |> put_flash(:info, "Successfully unlocked tags.")
-    |> moderation_log(details: &log_details/3, data: image)
-    |> redirect(to: Routes.image_path(conn, :show, image))
+    |> moderation_log(details: &log_details/2, data: image)
+    |> redirect(to: ~p"/images/#{image}")
   end
 
-  defp log_details(conn, action, image) do
+  defp log_details(action, image) do
     body =
       case action do
         :create -> "Locked tags on image >>#{image.id}"
@@ -55,7 +55,7 @@ defmodule PhilomenaWeb.Image.TagLockController do
 
     %{
       body: body,
-      subject_path: Routes.image_path(conn, :show, image)
+      subject_path: ~p"/images/#{image}"
     }
   end
 end

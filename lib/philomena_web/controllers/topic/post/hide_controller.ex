@@ -20,10 +20,10 @@ defmodule PhilomenaWeb.Topic.Post.HideController do
       {:ok, post} ->
         conn
         |> put_flash(:info, "Post successfully hidden.")
-        |> moderation_log(details: &log_details/3, data: post)
+        |> moderation_log(details: &log_details/2, data: post)
         |> redirect(
           to:
-            Routes.forum_topic_path(conn, :show, post.topic.forum, post.topic, post_id: post.id) <>
+            ~p"/forums/#{post.topic.forum}/topics/#{post.topic}?#{[post_id: post.id]}" <>
               "#post_#{post.id}"
         )
 
@@ -32,7 +32,7 @@ defmodule PhilomenaWeb.Topic.Post.HideController do
         |> put_flash(:error, "Unable to hide post!")
         |> redirect(
           to:
-            Routes.forum_topic_path(conn, :show, post.topic.forum, post.topic, post_id: post.id) <>
+            ~p"/forums/#{post.topic.forum}/topics/#{post.topic}?#{[post_id: post.id]}" <>
               "#post_#{post.id}"
         )
     end
@@ -45,10 +45,10 @@ defmodule PhilomenaWeb.Topic.Post.HideController do
       {:ok, post} ->
         conn
         |> put_flash(:info, "Post successfully unhidden.")
-        |> moderation_log(details: &log_details/3, data: post)
+        |> moderation_log(details: &log_details/2, data: post)
         |> redirect(
           to:
-            Routes.forum_topic_path(conn, :show, post.topic.forum, post.topic, post_id: post.id) <>
+            ~p"/forums/#{post.topic.forum}/topics/#{post.topic}?#{[post_id: post.id]}" <>
               "#post_#{post.id}"
         )
 
@@ -57,13 +57,13 @@ defmodule PhilomenaWeb.Topic.Post.HideController do
         |> put_flash(:error, "Unable to unhide post!")
         |> redirect(
           to:
-            Routes.forum_topic_path(conn, :show, post.topic.forum, post.topic, post_id: post.id) <>
+            ~p"/forums/#{post.topic.forum}/topics/#{post.topic}?#{[post_id: post.id]}" <>
               "#post_#{post.id}"
         )
     end
   end
 
-  defp log_details(conn, action, post) do
+  defp log_details(action, post) do
     body =
       case action do
         :create ->
@@ -76,7 +76,7 @@ defmodule PhilomenaWeb.Topic.Post.HideController do
     %{
       body: body,
       subject_path:
-        Routes.forum_topic_path(conn, :show, post.topic.forum, post.topic, post_id: post.id) <>
+        ~p"/forums/#{post.topic.forum}/topics/#{post.topic}?#{[post_id: post.id]}" <>
           "#post_#{post.id}"
     }
   end

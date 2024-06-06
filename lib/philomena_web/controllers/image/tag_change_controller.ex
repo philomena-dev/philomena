@@ -43,10 +43,10 @@ defmodule PhilomenaWeb.Image.TagChangeController do
     conn
     |> put_flash(:info, "Successfully deleted tag change from history.")
     |> moderation_log(
-      details: &log_details/3,
+      details: &log_details/2,
       data: %{image: image, details: tag_change_details(tag_change)}
     )
-    |> redirect(to: Routes.image_path(conn, :show, image))
+    |> redirect(to: ~p"/images/#{image}")
   end
 
   defp added_filter(query, %{"added" => "1"}),
@@ -58,10 +58,10 @@ defmodule PhilomenaWeb.Image.TagChangeController do
   defp added_filter(query, _params),
     do: query
 
-  defp log_details(conn, _action, %{image: image, details: details}) do
+  defp log_details(_action, %{image: image, details: details}) do
     %{
       body: "Deleted tag change #{details} on >>#{image.id} from history",
-      subject_path: Routes.image_path(conn, :show, image)
+      subject_path: ~p"/images/#{image}"
     }
   end
 

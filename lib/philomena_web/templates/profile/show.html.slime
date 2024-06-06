@@ -2,7 +2,7 @@
   .profile-top__avatar
     - avatar = render PhilomenaWeb.UserAttributionView, "_user_avatar.html", object: %{user: @user}, class: "avatar--large"
     = if current?(@user, @conn.assigns.current_user) do
-      = link avatar, to: Routes.avatar_path(@conn, :edit, profile: true), title: "Change avatar"
+      = link avatar, to: ~p"/avatar/edit?#{[profile: true]}", title: "Change avatar"
     - else
       = avatar
   .profile-top__name-and-links
@@ -14,7 +14,7 @@
       br
 
       = if can?(@conn, :edit_description, @user) do
-        = link "Edit Personal Title", to: Routes.profile_description_path(@conn, :edit, @user)
+        = link "Edit Personal Title", to: ~p"/profiles/#{@user}/description/edit"
         br
 
       span
@@ -23,21 +23,21 @@
 
     .profile-top__options
       ul.profile-top__options__column
-        li = link("Send message", to: Routes.conversation_path(@conn, :new, recipient: @user.name))
-        li = link("Our conversations", to: Routes.conversation_path(@conn, :index, with: @user.id))
-        li = link("Report this user", to: Routes.profile_report_path(@conn, :new, @user))
+        li = link("Send message", to: ~p"/conversations/new?#{[recipient: @user.name]}")
+        li = link("Our conversations", to: ~p"/conversations?#{[with: @user.id]}")
+        li = link("Report this user", to: ~p"/profiles/#{@user}/reports/new")
 
       ul.profile-top__options__column
-        li = link("Uploads", to: Routes.search_path(@conn, :index, q: "uploader_id:#{@user.id}"))
-        li = link("Comments", to: Routes.comment_path(@conn, :index, cq: "user_id:#{@user.id}"))
-        li = link("Posts", to: Routes.post_path(@conn, :index, pq: "user_id:#{@user.id}"))
+        li = link("Uploads", to: ~p"/search?#{[q: "uploader_id:#{@user.id}"]}")
+        li = link("Comments", to: ~p"/comments?#{[cq: "user_id:#{@user.id}"]}")
+        li = link("Posts", to: ~p"/posts?#{[pq: "user_id:#{@user.id}"]}")
         = if current?(@user, @conn.assigns.current_user) do
-          li = link "My reports", to: Routes.report_path(@conn, :index)
+          li = link "My reports", to: ~p"/reports"
 
       ul.profile-top__options__column
-        li = link("Favorites", to: Routes.search_path(@conn, :index, q: "faved_by_id:#{@user.id}"))
-        li = link("Tag changes", to: Routes.profile_tag_change_path(@conn, :index, @user))
-        li = link("Source changes", to: Routes.profile_source_change_path(@conn, :index, @user))
+        li = link("Favorites", to: ~p"/search?#{[q: "faved_by_id:#{@user.id}"]}")
+        li = link("Tag changes", to: ~p"/profiles/#{@user}/tag_changes")
+        li = link("Source changes", to: ~p"/profiles/#{@user}/source_changes")
 
 = if can_index_user?(@conn) do
   .js-staff-action
@@ -47,7 +47,7 @@
   .block
     i.fa.icon--padded.small.fa-filter>
     strong.comment_deleted> Forced Filter:
-    = link @forced.name, to: Routes.filter_path(@conn, :show, @forced)
+    = link @forced.name, to: ~p"/filters/#{@forced}"
 
 = if (current?(@user, @conn.assigns.current_user) or can?(@conn, :index, Philomena.Bans.User)) and Enum.any?(@bans) do
   .block.block--warning
@@ -92,10 +92,10 @@
               - else
                 ' Hidden
               ' &bull;
-              a href=Routes.profile_artist_link_path(@conn, :edit, @user, link)
+              a href=~p"/profiles/#{@user}/artist_links/#{link}/edit"
                 ' Edit
               ' &bull;
-              a href=Routes.admin_artist_link_reject_path(@conn, :create, link) data-method="post"
+              a href=~p"/admin/artist_links/#{link}/reject" data-method="post"
                 ' Reject
             - else
               => unless link.public do
@@ -104,7 +104,7 @@
 
       = if current?(@user, @conn.assigns.current_user) or manages_links?(@conn, @user) do
         .block__content.alternating-color.break-word
-          a.button href=Routes.profile_artist_link_path(@conn, :new, @user)
+          a.button href=~p"/profiles/#{@user}/artist_links/new"
             i.fa.fa-link>
             | Create an Artist Link
     .block
@@ -120,18 +120,18 @@
           .flex__grow.center
             => pretty_time(award.awarded_on)
             = if manages_awards?(@conn) do
-              = user_abbrv(@conn, award.awarded_by)
+              = user_abbrv(award.awarded_by)
 
           = if manages_awards?(@conn) do
             .flex__grow.center
-              a href=Routes.profile_award_path(@conn, :delete, @user, award) data-method="delete" data-confirm="Are you really, really sure?"
+              a href=~p"/profiles/#{@user}/awards/#{award}" data-method="delete" data-confirm="Are you really, really sure?"
                 ' Remove
               br
-              a href=Routes.profile_award_path(@conn, :edit, @user, award)
+              a href=~p"/profiles/#{@user}/awards/#{award}/edit"
                 ' Edit
       = if manages_awards?(@conn) and not hide_staff_tools?(@conn) do
         .block__content.alternating-color.no-overflow
-          a.button href=Routes.profile_award_path(@conn, :new, @user)
+          a.button href=~p"/profiles/#{@user}/awards/new"
             i.fa.fa-trophy>
             | Award a badge
 
@@ -158,7 +158,7 @@
                 td = body
                 td = pretty_time(mod_note.created_at)
         .block__content
-          a.button href=Routes.profile_detail_path(@conn, :index, @user)
+          a.button href=~p"/profiles/#{@user}/details"
             i.fa.fa-plus>
             | Edit mod notes
     = if can_index_user?(@conn) do
@@ -169,15 +169,15 @@
         .block__content.profile-about
           = @scratchpad
         .block__content
-          a.button href=Routes.profile_scratchpad_path(@conn, :edit, @user)
+          a.button href=~p"/profiles/#{@user}/scratchpad/edit"
             i.fa.fa-edit>
             | Edit
 
   .column-layout__main
     = render PhilomenaWeb.ProfileView, "_statistics.html", user: @user, statistics: @statistics, conn: @conn
-    = render PhilomenaWeb.ProfileView, "_recent_images.html", title: "Recent Artwork", images: @recent_artwork, view_all_path: Routes.search_path(@conn, :index, q: tag_disjunction(@tags)), conn: @conn
-    = render PhilomenaWeb.ProfileView, "_recent_images.html", title: "Recent Uploads", images: @recent_uploads, view_all_path: Routes.search_path(@conn, :index, q: "uploader_id:#{@user.id}"), conn: @conn
-    = render PhilomenaWeb.ProfileView, "_recent_images.html", title: "Recent Favorites", images: @recent_faves, view_all_path: Routes.search_path(@conn, :index, q: "faved_by_id:#{@user.id}"), conn: @conn
+    = render PhilomenaWeb.ProfileView, "_recent_images.html", title: "Recent Artwork", images: @recent_artwork, view_all_path: ~p"/search?#{[q: tag_disjunction(@tags)]}", conn: @conn
+    = render PhilomenaWeb.ProfileView, "_recent_images.html", title: "Recent Uploads", images: @recent_uploads, view_all_path: ~p"/search?#{[q: "uploader_id:#{@user.id}"]}", conn: @conn
+    = render PhilomenaWeb.ProfileView, "_recent_images.html", title: "Recent Favorites", images: @recent_faves, view_all_path: ~p"/search?#{[q: "faved_by_id:#{@user.id}"]}", conn: @conn
     = render PhilomenaWeb.ProfileView, "_recent_galleries.html", galleries: @recent_galleries, user: @user, conn: @conn
     = render PhilomenaWeb.ProfileView, "_recent_comments.html", comments: @recent_comments, user: @user, conn: @conn
     = render PhilomenaWeb.ProfileView, "_recent_posts.html", posts: @recent_posts, user: @user, conn: @conn

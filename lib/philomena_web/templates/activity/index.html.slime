@@ -32,7 +32,7 @@
               ' No artist tags have any associated streams.
               = if can?(@conn, :create, Philomena.Channels.Channel) do
                 ' As an administrator of this site, you may
-                => link "click here", to: Routes.channel_path(@conn, :new)
+                => link "click here", to: ~p"/channels/new"
                 ' to add some, or
                 a href="/channels"
                   ' click here
@@ -63,4 +63,4 @@
               ' Browse Watched Images
         .media-list
           = for image <- @watched do
-            = render PhilomenaWeb.ImageView, "_image_box.html", image: image, link: Routes.image_path(@conn, :show, image, q: "my:watched"), size: :thumb_small, conn: @conn
+            = render PhilomenaWeb.ImageView, "_image_box.html", image: image, link: ~p"/images/#{image}?#{[q: "my:watched"]}", size: :thumb_small, conn: @conn

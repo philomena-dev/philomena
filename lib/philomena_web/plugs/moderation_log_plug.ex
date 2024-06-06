@@ -29,7 +29,7 @@ defmodule PhilomenaWeb.ModerationLogPlug do
     user = conn.assigns.current_user
     action = Controller.action_name(conn)
 
-    %{subject_path: subject_path, body: body} = details_func.(conn, action, userdata)
+    %{subject_path: subject_path, body: body} = details_func.(action, userdata)
 
     mod = Controller.controller_module(conn)
     [mod_name] = Regex.run(@controller_regex, to_string(mod), capture: :all_but_first)

@@ -50,8 +50,8 @@ defmodule PhilomenaWeb.Admin.UserBanController do
       {:ok, user_ban} ->
         conn
         |> put_flash(:info, "User was successfully banned.")
-        |> moderation_log(details: &log_details/3, data: user_ban)
-        |> redirect(to: Routes.admin_user_ban_path(conn, :index))
+        |> moderation_log(details: &log_details/2, data: user_ban)
+        |> redirect(to: ~p"/admin/user_bans")
 
       {:error, :user_ban, changeset, _changes} ->
         render(conn, "new.html", changeset: changeset)
@@ -71,8 +71,8 @@ defmodule PhilomenaWeb.Admin.UserBanController do
       {:ok, user_ban} ->
         conn
         |> put_flash(:info, "User ban successfully updated.")
-        |> moderation_log(details: &log_details/3, data: user_ban)
-        |> redirect(to: Routes.admin_user_ban_path(conn, :index))
+        |> moderation_log(details: &log_details/2, data: user_ban)
+        |> redirect(to: ~p"/admin/user_bans")
 
       {:error, changeset} ->
         render(conn, "edit.html", changeset: changeset)
@@ -84,8 +84,8 @@ defmodule PhilomenaWeb.Admin.UserBanController do
 
     conn
     |> put_flash(:info, "User ban successfully deleted.")
-    |> moderation_log(details: &log_details/3, data: user_ban)
-    |> redirect(to: Routes.admin_user_ban_path(conn, :index))
+    |> moderation_log(details: &log_details/2, data: user_ban)
+    |> redirect(to: ~p"/admin/user_bans")
   end
 
   defp load_bans(queryable, conn) do
@@ -116,7 +116,7 @@ defmodule PhilomenaWeb.Admin.UserBanController do
     end
   end
 
-  defp log_details(conn, action, ban) do
+  defp log_details(action, ban) do
     body =
       case action do
         :create -> "Created a user ban #{ban.generated_ban_id}"
@@ -124,6 +124,6 @@ defmodule PhilomenaWeb.Admin.UserBanController do
         :delete -> "Deleted a user ban #{ban.generated_ban_id}"
       end
 
-    %{body: body, subject_path: Routes.admin_user_ban_path(conn, :index)}
+    %{body: body, subject_path: ~p"/admin/user_bans"}
   end
 end

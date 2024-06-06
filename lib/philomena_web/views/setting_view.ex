@@ -51,7 +51,7 @@ defmodule PhilomenaWeb.SettingView do
     ]
   end
 
-  def light_theme_options(conn) do
+  def light_theme_options do
     [
       [
         key: "Red",

@@ -19,13 +19,13 @@ defmodule PhilomenaWeb.Image.DeleteController do
       {:ok, result} ->
         conn
         |> put_flash(:info, "Image successfully hidden.")
-        |> moderation_log(details: &log_details/3, data: result.image)
-        |> redirect(to: Routes.image_path(conn, :show, image))
+        |> moderation_log(details: &log_details/2, data: result.image)
+        |> redirect(to: ~p"/images/#{image}")
 
       _error ->
         conn
         |> put_flash(:error, "Failed to hide image.")
-        |> redirect(to: Routes.image_path(conn, :show, image))
+        |> redirect(to: ~p"/images/#{image}")
     end
   end
 
@@ -36,13 +36,13 @@ defmodule PhilomenaWeb.Image.DeleteController do
       {:ok, image} ->
         conn
         |> put_flash(:info, "Hide reason updated.")
-        |> moderation_log(details: &log_details/3, data: image)
-        |> redirect(to: Routes.image_path(conn, :show, image))
+        |> moderation_log(details: &log_details/2, data: image)
+        |> redirect(to: ~p"/images/#{image}")
 
       {:error, _changeset} ->
         conn
         |> put_flash(:error, "Couldn't update hide reason.")
-        |> redirect(to: Routes.image_path(conn, :show, image))
+        |> redirect(to: ~p"/images/#{image}")
     end
   end
 
@@ -54,7 +54,7 @@ defmodule PhilomenaWeb.Image.DeleteController do
       _false ->
         conn
         |> put_flash(:error, "Cannot change hide reason on a non-hidden image!")
-        |> redirect(to: Routes.image_path(conn, :show, conn.assigns.image))
+        |> redirect(to: ~p"/images/#{conn.assigns.image}")
         |> halt()
     end
   end
@@ -66,11 +66,11 @@ defmodule PhilomenaWeb.Image.DeleteController do
 
     conn
     |> put_flash(:info, "Image successfully unhidden.")
-    |> moderation_log(details: &log_details/3, data: image)
-    |> redirect(to: Routes.image_path(conn, :show, image))
+    |> moderation_log(details: &log_details/2, data: image)
+    |> redirect(to: ~p"/images/#{image}")
   end
 
-  defp log_details(conn, action, image) do
+  defp log_details(action, image) do
     body =
       case action do
         :create -> "Hidden image >>#{image.id} (#{image.deletion_reason})"
@@ -80,7 +80,7 @@ defmodule PhilomenaWeb.Image.DeleteController do
 
     %{
       body: body,
-      subject_path: Routes.image_path(conn, :show, image)
+      subject_path: ~p"/images/#{image}"
     }
   end
 end
