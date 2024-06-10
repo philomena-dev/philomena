@@ -1,3 +1,7 @@
+.hidden--narrow-screen {
+  display: none;
+}
+
 /* Phones. */
 @mixin if-phone {
   .hidden--phone {
@@ -23,5 +27,16 @@
 @mixin if-desktop {
   .hidden--desktop {
     display: none !important;
+  }
+}
+
+/* Widescreens are larger than 1500px */
+@mixin if-widescreen {
+  .hidden--widescreen {
+    display: none !important;
+  }
+
+  .hidden--narrow-screen {
+    display: inherit;
   }
 }

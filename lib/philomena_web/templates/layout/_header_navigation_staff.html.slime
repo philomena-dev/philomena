@@ -1,8 +1,8 @@
-.flex.flex--centered.header--secondary__admin-links.stretched-mobile-links.js-staff-action
+.header--secondary__admin-links.js-staff-action
   = if manages_users?(@conn) do
     .dropdown.hidden--mobile
       a.header__link title="Admin"
-        ' A
+        i.fa.fa-bars>
         i.fa.fa-caret-down
 
       .dropdown__content.js-burger-links
@@ -64,38 +64,56 @@
 
   = if @pending_approval_count do
     = link to: ~p"/admin/approvals", class: "header__link", title: "Approval Queue" do
-      ' Q
+      i.fa.fa-stamp>
+      span
+        | A
+        span.hidden--narrow-screen> pprovals
       span.header__counter__admin
         = @pending_approval_count
 
   = if @duplicate_report_count do
     = link to: ~p"/duplicate_reports", class: "header__link", title: "Duplicates" do
-      ' D
+      i.fa.fa-copy>
+      span
+        | D
+        span.hidden--narrow-screen> upes
       span.header__counter__admin
         = @duplicate_report_count
 
   = if @report_count do
     = link to: ~p"/admin/reports", class: "header__link", title: "Reports" do
-      ' R
+      i.fa.fa-flag>
+      span
+        | R
+        span.hidden--narrow-screen> eports
       span.header__counter__admin
         = @report_count
 
   = if @artist_link_count do
     = link to: ~p"/admin/artist_links", class: "header__link", title: "Artist Links" do
-      ' L
+      i.fa.fa-link>
+      span
+        | L
+        span.hidden--narrow-screen> inks
       span.header__counter__admin
         = @artist_link_count
 
   = if @dnp_entry_count do
     = link to: ~p"/admin/dnp_entries", class: "header__link", title: "DNP Requests" do
-      ' S
+      i.fa.fa-circle-minus>
+      span
+        span.hidden--narrow-screen> DNPs
+        span.hidden--widescreen> S
       span.header__counter__admin
         = @dnp_entry_count
 
   = if manages_bans?(@conn) do
     .dropdown.hidden--mobile
       a.header__link title="Bans"
-        ' B
+        i.fa.fa-gavel>
+      span
+        | B
+        span.hidden--narrow-screen> ans
         i.fa.fa-caret-down
 
       .dropdown__content.dropdown__content--right.js-burger-links

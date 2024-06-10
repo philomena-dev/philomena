@@ -5,6 +5,7 @@
 import { fetchJson, handleError } from './utils/requests';
 import { $ } from './utils/dom';
 import { delegate } from './utils/events';
+import { assertNotNull } from './utils/assert';
 import store from './utils/store';
 
 const NOTIFICATION_INTERVAL = 600000,
@@ -39,7 +40,7 @@ function getNewNotifications() {
 }
 
 function updateNotificationTicker(notificationCount) {
-  const ticker = $('.js-notification-ticker');
+  const ticker = assertNotNull($('.js-notification-ticker'));
   const parsedNotificationCount = Number(notificationCount);
 
   ticker.dataset.notificationCount = parsedNotificationCount;

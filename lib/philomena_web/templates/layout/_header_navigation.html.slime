@@ -45,7 +45,7 @@ a.header__link href="/tags"
 a.header__link href="/channels"
   i.fa.fa-stream>
   ' Live
-  span.header__counter
+  span.header__counter--simple
     = @conn.assigns.live_channels
 
 a.header__link href="/galleries"

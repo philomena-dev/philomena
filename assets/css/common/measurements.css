@@ -1,3 +1,4 @@
+$min-widescreen-width: 1500px;
 $min-desktop-width: 1280px;
 $max-phone-width: 700px;
 $narrow-layout-width: 960px;
@@ -22,7 +23,7 @@ $font-family-heading: $font-family-base;
 
   /* Navbar */
   --navbar-size: 4rem;
-  --navbar-secondary-size: 2.5rem;
+  --navbar-secondary-size: 2.25rem;
   --navbar-input-size: 2rem;
   --navbar-input-width: 18vw;
   --navbar-input-max-width: 22rem;
@@ -76,11 +77,14 @@ $font-family-heading: $font-family-base;
   --badge-normal-size: 2rem;
 
   /* Counter badges (the "red notification badge") */
-  --number-badge-size: 0.6rem;
+  --number-badge-size: 0.8rem;
   --number-badge-padding: 0.1rem;
   --number-badge-border: 2px;
-  --number-badge-lower-offset: 0.7rem;
-  --number-badge-upper-offset: 0.7rem;
+  --number-badge-vote-vertical-offset: 0.7rem;
+  --number-badge-header-vertical-offset: 1.2rem;
+  --number-badge-header-horizontal-offset: 0.6rem;
+  --number-badge-admin-vertical-offset: 0.6rem;
+  --number-badge-admin-horizontal-offset: 0.6rem;
 
   /* Fonts */
   --font-family: $font-family-base;
@@ -91,6 +95,7 @@ $font-family-heading: $font-family-base;
   --font-micro-size: 10px;
   --font-header-size: 16px;
   --font-icon-size: 2rem;
+  --font-small-icon-size: 0.9rem;
   --font-h1-size: 1.75rem;
   --font-h2-size: 1.5rem;
   --font-h3-size: 1.35rem;

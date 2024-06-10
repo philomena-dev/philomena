@@ -1,3 +1,9 @@
+@define-mixin if-widescreen {
+  @media (min-width: calc($min-widescreen-width + 1px)) {
+    @mixin-content;
+  }
+}
+
 @define-mixin if-desktop {
   @media (min-width: calc($min-desktop-width + 1px)) {
     @mixin-content;

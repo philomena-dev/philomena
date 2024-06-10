@@ -60,7 +60,7 @@ function createTagDropdown(tag: HTMLSpanElement) {
     const act = event.target.dataset.tagAction;
 
     if (act && actions[act]) {
-      actions[act]()
+      actions[act]();
     }
   }) as EventListener);
 }

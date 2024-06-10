@@ -9,6 +9,7 @@ header {
 
 .header__link {
   @mixin animated-transition;
+  position: relative;
   color: var(--text-color) !important;
 }
 
@@ -42,6 +43,29 @@ header {
   border: 0;
 }
 
+.header__counter {
+  position: absolute;
+  background: var(--danger-color);
+  border-radius: 100%;
+  min-width: var(--number-badge-size);
+  line-height: var(--number-badge-size);
+  font-size: var(--number-badge-size);
+  font-weight: bold;
+  padding: var(--number-badge-padding);
+  text-align: center;
+  top: var(--number-badge-header-vertical-offset);
+  left: var(--number-badge-header-horizontal-offset);
+}
+
+/* Old style counter */
+.header__counter--simple {
+  display: inline-flex;
+  padding: 0 var(--padding-small);
+  line-height: inherit;
+  text-align: center;
+  background: var(--primary-muted-color);
+}
+
 .header__input {
   @mixin animated-transition;
   height: var(--navbar-input-size);
@@ -72,14 +96,33 @@ header {
   padding: 0 var(--padding-normal);
 }
 
+.nav-container {
+  display: flex;
+  gap: var(--padding-normal);
+  padding: 0 var(--padding-normal);
+  flex-wrap: wrap;
+}
+
 nav.header__secondary {
   display: flex;
+  flex: 1 0 auto;
   line-height: var(--navbar-secondary-size);
+  border-radius: var(--border-radius-outer);
   padding: 0 var(--padding-large);
   font-size: var(--font-header-size);
   gap: var(--padding-large);
   align-items: center;
   background: var(--primary-color);
+}
+
+nav.header__secondary .fa,
+nav.header__staff .fa {
+  display: inline-flex;
+  text-align: center;
+  font-size: var(--font-small-icon-size);
+  width: var(--font-small-icon-size);
+  height: var(--font-small-icon-size);
+  margin-right: var(--padding-tiny);
 }
 
 nav.header__secondary .header__link {

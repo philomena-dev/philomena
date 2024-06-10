@@ -27,7 +27,7 @@
   padding: var(--number-badge-padding);
   line-height: var(--number-badge-size);
   min-width: var(--number-badge-size);
-  top: var(--number-badge-lower-offset);
+  top: var(--number-badge-vote-vertical-offset);
 }
 
 .interaction--comment:hover > .comments-count {

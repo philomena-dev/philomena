@@ -30,7 +30,7 @@ header
   = if @current_user do
     a.header__link href="/notifications" title="Notifications"
       i.fas.fa-bell>
-      /span.js-notification-ticker.fa__text.header__counter data-notification-count=@notification_count = @notification_count
+      span.js-notification-ticker.fa__text.header__counter data-notification-count=@notification_count = @notification_count
 
     a.header__link href="/conversations" title="Conversations"
       = if @conversation_count > 0 do
@@ -125,7 +125,11 @@ header
       | Register
     a.header__link href=~p"/sessions/new"
       | Login
-nav.header__secondary
-  = render PhilomenaWeb.LayoutView, "_header_navigation.html", assigns
+
+.nav-container
+  nav.header__secondary
+    = render PhilomenaWeb.LayoutView, "_header_navigation.html", assigns
+
   = if !is_nil(@current_user) and @current_user.role != "user" do
-    /= render PhilomenaWeb.LayoutView, "_header_staff_links.html", assigns
+    nav.header__staff
+      = render PhilomenaWeb.LayoutView, "_header_navigation_staff.html", assigns
