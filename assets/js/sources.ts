@@ -1,7 +1,7 @@
 import { $ } from './utils/dom';
 import { inputDuplicatorCreator } from './input-duplicator';
 
-export interface SourcesEvent extends CustomEvent<Response> {
+export interface TagSourceEvent extends CustomEvent<Response> {
   target: HTMLElement,
 }
 
@@ -17,7 +17,7 @@ function setupInputs() {
 function imageSourcesCreator() {
   setupInputs();
 
-  document.addEventListener('fetchcomplete', (({ target, detail }: SourcesEvent) => {
+  document.addEventListener('fetchcomplete', (({ target, detail }: TagSourceEvent) => {
     const sourceSauce = $<HTMLElement>('.js-sourcesauce');
 
     if (sourceSauce && target && target.matches('#source-form')) {

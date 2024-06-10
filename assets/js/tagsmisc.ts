@@ -6,7 +6,7 @@ import { $, $$ } from './utils/dom';
 import store from './utils/store';
 import { initTagDropdown } from './tags';
 import { setupTagsInput, reloadTagsInput } from './tagsinput';
-import { SourcesEvent } from './sources';
+import { TagSourceEvent } from './sources';
 
 type TagInputActionFunction = (tagInput: HTMLTextAreaElement | null) => void
 type TagInputActionList = {
@@ -49,7 +49,7 @@ function setupTags() {
   });
 }
 
-function updateTagSauce({target, detail}: SourcesEvent) {
+function updateTagSauce({target, detail}: TagSourceEvent) {
   const tagSauce = $<HTMLDivElement>('.js-tagsauce');
 
   if (tagSauce && target.matches('#tags-form')) {
