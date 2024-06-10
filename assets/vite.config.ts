@@ -28,6 +28,10 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
   return {
     publicDir: 'static',
     plugins: [],
+    server: {
+      host: '0.0.0.0',
+      port: 5173,
+    },
     resolve: {
       alias: {
         common: path.resolve(__dirname, 'css/common/'),
