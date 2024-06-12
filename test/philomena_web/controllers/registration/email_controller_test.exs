@@ -17,7 +17,7 @@ defmodule PhilomenaWeb.Registration.EmailControllerTest do
         })
 
       assert redirected_to(conn) == ~p"/registrations/edit"
-      assert Flash.get(conn.assigns.flash, :info) =~ "A link to confirm your email"
+      assert Flash.get(conn.assigns.flash, :alert) =~ "A link to confirm your email"
       assert Users.get_user_by_email(user.email)
     end
 
@@ -54,7 +54,7 @@ defmodule PhilomenaWeb.Registration.EmailControllerTest do
       conn = get(conn, ~p"/registrations/email/#{token}")
       assert redirected_to(conn) == ~p"/registrations/edit"
 
-      assert Flash.get(conn.assigns.flash, :error) =~
+      assert Flash.get(conn.assigns.flash, :warning) =~
                "Email change link is invalid or it has expired"
     end
 
@@ -62,7 +62,7 @@ defmodule PhilomenaWeb.Registration.EmailControllerTest do
       conn = get(conn, ~p"/registrations/email/oops")
       assert redirected_to(conn) == ~p"/registrations/edit"
 
-      assert Flash.get(conn.assigns.flash, :error) =~
+      assert Flash.get(conn.assigns.flash, :warning) =~
                "Email change link is invalid or it has expired"
 
       assert Users.get_user_by_email(user.email)

@@ -164,7 +164,7 @@ defmodule PhilomenaWeb.UserAuthTest do
       assert conn.halted
       assert redirected_to(conn) == ~p"/sessions/new"
 
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+      assert Phoenix.Flash.get(conn.assigns.flash, :warning) ==
                "You must log in to access this page."
     end
 

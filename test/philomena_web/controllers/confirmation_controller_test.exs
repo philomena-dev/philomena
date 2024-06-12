@@ -27,7 +27,7 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
         })
 
       assert redirected_to(conn) == "/"
-      assert Flash.get(conn.assigns.flash, :info) =~ "If your email is in our system"
+      assert Flash.get(conn.assigns.flash, :alert) =~ "If your email is in our system"
       assert Repo.get_by!(Users.UserToken, user_id: user.id).context == "confirm"
     end
 
@@ -40,7 +40,7 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
         })
 
       assert redirected_to(conn) == "/"
-      assert Flash.get(conn.assigns.flash, :info) =~ "If your email is in our system"
+      assert Flash.get(conn.assigns.flash, :alert) =~ "If your email is in our system"
       refute Repo.get_by(Users.UserToken, user_id: user.id)
     end
 
@@ -51,7 +51,7 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
         })
 
       assert redirected_to(conn) == "/"
-      assert Flash.get(conn.assigns.flash, :info) =~ "If your email is in our system"
+      assert Flash.get(conn.assigns.flash, :alert) =~ "If your email is in our system"
       assert Repo.all(Users.UserToken) == []
     end
   end
@@ -73,7 +73,7 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
       conn = get(conn, ~p"/confirmations/#{token}")
       assert redirected_to(conn) == "/"
 
-      assert Flash.get(conn.assigns.flash, :error) =~
+      assert Flash.get(conn.assigns.flash, :warning) =~
                "Confirmation link is invalid or it has expired"
     end
 
@@ -81,7 +81,7 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
       conn = get(conn, ~p"/confirmations/oops")
       assert redirected_to(conn) == "/"
 
-      assert Flash.get(conn.assigns.flash, :error) =~
+      assert Flash.get(conn.assigns.flash, :warning) =~
                "Confirmation link is invalid or it has expired"
 
       refute Users.get_user!(user.id).confirmed_at
