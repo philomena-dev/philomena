@@ -20,9 +20,11 @@ export function setupSettings() {
   });
 
   // Theme preview
-  themeSelect && themeSelect.addEventListener('change', () => {
-    if (styleSheet) {
-      styleSheet.href = themeSelect.options[themeSelect.selectedIndex].dataset.themePath || '#';
-    }
-  });
+  if (themeSelect) {
+    themeSelect.addEventListener('change', () => {
+      if (styleSheet) {
+        styleSheet.href = themeSelect.options[themeSelect.selectedIndex].dataset.themePath || '#';
+      }
+    });
+  }
 }

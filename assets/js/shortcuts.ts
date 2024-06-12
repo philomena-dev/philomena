@@ -55,11 +55,12 @@ const keyCodes: ShortcutKeycodes = {
   KeyO() { openFullView(); },                // O - open original
   KeyV() { openFullViewNewTab(); },          // V - open original in a new tab
   KeyF() {                                   // F - favourite image
-    getHover() ? click(`a.interaction--fave[data-image-id="${getHover()}"]`)
+    /* Gotta use a "return" here and in the next function because eslint is silly */
+    return getHover() ? click(`a.interaction--fave[data-image-id="${getHover()}"]`)
       : click('.block__header a.interaction--fave');
   },
   KeyU() {                                   // U - upvote image
-    getHover() ? click(`a.interaction--upvote[data-image-id="${getHover()}"]`)
+    return getHover() ? click(`a.interaction--upvote[data-image-id="${getHover()}"]`)
       : click('.block__header a.interaction--upvote');
   },
 };

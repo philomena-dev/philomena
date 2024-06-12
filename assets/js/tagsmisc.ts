@@ -18,7 +18,7 @@ type TagInputActionList = {
 function tagInputButtons({target}: PointerEvent) {
   const actions: TagInputActionList = {
     save(tagInput: HTMLTextAreaElement | null) {
-      tagInput && store.set('tag_input', tagInput.value);
+      if (tagInput) store.set('tag_input', tagInput.value);
     },
     load(tagInput: HTMLTextAreaElement | null) {
       if (!tagInput) { return; }

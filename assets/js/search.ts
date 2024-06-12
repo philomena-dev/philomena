@@ -37,14 +37,14 @@ function executeFormHelper(e: PointerEvent) {
   const searchField = $<HTMLInputElement>('.js-search-field');
   const attr = (name: string) => e.target && (e.target as HTMLElement).getAttribute(name);
 
-  attr('data-search-add') && addTag(searchField, attr('data-search-add'));
-  attr('data-search-show-help') && showHelp((e.target as Node).textContent || '', attr('data-search-show-help'));
-  attr('data-search-select-last') && searchField && selectLast(searchField, parseInt(attr('data-search-select-last') || '', 10));
-  attr('data-search-prepend') && searchField && prependToLast(searchField, attr('data-search-prepend') || '');
+  if (attr('data-search-add')) addTag(searchField, attr('data-search-add'));
+  if (attr('data-search-show-help')) showHelp((e.target as Node).textContent || '', attr('data-search-show-help'));
+  if (attr('data-search-select-last') && searchField) selectLast(searchField, parseInt(attr('data-search-select-last') || '', 10));
+  if (attr('data-search-prepend') && searchField) prependToLast(searchField, attr('data-search-prepend') || '');
 }
 
 export function setupSearch() {
   const form = $<HTMLInputElement>('.js-search-form');
 
-  form && form.addEventListener('click', executeFormHelper as EventListener);
+  if (form) form.addEventListener('click', executeFormHelper as EventListener);
 }

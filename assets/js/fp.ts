@@ -152,7 +152,7 @@ export async function setSesCookie() {
       fp = `d${await createFp()}`;
     }
     // If it fails, use fakeprint "d015c342859dde3" as a last resort.
-    catch (err) {
+    catch {
       fp = 'd015c342859dde3';
     }
 

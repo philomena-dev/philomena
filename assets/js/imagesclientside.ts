@@ -7,6 +7,7 @@ import { setupInteractions } from './interactions';
 import { showThumb, showBlock, spoilerThumb, spoilerBlock, hideThumb } from './utils/image';
 import { TagData, getHiddenTags, getSpoileredTags, imageHitsTags, imageHitsComplex, displayTags } from './utils/tag';
 import { AstMatcher } from './query/types';
+import { assertNotUndefined } from './utils/assert';
 
 type RunFilterCallback = (img: HTMLDivElement, test: TagData[]) => void;
 
@@ -16,7 +17,7 @@ function runFilter(img: HTMLDivElement, test: TagData[] | boolean, runCallback: 
   runCallback(img, test as TagData[]);
 
   // I don't like this.
-  img.dataset.imageId && window.booru.imagesWithDownvotingDisabled.push(img.dataset.imageId);
+  window.booru.imagesWithDownvotingDisabled.push(assertNotUndefined(img.dataset.imageId));
 
   return true;
 }
