@@ -168,7 +168,7 @@
           .block__header__buttons
             a.button href=~p"/profiles/#{@user}/details"
               i.fa.fa-plus>
-              | Edit
+              | Add / Edit
         .block__content
           = if Enum.count(@mod_notes) > 0 do
             table.table

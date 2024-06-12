@@ -12,4 +12,4 @@
 
       - true ->
         span: i.fa.icon--padded--right.fa-info-circle
-        | No description provided.
+        | No description provided
