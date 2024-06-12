@@ -104,7 +104,9 @@
 }
 
 .block__header > .fa,
-.block__header--single-item > .fa {
+.block__header--single-item > .fa,
+.block__header > span .fa,
+.block__header--single-item > span .fa {
   margin-right: var(--padding-normal);
 }
 

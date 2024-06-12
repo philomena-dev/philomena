@@ -66,9 +66,15 @@
       = render PhilomenaWeb.ProfileView, "_commission.html", user: @user, commission_information: @commission_information, conn: @conn
 
     .block
-      .block__header
-        i.fa.fa-link
-        | Artist Links
+      .block__header.flex
+        span
+          i.fa.fa-link
+          | Artist Links
+        = if current?(@user, @conn.assigns.current_user) or manages_links?(@conn, @user) do
+          .block__header__buttons
+            a.button href=~p"/profiles/#{@user}/artist_links/new"
+              i.fa.fa-link>
+              | Create
 
       = for link <- @user.verified_links, should_see_link?(@conn, @user, link) do
         - watchers = if link.tag, do: @watcher_counts[link.tag.id] || 0, else: 0
@@ -101,16 +107,22 @@
               => unless link.public do
                 br
                 ' Hidden
+      = if Enum.count(@user.verified_links) == 0 do
+        .block__content
+          p
+            span: i.fa.icon--padded--right.fa-info-circle
+            | No artist links associated
 
-      = if current?(@user, @conn.assigns.current_user) or manages_links?(@conn, @user) do
-        .block__content.alternating-color.break-word
-          a.button href=~p"/profiles/#{@user}/artist_links/new"
-            i.fa.fa-link>
-            | Create an Artist Link
     .block
-      .block__header
-        i.fa.fa-award
-        | Badges
+      .block__header.flex
+        span
+          i.fa.fa-award
+          | Badges
+        = if manages_awards?(@conn) and not hide_staff_tools?(@conn) do
+          .block__header__buttons
+            a.button href=~p"/profiles/#{@user}/awards/new"
+              i.fa.fa-trophy>
+              | Award
       = for award <- award_order(@user.awards) do
         .block__content.flex.flex--centered.flex--center-distributed.alternating-color.no-overflow title=award.label
           .flex__grow.center
@@ -129,49 +141,68 @@
               br
               a href=~p"/profiles/#{@user}/awards/#{award}/edit"
                 ' Edit
-      = if manages_awards?(@conn) and not hide_staff_tools?(@conn) do
-        .block__content.alternating-color.no-overflow
-          a.button href=~p"/profiles/#{@user}/awards/new"
-            i.fa.fa-trophy>
-            | Award a badge
-
+      = if Enum.count(@user.awards) == 0 do
+        .block__content
+          p 
+            span: i.fa.icon--padded--right.fa-info-circle
+            | No badge awards received
     .block
-      .block__header
-        i.fa.fa-question
-        | About Me
+      .block__header.flex
+        span
+          i.fa.fa-question
+          | About Me
+        = if can?(@conn, :edit_description, @user) do
+          .block__header__buttons
+            a.button href=~p"/profiles/#{@user}/description/edit"
+              i.fa.fa-edit>
+              | Edit
 
       = render PhilomenaWeb.ProfileView, "_about_me.html", user: @user, about_me: @about_me, conn: @conn
 
     = if can_read_mod_notes?(@conn) and not hide_staff_tools?(@conn) do
       .block.block--warning
-        .block__header
-          i.fa.fa-sticky-note
-          | Mod Notes
-        table.table
-          thead
-            tr
-              th Note
-              th Created
-          tbody
-            = for {body, mod_note} <- @mod_notes do
-              tr
-                td = body
-                td = pretty_time(mod_note.created_at)
+        .block__header.flex
+          span
+            i.fa.fa-sticky-note
+            | Mod Notes
+          .block__header__buttons
+            a.button href=~p"/profiles/#{@user}/details"
+              i.fa.fa-plus>
+              | Edit
         .block__content
-          a.button href=~p"/profiles/#{@user}/details"
-            i.fa.fa-plus>
-            | Edit mod notes
+          = if Enum.count(@mod_notes) > 0 do
+            table.table
+              thead
+                tr
+                  th Note
+                  th Created
+              tbody
+                = for {body, mod_note} <- @mod_notes do
+                  tr
+                    td = body
+                    td = pretty_time(mod_note.created_at)
+          - else
+            p 
+              span: i.fa.icon--padded--right.fa-info-circle
+              | No mod notes
     = if can_index_user?(@conn) do
       .block.block--warning
-        .block__header
-          i.fa.fa-clipboard
-          | Moderation Scratchpad
+        .block__header.flex
+          span
+            i.fa.fa-clipboard
+            | Moderation Scratchpad
+          .block__header__buttons
+            a.button href=~p"/profiles/#{@user}/scratchpad/edit"
+              i.fa.fa-edit>
+              | Edit
         .block__content.profile-about
-          = @scratchpad
-        .block__content
-          a.button href=~p"/profiles/#{@user}/scratchpad/edit"
-            i.fa.fa-edit>
-            | Edit
+          - {_, contents} = @scratchpad
+          = if String.trim(contents) != "" do
+            = @scratchpad
+          - else
+            p 
+              span: i.fa.icon--padded--right.fa-info-circle
+              | No information present
 
   .column-layout__main
     = render PhilomenaWeb.ProfileView, "_statistics.html", user: @user, statistics: @statistics, conn: @conn

@@ -24,6 +24,7 @@
       = link "More information", to: ~p"/profiles/#{@user}/commission"
 
     - current?(@user, @conn.assigns.current_user) ->
+      span: i.fa.icon--padded--right.fa-info-circle
       = if Enum.any?(@conn.assigns.user.verified_links) do
         em
           ' You don't have any commission information listed yet.
@@ -36,3 +37,6 @@
           ' to set one up.
 
     - true ->
+      p
+        span: i.fa.icon--padded--right.fa-info-circle
+        | No commission listing set up

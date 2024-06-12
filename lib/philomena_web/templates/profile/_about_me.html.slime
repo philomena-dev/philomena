@@ -1,19 +1,15 @@
 .block__content.profile-about
-  = cond do
-    - @user.description not in [nil, ""] ->
-      = @about_me
+  p
+    = cond do
+      - @user.description not in [nil, ""] ->
+        = @about_me
 
-    - current?(@user, @conn.assigns.current_user) ->
-      em
-        ' Want to
-        => link "add some info about yourself?", to: ~p"/profiles/#{@user}/description/edit"
+      - current?(@user, @conn.assigns.current_user) ->
+        span: i.fa.icon--padded--right.fa-info-circle
+        em
+          ' Want to
+          => link "add some info about yourself?", to: ~p"/profiles/#{@user}/description/edit"
 
-    - true ->
-      | No description provided.
-
-  = if can?(@conn, :edit_description, @user) do
-    = if @user.description not in [nil, ""] do
-      hr.separator.separator--secondary
-    a.button href=~p"/profiles/#{@user}/description/edit"
-      i.fa.fa-edit>
-      | Edit
+      - true ->
+        span: i.fa.icon--padded--right.fa-info-circle
+        | No description provided.
