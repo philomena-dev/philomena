@@ -6,21 +6,20 @@
 - is_required = assigns[:required]
 - input_classes = assigns[:class]
 .block__header.block__header--js-tabbed
-  a.selected href="#" data-click-tab="write"
+  a.button.selected href="#" data-click-tab="write"
     i.fa> class="fa-#{action_icon}"
     = action_text
 
-  a href="#" data-click-tab="preview"
-    i.fa.fa-cog.icon--padded.small.fa-spin.js-preview-loading.hidden> title=raw('Loading preview&hellip;')
-    i.fa.fa-eye.icon--padded.small.js-preview-idle>
+  a.button href="#" data-click-tab="preview"
+    i.fa.fa-cog.fa-spin.js-preview-loading.hidden> title=raw('Loading preview&hellip;')
+    i.fa.fa-eye.js-preview-idle>
     | Preview
 
-.block__tab.communication-edit__tab.selected.js-preview-input-wrapper data-tab="write"
-  = render PhilomenaWeb.MarkdownView, "_help.html", conn: @conn
+.block__tab.communication__edit-tab.selected.js-preview-input-wrapper data-tab="write"
   = render PhilomenaWeb.MarkdownView, "_toolbar.html", conn: @conn
 
   .field
     = textarea form, field_name, class: add_classes("input input--wide input--text input--resize-vertical js-toolbar-input js-preview-input", input_classes), placeholder: field_placeholder, required: required?(is_required)
     = error_tag form, field_name
 
-.block__tab.communication-edit__tab.hidden.js-preview-content data-tab="preview"
+.block__tab.block__content.communication__edit-tab.hidden.js-preview-content data-tab="preview"

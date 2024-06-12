@@ -78,6 +78,9 @@ $spoiler-color: #0f0f0f;
   --spoiler-color: $spoiler-color;
   --spoiler-revealed-color: hsl(from $spoiler-color h s calc(l + 20));
 
+  /* The invisible color */
+  --invisible-color: #00000000;
+
   /* Type (information category) colors */
   @mixin type-color success, $success-color;
   @mixin type-color warning, $warning-color;

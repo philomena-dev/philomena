@@ -4,7 +4,7 @@ p
 
 article.block.communication
   .block__content.flex.flex--no-wrap
-    = render PhilomenaWeb.CommunicationView, "_body.html", object: @report, body: @body, conn: @conn
+    = render PhilomenaWeb.CommunicationView, "_body.html", object: @report, body: @body, conn: @conn, name: "report"
 
   .block__content.communication__options
     .flex.flex--wrap.flex--spaced-out

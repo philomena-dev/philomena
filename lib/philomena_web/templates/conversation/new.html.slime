@@ -38,5 +38,5 @@ h1 New Conversation
     div
       = render PhilomenaWeb.MarkdownView, "_input.html", changeset: @changeset, conn: @conn, f: fm, action_icon: "pencil-alt", action_text: "Compose"
 
-  .block__content.communication-edit__actions
+  .block__content.communication__edit-actions
     = submit "Send", class: "button", autocomplete: "off", data: [disable_with: "Sending..."]

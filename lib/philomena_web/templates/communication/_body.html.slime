@@ -1,7 +1,7 @@
 elixir:
   anon = is_nil(assigns[:noanon]) or @noanon == false
   options = if is_nil(assigns[:options]), do: "", else: @options
-  deleted = Map.has_key?(@object, :hidden_from_users) and @object.hidden_from_users == true
+  deleted = if Map.has_key?(@object, :hidden_from_users), do: @object.hidden_from_users == true, else: false
   hidden_if_deleted = if deleted, do: "hidden", else: ""
   deleted_class = if deleted, do: "communication--deleted", else: ""
 
@@ -13,7 +13,6 @@ elixir:
     = render PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html", object: @object, conn: @conn
   - true ->
     = render PhilomenaWeb.UserAttributionView, "_user_avatar.html", object: @object, conn: @conn, class: "avatar--small"
-
 - username = if anon do
   = render PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @object, awards: true, conn: @conn
 - else

@@ -4,7 +4,7 @@
       p Oops, something went wrong! Please check the errors below.
 
   .block
-    .communication-edit__wrap
+    .communication__edit-wrap
       .field
         = render PhilomenaWeb.MarkdownView, "_input.html", conn: @conn, f: f, placeholder: "Please read the site rules before posting and use ||spoilers|| for NSFW stuff in SFW forums."
 
@@ -12,5 +12,5 @@
         = text_input f, :edit_reason, class: "input input--wide", placeholder: "Reason for edit"
         = error_tag f, :edit_reason
 
-    .block__content.communication-edit__actions
+    .block__content.communication__edit-actions
       => submit "Edit", class: "button", data: [disable_with: raw("Posting&hellip;")]

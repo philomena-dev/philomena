@@ -165,3 +165,9 @@
 .image-scaled {
   max-width: 100%;
 }
+
+@mixin if-phone {
+  .media-box__header--link-row {
+    grid-template-columns: 1fr 1fr 1.5fr 1fr 1fr;
+  }
+}

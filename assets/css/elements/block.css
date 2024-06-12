@@ -59,8 +59,7 @@
   border-bottom-right-radius: var(--border-radius-outer) !important;
 }
 
-.block__content,
-.block__tab {
+.block__content {
   border-radius: var(--border-radius-outer);
   padding: var(--padding-normal);
   background: var(--primary-dark-color);
@@ -146,14 +145,10 @@
   margin-top: 0;
 }
 
-.block__tab {
-  padding: var(--padding-normal);
-}
-
 .block__header--js-tabbed {
   display: flex;
   padding: 0;
-  gap: var(--padding-normal);
+  gap: var(--padding-small);
 }
 
 @mixin if-mobile {
@@ -169,11 +164,11 @@
 }
 
 .block__header--js-tabbed a:hover {
-  background: var(--background-color);
+  background: var(--primary-dark-color);
 }
 
 .block__header--js-tabbed .selected {
-  background: var(--background-color);
+  background: var(--primary-dark-color);
 }
 
 .block--spaced-top {

@@ -33,7 +33,7 @@ nav.header__secondary > * {
 @mixin legacy-flex-gap block__header--js-tabbed, var(--padding-normal);
 @mixin legacy-flex-gap field, var(--padding-normal);
 @mixin legacy-flex-gap horizontal-list, var(--padding-normal);
-@mixin legacy-flex-gap communication-edit__actions, var(--padding-normal);
+@mixin legacy-flex-gap communication__edit-actions, var(--padding-normal);
 @mixin legacy-flex-gap header__link--user, var(--padding-normal);
 @mixin legacy-flex-gap tag-list, var(--padding-small);
 @mixin legacy-flex-gap tagsinput, var(--padding-small);

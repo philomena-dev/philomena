@@ -6,11 +6,23 @@
     width: 1rem;
   }
 
+  .interaction--$(type).interaction--nohover:hover {
+    color: var(--$(type)-color) !important;
+  }
+
   .interaction--$(type).active,
   .interaction--$(type):hover {
     color: var(--text-color) !important;
     background-color: var(--$(type)-color);
   }
+}
+
+.interaction--optional {
+  display: none;
+}
+
+.interaction--nohover:hover {
+  background: 0 !important;
 }
 
 @mixin interaction-type fave;

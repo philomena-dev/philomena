@@ -23,16 +23,17 @@ elixir:
     .media-box__header--link-row
       a.interaction--fave href="#" rel="nofollow" data-image-id=@image.id
         i.fa.fa-star title="Fave!"
+      span.interaction--fave.interaction--nohover.interaction--optional.hidden--phone = shorten_number(@image.faves_count)
       a.interaction--upvote href="#" rel="nofollow" data-image-id=@image.id
         i.fa.fa-arrow-up title="Yay!"
-      span.score title="Score" data-image-id=@image.id = @image.score
+      span.score title="Score" data-image-id=@image.id = shorten_number(@image.score)
       a.interaction--downvote href="#" rel="nofollow" data-image-id=@image.id
         i.fa.fa-arrow-down title="Neigh!"
+      a.interaction--hide.interaction--optional.hidden--phone href="#" rel="nofollow" data-image-id=@image.id
+        i.fa.fa-eye-slash title="Hide"
       a.interaction--comment href="/#{@image.id}#comments" title="Comments"
         i.fa.fa-comments>
         = if @image.comments_count > 0 do
-          span.comments-count data-image-id=@image.id = @image.comments_count
-      /a.interaction--hide href="#" rel="nofollow" data-image-id=@image.id
-        i.fa.fa-eye-slash title="Hide"
+          span.comments-count data-image-id=@image.id = shorten_number(@image.comments_count)
   .media-box__content class=size_class
     = render PhilomenaWeb.ImageView, "_image_container.html", link: link, image: @image, size: @size, conn: @conn

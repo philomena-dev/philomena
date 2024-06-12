@@ -14,10 +14,4 @@ article.block.communication
                   ' Approve
 
   .block__content.flex.flex--no-wrap
-    = render PhilomenaWeb.CommunicationView, "_body.html", object: %{user: @message.from}, noanon: true, body: @body, conn: @conn, name: "message"
-
-  .block__content.communication__options
-    .flex.flex--wrap.flex--spaced-out
-      div
-        ' Posted
-        = pretty_time(@message.created_at)
+    = render PhilomenaWeb.CommunicationView, "_body.html", object: %{user: @message.from, created_at: @message.created_at}, noanon: true, body: @body, conn: @conn, name: "message"

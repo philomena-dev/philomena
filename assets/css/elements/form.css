@@ -4,6 +4,10 @@ form .field {
   margin-bottom: var(--padding-normal);
 }
 
+form .field:last-child {
+  margin-bottom: 0;
+}
+
 form .form--two-column {
   display: grid;
   grid: inherit;

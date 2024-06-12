@@ -1,0 +1,7 @@
+.interaction--optional {
+  display: inherit !important;
+}
+
+.media-box__header--link-row {
+  grid-template-columns: 0.5fr 1.5fr 1fr 1.5fr 1fr 1fr 1fr;
+}

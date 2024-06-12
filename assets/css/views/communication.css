@@ -1,32 +1,42 @@
 .communication__toolbar {
+  display: flex;
+  flex-wrap: wrap;
   font-size: var(--font-size);
-  background: var(--secondary-color);
-  padding: 0 var(--padding-small);
+  background: var(--primary-dark-color);
+  padding: var(--padding-small);
   line-height: var(--block-header-height);
-  border: 1px solid var(--secondary-border-color);
-  border-bottom: 0;
-  box-sizing: border-box;
+  border-bottom: 1px solid var(--primary-border-color);
 }
 
 .communication__toolbar__button {
-  color: var(--text-color);
+  color: var(--text-color) !important;
   background: 0;
   border: 0;
-  padding: var(--padding-small);
+  border-radius: var(--border-radius-inner);
+  padding: 0 var(--padding-small);
 }
 
 .communication__toolbar__button:hover {
   background: var(--secondary-muted-color);
 }
 
-.communication-edit__actions {
+.communication__edit-tab {
+  border-radius: var(--border-radius-inner);
+  overflow: hidden;
+}
+
+.communication__edit-tab textarea {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.communication__edit-actions {
   display: flex;
   flex-direction: row;
   line-height: var(--block-header-height);
   border: 0;
-  margin: var(--padding-normal);
-  margin-top: 0;
-  gap: var(--padding-normal);
+  gap: var(--padding-small);
+  margin-top: var(--padding-small);
 }
 
 .communication__anonymous {

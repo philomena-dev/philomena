@@ -7,7 +7,7 @@
     div
       = render PhilomenaWeb.MarkdownView, "_input.html", conn: @conn, f: f, placeholder: "Please read the site rules before posting and use ||spoilers|| for NSFW stuff in SFW forums."
 
-    .block__content.communication-edit__actions
+    .block__content.communication__edit-actions
       => submit "Post", class: "button", data: [disable_with: raw("Posting&hellip;")]
 
       = render PhilomenaWeb.MarkdownView, "_anon_checkbox.html", conn: @conn, f: f
