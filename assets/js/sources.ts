@@ -1,5 +1,7 @@
+import { assertNotNull } from './utils/assert';
 import { $ } from './utils/dom';
 import { inputDuplicatorCreator } from './input-duplicator';
+import '../types/ujs';
 
 export interface TagSourceEvent extends CustomEvent<Response> {
   target: HTMLElement,
@@ -14,19 +16,17 @@ function setupInputs() {
   });
 }
 
-function imageSourcesCreator() {
+export function imageSourcesCreator() {
   setupInputs();
 
-  document.addEventListener('fetchcomplete', (({ target, detail }: TagSourceEvent) => {
-    const sourceSauce = $<HTMLElement>('.js-sourcesauce');
+  document.addEventListener('fetchcomplete', ({ target, detail }) => {
+    if (target.matches('#source-form')) {
+      const sourceSauce = assertNotNull($<HTMLElement>('.js-sourcesauce'));
 
-    if (sourceSauce && target && target.matches('#source-form')) {
       detail.text().then(text => {
         sourceSauce.outerHTML = text;
         setupInputs();
       });
     }
-  }) as EventListener);
+  });
 }
-
-export { imageSourcesCreator };

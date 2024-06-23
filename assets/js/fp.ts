@@ -1,36 +1,39 @@
 /**
  * FP version 4
  *
- * Not reliant on deprecated properties,
- * and potentially more accurate at what it's supposed to do.
+ * Not reliant on deprecated properties, and potentially
+ * more accurate at what it's supposed to do.
  */
 
-import { $ } from './utils/dom';
 import store from './utils/store';
 
-interface RealKeyboard {
-  getLayoutMap: () => Promise<Map<string, string>>
-}
+const storageKey = 'cached_ses_value';
 
-interface RealUserAgentData {
-  brands: [{brand: string, version: string}],
-  mobile: boolean,
-  platform: string,
-}
+declare global {
+  interface Keyboard {
+    getLayoutMap: () => Promise<Map<string, string>>
+  }
 
-interface RealNavigator extends Navigator {
-  deviceMemory: number | null,
-  keyboard: RealKeyboard | null,
-  userAgentData: RealUserAgentData | null,
+  interface UserAgentData {
+    brands: [{brand: string, version: string}],
+    mobile: boolean,
+    platform: string,
+  }
+
+  interface Navigator {
+    deviceMemory: number | undefined,
+    keyboard: Keyboard | undefined,
+    userAgentData: UserAgentData | undefined,
+  }
 }
 
 /**
- * Creates a 53-bit long hash of a string.
+ * Creates a 53-bit non-cryptographic hash of a string.
  *
- * @param {string} str The string to hash.
- * @param {number} seed The seed to use for hash generation.
- * @return {number} The resulting hash as a 53-bit number.
- * @see {@link https://stackoverflow.com/a/8831937}
+ * @param str The string to hash.
+ * @param seed The seed to use for hash generation.
+ * @return The resulting hash as a 53-bit number.
+ * @see {@link https://stackoverflow.com/a/52171480}
  */
 function cyrb53(str: string, seed: number = 0x16fe7b0a): number {
   let h1 = 0xdeadbeef ^ seed;
@@ -50,67 +53,104 @@ function cyrb53(str: string, seed: number = 0x16fe7b0a): number {
   return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 }
 
-/** Creates a semi-unique string from browser attributes.
+/**
+ * Get keyboard layout data from the navigator layout map.
  *
-  * @async
-  * @return {Promise<string>} Hexadecimally encoded 53 bit number padded to 7 bytes.
-  */
-async function createFp(): Promise<string> {
-  const nav = navigator as RealNavigator;
-  let kb = 'none';
-  let mem = '1';
-  let ua = 'none';
+ * @return String containing layout map entries, or `none` when unavailable
+ */
+async function getKeyboardData(): Promise<string> {
+  if (navigator.keyboard) {
+    const layoutMap = await navigator.keyboard.getLayoutMap();
 
-  if (nav.keyboard) {
-    kb = Array.from((await nav.keyboard.getLayoutMap()).entries()).sort().map(e => `${e[0]}${e[1]}`).join('');
+    return Array.from(layoutMap.entries())
+      .sort()
+      .map(([k, v]) => `${k}${v}`)
+      .join('');
   }
 
-  if (nav.deviceMemory) {
-    mem = nav.deviceMemory.toString();
+  return 'none';
+}
+
+/**
+ * Get an approximation of memory available in gigabytes.
+ *
+ * @return String containing device memory data, or `1` when unavailable
+ */
+function getMemoryData(): string {
+  if (navigator.deviceMemory) {
+    return navigator.deviceMemory.toString();
   }
 
-  if (nav.userAgentData) {
-    const uadata = nav.userAgentData;
+  return '1';
+}
+
+/**
+ * Get the "brands" of the user agent.
+ *
+ * For Chromium-based browsers this returns additional data like "Edge" or "Chrome"
+ * which may also contain additional data beyond the `userAgent` property.
+ *
+ * @return String containing brand data, or `none` when unavailable
+ */
+function getUserAgentBrands(): string {
+  const data = navigator.userAgentData;
+
+  if (data) {
     let brands = 'none';
 
-    if (uadata.brands && uadata.brands.length > 0) {
-      brands = uadata.brands.filter(e => !e.brand.match(/.*ot.*rand.*/gi)).map(e => `${e.brand}${e.version}`).join('');
+    if (data.brands && data.brands.length > 0) {
+      // NB: Chromium implements GREASE protocol to prevent ossification of
+      // the "Not a brand" string - see https://stackoverflow.com/a/64443187
+      brands = data.brands
+        .filter(e => !e.brand.match(/.*ot.*rand.*/gi))
+        .map(e => `${e.brand}${e.version}`)
+        .sort()
+        .join('');
     }
 
-    ua = `${brands}${uadata.mobile}${uadata.platform}`;
+    return `${brands}${data.mobile}${data.platform}`;
   }
 
-  let width: string | null = store.get('cached_rem_size');
-  const body = $<HTMLBodyElement>('body');
+  return 'none';
+}
 
-  if (!width && body) {
-    const testElement = document.createElement('span');
-    testElement.style.minWidth = '1rem';
-    testElement.style.maxWidth = '1rem';
-    testElement.style.position = 'absolute';
+/**
+ * Get the size in rems of the default body font.
+ *
+ * Causes a forced layout. Be sure to cache this value.
+ *
+ * @return String with the rem size
+ */
+function getFontRemSize(): string {
+  const testElement = document.createElement('span');
+  testElement.style.minWidth = '1rem';
+  testElement.style.maxWidth = '1rem';
+  testElement.style.position = 'absolute';
 
-    body.appendChild(testElement);
+  document.body.appendChild(testElement);
 
-    width = testElement.clientWidth.toString();
+  const width = testElement.clientWidth.toString();
 
-    body.removeChild(testElement);
+  document.body.removeChild(testElement);
 
-    store.set('cached_rem_size', width);
-  }
+  return width;
+}
 
-  if (!width) {
-    width = '0';
-  }
-
+/**
+ * Create a semi-unique string from browser attributes.
+ *
+ * @return Hexadecimally encoded 53 bit number padded to 7 bytes.
+ */
+async function createFp(): Promise<string> {
   const prints: string[] = [
     navigator.userAgent,
     navigator.hardwareConcurrency.toString(),
     navigator.maxTouchPoints.toString(),
     navigator.language,
-    kb,
-    mem,
-    ua,
-    width,
+    await getKeyboardData(),
+    getMemoryData(),
+    getUserAgentBrands(),
+    getFontRemSize(),
 
     screen.height.toString(),
     screen.width.toString(),
@@ -121,43 +161,50 @@ async function createFp(): Promise<string> {
     new Date().getTimezoneOffset().toString(),
   ];
 
-  return cyrb53(prints.join('')).toString(16).padStart(14, '0');
+  return cyrb53(prints.join(''))
+    .toString(16)
+    .padStart(14, '0');
+}
+
+/**
+ * Gets the existing `_ses` value from local storage or cookies.
+ *
+ * @return String `_ses` value or `null`
+ */
+function getSesValue(): string | null {
+  // Try storage
+  const storageValue: string | null = store.get(storageKey);
+  if (storageValue) {
+    return storageValue;
+  }
+
+  // Try cookie
+  const match = document.cookie.match(/_ses=([a-f0-9]+)/);
+  if (match && match[1]) {
+    return match[1];
+  }
+
+  // Not found
+  return null;
 }
 
 /**
  * Sets the `_ses` cookie.
  *
  * If `cached_ses_value` is present in local storage, uses it to set the `_ses` cookie.
- * Otherwise if the `_ses` cookie already exits, uses its value instead.
- * Otherwise attempts to generate a new value for the `_ses` cookie
- * based on various browser attributes.
+ * Otherwise, if the `_ses` cookie already exists, uses its value instead.
+ * Otherwise, attempts to generate a new value for the `_ses` cookie based on
+ * various browser attributes.
  * Failing all previous methods, sets the `_ses` cookie to a fallback value.
- *
- * @async
  */
 export async function setSesCookie() {
-  let fp: string | null = store.get('cached_ses_value');
+  let sesValue = getSesValue();
 
-  if (!fp) {
-    const m = document.cookie.match(/_ses=([a-f0-9]+)/);
-
-    if (m && m[1]) {
-      fp = m[1];
-    }
-  }
-
-  if (!fp || fp.charAt(0) !== 'd' || fp.length !== 15) {
+  if (!sesValue || sesValue.charAt(0) !== 'd' || sesValue.length !== 15) {
     // The prepended 'd' acts as a crude versioning mechanism.
-    try {
-      fp = `d${await createFp()}`;
-    }
-    // If it fails, use fakeprint "d015c342859dde3" as a last resort.
-    catch {
-      fp = 'd015c342859dde3';
-    }
-
-    store.set('cached_ses_value', fp);
+    sesValue = `d${await createFp()}`;
+    store.set(storageKey, sesValue);
   }
 
-  document.cookie = `_ses=${fp}; path=/; SameSite=Lax`;
+  document.cookie = `_ses=${sesValue}; path=/; SameSite=Lax`;
 }

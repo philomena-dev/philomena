@@ -4,7 +4,7 @@
 
 import { $$, showEl, hideEl } from './utils/dom';
 import { assertNotUndefined } from './utils/assert';
-import { TagSourceEvent } from './sources';
+import '../types/ujs';
 
 type TagDropdownActionFunction = () => void;
 type TagDropdownActionList = Record<string, TagDropdownActionFunction>;
@@ -19,8 +19,8 @@ function removeTag(tagId: number, list: number[]) {
 
 function createTagDropdown(tag: HTMLSpanElement) {
   const { userIsSignedIn, userCanEditFilter, watchedTagList, spoileredTagList, hiddenTagList } = window.booru;
-  const [ unwatch, watch, unspoiler, spoiler, unhide, hide, signIn, filter ] = $$<HTMLElement>('.tag__dropdown__link');
-  const [ unwatched, watched, spoilered, hidden ] = $$<HTMLSpanElement>('.tag__state');
+  const [ unwatch, watch, unspoiler, spoiler, unhide, hide, signIn, filter ] = $$<HTMLElement>('.tag__dropdown__link', tag);
+  const [ unwatched, watched, spoilered, hidden ] = $$<HTMLSpanElement>('.tag__state', tag);
   const tagId = parseInt(assertNotUndefined(tag.dataset.tagId), 10);
 
   const actions: TagDropdownActionList = {
@@ -56,15 +56,14 @@ function createTagDropdown(tag: HTMLSpanElement) {
   if (userIsSignedIn &&
      !userCanEditFilter) showEl(filter);
 
-  tag.addEventListener('fetchcomplete', ((event: TagSourceEvent) => {
-    const act = event.target.dataset.tagAction;
-
-    if (act && actions[act]) {
-      actions[act]();
-    }
-  }) as EventListener);
+  tag.addEventListener('fetchcomplete', event => {
+    const act = assertNotUndefined(event.target.dataset.tagAction);
+    actions[act]();
+  });
 }
 
 export function initTagDropdown() {
-  [].forEach.call($$<HTMLSpanElement>('.tag.dropdown'), createTagDropdown);
+  for (const tagSpan of $$<HTMLSpanElement>('.tag.dropdown')) {
+    createTagDropdown(tagSpan);
+  }
 }

@@ -3,6 +3,7 @@
  */
 
 import { arraysEqual } from './utils/array';
+import { assertNotNull, assertNotUndefined } from './utils/assert';
 import { $, $$ } from './utils/dom';
 import { initDraggables } from './utils/draggable';
 import { fetchJson } from './utils/requests';
@@ -11,14 +12,13 @@ export function setupGalleryEditing() {
   if (!$<HTMLElement>('.rearrange-button')) return;
 
   const [ rearrangeEl, saveEl ] = $$<HTMLElement>('.rearrange-button');
-  const sortableEl = $<HTMLDivElement>('#sortable');
-  const containerEl = $<HTMLDivElement>('.media-list');
-
-  if (!sortableEl || !containerEl || !saveEl || !rearrangeEl) { return; }
+  const sortableEl = assertNotNull($<HTMLDivElement>('#sortable'));
+  const containerEl = assertNotNull($<HTMLDivElement>('.js-resizable-media-container'));
 
   // Copy array
-  let oldImages = window.booru.galleryImages.slice();
-  let newImages = window.booru.galleryImages.slice();
+  const galleryImages = assertNotUndefined(window.booru.galleryImages);
+  let oldImages = galleryImages.slice();
+  let newImages = galleryImages.slice();
 
   initDraggables();
 
@@ -33,17 +33,17 @@ export function setupGalleryEditing() {
     sortableEl.classList.remove('editing');
     containerEl.classList.remove('drag-container');
 
-    newImages = $$<HTMLDivElement>('.image-container', containerEl).map(i => parseInt(i.dataset.imageId || '-1', 10));
+    newImages = $$<HTMLDivElement>('.image-container', containerEl)
+      .map(i => parseInt(assertNotUndefined(i.dataset.imageId), 10));
 
     // If nothing changed, don't bother.
     if (arraysEqual(newImages, oldImages)) return;
 
-    if (saveEl.dataset.reorderPath) {
-      fetchJson('PATCH', saveEl.dataset.reorderPath, {
-        image_ids: newImages,
+    const reorderPath = assertNotUndefined(saveEl.dataset.reorderPath);
 
-      // copy the array again so that we have the newly updated set
-      }).then(() => oldImages = newImages.slice());
-    }
+    fetchJson('PATCH', reorderPath, {
+      image_ids: newImages,
+    // copy the array again so that we have the newly updated set
+    }).then(() => oldImages = newImages.slice());
   });
 }

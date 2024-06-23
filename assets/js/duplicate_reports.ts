@@ -2,9 +2,10 @@
  * Interactive behavior for duplicate reports.
  */
 
+import { assertNotNull } from './utils/assert';
 import { $, $$ } from './utils/dom';
 
-function setupDupeReports() {
+export function setupDupeReports() {
   const onion = $<SVGSVGElement>('.onion-skin__image');
   const slider = $<HTMLInputElement>('.onion-skin__slider');
   const swipe = $<SVGSVGElement>('.swipe__image');
@@ -30,16 +31,12 @@ function setupSwipe(swipe: SVGSVGElement) {
 }
 
 function setupOnionSkin(onion: SVGSVGElement, slider: HTMLInputElement) {
-  const target = $<HTMLImageElement>('#target', onion);
+  const target = assertNotNull($<SVGImageElement>('#target', onion));
 
   function setOpacity() {
-    if (target) {
-      target.setAttribute('opacity', slider.value);
-    }
+    target.setAttribute('opacity', slider.value);
   }
 
   setOpacity();
   slider.addEventListener('input', setOpacity);
 }
-
-export { setupDupeReports };

@@ -11,6 +11,7 @@ html lang="en"
         =< site_name()
       - else
         =<> site_name()
+    link rel="preconnect" href="https://#{cdn_host()}"
     link rel="stylesheet" href=~p"/css/application.css"
     link rel="stylesheet" href=stylesheet_path(@conn, @current_user)
     = if is_nil(@current_user) do

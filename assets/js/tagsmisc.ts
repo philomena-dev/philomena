@@ -2,42 +2,37 @@
  * Tags Misc
  */
 
+import { assertType, assertNotNull } from './utils/assert';
 import { $, $$ } from './utils/dom';
 import store from './utils/store';
 import { initTagDropdown } from './tags';
 import { setupTagsInput, reloadTagsInput } from './tagsinput';
-import { TagSourceEvent } from './sources';
+import '../types/ujs';
 
-type TagInputActionFunction = (tagInput: HTMLTextAreaElement | null) => void
-type TagInputActionList = {
-  save: TagInputActionFunction,
-  load: TagInputActionFunction,
-  clear: TagInputActionFunction,
-}
+type TagInputActionFunction = (tagInput: HTMLTextAreaElement) => void;
+type TagInputActionList = Record<string, TagInputActionFunction>;
 
-function tagInputButtons({target}: PointerEvent) {
+function tagInputButtons(event: MouseEvent) {
+  const target = assertType(event.target, HTMLElement);
+
   const actions: TagInputActionList = {
-    save(tagInput: HTMLTextAreaElement | null) {
-      if (tagInput) store.set('tag_input', tagInput.value);
+    save(tagInput: HTMLTextAreaElement) {
+      store.set('tag_input', tagInput.value);
     },
-    load(tagInput: HTMLTextAreaElement | null) {
-      if (!tagInput) { return; }
-
+    load(tagInput: HTMLTextAreaElement) {
       // If entry 'tag_input' does not exist, try to use the current list
       tagInput.value = store.get('tag_input') || tagInput.value;
       reloadTagsInput(tagInput);
     },
-    clear(tagInput: HTMLTextAreaElement | null) {
-      if (!tagInput) { return; }
-
+    clear(tagInput: HTMLTextAreaElement) {
       tagInput.value = '';
       reloadTagsInput(tagInput);
     },
   };
 
-  for (const action in actions) {
-    if (target && (target as HTMLElement).matches(`#tagsinput-${action}`)) {
-      actions[action as keyof TagInputActionList]($<HTMLTextAreaElement>('image_tag_input'));
+  for (const [ name, action ] of Object.entries(actions)) {
+    if (target && target.matches(`#tagsinput-${name}`)) {
+      action(assertNotNull($<HTMLTextAreaElement>('#image_tag_input')));
     }
   }
 }
@@ -49,10 +44,10 @@ function setupTags() {
   });
 }
 
-function updateTagSauce({target, detail}: TagSourceEvent) {
-  const tagSauce = $<HTMLDivElement>('.js-tagsauce');
+function updateTagSauce({ target, detail }: FetchcompleteEvent) {
+  if (target.matches('#tags-form')) {
+    const tagSauce = assertNotNull($<HTMLDivElement>('.js-tagsauce'));
 
-  if (tagSauce && target.matches('#tags-form')) {
     detail.text().then(text => {
       tagSauce.outerHTML = text;
       setupTags();
@@ -63,8 +58,8 @@ function updateTagSauce({target, detail}: TagSourceEvent) {
 
 function setupTagEvents() {
   setupTags();
-  document.addEventListener('fetchcomplete', updateTagSauce as EventListener);
-  document.addEventListener('click', tagInputButtons as EventListener);
+  document.addEventListener('fetchcomplete', updateTagSauce);
+  document.addEventListener('click', tagInputButtons);
 }
 
 export { setupTagEvents };

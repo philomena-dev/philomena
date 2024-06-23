@@ -4,9 +4,9 @@
  * Warn users that their PM will be reviewed.
  */
 
-import { $ } from './utils/dom';
+import { $, hideEl, showEl } from './utils/dom';
 
-function warnAboutPMs() {
+export function warnAboutPMs() {
   const textarea = $<HTMLTextAreaElement>('.js-toolbar-input');
   const warning = $<HTMLDivElement>('.js-hidden-warning');
   const imageEmbedRegex = /!+\[/g;
@@ -17,12 +17,10 @@ function warnAboutPMs() {
     const value = textarea.value;
 
     if (value.match(imageEmbedRegex)) {
-      warning.classList.remove('hidden');
+      showEl(warning);
     }
     else if (!warning.classList.contains('hidden')) {
-      warning.classList.add('hidden');
+      hideEl(warning);
     }
   });
 }
-
-export { warnAboutPMs };

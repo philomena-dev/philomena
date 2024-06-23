@@ -2,131 +2,109 @@
  * Client-side image filtering/spoilering.
  */
 
+import { assertNotUndefined } from './utils/assert';
 import { $$, escapeHtml } from './utils/dom';
 import { setupInteractions } from './interactions';
 import { showThumb, showBlock, spoilerThumb, spoilerBlock, hideThumb } from './utils/image';
 import { TagData, getHiddenTags, getSpoileredTags, imageHitsTags, imageHitsComplex, displayTags } from './utils/tag';
 import { AstMatcher } from './query/types';
-import { assertNotUndefined } from './utils/assert';
 
-type RunFilterCallback = (img: HTMLDivElement, test: TagData[]) => void;
+type CallbackType = 'tags' | 'complex';
+type RunCallback = (img: HTMLDivElement, tags: TagData[], type: CallbackType) => void;
 
-function runFilter(img: HTMLDivElement, test: TagData[] | boolean, runCallback: RunFilterCallback) {
-  if (!test || typeof test !== 'boolean' && test.length === 0) { return false; }
+function run(
+  img: HTMLDivElement,
+  tags: TagData[],
+  complex: AstMatcher,
+  runCallback: RunCallback
+): boolean {
+  const hit = (() => {
+    // Check tags array first to provide more precise filter explanations
+    const hitTags = imageHitsTags(img, tags);
+    if (hitTags.length !== 0) {
+      runCallback(img, hitTags, 'tags');
+      return true;
+    }
 
-  runCallback(img, test as TagData[]);
+    // No tags matched, try complex filter AST
+    const hitComplex = imageHitsComplex(img, complex);
+    if (hitComplex) {
+      runCallback(img, hitTags, 'complex');
+      return true;
+    }
 
-  // I don't like this.
-  window.booru.imagesWithDownvotingDisabled.push(assertNotUndefined(img.dataset.imageId));
+    // Nothing matched at all, image can be shown
+    return false;
+  })();
 
-  return true;
+  if (hit) {
+    // Disallow negative interaction on image which is not visible
+    window.booru.imagesWithDownvotingDisabled.push(assertNotUndefined(img.dataset.imageId));
+  }
+
+  return hit;
 }
 
-// ---
+function bannerImage(tagsHit: TagData[]) {
+  if (tagsHit.length > 0) {
+    return tagsHit[0].spoiler_image_uri || window.booru.hiddenTag;
+  }
 
-function filterThumbSimple(img: HTMLDivElement, tagsHit: TagData[]) {
-  hideThumb(img, tagsHit[0].spoiler_image_uri || window.booru.hiddenTag, `[HIDDEN] ${displayTags(tagsHit)}`);
+  return window.booru.hiddenTag;
 }
 
-function spoilerThumbSimple(img: HTMLDivElement, tagsHit: TagData[]) {
-  spoilerThumb(img, tagsHit[0].spoiler_image_uri || window.booru.hiddenTag, displayTags(tagsHit));
+// TODO: this approach is not suitable for translations because it depends on
+// markup embedded in the page adjacent to this text
+
+/* eslint-disable indent */
+
+function hideThumbTyped(img: HTMLDivElement, tagsHit: TagData[], type: CallbackType) {
+  const bannerText = type === 'tags' ? `[HIDDEN] ${displayTags(tagsHit)}`
+                                     : '[HIDDEN] <i>(Complex Filter)</i>';
+  hideThumb(img, bannerImage(tagsHit), bannerText);
 }
 
-function filterThumbComplex(img: HTMLDivElement)  {
-  hideThumb(img, window.booru.hiddenTag, '[HIDDEN] <i>(Complex Filter)</i>');
+function spoilerThumbTyped(img: HTMLDivElement, tagsHit: TagData[], type: CallbackType) {
+  const bannerText = type === 'tags' ? displayTags(tagsHit)
+                                     : '<i>(Complex Filter)</i>';
+  spoilerThumb(img, bannerImage(tagsHit), bannerText);
 }
 
-function spoilerThumbComplex(img: HTMLDivElement) {
-  spoilerThumb(img, window.booru.hiddenTag, '<i>(Complex Filter)</i>');
+function hideBlockTyped(img: HTMLDivElement, tagsHit: TagData[], type: CallbackType) {
+  const bannerText = type === 'tags' ? `This image is tagged <code>${escapeHtml(tagsHit[0].name)}</code>, which is hidden by `
+                                     : 'This image was hidden by a complex tag expression in ';
+  spoilerBlock(img, bannerImage(tagsHit), bannerText);
 }
 
-function filterBlockSimple(img: HTMLDivElement, tagsHit: TagData[]) {
-  spoilerBlock(
-    img,
-    tagsHit[0].spoiler_image_uri || window.booru.hiddenTag,
-    `This image is tagged <code>${escapeHtml(tagsHit[0].name)}</code>, which is hidden by `
-  );
+function spoilerBlockTyped(img: HTMLDivElement, tagsHit: TagData[], type: CallbackType) {
+  const bannerText = type === 'tags' ? `This image is tagged <code>${escapeHtml(tagsHit[0].name)}</code>, which is spoilered by `
+                                     : 'This image was spoilered by a complex tag expression in ';
+  spoilerBlock(img, bannerImage(tagsHit), bannerText);
 }
 
-function spoilerBlockSimple(img: HTMLDivElement, tagsHit: TagData[]) {
-  spoilerBlock(
-    img,
-    tagsHit[0].spoiler_image_uri || window.booru.hiddenTag,
-    `This image is tagged <code>${escapeHtml(tagsHit[0].name)}</code>, which is spoilered by `
-  );
-}
+/* eslint-enable indent */
 
-function filterBlockComplex(img: HTMLDivElement) {
-  spoilerBlock(img, window.booru.hiddenTag, 'This image was hidden by a complex tag expression in ');
-}
-
-function spoilerBlockComplex(img: HTMLDivElement) {
-  spoilerBlock(img, window.booru.hiddenTag, 'This image was spoilered by a complex tag expression in ');
-}
-
-// ---
-
-function thumbTagFilter(tags: TagData[], img: HTMLDivElement)         {
-  return runFilter(img, imageHitsTags(img, tags), filterThumbSimple);
-}
-
-function thumbComplexFilter(complex: AstMatcher, img: HTMLDivElement)  {
-  return runFilter(img, imageHitsComplex(img, complex), filterThumbComplex);
-}
-
-function thumbTagSpoiler(tags: TagData[], img: HTMLDivElement)        {
-  return runFilter(img, imageHitsTags(img, tags), spoilerThumbSimple);
-}
-
-function thumbComplexSpoiler(complex: AstMatcher, img: HTMLDivElement) {
-  return runFilter(img, imageHitsComplex(img, complex), spoilerThumbComplex);
-}
-
-function blockTagFilter(tags: TagData[], img: HTMLDivElement)         {
-  return runFilter(img, imageHitsTags(img, tags), filterBlockSimple);
-}
-
-function blockComplexFilter(complex: AstMatcher, img: HTMLDivElement)  {
-  return runFilter(img, imageHitsComplex(img, complex), filterBlockComplex);
-}
-
-function blockTagSpoiler(tags: TagData[], img: HTMLDivElement)        {
-  return runFilter(img, imageHitsTags(img, tags), spoilerBlockSimple);
-}
-
-function blockComplexSpoiler(complex: AstMatcher, img: HTMLDivElement) {
-  return runFilter(img, imageHitsComplex(img, complex), spoilerBlockComplex);
-}
-
-// ---
-
-function filterNode(node: Pick<Document, 'querySelectorAll'>) {
+export function filterNode(node: Pick<Document, 'querySelectorAll'>) {
   const hiddenTags = getHiddenTags(), spoileredTags = getSpoileredTags();
   const { hiddenFilter, spoileredFilter } = window.booru;
 
   // Image thumb boxes with vote and fave buttons on them
   $$<HTMLDivElement>('.image-container', node)
-    .filter(img => !thumbTagFilter(hiddenTags, img))
-    .filter(img => !thumbComplexFilter(hiddenFilter, img))
-    .filter(img => !thumbTagSpoiler(spoileredTags, img))
-    .filter(img => !thumbComplexSpoiler(spoileredFilter, img))
+    .filter(img => !run(img, hiddenTags,    hiddenFilter,    hideThumbTyped))
+    .filter(img => !run(img, spoileredTags, spoileredFilter, spoilerThumbTyped))
     .forEach(img => showThumb(img));
 
   // Individual image pages and images in posts/comments
   $$<HTMLDivElement>('.image-show-container', node)
-    .filter(img => !blockTagFilter(hiddenTags, img))
-    .filter(img => !blockComplexFilter(hiddenFilter, img))
-    .filter(img => !blockTagSpoiler(spoileredTags, img))
-    .filter(img => !blockComplexSpoiler(spoileredFilter, img))
+    .filter(img => !run(img, hiddenTags,    hiddenFilter,    hideBlockTyped))
+    .filter(img => !run(img, spoileredTags, spoileredFilter, spoilerBlockTyped))
     .forEach(img => showBlock(img));
 }
 
-function initImagesClientside() {
+export function initImagesClientside() {
   window.booru.imagesWithDownvotingDisabled = [];
   // This fills the imagesWithDownvotingDisabled array
   filterNode(document);
   // Once the array is populated, we can initialize interactions
   setupInteractions();
 }
-
-export { initImagesClientside, filterNode };

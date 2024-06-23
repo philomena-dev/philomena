@@ -9,6 +9,7 @@ window.booru = {
   csrfToken: 'mockCsrfToken',
   hiddenTag: '/mock-tagblocked.svg',
   hiddenTagList: [],
+  hideStaffTools: 'true',
   ignoredTagList: [],
   imagesWithDownvotingDisabled: [],
   spoilerType: 'off',
@@ -20,7 +21,6 @@ window.booru = {
   spoileredFilter: matchNone(),
   interactions: [],
   tagsVersion: 5,
-  hideStaffTools: 'false',
   galleryImages: []
 };
 

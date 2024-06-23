@@ -11,7 +11,8 @@ defmodule Philomena.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
-      dialyzer: [plt_add_apps: [:mix]]
+      dialyzer: [plt_add_apps: [:mix]],
+      docs: [formatters: ["html"]]
     ]
   end
 
@@ -34,7 +35,7 @@ defmodule Philomena.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.6"},
+      {:phoenix, "~> 1.7"},
       {:phoenix_pubsub, "~> 2.1"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.9"},
@@ -44,10 +45,8 @@ defmodule Philomena.MixProject do
       {:phoenix_live_reload, "~> 1.4", only: :dev},
       {:gettext, "~> 0.22"},
       {:jason, "~> 1.4"},
-      {:ranch, "~> 2.1", override: true},
-      {:plug_cowboy, "~> 2.6"},
-      {:slime, "~> 1.3.0",
-       github: "liamwhite/slime", ref: "4c8ad4e9e9dcc792f4db769a9ef2ad7d6eba8f31", override: true},
+      {:bandit, "~> 1.2"},
+      {:slime, "~> 1.3.1"},
       {:phoenix_slime, "~> 0.13",
        github: "slime-lang/phoenix_slime", ref: "8944de91654d6fcf6bdcc0aed6b8647fe3398241"},
       {:phoenix_pubsub_redis, "~> 3.0"},
@@ -64,9 +63,7 @@ defmodule Philomena.MixProject do
       {:redix, "~> 1.2"},
       {:remote_ip, "~> 1.1"},
       {:briefly, "~> 0.4"},
-      {:tesla, "~> 1.5"},
-      {:castore, "~> 1.0", override: true},
-      {:mint, "~> 1.4"},
+      {:req, "~> 0.5"},
       {:exq, "~> 0.17"},
       {:ex_aws, "~> 2.0",
        github: "liamwhite/ex_aws", ref: "a340859dd8ac4d63bd7a3948f0994e493e49bda4", override: true},
@@ -83,9 +80,10 @@ defmodule Philomena.MixProject do
       {:rustler, "~> 0.27"},
 
       # Linting
-      {:credo, "~> 1.6", only: [:dev, :test], override: true},
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:credo_envvar, "~> 0.1", only: [:dev, :test], runtime: false},
       {:credo_naming, "~> 2.0", only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.30", only: [:dev], runtime: false},
 
       # Security checks
       {:sobelow, "~> 0.11", only: [:dev, :test], runtime: true},
@@ -93,10 +91,6 @@ defmodule Philomena.MixProject do
 
       # Static analysis
       {:dialyxir, "~> 1.2", only: :dev, runtime: false},
-
-      # Fixes for OTP/25
-      {:neotoma, "~> 1.7.3", manager: :rebar3, override: true},
-      {:hut, "~> 1.4.0", manager: :rebar3, override: true},
 
       # Fixes for Elixir v1.15+
       {:canary, "~> 1.1",

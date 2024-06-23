@@ -72,7 +72,7 @@ interface BooruObject {
   /**
    * List of image IDs in the current gallery.
    */
-  galleryImages: number[]
+  galleryImages?: number[];
 }
 
 declare global {
