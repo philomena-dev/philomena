@@ -1,18 +1,4 @@
-elixir:
-  post_link = ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}?#{[post_id: @post.id]}" <> "#post_#{@post.id}"
-
-- options = if true do
-  .flex__spacer.hidden--desktop
-  a.communication__interaction.hidden--desktop title="Link to post" href="#{post_link}"
-    i.fa.fa-link
-  = if not is_nil(@post.edited_at) and can?(@conn, :show, @post) do
-    a href=~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/history"
-      ' Edited
-      => pretty_time(@post.edited_at)
-
-      = if @post.edit_reason not in [nil, ""] do
-        ' because:
-        => @post.edit_reason
+- options = render PhilomenaWeb.PostView, "_post_options_top.html", conn: @conn, post: @post
 
 article.block.communication id="post_#{@post.id}"
   = if not @post.approved and not @post.hidden_from_users and (can?(@conn, :hide, @post) or @post.user_id == @conn.assigns.current_user.id) do
