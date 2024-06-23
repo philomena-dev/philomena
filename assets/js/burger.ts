@@ -29,15 +29,12 @@ function close(burger: HTMLElement, content: HTMLElement, body: HTMLElement, roo
   }, 300);
 }
 
-function copyArtistLinksTo(burger: HTMLElement) {
+function copyUserLinksTo(burger: HTMLElement) {
   const copy = (links: HTMLCollection) => {
     burger.appendChild(document.createElement('hr'));
 
-    for (let i = 0; i < links.length; i++) {
-      // If we're here, this should not be null.
-      const link = assertNotNull(links.item(i));
+    for (const link of links) {
       const burgerLink = link.cloneNode(true) as HTMLElement;
-
       burgerLink.className = '';
       burger.appendChild(burgerLink);
     }
@@ -54,7 +51,7 @@ export function setupBurgerMenu() {
   const body = document.body;
   const root = document.documentElement;
 
-  copyArtistLinksTo(burger);
+  copyUserLinksTo(burger);
 
   toggle.addEventListener('click', event => {
     event.stopPropagation();
