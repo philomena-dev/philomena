@@ -1,0 +1,26 @@
+@define-mixin label-type $type {
+  .label--$(type) {
+    background-color: var(--$(type)-color);
+  }
+}
+
+.label {
+  display: flex;
+  background: var(--primary-color);
+  padding: var(--padding-tiny) var(--padding-small);
+  border-radius: var(--border-radius-inner);
+  width: fit-content;
+  gap: var(--padding-tiny);
+  white-space: nowrap;
+}
+
+.label--block {
+  margin: var(--padding-small) 0;
+}
+
+@mixin label-type secondary;
+@mixin label-type danger;
+@mixin label-type warning;
+@mixin label-type success;
+@mixin label-type special;
+@mixin label-type information;

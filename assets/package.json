@@ -2,7 +2,7 @@
   "type": "module",
   "scripts": {
     "deploy": "cross-env NODE_ENV=production tsc && cross-env NODE_ENV=production vite build",
-    "lint": "eslint .",
+    "lint": "eslint . && stylelint ./css/**/*.css",
     "test": "vitest run --coverage",
     "test:watch": "vitest watch --coverage",
     "dev": "vite",
@@ -10,15 +10,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@csstools/postcss-relative-color-syntax": "^2.0.16",
     "@fortawesome/fontawesome-free": "^6.5.2",
+    "@types/postcss-mixins": "^9.0.5",
     "@types/web": "^0.0.148",
     "typescript-eslint": "8.0.0-alpha.30",
     "autoprefixer": "^10.4.19",
     "cross-env": "^7.0.3",
     "eslint": "^9.4.0",
     "jest-environment-jsdom": "^29.7.0",
-    "normalize-scss": "^8.0.0",
-    "sass": "^1.75.0",
+    "normalize.css": "^8.0.1",
+    "postcss-mixins": "^10.0.1",
+    "postcss-simple-vars": "^7.0.1",
     "typescript": "^5.4",
     "vite": "^5.2"
   },
@@ -30,6 +33,10 @@
     "chai": "^5",
     "eslint-plugin-vitest": "^0.5.4",
     "jsdom": "^24.1.0",
+    "prettier": "^3.3.2",
+    "stylelint": "^16.6.1",
+    "stylelint-config-standard": "^36.0.0",
+    "stylelint-prettier": "^5.0.0",
     "vitest": "^1.6.0",
     "vitest-fetch-mock": "^0.2.2"
   }

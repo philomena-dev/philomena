@@ -26,7 +26,7 @@ defmodule PhilomenaWeb.PasswordControllerTest do
         })
 
       assert redirected_to(conn) == "/"
-      assert Flash.get(conn.assigns.flash, :info) =~ "If your email is in our system"
+      assert Flash.get(conn.assigns.flash, :alert) =~ "If your email is in our system"
       assert Repo.get_by!(Users.UserToken, user_id: user.id).context == "reset_password"
     end
 
@@ -37,7 +37,7 @@ defmodule PhilomenaWeb.PasswordControllerTest do
         })
 
       assert redirected_to(conn) == "/"
-      assert Flash.get(conn.assigns.flash, :info) =~ "If your email is in our system"
+      assert Flash.get(conn.assigns.flash, :alert) =~ "If your email is in our system"
       assert Repo.all(Users.UserToken) == []
     end
   end
@@ -61,7 +61,7 @@ defmodule PhilomenaWeb.PasswordControllerTest do
       conn = get(conn, ~p"/passwords/oops/edit")
       assert redirected_to(conn) == "/"
 
-      assert Flash.get(conn.assigns.flash, :error) =~
+      assert Flash.get(conn.assigns.flash, :warning) =~
                "Reset password link is invalid or it has expired"
     end
   end
@@ -109,7 +109,7 @@ defmodule PhilomenaWeb.PasswordControllerTest do
       conn = put(conn, ~p"/passwords/oops")
       assert redirected_to(conn) == "/"
 
-      assert Flash.get(conn.assigns.flash, :error) =~
+      assert Flash.get(conn.assigns.flash, :warning) =~
                "Reset password link is invalid or it has expired"
     end
   end

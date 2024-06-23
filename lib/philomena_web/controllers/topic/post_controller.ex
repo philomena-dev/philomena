@@ -64,7 +64,7 @@ defmodule PhilomenaWeb.Topic.PostController do
 
       _error ->
         conn
-        |> put_flash(:error, "There was an error creating the post")
+        |> put_flash(:warning, "There was an error creating the post")
         |> redirect(to: ~p"/forums/#{forum}/topics/#{topic}")
     end
   end

@@ -13,19 +13,19 @@ defmodule PhilomenaWeb.ReportView do
 
   def report_categories do
     [
-      "Rule #0: Namecalling, trolling, discrimination": "Rule #0",
-      "Rule #1: DNP, content theft, pay content, trace/bad edit": "Rule #1",
-      "Rule #2: Bad tagging/sourcing": "Rule #2",
-      "Rule #3: Image not MLP-related/obligatory pony": "Rule #3",
-      "Rule #4: Whining about filterable content": "Rule #4",
-      "Rule #5: Underage+human/anthro-looking porn": "Rule #5",
-      "Rule #6: Spam, off-topic, or general site abuse": "Rule #6",
-      "Rule #7: Above topic rating (NOT swear words)": "Rule #7",
-      "Rule #8: Privacy violation": "Rule #8",
-      "Rule #9: Commissions": "Rule #9",
-      "Rule #n: Spirit of the rules": "Rule #n",
-      "Other (please explain)": "Other",
-      "Takedown request": "Takedown request"
+      {dgettext("rules", "Rule #0: Namecalling, trolling, discrimination"), "Rule #0"},
+      {dgettext("rules", "Rule #1: DNP, content theft, pay content, trace/bad edit"), "Rule #1"},
+      {dgettext("rules", "Rule #2: Bad tagging/sourcing"), "Rule #2"},
+      {dgettext("rules", "Rule #3: Image not related to the topic of the site"), "Rule #3"},
+      {dgettext("rules", "Rule #4: Complaining about filterable content"), "Rule #4"},
+      {dgettext("rules", "Rule #5: Illegal/forbidden content / underage porn"), "Rule #5"},
+      {dgettext("rules", "Rule #6: Spam, off-topic, or general site abuse"), "Rule #6"},
+      {dgettext("rules", "Rule #7: Above topic rating (NOT swear words)"), "Rule #7"},
+      {dgettext("rules", "Rule #8: Privacy violation"), "Rule #8"},
+      {dgettext("rules", "Rule #9: Commissions"), "Rule #9"},
+      {dgettext("rules", "Rule #n: Spirit of the rules"), "Rule #n"},
+      {dgettext("rules", "Other (please explain)"), "Other"},
+      {dgettext("rules", "Takedown request"), "Takedown request"}
     ]
   end
 

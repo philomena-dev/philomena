@@ -1,0 +1,37 @@
+nav.header__staff {
+  display: flex;
+  line-height: var(--navbar-secondary-size);
+  border-radius: var(--border-radius-outer);
+}
+
+.header__counter__admin {
+  display: inline-flex;
+  flex-flow: column;
+  background: var(--danger-color);
+  border-radius: 100%;
+  min-width: var(--number-badge-size);
+  line-height: var(--number-badge-size);
+  font-size: var(--number-badge-size);
+  font-weight: bold;
+  padding: var(--number-badge-padding);
+  text-align: center;
+}
+
+.header--secondary__admin-links {
+  display: flex;
+  gap: var(--padding-large);
+  padding: 0 var(--padding-normal);
+  background: var(--danger-dark-color);
+  border-radius: var(--border-radius-outer);
+}
+
+@mixin if-mobile {
+  .header--secondary__admin-links {
+    justify-content: center;
+    flex: 1 0 auto;
+  }
+
+  nav.header__staff {
+    flex: 1 0 auto;
+  }
+}

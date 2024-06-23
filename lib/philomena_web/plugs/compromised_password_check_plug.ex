@@ -16,7 +16,7 @@ defmodule PhilomenaWeb.CompromisedPasswordCheckPlug do
       true ->
         conn
         |> put_flash(
-          :error,
+          :warning,
           "We've detected that the password you entered has been compromised during a data breach of another website. Please choose a different password."
         )
         |> redirect(external: conn.assigns.referrer)

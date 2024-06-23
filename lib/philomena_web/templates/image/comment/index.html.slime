@@ -6,13 +6,13 @@ elixir:
   .block__header.page__header
     .page__pagination = pagination
     .page__info
-      span.block__header__title
+      span
         =<> @image.comments_count
         => pluralize("comment", "comments", @image.comments_count)
         ' posted
       button.button#js-refresh-comments title="Refresh" data-disable-with="..."
         i.fa.fa-sync
-        span.hide-mobile<> Refresh
+        span.hidden--mobile<> Refresh
 
 = for {comment, body} <- @comments, can_view_communication?(@conn, comment) do
   = render PhilomenaWeb.CommentView, "_comment.html", comment: comment, body: body, conn: @conn

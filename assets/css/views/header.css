@@ -1,0 +1,171 @@
+header {
+  display: flex;
+  line-height: var(--navbar-size);
+  padding: 0 var(--padding-large);
+  font-size: var(--font-header-size);
+  gap: var(--padding-large);
+  align-items: center;
+}
+
+.header__link {
+  @mixin animated-transition;
+  position: relative;
+  color: var(--text-color) !important;
+}
+
+.header__link:hover {
+  @mixin animated-transition;
+  color: var(--primary-link-color) !important;
+}
+
+.header__link--user {
+  display: flex;
+  align-items: center;
+  gap: var(--padding-normal);
+}
+
+.header__logo {
+  font-size: var(--font-h2-size);
+}
+
+.header__search {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  border: 0;
+  border-radius: var(--border-radius-inner);
+  background: var(--primary-muted-color);
+  height: var(--navbar-input-size);
+}
+
+.header__search > button {
+  background: 0;
+  border: 0;
+}
+
+.header__counter {
+  position: absolute;
+  background: var(--danger-color);
+  border-radius: 100%;
+  min-width: var(--number-badge-size);
+  line-height: var(--number-badge-size);
+  font-size: var(--number-badge-size);
+  font-weight: bold;
+  padding: var(--number-badge-padding);
+  text-align: center;
+  top: var(--number-badge-header-vertical-offset);
+  left: var(--number-badge-header-horizontal-offset);
+}
+
+/* Old style counter */
+.header__counter--simple {
+  display: inline-flex;
+  padding: 0 var(--padding-small);
+  line-height: inherit;
+  text-align: center;
+  background: var(--primary-muted-color);
+}
+
+.header__input {
+  @mixin animated-transition;
+  height: var(--navbar-input-size);
+  font-size: var(--font-size);
+  background: 0;
+  border: 0;
+}
+
+.header__input--text {
+  width: var(--navbar-input-width);
+  max-width: var(--navbar-input-max-width);
+}
+
+.header__search__button {
+  display: flex;
+  align-items: center;
+  height: var(--navbar-input-size);
+  color: var(--text-color) !important;
+  padding: 0 var(--padding-normal);
+}
+
+.header__search__button:hover {
+  background: var(--primary-color);
+  cursor: pointer;
+}
+
+.header__filter-form {
+  padding: 0 var(--padding-normal);
+}
+
+.nav-container {
+  display: flex;
+  gap: var(--padding-normal);
+  padding: 0 var(--padding-normal);
+  flex-wrap: wrap;
+}
+
+nav.header__secondary {
+  display: flex;
+  flex: 1 0 auto;
+  line-height: var(--navbar-secondary-size);
+  border-radius: var(--border-radius-outer);
+  padding: 0 var(--padding-large);
+  font-size: var(--font-header-size);
+  gap: var(--padding-large);
+  align-items: center;
+  background: var(--primary-color);
+}
+
+nav.header__secondary .fa,
+nav.header__staff .fa {
+  display: inline-flex;
+  text-align: center;
+  font-size: var(--font-small-icon-size);
+  width: var(--font-small-icon-size);
+  height: var(--font-small-icon-size);
+  margin-right: var(--padding-tiny);
+}
+
+nav.header__secondary .header__link {
+  color: var(--text-light-color) !important;
+}
+
+nav.header__secondary .header__link:hover {
+  color: var(--primary-link-color) !important;
+}
+
+nav.dropdown__content {
+  line-height: var(--navbar-secondary-size);
+}
+
+i.favicon-home {
+  background-image: url("/favicon.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  min-width: 1em;
+  height: 1em;
+  display: inline-block;
+}
+
+@mixin if-mobile {
+  header {
+    gap: var(--padding-normal);
+    flex-wrap: wrap;
+    margin-bottom: var(--padding-normal);
+    padding: 0 var(--padding-normal);
+  }
+
+  nav.header__secondary {
+    display: none;
+  }
+
+  form.header__search {
+    width: 100%;
+    order: 1;
+  }
+
+  .header__input--text {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}

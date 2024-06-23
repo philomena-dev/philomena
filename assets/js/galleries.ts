@@ -9,7 +9,7 @@ import { initDraggables } from './utils/draggable';
 import { fetchJson } from './utils/requests';
 
 export function setupGalleryEditing() {
-  if (!$('.rearrange-button')) return;
+  if (!$<HTMLElement>('.rearrange-button')) return;
 
   const [ rearrangeEl, saveEl ] = $$<HTMLElement>('.rearrange-button');
   const sortableEl = assertNotNull($<HTMLDivElement>('#sortable'));
@@ -43,7 +43,6 @@ export function setupGalleryEditing() {
 
     fetchJson('PATCH', reorderPath, {
       image_ids: newImages,
-
     // copy the array again so that we have the newly updated set
     }).then(() => oldImages = newImages.slice());
   });

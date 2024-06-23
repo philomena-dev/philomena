@@ -1,6 +1,8 @@
 defmodule PhilomenaWeb.AppView do
   use Phoenix.HTML
 
+  import PhilomenaWeb.Gettext
+
   @time_strings %{
     seconds: "less than a minute",
     minute: "about a minute",
@@ -254,4 +256,11 @@ defmodule PhilomenaWeb.AppView do
   def get_flash(%{assigns: %{flash: nil}}, _key), do: %{}
   def get_flash(%{assigns: %{flash: flash}}, key), do: Phoenix.Flash.get(flash, key)
   def get_flash(_, _key), do: %{}
+
+  def site_name, do: gettext("Philomena Site")
+
+  def shorten_number(n) when n >= 1_000_000_000, do: "#{Float.floor(n / 1_000_000_000, 1)}B"
+  def shorten_number(n) when n >= 1_000_000, do: "#{Float.floor(n / 1_000_000, 1)}M"
+  def shorten_number(n) when n >= 1_000, do: "#{Float.floor(n / 1_000, 1)}K"
+  def shorten_number(n), do: n
 end

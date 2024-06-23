@@ -205,7 +205,7 @@ defmodule PhilomenaWeb.ImageController do
           not Canada.Can.can?(conn.assigns.current_user, :show, image) ->
         conn
         |> put_flash(
-          :info,
+          :alert,
           "The image you were looking for has been marked a duplicate of the image below"
         )
         |> redirect(to: ~p"/images/#{image.duplicate_id}")

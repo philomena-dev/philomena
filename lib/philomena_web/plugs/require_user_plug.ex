@@ -13,7 +13,7 @@ defmodule PhilomenaWeb.RequireUserPlug do
       conn
     else
       conn
-      |> put_flash(:error, "You must be signed in to see this page.")
+      |> put_flash(:alert, "You must be signed in to see this page.")
       |> redirect(to: "/")
       |> halt()
     end
