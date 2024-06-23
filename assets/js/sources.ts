@@ -3,10 +3,6 @@ import { $ } from './utils/dom';
 import { inputDuplicatorCreator } from './input-duplicator';
 import '../types/ujs';
 
-export interface TagSourceEvent extends CustomEvent<Response> {
-  target: HTMLElement,
-}
-
 function setupInputs() {
   inputDuplicatorCreator({
     addButtonSelector: '.js-image-add-source',
