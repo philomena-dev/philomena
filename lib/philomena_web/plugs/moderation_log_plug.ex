@@ -17,7 +17,7 @@ defmodule PhilomenaWeb.ModerationLogPlug do
   def init(opts), do: opts
 
   @type log_details :: %{subject_path: String.t(), body: String.t()}
-  @type details_func :: (Plug.Conn.t(), atom(), any() -> log_details())
+  @type details_func :: (atom(), any() -> log_details())
   @type call_opts :: [details: details_func, data: any()]
 
   @doc false

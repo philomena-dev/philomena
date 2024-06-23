@@ -42,7 +42,7 @@ defmodule Philomena.Commissions.Commission do
     |> validate_length(:contact, max: 1000, count: :bytes)
     |> validate_length(:will_create, max: 1000, count: :bytes)
     |> validate_length(:will_not_create, max: 1000, count: :bytes)
-    |> validate_subset(:categories, Keyword.values(categories()))
+    |> validate_subset(:categories, category_values())
   end
 
   defp drop_blank_categories(changeset) do
@@ -69,6 +69,26 @@ defmodule Philomena.Commissions.Commission do
       {dgettext("commissions", "Safe"), "Safe"},
       {dgettext("commissions", "Shipping"), "Shipping"},
       {dgettext("commissions", "Violence and Gore"), "Violence and Gore"}
+    ]
+  end
+
+  # This is probably not the best way to do this,
+  # but I need dialyzer to shut up and do so fast.
+  def category_values do
+    [
+      "Anthro",
+      "Canon Characters",
+      "Comics",
+      "Fetish Art",
+      "Human and Human-like",
+      "NSFW",
+      "Original Characters",
+      "Original Species",
+      "Non-Humanoid",
+      "Requests",
+      "Safe",
+      "Shipping",
+      "Violence and Gore"
     ]
   end
 
