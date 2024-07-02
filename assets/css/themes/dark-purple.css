@@ -1,57 +1,15 @@
-$background-color: #15121a;
-$text-color: #e0e0e0;
+@import "themes/base/dark";
 
+$background-color: #15121a;
 $primary-color: #36274e;
 $secondary-color: #785b99;
-$danger-color: #6d2a20;
-$warning-color: #715227;
-$success-color: #25603e;
-$information-color: #1c606a;
-$special-color: #65206e;
-
-$upvote-color: #5b9b26;
-$downvote-color: #da3412;
-$fave-color: #a18e27;
-$comment-color: #b099dd;
-$hide-color: #da3412;
-
-$tag-default-color: #1b3c21;
-$tag-error-color: #4f181d;
-$tag-rating-color: #113456;
-$tag-origin-color: #1d1858;
-$tag-character-color: #193f47;
-$tag-oc-color: #451f47;
-$tag-species-color: #362118;
-$tag-body-type-color: #393939;
-$tag-content-fanmade-color: #622c4e;
-$tag-content-official-color: #4b491c;
-$tag-spoiler-color: #4f3811;
-
-$spoiler-color: #0f0f0f;
-
-@define-mixin tag-color $tagname, $color, $text-percentage: 35, $border-percentage: 15 {
-  --tag-$(tagname)-color: $(color);
-  --tag-$(tagname)-border-color: hsl(from $color h s calc(l + $border-percentage));
-  --tag-$(tagname)-text-color: hsl(from $color h s calc(l + $text-percentage));
-}
-
-@define-mixin type-color $type, $color {
-  --$(type)-color: $color;
-  --$(type)-border-color: hsl(from $color h calc(s - 20) calc(l + 10));
-  --$(type)-muted-color: hsl(from $color h calc(s - 10) calc(l - 7));
-  --$(type)-dark-color: hsl(from $color h calc(s - 30) calc(l - 11));
-  --$(type)-link-color: hsl(from $color h calc(s + 10) calc(l + 45));
-}
 
 :root {
   /* Main colors */
   --background-color: $background-color;
-  --text-color: $text-color;
-  --text-light-color: $text-color;
 
   /* Link colors */
   --link-color: hsl(from $primary-color h calc(s + 10) calc(l + 50));
-  --link-hover-color: $text-color;
 
   /* Primary color (block backgrounds and such) */
   --primary-color: $primary-color;
@@ -66,38 +24,4 @@ $spoiler-color: #0f0f0f;
   --secondary-muted-color: hsl(from $secondary-color h s calc(l - 17));
   --secondary-dark-color: hsl(from $secondary-color h calc(s - 5) calc(l - 25));
   --secondary-link-color: hsl(from $secondary-color h s calc(l + 40));
-
-  /* Interaction (vote) colors */
-  --upvote-color: $upvote-color;
-  --downvote-color: $downvote-color;
-  --fave-color: $fave-color;
-  --comment-color: $comment-color;
-  --hide-color: $hide-color;
-
-  /* Spoiler colors */
-  --spoiler-color: $spoiler-color;
-  --spoiler-revealed-color: hsl(from $spoiler-color h s calc(l + 20));
-
-  /* The invisible color */
-  --invisible-color: #00000000;
-
-  /* Type (information category) colors */
-  @mixin type-color success, $success-color;
-  @mixin type-color warning, $warning-color;
-  @mixin type-color danger, $danger-color;
-  @mixin type-color information, $information-color;
-  @mixin type-color special, $special-color;
-
-  /* Tag colors */
-  @mixin tag-color default, $tag-default-color;
-  @mixin tag-color error, $tag-error-color, 37;
-  @mixin tag-color rating, $tag-rating-color, 37;
-  @mixin tag-color origin, $tag-origin-color, 42;
-  @mixin tag-color character, $tag-character-color;
-  @mixin tag-color oc, $tag-oc-color, 40;
-  @mixin tag-color species, $tag-species-color, 37;
-  @mixin tag-color body-type, $tag-body-type-color, 45, 12;
-  @mixin tag-color content-fanmade, $tag-content-fanmade-color, 40;
-  @mixin tag-color content-official, $tag-content-official-color;
-  @mixin tag-color spoiler, $tag-spoiler-color;
 }

@@ -1,15 +1,16 @@
 @import "themes/base/dark";
 
-$background-color: #0f161e;
-$primary-color: #284371;
-$secondary-color: #546c99;
+$background-color: #131513;
+$primary-color: #235c36;
+$secondary-color: #3f7a64;
+$success-color: #1c7843;
 
 :root {
   /* Main colors */
   --background-color: $background-color;
 
   /* Link colors */
-  --link-color: hsl(from $primary-color h calc(s + 10) calc(l + 40));
+  --link-color: hsl(from $primary-color h calc(s - 10) calc(l + 40));
 
   /* Primary color (block backgrounds and such) */
   --primary-color: $primary-color;
@@ -22,6 +23,9 @@ $secondary-color: #546c99;
   --secondary-color: $secondary-color;
   --secondary-border-color: hsl(from $secondary-color h s calc(l + 5));
   --secondary-muted-color: hsl(from $secondary-color h s calc(l - 17));
-  --secondary-dark-color: hsl(from $secondary-color h calc(s - 5) calc(l - 25));
+  --secondary-dark-color: hsl(from $secondary-color h calc(s - 5) calc(l - 23));
   --secondary-link-color: hsl(from $secondary-color h s calc(l + 40));
+
+  /* Type (information category) colors */
+  @mixin type-color success, $success-color;
 }
