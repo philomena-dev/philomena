@@ -1,0 +1,28 @@
+@import "themes/base/light";
+
+$background-color: #f7f7f7;
+$primary-color: #f48906;
+$secondary-color: #e2a344;
+
+:root {
+  /* Main colors */
+  --background-color: $background-color;
+  --text-light-color: $background-color;
+
+  /* Link colors */
+  --link-color: hsl(from $primary-color h calc(s + 10) calc(l - 25));
+
+  /* Primary color (block backgrounds and such) */
+  --primary-color: $primary-color;
+  --primary-border-color: hsl(from $primary-color h calc(s + 5) calc(l - 5));
+  --primary-muted-color: hsl(from $primary-color h calc(s + 7) calc(l + 33));
+  --primary-dark-color: hsl(from $primary-color h calc(s + 20) calc(l + 44));
+  --primary-link-color: var(--link-color); /* for consistency */
+
+  /* Secondary color (most buttons) */
+  --secondary-color: $secondary-color;
+  --secondary-border-color: hsl(from $secondary-color h s calc(l - 45));
+  --secondary-muted-color: hsl(from $secondary-color h calc(s + 5) calc(l + 14));
+  --secondary-dark-color: hsl(from $secondary-color h calc(s - 5) calc(l + 20));
+  --secondary-link-color: hsl(from $secondary-color h s calc(l - 55));
+}

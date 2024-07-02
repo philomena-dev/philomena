@@ -1,0 +1,36 @@
+@import "themes/base/light";
+
+$background-color: #f7f7f7;
+$primary-color: #c0c0c0; /* i'm a chicken :D */
+$secondary-color: #c7c7c7;
+
+:root {
+  /* Main colors */
+  --background-color: $background-color;
+  --text-light-color: $background-color;
+
+  /* Link colors */
+  --link-color: hsl(from $primary-color h s calc(l - 50));
+
+  /* Primary color (block backgrounds and such) */
+  --primary-color: $primary-color;
+  --primary-border-color: hsl(from $primary-color h s calc(l - 5));
+  --primary-muted-color: hsl(from $primary-color h s calc(l + 10));
+  --primary-dark-color: hsl(from $primary-color h s calc(l + 17));
+  --primary-link-color: var(--link-color); /* for consistency */
+
+  /* Secondary color (most buttons) */
+  --secondary-color: $secondary-color;
+  --secondary-border-color: hsl(from $secondary-color h s calc(l - 45));
+  --secondary-muted-color: hsl(from $secondary-color h s calc(l + 2));
+  --secondary-dark-color: hsl(from $secondary-color h s calc(l + 5));
+  --secondary-link-color: hsl(from $secondary-color h s calc(l - 55));
+}
+
+.header__link {
+  color: var(--text-color) !important;
+}
+
+nav.header__secondary .header__link {
+  color: var(--text-color) !important;
+}
