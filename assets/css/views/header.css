@@ -5,12 +5,13 @@ header {
   font-size: var(--font-header-size);
   gap: var(--padding-large);
   align-items: center;
+  background: var(--primary-color);
 }
 
 .header__link {
   @mixin animated-transition;
   position: relative;
-  color: var(--text-color) !important;
+  color: var(--text-light-color) !important;
 }
 
 .header__link:hover {
@@ -58,6 +59,7 @@ header {
 }
 
 /* Old style counter */
+/* todo: remove */
 .header__counter--simple {
   display: inline-flex;
   padding: 0 var(--padding-small);
@@ -98,8 +100,8 @@ header {
 
 .nav-container {
   display: flex;
+  flex-flow: column;
   gap: var(--padding-normal);
-  padding: 0 var(--padding-normal);
   flex-wrap: wrap;
 }
 
@@ -107,7 +109,6 @@ nav.header__secondary {
   display: flex;
   flex: 1 0 auto;
   line-height: var(--navbar-secondary-size);
-  border-radius: var(--border-radius-outer);
   padding: 0 var(--padding-large);
   font-size: var(--font-header-size);
   gap: var(--padding-large);

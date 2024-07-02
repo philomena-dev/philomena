@@ -2,6 +2,7 @@ nav.header__staff {
   display: flex;
   line-height: var(--navbar-secondary-size);
   border-radius: var(--border-radius-outer);
+  margin: auto;
 }
 
 .header__counter__admin {
@@ -23,6 +24,14 @@ nav.header__staff {
   padding: 0 var(--padding-normal);
   background: var(--danger-dark-color);
   border-radius: var(--border-radius-outer);
+}
+
+.header--secondary__admin-links .header__link {
+  color: var(--text-color) !important;
+}
+
+.header--secondary__admin-links .header__link:hover {
+  color: var(--danger-link-color) !important;
 }
 
 @mixin if-mobile {

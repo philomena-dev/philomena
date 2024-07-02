@@ -22,8 +22,8 @@ $font-family-heading: $font-family-base;
   --block-header-height: 2rem;
 
   /* Navbar */
-  --navbar-size: 4rem;
-  --navbar-secondary-size: 2.25rem;
+  --navbar-size: 3rem;
+  --navbar-secondary-size: 2.5rem;
   --navbar-input-size: 2rem;
   --navbar-input-width: 18vw;
   --navbar-input-max-width: 22rem;

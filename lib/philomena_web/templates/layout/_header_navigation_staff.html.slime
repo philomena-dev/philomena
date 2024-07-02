@@ -1,6 +1,6 @@
 .header--secondary__admin-links.js-staff-action
   = if manages_users?(@conn) do
-    .dropdown.hidden--mobile
+    .dropdown.dropdown--danger.hidden--mobile
       a.header__link title="Admin"
         i.fa.fa-bars>
         i.fa.fa-caret-down
@@ -108,7 +108,7 @@
         = @dnp_entry_count
 
   = if manages_bans?(@conn) do
-    .dropdown.hidden--mobile
+    .dropdown.dropdown--danger.hidden--mobile
       a.header__link title="Bans"
         i.fa.fa-gavel>
       span
