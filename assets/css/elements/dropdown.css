@@ -12,19 +12,19 @@
   .dropdown--$(type) .dropdown__item:hover .dropdown__text {
     background: var(--$(type)-color);
   }
-  
+
   .dropdown--$(type) .dropdown__icon {
     background: var(--$(type)-dark-color);
   }
-  
+
   .dropdown--$(type) .dropdown__item:hover .dropdown__icon {
     background: var(--$(type)-color);
   }
-  
+
   .dropdown--$(type) .dropdown__separator {
     border-color: var(--$(type)-border-color);
   }
-  
+
   .dropdown--$(type) .dropdown__link:hover {
     background: var(--$(type)-color);
   }

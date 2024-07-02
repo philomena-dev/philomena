@@ -102,7 +102,9 @@ defmodule PhilomenaWeb.AppView do
     end
   end
 
-  def button_to(route, args \\ [], do: fun) do
+  def button_to(text, route, args \\ [])
+
+  def button_to(route, args, do: fun) do
     method = Keyword.get(args, :method, "get")
     class = Keyword.get(args, :class, nil)
     data = Keyword.get(args, :data, [])
