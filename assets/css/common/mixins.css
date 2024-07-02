@@ -64,3 +64,23 @@
     color var(--transition-animation-duration) ease,
     background var(--transition-animation-duration) ease;
 }
+
+@define-mixin no-bottom-border-radius {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+@define-mixin no-top-border-radius {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+@define-mixin first-last-child-border-radius $classname {
+  .$(classname) > *:first-child {
+    @mixin no-top-border-radius;
+  }
+
+  $(classname) > *:last-child {
+    @mixin no-bottom-border-radius;
+  }
+}

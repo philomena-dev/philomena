@@ -1,27 +1,59 @@
-.table {
+.table,
+.communication__body__text table {
   border-collapse: collapse;
   width: 100%;
 }
 
-.table > thead {
-  border-radius: var(--border-radius-inner);
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-.table > tbody {
-  border-radius: var(--border-radius-inner);
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-
-.table td,
-th {
-  padding: var(--padding-small);
-  border: 1px solid var(--secondary-muted-color);
-  text-align: left;
+.table thead,
+.communication__body__text table thead {
+  background: var(--secondary-muted-color);
 }
 
 .table th {
   background: var(--secondary-color);
+  padding: var(--padding-normal) var(--padding-small);
+}
+
+.table td,
+.table th {
+  padding: var(--padding-small);
+  text-align: left;
+}
+
+.communication__body__text table th {
+  background: var(--secondary-color);
+  padding: var(--padding-normal) var(--padding-small);
+}
+
+.communication__body__text table td,
+.communication__body__text table th {
+  padding: var(--padding-small);
+  text-align: left;
+}
+
+.table tr,
+.communication__body__text table tr {
+  border-bottom: 1px solid var(--secondary-muted-color);
+}
+
+.table thead th:last-child {
+  border-top-right-radius: var(--border-radius-inner);
+}
+
+.table thead th:first-child {
+  border-top-left-radius: var(--border-radius-inner);
+}
+
+.communication__body__text table thead th:first-child {
+  border-top-left-radius: var(--border-radius-inner);
+}
+
+.communication__body__text table thead th:last-child {
+  border-top-right-radius: var(--border-radius-inner);
+}
+
+.table tbody,
+.communication__body__text table tbody {
+  border-top: 2px solid var(--secondary-muted-color);
+  border-bottom: 2px solid var(--secondary-muted-color);
 }

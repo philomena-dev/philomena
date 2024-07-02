@@ -2,7 +2,7 @@
   strong<>
     - icon = user_icon(@object.user)
     = if icon do
-      i class="fa #{icon}">
+      i> class="fa #{icon}"
     = link(@object.user.name, to: ~p"/profiles/#{@object.user}")
   = if assigns[:awards] do
     = render PhilomenaWeb.ProfileView, "_awards.html", awards: @object.user.awards

@@ -27,12 +27,15 @@
   = if !@conn.params["fq"] do
     h2 My Filters
     = if @current_user do
-      p
-        = link("Click here to make a new filter from scratch", to: ~p"/filters/new")
+      = link to: ~p"/filters/new", class: "button" do
+        i.fa.fa-plus>
+        | Click here to make a new filter from scratch
+      br
       = for filter <- @my_filters do
         = render PhilomenaWeb.FilterView, "_filter.html", conn: @conn, filter: filter
     - else
       p
+        i.fa.fa-circle-info.icon--fixed>
         ' If you're logged in, you can create and maintain custom filters here.
 
     h2 Global Filters

@@ -103,7 +103,7 @@
   width: fit-content;
   font-weight: bold;
   font-size: var(--font-size);
-  background: var(--primary-muted-color);
+  background: var(--secondary-dark-color);
   color: var(--link-color);
   border-radius: var(--border-radius-inner);
   padding: 0 var(--padding-small);
@@ -117,7 +117,7 @@
 .button:active {
   @mixin animated-transition;
   color: var(--text-color);
-  background: var(--primary-dark-color);
+  background: var(--secondary-muted-color);
   border-radius: var(--border-radius-inner);
   cursor: pointer;
 }

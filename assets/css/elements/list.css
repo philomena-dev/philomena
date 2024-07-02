@@ -1,10 +1,23 @@
 ul,
 ol {
-  padding: 0;
-  list-style-type: none;
+  display: flex;
+  flex-flow: column;
+  gap: var(--padding-small);
+  margin: 0;
+  margin-left: var(--padding-small);
+  padding-inline-start: var(--padding-normal);
+}
+
+li > ul,
+li > ol {
+  padding-top: var(--padding-small);
 }
 
 .horizontal-list {
   display: flex;
+  flex-flow: row;
   gap: var(--padding-normal);
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
