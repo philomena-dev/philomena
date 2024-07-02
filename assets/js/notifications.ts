@@ -29,7 +29,8 @@ function getNewNotifications() {
   }
 
   fetchJson('GET', '/notifications/unread')
-    .then(handleError).then(response => response.json())
+    .then(handleError)
+    .then(response => response.json())
     .then(({ notifications }) => {
       updateNotificationTicker(notifications);
       storeNotificationCount(notifications);
@@ -38,9 +39,9 @@ function getNewNotifications() {
     });
 }
 
-function updateNotificationTicker(notificationCount: unknown) {
+function updateNotificationTicker(notificationCount: string | null) {
   const ticker = assertNotNull($<HTMLSpanElement>('.js-notification-ticker'));
-  const parsedNotificationCount = Number(notificationCount as string);
+  const parsedNotificationCount = Number(notificationCount);
 
   ticker.dataset.notificationCount = parsedNotificationCount.toString();
   ticker.textContent = parsedNotificationCount.toString();
@@ -58,11 +59,8 @@ export function setupNotifications() {
   setTimeout(getNewNotifications, NOTIFICATION_INTERVAL);
 
   // Update the current number of notifications based on the latest page load
-  const ticker = $<HTMLSpanElement>('.js-notification-ticker');
-
-  if (ticker) {
-    storeNotificationCount(assertNotUndefined(ticker.dataset.notificationCount));
-  }
+  const ticker = assertNotNull($<HTMLSpanElement>('.js-notification-ticker'));
+  storeNotificationCount(assertNotUndefined(ticker.dataset.notificationCount));
 
   // Update ticker when the stored value changes - this will occur in all open tabs
   store.watch('notificationCount', updateNotificationTicker);
