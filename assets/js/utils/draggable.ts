@@ -47,8 +47,7 @@ function drop(event: DragEvent, target: HTMLElement) {
 
   if (event.clientX < detX) {
     target.insertAdjacentElement('beforebegin', dragSrcEl);
-  }
-  else {
+  } else {
     target.insertAdjacentElement('afterend', dragSrcEl);
   }
 }
@@ -57,18 +56,18 @@ function dragEnd(event: DragEvent, target: HTMLElement) {
   clearDragSource();
 
   if (target.parentNode) {
-    $$('.over', target.parentNode).forEach(t => t.classList.remove('over'));
+    $$('.over', target.parentNode).forEach((t) => t.classList.remove('over'));
   }
 }
 
 export function initDraggables() {
   const draggableSelector = '.drag-container [draggable]';
-  delegate(document, 'dragstart', { [draggableSelector]: dragStart});
-  delegate(document, 'dragover', { [draggableSelector]: dragOver});
-  delegate(document, 'dragenter', { [draggableSelector]: dragEnter});
-  delegate(document, 'dragleave', { [draggableSelector]: dragLeave});
-  delegate(document, 'dragend', { [draggableSelector]: dragEnd});
-  delegate(document, 'drop', { [draggableSelector]: drop});
+  delegate(document, 'dragstart', { [draggableSelector]: dragStart });
+  delegate(document, 'dragover', { [draggableSelector]: dragOver });
+  delegate(document, 'dragenter', { [draggableSelector]: dragEnter });
+  delegate(document, 'dragleave', { [draggableSelector]: dragLeave });
+  delegate(document, 'dragend', { [draggableSelector]: dragEnd });
+  delegate(document, 'drop', { [draggableSelector]: drop });
 }
 
 export function clearDragSource() {

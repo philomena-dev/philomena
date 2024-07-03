@@ -11,7 +11,7 @@ const MATROSKA_MAGIC = 0x1a45dfa3;
 function scrapeUrl(url) {
   return fetchJson('POST', '/images/scrape', { url })
     .then(handleError)
-    .then(response => response.json());
+    .then((response) => response.json());
 }
 
 function elementForEmbeddedImage({ camo_url, type }) {
@@ -34,7 +34,7 @@ function setupImageUpload() {
   const [fileField, remoteUrl, scraperError] = $$('.js-scraper', form);
   const descrEl = $('.js-image-descr-input', form);
   const tagsEl = $('.js-image-tags-input', form);
-  const sourceEl = $$('.js-source-url', form).find(input => input.value === '');
+  const sourceEl = $$('.js-source-url', form).find((input) => input.value === '');
   const fetchButton = $('#js-scraper-preview');
   if (!fetchButton) return;
 
@@ -68,17 +68,25 @@ function setupImageUpload() {
     showEl(scraperError);
     enableFetch();
   }
-  function hideError()    { hideEl(scraperError); }
-  function disableFetch() { fetchButton.setAttribute('disabled', ''); }
-  function enableFetch()  { fetchButton.removeAttribute('disabled'); }
+  function hideError() {
+    hideEl(scraperError);
+  }
+  function disableFetch() {
+    fetchButton.setAttribute('disabled', '');
+  }
+  function enableFetch() {
+    fetchButton.removeAttribute('disabled');
+  }
 
   const reader = new FileReader();
 
-  reader.addEventListener('load', event => {
-    showImages([{
-      camo_url: event.target.result,
-      type: fileField.files[0].type
-    }]);
+  reader.addEventListener('load', (event) => {
+    showImages([
+      {
+        camo_url: event.target.result,
+        type: fileField.files[0].type,
+      },
+    ]);
 
     // Clear any currently cached data, because the file field
     // has higher priority than the scraper:
@@ -88,7 +96,9 @@ function setupImageUpload() {
   });
 
   // Watch for files added to the form
-  fileField.addEventListener('change', () => { fileField.files.length && reader.readAsArrayBuffer(fileField.files[0]); });
+  fileField.addEventListener('change', () => {
+    fileField.files.length && reader.readAsArrayBuffer(fileField.files[0]);
+  });
 
   // Watch for [Fetch] clicks
   fetchButton.addEventListener('click', () => {
@@ -96,37 +106,39 @@ function setupImageUpload() {
 
     disableFetch();
 
-    scrapeUrl(remoteUrl.value).then(data => {
-      if (data === null) {
-        scraperError.innerText = 'No image found at that address.';
-        showError();
-        return;
-      }
-      else if (data.errors && data.errors.length > 0) {
-        scraperError.innerText = data.errors.join(' ');
-        showError();
-        return;
-      }
+    scrapeUrl(remoteUrl.value)
+      .then((data) => {
+        if (data === null) {
+          scraperError.innerText = 'No image found at that address.';
+          showError();
+          return;
+        } else if (data.errors && data.errors.length > 0) {
+          scraperError.innerText = data.errors.join(' ');
+          showError();
+          return;
+        }
 
-      hideError();
+        hideError();
 
-      // Set source
-      if (sourceEl) sourceEl.value = sourceEl.value || data.source_url || '';
-      // Set description
-      if (descrEl) descrEl.value = descrEl.value || data.description || '';
-      // Add author
-      if (tagsEl && data.author_name) addTag(tagsEl, `artist:${data.author_name.toLowerCase()}`);
-      // Clear selected file, if any
-      fileField.value = '';
-      showImages(data.images);
+        // Set source
+        if (sourceEl) sourceEl.value = sourceEl.value || data.source_url || '';
+        // Set description
+        if (descrEl) descrEl.value = descrEl.value || data.description || '';
+        // Add author
+        if (tagsEl && data.author_name) addTag(tagsEl, `artist:${data.author_name.toLowerCase()}`);
+        // Clear selected file, if any
+        fileField.value = '';
+        showImages(data.images);
 
-      enableFetch();
-    }).catch(showError);
+        enableFetch();
+      })
+      .catch(showError);
   });
 
   // Fetch on "enter" in url field
-  remoteUrl.addEventListener('keydown', event => {
-    if (event.keyCode === 13) { // Hit enter
+  remoteUrl.addEventListener('keydown', (event) => {
+    if (event.keyCode === 13) {
+      // Hit enter
       fetchButton.click();
     }
   });
@@ -135,8 +147,7 @@ function setupImageUpload() {
   function setFetchEnabled() {
     if (remoteUrl.value.length > 0) {
       enableFetch();
-    }
-    else {
+    } else {
       disableFetch();
     }
   }

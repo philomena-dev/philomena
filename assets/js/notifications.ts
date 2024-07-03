@@ -9,17 +9,17 @@ import { assertNotNull, assertNotUndefined } from './utils/assert';
 import store from './utils/store';
 
 const NOTIFICATION_INTERVAL = 600000,
-      NOTIFICATION_EXPIRES = 300000;
+  NOTIFICATION_EXPIRES = 300000;
 
 function bindSubscriptionLinks() {
   delegate(document, 'fetchcomplete', {
-    '.js-subscription-link': event => {
+    '.js-subscription-link': (event) => {
       const target = assertNotNull(event.target.closest('.js-subscription-target'));
 
-      event.detail.text().then(text => {
+      event.detail.text().then((text) => {
         target.outerHTML = text;
       });
-    }
+    },
   });
 }
 
@@ -30,7 +30,7 @@ function getNewNotifications() {
 
   fetchJson('GET', '/notifications/unread')
     .then(handleError)
-    .then(response => response.json())
+    .then((response) => response.json())
     .then(({ notifications }) => {
       updateNotificationTicker(notifications);
       storeNotificationCount(notifications);

@@ -47,7 +47,7 @@ function getPreview(body, anonymous, previewLoading, previewIdle, previewContent
 
   fetchJson('POST', path, { body, anonymous })
     .then(handleError)
-    .then(data => {
+    .then((data) => {
       previewContent.innerHTML = data;
       filterNode(previewContent);
       bindImageTarget(previewContent);
@@ -110,13 +110,14 @@ function setupPreviews() {
   // Fire handler for automatic resizing if textarea contains text on page load (e.g. editing)
   if (textarea.value) textarea.dispatchEvent(new Event('change'));
 
-  previewAnon && previewAnon.addEventListener('click', () => {
-    if (previewContent.classList.contains('hidden')) return;
+  previewAnon &&
+    previewAnon.addEventListener('click', () => {
+      if (previewContent.classList.contains('hidden')) return;
 
-    updatePreview();
-  });
+      updatePreview();
+    });
 
-  document.addEventListener('click', event => {
+  document.addEventListener('click', (event) => {
     if (event.target && event.target.closest('.post-reply')) {
       const link = event.target.closest('.post-reply');
       commentReply(link.dataset.author, link.getAttribute('href'), textarea, link.dataset.post);

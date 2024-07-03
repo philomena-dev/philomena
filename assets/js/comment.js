@@ -18,25 +18,23 @@ function handleError(response) {
 }
 
 function commentPosted(response) {
-  const commentEditTab  = $('#js-comment-form a[data-click-tab="write"]'),
-        commentEditForm = $('#js-comment-form'),
-        container       = document.getElementById('comments'),
-        requestOk       = response.ok;
+  const commentEditTab = $('#js-comment-form a[data-click-tab="write"]'),
+    commentEditForm = $('#js-comment-form'),
+    container = document.getElementById('comments'),
+    requestOk = response.ok;
 
   commentEditTab.click();
   commentEditForm.reset();
 
   if (requestOk) {
-    response.text().then(text => {
+    response.text().then((text) => {
       if (text.includes('<div class="flash flash--warning">')) {
         window.location.reload();
-      }
-      else {
+      } else {
         displayComments(container, text);
       }
     });
-  }
-  else {
+  } else {
     window.location.reload();
     window.scrollTo(0, 0); // Error message is displayed at the top of the page (flash)
   }
@@ -44,10 +42,10 @@ function commentPosted(response) {
 
 function loadParentPost(event) {
   const clickedLink = event.target,
-        // Find the comment containing the link that was clicked
-        fullComment = clickedLink.closest('article.block'),
-        // Look for a potential image and comment ID
-        commentMatches = /(\w+)#comment_(\w+)$/.exec(clickedLink.getAttribute('href'));
+    // Find the comment containing the link that was clicked
+    fullComment = clickedLink.closest('article.block'),
+    // Look for a potential image and comment ID
+    commentMatches = /(\w+)#comment_(\w+)$/.exec(clickedLink.getAttribute('href'));
 
   // If the clicked link is already active, just clear the parent comments
   if (clickedLink.classList.contains('active_reply_link')) {
@@ -58,11 +56,11 @@ function loadParentPost(event) {
 
   if (commentMatches) {
     // If the regex matched, get the image and comment ID
-    const [ , imageId, commentId ] = commentMatches;
+    const [, imageId, commentId] = commentMatches;
 
     fetchHtml(`/images/${imageId}/comments/${commentId}`)
       .then(handleError)
-      .then(data => {
+      .then((data) => {
         clearParentPost(clickedLink, fullComment);
         insertParentPost(data, clickedLink, fullComment);
       });
@@ -99,7 +97,7 @@ function clearParentPost(clickedLink, fullComment) {
   }
 
   // Remove class active_reply_link from all links in the comment
-  [].slice.call(fullComment.getElementsByClassName('active_reply_link')).forEach(link => {
+  [].slice.call(fullComment.getElementsByClassName('active_reply_link')).forEach((link) => {
     link.classList.remove('active_reply_link');
   });
 
@@ -121,14 +119,17 @@ function displayComments(container, commentsHtml) {
 
 function loadComments(event) {
   const container = document.getElementById('comments'),
-        hasHref = event.target && event.target.getAttribute('href'),
-        hasHash = window.location.hash && window.location.hash.match(/#comment_([a-f0-9]+)/),
-        getURL = hasHref || (hasHash ? `${container.dataset.currentUrl}?comment_id=${window.location.hash.substring(9, window.location.hash.length)}`
-          : container.dataset.currentUrl);
+    hasHref = event.target && event.target.getAttribute('href'),
+    hasHash = window.location.hash && window.location.hash.match(/#comment_([a-f0-9]+)/),
+    getURL =
+      hasHref ||
+      (hasHash
+        ? `${container.dataset.currentUrl}?comment_id=${window.location.hash.substring(9, window.location.hash.length)}`
+        : container.dataset.currentUrl);
 
   fetchHtml(getURL)
     .then(handleError)
-    .then(data => {
+    .then((data) => {
       displayComments(container, data);
 
       // Make sure the :target CSS selector applies to the inserted content
@@ -143,17 +144,16 @@ function loadComments(event) {
 }
 
 function setupComments() {
-  const comments     = document.getElementById('comments'),
-        hasHash      = window.location.hash && window.location.hash.match(/^#comment_([a-f0-9]+)$/),
-        targetOnPage = hasHash ? Boolean($(window.location.hash)) : true;
+  const comments = document.getElementById('comments'),
+    hasHash = window.location.hash && window.location.hash.match(/^#comment_([a-f0-9]+)$/),
+    targetOnPage = hasHash ? Boolean($(window.location.hash)) : true;
 
   // Load comments over AJAX if we are on a page with element #comments
   if (comments) {
     if (!comments.dataset.loaded || !targetOnPage) {
       // There is no event associated with the initial load, so use false
       loadComments(false);
-    }
-    else {
+    } else {
       filterNode(comments);
     }
   }
@@ -165,8 +165,9 @@ function setupComments() {
     '#js-refresh-comments': loadComments,
   };
 
-  document.addEventListener('click', event => {
-    if (event.button === 0) { // Left-click only
+  document.addEventListener('click', (event) => {
+    if (event.button === 0) {
+      // Left-click only
       for (const target in targets) {
         if (event.target && event.target.closest(target)) {
           targets[target](event) && event.preventDefault();
@@ -175,7 +176,7 @@ function setupComments() {
     }
   });
 
-  document.addEventListener('fetchcomplete', event => {
+  document.addEventListener('fetchcomplete', (event) => {
     if (event.target.id === 'js-comment-form') commentPosted(event.detail);
   });
 }

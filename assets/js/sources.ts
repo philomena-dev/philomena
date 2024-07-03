@@ -19,7 +19,7 @@ export function imageSourcesCreator() {
     if (target.matches('#source-form')) {
       const sourceSauce = assertNotNull($<HTMLElement>('.js-sourcesauce'));
 
-      detail.text().then(text => {
+      detail.text().then((text) => {
         sourceSauce.outerHTML = text;
         setupInputs();
       });

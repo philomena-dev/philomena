@@ -23,11 +23,11 @@ function persistTag(tagData) {
  */
 function isStale(tag) {
   const now = new Date().getTime() / 1000;
-  return tag.fetchedAt === null || tag.fetchedAt < (now - 604800);
+  return tag.fetchedAt === null || tag.fetchedAt < now - 604800;
 }
 
 function clearTags() {
-  Object.keys(localStorage).forEach(key => {
+  Object.keys(localStorage).forEach((key) => {
     if (key.substring(0, 9) === 'bor_tags_') {
       store.remove(key);
     }
@@ -40,11 +40,13 @@ function clearTags() {
  */
 function isValidStoredTag(value) {
   if (value !== null && 'id' in value && 'name' in value && 'images' in value && 'spoiler_image_uri' in value) {
-    return typeof value.id === 'number'
-      && typeof value.name === 'string'
-      && typeof value.images === 'number'
-      && (value.spoiler_image_uri === null || typeof value.spoiler_image_uri === 'string')
-      && (value.fetchedAt === null || typeof value.fetchedAt === 'number');
+    return (
+      typeof value.id === 'number' &&
+      typeof value.name === 'string' &&
+      typeof value.images === 'number' &&
+      (value.spoiler_image_uri === null || typeof value.spoiler_image_uri === 'string') &&
+      (value.fetchedAt === null || typeof value.fetchedAt === 'number')
+    );
   }
 
   return false;
@@ -82,8 +84,8 @@ function fetchAndPersistTags(tagIds) {
   const remaining = tagIds.slice(41);
 
   fetch(`/fetch/tags?ids[]=${ids.join('&ids[]=')}`)
-    .then(response => response.json())
-    .then(data => data.tags.forEach(tag => persistTag(tag)))
+    .then((response) => response.json())
+    .then((data) => data.tags.forEach((tag) => persistTag(tag)))
     .then(() => fetchAndPersistTags(remaining));
 }
 
@@ -94,7 +96,7 @@ function fetchAndPersistTags(tagIds) {
 function fetchNewOrStaleTags(tagIds) {
   const fetchIds = [];
 
-  tagIds.forEach(t => {
+  tagIds.forEach((t) => {
     const stored = store.get(`bor_tags_${t}`);
     if (!stored || isStale(stored)) {
       fetchIds.push(t);
@@ -112,17 +114,18 @@ function verifyTagsVersion(latest) {
 }
 
 function initializeFilters() {
-  const tags = window.booru.spoileredTagList
-    .concat(window.booru.hiddenTagList)
-    .filter((a, b, c) => c.indexOf(a) === b);
+  const tags = window.booru.spoileredTagList.concat(window.booru.hiddenTagList).filter((a, b, c) => c.indexOf(a) === b);
 
   verifyTagsVersion(window.booru.tagsVersion);
   fetchNewOrStaleTags(tags);
 }
 
 function unmarshal(data) {
-  try { return JSON.parse(data); }
-  catch { return data; }
+  try {
+    return JSON.parse(data);
+  } catch {
+    return data;
+  }
 }
 
 function loadBooruData() {

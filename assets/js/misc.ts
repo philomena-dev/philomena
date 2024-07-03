@@ -9,10 +9,10 @@ import '../types/ujs';
 
 let touchMoved = false;
 
-function formResult({target, detail}: FetchcompleteEvent) {
+function formResult({ target, detail }: FetchcompleteEvent) {
   const elements: Record<string, string> = {
     '#description-form': '.image-description',
-    '#uploader-form': '.image-uploader'
+    '#uploader-form': '.image-uploader',
   };
 
   function showResult(formEl: HTMLFormElement, resultEl: HTMLElement, response: string) {
@@ -20,17 +20,17 @@ function formResult({target, detail}: FetchcompleteEvent) {
     hideEl(formEl);
     showEl(resultEl);
 
-    $$<HTMLInputElement | HTMLButtonElement>('input[type="submit"],button', formEl).forEach(button => {
+    $$<HTMLInputElement | HTMLButtonElement>('input[type="submit"],button', formEl).forEach((button) => {
       button.disabled = false;
     });
   }
 
-  for (const [ formSelector, resultSelector ] of Object.entries(elements)) {
+  for (const [formSelector, resultSelector] of Object.entries(elements)) {
     if (target.matches(formSelector)) {
       const form = assertType(target, HTMLFormElement);
       const result = assertNotNull($<HTMLElement>(resultSelector));
 
-      detail.text().then(text => showResult(form, result, text));
+      detail.text().then((text) => showResult(form, result, text));
     }
   }
 }
@@ -85,11 +85,13 @@ export function setupEvents() {
   }
 
   if (store.get('hide_score')) {
-    $$<HTMLElement>('.upvotes,.score,.downvotes').forEach(s => hideEl(s));
+    $$<HTMLElement>('.upvotes,.score,.downvotes').forEach((s) => hideEl(s));
   }
 
   document.addEventListener('fetchcomplete', formResult);
   document.addEventListener('click', revealSpoiler);
   document.addEventListener('touchend', revealSpoiler);
-  document.addEventListener('touchmove', () => touchMoved = true);
+  document.addEventListener('touchmove', () => {
+    touchMoved = true;
+  });
 }

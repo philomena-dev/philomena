@@ -21,7 +21,7 @@ window.booru = {
   spoileredFilter: matchNone(),
   interactions: [],
   tagsVersion: 5,
-  galleryImages: []
+  galleryImages: [],
 };
 
 // https://github.com/jsdom/jsdom/issues/1721#issuecomment-1484202038
@@ -31,6 +31,7 @@ Object.assign(globalThis, { URL, Blob });
 
 // Prevents an error when calling `form.submit()` directly in
 // the code that is being tested
+// eslint-disable-next-line prettier/prettier
 HTMLFormElement.prototype.submit = function() {
   fireEvent.submit(this);
 };

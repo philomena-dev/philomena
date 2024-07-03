@@ -5,7 +5,9 @@ import { fireEvent } from '@testing-library/dom';
 
 describe('Input duplicator functionality', () => {
   beforeEach(() => {
-    document.documentElement.insertAdjacentHTML('beforeend', `<form action="/">
+    document.documentElement.insertAdjacentHTML(
+      'beforeend',
+      `<form action="/">
       <div class="js-max-input-count">3</div>
       <div class="js-input-source">
         <input id="0" name="0" class="js-input" type="text"/>
@@ -16,7 +18,8 @@ describe('Input duplicator functionality', () => {
       <div class="js-button-container">
         <button type="button" class="js-add-input">Add input</button>
       </div>
-    </form>`);
+    </form>`,
+    );
   });
 
   afterEach(() => {

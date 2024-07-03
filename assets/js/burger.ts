@@ -40,7 +40,7 @@ function copyUserLinksTo(burger: HTMLElement) {
     }
   };
 
-  $$<HTMLElement>('.js-burger-links').forEach(container => copy(container.children));
+  $$<HTMLElement>('.js-burger-links').forEach((container) => copy(container.children));
 }
 
 export function setupBurgerMenu() {
@@ -53,14 +53,13 @@ export function setupBurgerMenu() {
 
   copyUserLinksTo(burger);
 
-  toggle.addEventListener('click', event => {
+  toggle.addEventListener('click', (event) => {
     event.stopPropagation();
     event.preventDefault();
 
     if (content.classList.contains('open')) {
       close(burger, content, body, root);
-    }
-    else {
+    } else {
       open(burger, content, body, root);
     }
   });

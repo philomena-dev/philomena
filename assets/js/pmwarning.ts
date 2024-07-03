@@ -18,8 +18,7 @@ export function warnAboutPMs() {
 
     if (value.match(imageEmbedRegex)) {
       showEl(warning);
-    }
-    else if (!warning.classList.contains('hidden')) {
+    } else if (!warning.classList.contains('hidden')) {
       hideEl(warning);
     }
   });

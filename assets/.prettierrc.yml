@@ -2,6 +2,13 @@ tabWidth: 2
 useTabs: false
 printWidth: 120
 semi: true
-singleQuote: false
+singleQuote: true
 bracketSpacing: true
 endOfLine: lf
+quoteProps: as-needed
+trailingComma: all
+arrowParens: always
+overrides:
+  - files: "*.css"
+    options:
+      singleQuote: false

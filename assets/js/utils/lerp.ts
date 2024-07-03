@@ -5,8 +5,11 @@
 // clamp the value between min and max, depending on whether
 // the delta >= 1 or <= 0.
 export function lerp(delta: number, from: number, to: number): number {
-  if (delta >= 1) { return to; }
-  else if (delta <= 0) { return from; }
+  if (delta >= 1) {
+    return to;
+  } else if (delta <= 0) {
+    return from;
+  }
 
   return from + (to - from) * delta;
 }

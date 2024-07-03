@@ -30,7 +30,7 @@ function sortTags(hidden: boolean, a: TagData, b: TagData): number {
 
 export function getHiddenTags(): TagData[] {
   return unique(window.booru.hiddenTagList)
-    .map(tagId => getTag(tagId))
+    .map((tagId) => getTag(tagId))
     .sort(sortTags.bind(null, true));
 }
 
@@ -38,8 +38,8 @@ export function getSpoileredTags(): TagData[] {
   if (window.booru.spoilerType === 'off') return [];
 
   return unique(window.booru.spoileredTagList)
-    .filter(tagId => window.booru.ignoredTagList.indexOf(tagId) === -1)
-    .map(tagId => getTag(tagId))
+    .filter((tagId) => window.booru.ignoredTagList.indexOf(tagId) === -1)
+    .map((tagId) => getTag(tagId))
     .sort(sortTags.bind(null, false));
 }
 
@@ -49,7 +49,7 @@ export function imageHitsTags(img: HTMLElement, matchTags: TagData[]): TagData[]
     return [];
   }
   const imageTags = JSON.parse(imageTagsString);
-  return matchTags.filter(t => imageTags.indexOf(t.id) !== -1);
+  return matchTags.filter((t) => imageTags.indexOf(t.id) !== -1);
 }
 
 export function imageHitsComplex(img: HTMLElement, matchComplex: AstMatcher) {
@@ -57,11 +57,13 @@ export function imageHitsComplex(img: HTMLElement, matchComplex: AstMatcher) {
 }
 
 export function displayTags(tags: TagData[]): string {
-  const mainTag = tags[0], otherTags = tags.slice(1);
-  let list = escapeHtml(mainTag.name), extras;
+  const mainTag = tags[0],
+    otherTags = tags.slice(1);
+  let list = escapeHtml(mainTag.name),
+    extras;
 
   if (otherTags.length > 0) {
-    extras = otherTags.map(tag => escapeHtml(tag.name)).join(', ');
+    extras = otherTags.map((tag) => escapeHtml(tag.name)).join(', ');
     list += `<span title="${extras}">, ${extras}</span>`;
   }
 

@@ -23,11 +23,13 @@ function makeWildcardMatcher(term: string): FieldMatcher {
   // A custom NFA with caching may be more sophisticated but not
   // likely to be faster.
   const wildcard = new RegExp(
-    `^${term.replace(/([.+^$[\]\\(){}|-])/g, '\\$1')
+    `^${term
+      .replace(/([.+^$[\]\\(){}|-])/g, '\\$1')
       .replace(/([^\\]|[^\\](?:\\\\)+)\*/g, '$1.*')
       .replace(/^(?:\\\\)*\*/g, '.*')
       .replace(/([^\\]|[^\\](?:\\\\)+)\?/g, '$1.?')
-      .replace(/^(?:\\\\)*\?/g, '.?')}$`, 'i'
+      .replace(/^(?:\\\\)*\?/g, '.?')}$`,
+    'i',
   );
 
   return (v, name) => {
@@ -69,10 +71,9 @@ function fuzzyMatch(term: string, targetStr: string, fuzz: number): boolean {
         // Insertion.
         v2[j] + 1,
         // Substitution or No Change.
-        v1[j] + cost
+        v1[j] + cost,
       );
-      if (i > 1 && j > 1 && term[i] === targetStrLower[j - 1] &&
-        targetStrLower[i - 1] === targetStrLower[j]) {
+      if (i > 1 && j > 1 && term[i] === targetStrLower[j - 1] && targetStrLower[i - 1] === targetStrLower[j]) {
         v2[j + 1] = Math.min(v2[j], v0[j - 1] + cost);
       }
     }

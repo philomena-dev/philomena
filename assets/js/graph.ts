@@ -22,7 +22,7 @@ function graphSlice(el: SVGSVGElement, width: number, offset: number) {
 }
 
 function resizeGraphs() {
-  $$<SVGSVGElement>('#js-graph-svg').forEach(el => {
+  $$<SVGSVGElement>('#js-graph-svg').forEach((el) => {
     const parent: HTMLElement | null = el.parentElement;
 
     if (parent) {
@@ -34,7 +34,7 @@ function resizeGraphs() {
 function scaleGraph(target: HTMLElement, min: number, max: number) {
   const targetSvg = $<SVGSVGElement>('#js-graph-svg', target);
 
-  if (!targetSvg) { return; }
+  if (!targetSvg) return;
 
   const cw = target.clientWidth;
   const diff = 100 - (max - min);
@@ -47,14 +47,14 @@ function scaleGraph(target: HTMLElement, min: number, max: number) {
 }
 
 function setupSliders() {
-  $$<HTMLInputElement>('#js-graph-slider').forEach(el => {
+  $$<HTMLInputElement>('#js-graph-slider').forEach((el) => {
     const targetId = el.getAttribute('data-target');
 
-    if (!targetId) { return; }
+    if (!targetId) return;
 
     const target = $<HTMLElement>(targetId);
 
-    if (!target) { return; }
+    if (!target) return;
 
     el.addEventListener('input', () => {
       const min = Number(el.getAttribute('valuemin') || '0');

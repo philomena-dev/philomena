@@ -11,7 +11,7 @@ import { fetchJson } from './utils/requests';
 export function setupGalleryEditing() {
   if (!$<HTMLElement>('.rearrange-button')) return;
 
-  const [ rearrangeEl, saveEl ] = $$<HTMLElement>('.rearrange-button');
+  const [rearrangeEl, saveEl] = $$<HTMLElement>('.rearrange-button');
   const sortableEl = assertNotNull($<HTMLDivElement>('#sortable'));
   const containerEl = assertNotNull($<HTMLDivElement>('.js-resizable-media-container'));
 
@@ -22,7 +22,9 @@ export function setupGalleryEditing() {
 
   initDraggables();
 
-  $$<HTMLDivElement>('.media-box', containerEl).forEach(i => i.draggable = true);
+  $$<HTMLDivElement>('.media-box', containerEl).forEach((i) => {
+    i.draggable = true;
+  });
 
   rearrangeEl.addEventListener('click', () => {
     sortableEl.classList.add('editing');
@@ -33,8 +35,9 @@ export function setupGalleryEditing() {
     sortableEl.classList.remove('editing');
     containerEl.classList.remove('drag-container');
 
-    newImages = $$<HTMLDivElement>('.image-container', containerEl)
-      .map(i => parseInt(assertNotUndefined(i.dataset.imageId), 10));
+    newImages = $$<HTMLDivElement>('.image-container', containerEl).map((i) =>
+      parseInt(assertNotUndefined(i.dataset.imageId), 10),
+    );
 
     // If nothing changed, don't bother.
     if (arraysEqual(newImages, oldImages)) return;
@@ -43,7 +46,9 @@ export function setupGalleryEditing() {
 
     fetchJson('PATCH', reorderPath, {
       image_ids: newImages,
-    // copy the array again so that we have the newly updated set
-    }).then(() => oldImages = newImages.slice());
+      // copy the array again so that we have the newly updated set
+    }).then(() => {
+      oldImages = newImages.slice();
+    });
   });
 }

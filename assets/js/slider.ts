@@ -34,8 +34,7 @@ function setupDrag(el: HTMLDivElement, dataEl: HTMLInputElement, valueProperty: 
   function clampValue(value: number): number {
     if (cachedValue >= cachedLimit && value < cachedLimit) {
       return cachedLimit;
-    }
-    else if (cachedValue < cachedLimit && value >= cachedLimit) {
+    } else if (cachedValue < cachedLimit && value >= cachedLimit) {
       return cachedLimit - 1; // Offset by 1 to ensure stored value is less than limit.
     }
 
@@ -55,7 +54,9 @@ function setupDrag(el: HTMLDivElement, dataEl: HTMLInputElement, valueProperty: 
   // Initializes cached variables. Should be used
   // when the pointer event begins.
   function initVars() {
-    if (!parent) { return; }
+    if (!parent) {
+      return;
+    }
 
     const rect = parent.getBoundingClientRect();
 
@@ -70,7 +71,9 @@ function setupDrag(el: HTMLDivElement, dataEl: HTMLInputElement, valueProperty: 
 
   // Called during pointer movement.
   function dragMove(e: PointerEvent) {
-    if (!dragging) { return; }
+    if (!dragging) {
+      return;
+    }
 
     e.preventDefault();
 
@@ -79,13 +82,7 @@ function setupDrag(el: HTMLDivElement, dataEl: HTMLInputElement, valueProperty: 
     // `lerp` cleverly clamps the value between min and max,
     // so no need for any explicit checks for that here, only
     // the crossover check is required.
-    curValue = clampValue(
-      lerp(
-        (desiredPos - minPos) / (maxPos - minPos),
-        cachedMin,
-        cachedMax
-      )
-    );
+    curValue = clampValue(lerp((desiredPos - minPos) / (maxPos - minPos), cachedMin, cachedMax));
 
     // Same here, lerp clamps the value so it doesn't get out
     // of the slider boundary.
@@ -99,7 +96,9 @@ function setupDrag(el: HTMLDivElement, dataEl: HTMLInputElement, valueProperty: 
 
   // Called when the pointer is let go of.
   function dragEnd(e: PointerEvent) {
-    if (!dragging) { return; }
+    if (!dragging) {
+      return;
+    }
 
     e.preventDefault();
 
@@ -111,7 +110,9 @@ function setupDrag(el: HTMLDivElement, dataEl: HTMLInputElement, valueProperty: 
 
   // Called when the slider head is clicked or tapped.
   function dragBegin(e: PointerEvent) {
-    if (!parent) { return; }
+    if (!parent) {
+      return;
+    }
 
     e.preventDefault();
     initVars();
@@ -168,7 +169,7 @@ function setupSlider(el: HTMLInputElement) {
 
 // Sets up all sliders currently on the page.
 function setupSliders() {
-  $$<HTMLInputElement>('input[type="dualrange"]').forEach(el => {
+  $$<HTMLInputElement>('input[type="dualrange"]').forEach((el) => {
     setupSlider(el);
   });
 }

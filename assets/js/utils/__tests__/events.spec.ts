@@ -60,7 +60,7 @@ describe('Event utils', () => {
       const mockButton = document.createElement('button');
       const mockHandler = vi.fn();
 
-      mockButton.addEventListener('click', e => leftClick(mockHandler)(e, mockButton));
+      mockButton.addEventListener('click', (e) => leftClick(mockHandler)(e, mockButton));
 
       fireEvent.click(mockButton, { button: 0 });
 
@@ -72,7 +72,7 @@ describe('Event utils', () => {
       const mockHandler = vi.fn();
       const mockButtonNumber = getRandomArrayItem([1, 2, 3, 4, 5]);
 
-      mockButton.addEventListener('click', e => leftClick(mockHandler)(e, mockButton));
+      mockButton.addEventListener('click', (e) => leftClick(mockHandler)(e, mockButton));
 
       fireEvent.click(mockButton, { button: mockButtonNumber });
 

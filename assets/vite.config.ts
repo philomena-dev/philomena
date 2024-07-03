@@ -11,18 +11,16 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
   const isDev = command !== 'build' && mode !== 'test';
   const targets = new Map();
 
-  fs.readdirSync(path.resolve(__dirname, 'css/themes/')).forEach(name => {
+  fs.readdirSync(path.resolve(__dirname, 'css/themes/')).forEach((name) => {
     const m = name.match(/([-a-z]+).css/);
 
-    if (m)
-      targets.set(`css/${m[1]}`, `./css/themes/${m[1]}.css`);
+    if (m) targets.set(`css/${m[1]}`, `./css/themes/${m[1]}.css`);
   });
 
-  fs.readdirSync(path.resolve(__dirname, 'css/options/')).forEach(name => {
+  fs.readdirSync(path.resolve(__dirname, 'css/options/')).forEach((name) => {
     const m = name.match(/([-a-z]+).css/);
 
-    if (m)
-      targets.set(`css/options/${m[1]}`, `./css/options/${m[1]}.css`);
+    if (m) targets.set(`css/options/${m[1]}`, `./css/options/${m[1]}.css`);
   });
 
   return {
@@ -37,8 +35,8 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
         common: path.resolve(__dirname, 'css/common/'),
         views: path.resolve(__dirname, 'css/views/'),
         elements: path.resolve(__dirname, 'css/elements/'),
-        themes: path.resolve(__dirname, 'css/themes/')
-      }
+        themes: path.resolve(__dirname, 'css/themes/'),
+      },
     },
     build: {
       target: ['es2016', 'chrome67', 'firefox62', 'edge18', 'safari12'],
@@ -51,19 +49,19 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
         input: {
           'js/app': './js/app.ts',
           'css/application': './css/application.css',
-          ...Object.fromEntries(targets)
+          ...Object.fromEntries(targets),
         },
         output: {
           entryFileNames: '[name].js',
           chunkFileNames: '[name].js',
-          assetFileNames: '[name][extname]'
-        }
-      }
+          assetFileNames: '[name][extname]',
+        },
+      },
     },
     css: {
-      postcss:  {
-        plugins: [postcssMixins(), postcssSimpleVars(), postcssRelativeColor(), autoprefixer]
-      }
+      postcss: {
+        plugins: [postcssMixins(), postcssSimpleVars(), postcssRelativeColor(), autoprefixer],
+      },
     },
     test: {
       globals: true,
@@ -74,11 +72,7 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
       coverage: {
         reporter: ['text', 'html'],
         include: ['js/**/*.{js,ts}'],
-        exclude: [
-          'node_modules/',
-          '.*\\.test\\.ts$',
-          '.*\\.d\\.ts$',
-        ],
+        exclude: ['node_modules/', '.*\\.test\\.ts$', '.*\\.d\\.ts$'],
         thresholds: {
           statements: 0,
           branches: 0,
@@ -90,8 +84,8 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
             functions: 100,
             lines: 100,
           },
-        }
-      }
-    }
+        },
+      },
+    },
   };
 });

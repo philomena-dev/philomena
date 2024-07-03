@@ -29,12 +29,16 @@ describe('Image upload form', () => {
   let mockPng: File;
   let mockWebm: File;
 
-  beforeAll(async() => {
+  beforeAll(async () => {
     const mockPngPath = join(__dirname, 'upload-test.png');
     const mockWebmPath = join(__dirname, 'upload-test.webm');
 
-    mockPng = new File([(await promises.readFile(mockPngPath, { encoding: null })).buffer], 'upload-test.png', { type: 'image/png' });
-    mockWebm = new File([(await promises.readFile(mockWebmPath, { encoding: null })).buffer], 'upload-test.webm', { type: 'video/webm' });
+    mockPng = new File([(await promises.readFile(mockPngPath, { encoding: null })).buffer], 'upload-test.png', {
+      type: 'image/png',
+    });
+    mockWebm = new File([(await promises.readFile(mockWebmPath, { encoding: null })).buffer], 'upload-test.webm', {
+      type: 'video/webm',
+    });
   });
 
   beforeAll(() => {
@@ -46,7 +50,6 @@ describe('Image upload form', () => {
   });
 
   fixEventListeners(window);
-
 
   let form: HTMLFormElement;
   let imgPreviews: HTMLDivElement;
@@ -63,7 +66,9 @@ describe('Image upload form', () => {
   };
 
   beforeEach(() => {
-    document.documentElement.insertAdjacentHTML('beforeend', `
+    document.documentElement.insertAdjacentHTML(
+      'beforeend',
+      `
       <form action="/images">
         <div id="js-image-upload-previews"></div>
         <input id="image_image" name="image[image]" type="file" class="js-scraper" />
@@ -75,7 +80,8 @@ describe('Image upload form', () => {
         <textarea id="image_tag_input" name="image[tag_input]" class="js-image-tags-input"></textarea>
         <textarea id="image_description" name="image[description]" class="js-image-descr-input"></textarea>
       </form>
-    `);
+    `,
+    );
 
     form = assertNotNull($<HTMLFormElement>('form'));
     imgPreviews = assertNotNull($<HTMLDivElement>('#js-image-upload-previews'));
@@ -121,7 +127,7 @@ describe('Image upload form', () => {
     });
   });
 
-  it('should block navigation away after an image file is attached, but not after form submission', async() => {
+  it('should block navigation away after an image file is attached, but not after form submission', async () => {
     fireEvent.change(fileField, { target: { files: [mockPng] } });
     await waitFor(() => {
       assertFetchButtonIsDisabled();
@@ -131,8 +137,8 @@ describe('Image upload form', () => {
     const failedUnloadEvent = new Event('beforeunload', { cancelable: true });
     expect(fireEvent(window, failedUnloadEvent)).toBe(false);
 
-    await new Promise<void>(resolve => {
-      form.addEventListener('submit', event => {
+    await new Promise<void>((resolve) => {
+      form.addEventListener('submit', (event) => {
         event.preventDefault();
         resolve();
       });
@@ -143,11 +149,11 @@ describe('Image upload form', () => {
     expect(fireEvent(window, succeededUnloadEvent)).toBe(true);
   });
 
-  it('should scrape images when the fetch button is clicked', async() => {
+  it('should scrape images when the fetch button is clicked', async () => {
     fetchMock.mockResolvedValue(new Response(JSON.stringify(scrapeResponse), { status: 200 }));
     fireEvent.input(remoteUrl, { target: { value: 'http://localhost/images/1' } });
 
-    await new Promise<void>(resolve => {
+    await new Promise<void>((resolve) => {
       tagsEl.addEventListener('addtag', (event: Event) => {
         expect((event as CustomEvent).detail).toEqual({ name: 'artist:test' });
         resolve();
