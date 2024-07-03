@@ -83,22 +83,16 @@ h1 Content Settings
                 ' For 1080p monitors, try 24.
           .field
             label Theme
-            select.input#js-theme-selector name="user[theme]" id="user_theme"
-              option value="dark" Dark
-              option value="light" Light
+            .with-error
+              => select f, :theme_name, themes(), class: "input"
+              = error_tag f, :theme_name
             .fieldlabel: i General appearance of the theme
-          .field#js-theme-dark
+          .field
             label Theme color
             .with-error
-              => select f, :dark_theme, theme_options(), class: "input"
-              = error_tag f, :dark_theme
+              => select f, :theme_color, theme_colors(), class: "input"
+              = error_tag f, :theme_color
             .fieldlabel: i Color of the theme, don't forget to save settings to apply the theme
-          .field.hidden#js-theme-light
-            label Theme color
-            .with-error
-              => select f, :light_theme, light_theme_options(), class: "input"
-              = error_tag f, :light_theme
-            .fieldlabel: i Preview themes by selecting one from the dropdown. Saving sets the currently selected theme.
           .field
             => label f, :scale_large_images
             .with-error

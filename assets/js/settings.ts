@@ -11,8 +11,9 @@ export function setupSettings() {
   if (!$('#js-setting-table')) return;
 
   const localCheckboxes = $$<HTMLInputElement>('[data-tab="local"] input[type="checkbox"]');
-  const themeSelect = assertNotNull($<HTMLSelectElement>('#user_theme'));
-  const styleSheet = assertNotNull($<HTMLLinkElement>('head link[rel="stylesheet"]'));
+  const themeSelect = assertNotNull($<HTMLSelectElement>('#user_theme_name'));
+  const themeColorSelect = assertNotNull($<HTMLSelectElement>('#user_theme_color'));
+  const styleSheet = assertNotNull($<HTMLLinkElement>('#js-theme-stylesheet'));
 
   // Local settings
   localCheckboxes.forEach(checkbox => {
@@ -22,9 +23,13 @@ export function setupSettings() {
   });
 
   // Theme preview
-  if (themeSelect) {
-    themeSelect.addEventListener('change', () => {
-      styleSheet.href = assertNotUndefined(themeSelect.options[themeSelect.selectedIndex].dataset.themePath);
-    });
-  }
+  const themePreviewCallback = () => {
+    const themeName = assertNotUndefined(themeSelect.options[themeSelect.selectedIndex].value);
+    const themeColor = assertNotUndefined(themeColorSelect.options[themeColorSelect.selectedIndex].value);
+
+    styleSheet.href = `/css/${themeName}-${themeColor}.css`;
+  };
+
+  themeSelect.addEventListener('change', themePreviewCallback);
+  themeColorSelect.addEventListener('change', themePreviewCallback);
 }

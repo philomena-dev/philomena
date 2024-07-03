@@ -71,22 +71,24 @@ defmodule PhilomenaWeb.LayoutView do
 
   def stylesheet_path(conn, %{theme: theme})
       when theme in [
-             "dark-blue",
              "dark-red",
+             "dark-orange",
+             "dark-yellow",
+             "dark-blue",
              "dark-green",
              "dark-purple",
-             "dark-pink",
-             "dark-yellow",
              "dark-cyan",
-             "dark-grey",
-             "light-blue",
+             "dark-pink",
+             "dark-silver",
              "light-red",
+             "light-orange",
+             "light-yellow",
+             "light-blue",
              "light-green",
              "light-purple",
-             "light-pink",
-             "light-yellow",
              "light-cyan",
-             "light-grey"
+             "light-pink",
+             "light-silver"
            ],
       do: static_path(conn, "/css/#{theme}.css")
 
