@@ -20,7 +20,7 @@ function formResult({ target, detail }: FetchcompleteEvent) {
     hideEl(formEl);
     showEl(resultEl);
 
-    $$<HTMLInputElement | HTMLButtonElement>('input[type="submit"],button', formEl).forEach((button) => {
+    $$<HTMLInputElement | HTMLButtonElement>('input[type="submit"],button', formEl).forEach(button => {
       button.disabled = false;
     });
   }
@@ -30,7 +30,7 @@ function formResult({ target, detail }: FetchcompleteEvent) {
       const form = assertType(target, HTMLFormElement);
       const result = assertNotNull($<HTMLElement>(resultSelector));
 
-      detail.text().then((text) => showResult(form, result, text));
+      detail.text().then(text => showResult(form, result, text));
     }
   }
 }
@@ -85,7 +85,7 @@ export function setupEvents() {
   }
 
   if (store.get('hide_score')) {
-    $$<HTMLElement>('.upvotes,.score,.downvotes').forEach((s) => hideEl(s));
+    $$<HTMLElement>('.upvotes,.score,.downvotes').forEach(s => hideEl(s));
   }
 
   document.addEventListener('fetchcomplete', formResult);

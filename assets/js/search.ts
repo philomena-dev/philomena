@@ -2,7 +2,7 @@ import { $, $$ } from './utils/dom';
 import { addTag } from './tagsinput';
 
 function showHelp(subject: string, type: string | null) {
-  $$<HTMLElement>('[data-search-help]').forEach((helpBox) => {
+  $$<HTMLElement>('[data-search-help]').forEach(helpBox => {
     if (helpBox.getAttribute('data-search-help') === type) {
       const searchSubject = $<HTMLElement>('.js-search-help-subject', helpBox);
 

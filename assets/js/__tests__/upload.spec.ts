@@ -137,8 +137,8 @@ describe('Image upload form', () => {
     const failedUnloadEvent = new Event('beforeunload', { cancelable: true });
     expect(fireEvent(window, failedUnloadEvent)).toBe(false);
 
-    await new Promise<void>((resolve) => {
-      form.addEventListener('submit', (event) => {
+    await new Promise<void>(resolve => {
+      form.addEventListener('submit', event => {
         event.preventDefault();
         resolve();
       });
@@ -153,7 +153,7 @@ describe('Image upload form', () => {
     fetchMock.mockResolvedValue(new Response(JSON.stringify(scrapeResponse), { status: 200 }));
     fireEvent.input(remoteUrl, { target: { value: 'http://localhost/images/1' } });
 
-    await new Promise<void>((resolve) => {
+    await new Promise<void>(resolve => {
       tagsEl.addEventListener('addtag', (event: Event) => {
         expect((event as CustomEvent).detail).toEqual({ name: 'artist:test' });
         resolve();

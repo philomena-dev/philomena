@@ -169,7 +169,7 @@ function setupSlider(el: HTMLInputElement) {
 
 // Sets up all sliders currently on the page.
 function setupSliders() {
-  $$<HTMLInputElement>('input[type="dualrange"]').forEach((el) => {
+  $$<HTMLInputElement>('input[type="dualrange"]').forEach(el => {
     setupSlider(el);
   });
 }

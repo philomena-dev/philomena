@@ -133,7 +133,7 @@ export class LocalAutocompleter {
       }
 
       // Add if not filtering or no associations are filtered
-      if (unfilter || hiddenTags.findIndex((ht) => result.associations.includes(ht)) === -1) {
+      if (unfilter || hiddenTags.findIndex(ht => result.associations.includes(ht)) === -1) {
         results[result.name] = result;
       }
     }

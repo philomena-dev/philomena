@@ -48,7 +48,7 @@ export function delegate<K extends keyof PhilomenaAvailableEventsMap, Target ext
   event: K,
   selectors: Record<string, (e: PhilomenaAvailableEventsMap[K], target: Target) => void | boolean>,
 ) {
-  node.addEventListener(event, (e) => {
+  node.addEventListener(event, e => {
     for (const selector in selectors) {
       const evtTarget = e.target as EventTarget | Target | null;
       if (evtTarget && 'closest' in evtTarget && typeof evtTarget.closest === 'function') {

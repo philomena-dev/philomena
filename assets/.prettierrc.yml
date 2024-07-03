@@ -7,7 +7,7 @@ bracketSpacing: true
 endOfLine: lf
 quoteProps: as-needed
 trailingComma: all
-arrowParens: always
+arrowParens: avoid
 overrides:
   - files: "*.css"
     options:

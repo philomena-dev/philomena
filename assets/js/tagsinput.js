@@ -81,7 +81,7 @@ function setupTagsInput(tagBlock) {
     // enter or comma
     if (keyCode === 13 || (keyCode === 188 && !shiftKey)) {
       event.preventDefault();
-      inputField.value.split(',').forEach((t) => insertTag(t));
+      inputField.value.split(',').forEach(t => insertTag(t));
       inputField.value = '';
     }
   }
@@ -129,7 +129,7 @@ function setupTagsInput(tagBlock) {
     container.appendChild(inputField);
 
     tags = [];
-    textarea.value.split(',').forEach((t) => insertTag(t));
+    textarea.value.split(',').forEach(t => insertTag(t));
     textarea.value = tags.join(', ');
   }
 }
@@ -143,7 +143,7 @@ function fancyEditorRequested(tagBlock) {
 }
 
 function setupTagListener() {
-  document.addEventListener('addtag', (event) => {
+  document.addEventListener('addtag', event => {
     if (event.target.value) event.target.value += ', ';
     event.target.value += event.detail.name;
   });

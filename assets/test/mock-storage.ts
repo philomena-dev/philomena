@@ -68,7 +68,7 @@ export function mockStorageImpl(): MockStorageImplApi {
       delete tempStorage[key];
     },
   });
-  const forceStorageError: MockStorageImplApi['forceStorageError'] = (func) => {
+  const forceStorageError: MockStorageImplApi['forceStorageError'] = func => {
     shouldThrow = true;
     const value = func();
     if (!(value instanceof Promise)) {
@@ -80,7 +80,7 @@ export function mockStorageImpl(): MockStorageImplApi {
       shouldThrow = false;
     });
   };
-  const setStorageValue: MockStorageImplApi['setStorageValue'] = (value) => {
+  const setStorageValue: MockStorageImplApi['setStorageValue'] = value => {
     tempStorage = value;
   };
   const clearStorage = () => setStorageValue({});

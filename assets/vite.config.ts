@@ -11,13 +11,13 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
   const isDev = command !== 'build' && mode !== 'test';
   const targets = new Map();
 
-  fs.readdirSync(path.resolve(__dirname, 'css/themes/')).forEach((name) => {
+  fs.readdirSync(path.resolve(__dirname, 'css/themes/')).forEach(name => {
     const m = name.match(/([-a-z]+).css/);
 
     if (m) targets.set(`css/${m[1]}`, `./css/themes/${m[1]}.css`);
   });
 
-  fs.readdirSync(path.resolve(__dirname, 'css/options/')).forEach((name) => {
+  fs.readdirSync(path.resolve(__dirname, 'css/options/')).forEach(name => {
     const m = name.match(/([-a-z]+).css/);
 
     if (m) targets.set(`css/options/${m[1]}`, `./css/options/${m[1]}.css`);

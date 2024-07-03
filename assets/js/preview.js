@@ -47,7 +47,7 @@ function getPreview(body, anonymous, previewLoading, previewIdle, previewContent
 
   fetchJson('POST', path, { body, anonymous })
     .then(handleError)
-    .then((data) => {
+    .then(data => {
       previewContent.innerHTML = data;
       filterNode(previewContent);
       bindImageTarget(previewContent);
@@ -117,7 +117,7 @@ function setupPreviews() {
       updatePreview();
     });
 
-  document.addEventListener('click', (event) => {
+  document.addEventListener('click', event => {
     if (event.target && event.target.closest('.post-reply')) {
       const link = event.target.closest('.post-reply');
       commentReply(link.dataset.author, link.getAttribute('href'), textarea, link.dataset.post);

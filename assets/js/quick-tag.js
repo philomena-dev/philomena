@@ -30,10 +30,10 @@ function toggleActiveState() {
 
   setTagButton(`Submit (${currentTags()})`);
 
-  $$('.media-box__header').forEach((el) => el.classList.toggle('media-box__header--unselected'));
-  $$('.media-box__header').forEach((el) => el.classList.remove('media-box__header--selected'));
-  currentQueue().forEach((id) =>
-    $$(`.media-box__header[data-image-id="${id}"]`).forEach((el) => el.classList.add('media-box__header--selected')),
+  $$('.media-box__header').forEach(el => el.classList.toggle('media-box__header--unselected'));
+  $$('.media-box__header').forEach(el => el.classList.remove('media-box__header--selected'));
+  currentQueue().forEach(id =>
+    $$(`.media-box__header[data-image-id="${id}"]`).forEach(el => el.classList.add('media-box__header--selected')),
   );
 }
 
@@ -64,8 +64,8 @@ function submit() {
     image_ids: currentQueue(),
   })
     .then(handleError)
-    .then((r) => r.json())
-    .then((data) => {
+    .then(r => r.json())
+    .then(data => {
       if (data.failed.length) window.alert(`Failed to add tags to the images with these IDs: ${data.failed}`);
 
       reset();
@@ -80,7 +80,7 @@ function modifyImageQueue(mediaBox) {
 
     isSelected ? queue.splice(queue.indexOf(imageId), 1) : queue.push(imageId);
 
-    $$(`.media-box__header[data-image-id="${imageId}"]`).forEach((el) =>
+    $$(`.media-box__header[data-image-id="${imageId}"]`).forEach(el =>
       el.classList.toggle('media-box__header--selected'),
     );
 

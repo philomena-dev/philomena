@@ -41,7 +41,7 @@ export function inputDuplicatorCreator({
   const maxOptionCountElement = assertNotNull($(maxInputCountSelector, form));
   const maxOptionCount = parseInt(maxOptionCountElement.innerHTML, 10);
 
-  addButton.addEventListener('click', (e) => {
+  addButton.addEventListener('click', e => {
     e.preventDefault();
 
     const existingFields = $$<HTMLElement>(fieldSelector, form);
@@ -52,7 +52,7 @@ export function inputDuplicatorCreator({
       const prevField = existingFields[existingFieldsLength - 1];
       const prevFieldCopy = prevField.cloneNode(true) as HTMLElement;
 
-      $$<HTMLInputElement>('input', prevFieldCopy).forEach((prevFieldCopyInput) => {
+      $$<HTMLInputElement>('input', prevFieldCopy).forEach(prevFieldCopyInput => {
         // Reset new input's value
         prevFieldCopyInput.value = '';
         prevFieldCopyInput.removeAttribute('value');

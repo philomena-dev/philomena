@@ -117,7 +117,7 @@ export function spoilerThumb(img: HTMLDivElement, spoilerUri: string, reason: st
 
   switch (window.booru.spoilerType) {
     case 'click':
-      img.addEventListener('click', (event) => {
+      img.addEventListener('click', event => {
         if (showThumb(img)) event.preventDefault();
       });
       img.addEventListener('mouseleave', () => hideThumb(img, spoilerUri, reason));

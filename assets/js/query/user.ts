@@ -8,7 +8,7 @@ function interactionMatch(
   interactions: Interaction[],
 ): boolean {
   return interactions.some(
-    (v) => v.image_id === imageId && v.interaction_type === type && (value === null || v.value === value),
+    v => v.image_id === imageId && v.interaction_type === type && (value === null || v.value === value),
   );
 }
 

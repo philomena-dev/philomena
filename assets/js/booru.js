@@ -27,7 +27,7 @@ function isStale(tag) {
 }
 
 function clearTags() {
-  Object.keys(localStorage).forEach((key) => {
+  Object.keys(localStorage).forEach(key => {
     if (key.substring(0, 9) === 'bor_tags_') {
       store.remove(key);
     }
@@ -84,8 +84,8 @@ function fetchAndPersistTags(tagIds) {
   const remaining = tagIds.slice(41);
 
   fetch(`/fetch/tags?ids[]=${ids.join('&ids[]=')}`)
-    .then((response) => response.json())
-    .then((data) => data.tags.forEach((tag) => persistTag(tag)))
+    .then(response => response.json())
+    .then(data => data.tags.forEach(tag => persistTag(tag)))
     .then(() => fetchAndPersistTags(remaining));
 }
 
@@ -96,7 +96,7 @@ function fetchAndPersistTags(tagIds) {
 function fetchNewOrStaleTags(tagIds) {
   const fetchIds = [];
 
-  tagIds.forEach((t) => {
+  tagIds.forEach(t => {
     const stored = store.get(`bor_tags_${t}`);
     if (!stored || isStale(stored)) {
       fetchIds.push(t);

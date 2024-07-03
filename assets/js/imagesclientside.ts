@@ -84,15 +84,15 @@ export function filterNode(node: Pick<Document, 'querySelectorAll'>) {
 
   // Image thumb boxes with vote and fave buttons on them
   $$<HTMLDivElement>('.image-container', node)
-    .filter((img) => !run(img, hiddenTags, hiddenFilter, hideThumbTyped))
-    .filter((img) => !run(img, spoileredTags, spoileredFilter, spoilerThumbTyped))
-    .forEach((img) => showThumb(img));
+    .filter(img => !run(img, hiddenTags, hiddenFilter, hideThumbTyped))
+    .filter(img => !run(img, spoileredTags, spoileredFilter, spoilerThumbTyped))
+    .forEach(img => showThumb(img));
 
   // Individual image pages and images in posts/comments
   $$<HTMLDivElement>('.image-show-container', node)
-    .filter((img) => !run(img, hiddenTags, hiddenFilter, hideBlockTyped))
-    .filter((img) => !run(img, spoileredTags, spoileredFilter, spoilerBlockTyped))
-    .forEach((img) => showBlock(img));
+    .filter(img => !run(img, hiddenTags, hiddenFilter, hideBlockTyped))
+    .filter(img => !run(img, spoileredTags, spoileredFilter, spoilerBlockTyped))
+    .forEach(img => showBlock(img));
 }
 
 export function initImagesClientside() {

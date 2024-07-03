@@ -101,7 +101,7 @@ describe('Image utils', () => {
         const mockImage = new Image();
         mockImage.src = mockImageUri;
         if (imgClasses) {
-          imgClasses.forEach((videoClass) => {
+          imgClasses.forEach(videoClass => {
             mockImage.classList.add(videoClass);
           });
         }
@@ -109,7 +109,7 @@ describe('Image utils', () => {
 
         const mockVideo = document.createElement('video');
         if (videoClasses) {
-          videoClasses.forEach((videoClass) => {
+          videoClasses.forEach(videoClass => {
             mockVideo.classList.add(videoClass);
           });
         }
@@ -161,7 +161,7 @@ describe('Image utils', () => {
         expect(result).toBe(true);
       });
 
-      ['data-size', 'data-uris'].forEach((missingAttributeName) => {
+      ['data-size', 'data-uris'].forEach(missingAttributeName => {
         it(`should return early if the ${missingAttributeName} attribute is missing`, () => {
           const { mockElement } = createMockElements({
             extension: 'webm',

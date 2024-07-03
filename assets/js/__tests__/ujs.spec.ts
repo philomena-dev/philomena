@@ -70,10 +70,10 @@ describe('Remote utilities', () => {
     });
 
     it('should emit fetchcomplete event', () =>
-      new Promise<void>((resolve) => {
+      new Promise<void>(resolve => {
         let a: HTMLAnchorElement | null = null;
 
-        addOneShotEventListener('fetchcomplete', (event) => {
+        addOneShotEventListener('fetchcomplete', event => {
           expect(event.target).toBe(a);
           resolve();
         });
@@ -95,8 +95,8 @@ describe('Remote utilities', () => {
     };
 
     it('should submit a form with the given action', () =>
-      new Promise<void>((resolve) => {
-        addOneShotEventListener('submit', (event) => {
+      new Promise<void>(resolve => {
+        addOneShotEventListener('submit', event => {
           event.preventDefault();
 
           const target = assertType(event.target, HTMLFormElement);
@@ -192,10 +192,10 @@ describe('Remote utilities', () => {
     });
 
     it('should emit fetchcomplete event', () =>
-      new Promise<void>((resolve) => {
+      new Promise<void>(resolve => {
         let form: HTMLFormElement | null = null;
 
-        addOneShotEventListener('fetchcomplete', (event) => {
+        addOneShotEventListener('fetchcomplete', event => {
           expect(event.target).toBe(form);
           resolve();
         });
@@ -214,7 +214,7 @@ describe('Remote utilities', () => {
 
 describe('Form utilities', () => {
   beforeEach(() => {
-    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
       cb(1);
       return 1;
     });
@@ -260,7 +260,7 @@ describe('Form utilities', () => {
 
       // jsdom has no implementation for HTMLFormElement.prototype.submit
       // and will return an error if the event's default isn't prevented
-      form.addEventListener('submit', (event) => event.preventDefault());
+      form.addEventListener('submit', event => event.preventDefault());
 
       const button = document.createElement('button');
       button.type = 'submit';

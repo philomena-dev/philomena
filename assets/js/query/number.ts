@@ -2,7 +2,7 @@ import { FieldMatcher, RangeEqualQualifier } from './types';
 
 export function makeNumberMatcher(term: number, fuzz: number, qual: RangeEqualQualifier): FieldMatcher {
   // Range matching.
-  return (v) => {
+  return v => {
     const attrVal = parseFloat(v);
 
     if (isNaN(attrVal)) {

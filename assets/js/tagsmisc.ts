@@ -38,7 +38,7 @@ function tagInputButtons(event: MouseEvent) {
 }
 
 function setupTags() {
-  $$<HTMLDivElement>('.js-tag-block').forEach((el) => {
+  $$<HTMLDivElement>('.js-tag-block').forEach(el => {
     setupTagsInput(el);
     el.classList.remove('js-tag-block');
   });
@@ -48,7 +48,7 @@ function updateTagSauce({ target, detail }: FetchcompleteEvent) {
   if (target.matches('#tags-form')) {
     const tagSauce = assertNotNull($<HTMLDivElement>('.js-tagsauce'));
 
-    detail.text().then((text) => {
+    detail.text().then(text => {
       tagSauce.outerHTML = text;
       setupTags();
       initTagDropdown();

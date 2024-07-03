@@ -26,27 +26,27 @@ const types = {
 
 const actions = {
   hide(data) {
-    selectorCb(data.base, data.value, (el) => el.classList.add('hidden'));
+    selectorCb(data.base, data.value, el => el.classList.add('hidden'));
   },
 
   tabHide(data) {
-    selectorCbChildren(data.base, data.value, (el) => el.classList.add('hidden'));
+    selectorCbChildren(data.base, data.value, el => el.classList.add('hidden'));
   },
 
   show(data) {
-    selectorCb(data.base, data.value, (el) => el.classList.remove('hidden'));
+    selectorCb(data.base, data.value, el => el.classList.remove('hidden'));
   },
 
   toggle(data) {
-    selectorCb(data.base, data.value, (el) => el.classList.toggle('hidden'));
+    selectorCb(data.base, data.value, el => el.classList.toggle('hidden'));
   },
 
   submit(data) {
-    selectorCb(data.base, data.value, (el) => el.submit());
+    selectorCb(data.base, data.value, el => el.submit());
   },
 
   disable(data) {
-    selectorCb(data.base, data.value, (el) => {
+    selectorCb(data.base, data.value, el => {
       el.disabled = true;
     });
   },
@@ -65,7 +65,7 @@ const actions = {
   },
 
   checkall(data) {
-    $$(`${data.value} input[type=checkbox]`).forEach((c) => {
+    $$(`${data.value} input[type=checkbox]`).forEach(c => {
       c.checked = !c.checked;
     });
   },
@@ -102,8 +102,8 @@ const actions = {
     if (loadTab && !newTab.dataset.loaded) {
       fetchHtml(loadTab)
         .then(handleError)
-        .then((response) => response.text())
-        .then((response) => {
+        .then(response => response.text())
+        .then(response => {
           newTab.innerHTML = response;
         })
         .then(() => {

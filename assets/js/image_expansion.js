@@ -156,7 +156,7 @@ function bindImageForClick(target) {
 }
 
 function bindImageTarget(node = document) {
-  $$('.image-target', node).forEach((target) => {
+  $$('.image-target', node).forEach(target => {
     pickAndResize(target);
 
     if (target.dataset.mimeType === 'video/webm') {

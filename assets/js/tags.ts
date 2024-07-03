@@ -82,7 +82,7 @@ function createTagDropdown(tag: HTMLSpanElement) {
   if (!userIsSignedIn) showEl(signIn);
   if (userIsSignedIn && !userCanEditFilter) showEl(filter);
 
-  tag.addEventListener('fetchcomplete', (event) => {
+  tag.addEventListener('fetchcomplete', event => {
     const act = assertNotUndefined(event.target.dataset.tagAction);
     actions[act]();
   });

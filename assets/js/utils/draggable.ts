@@ -56,7 +56,7 @@ function dragEnd(event: DragEvent, target: HTMLElement) {
   clearDragSource();
 
   if (target.parentNode) {
-    $$('.over', target.parentNode).forEach((t) => t.classList.remove('over'));
+    $$('.over', target.parentNode).forEach(t => t.classList.remove('over'));
   }
 }
 

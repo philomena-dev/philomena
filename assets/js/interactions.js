@@ -39,33 +39,33 @@ function modifyCache(callback) {
 }
 
 function cacheStatus(imageId, interactionType, value) {
-  modifyCache((cache) => {
+  modifyCache(cache => {
     cache[`${imageId}${interactionType}`] = { imageId, interactionType, value };
     return cache;
   });
 }
 
 function uncacheStatus(imageId, interactionType) {
-  modifyCache((cache) => {
+  modifyCache(cache => {
     delete cache[`${imageId}${interactionType}`];
     return cache;
   });
 }
 
 function setScore(imageId, data) {
-  onImage(imageId, '.score', (el) => {
+  onImage(imageId, '.score', el => {
     el.textContent = data.score;
   });
 
-  onImage(imageId, '.favorites', (el) => {
+  onImage(imageId, '.favorites', el => {
     el.textContent = data.faves;
   });
 
-  onImage(imageId, '.upvotes', (el) => {
+  onImage(imageId, '.upvotes', el => {
     el.textContent = data.upvotes;
   });
 
-  onImage(imageId, '.downvotes', (el) => {
+  onImage(imageId, '.downvotes', el => {
     el.textContent = data.downvotes;
   });
 }
@@ -75,50 +75,50 @@ function setScore(imageId, data) {
 
 function showUpvoted(imageId) {
   cacheStatus(imageId, 'voted', 'up');
-  onImage(imageId, '.interaction--upvote', (el) => el.classList.add('active'));
+  onImage(imageId, '.interaction--upvote', el => el.classList.add('active'));
 }
 
 function showDownvoted(imageId) {
   cacheStatus(imageId, 'voted', 'down');
-  onImage(imageId, '.interaction--downvote', (el) => el.classList.add('active'));
+  onImage(imageId, '.interaction--downvote', el => el.classList.add('active'));
 }
 
 function showFaved(imageId) {
   cacheStatus(imageId, 'faved', '');
-  onImage(imageId, '.interaction--fave', (el) => el.classList.add('active'));
+  onImage(imageId, '.interaction--fave', el => el.classList.add('active'));
 }
 
 function showHidden(imageId) {
   cacheStatus(imageId, 'hidden', '');
-  onImage(imageId, '.interaction--hide', (el) => el.classList.add('active'));
+  onImage(imageId, '.interaction--hide', el => el.classList.add('active'));
 }
 
 function resetVoted(imageId) {
   uncacheStatus(imageId, 'voted');
 
-  onImage(imageId, '.interaction--upvote', (el) => el.classList.remove('active'));
+  onImage(imageId, '.interaction--upvote', el => el.classList.remove('active'));
 
-  onImage(imageId, '.interaction--downvote', (el) => el.classList.remove('active'));
+  onImage(imageId, '.interaction--downvote', el => el.classList.remove('active'));
 }
 
 function resetFaved(imageId) {
   uncacheStatus(imageId, 'faved');
-  onImage(imageId, '.interaction--fave', (el) => el.classList.remove('active'));
+  onImage(imageId, '.interaction--fave', el => el.classList.remove('active'));
 }
 
 function resetHidden(imageId) {
   uncacheStatus(imageId, 'hidden');
-  onImage(imageId, '.interaction--hide', (el) => el.classList.remove('active'));
+  onImage(imageId, '.interaction--hide', el => el.classList.remove('active'));
 }
 
 function interact(type, imageId, method, data = {}) {
   return fetchJson(method, endpoints[type](imageId), data)
-    .then((res) => res.json())
-    .then((res) => setScore(imageId, res));
+    .then(res => res.json())
+    .then(res => setScore(imageId, res));
 }
 
 function displayInteractionSet(interactions) {
-  interactions.forEach((i) => {
+  interactions.forEach(i => {
     switch (i.interaction_type) {
       case 'faved':
         showFaved(i.image_id);
@@ -143,8 +143,8 @@ function loadInteractions() {
   if (!document.getElementById('imagelist-container')) return;
 
   /* Users will blind downvote without this */
-  window.booru.imagesWithDownvotingDisabled.forEach((i) => {
-    onImage(i, '.interaction--downvote', (a) => {
+  window.booru.imagesWithDownvotingDisabled.forEach(i => {
+    onImage(i, '.interaction--downvote', a => {
       // TODO Use a 'js-' class to target these instead
       const icon = a.querySelector('i') || a.querySelector('.oc-icon-small');
 
@@ -152,7 +152,7 @@ function loadInteractions() {
       a.classList.add('disabled');
       a.addEventListener(
         'click',
-        (event) => {
+        event => {
           event.stopPropagation();
           event.preventDefault();
         },
@@ -205,7 +205,7 @@ const targets = {
 };
 
 function bindInteractions() {
-  document.addEventListener('click', (event) => {
+  document.addEventListener('click', event => {
     if (event.button === 0) {
       // Is it a left-click?
       for (const target in targets) {
@@ -222,7 +222,7 @@ function bindInteractions() {
 }
 
 function loggedOutInteractions() {
-  [].forEach.call(document.querySelectorAll('.interaction--fave,.interaction--upvote,.interaction--downvote'), (a) =>
+  [].forEach.call(document.querySelectorAll('.interaction--fave,.interaction--upvote,.interaction--downvote'), a =>
     a.setAttribute('href', '/sessions/new'),
   );
 }

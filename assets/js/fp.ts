@@ -102,8 +102,8 @@ function getUserAgentBrands(): string {
       // NB: Chromium implements GREASE protocol to prevent ossification of
       // the "Not a brand" string - see https://stackoverflow.com/a/64443187
       brands = data.brands
-        .filter((e) => !e.brand.match(/.*ot.*rand.*/gi))
-        .map((e) => `${e.brand}${e.version}`)
+        .filter(e => !e.brand.match(/.*ot.*rand.*/gi))
+        .map(e => `${e.brand}${e.version}`)
         .sort()
         .join('');
     }

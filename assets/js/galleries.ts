@@ -22,7 +22,7 @@ export function setupGalleryEditing() {
 
   initDraggables();
 
-  $$<HTMLDivElement>('.media-box', containerEl).forEach((i) => {
+  $$<HTMLDivElement>('.media-box', containerEl).forEach(i => {
     i.draggable = true;
   });
 
@@ -35,7 +35,7 @@ export function setupGalleryEditing() {
     sortableEl.classList.remove('editing');
     containerEl.classList.remove('drag-container');
 
-    newImages = $$<HTMLDivElement>('.image-container', containerEl).map((i) =>
+    newImages = $$<HTMLDivElement>('.image-container', containerEl).map(i =>
       parseInt(assertNotUndefined(i.dataset.imageId), 10),
     );
 

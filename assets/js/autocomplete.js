@@ -139,7 +139,7 @@ function createList(suggestions) {
     list = document.createElement('ul');
   list.className = 'autocomplete__list';
 
-  suggestions.forEach((suggestion) => createItem(list, suggestion));
+  suggestions.forEach(suggestion => createItem(list, suggestion));
 
   parent.appendChild(list);
 }
@@ -176,7 +176,7 @@ function showAutocomplete(suggestions, fetchedTerm, targetInput) {
 function getSuggestions(term) {
   // In case source URL was not given at all, do not try sending the request.
   if (!inputField.dataset.acSource) return [];
-  return fetch(`${inputField.dataset.acSource}${term}`).then((response) => response.json());
+  return fetch(`${inputField.dataset.acSource}${term}`).then(response => response.json());
 }
 
 function getSelectedTerm() {
@@ -212,7 +212,7 @@ function listenAutocomplete() {
 
   document.addEventListener('focusin', fetchLocalAutocomplete);
 
-  document.addEventListener('input', (event) => {
+  document.addEventListener('input', event => {
     removeParent();
     fetchLocalAutocomplete(event);
     window.clearTimeout(timeout);
@@ -258,7 +258,7 @@ function listenAutocomplete() {
           showAutocomplete(cache[fetchedTerm], fetchedTerm, event.target);
         } else {
           // inputField could get overwritten while the suggestions are being fetched - use event.target
-          getSuggestions(fetchedTerm).then((suggestions) => {
+          getSuggestions(fetchedTerm).then(suggestions => {
             if (fetchedTerm === event.target.value) {
               showAutocomplete(suggestions, fetchedTerm, event.target);
             }
@@ -269,7 +269,7 @@ function listenAutocomplete() {
   });
 
   // If there's a click outside the inputField, remove autocomplete
-  document.addEventListener('click', (event) => {
+  document.addEventListener('click', event => {
     if (event.target && event.target !== inputField) removeParent();
     if (event.target === inputField && isSearchField() && isSelectionOutsideCurrentTerm()) removeParent();
   });
@@ -283,8 +283,8 @@ function listenAutocomplete() {
 
       fetch(`/autocomplete/compiled?vsn=2&key=${cacheKey}`, { credentials: 'omit', cache: 'force-cache' })
         .then(handleError)
-        .then((resp) => resp.arrayBuffer())
-        .then((buf) => {
+        .then(resp => resp.arrayBuffer())
+        .then(buf => {
           localAc = new LocalAutocompleter(buf);
         });
     }

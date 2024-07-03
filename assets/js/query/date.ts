@@ -17,16 +17,16 @@ function makeMatcher(bottomDate: PosixTimeMs, topDate: PosixTimeMs, qual: RangeE
   // done compared to numeric ranges.
   switch (qual) {
     case 'lte':
-      return (v) => new Date(v).getTime() < topDate;
+      return v => new Date(v).getTime() < topDate;
     case 'gte':
-      return (v) => new Date(v).getTime() >= bottomDate;
+      return v => new Date(v).getTime() >= bottomDate;
     case 'lt':
-      return (v) => new Date(v).getTime() < bottomDate;
+      return v => new Date(v).getTime() < bottomDate;
     case 'gt':
-      return (v) => new Date(v).getTime() >= topDate;
+      return v => new Date(v).getTime() >= topDate;
     case 'eq':
     default:
-      return (v) => {
+      return v => {
         const t = new Date(v).getTime();
         return t >= bottomDate && t < topDate;
       };

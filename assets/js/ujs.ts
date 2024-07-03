@@ -57,7 +57,7 @@ function formRemote(event: Event, target: HTMLFormElement) {
     method: (target.dataset.method || target.method).toUpperCase(),
     headers: headers(),
     body: new FormData(target),
-  }).then((response) => {
+  }).then(response => {
     fire(target, 'fetchcomplete', response);
     if (response && response.status === 300) {
       window.location.reload();
@@ -66,7 +66,7 @@ function formRemote(event: Event, target: HTMLFormElement) {
 }
 
 function formReset(_event: Event | null, target: HTMLElement) {
-  $$<HTMLElement>('[disabled][data-disable-with][data-enable-with]', target).forEach((input) => {
+  $$<HTMLElement>('[disabled][data-disable-with][data-enable-with]', target).forEach(input => {
     const label = findFirstTextNode(input);
     if (label) {
       label.nodeValue = ` ${input.dataset.enableWith}`;
@@ -85,7 +85,7 @@ function linkRemote(event: Event, target: HTMLAnchorElement) {
     credentials: 'same-origin',
     method: (target.dataset.method || 'get').toUpperCase(),
     headers: headers(),
-  }).then((response) => fire(target, 'fetchcomplete', response));
+  }).then(response => fire(target, 'fetchcomplete', response));
 }
 
 delegate(document, 'click', {

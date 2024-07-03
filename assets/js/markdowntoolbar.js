@@ -156,13 +156,13 @@ function insertLink(textarea, options) {
 }
 
 function wrapSelection(textarea, options) {
-  transformSelection(textarea, (selectedText) => {
+  transformSelection(textarea, selectedText => {
     const { text = selectedText, prefix = '', suffix = options.prefix } = options,
       emptyText = text === '';
     let newText = text;
 
     if (!emptyText) {
-      newText = text.replace(/(\n{2,})/g, (match) => {
+      newText = text.replace(/(\n{2,})/g, match => {
         return suffix + match + prefix;
       });
     }
@@ -188,7 +188,7 @@ function wrapLines(textarea, options, eachLine = true) {
         ? prefix + text.trim() + suffix
         : text
             .split(/\n/g)
-            .map((line) => prefix + line.trim() + suffix)
+            .map(line => prefix + line.trim() + suffix)
             .join('\n');
 
       // Force a space at the end of lines with only blockquote markers
@@ -205,7 +205,7 @@ function wrapSelectionOrLines(textarea, options) {
 }
 
 function escapeSelection(textarea, options) {
-  transformSelection(textarea, (selectedText) => {
+  transformSelection(textarea, selectedText => {
     const { text = selectedText } = options,
       emptyText = text === '';
 
@@ -255,10 +255,10 @@ function shortcutHandler(event) {
 }
 
 function setupToolbar() {
-  $$('.communication__toolbar').forEach((toolbar) => {
+  $$('.communication__toolbar').forEach(toolbar => {
     toolbar.addEventListener('click', clickHandler);
   });
-  $$('.js-toolbar-input').forEach((textarea) => {
+  $$('.js-toolbar-input').forEach(textarea => {
     textarea.addEventListener('keydown', shortcutHandler);
   });
 }

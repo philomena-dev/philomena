@@ -11,7 +11,7 @@ const MATROSKA_MAGIC = 0x1a45dfa3;
 function scrapeUrl(url) {
   return fetchJson('POST', '/images/scrape', { url })
     .then(handleError)
-    .then((response) => response.json());
+    .then(response => response.json());
 }
 
 function elementForEmbeddedImage({ camo_url, type }) {
@@ -34,7 +34,7 @@ function setupImageUpload() {
   const [fileField, remoteUrl, scraperError] = $$('.js-scraper', form);
   const descrEl = $('.js-image-descr-input', form);
   const tagsEl = $('.js-image-tags-input', form);
-  const sourceEl = $$('.js-source-url', form).find((input) => input.value === '');
+  const sourceEl = $$('.js-source-url', form).find(input => input.value === '');
   const fetchButton = $('#js-scraper-preview');
   if (!fetchButton) return;
 
@@ -80,7 +80,7 @@ function setupImageUpload() {
 
   const reader = new FileReader();
 
-  reader.addEventListener('load', (event) => {
+  reader.addEventListener('load', event => {
     showImages([
       {
         camo_url: event.target.result,
@@ -107,7 +107,7 @@ function setupImageUpload() {
     disableFetch();
 
     scrapeUrl(remoteUrl.value)
-      .then((data) => {
+      .then(data => {
         if (data === null) {
           scraperError.innerText = 'No image found at that address.';
           showError();
@@ -136,7 +136,7 @@ function setupImageUpload() {
   });
 
   // Fetch on "enter" in url field
-  remoteUrl.addEventListener('keydown', (event) => {
+  remoteUrl.addEventListener('keydown', event => {
     if (event.keyCode === 13) {
       // Hit enter
       fetchButton.click();

@@ -80,7 +80,7 @@ describe('Draggable Utilities', () => {
         expect(dataTransferItem.type).toEqual('text/plain');
 
         let stringValue: string | undefined;
-        dataTransferItem.getAsString((value) => {
+        dataTransferItem.getAsString(value => {
           stringValue = value;
         });
         expect(stringValue).toEqual('');

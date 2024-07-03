@@ -27,7 +27,7 @@ function commentPosted(response) {
   commentEditForm.reset();
 
   if (requestOk) {
-    response.text().then((text) => {
+    response.text().then(text => {
       if (text.includes('<div class="flash flash--warning">')) {
         window.location.reload();
       } else {
@@ -60,7 +60,7 @@ function loadParentPost(event) {
 
     fetchHtml(`/images/${imageId}/comments/${commentId}`)
       .then(handleError)
-      .then((data) => {
+      .then(data => {
         clearParentPost(clickedLink, fullComment);
         insertParentPost(data, clickedLink, fullComment);
       });
@@ -97,7 +97,7 @@ function clearParentPost(clickedLink, fullComment) {
   }
 
   // Remove class active_reply_link from all links in the comment
-  [].slice.call(fullComment.getElementsByClassName('active_reply_link')).forEach((link) => {
+  [].slice.call(fullComment.getElementsByClassName('active_reply_link')).forEach(link => {
     link.classList.remove('active_reply_link');
   });
 
@@ -129,7 +129,7 @@ function loadComments(event) {
 
   fetchHtml(getURL)
     .then(handleError)
-    .then((data) => {
+    .then(data => {
       displayComments(container, data);
 
       // Make sure the :target CSS selector applies to the inserted content
@@ -165,7 +165,7 @@ function setupComments() {
     '#js-refresh-comments': loadComments,
   };
 
-  document.addEventListener('click', (event) => {
+  document.addEventListener('click', event => {
     if (event.button === 0) {
       // Left-click only
       for (const target in targets) {
@@ -176,7 +176,7 @@ function setupComments() {
     }
   });
 
-  document.addEventListener('fetchcomplete', (event) => {
+  document.addEventListener('fetchcomplete', event => {
     if (event.target.id === 'js-comment-form') commentPosted(event.detail);
   });
 }

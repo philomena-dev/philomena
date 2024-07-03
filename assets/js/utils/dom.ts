@@ -25,37 +25,37 @@ export function $$<E extends Element = Element>(
 }
 
 export function showEl<E extends HTMLElement>(...elements: E[] | ConcatArray<E>[]) {
-  ([] as E[]).concat(...elements).forEach((el) => el.classList.remove('hidden'));
+  ([] as E[]).concat(...elements).forEach(el => el.classList.remove('hidden'));
 }
 
 export function hideEl<E extends HTMLElement>(...elements: E[] | ConcatArray<E>[]) {
-  ([] as E[]).concat(...elements).forEach((el) => el.classList.add('hidden'));
+  ([] as E[]).concat(...elements).forEach(el => el.classList.add('hidden'));
 }
 
 export function toggleEl<E extends HTMLElement>(...elements: E[] | ConcatArray<E>[]) {
-  ([] as E[]).concat(...elements).forEach((el) => el.classList.toggle('hidden'));
+  ([] as E[]).concat(...elements).forEach(el => el.classList.toggle('hidden'));
 }
 
 export function clearEl<E extends HTMLElement>(...elements: E[] | ConcatArray<E>[]) {
-  ([] as E[]).concat(...elements).forEach((el) => {
+  ([] as E[]).concat(...elements).forEach(el => {
     while (el.firstChild) el.removeChild(el.firstChild);
   });
 }
 
 export function disableEl<E extends PhilomenaInputElements>(...elements: E[] | ConcatArray<E>[]) {
-  ([] as E[]).concat(...elements).forEach((el) => {
+  ([] as E[]).concat(...elements).forEach(el => {
     el.disabled = true;
   });
 }
 
 export function enableEl<E extends PhilomenaInputElements>(...elements: E[] | ConcatArray<E>[]) {
-  ([] as E[]).concat(...elements).forEach((el) => {
+  ([] as E[]).concat(...elements).forEach(el => {
     el.disabled = false;
   });
 }
 
 export function removeEl<E extends HTMLElement>(...elements: E[] | ConcatArray<E>[]) {
-  ([] as E[]).concat(...elements).forEach((el) => el.parentNode?.removeChild(el));
+  ([] as E[]).concat(...elements).forEach(el => el.parentNode?.removeChild(el));
 }
 
 export function makeEl<Tag extends keyof HTMLElementTagNameMap>(
@@ -78,7 +78,7 @@ export function onLeftClick(
   callback: (e: MouseEvent) => boolean | void,
   context: Pick<GlobalEventHandlers, 'addEventListener' | 'removeEventListener'> = document,
 ): VoidFunction {
-  const handler: typeof callback = (event) => {
+  const handler: typeof callback = event => {
     if (event.button === 0) callback(event);
   };
   context.addEventListener('click', handler);
@@ -106,5 +106,5 @@ export function escapeCss(css: string): string {
 }
 
 export function findFirstTextNode<N extends Node>(of: Node): N {
-  return Array.prototype.filter.call(of.childNodes, (el) => el.nodeType === Node.TEXT_NODE)[0];
+  return Array.prototype.filter.call(of.childNodes, el => el.nodeType === Node.TEXT_NODE)[0];
 }
