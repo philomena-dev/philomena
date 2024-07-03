@@ -93,6 +93,7 @@ h1 Content Settings
               => select f, :theme_color, theme_colors(), class: "input"
               = error_tag f, :theme_color
             .fieldlabel: i Color of the theme, don't forget to save settings to apply the theme
+          .hidden#js-theme-paths data-theme-paths=theme_paths_json()
           .field
             => label f, :scale_large_images
             .with-error

@@ -13,6 +13,11 @@ export function setupSettings() {
   const localCheckboxes = $$<HTMLInputElement>('[data-tab="local"] input[type="checkbox"]');
   const themeSelect = assertNotNull($<HTMLSelectElement>('#user_theme_name'));
   const themeColorSelect = assertNotNull($<HTMLSelectElement>('#user_theme_color'));
+  const themePaths: Record<string, string> = JSON.parse(
+    assertNotUndefined(
+      assertNotNull($<HTMLDivElement>('#js-theme-paths')).dataset.themePaths
+    )
+  );
   const styleSheet = assertNotNull($<HTMLLinkElement>('#js-theme-stylesheet'));
 
   // Local settings
@@ -27,7 +32,7 @@ export function setupSettings() {
     const themeName = assertNotUndefined(themeSelect.options[themeSelect.selectedIndex].value);
     const themeColor = assertNotUndefined(themeColorSelect.options[themeColorSelect.selectedIndex].value);
 
-    styleSheet.href = `/css/${themeName}-${themeColor}.css`;
+    styleSheet.href = themePaths[`${themeName}-${themeColor}`];
   };
 
   themeSelect.addEventListener('change', themePreviewCallback);
