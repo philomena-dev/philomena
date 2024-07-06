@@ -8,18 +8,16 @@ import { fetchHtml } from './utils/requests';
 import { timeAgo } from './timeago';
 
 function handleError(response) {
-
   const errorMessage = '<div>Comment failed to load!</div>';
 
   if (!response.ok) {
     return errorMessage;
   }
-  return response.text();
 
+  return response.text();
 }
 
 function commentPosted(response) {
-
   const commentEditTab  = $('#js-comment-form a[data-click-tab="write"]'),
         commentEditForm = $('#js-comment-form'),
         container       = document.getElementById('comments'),
@@ -42,11 +40,9 @@ function commentPosted(response) {
     window.location.reload();
     window.scrollTo(0, 0); // Error message is displayed at the top of the page (flash)
   }
-
 }
 
 function loadParentPost(event) {
-
   const clickedLink = event.target,
         // Find the comment containing the link that was clicked
         fullComment = clickedLink.closest('article.block'),
@@ -61,7 +57,6 @@ function loadParentPost(event) {
   }
 
   if (commentMatches) {
-
     // If the regex matched, get the image and comment ID
     const [ , imageId, commentId ] = commentMatches;
 
@@ -73,13 +68,10 @@ function loadParentPost(event) {
       });
 
     return true;
-
   }
-
 }
 
 function insertParentPost(data, clickedLink, fullComment) {
-
   // Add the 'subthread' class to the comment with the clicked link
   fullComment.classList.add('subthread');
 
@@ -98,11 +90,9 @@ function insertParentPost(data, clickedLink, fullComment) {
 
   // Filter images (if any) in the loaded comment
   filterNode(fullComment.previousSibling);
-
 }
 
 function clearParentPost(clickedLink, fullComment) {
-
   // Remove any previous siblings with the class fetched-comment
   while (fullComment.previousSibling && fullComment.previousSibling.classList.contains('fetched-comment')) {
     fullComment.previousSibling.parentNode.removeChild(fullComment.previousSibling);
@@ -117,11 +107,9 @@ function clearParentPost(clickedLink, fullComment) {
   if (!fullComment.classList.contains('fetched-comment')) {
     fullComment.classList.remove('subthread');
   }
-
 }
 
 function displayComments(container, commentsHtml) {
-
   container.innerHTML = commentsHtml;
 
   // Execute timeago on comments
@@ -129,11 +117,9 @@ function displayComments(container, commentsHtml) {
 
   // Filter images in the comments
   filterNode(container);
-
 }
 
 function loadComments(event) {
-
   const container = document.getElementById('comments'),
         hasHref = event.target && event.target.getAttribute('href'),
         hasHash = window.location.hash && window.location.hash.match(/#comment_([a-f0-9]+)/),
@@ -143,7 +129,6 @@ function loadComments(event) {
   fetchHtml(getURL)
     .then(handleError)
     .then(data => {
-
       displayComments(container, data);
 
       // Make sure the :target CSS selector applies to the inserted content
@@ -155,7 +140,6 @@ function loadComments(event) {
     });
 
   return true;
-
 }
 
 function setupComments() {

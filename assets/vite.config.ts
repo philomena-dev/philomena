@@ -2,24 +2,28 @@
 import fs from 'fs';
 import path from 'path';
 import autoprefixer from 'autoprefixer';
+import postcssMixins from 'postcss-mixins';
+import postcssSimpleVars from 'postcss-simple-vars';
+import postcssRelativeColor from '@csstools/postcss-relative-color-syntax';
 import { defineConfig, UserConfig, ConfigEnv } from 'vite';
 
 export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
   const isDev = command !== 'build' && mode !== 'test';
+  const targets = new Map();
 
-  const themeNames =
-    fs.readdirSync(path.resolve(__dirname, 'css/themes/')).map(name => {
-      const m = name.match(/([-a-z]+).scss/);
+  fs.readdirSync(path.resolve(__dirname, 'css/themes/')).forEach(name => {
+    const m = name.match(/([-a-z]+).css/);
 
-      if (m) { return m[1]; }
-      return null;
-    });
+    if (m)
+      targets.set(`css/${m[1]}`, `./css/themes/${m[1]}.css`);
+  });
 
-  const themes = new Map();
+  fs.readdirSync(path.resolve(__dirname, 'css/options/')).forEach(name => {
+    const m = name.match(/([-a-z]+).css/);
 
-  for (const name of themeNames) {
-    themes.set(`css/${name}`, `./css/themes/${name}.scss`);
-  }
+    if (m)
+      targets.set(`css/options/${m[1]}`, `./css/options/${m[1]}.css`);
+  });
 
   return {
     publicDir: 'static',
@@ -31,7 +35,9 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
     resolve: {
       alias: {
         common: path.resolve(__dirname, 'css/common/'),
-        views: path.resolve(__dirname, 'css/views/')
+        views: path.resolve(__dirname, 'css/views/'),
+        elements: path.resolve(__dirname, 'css/elements/'),
+        themes: path.resolve(__dirname, 'css/themes/')
       }
     },
     build: {
@@ -44,7 +50,8 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
       rollupOptions: {
         input: {
           'js/app': './js/app.ts',
-          ...Object.fromEntries(themes)
+          'css/application': './css/application.css',
+          ...Object.fromEntries(targets)
         },
         output: {
           entryFileNames: '[name].js',
@@ -55,7 +62,7 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
     },
     css: {
       postcss:  {
-        plugins: [autoprefixer]
+        plugins: [postcssMixins(), postcssSimpleVars(), postcssRelativeColor(), autoprefixer]
       }
     },
     test: {

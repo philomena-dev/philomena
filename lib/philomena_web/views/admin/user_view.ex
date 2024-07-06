@@ -29,14 +29,12 @@ defmodule PhilomenaWeb.Admin.UserView do
         checked: Enum.member?(Enum.map(Map.get(form.data, field), & &1.id), role.id)
       )
 
-    content_tag(:li, class: "table-list__label") do
-      content_tag(:div) do
-        [
-          checkbox(form, field, input_opts),
-          " ",
-          content_tag(:label, description(role.name, role.resource_type), label_opts)
-        ]
-      end
+    content_tag(:li) do
+      [
+        checkbox(form, field, input_opts),
+        " ",
+        content_tag(:label, description(role.name, role.resource_type), label_opts)
+      ]
     end
   end
 
@@ -48,7 +46,9 @@ defmodule PhilomenaWeb.Admin.UserView do
 
   def description("moderator", "Tag"), do: "Manage tag details"
   def description("admin", "Tag"), do: "Alias tags"
-  def description("batch_update", "Tag"), do: "Update tags in batches"
+
+  def description("batch_update", "Tag"),
+    do: "Update tags in batches (do not issue to staff members)"
 
   def description("moderator", "User"), do: "Manage users and wipe votes"
   def description("admin", "Role"), do: "Manage permissions"

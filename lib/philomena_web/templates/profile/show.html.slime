@@ -1,6 +1,6 @@
 .profile-top
   .profile-top__avatar
-    - avatar = render PhilomenaWeb.UserAttributionView, "_user_avatar.html", object: %{user: @user}, class: "avatar--125px"
+    - avatar = render PhilomenaWeb.UserAttributionView, "_user_avatar.html", object: %{user: @user}, class: "avatar--large"
     = if current?(@user, @conn.assigns.current_user) do
       = link avatar, to: ~p"/avatar/edit?#{[profile: true]}", title: "Change avatar"
     - else
@@ -45,14 +45,15 @@
 
 = if @forced && (current?(@user, @conn.assigns.current_user) or can_index_user?(@conn)) do
   .block
-    i.fa.fa-fw.fa-filter>
+    i.fa.icon--padded.small.fa-filter>
     strong.comment_deleted> Forced Filter:
     = link @forced.name, to: ~p"/filters/#{@forced}"
 
 = if (current?(@user, @conn.assigns.current_user) or can?(@conn, :index, Philomena.Bans.User)) and Enum.any?(@bans) do
-  .block
-    .block__header--single-item
-      ' Ban History
+  .block.block--warning
+    .block__header
+      i.fa.fa-ban
+      | Ban History
     .block__content
       = render PhilomenaWeb.BanView, "_bans.html", bans: @bans, conn: @conn
 
@@ -60,15 +61,21 @@
   .column-layout__left
     .block
       .block__header
-        span.block__header__title Commissions
+        i.fa.fa-briefcase
+        | Commissions
       = render PhilomenaWeb.ProfileView, "_commission.html", user: @user, commission_information: @commission_information, conn: @conn
 
     .block
-      = if current?(@user, @conn.assigns.current_user) or manages_links?(@conn, @user) do
-        a.block__header--single-item href=~p"/profiles/#{@user}/artist_links/new" Artist Links
-      - else
-        .block__header
-          span.block__header__title Artist Links
+      .block__header.flex
+        span
+          i.fa.fa-link
+          | Artist Links
+        = if current?(@user, @conn.assigns.current_user) or manages_links?(@conn, @user) do
+          .block__header__buttons
+            a.button href=~p"/profiles/#{@user}/artist_links/new"
+              i.fa.fa-link>
+              | Create
+
       = for link <- @user.verified_links, should_see_link?(@conn, @user, link) do
         - watchers = if link.tag, do: @watcher_counts[link.tag.id] || 0, else: 0
 
@@ -100,13 +107,22 @@
               => unless link.public do
                 br
                 ' Hidden
+      = if Enum.count(@user.verified_links) == 0 do
+        .block__content
+          p
+            span: i.fa.icon--padded--right.fa-info-circle
+            | No artist links associated
 
     .block
-      = if manages_awards?(@conn) and not hide_staff_tools?(@conn) do
-        a.block__header--single-item href=~p"/profiles/#{@user}/awards/new" Badges
-      - else
-        .block__header
-          span.block__header__title Badges
+      .block__header.flex
+        span
+          i.fa.fa-award
+          | Badges
+        = if manages_awards?(@conn) and not hide_staff_tools?(@conn) do
+          .block__header__buttons
+            a.button href=~p"/profiles/#{@user}/awards/new"
+              i.fa.fa-trophy>
+              | Award
       = for award <- award_order(@user.awards) do
         .block__content.flex.flex--centered.flex--center-distributed.alternating-color.no-overflow title=award.label
           .flex__grow.center
@@ -125,34 +141,68 @@
               br
               a href=~p"/profiles/#{@user}/awards/#{award}/edit"
                 ' Edit
-
+      = if Enum.count(@user.awards) == 0 do
+        .block__content
+          p 
+            span: i.fa.icon--padded--right.fa-info-circle
+            | No badge awards received
     .block
-      .block__header
+      .block__header.flex
+        span
+          i.fa.fa-question
+          | About Me
         = if can?(@conn, :edit_description, @user) do
-          a.block__header--single-item href=~p"/profiles/#{@user}/description/edit" About Me
-        - else
-          span.block__header__title About Me
+          .block__header__buttons
+            a.button href=~p"/profiles/#{@user}/description/edit"
+              i.fa.fa-edit>
+              | Edit
 
       = render PhilomenaWeb.ProfileView, "_about_me.html", user: @user, about_me: @about_me, conn: @conn
 
     = if can_read_mod_notes?(@conn) and not hide_staff_tools?(@conn) do
-      .block
-        a.block__header--single-item href=~p"/profiles/#{@user}/details" Mod Notes
-        table.table
-          thead
-            tr
-              th Note
-              th Created
-          tbody
-            = for {body, mod_note} <- @mod_notes do
-              tr
-                td = body
-                td = pretty_time(mod_note.created_at)
+      .block.block--warning
+        .block__header.flex
+          span
+            i.fa.fa-sticky-note
+            | Mod Notes
+          .block__header__buttons
+            a.button href=~p"/profiles/#{@user}/details"
+              i.fa.fa-plus>
+              | Add / Edit
+        .block__content
+          = if Enum.count(@mod_notes) > 0 do
+            table.table
+              thead
+                tr
+                  th Note
+                  th Created
+              tbody
+                = for {body, mod_note} <- @mod_notes do
+                  tr
+                    td = body
+                    td = pretty_time(mod_note.created_at)
+          - else
+            p 
+              span: i.fa.icon--padded--right.fa-info-circle
+              | No mod notes
     = if can_index_user?(@conn) do
-      .block
-        a.block__header--single-item href=~p"/profiles/#{@user}/scratchpad/edit" Moderation Scratchpad
+      .block.block--warning
+        .block__header.flex
+          span
+            i.fa.fa-clipboard
+            | Moderation Scratchpad
+          .block__header__buttons
+            a.button href=~p"/profiles/#{@user}/scratchpad/edit"
+              i.fa.fa-edit>
+              | Edit
         .block__content.profile-about
-          = @scratchpad
+          - {_, contents} = @scratchpad
+          = if String.trim(contents) != "" do
+            = @scratchpad
+          - else
+            p 
+              span: i.fa.icon--padded--right.fa-info-circle
+              | No information present
 
   .column-layout__main
     = render PhilomenaWeb.ProfileView, "_statistics.html", user: @user, statistics: @statistics, conn: @conn

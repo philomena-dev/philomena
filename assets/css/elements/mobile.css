@@ -1,0 +1,42 @@
+.hidden--narrow-screen {
+  display: none;
+}
+
+/* Phones. */
+@mixin if-phone {
+  .hidden--phone {
+    display: none !important;
+  }
+}
+
+/* Tablets. */
+@mixin if-tablet {
+  .hidden--tablet {
+    display: none !important;
+  }
+}
+
+/* Phones and tablets. */
+@mixin if-mobile {
+  .hidden--mobile {
+    display: none !important;
+  }
+}
+
+/* Anything larger than 1280px (Desktops). */
+@mixin if-desktop {
+  .hidden--desktop {
+    display: none !important;
+  }
+}
+
+/* Widescreens are larger than 1500px */
+@mixin if-widescreen {
+  .hidden--widescreen {
+    display: none !important;
+  }
+
+  .hidden--narrow-screen {
+    display: inherit;
+  }
+}

@@ -19,6 +19,6 @@
       ' Voting ends
       = pretty_time(@poll.active_until)
 
-  button.button.button--state-success>
+  button.button.button--success>
     i.fa.fa-check>
     ' Vote
