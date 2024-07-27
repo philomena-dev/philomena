@@ -1034,7 +1034,8 @@ CREATE TABLE public.images (
     image_duration double precision,
     description character varying DEFAULT ''::character varying NOT NULL,
     scratchpad character varying,
-    approved boolean DEFAULT false
+    approved boolean DEFAULT false,
+    image_orig_size integer
 );
 
 
@@ -5445,3 +5446,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20211107130226);
 INSERT INTO public."schema_migrations" (version) VALUES (20211219194836);
 INSERT INTO public."schema_migrations" (version) VALUES (20220321173359);
 INSERT INTO public."schema_migrations" (version) VALUES (20240707191353);
+INSERT INTO public."schema_migrations" (version) VALUES (20240723122759);
