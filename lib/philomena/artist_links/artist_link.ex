@@ -13,8 +13,6 @@ defmodule Philomena.ArtistLinks.ArtistLink do
 
     field :aasm_state, :string, default: "unverified"
     field :uri, :string
-    field :hostname, :string
-    field :path, :string
     field :verification_code, :string
     field :public, :boolean, default: true
     field :next_check_at, :utc_datetime

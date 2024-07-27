@@ -23,11 +23,6 @@ article.block.communication
         => link_to_ip @conn, @report.ip
         => link_to_fingerprint @conn, @report.fingerprint
 
-    div
-      ' User-Agent:
-      code
-        = @report.user_agent
-
 = if assigns[:mod_notes] do
   h4 Mod Notes
   = render PhilomenaWeb.Admin.ModNoteView, "_table.html", mod_notes: @mod_notes, conn: @conn

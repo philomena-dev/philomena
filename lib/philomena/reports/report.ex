@@ -10,8 +10,6 @@ defmodule Philomena.Reports.Report do
 
     field :ip, EctoNetwork.INET
     field :fingerprint, :string
-    field :user_agent, :string, default: ""
-    field :referrer, :string, default: ""
     field :reason, :string
     field :state, :string, default: "open"
     field :open, :boolean, default: true
@@ -71,8 +69,7 @@ defmodule Philomena.Reports.Report do
       :category,
       :reason,
       :ip,
-      :fingerprint,
-      :user_agent
+      :fingerprint
     ])
   end
 
