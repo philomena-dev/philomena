@@ -5,7 +5,7 @@ h1
   a href=(~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}?#{[post_id: @post.id]}" <> "#post_#{@post.id}")
     = @post.topic.title
 
-= for version <- @versions do
+/= for version <- @versions do
   article.block.communication
     .block__content.flex.flex--no-wrap
       .flex__fixed.spacing-right
@@ -31,10 +31,11 @@ h1
 
     .block__content.communication__options
       .flex.flex--wrap.flex--spaced-out
+        - edit_reason = version.previous_version.edit_reason
         div
-          = if version.edit_reason not in [nil, ""] do
+          = if edit_reason not in [nil, ""] do
             ' Reason:
-            = version.edit_reason
+            = edit_reason
           - else
             ' No reason given
 

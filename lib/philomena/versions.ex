@@ -5,75 +5,77 @@ defmodule Philomena.Versions do
 
   import Ecto.Query, warn: false
   alias Philomena.Repo
-
-  alias Philomena.Versions.Version
-  alias Philomena.Users.User
-
-  def load_data_and_associations(versions, parent) do
-    user_ids =
-      versions
-      |> Enum.map(& &1.whodunnit)
-      |> Enum.reject(&is_nil/1)
-
-    users =
-      User
-      |> where([u], u.id in ^user_ids)
-      |> preload(awards: :badge)
-      |> Repo.all()
-      |> Map.new(&{to_string(&1.id), &1})
-
-    {versions, _last_body} =
-      versions
-      |> Enum.map_reduce(
-        {parent.body, parent.edit_reason},
-        fn version, {previous_body, previous_reason} ->
-          json = Jason.decode!(version.object || "{}")
-          body = json["body"] || ""
-          edit_reason = json["edit_reason"]
-
-          v = %{
-            version
-            | parent: parent,
-              user: users[version.whodunnit],
-              body: body,
-              edit_reason: previous_reason,
-              difference: difference(body, previous_body)
-          }
-
-          {v, {body, edit_reason}}
-        end
-      )
-
-    versions
-  end
-
-  defp difference(previous, nil), do: [eq: previous]
-  defp difference(previous, next), do: String.myers_difference(previous, next)
+  alias Philomena.Versions.Difference
 
   @doc """
-  Creates a version.
+  Calculate a list of `m:Philomena.Versions.Difference` structs that represent
+  paginated differences between different versions of the object.
+
+  When expanded, the list of differences may look like:
+
+      [
+        %Difference{
+          previous_version: %CommentVersion{},
+          parent: %Comment{},
+          user: %User{},
+          difference: [del: "goodbye ", ins: "hello ", eq: "world"],
+        }
+      ]
 
   ## Examples
 
-      iex> create_version(%{field: value})
-      {:ok, %Version{}}
-
-      iex> create_version(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+      iex> compute_text_differences(CommentVersion, %Comment{}, :body, page: 1, page_size: 25)
+      %Scrivener.Page{}
 
   """
-  def create_version(item_type, item_id, whodunnit, attrs \\ %{}) do
-    %Version{
-      item_type: item_type,
-      item_id: item_id,
-      event: "update",
-      whodunnit: whodunnit(whodunnit)
-    }
-    |> Version.changeset(attrs, item_id)
-    |> Repo.insert()
+  def compute_text_differences(query, parent, name, pagination) do
+    page = Repo.paginate(preload_and_order(query), pagination)
+    initial = get_comparison_version(query, parent, page)
+
+    {differences, _prev} =
+      Enum.map_reduce(page, initial, fn older, newer ->
+        d = %Difference{
+          previous_version: newer,
+          created_at: older.created_at,
+          parent: parent,
+          user: older.user,
+          difference: difference(older, newer, name)
+        }
+
+        {d, older}
+      end)
+
+    %{page | entries: differences}
   end
 
-  # revolver ocelot
-  defp whodunnit(user_id) when is_integer(user_id), do: to_string(user_id)
-  defp whodunnit(nil), do: nil
+  #
+  # Get the first version to use when reducing the list of differences.
+  #
+  defp get_comparison_version(query, parent, page) do
+    curr = Enum.at(page, 0)
+
+    prev =
+      if curr do
+        query
+        |> where([v], v.created_at > ^curr.created_at and v.id > ^curr.id)
+        |> order_by(asc: :created_at, asc: :id)
+        |> limit(1)
+        |> Repo.one()
+      end
+
+    prev || parent
+  end
+
+  defp preload_and_order(query) do
+    query
+    |> preload(:user)
+    |> order_by(desc: :created_at, desc: :id)
+  end
+
+  defp difference(curr, prev, name) do
+    curr_body = Map.fetch!(curr, name)
+    prev_body = Map.fetch!(prev, name)
+
+    String.myers_difference(curr_body, prev_body)
+  end
 end

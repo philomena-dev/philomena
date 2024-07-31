@@ -1,46 +1,49 @@
 h1
-  ' Viewing last 25 versions of comment by
+  ' Viewing history for comment by
   = render PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @comment, conn: @conn
   ' on image
   a href=~p"/images/#{@comment.image}"
     | #
     = @comment.image_id
 
-= for version <- @versions do
+h2 Current version
+= render PhilomenaWeb.CommentView, "_comment.html", comment: @comment, body: @body, conn: @conn
+
+h2 Previous versions
+= for {version, body} <- @versions do
+  - comment = merge_version(@comment, version)
+
   article.block.communication
     .block__content.flex.flex--no-wrap
       .flex__fixed.spacing-right
-        = render PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html", object: @comment, conn: @conn
+        = render PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html", object: comment, conn: @conn
 
       .flex__grow.communication__body
-        span.communication__body__sender-name = render PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @comment, awards: true, conn: @conn
+        span.communication__body__sender-name = render PhilomenaWeb.UserAttributionView, "_anon_user.html", object: comment, awards: true, conn: @conn
         br
 
-        = render PhilomenaWeb.UserAttributionView, "_anon_user_title.html", object: @comment, conn: @conn
+        = render PhilomenaWeb.UserAttributionView, "_anon_user_title.html", object: comment, conn: @conn
 
         .communication__body__text
-          = for edit <- version.difference do
-            = case edit do
-              - {:eq, value} ->
-                = escape_nl2br(value)
-
-              - {:ins, value} ->
-                ins.differ = escape_nl2br(value)
-
-              - {:del, value} ->
-                del.differ = escape_nl2br(value)
+          = body
 
     .block__content.communication__options
       .flex.flex--wrap.flex--spaced-out
         div
-          = if version.edit_reason not in [nil, ""] do
-            ' Reason:
-            = version.edit_reason
-          - else
-            ' No reason given
+          = cond do
+            - version.index > 1 and comment.edit_reason not in [nil, ""] ->
+              ' Reason:
+              = comment.edit_reason
+            - version.index > 1 ->
+              ' No reason given
+            - true ->
+              ' Original
 
         .flex__right
-          ' Edited
+          = if version.index == 1 do
+            ' Created
+          - else
+            ' Edited
           => pretty_time(version.created_at)
           ' by
-          => render PhilomenaWeb.UserAttributionView, "_anon_user.html", object: version, conn: @conn
+          => render PhilomenaWeb.UserAttributionView, "_anon_user.html", object: comment, conn: @conn

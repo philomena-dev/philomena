@@ -111,24 +111,18 @@ defmodule PhilomenaWeb.Image.CommentController do
 
   def update(conn, %{"comment" => comment_params}) do
     case Comments.update_comment(conn.assigns.comment, conn.assigns.current_user, comment_params) do
-      {:ok, %{comment: comment}} ->
-        if not comment.approved do
-          Comments.report_non_approved(comment)
-        end
-
+      {:ok, comment} ->
         PhilomenaWeb.Endpoint.broadcast!(
           "firehose",
           "comment:update",
           PhilomenaWeb.Api.Json.CommentView.render("show.json", %{comment: comment})
         )
 
-        Comments.reindex_comment(comment)
-
         conn
         |> put_flash(:info, "Comment updated successfully.")
         |> redirect(to: ~p"/images/#{conn.assigns.image}" <> "#comment_#{comment.id}")
 
-      {:error, :comment, changeset, _changes} ->
+      {:error, changeset} ->
         render(conn, "edit.html", comment: conn.assigns.comment, changeset: changeset)
     end
   end

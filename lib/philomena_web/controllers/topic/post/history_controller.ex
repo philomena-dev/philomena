@@ -1,11 +1,9 @@
 defmodule PhilomenaWeb.Topic.Post.HistoryController do
   use PhilomenaWeb, :controller
 
-  alias Philomena.Versions.Version
-  alias Philomena.Versions
+  alias PhilomenaWeb.MarkdownRenderer
   alias Philomena.Forums.Forum
-  alias Philomena.Repo
-  import Ecto.Query
+  alias Philomena.Posts
 
   plug PhilomenaWeb.CanaryMapPlug, index: :show
 
@@ -21,14 +19,8 @@ defmodule PhilomenaWeb.Topic.Post.HistoryController do
   def index(conn, _params) do
     topic = conn.assigns.topic
     post = conn.assigns.post
-
-    versions =
-      Version
-      |> where(item_type: "Post", item_id: ^post.id)
-      |> order_by(desc: :created_at)
-      |> limit(25)
-      |> Repo.all()
-      |> Versions.load_data_and_associations(post)
+    renderer = &MarkdownRenderer.render_collection(&1, conn)
+    versions = Posts.list_post_versions(post, renderer, conn.assigns.scrivener)
 
     render(conn, "index.html",
       title: "Post History for Post #{post.id} - #{topic.title} - Forums",

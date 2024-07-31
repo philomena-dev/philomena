@@ -12,12 +12,12 @@ defmodule Philomena.Posts do
   alias Philomena.Topics
   alias Philomena.UserStatistics
   alias Philomena.Posts.Post
+  alias Philomena.Posts.Version
   alias Philomena.Posts.SearchIndex, as: PostIndex
   alias Philomena.IndexWorker
   alias Philomena.Forums.Forum
   alias Philomena.Notifications
   alias Philomena.NotificationWorker
-  alias Philomena.Versions
   alias Philomena.Reports
 
   @doc """
@@ -142,30 +142,44 @@ defmodule Philomena.Posts do
 
   """
   def update_post(%Post{} = post, editor, attrs) do
-    now = DateTime.utc_now(:second)
-    current_body = post.body
-    current_reason = post.edit_reason
+    version_changeset =
+      Version.changeset(%Version{}, post, editor, %{
+        body: post.body,
+        edit_reason: post.edit_reason,
+        created_at: post.edited_at || post.created_at
+      })
 
-    post_changes = Post.changeset(post, attrs, now)
+    now = DateTime.utc_now(:second)
+    post_changeset = Post.changeset(post, attrs, now)
 
     Multi.new()
-    |> Multi.update(:post, post_changes)
-    |> Multi.run(:version, fn _repo, _changes ->
-      Versions.create_version("Post", post.id, editor.id, %{
-        "body" => current_body,
-        "edit_reason" => current_reason
-      })
-    end)
+    |> Multi.insert(:version, version_changeset)
+    |> Multi.update(:post, post_changeset)
     |> Repo.transaction()
     |> case do
-      {:ok, %{post: post}} = result ->
+      {:ok, %{post: post}} ->
+        if not post.approved do
+          report_non_approved(post)
+        end
+
         reindex_post(post)
 
-        result
+        {:ok, post}
 
-      error ->
-        error
+      _ ->
+        {:error, post_changeset}
     end
+  end
+
+  def list_post_versions(%Post{} = post, collection_renderer, pagination) do
+    versions =
+      Version
+      |> where(post_id: ^post.id)
+      |> order_by(desc: :created_at, desc: :id)
+      |> Repo.paginate(pagination)
+
+    bodies = collection_renderer.(versions)
+    put_in(versions.entries, Enum.zip(versions, bodies))
   end
 
   @doc """

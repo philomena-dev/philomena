@@ -10,13 +10,13 @@ defmodule Philomena.Comments do
   alias PhilomenaQuery.Search
   alias Philomena.UserStatistics
   alias Philomena.Comments.Comment
+  alias Philomena.Comments.Version
   alias Philomena.Comments.SearchIndex, as: CommentIndex
   alias Philomena.IndexWorker
   alias Philomena.Images.Image
   alias Philomena.Images
   alias Philomena.Notifications
   alias Philomena.NotificationWorker
-  alias Philomena.Versions
   alias Philomena.Reports
 
   @doc """
@@ -93,21 +93,46 @@ defmodule Philomena.Comments do
 
   """
   def update_comment(%Comment{} = comment, editor, attrs) do
-    now = DateTime.utc_now(:second)
-    current_body = comment.body
-    current_reason = comment.edit_reason
+    version_changeset =
+      Version.changeset(%Version{}, comment, editor, %{
+        body: comment.body,
+        edit_reason: comment.edit_reason,
+        created_at: comment.edited_at || comment.created_at
+      })
 
-    comment_changes = Comment.changeset(comment, attrs, now)
+    now = DateTime.utc_now(:second)
+    comment_changeset = Comment.changeset(comment, attrs, now)
 
     Multi.new()
-    |> Multi.update(:comment, comment_changes)
-    |> Multi.run(:version, fn _repo, _changes ->
-      Versions.create_version("Comment", comment.id, editor.id, %{
-        "body" => current_body,
-        "edit_reason" => current_reason
-      })
-    end)
+    |> Multi.insert(:version, version_changeset)
+    |> Multi.update(:comment, comment_changeset)
     |> Repo.transaction()
+    |> case do
+      {:ok, %{comment: comment}} ->
+        if not comment.approved do
+          report_non_approved(comment)
+        end
+
+        reindex_comment(comment)
+
+        {:ok, comment}
+
+      _ ->
+        {:error, comment_changeset}
+    end
+  end
+
+  def list_comment_versions(%Comment{} = comment, collection_renderer, pagination) do
+    versions =
+      Version
+      |> where(comment_id: ^comment.id)
+      |> order_by(desc: :created_at, desc: :id)
+      |> select([v], %{v | index: over(row_number(), order_by: [asc: :created_at, asc: :id])})
+      |> preload(:user)
+      |> Repo.paginate(pagination)
+
+    bodies = collection_renderer.(versions)
+    put_in(versions.entries, Enum.zip(versions, bodies))
   end
 
   @doc """
