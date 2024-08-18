@@ -9,8 +9,6 @@ defmodule Philomena.PollVotes.PollVote do
     belongs_to :poll_option, PollOption
     belongs_to :user, User
 
-    field :rank, :integer
-
     timestamps(inserted_at: :created_at, updated_at: false, type: :utc_datetime)
   end
 
