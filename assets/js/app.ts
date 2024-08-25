@@ -9,6 +9,8 @@
 import './ujs';
 import './when-ready';
 
+import './vision/chroma-subsample';
+
 // When developing CSS, include the relevant CSS you're working on here
 // in order to enable HMR (live reload) on it.
 // Would typically be either the theme file, or any additional file
