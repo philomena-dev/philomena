@@ -10,7 +10,7 @@ defmodule Philomena.Bans.User do
     belongs_to :banning_user, User
 
     field :reason, :string
-    field :note, :string
+    field :note, :string, default: ""
     field :enabled, :boolean, default: true
     field :valid_until, PhilomenaQuery.Ecto.RelativeDate
     field :generated_ban_id, :string
