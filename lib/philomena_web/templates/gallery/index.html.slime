@@ -27,7 +27,7 @@ elixir:
             => select f, :sd, ["Descending": "desc", "Ascending": "asc"], class: "input"
 
           .field
-          = submit "Search", class: "button button--state-primary"
+          = submit "Search", class: "button button--primary"
     .block
       .block__header
         a href="/galleries/new" title="Create Gallery"
@@ -38,7 +38,7 @@ elixir:
       .block__header.page__header
         .page__pagination = pagination
 
-      .block__content.js-resizable-media-container
+      .media-list
         = if Enum.any?(@galleries) do
           = for gallery <- @galleries do
             = render PhilomenaWeb.GalleryView, "_gallery.html", gallery: gallery, conn: @conn

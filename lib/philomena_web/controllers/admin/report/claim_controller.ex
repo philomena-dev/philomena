@@ -16,7 +16,7 @@ defmodule PhilomenaWeb.Admin.Report.ClaimController do
 
       {:error, _changeset} ->
         conn
-        |> put_flash(:error, "Couldn't claim that report!")
+        |> put_flash(:warning, "Couldn't claim that report!")
         |> redirect(to: ~p"/admin/reports/#{conn.assigns.report}")
     end
   end

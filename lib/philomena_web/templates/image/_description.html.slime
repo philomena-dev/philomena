@@ -5,7 +5,7 @@
       ' Description
     = if can?(@conn, :edit_description, @image) do
       .block__header__buttons
-        a.button.button--inline#edit-description href="#" data-click-focus="#description" data-click-hide=".image-description" data-click-show="#description-form" title="Edit description" accessKey="d"
+        a.button#edit-description href="#" data-click-focus="#description" data-click-hide=".image-description" data-click-show="#description-form" title="Edit description" accessKey="d"
           i.fas.fa-edit>
           ' Edit
   .block__content

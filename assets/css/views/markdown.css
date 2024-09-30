@@ -1,0 +1,73 @@
+.textile-syntax-reference {
+  display: flex;
+  flex-flow: row wrap;
+  line-height: var(--block-header-height);
+  vertical-align: center;
+  margin-bottom: var(--padding-small);
+}
+
+.textile-syntax-reference > span,
+.textile-syntax-reference > button {
+  margin-left: var(--padding-normal);
+}
+
+.spoiler,
+.spoiler a {
+  color: var(--spoiler-color);
+  background: var(--spoiler-color);
+}
+
+.spoiler-revealed,
+.spoiler:hover {
+  color: var(--text-color);
+  background: var(--spoiler-revealed-color);
+}
+
+.spoiler-revealed a,
+.spoiler:hover a {
+  color: var(--link-color);
+}
+
+.walloftext {
+  line-height: var(--readable-line-height);
+}
+
+pre,
+code {
+  font-family: var(--font-family-monospace);
+  background: var(--background-color);
+  border: 1px solid var(--primary-border-color);
+  border-radius: var(--border-radius-inner);
+  padding: calc(var(--padding-tiny) / 2) var(--padding-tiny);
+}
+
+pre {
+  padding: var(--padding-small);
+  line-height: var(--readable-line-height);
+  margin: var(--padding-small);
+  margin-right: 0;
+}
+
+pre code {
+  border: 0;
+  background: 0;
+  padding: 0;
+}
+
+blockquote {
+  position: relative;
+  margin: 0;
+  padding: var(--padding-normal);
+}
+
+blockquote:before {
+  content: "";
+  display: block;
+  position: absolute;
+  background: var(--secondary-color);
+  border-radius: var(--border-radius-inner);
+  width: var(--padding-tiny);
+  height: 100%;
+  left: 0;
+  top: 0;
+}

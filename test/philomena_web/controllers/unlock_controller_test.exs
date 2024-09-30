@@ -27,7 +27,7 @@ defmodule PhilomenaWeb.UnlockControllerTest do
         })
 
       assert redirected_to(conn) == "/"
-      assert Flash.get(conn.assigns.flash, :info) =~ "If your email is in our system"
+      assert Flash.get(conn.assigns.flash, :alert) =~ "If your email is in our system"
       assert Repo.get_by!(Users.UserToken, user_id: user.id).context == "unlock"
     end
 
@@ -40,7 +40,7 @@ defmodule PhilomenaWeb.UnlockControllerTest do
         })
 
       assert redirected_to(conn) == "/"
-      assert Flash.get(conn.assigns.flash, :info) =~ "If your email is in our system"
+      assert Flash.get(conn.assigns.flash, :alert) =~ "If your email is in our system"
       refute Repo.get_by(Users.UserToken, user_id: user.id)
     end
 
@@ -51,7 +51,7 @@ defmodule PhilomenaWeb.UnlockControllerTest do
         })
 
       assert redirected_to(conn) == "/"
-      assert Flash.get(conn.assigns.flash, :info) =~ "If your email is in our system"
+      assert Flash.get(conn.assigns.flash, :alert) =~ "If your email is in our system"
       assert Repo.all(Users.UserToken) == []
     end
   end
@@ -72,13 +72,13 @@ defmodule PhilomenaWeb.UnlockControllerTest do
 
       conn = get(conn, ~p"/unlocks/#{token}")
       assert redirected_to(conn) == "/"
-      assert Flash.get(conn.assigns.flash, :error) =~ "Unlock link is invalid or it has expired"
+      assert Flash.get(conn.assigns.flash, :warning) =~ "Unlock link is invalid or it has expired"
     end
 
     test "does not unlock with invalid token", %{conn: conn, user: user} do
       conn = get(conn, ~p"/unlocks/oops")
       assert redirected_to(conn) == "/"
-      assert Flash.get(conn.assigns.flash, :error) =~ "Unlock link is invalid or it has expired"
+      assert Flash.get(conn.assigns.flash, :warning) =~ "Unlock link is invalid or it has expired"
       assert Users.get_user!(user.id).locked_at
     end
   end

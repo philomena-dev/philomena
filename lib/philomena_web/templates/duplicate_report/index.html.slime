@@ -7,7 +7,7 @@ h1 Duplicate Reports
   .block__header.page__header
     .page__pagination = pagination
     .page__info
-      span.block__header__title Display only:
+      span Display only:
       => link "Open (All)", to: ~p"/duplicate_reports?#{[states: ~W(open claimed)]}"
       => link "Open (Unclaimed)", to: ~p"/duplicate_reports?#{[states: ~W(open)]}"
       => link "Open (Claimed)", to: ~p"/duplicate_reports?#{[states: ~W(claimed)]}"

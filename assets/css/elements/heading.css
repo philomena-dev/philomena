@@ -1,0 +1,37 @@
+@define-mixin heading $el {
+  $(el) {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-$(el)-size);
+    font-weight: normal;
+    padding: var(--padding-small) 0;
+    margin-top: 0;
+    border-bottom: 1px solid var(--primary-border-color);
+  }
+}
+
+@define-mixin heading-type $type {
+  .heading--$(type) {
+    border-bottom-color: var(--$(type)-border-color);
+  }
+
+  .block--$(type) h1,
+  .block--$(type) h2,
+  .block--$(type) h3,
+  .block--$(type) h4,
+  .block--$(type) h5,
+  .block--$(type) h6 {
+    border-bottom-color: var(--$(type)-border-color);
+  }
+}
+
+@mixin heading h1;
+@mixin heading h2;
+@mixin heading h3;
+@mixin heading h4;
+@mixin heading h5;
+@mixin heading h6;
+@mixin heading-type success;
+@mixin heading-type warning;
+@mixin heading-type danger;
+@mixin heading-type information;
+@mixin heading-type special;

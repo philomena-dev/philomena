@@ -1,0 +1,18 @@
+.image-description {
+  margin-top: var(--padding-normal);
+}
+
+.image-sources {
+  display: grid;
+  grid-template-columns: var(--font-icon-size) auto;
+  gap: var(--padding-small);
+}
+
+.image-source__icon,
+.image-source__link {
+  overflow: hidden;
+}
+
+.image-source__icon {
+  justify-self: center;
+}

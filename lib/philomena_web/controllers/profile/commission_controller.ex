@@ -153,7 +153,7 @@ defmodule PhilomenaWeb.Profile.CommissionController do
       false ->
         conn
         |> put_flash(
-          :error,
+          :warning,
           "You must have a verified artist link to create a commission listing."
         )
         |> redirect(to: ~p"/commissions")

@@ -1,0 +1,109 @@
+@define-mixin dropdown-type $type {
+  .dropdown--$(type) .dropdown__content {
+    background: var(--$(type)-muted-color);
+    border-color: var(--$(type)-border-color);
+  }
+
+  .dropdown--$(type) .dropdown__text {
+    background: var(--$(type)-muted-color);
+    border-color: var(--$(type)-border-color);
+  }
+
+  .dropdown--$(type) .dropdown__item:hover .dropdown__text {
+    background: var(--$(type)-color);
+  }
+
+  .dropdown--$(type) .dropdown__icon {
+    background: var(--$(type)-dark-color);
+  }
+
+  .dropdown--$(type) .dropdown__item:hover .dropdown__icon {
+    background: var(--$(type)-color);
+  }
+
+  .dropdown--$(type) .dropdown__separator {
+    border-color: var(--$(type)-border-color);
+  }
+
+  .dropdown--$(type) .dropdown__link:hover {
+    background: var(--$(type)-color);
+  }
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown__content {
+  background: var(--primary-muted-color);
+  border: 1px solid var(--primary-border-color);
+  border-radius: var(--border-radius-inner);
+  position: absolute;
+  display: none;
+  top: 100%;
+  left: 0;
+}
+
+.dropdown:hover .dropdown__content {
+  display: grid;
+  min-width: 100%;
+  z-index: 999;
+  overflow: hidden;
+}
+
+.dropdown__content > :not(.hidden) {
+  white-space: nowrap;
+}
+
+.dropdown__content--right {
+  left: inherit;
+  right: 0;
+}
+
+.dropdown__item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  color: var(--text-color) !important;
+}
+
+.dropdown__text {
+  padding: 0 var(--padding-small);
+  background: var(--primary-muted-color);
+  border-left: 1px solid var(--primary-border-color);
+}
+
+.dropdown__item:hover .dropdown__text {
+  background: var(--primary-color);
+}
+
+.dropdown__icon {
+  padding: 0 var(--padding-small);
+  background: var(--primary-dark-color);
+}
+
+.dropdown__item:hover .dropdown__icon {
+  background: var(--primary-color);
+}
+
+.dropdown__separator {
+  margin: 0;
+  border: 1px solid var(--primary-border-color);
+  border-top: 0;
+}
+
+.dropdown__link {
+  padding: 0 var(--padding-small);
+  color: var(--text-color) !important;
+}
+
+.dropdown__link:hover {
+  background: var(--primary-color);
+}
+
+@mixin dropdown-type secondary;
+@mixin dropdown-type success;
+@mixin dropdown-type warning;
+@mixin dropdown-type danger;
+@mixin dropdown-type information;
+@mixin dropdown-type special;

@@ -8,7 +8,7 @@ h1
 
 .block
   .block__header
-    span.block__header__title
+    span
       | Display only:
 
     = link "Removed", to: ~p"/ip_profiles/#{to_string(@ip)}/tag_changes?#{[added: 0]}"

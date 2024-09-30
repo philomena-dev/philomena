@@ -46,7 +46,7 @@ defmodule PhilomenaWeb.Topic.Poll.VoteController do
 
       _error ->
         conn
-        |> put_flash(:error, "Your vote was not recorded.")
+        |> put_flash(:warning, "Your vote was not recorded.")
         |> redirect(to: ~p"/forums/#{topic.forum}/topics/#{topic}")
     end
   end
