@@ -172,8 +172,6 @@ defmodule Philomena.DevSeeds do
     [
       fingerprint: "d015c342859dde3",
       ip: default_ip(),
-      user_agent: "Hopefully not IE",
-      referrer: "localhost",
       user_id: id,
       user: user
     ]
