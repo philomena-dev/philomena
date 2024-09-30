@@ -31,7 +31,6 @@ Object.assign(globalThis, { URL, Blob });
 
 // Prevents an error when calling `form.submit()` directly in
 // the code that is being tested
-// eslint-disable-next-line prettier/prettier
-HTMLFormElement.prototype.submit = function() {
+HTMLFormElement.prototype.submit = function () {
   fireEvent.submit(this);
 };

@@ -130,6 +130,7 @@ defmodule PhilomenaMedia.Uploader do
   * `width` (integer) - the width of the file
   * `height` (integer) - the height of the file
   * `size` (integer) - the size of the file, in bytes
+  * `orig_size` (integer) - the size of the file, in bytes
   * `format` (String) - the file extension, one of `~w(gif jpg png svg webm)`, determined by reading the file
   * `mime_type` (String) - the file's sniffed MIME type, determined by reading the file
   * `duration` (float) - the duration of the media file
@@ -148,6 +149,7 @@ defmodule PhilomenaMedia.Uploader do
           :foo_width,
           :foo_height,
           :foo_size,
+          :foo_orig_size,
           :foo_format,
           :foo_mime_type,
           :foo_duration,
@@ -208,7 +210,7 @@ defmodule PhilomenaMedia.Uploader do
           (schema_or_changeset(), map() -> Ecto.Changeset.t())
         ) :: Ecto.Changeset.t()
   def analyze_upload(schema_or_changeset, field_name, upload_parameter, changeset_fn) do
-    with {:ok, analysis} <- Analyzers.analyze(upload_parameter),
+    with {:ok, analysis} <- Analyzers.analyze_upload(upload_parameter),
          analysis <- extra_attributes(analysis, upload_parameter) do
       removed =
         schema_or_changeset
@@ -221,6 +223,7 @@ defmodule PhilomenaMedia.Uploader do
           "width" => analysis.width,
           "height" => analysis.height,
           "size" => analysis.size,
+          "orig_size" => analysis.size,
           "format" => analysis.extension,
           "mime_type" => analysis.mime_type,
           "duration" => analysis.duration,

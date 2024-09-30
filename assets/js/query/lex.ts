@@ -32,8 +32,8 @@ export interface LexResult {
 }
 
 export function generateLexResult(searchStr: string, parseTerm: ParseTerm): LexResult {
-  const opQueue: string[] = [],
-    groupNegate: boolean[] = [];
+  const opQueue: string[] = [];
+  const groupNegate: boolean[] = [];
 
   let searchTerm: string | null = null;
   let boostFuzzStr = '';
@@ -85,11 +85,10 @@ export function generateLexResult(searchStr: string, parseTerm: ParseTerm): LexR
       }
 
       const token = match[0];
+      const tokenIsBinaryOp = ['and_op', 'or_op'].indexOf(tokenName) !== -1;
+      const tokenIsGroupStart = tokenName === 'rparen' && lparenCtr === 0;
 
-      if (
-        searchTerm !== null &&
-        (['and_op', 'or_op'].indexOf(tokenName) !== -1 || (tokenName === 'rparen' && lparenCtr === 0))
-      ) {
+      if (searchTerm !== null && (tokenIsBinaryOp || tokenIsGroupStart)) {
         endTerm();
       }
 

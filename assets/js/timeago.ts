@@ -35,12 +35,12 @@ function setTimeAgo(el: HTMLTimeElement) {
   const date = new Date(datetime);
   const distMillis = distance(date);
 
-  const seconds = Math.abs(distMillis) / 1000,
-    minutes = seconds / 60,
-    hours = minutes / 60,
-    days = hours / 24,
-    months = days / 30,
-    years = days / 365;
+  const seconds = Math.abs(distMillis) / 1000;
+  const minutes = seconds / 60;
+  const hours = minutes / 60;
+  const days = hours / 24;
+  const months = days / 30;
+  const years = days / 365;
 
   const words =
     (seconds < 45 && substitute('seconds', seconds)) ||

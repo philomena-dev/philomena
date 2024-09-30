@@ -57,8 +57,22 @@ function makeRelativeDateMatcher(dateVal: string, qual: RangeEqualQualifier): Fi
   return makeMatcher(bottomDate, topDate, qual);
 }
 
+const parseRes: RegExp[] = [
+  // year
+  /^(\d{4})/,
+  // month
+  /^-(\d{2})/,
+  // day
+  /^-(\d{2})/,
+  // hour
+  /^(?:\s+|T|t)(\d{2})/,
+  // minute
+  /^:(\d{2})/,
+  // second
+  /^:(\d{2})/,
+];
+
 function makeAbsoluteDateMatcher(dateVal: string, qual: RangeEqualQualifier): FieldMatcher {
-  const parseRes: RegExp[] = [/^(\d{4})/, /^-(\d{2})/, /^-(\d{2})/, /^(?:\s+|T|t)(\d{2})/, /^:(\d{2})/, /^:(\d{2})/];
   const timeZoneOffset: TimeZoneOffset = [0, 0];
   const timeData: AbsoluteDate = [0, 0, 1, 0, 0, 0];
 

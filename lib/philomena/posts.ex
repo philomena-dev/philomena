@@ -16,11 +16,8 @@ defmodule Philomena.Posts do
   alias Philomena.IndexWorker
   alias Philomena.Forums.Forum
   alias Philomena.Notifications
-  alias Philomena.NotificationWorker
   alias Philomena.Versions
   alias Philomena.Reports
-  alias Philomena.Reports.Report
-  alias Philomena.Users.User
 
   @doc """
   Gets a single post.
@@ -51,7 +48,7 @@ defmodule Philomena.Posts do
 
   """
   def create_post(topic, attributes, params \\ %{}) do
-    now = DateTime.utc_now()
+    now = DateTime.utc_now(:second)
 
     topic_query =
       Topic
@@ -66,7 +63,7 @@ defmodule Philomena.Posts do
       |> where(id: ^topic.forum_id)
 
     Multi.new()
-    |> Multi.all(:topic_lock, topic_lock_query)
+    |> Multi.one(:topic, topic_lock_query)
     |> Multi.run(:post, fn repo, _ ->
       last_position =
         Post
@@ -95,7 +92,8 @@ defmodule Philomena.Posts do
 
       {:ok, count}
     end)
-    |> maybe_create_subscription_on_reply(topic, attributes[:user])
+    |> Multi.run(:notification, &notify_post/2)
+    |> Topics.maybe_subscribe_on(:topic, attributes[:user], :watch_on_reply)
     |> Repo.transaction()
     |> case do
       {:ok, %{post: post}} = result ->
@@ -108,55 +106,17 @@ defmodule Philomena.Posts do
     end
   end
 
-  defp maybe_create_subscription_on_reply(multi, topic, %User{watch_on_reply: true} = user) do
-    multi
-    |> Multi.run(:subscribe, fn _repo, _changes ->
-      Topics.create_subscription(topic, user)
-    end)
-  end
-
-  defp maybe_create_subscription_on_reply(multi, _topic, _user) do
-    multi
-  end
-
-  def notify_post(post) do
-    Exq.enqueue(Exq, "notifications", NotificationWorker, ["Posts", post.id])
+  defp notify_post(_repo, %{post: post, topic: topic}) do
+    Notifications.create_forum_post_notification(post.user, topic, post)
   end
 
   def report_non_approved(%Post{approved: true}), do: false
 
   def report_non_approved(post) do
     Reports.create_system_report(
-      post.id,
-      "Post",
+      {"Post", post.id},
       "Approval",
       "Post contains externally-embedded images and has been flagged for review."
-    )
-  end
-
-  def perform_notify(post_id) do
-    post = get_post!(post_id)
-
-    topic =
-      post
-      |> Repo.preload(:topic)
-      |> Map.fetch!(:topic)
-
-    subscriptions =
-      topic
-      |> Repo.preload(:subscriptions)
-      |> Map.fetch!(:subscriptions)
-
-    Notifications.notify(
-      post,
-      subscriptions,
-      %{
-        actor_id: topic.id,
-        actor_type: "Topic",
-        actor_child_id: post.id,
-        actor_child_type: "Post",
-        action: "posted a new reply in"
-      }
     )
   end
 
@@ -173,7 +133,7 @@ defmodule Philomena.Posts do
 
   """
   def update_post(%Post{} = post, editor, attrs) do
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    now = DateTime.utc_now(:second)
     current_body = post.body
     current_reason = post.edit_reason
 
@@ -216,11 +176,7 @@ defmodule Philomena.Posts do
   end
 
   def hide_post(%Post{} = post, attrs, user) do
-    reports =
-      Report
-      |> where(reportable_type: "Post", reportable_id: ^post.id)
-      |> select([r], r.id)
-      |> update(set: [open: false, state: "closed", admin_id: ^user.id])
+    report_query = Reports.close_report_query({"Post", post.id}, user)
 
     topics =
       Topic
@@ -236,7 +192,7 @@ defmodule Philomena.Posts do
 
     Multi.new()
     |> Multi.update(:post, post)
-    |> Multi.update_all(:reports, reports, [])
+    |> Multi.update_all(:reports, report_query, [])
     |> Multi.update_all(:topics, topics, [])
     |> Multi.update_all(:forums, forums, [])
     |> Repo.transaction()
@@ -267,21 +223,15 @@ defmodule Philomena.Posts do
   end
 
   def approve_post(%Post{} = post, user) do
-    reports =
-      Report
-      |> where(reportable_type: "Post", reportable_id: ^post.id)
-      |> select([r], r.id)
-      |> update(set: [open: false, state: "closed", admin_id: ^user.id])
-
+    report_query = Reports.close_report_query({"Post", post.id}, user)
     post = Post.approve_changeset(post)
 
     Multi.new()
     |> Multi.update(:post, post)
-    |> Multi.update_all(:reports, reports, [])
+    |> Multi.update_all(:reports, report_query, [])
     |> Repo.transaction()
     |> case do
       {:ok, %{post: post, reports: {_count, reports}}} ->
-        notify_post(post)
         UserStatistics.inc_stat(post.user, :forum_posts)
         Reports.reindex_reports(reports)
         reindex_post(post)

@@ -95,9 +95,7 @@ function showHidden(imageId) {
 
 function resetVoted(imageId) {
   uncacheStatus(imageId, 'voted');
-
   onImage(imageId, '.interaction--upvote', el => el.classList.remove('active'));
-
   onImage(imageId, '.interaction--downvote', el => el.classList.remove('active'));
 }
 

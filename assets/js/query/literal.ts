@@ -22,15 +22,15 @@ function makeWildcardMatcher(term: string): FieldMatcher {
   // Transforms wildcard match into regular expression.
   // A custom NFA with caching may be more sophisticated but not
   // likely to be faster.
-  const wildcard = new RegExp(
-    `^${term
-      .replace(/([.+^$[\]\\(){}|-])/g, '\\$1')
-      .replace(/([^\\]|[^\\](?:\\\\)+)\*/g, '$1.*')
-      .replace(/^(?:\\\\)*\*/g, '.*')
-      .replace(/([^\\]|[^\\](?:\\\\)+)\?/g, '$1.?')
-      .replace(/^(?:\\\\)*\?/g, '.?')}$`,
-    'i',
-  );
+
+  const regexpForm = term
+    .replace(/([.+^$[\]\\(){}|-])/g, '\\$1')
+    .replace(/([^\\]|[^\\](?:\\\\)+)\*/g, '$1.*')
+    .replace(/^(?:\\\\)*\*/g, '.*')
+    .replace(/([^\\]|[^\\](?:\\\\)+)\?/g, '$1.?')
+    .replace(/^(?:\\\\)*\?/g, '.?');
+
+  const wildcard = new RegExp(`^${regexpForm}$`, 'i');
 
   return (v, name) => {
     const values = extractValues(v, name);

@@ -173,6 +173,7 @@ defmodule PhilomenaWeb.Router do
 
     scope "/notifications", Notification, as: :notification do
       resources "/unread", UnreadController, only: [:index]
+      resources "/categories", CategoryController, only: [:show]
     end
 
     resources "/notifications", NotificationController, only: [:index, :delete]
@@ -262,8 +263,6 @@ defmodule PhilomenaWeb.Router do
       resources "/subscription", Forum.SubscriptionController,
         only: [:create, :delete],
         singleton: true
-
-      resources "/read", Forum.ReadController, only: [:create], singleton: true
     end
 
     resources "/profiles", ProfileController, only: [] do
@@ -397,6 +396,7 @@ defmodule PhilomenaWeb.Router do
           singleton: true
 
         resources "/unlock", User.UnlockController, only: [:create], singleton: true
+        resources "/erase", User.EraseController, only: [:new, :create], singleton: true
         resources "/api_key", User.ApiKeyController, only: [:delete], singleton: true
         resources "/downvotes", User.DownvoteController, only: [:delete], singleton: true
         resources "/votes", User.VoteController, only: [:delete], singleton: true

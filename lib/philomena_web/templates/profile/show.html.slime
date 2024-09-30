@@ -143,7 +143,7 @@
                 ' Edit
       = if Enum.count(@user.awards) == 0 do
         .block__content
-          p 
+          p
             span: i.fa.icon--padded--right.fa-info-circle
             | No badge awards received
     .block
@@ -177,12 +177,12 @@
                   th Note
                   th Created
               tbody
-                = for {body, mod_note} <- @mod_notes do
+                = for {mod_note, body} <- @mod_notes do
                   tr
                     td = body
                     td = pretty_time(mod_note.created_at)
           - else
-            p 
+            p
               span: i.fa.icon--padded--right.fa-info-circle
               | No mod notes
     = if can_index_user?(@conn) do
@@ -200,7 +200,7 @@
           = if String.trim(contents) != "" do
             = @scratchpad
           - else
-            p 
+            p
               span: i.fa.icon--padded--right.fa-info-circle
               | No information present
 

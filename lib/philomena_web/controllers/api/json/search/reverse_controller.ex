@@ -1,7 +1,7 @@
 defmodule PhilomenaWeb.Api.Json.Search.ReverseController do
   use PhilomenaWeb, :controller
 
-  alias PhilomenaWeb.ImageReverse
+  alias Philomena.DuplicateReports
   alias Philomena.Interactions
 
   plug PhilomenaWeb.ScraperCachePlug
@@ -10,15 +10,27 @@ defmodule PhilomenaWeb.Api.Json.Search.ReverseController do
   def create(conn, %{"image" => image_params}) do
     user = conn.assigns.current_user
 
-    images =
+    {images, total} =
       image_params
       |> Map.put("distance", conn.params["distance"])
-      |> ImageReverse.images()
+      |> Map.put("limit", conn.params["limit"])
+      |> DuplicateReports.execute_search_query()
+      |> case do
+        {:ok, images} ->
+          {images, images.total_entries}
+
+        {:error, _changeset} ->
+          {[], 0}
+      end
 
     interactions = Interactions.user_interactions(images, user)
 
     conn
     |> put_view(PhilomenaWeb.Api.Json.ImageView)
-    |> render("index.json", images: images, total: length(images), interactions: interactions)
+    |> render("index.json",
+      images: images,
+      total: total,
+      interactions: interactions
+    )
   end
 end

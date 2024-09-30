@@ -18,6 +18,7 @@ defmodule Philomena.Users do
   alias Philomena.Galleries
   alias Philomena.Reports
   alias Philomena.Filters
+  alias Philomena.UserEraseWorker
   alias Philomena.UserRenameWorker
 
   ## Database getters
@@ -52,6 +53,22 @@ defmodule Philomena.Users do
   """
   def get_user_by_email(email) when is_binary(email) do
     Repo.get_by(User, email: email)
+  end
+
+  @doc """
+  Gets a user by name.
+
+  ## Examples
+
+      iex> get_user_by_name("Administrator")
+      %User{}
+
+      iex> get_user_by_name("nonexistent")
+      nil
+
+  """
+  def get_user_by_name(name) when is_binary(name) do
+    Repo.get_by(User, name: name)
   end
 
   @doc """
@@ -681,6 +698,20 @@ defmodule Philomena.Users do
     user
     |> User.unverify_changeset()
     |> Repo.update()
+  end
+
+  def erase_user(%User{} = user, %User{} = moderator) do
+    # Deactivate to prevent the user from racing these changes
+    {:ok, user} = deactivate_user(moderator, user)
+
+    # Rename to prevent usage for brand recognition SEO
+    random_hex = Base.encode16(:crypto.strong_rand_bytes(16), case: :lower)
+    {:ok, user} = update_user(user, %{name: "deactivated_#{random_hex}"})
+
+    # Enqueue a background job to perform the rest of the deletion
+    Exq.enqueue(Exq, "indexing", UserEraseWorker, [user.id, moderator.id])
+
+    {:ok, user}
   end
 
   defp setup_roles(nil), do: nil

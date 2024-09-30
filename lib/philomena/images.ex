@@ -22,8 +22,9 @@ defmodule Philomena.Images do
   alias Philomena.IndexWorker
   alias Philomena.ImageFeatures.ImageFeature
   alias Philomena.SourceChanges.SourceChange
-  alias Philomena.Notifications.Notification
-  alias Philomena.NotificationWorker
+  alias Philomena.Notifications.ImageCommentNotification
+  alias Philomena.Notifications.ImageMergeNotification
+  alias Philomena.TagChanges.Limits
   alias Philomena.TagChanges.TagChange
   alias Philomena.Tags
   alias Philomena.UserStatistics
@@ -31,11 +32,14 @@ defmodule Philomena.Images do
   alias Philomena.Notifications
   alias Philomena.Interactions
   alias Philomena.Reports
-  alias Philomena.Reports.Report
   alias Philomena.Comments
   alias Philomena.Galleries.Gallery
   alias Philomena.Galleries.Interaction
   alias Philomena.Users.User
+
+  use Philomena.Subscriptions,
+    on_delete: :clear_image_notification,
+    id_name: :image_id
 
   @doc """
   Gets a single image.
@@ -90,11 +94,6 @@ defmodule Philomena.Images do
 
     Multi.new()
     |> Multi.insert(:image, image)
-    |> Multi.run(:name_caches, fn repo, %{image: image} ->
-      image
-      |> Image.cache_changeset()
-      |> repo.update()
-    end)
     |> Multi.run(:added_tag_count, fn repo, %{image: image} ->
       tag_ids = image.added_tags |> Enum.map(& &1.id)
       tags = Tag |> where([t], t.id in ^tag_ids)
@@ -103,7 +102,7 @@ defmodule Philomena.Images do
 
       {:ok, count}
     end)
-    |> maybe_create_subscription_on_upload(attribution[:user])
+    |> maybe_subscribe_on(:image, attribution[:user], :watch_on_upload)
     |> Repo.transaction()
     |> case do
       {:ok, %{image: image}} = result ->
@@ -157,17 +156,6 @@ defmodule Philomena.Images do
     Logger.error("Aborting upload of #{image.id} after #{retry_count} retries")
   end
 
-  defp maybe_create_subscription_on_upload(multi, %User{watch_on_upload: true} = user) do
-    multi
-    |> Multi.run(:subscribe, fn _repo, %{image: image} ->
-      create_subscription(image, user)
-    end)
-  end
-
-  defp maybe_create_subscription_on_upload(multi, _user) do
-    multi
-  end
-
   def approve_image(image) do
     image
     |> Repo.preload(:user)
@@ -201,8 +189,7 @@ defmodule Philomena.Images do
 
   defp maybe_suggest_user_verification(%User{id: id, uploads_count: 5, verified: false}) do
     Reports.create_system_report(
-      id,
-      "User",
+      {"User", id},
       "Verification",
       "User has uploaded enough approved images to be considered for verification."
     )
@@ -376,7 +363,7 @@ defmodule Philomena.Images do
   end
 
   defp source_change_attributes(attribution, image, source, added, user) do
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    now = DateTime.utc_now(:second)
 
     user_id =
       case user do
@@ -392,8 +379,6 @@ defmodule Philomena.Images do
       updated_at: now,
       ip: attribution[:ip],
       fingerprint: attribution[:fingerprint],
-      user_agent: attribution[:user_agent],
-      referrer: attribution[:referrer],
       added: added
     }
   end
@@ -425,6 +410,9 @@ defmodule Philomena.Images do
         error ->
           error
       end
+    end)
+    |> Multi.run(:check_limits, fn _repo, %{image: {image, _added, _removed}} ->
+      check_tag_change_limits_before_commit(image, attribution)
     end)
     |> Multi.run(:added_tag_changes, fn repo, %{image: {image, added_tags, _removed}} ->
       tag_changes =
@@ -469,10 +457,47 @@ defmodule Philomena.Images do
         {:ok, count}
     end)
     |> Repo.transaction()
+    |> case do
+      {:ok, %{image: {image, _added, _removed}}} = res ->
+        update_tag_change_limits_after_commit(image, attribution)
+
+        res
+
+      err ->
+        err
+    end
+  end
+
+  defp check_tag_change_limits_before_commit(image, attribution) do
+    tag_changed_count = length(image.added_tags) + length(image.removed_tags)
+    rating_changed = image.ratings_changed
+    user = attribution[:user]
+    ip = attribution[:ip]
+
+    cond do
+      Limits.limited_for_tag_count?(user, ip, tag_changed_count) ->
+        {:error, :limit_exceeded}
+
+      rating_changed and Limits.limited_for_rating_count?(user, ip) ->
+        {:error, :limit_exceeded}
+
+      true ->
+        {:ok, 0}
+    end
+  end
+
+  def update_tag_change_limits_after_commit(image, attribution) do
+    rating_changed_count = if(image.ratings_changed, do: 1, else: 0)
+    tag_changed_count = length(image.added_tags) + length(image.removed_tags)
+    user = attribution[:user]
+    ip = attribution[:ip]
+
+    Limits.update_tag_count_after_update(user, ip, tag_changed_count)
+    Limits.update_rating_count_after_update(user, ip, rating_changed_count)
   end
 
   defp tag_change_attributes(attribution, image, tag, added, user) do
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    now = DateTime.utc_now(:second)
 
     user_id =
       case user do
@@ -489,8 +514,6 @@ defmodule Philomena.Images do
       tag_name_cache: tag.name,
       ip: attribution[:ip],
       fingerprint: attribution[:fingerprint],
-      user_agent: attribution[:user_agent],
-      referrer: attribution[:referrer],
       added: added
     }
   end
@@ -569,13 +592,13 @@ defmodule Philomena.Images do
     |> Multi.run(:migrate_interactions, fn _, %{} ->
       {:ok, Interactions.migrate_interactions(image, duplicate_of_image)}
     end)
+    |> Multi.run(:notification, &notify_merge(&1, &2, image, duplicate_of_image))
     |> Repo.transaction()
     |> process_after_hide()
     |> case do
       {:ok, result} ->
         reindex_image(duplicate_of_image)
         Comments.reindex_comments(duplicate_of_image)
-        notify_merge(image, duplicate_of_image)
 
         {:ok, result}
 
@@ -585,11 +608,7 @@ defmodule Philomena.Images do
   end
 
   defp hide_image_multi(changeset, image, user, multi) do
-    reports =
-      Report
-      |> where(reportable_type: "Image", reportable_id: ^image.id)
-      |> select([r], r.id)
-      |> update(set: [open: false, state: "closed", admin_id: ^user.id])
+    report_query = Reports.close_report_query({"Image", image.id}, user)
 
     galleries =
       Gallery
@@ -600,7 +619,7 @@ defmodule Philomena.Images do
 
     multi
     |> Multi.update(:image, changeset)
-    |> Multi.update_all(:reports, reports, [])
+    |> Multi.update_all(:reports, report_query, [])
     |> Multi.update_all(:galleries, galleries, [])
     |> Multi.delete_all(:gallery_interactions, gallery_interactions, [])
     |> Multi.run(:tags, fn repo, %{image: image} ->
@@ -715,7 +734,7 @@ defmodule Philomena.Images do
       |> where([t], t.image_id in ^image_ids and t.tag_id in ^removed_tags)
       |> select([t], [t.image_id, t.tag_id])
 
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    now = DateTime.utc_now(:second)
     tag_change_attributes = Map.merge(tag_change_attributes, %{created_at: now, updated_at: now})
     tag_attributes = %{name: "", slug: "", created_at: now, updated_at: now}
 
@@ -868,53 +887,6 @@ defmodule Philomena.Images do
 
   alias Philomena.Images.Subscription
 
-  def subscribed?(_image, nil), do: false
-
-  def subscribed?(image, user) do
-    Subscription
-    |> where(image_id: ^image.id, user_id: ^user.id)
-    |> Repo.exists?()
-  end
-
-  @doc """
-  Creates a subscription.
-
-  ## Examples
-
-      iex> create_subscription(%{field: value})
-      {:ok, %Subscription{}}
-
-      iex> create_subscription(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_subscription(_image, nil), do: {:ok, nil}
-
-  def create_subscription(image, user) do
-    %Subscription{image_id: image.id, user_id: user.id}
-    |> Subscription.changeset(%{})
-    |> Repo.insert(on_conflict: :nothing)
-  end
-
-  @doc """
-  Deletes a subscription.
-
-  ## Examples
-
-      iex> delete_subscription(subscription)
-      {:ok, %Subscription{}}
-
-      iex> delete_subscription(subscription)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_subscription(image, user) do
-    clear_notification(image, user)
-
-    %Subscription{image_id: image.id, user_id: user.id}
-    |> Repo.delete()
-  end
-
   def migrate_subscriptions(source, target) do
     subscriptions =
       Subscription
@@ -924,12 +896,40 @@ defmodule Philomena.Images do
 
     Repo.insert_all(Subscription, subscriptions, on_conflict: :nothing)
 
-    {count, nil} =
-      Notification
-      |> where(actor_type: "Image", actor_id: ^source.id)
-      |> Repo.delete_all()
+    comment_notifications =
+      from cn in ImageCommentNotification,
+        where: cn.image_id == ^source.id,
+        select: %{
+          user_id: cn.user_id,
+          image_id: ^target.id,
+          comment_id: cn.comment_id,
+          read: cn.read,
+          created_at: cn.created_at,
+          updated_at: cn.updated_at
+        }
 
-    {:ok, count}
+    merge_notifications =
+      from mn in ImageMergeNotification,
+        where: mn.target_id == ^source.id,
+        select: %{
+          user_id: mn.user_id,
+          target_id: ^target.id,
+          source_id: mn.source_id,
+          read: mn.read,
+          created_at: mn.created_at,
+          updated_at: mn.updated_at
+        }
+
+    {comment_notification_count, nil} =
+      Repo.insert_all(ImageCommentNotification, comment_notifications, on_conflict: :nothing)
+
+    {merge_notification_count, nil} =
+      Repo.insert_all(ImageMergeNotification, merge_notifications, on_conflict: :nothing)
+
+    Repo.delete_all(exclude(comment_notifications, :select))
+    Repo.delete_all(exclude(merge_notifications, :select))
+
+    {:ok, {comment_notification_count, merge_notification_count}}
   end
 
   def migrate_sources(source, target) do
@@ -944,34 +944,22 @@ defmodule Philomena.Images do
     |> Repo.update()
   end
 
-  def notify_merge(source, target) do
-    Exq.enqueue(Exq, "notifications", NotificationWorker, ["Images", [source.id, target.id]])
+  defp notify_merge(_repo, _changes, source, target) do
+    Notifications.create_image_merge_notification(target, source)
   end
 
-  def perform_notify([source_id, target_id]) do
-    target = get_image!(target_id)
+  @doc """
+  Removes all image notifications for a given image and user.
 
-    subscriptions =
-      target
-      |> Repo.preload(:subscriptions)
-      |> Map.fetch!(:subscriptions)
+  ## Examples
 
-    Notifications.notify(
-      nil,
-      subscriptions,
-      %{
-        actor_id: target.id,
-        actor_type: "Image",
-        actor_child_id: nil,
-        actor_child_type: nil,
-        action: "merged ##{source_id} into"
-      }
-    )
-  end
+      iex> clear_image_notification(image, user)
+      :ok
 
-  def clear_notification(_image, nil), do: nil
-
-  def clear_notification(image, user) do
-    Notifications.delete_unread_notification("Image", image.id, user)
+  """
+  def clear_image_notification(%Image{} = image, user) do
+    Notifications.clear_image_comment_notification(image, user)
+    Notifications.clear_image_merge_notification(image, user)
+    :ok
   end
 end

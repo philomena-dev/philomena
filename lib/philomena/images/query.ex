@@ -84,7 +84,7 @@ defmodule Philomena.Images.Query do
   defp anonymous_fields do
     [
       int_fields:
-        ~W(id width height score upvotes downvotes faves uploader_id faved_by_id pixels size comment_count source_count tag_count) ++
+        ~W(id width height score upvotes downvotes faves uploader_id faved_by_id pixels size orig_size comment_count source_count tag_count) ++
           tag_count_fields(),
       float_fields: ~W(aspect_ratio wilson_score duration),
       date_fields: ~W(created_at updated_at first_seen_at),
@@ -144,8 +144,9 @@ defmodule Philomena.Images.Query do
     |> Parser.parse(query_string, context)
   end
 
-  def compile(user, query_string, watch \\ false) do
-    query_string = query_string || ""
+  def compile(query_string, opts \\ []) do
+    user = Keyword.get(opts, :user)
+    watch = Keyword.get(opts, :watch, false)
 
     case user do
       nil ->

@@ -15,8 +15,6 @@ defmodule Philomena.ArtistLinks.ArtistLink do
 
     field :aasm_state, :string, default: "unverified"
     field :uri, :string
-    field :hostname, :string
-    field :path, :string
     field :verification_code, :string
     field :public, :boolean, default: true
     field :next_check_at, :utc_datetime
@@ -37,7 +35,6 @@ defmodule Philomena.ArtistLinks.ArtistLink do
     |> cast(attrs, [:uri, :public])
     |> put_change(:tag_id, nil)
     |> validate_required([:user, :uri, :public])
-    |> parse_uri()
   end
 
   def edit_changeset(artist_link, attrs, tag) do
@@ -45,7 +42,6 @@ defmodule Philomena.ArtistLinks.ArtistLink do
     |> cast(attrs, [:uri, :public])
     |> put_change(:tag_id, tag.id)
     |> validate_required([:user, :uri, :public])
-    |> parse_uri()
   end
 
   def creation_changeset(artist_link, attrs, user, tag) do
@@ -57,7 +53,6 @@ defmodule Philomena.ArtistLinks.ArtistLink do
     |> validate_required([:tag], message: "must exist")
     |> validate_format(:uri, ~r|\Ahttps?://|)
     |> validate_category()
-    |> parse_uri()
     |> put_verification_code()
     |> put_next_check_at()
     |> unique_constraint([:uri, :tag_id, :user_id],
@@ -90,20 +85,11 @@ defmodule Philomena.ArtistLinks.ArtistLink do
   end
 
   def contact_changeset(artist_link, user) do
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
-
-    change(artist_link)
+    artist_link
+    |> change()
     |> put_change(:contacted_by_user_id, user.id)
-    |> put_change(:contacted_at, now)
+    |> put_change(:contacted_at, DateTime.utc_now(:second))
     |> put_change(:aasm_state, "contacted")
-  end
-
-  defp parse_uri(changeset) do
-    string_uri = get_field(changeset, :uri) |> to_string()
-    uri = URI.parse(string_uri)
-
-    changeset
-    |> change(hostname: uri.host, path: uri.path)
   end
 
   defp put_verification_code(changeset) do
@@ -113,9 +99,9 @@ defmodule Philomena.ArtistLinks.ArtistLink do
 
   defp put_next_check_at(changeset) do
     time =
-      DateTime.utc_now()
+      :second
+      |> DateTime.utc_now()
       |> DateTime.add(60 * 2, :second)
-      |> DateTime.truncate(:second)
 
     change(changeset, next_check_at: time)
   end

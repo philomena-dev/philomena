@@ -14,7 +14,9 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
   fs.readdirSync(path.resolve(__dirname, 'css/themes/')).forEach(name => {
     const m = name.match(/([-a-z]+).css/);
 
-    if (m) targets.set(`css/${m[1]}`, `./css/themes/${m[1]}.css`);
+    if (m) return targets.set(`css/${m[1]}`, `./css/themes/${m[1]}.css`);
+
+    return null;
   });
 
   fs.readdirSync(path.resolve(__dirname, 'css/options/')).forEach(name => {
@@ -66,13 +68,13 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
     test: {
       globals: true,
       environment: 'jsdom',
+      exclude: ['node_modules/', '.*\\.test\\.ts$', '.*\\.d\\.ts$', '.*\\.spec\\.ts$'],
       // TODO Jest --randomize CLI flag equivalent, consider enabling in the future
       // sequence: { shuffle: true },
       setupFiles: './test/vitest-setup.ts',
       coverage: {
         reporter: ['text', 'html'],
         include: ['js/**/*.{js,ts}'],
-        exclude: ['node_modules/', '.*\\.test\\.ts$', '.*\\.d\\.ts$'],
         thresholds: {
           statements: 0,
           branches: 0,

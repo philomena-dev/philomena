@@ -22,9 +22,9 @@ export function setupGalleryEditing() {
 
   initDraggables();
 
-  $$<HTMLDivElement>('.media-box', containerEl).forEach(i => {
-    i.draggable = true;
-  });
+  for (const mediaBox of $$<HTMLDivElement>('.media-box', containerEl)) {
+    mediaBox.draggable = true;
+  }
 
   rearrangeEl.addEventListener('click', () => {
     sortableEl.classList.add('editing');
@@ -46,8 +46,8 @@ export function setupGalleryEditing() {
 
     fetchJson('PATCH', reorderPath, {
       image_ids: newImages,
-      // copy the array again so that we have the newly updated set
     }).then(() => {
+      // copy the array again so that we have the newly updated set
       oldImages = newImages.slice();
     });
   });

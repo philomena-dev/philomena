@@ -8,7 +8,6 @@ defmodule Philomena.Comments do
   alias Philomena.Repo
 
   alias PhilomenaQuery.Search
-  alias Philomena.Reports.Report
   alias Philomena.UserStatistics
   alias Philomena.Comments.Comment
   alias Philomena.Comments.SearchIndex, as: CommentIndex
@@ -16,10 +15,8 @@ defmodule Philomena.Comments do
   alias Philomena.Images.Image
   alias Philomena.Images
   alias Philomena.Notifications
-  alias Philomena.NotificationWorker
   alias Philomena.Versions
   alias Philomena.Reports
-  alias Philomena.Users.User
 
   @doc """
   Gets a single comment.
@@ -58,52 +55,20 @@ defmodule Philomena.Comments do
       Image
       |> where(id: ^image.id)
 
+    image_lock_query =
+      lock(image_query, "FOR UPDATE")
+
     Multi.new()
+    |> Multi.one(:image, image_lock_query)
     |> Multi.insert(:comment, comment)
-    |> Multi.update_all(:image, image_query, inc: [comments_count: 1])
-    |> maybe_create_subscription_on_reply(image, attribution[:user])
+    |> Multi.update_all(:update_image, image_query, inc: [comments_count: 1])
+    |> Multi.run(:notification, &notify_comment/2)
+    |> Images.maybe_subscribe_on(:image, attribution[:user], :watch_on_reply)
     |> Repo.transaction()
   end
 
-  defp maybe_create_subscription_on_reply(multi, image, %User{watch_on_reply: true} = user) do
-    multi
-    |> Multi.run(:subscribe, fn _repo, _changes ->
-      Images.create_subscription(image, user)
-    end)
-  end
-
-  defp maybe_create_subscription_on_reply(multi, _image, _user) do
-    multi
-  end
-
-  def notify_comment(comment) do
-    Exq.enqueue(Exq, "notifications", NotificationWorker, ["Comments", comment.id])
-  end
-
-  def perform_notify(comment_id) do
-    comment = get_comment!(comment_id)
-
-    image =
-      comment
-      |> Repo.preload(:image)
-      |> Map.fetch!(:image)
-
-    subscriptions =
-      image
-      |> Repo.preload(:subscriptions)
-      |> Map.fetch!(:subscriptions)
-
-    Notifications.notify(
-      comment,
-      subscriptions,
-      %{
-        actor_id: image.id,
-        actor_type: "Image",
-        actor_child_id: comment.id,
-        actor_child_type: "Comment",
-        action: "commented on"
-      }
-    )
+  defp notify_comment(_repo, %{image: image, comment: comment}) do
+    Notifications.create_image_comment_notification(comment.user, image, comment)
   end
 
   @doc """
@@ -119,7 +84,7 @@ defmodule Philomena.Comments do
 
   """
   def update_comment(%Comment{} = comment, editor, attrs) do
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    now = DateTime.utc_now(:second)
     current_body = comment.body
     current_reason = comment.edit_reason
 
@@ -153,17 +118,12 @@ defmodule Philomena.Comments do
   end
 
   def hide_comment(%Comment{} = comment, attrs, user) do
-    reports =
-      Report
-      |> where(reportable_type: "Comment", reportable_id: ^comment.id)
-      |> select([r], r.id)
-      |> update(set: [open: false, state: "closed", admin_id: ^user.id])
-
+    report_query = Reports.close_report_query({"Comment", comment.id}, user)
     comment = Comment.hide_changeset(comment, attrs, user)
 
     Multi.new()
     |> Multi.update(:comment, comment)
-    |> Multi.update_all(:reports, reports, [])
+    |> Multi.update_all(:reports, report_query, [])
     |> Repo.transaction()
     |> case do
       {:ok, %{comment: comment, reports: {_count, reports}}} ->
@@ -199,21 +159,15 @@ defmodule Philomena.Comments do
   end
 
   def approve_comment(%Comment{} = comment, user) do
-    reports =
-      Report
-      |> where(reportable_type: "Comment", reportable_id: ^comment.id)
-      |> select([r], r.id)
-      |> update(set: [open: false, state: "closed", admin_id: ^user.id])
-
+    report_query = Reports.close_report_query({"Comment", comment.id}, user)
     comment = Comment.approve_changeset(comment)
 
     Multi.new()
     |> Multi.update(:comment, comment)
-    |> Multi.update_all(:reports, reports, [])
+    |> Multi.update_all(:reports, report_query, [])
     |> Repo.transaction()
     |> case do
       {:ok, %{comment: comment, reports: {_count, reports}}} ->
-        notify_comment(comment)
         UserStatistics.inc_stat(comment.user, :comments_posted)
         Reports.reindex_reports(reports)
         reindex_comment(comment)
@@ -229,8 +183,7 @@ defmodule Philomena.Comments do
 
   def report_non_approved(comment) do
     Reports.create_system_report(
-      comment.id,
-      "Comment",
+      {"Comment", comment.id},
       "Approval",
       "Comment contains externally-embedded images and has been flagged for review."
     )

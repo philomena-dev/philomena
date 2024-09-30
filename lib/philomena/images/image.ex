@@ -2,7 +2,6 @@ defmodule Philomena.Images.Image do
   use Ecto.Schema
 
   import Ecto.Changeset
-  import Ecto.Query
 
   alias Philomena.ImageIntensities.ImageIntensity
   alias Philomena.ImageVotes.ImageVote
@@ -51,6 +50,7 @@ defmodule Philomena.Images.Image do
     field :image_width, :integer
     field :image_height, :integer
     field :image_size, :integer
+    field :image_orig_size, :integer
     field :image_format, :string
     field :image_mime_type, :string
     field :image_aspect_ratio, :float
@@ -58,14 +58,11 @@ defmodule Philomena.Images.Image do
     field :image_is_animated, :boolean, source: :is_animated
     field :ip, EctoNetwork.INET
     field :fingerprint, :string
-    field :user_agent, :string, default: ""
-    field :referrer, :string, default: ""
     field :anonymous, :boolean, default: false
     field :score, :integer, default: 0
     field :faves_count, :integer, default: 0
     field :upvotes_count, :integer, default: 0
     field :downvotes_count, :integer, default: 0
-    field :votes_count, :integer, default: 0
     field :source_url, :string
     field :description, :string, default: ""
     field :image_sha512_hash, :string
@@ -87,15 +84,11 @@ defmodule Philomena.Images.Image do
     field :hides_count, :integer, default: 0
     field :approved, :boolean
 
-    # todo: can probably remove these now
-    field :tag_list_cache, :string
-    field :tag_list_plus_alias_cache, :string
-    field :file_name_cache, :string
-
     field :removed_tags, {:array, :any}, default: [], virtual: true
     field :added_tags, {:array, :any}, default: [], virtual: true
     field :removed_sources, {:array, :any}, default: [], virtual: true
     field :added_sources, {:array, :any}, default: [], virtual: true
+    field :ratings_changed, :boolean, default: false, virtual: true
 
     field :uploaded_image, :string, virtual: true
     field :removed_image, :string, virtual: true
@@ -120,11 +113,9 @@ defmodule Philomena.Images.Image do
   end
 
   def creation_changeset(image, attrs, attribution) do
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
-
     image
     |> cast(attrs, [:anonymous, :source_url, :description])
-    |> change(first_seen_at: now)
+    |> change(first_seen_at: DateTime.utc_now(:second))
     |> change(attribution)
     |> validate_length(:description, max: 50_000, count: :bytes)
     |> validate_format(:source_url, ~r/\Ahttps?:\/\//)
@@ -138,6 +129,7 @@ defmodule Philomena.Images.Image do
       :image_width,
       :image_height,
       :image_size,
+      :image_orig_size,
       :image_format,
       :image_mime_type,
       :image_aspect_ratio,
@@ -153,6 +145,7 @@ defmodule Philomena.Images.Image do
       :image_width,
       :image_height,
       :image_size,
+      :image_orig_size,
       :image_format,
       :image_mime_type,
       :image_aspect_ratio,
@@ -226,7 +219,6 @@ defmodule Philomena.Images.Image do
     |> cast(attrs, [])
     |> TagDiffer.diff_input(old_tags, new_tags, excluded_tags)
     |> TagValidator.validate_tags()
-    |> cache_changeset()
   end
 
   def locked_tags_changeset(image, attrs, locked_tags) do
@@ -340,54 +332,7 @@ defmodule Philomena.Images.Image do
   def approve_changeset(image) do
     change(image)
     |> put_change(:approved, true)
-    |> put_change(:first_seen_at, DateTime.truncate(DateTime.utc_now(), :second))
-  end
-
-  def cache_changeset(image) do
-    changeset = change(image)
-    image = apply_changes(changeset)
-
-    {tag_list_cache, tag_list_plus_alias_cache, file_name_cache} =
-      create_caches(image.id, image.tags)
-
-    changeset
-    |> put_change(:tag_list_cache, tag_list_cache)
-    |> put_change(:tag_list_plus_alias_cache, tag_list_plus_alias_cache)
-    |> put_change(:file_name_cache, file_name_cache)
-  end
-
-  defp create_caches(image_id, tags) do
-    tags = Tag.display_order(tags)
-
-    tag_list_cache =
-      tags
-      |> Enum.map_join(", ", & &1.name)
-
-    tag_ids = tags |> Enum.map(& &1.id)
-
-    aliases =
-      Tag
-      |> where([t], t.aliased_tag_id in ^tag_ids)
-      |> Repo.all()
-
-    tag_list_plus_alias_cache =
-      (tags ++ aliases)
-      |> Tag.display_order()
-      |> Enum.map_join(", ", & &1.name)
-
-    # Truncate filename to 150 characters, making room for the path + filename on Windows
-    # https://stackoverflow.com/questions/265769/maximum-filename-length-in-ntfs-windows-xp-and-windows-vista
-    file_name_slug_fragment =
-      tags
-      |> Enum.map_join("_", & &1.slug)
-      |> String.to_charlist()
-      |> Enum.filter(&(&1 in ?a..?z or &1 in ~c"0123456789_-"))
-      |> List.to_string()
-      |> String.slice(0..150)
-
-    file_name_cache = "#{image_id}__#{file_name_slug_fragment}"
-
-    {tag_list_cache, tag_list_plus_alias_cache, file_name_cache}
+    |> put_change(:first_seen_at, DateTime.utc_now(:second))
   end
 
   defp create_key do

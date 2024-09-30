@@ -11,8 +11,10 @@ defmodule Philomena.Topics do
   alias Philomena.Forums.Forum
   alias Philomena.Posts
   alias Philomena.Notifications
-  alias Philomena.NotificationWorker
-  alias Philomena.Users.User
+
+  use Philomena.Subscriptions,
+    on_delete: :clear_topic_notification,
+    id_name: :topic_id
 
   @doc """
   Gets a single topic.
@@ -43,7 +45,7 @@ defmodule Philomena.Topics do
 
   """
   def create_topic(forum, attribution, attrs \\ %{}) do
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    now = DateTime.utc_now(:second)
 
     topic =
       %Topic{}
@@ -70,7 +72,8 @@ defmodule Philomena.Topics do
 
       {:ok, count}
     end)
-    |> maybe_create_subscription_on_new_topic(attribution[:user])
+    |> Multi.run(:notification, &notify_topic/2)
+    |> maybe_subscribe_on(:topic, attribution[:user], :watch_on_new_topic)
     |> Repo.transaction()
     |> case do
       {:ok, %{topic: topic}} = result ->
@@ -84,46 +87,8 @@ defmodule Philomena.Topics do
     end
   end
 
-  defp maybe_create_subscription_on_new_topic(multi, %User{watch_on_new_topic: true} = user) do
-    multi
-    |> Multi.run(:subscribe, fn _repo, %{topic: topic} ->
-      create_subscription(topic, user)
-    end)
-  end
-
-  defp maybe_create_subscription_on_new_topic(multi, _user) do
-    multi
-  end
-
-  def notify_topic(topic, post) do
-    Exq.enqueue(Exq, "notifications", NotificationWorker, ["Topics", [topic.id, post.id]])
-  end
-
-  def perform_notify([topic_id, post_id]) do
-    topic = get_topic!(topic_id)
-    post = Posts.get_post!(post_id)
-
-    forum =
-      topic
-      |> Repo.preload(:forum)
-      |> Map.fetch!(:forum)
-
-    subscriptions =
-      forum
-      |> Repo.preload(:subscriptions)
-      |> Map.fetch!(:subscriptions)
-
-    Notifications.notify(
-      post,
-      subscriptions,
-      %{
-        actor_id: topic.id,
-        actor_type: "Topic",
-        actor_child_id: post.id,
-        actor_child_type: "Post",
-        action: "posted a new topic in #{forum.name}"
-      }
-    )
+  defp notify_topic(_repo, %{topic: topic}) do
+    Notifications.create_forum_topic_notification(topic.user, topic)
   end
 
   @doc """
@@ -171,55 +136,6 @@ defmodule Philomena.Topics do
   """
   def change_topic(%Topic{} = topic) do
     Topic.changeset(topic, %{})
-  end
-
-  alias Philomena.Topics.Subscription
-
-  def subscribed?(_topic, nil), do: false
-
-  def subscribed?(topic, user) do
-    Subscription
-    |> where(topic_id: ^topic.id, user_id: ^user.id)
-    |> Repo.exists?()
-  end
-
-  @doc """
-  Creates a subscription.
-
-  ## Examples
-
-      iex> create_subscription(%{field: value})
-      {:ok, %Subscription{}}
-
-      iex> create_subscription(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_subscription(_topic, nil), do: {:ok, nil}
-
-  def create_subscription(topic, user) do
-    %Subscription{topic_id: topic.id, user_id: user.id}
-    |> Subscription.changeset(%{})
-    |> Repo.insert(on_conflict: :nothing)
-  end
-
-  @doc """
-  Deletes a Subscription.
-
-  ## Examples
-
-      iex> delete_subscription(subscription)
-      {:ok, %Subscription{}}
-
-      iex> delete_subscription(subscription)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_subscription(topic, user) do
-    clear_notification(topic, user)
-
-    %Subscription{topic_id: topic.id, user_id: user.id}
-    |> Repo.delete()
   end
 
   def stick_topic(topic) do
@@ -300,9 +216,18 @@ defmodule Philomena.Topics do
     |> Repo.update()
   end
 
-  def clear_notification(_topic, nil), do: nil
+  @doc """
+  Removes all topic notifications for a given topic and user.
 
-  def clear_notification(topic, user) do
-    Notifications.delete_unread_notification("Topic", topic.id, user)
+  ## Examples
+
+      iex> clear_topic_notification(topic, user)
+      :ok
+
+  """
+  def clear_topic_notification(%Topic{} = topic, user) do
+    Notifications.clear_forum_post_notification(topic, user)
+    Notifications.clear_forum_topic_notification(topic, user)
+    :ok
   end
 end

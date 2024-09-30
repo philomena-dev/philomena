@@ -6,14 +6,14 @@ defmodule Philomena.Users.User do
 
   use Ecto.Schema
   import Ecto.Changeset
+  import PhilomenaQuery.Ecto.QueryValidator
 
   alias Philomena.Schema.TagList
-  alias Philomena.Schema.Search
 
+  alias Philomena.Images.Query
   alias Philomena.Filters.Filter
   alias Philomena.ArtistLinks.ArtistLink
   alias Philomena.Badges
-  alias Philomena.Notifications.UnreadNotification
   alias Philomena.Galleries.Gallery
   alias Philomena.Users.User
   alias Philomena.Commissions.Commission
@@ -31,8 +31,6 @@ defmodule Philomena.Users.User do
     has_many :public_links, ArtistLink, where: [public: true, aasm_state: "verified"]
     has_many :galleries, Gallery, foreign_key: :creator_id
     has_many :awards, Badges.Award
-    has_many :unread_notifications, UnreadNotification
-    has_many :notifications, through: [:unread_notifications, :notification]
     has_many :linked_tags, through: [:verified_links, :tag]
     has_many :user_ips, UserIp
     has_many :user_fingerprints, UserFingerprint
@@ -113,7 +111,6 @@ defmodule Philomena.Users.User do
     field :watched_tag_list, :string, virtual: true
 
     # Other stuff
-    field :last_donation_at, :utc_datetime
     field :last_renamed_at, :utc_datetime
     field :deleted_at, :utc_datetime
     field :scratchpad, :string
@@ -217,8 +214,7 @@ defmodule Philomena.Users.User do
   Confirms the account by setting `confirmed_at`.
   """
   def confirm_changeset(user) do
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
-    change(user, confirmed_at: now)
+    change(user, confirmed_at: DateTime.utc_now(:second))
   end
 
   @doc """
@@ -261,9 +257,7 @@ defmodule Philomena.Users.User do
   end
 
   def lock_changeset(user) do
-    locked_at = DateTime.utc_now() |> DateTime.truncate(:second)
-
-    change(user, locked_at: locked_at)
+    change(user, locked_at: DateTime.utc_now(:second))
   end
 
   def unlock_changeset(user) do
@@ -362,8 +356,8 @@ defmodule Philomena.Users.User do
     |> validate_inclusion(:images_per_page, 1..50)
     |> validate_inclusion(:comments_per_page, 1..100)
     |> validate_inclusion(:scale_large_images, ["false", "partscaled", "true"])
-    |> Search.validate_search(:watched_images_query_str, user, true)
-    |> Search.validate_search(:watched_images_exclude_str, user, true)
+    |> validate_query(:watched_images_query_str, &Query.compile(&1, user: user, watch: true))
+    |> validate_query(:watched_images_exclude_str, &Query.compile(&1, user: user, watch: true))
   end
 
   def description_changeset(user, attrs) do
@@ -383,14 +377,12 @@ defmodule Philomena.Users.User do
   end
 
   def name_changeset(user, attrs) do
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
-
     user
     |> cast(attrs, [:name])
     |> validate_name()
     |> put_slug()
     |> unique_constraints()
-    |> put_change(:last_renamed_at, now)
+    |> put_change(:last_renamed_at, DateTime.utc_now(:second))
   end
 
   def avatar_changeset(user, attrs) do
@@ -433,7 +425,7 @@ defmodule Philomena.Users.User do
   end
 
   def deactivate_changeset(user, moderator) do
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    now = DateTime.utc_now(:second)
 
     change(user, deleted_at: now, deleted_by_user_id: moderator.id)
   end

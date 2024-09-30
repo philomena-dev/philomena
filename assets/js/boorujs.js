@@ -9,47 +9,25 @@ import { fetchHtml, handleError } from './utils/requests';
 import { showBlock } from './utils/image';
 import { addTag } from './tagsinput';
 
+/* eslint-disable prettier/prettier */
+
 // Event types and any qualifying conditions - return true to not run action
 const types = {
-  click(event) {
-    return event.button !== 0; /* Left-click only */
-  },
-
-  change() {
-    /* No qualifier */
-  },
-
-  fetchcomplete() {
-    /* No qualifier */
-  },
+  click(event)    { return event.button !== 0; /* Left-click only */ },
+  change()        { /* No qualifier */ },
+  fetchcomplete() { /* No qualifier */ },
 };
 
 const actions = {
-  hide(data) {
-    selectorCb(data.base, data.value, el => el.classList.add('hidden'));
-  },
-
-  tabHide(data) {
-    selectorCbChildren(data.base, data.value, el => el.classList.add('hidden'));
-  },
-
-  show(data) {
-    selectorCb(data.base, data.value, el => el.classList.remove('hidden'));
-  },
-
-  toggle(data) {
-    selectorCb(data.base, data.value, el => el.classList.toggle('hidden'));
-  },
-
-  submit(data) {
-    selectorCb(data.base, data.value, el => el.submit());
-  },
-
-  disable(data) {
-    selectorCb(data.base, data.value, el => {
-      el.disabled = true;
-    });
-  },
+  hide(data)       { selectorCb(data.base, data.value, el => el.classList.add('hidden')); },
+  show(data)       { selectorCb(data.base, data.value, el => el.classList.remove('hidden')); },
+  toggle(data)     { selectorCb(data.base, data.value, el => el.classList.toggle('hidden')); },
+  submit(data)     { selectorCb(data.base, data.value, el => el.submit()); },
+  disable(data)    { selectorCb(data.base, data.value, el => el.disabled = true); },
+  focus(data)      { document.querySelector(data.value).focus(); },
+  unfilter(data)   { showBlock(data.el.closest('.image-show-container')); },
+  tabHide(data)    { selectorCbChildren(data.base, data.value, el => el.classList.add('hidden')); },
+  preventdefault() { /* The existence of this entry is enough */ },
 
   copy(data) {
     document.querySelector(data.value).select();
@@ -70,16 +48,15 @@ const actions = {
     });
   },
 
-  focus(data) {
-    document.querySelector(data.value).focus();
-  },
-
-  preventdefault() {
-    /* The existence of this entry is enough */
-  },
-
   addtag(data) {
     addTag(document.querySelector(data.el.closest('[data-target]').dataset.target), data.el.dataset.tagName);
+  },
+
+  hideParent(data) {
+    const base = data.el.closest(data.value);
+    if (base) {
+      base.classList.add('hidden');
+    }
   },
 
   tab(data) {
@@ -114,11 +91,9 @@ const actions = {
         });
     }
   },
-
-  unfilter(data) {
-    showBlock(data.el.closest('.image-show-container'));
-  },
 };
+
+/* eslint-enable prettier/prettier */
 
 // Use this function to apply a callback to elements matching the selectors
 function selectorCb(base = document, selector, cb) {

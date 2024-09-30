@@ -74,9 +74,9 @@ function submit() {
 
 function modifyImageQueue(mediaBox) {
   if (currentTags()) {
-    const imageId = mediaBox.dataset.imageId,
-      queue = currentQueue(),
-      isSelected = queue.includes(imageId);
+    const imageId = mediaBox.dataset.imageId;
+    const queue = currentQueue();
+    const isSelected = queue.includes(imageId);
 
     isSelected ? queue.splice(queue.indexOf(imageId), 1) : queue.push(imageId);
 

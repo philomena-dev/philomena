@@ -14,9 +14,11 @@ defmodule Philomena.Galleries do
   alias Philomena.IndexWorker
   alias Philomena.GalleryReorderWorker
   alias Philomena.Notifications
-  alias Philomena.NotificationWorker
-  alias Philomena.Notifications.{Notification, UnreadNotification}
   alias Philomena.Images
+
+  use Philomena.Subscriptions,
+    on_delete: :clear_gallery_notification,
+    id_name: :gallery_id
 
   @doc """
   Gets a single gallery.
@@ -91,21 +93,8 @@ defmodule Philomena.Galleries do
       |> select([i], i.image_id)
       |> Repo.all()
 
-    unread_notifications =
-      UnreadNotification
-      |> join(:inner, [un], _ in assoc(un, :notification))
-      |> where([_, n], n.actor_type == "Gallery")
-      |> where([_, n], n.actor_id == ^gallery.id)
-
-    notifications =
-      Notification
-      |> where(actor_type: "Gallery")
-      |> where(actor_id: ^gallery.id)
-
     Multi.new()
     |> Multi.delete(:gallery, gallery)
-    |> Multi.delete_all(:unread_notifications, unread_notifications)
-    |> Multi.delete_all(:notifications, notifications)
     |> Repo.transaction()
     |> case do
       {:ok, %{gallery: gallery}} ->
@@ -173,7 +162,7 @@ defmodule Philomena.Galleries do
 
   def add_image_to_gallery(gallery, image) do
     Multi.new()
-    |> Multi.run(:lock, fn repo, %{} ->
+    |> Multi.run(:gallery, fn repo, %{} ->
       gallery =
         Gallery
         |> where(id: ^gallery.id)
@@ -189,7 +178,7 @@ defmodule Philomena.Galleries do
       |> Interaction.changeset(%{"image_id" => image.id, "position" => position})
       |> repo.insert()
     end)
-    |> Multi.run(:gallery, fn repo, %{} ->
+    |> Multi.run(:image_count, fn repo, %{} ->
       now = DateTime.utc_now()
 
       {count, nil} =
@@ -199,11 +188,11 @@ defmodule Philomena.Galleries do
 
       {:ok, count}
     end)
+    |> Multi.run(:notification, &notify_gallery/2)
     |> Repo.transaction()
     |> case do
       {:ok, result} ->
         Images.reindex_image(image)
-        notify_gallery(gallery, image)
         reindex_gallery(gallery)
 
         {:ok, result}
@@ -215,7 +204,7 @@ defmodule Philomena.Galleries do
 
   def remove_image_from_gallery(gallery, image) do
     Multi.new()
-    |> Multi.run(:lock, fn repo, %{} ->
+    |> Multi.run(:gallery, fn repo, %{} ->
       gallery =
         Gallery
         |> where(id: ^gallery.id)
@@ -232,7 +221,7 @@ defmodule Philomena.Galleries do
 
       {:ok, count}
     end)
-    |> Multi.run(:gallery, fn repo, %{interaction: interaction_count} ->
+    |> Multi.run(:image_count, fn repo, %{interaction: interaction_count} ->
       now = DateTime.utc_now()
 
       {count, nil} =
@@ -255,35 +244,14 @@ defmodule Philomena.Galleries do
     end
   end
 
+  defp notify_gallery(_repo, %{gallery: gallery}) do
+    Notifications.create_gallery_image_notification(gallery)
+  end
+
   defp last_position(gallery_id) do
     Interaction
     |> where(gallery_id: ^gallery_id)
     |> Repo.aggregate(:max, :position)
-  end
-
-  def notify_gallery(gallery, image) do
-    Exq.enqueue(Exq, "notifications", NotificationWorker, ["Galleries", [gallery.id, image.id]])
-  end
-
-  def perform_notify([gallery_id, image_id]) do
-    gallery = get_gallery!(gallery_id)
-
-    subscriptions =
-      gallery
-      |> Repo.preload(:subscriptions)
-      |> Map.fetch!(:subscriptions)
-
-    Notifications.notify(
-      gallery,
-      subscriptions,
-      %{
-        actor_id: gallery.id,
-        actor_type: "Gallery",
-        actor_child_id: image_id,
-        actor_child_type: "Image",
-        action: "added images to"
-      }
-    )
   end
 
   def reorder_gallery(gallery, image_ids) do
@@ -357,54 +325,17 @@ defmodule Philomena.Galleries do
   defp position_order(%{order_position_asc: true}), do: [asc: :position]
   defp position_order(_gallery), do: [desc: :position]
 
-  alias Philomena.Galleries.Subscription
-
-  def subscribed?(_gallery, nil), do: false
-
-  def subscribed?(gallery, user) do
-    Subscription
-    |> where(gallery_id: ^gallery.id, user_id: ^user.id)
-    |> Repo.exists?()
-  end
-
   @doc """
-  Creates a subscription.
+  Removes all gallery notifications for a given gallery and user.
 
   ## Examples
 
-      iex> create_subscription(%{field: value})
-      {:ok, %Subscription{}}
-
-      iex> create_subscription(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+      iex> clear_gallery_notification(gallery, user)
+      :ok
 
   """
-  def create_subscription(gallery, user) do
-    %Subscription{gallery_id: gallery.id, user_id: user.id}
-    |> Subscription.changeset(%{})
-    |> Repo.insert(on_conflict: :nothing)
-  end
-
-  @doc """
-  Deletes a Subscription.
-
-  ## Examples
-
-      iex> delete_subscription(subscription)
-      {:ok, %Subscription{}}
-
-      iex> delete_subscription(subscription)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_subscription(gallery, user) do
-    %Subscription{gallery_id: gallery.id, user_id: user.id}
-    |> Repo.delete()
-  end
-
-  def clear_notification(_gallery, nil), do: nil
-
-  def clear_notification(gallery, user) do
-    Notifications.delete_unread_notification("Gallery", gallery.id, user)
+  def clear_gallery_notification(%Gallery{} = gallery, user) do
+    Notifications.clear_gallery_image_notification(gallery, user)
+    :ok
   end
 end

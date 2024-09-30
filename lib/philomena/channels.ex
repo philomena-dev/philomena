@@ -9,6 +9,11 @@ defmodule Philomena.Channels do
   alias Philomena.Channels.AutomaticUpdater
   alias Philomena.Channels.Channel
   alias Philomena.Notifications
+  alias Philomena.Tags
+
+  use Philomena.Subscriptions,
+    on_delete: :clear_channel_notification,
+    id_name: :channel_id
 
   @doc """
   Updates all the tracked channels for which an update scheme is known.
@@ -47,6 +52,7 @@ defmodule Philomena.Channels do
   """
   def create_channel(attrs \\ %{}) do
     %Channel{}
+    |> update_artist_tag(attrs)
     |> Channel.changeset(attrs)
     |> Repo.insert()
   end
@@ -65,8 +71,27 @@ defmodule Philomena.Channels do
   """
   def update_channel(%Channel{} = channel, attrs) do
     channel
+    |> update_artist_tag(attrs)
     |> Channel.changeset(attrs)
     |> Repo.update()
+  end
+
+  @doc """
+  Adds the artist tag from the `"artist_tag"` tag name attribute.
+
+  ## Examples
+
+      iex> update_artist_tag(%Channel{}, %{"artist_tag" => "artist:nighty"})
+      %Ecto.Changeset{}
+
+  """
+  def update_artist_tag(%Channel{} = channel, attrs) do
+    tag =
+      attrs
+      |> Map.get("artist_tag", "")
+      |> Tags.get_tag_by_name()
+
+    Channel.artist_tag_changeset(channel, tag)
   end
 
   @doc """
@@ -116,68 +141,17 @@ defmodule Philomena.Channels do
     Channel.changeset(channel, %{})
   end
 
-  alias Philomena.Channels.Subscription
-
   @doc """
-  Creates a subscription.
+  Removes all channel notifications for a given channel and user.
 
   ## Examples
 
-      iex> create_subscription(%{field: value})
-      {:ok, %Subscription{}}
-
-      iex> create_subscription(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+      iex> clear_channel_notification(channel, user)
+      :ok
 
   """
-  def create_subscription(_channel, nil), do: {:ok, nil}
-
-  def create_subscription(channel, user) do
-    %Subscription{channel_id: channel.id, user_id: user.id}
-    |> Subscription.changeset(%{})
-    |> Repo.insert(on_conflict: :nothing)
-  end
-
-  @doc """
-  Deletes a Subscription.
-
-  ## Examples
-
-      iex> delete_subscription(subscription)
-      {:ok, %Subscription{}}
-
-      iex> delete_subscription(subscription)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_subscription(channel, user) do
-    clear_notification(channel, user)
-
-    %Subscription{channel_id: channel.id, user_id: user.id}
-    |> Repo.delete()
-  end
-
-  def subscribed?(_channel, nil), do: false
-
-  def subscribed?(channel, user) do
-    Subscription
-    |> where(channel_id: ^channel.id, user_id: ^user.id)
-    |> Repo.exists?()
-  end
-
-  def subscriptions(_channels, nil), do: %{}
-
-  def subscriptions(channels, user) do
-    channel_ids = Enum.map(channels, & &1.id)
-
-    Subscription
-    |> where([s], s.channel_id in ^channel_ids and s.user_id == ^user.id)
-    |> Repo.all()
-    |> Map.new(&{&1.channel_id, true})
-  end
-
-  def clear_notification(channel, user) do
-    Notifications.delete_unread_notification("Channel", channel.id, user)
-    Notifications.delete_unread_notification("LivestreamChannel", channel.id, user)
+  def clear_channel_notification(%Channel{} = channel, user) do
+    Notifications.clear_channel_live_notification(channel, user)
+    :ok
   end
 end
