@@ -12,7 +12,7 @@ defmodule Philomena.Commissions.Item do
     field :item_type, :string
     field :description, :string
     field :base_price, :decimal
-    field :add_ons, :string
+    field :add_ons, :string, default: ""
 
     timestamps(inserted_at: :created_at, type: :utc_datetime)
   end
