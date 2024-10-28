@@ -1,4 +1,4 @@
-.block__content.alternating-color
+.block__content.block--borderless.block--alternating
   = if @topic.sticky do
     i.fa.fa-thumbtack>
   = if @topic.last_post do

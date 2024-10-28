@@ -1,9 +1,8 @@
-// This is a manifest file that'll be compiled into including all the files listed below.
-// Add new JavaScript/Coffee code in separate files in this directory and they'll automatically
-// be included in the compiled file accessible from http://example.com/assets/application.js
-// It's not advisable to add code directly here, but if you do, it'll appear at the bottom of the
-// the compiled file.
+// This is the Vite entry point of Philomena's clientside code.
+// It is used as a sort of 'manifest' for what to include, and shouldn't
+// have any code on its own.
 //
+// Only edit this file as described by the comment about CSS development below.
 
 // Our code
 import './ujs';
@@ -14,6 +13,7 @@ import './when-ready';
 // Would typically be either the theme file, or any additional file
 // you later intend to put in the <link> tag.
 
-// import '../css/themes/default.scss';
+import '../css/application.css';
+import '../css/themes/dark-blue.css';
 // import '../css/themes/dark.scss';
 // import '../css/themes/red.scss';

@@ -61,8 +61,8 @@ const actions = {
 
   tab(data) {
     const block = data.el.parentNode.parentNode,
-          newTab = $(`.block__tab[data-tab="${data.value}"]`),
-          loadTab = data.el.dataset.loadTab;
+      newTab = $(`.block__tab[data-tab="${data.value}"]`),
+      loadTab = data.el.dataset.loadTab;
 
     // Switch tab
     const selectedTab = block.querySelector('.selected');
@@ -80,9 +80,15 @@ const actions = {
       fetchHtml(loadTab)
         .then(handleError)
         .then(response => response.text())
-        .then(response => newTab.innerHTML = response)
-        .then(() => newTab.dataset.loaded = true)
-        .catch(() => newTab.textContent = 'Error!');
+        .then(response => {
+          newTab.innerHTML = response;
+        })
+        .then(() => {
+          newTab.dataset.loaded = true;
+        })
+        .catch(() => {
+          newTab.textContent = 'Error!';
+        });
     }
   },
 };

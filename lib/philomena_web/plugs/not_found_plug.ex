@@ -16,7 +16,7 @@ defmodule PhilomenaWeb.NotFoundPlug do
       false ->
         conn
         |> Controller.fetch_flash()
-        |> Controller.put_flash(:error, "Couldn't find what you were looking for!")
+        |> Controller.put_flash(:warning, "Couldn't find what you were looking for!")
         |> Controller.redirect(to: "/")
         |> Conn.halt()
     end

@@ -1,4 +1,4 @@
-.communication__toolbar.flex.flex--wrap
+.communication__toolbar
   button.communication__toolbar__button tabindex="-1" type="button" title="bold (ctrl+b)" data-syntax-id="bold"
     strong
       | B
@@ -32,3 +32,6 @@
   button.communication__toolbar__button tabindex="-1" type="button" title="Text you want the parser to ignore" data-syntax-id="escape"
     span
       | escape
+  .flex__spacer
+  a.communication__toolbar__button href="/pages/markdown"
+    i.fa.fa-question-circle

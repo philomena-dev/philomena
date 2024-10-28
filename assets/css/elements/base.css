@@ -1,0 +1,85 @@
+html {
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  background: var(--background-color);
+  color: var(--text-color);
+  line-height: var(--default-line-height);
+}
+
+main {
+  padding: var(--padding-large);
+  flex-grow: 1;
+}
+
+@mixin if-mobile {
+  main {
+    padding: var(--padding-small);
+  }
+}
+
+a,
+a:active,
+a:visited {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--link-hover-color);
+}
+
+hr {
+  border-color: var(--primary-border-color);
+}
+
+.hidden {
+  display: none !important;
+}
+
+p,
+.paragraph {
+  hyphens: none;
+  line-height: var(--readable-line-height);
+  margin: var(--padding-small);
+  margin-right: 0;
+}
+
+.icon--padded {
+  padding: 0 var(--padding-normal);
+}
+
+.icon--padded--right {
+  padding-right: var(--padding-normal);
+}
+
+.icon--padded.small {
+  padding: 0 var(--padding-small);
+}
+
+.icon--padded--right.small {
+  padding-right: var(--padding-small);
+}
+
+@mixin if-mobile {
+  .icon--padded {
+    padding: 0 var(--padding-small);
+  }
+
+  .icon--padded--right {
+    padding-right: var(--padding-normal);
+  }
+}
+
+/* Apparently this is necessary for dropdowns because
+   we can't have subgrids yet, and subgrids aren't really
+   polyfillable for any pre-late-2023 browsers. Ugh! */
+
+.icon--fixed {
+  width: 1em;
+  padding: var(--padding-small);
+}

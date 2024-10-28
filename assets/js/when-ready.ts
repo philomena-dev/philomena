@@ -19,7 +19,6 @@ import { setupEvents } from './misc';
 import { setupNotifications } from './notifications';
 import { setupPreviews } from './preview';
 import { setupQuickTag } from './quick-tag';
-import { initializeListener } from './resizablemedia';
 import { setupSettings } from './settings';
 import { listenForKeys } from './shortcuts';
 import { initTagDropdown } from './tags';
@@ -33,6 +32,8 @@ import { hideStaffTools } from './staffhider';
 import { pollOptionCreator } from './poll';
 import { warnAboutPMs } from './pmwarning';
 import { imageSourcesCreator } from './sources';
+import { sizeGraphs } from './graph';
+import { setupSliders } from './slider';
 
 whenReady(() => {
   loadBooruData();
@@ -50,7 +51,6 @@ whenReady(() => {
   setupNotifications();
   setupPreviews();
   setupQuickTag();
-  initializeListener();
   setupSettings();
   listenForKeys();
   initTagDropdown();
@@ -64,4 +64,6 @@ whenReady(() => {
   pollOptionCreator();
   warnAboutPMs();
   imageSourcesCreator();
+  setupSliders();
+  sizeGraphs();
 });

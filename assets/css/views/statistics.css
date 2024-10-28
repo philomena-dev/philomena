@@ -1,0 +1,45 @@
+.statistics {
+  display: flex;
+  flex-flow: column;
+  gap: var(--padding-small);
+}
+
+.statistics__statistic {
+  display: flex;
+  flex-flow: column;
+}
+
+.sparkline {
+  background: var(--primary-muted-color);
+  border-radius: var(--border-radius-inner);
+  display: flex;
+  height: var(--padding-large);
+  padding: var(--padding-small);
+  overflow: hidden;
+}
+
+.sparkline svg {
+  overflow: visible;
+}
+
+.barline__bar {
+  fill: var(--primary-link-color);
+}
+
+.barline__bar:hover {
+  fill: var(--danger-color);
+}
+
+.barline__dot {
+  fill: var(--primary-border-color);
+  stroke: var(--link-color);
+  stroke-width: 1px;
+}
+
+.barline__dot:hover {
+  fill: var(--danger-color);
+}
+
+.barline__dot[cy="21.25"] {
+  display: none;
+}

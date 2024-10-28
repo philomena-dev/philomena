@@ -37,7 +37,7 @@
 
   .block.js-dnp-form class=form_class(@changeset)
     .block__header
-      span.block__header__title DNP Request Form
+      span DNP Request Form
 
     .block__content
       / Option (set by script depending on the option chosen above)

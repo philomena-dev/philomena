@@ -12,7 +12,7 @@ h2 Do-Not-Post Requests
   .block__header
     = pagination
 
-    span.block__header__title Display Only:
+    span Display Only:
     => link "All Open", to: ~p"/admin/dnp_entries?#{[states: ~W(requested claimed rescinded acknowledged)]}"
     => link "Listed", to: ~p"/admin/dnp_entries?#{[states: ~W(listed)]}"
     => link "Rescinded", to: ~p"/admin/dnp_entries?#{[states: ~W(rescinded acknowledged)]}"

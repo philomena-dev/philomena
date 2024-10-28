@@ -47,14 +47,14 @@
           ' Sources
 
       .block__header__buttons
-        a.button.button--inline#edit-source data-click-focus=".js-image-source" data-click-hide="#image-source" data-click-show="#source-form" title="Edit source" accessKey="s"
+        a.button#edit-source data-click-focus=".js-image-source" data-click-hide="#image-source" data-click-show="#source-form" title="Edit source" accessKey="s"
           i.fas.fa-edit
           = if has_sources do
             ' Add/Edit
           - else
             ' Add
         = if @source_change_count > 0 do
-          a.button.button--link.button--inline href=~p"/images/#{@image}/source_changes" title="Source history"
+          a.button href=~p"/images/#{@image}/source_changes" title="Source history"
             i.fa.fa-history>
             spanspan.hide-mobile> History
             | (
@@ -62,26 +62,26 @@
             | )
         = if can?(@conn, :hide, @image) and not hide_staff_tools?(@conn) do
           = form_for @changeset, ~p"/images/#{@image}/source_history", [method: "delete"], fn _f ->
-            a.button.button--state-danger.button--inline type="submit" data-confirm="Are you really, really sure?" title="Wipe sources"
+            a.button.button--warning type="submit" data-confirm="Are you really, really sure?" title="Wipe sources"
               i.fas.fa-eraser>
               ' Wipe
     .block__content.flex.flex--wrap.flex--column
-      .image_sources
+      .image-sources
         = if has_sources do
           - [first_source | sources] = @image.sources
-          .image_source__icon
+          .image-source__icon
             i class=image_source_icon(first_source.source)
-          .image_source__link
+          .image-source__link
             a.js-source-link href=first_source.source
               strong = first_source.source
           = for source <- sources do
-            .image_source__icon
+            .image-source__icon
               i class=image_source_icon(source.source)
-            .image_source__link
+            .image-source__link
               a href=source.source
                 strong = source.source
         - else
-          .image_source__icon
+          .image-source__icon
             i.fa.fa-unlink
-          .image_source__link
+          .image-source__link
             em> not provided yet

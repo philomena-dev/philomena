@@ -1,21 +1,26 @@
 .block__content.js-imagelist-info.flex class=tags_row_class(@conn)
-  .flex__fixed.tag-info__image.thumb-tiny-container.spacing-right
+  .flex__fixed.tag-info__image.media-tiny-container.spacing--right
     = if @tag.image do
       img src=tag_image(@tag) alt="spoiler image"
     - else
       | no spoiler image
-  
+
   .flex__grow
-    = render PhilomenaWeb.TagView, "_tag.html", tag: @tag, conn: @conn
-    = link "Tag changes", to: ~p"/tags/#{@tag}/tag_changes", class: "detail-link"
-    = if manages_tags?(@conn) do
-      = link "Edit details", to: ~p"/tags/#{@tag}/edit", class: "detail-link"
-      = link "Usage", to: ~p"/tags/#{@tag}/details", class: "detail-link"
-    = if manages_dnp?(@conn) do
-      = link "Create new DNP entry", to: ~p"/dnp/new?#{[tag_id: @tag.id]}", class: "detail-link"
+    .tag-info__controls 
+      = render PhilomenaWeb.TagView, "_tag.html", tag: @tag, conn: @conn
+      .button__group--standalone
+        = link "Tag changes", to: ~p"/tags/#{@tag}/tag_changes", class: "detail-link"
+      = if manages_tags?(@conn) do
+        .button__group--standalone.button__group--warning
+          = link "Edit details", to: ~p"/tags/#{@tag}/edit", class: "detail-link"
+          .separator--vertical.separator--warning
+          = link "Usage", to: ~p"/tags/#{@tag}/details", class: "detail-link"
+      = if manages_dnp?(@conn) do
+        .button__group--standalone.button__group--danger
+          = link "Create new DNP entry", to: ~p"/dnp/new?#{[tag_id: @tag.id]}", class: "detail-link"
 
     br
-  
+
     = if @tag.short_description not in [nil, ""] do
       strong> Short description:
       = @tag.short_description

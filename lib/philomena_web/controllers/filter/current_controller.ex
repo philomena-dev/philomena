@@ -21,7 +21,7 @@ defmodule PhilomenaWeb.Filter.CurrentController do
 
     conn
     |> update_filter(user, filter)
-    |> put_flash(:info, "Switched to filter #{filter.name}")
+    |> put_flash(:alert, "Switched to filter #{filter.name}")
     |> redirect(external: conn.assigns.referrer)
   end
 

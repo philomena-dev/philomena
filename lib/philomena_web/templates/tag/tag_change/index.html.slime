@@ -9,7 +9,7 @@ h1
 
 .block
   .block__header
-    span.block__header__title
+    span
       | Display only:
 
     = link "Removed", to: ~p"/tags/#{@tag}/tag_changes?#{[added: 0]}"

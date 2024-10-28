@@ -1,0 +1,184 @@
+.communication__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: var(--font-size);
+  background: var(--primary-dark-color);
+  padding: var(--padding-small);
+  line-height: var(--block-header-height);
+  border-bottom: 1px solid var(--primary-border-color);
+}
+
+.communication__toolbar__button {
+  color: var(--text-color) !important;
+  background: 0;
+  border: 0;
+  border-radius: var(--border-radius-inner);
+  padding: 0 var(--padding-small);
+}
+
+.communication__toolbar__button:hover {
+  background: var(--secondary-muted-color);
+}
+
+.communication__edit-tab {
+  border-radius: var(--border-radius-inner);
+  overflow: hidden;
+}
+
+.communication__edit-tab textarea {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.communication__edit-actions {
+  display: flex;
+  flex-direction: row;
+  line-height: var(--block-header-height);
+  border: 0;
+  gap: var(--padding-small);
+  margin-top: var(--padding-small);
+}
+
+.communication__anonymous {
+  display: flex;
+  flex-direction: row;
+  line-height: var(--block-header-height);
+  background: var(--secondary-color);
+  border: 1px solid var(--secondary-border-color);
+}
+
+.communication__anonymous--checkbox {
+  padding: 0 var(--padding-small);
+  border-right: 1px solid var(--secondary-border-color);
+}
+
+.communication__anonymous--label {
+  padding: 0 var(--padding-small);
+}
+
+.communication > .block__content:first-of-type {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.communication > .block__content:last-of-type {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.communication__body {
+  display: block;
+  overflow: hidden;
+}
+
+.communication__body__text {
+  border-radius: var(--border-radius-inner);
+  word-wrap: break-word;
+}
+
+.communication__sender-name {
+  display: flex;
+  align-items: center;
+  gap: var(--padding-normal);
+}
+
+.communication__sender-block {
+  display: flex;
+  flex-direction: column;
+  background: var(--primary-muted-color);
+  border-radius: var(--border-radius-inner);
+  padding: var(--padding-small);
+}
+
+.communication__options {
+  display: flex;
+  flex-flow: row;
+}
+
+.communication__options__staff {
+  display: flex;
+  align-items: center;
+  gap: var(--padding-normal);
+  margin-top: var(--padding-small);
+}
+
+.communication__post-time {
+  display: flex;
+  align-items: center;
+  gap: var(--padding-small);
+  padding: var(--padding-small);
+  flex-wrap: nowrap;
+}
+
+.communication__post-time > time,
+.communication__options__edit-time {
+  white-space: nowrap;
+}
+
+.communication--deleted .communication__sender-block {
+  background: var(--danger-color);
+}
+
+.communication__body__text--deleted {
+  display: flex;
+  flex-flow: column;
+  margin-top: var(--padding-normal);
+  background: var(--danger-muted-color);
+  padding: var(--padding-normal) var(--padding-small);
+  gap: var(--padding-small);
+}
+
+@mixin if-mobile {
+  .communication__options {
+    flex-flow: column;
+  }
+
+  .communication__options__edit-time {
+    width: 100%;
+  }
+
+  .communication__post-time > time,
+  .communication__options__edit-time {
+    white-space: normal;
+  }
+
+  .communication__post-time {
+    border-radius: var(--border-radius-inner);
+    margin-top: var(--padding-small);
+    background: var(--primary-muted-color);
+    flex-wrap: wrap;
+  }
+
+  .communication__body__text {
+    margin-top: var(--padding-normal);
+  }
+
+  .communication__sender-block {
+    flex-direction: row;
+    gap: var(--padding-normal);
+    align-items: center;
+  }
+
+  .communication__sender-block > .image-constrained {
+    min-height: var(--avatar-small-size);
+    min-width: var(--avatar-small-size);
+  }
+
+  .communication__options > *:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: var(--padding-small);
+  }
+
+  .communication__body__text--deleted {
+    margin-top: 0;
+  }
+
+  .communication__body__text--deleted:first-child {
+    margin-bottom: var(--padding-normal);
+  }
+
+  .communication--deleted > .communication__post-time {
+    background: var(--danger-dark-color);
+  }
+}

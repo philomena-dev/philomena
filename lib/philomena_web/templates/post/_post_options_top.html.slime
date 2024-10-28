@@ -1,0 +1,13 @@
+- post_link = ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}?#{[post_id: @post.id]}" <> "#post_#{@post.id}"
+
+.flex__spacer.hidden--desktop
+a.communication__interaction.hidden--desktop title="Link to post" href="#{post_link}"
+  i.fa.fa-link
+= if not is_nil(@post.edited_at) and can?(@conn, :show, @post) do
+  a href=~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/history"
+    ' Edited
+    => pretty_time(@post.edited_at)
+
+    = if @post.edit_reason not in [nil, ""] do
+      ' because:
+      => @post.edit_reason

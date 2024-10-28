@@ -9,7 +9,7 @@ import { initDraggables } from './utils/draggable';
 import { fetchJson } from './utils/requests';
 
 export function setupGalleryEditing() {
-  if (!$('.rearrange-button')) return;
+  if (!$<HTMLElement>('.rearrange-button')) return;
 
   const [rearrangeEl, saveEl] = $$<HTMLElement>('.rearrange-button');
   const sortableEl = assertNotNull($<HTMLDivElement>('#sortable'));

@@ -1,7 +1,7 @@
 = form_for @changeset, ~p"/conversations/#{@conversation}/messages", fn f ->
   .block
-    .communication-edit__wrap
+    .communication__edit-wrap
       = render PhilomenaWeb.MarkdownView, "_input.html", conn: @conn, f: f, action_icon: "pencil-alt", action_text: "Reply"
 
-    .block__content.communication-edit__actions
+    .block__content.communication__edit-actions
       = submit "Send", class: "button", autocomplete: "off", data: [disable_with: raw("Sending&hellip;")]
