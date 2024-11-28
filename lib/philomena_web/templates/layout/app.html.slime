@@ -7,26 +7,21 @@ html lang="en"
     title
       = if assigns[:title] do
         => assigns[:title]
-        ' - Derpibooru
+        ' - Tantabus
       - else
-        ' Derpibooru
+        ' Tantabus
     link rel="preconnect" href="https://#{cdn_host()}"
     link rel="stylesheet" href=stylesheet_path(@current_user)
     = if is_nil(@current_user) do
       link rel="stylesheet" href=dark_stylesheet_path() media="(prefers-color-scheme: dark)"
     link rel="icon" href="/favicon.ico" type="image/x-icon"
     link rel="icon" href="/favicon.svg" type="image/svg+xml"
-    link rel="search" type="application/opensearchdescription+xml" title="Derpibooru" href="/opensearch.xml"
+    link rel="search" type="application/opensearchdescription+xml" title="Tantabus" href="/opensearch.xml"
     meta name="generator" content="philomena"
     meta name="theme-color" content="#618fc3"
     meta name="format-detection" content="telephone=no"
     = csrf_meta_tag()
-
-    = vite_hmr? do
-      script type="module" src="http://#{@conn.host}:5173/@vite/client"
-      script type="module" src="http://#{@conn.host}:5173/js/app.ts"
-    - else
-      script type="text/javascript" src=~p"/js/app.js" async="async"
+    script type="text/javascript" src=~p"/js/app.js" async="async"
     = render PhilomenaWeb.LayoutView, "_opengraph.html", assigns
   body data-theme=theme_name(@current_user) data-vite-reload=to_string(vite_reload?())
     = render PhilomenaWeb.LayoutView, "_burger.html", assigns
