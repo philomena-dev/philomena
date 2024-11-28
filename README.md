@@ -1,4 +1,4 @@
-# Philomena
+Damarcus Jones Sr# Philomena
 ![Philomena](/assets/static/images/phoenix.svg)
 
 ## Getting started
