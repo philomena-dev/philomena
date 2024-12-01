@@ -294,16 +294,15 @@ defmodule Philomena.Images do
     api_request("images/#{to_string(id)}")
   end
 
-  defp api_search(query, page) do
+  defp api_search(query) do
     query = %{
       "q" => query,
       "sf" => "id",
       "sd" => "asc",
       "per_page" => 50,
-      "page" => page,
+      "page" => 1,
       "filter_id" => import_filter()
     }
-
     api_request("search" <> "?" <> URI.encode_query(query))
   end
 
@@ -322,11 +321,11 @@ defmodule Philomena.Images do
   end
 
   def import_query(search_query) do
-    import_query(search_query, 1)
+    import_query(search_query, -1)
   end
 
-  def import_query(search_query, page) do
-    case api_search(search_query, page) do
+  def import_query(search_query, last_id) do
+    case api_search("#{search_query},id.gt:#{last_id}") do
       {:ok, %{body: body, status: 200}} ->
         decoded = Jason.decode!(body)
 
@@ -337,12 +336,13 @@ defmodule Philomena.Images do
 
           :timer.sleep(2000)
 
-          import_query(search_query, page + 1)
+          last_id = Enum.max_by(decoded["images"], &(&1["id"]))["id"]
+          import_query(search_query, last_id)
         end
 
       _ ->
         Logger.error(
-          "Unable to import query #{search_query} (page #{page}) from #{import_source()}"
+          "Unable to import query #{search_query} (last id #{last_id}) from #{import_source()}"
         )
     end
   end
