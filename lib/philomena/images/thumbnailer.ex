@@ -200,11 +200,14 @@ defmodule Philomena.Images.Thumbnailer do
   defp visible_image_thumb_prefix(%Image{created_at: created_at, id: id}),
     do: Path.join([image_file_root(), time_identifier(created_at), to_string(id)])
 
-  def image_url_base(%Image{created_at: created_at, id: id}, nil),
+  defp image_url_base(%Image{created_at: created_at, id: id}, nil),
     do: Path.join([image_url_root(), time_identifier(created_at), to_string(id)])
 
-  def image_url_base(%Image{created_at: created_at, id: id}, key),
+  defp image_url_base(%Image{created_at: created_at, id: id}, key),
     do: Path.join([image_url_root(), time_identifier(created_at), "#{id}-#{key}"])
+
+  def image_url_raw_base(%Image{created_at: created_at, id: id}),
+    do: Path.join(["/img", time_identifier(created_at), to_string(id)])
 
   defp time_identifier(time),
     do: Enum.join([time.year, time.month, time.day], "/")

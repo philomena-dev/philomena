@@ -229,7 +229,7 @@ defmodule Philomena.Images do
         version_names = PhilomenaMedia.Processors.versions(attrs["image_mime_type"], sizes)
 
         img_url_base =
-          Philomena.Images.Thumbnailer.image_url_base(%{image | id: attrs["id"]}, nil)
+          Philomena.Images.Thumbnailer.image_url_raw_base(%{image | id: attrs["id"]})
 
         version_names
         |> Enum.map(fn version ->
