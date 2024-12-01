@@ -13,6 +13,7 @@ defmodule Philomena.Images do
   alias Philomena.ThumbnailWorker
   alias Philomena.ImagePurgeWorker
   alias Philomena.DuplicateReports.DuplicateReport
+  alias Philomena.ImageIntensities
   alias Philomena.Images.Image
   alias Philomena.Images.Uploader
   alias Philomena.Images.Tagging
@@ -118,6 +119,234 @@ defmodule Philomena.Images do
     end
   end
 
+  @field_translations %{
+    "name" => "image_name",
+    "width" => "image_width",
+    "height" => "image_height",
+    "size" => "image_size",
+    "orig_size" => "image_orig_size",
+    "format" => "image_format",
+    "mime_type" => "image_mime_type",
+    "duration" => "image_duration",
+    "aspect_ratio" => "image_aspect_ratio",
+    "orig_sha512_hash" => "image_orig_sha512_hash",
+    "sha512_hash" => "image_sha512_hash",
+    "animated" => "image_is_animated"
+  }
+
+  def api_to_attrs(attrs) do
+    old_description =
+      if String.trim(attrs["description"]) != "" do
+        attrs["description"]
+      else
+        "No description provided."
+      end
+
+    new_description = """
+      Image imported from Derpibooru.
+      Original: #{import_source()}/images/#{attrs["id"]}
+      Metadata at the time of import:
+
+      Field | Data
+      --- | ---
+      Favorites | #{attrs["faves"]}
+      Upvotes | #{attrs["upvotes"]}
+      Downvotes | #{attrs["downvotes"]}
+      Score | #{attrs["score"]}
+      Comments | #{attrs["comment_count"]}
+      Uploader | #{attrs["uploader"] || "Anonymous"}
+
+      Original description below this line
+
+      ---
+
+      #{old_description}
+    """
+
+    sources_count = Enum.count(attrs["source_urls"])
+    range = Range.new(0, sources_count, 1)
+
+    attrs
+    |> Map.put(
+      "sources",
+      range
+      |> Enum.zip(
+        Enum.map(attrs["source_urls"], fn s ->
+          %{"source" => s}
+        end) ++
+          [%{"source" => "#{import_source()}/images/#{attrs["id"]}"}]
+      )
+      |> Map.new()
+    )
+    |> Map.put(
+      "tag_input",
+      Enum.join(attrs["tags"] ++ ["derpibooru import", "automatically imported"], ",")
+    )
+    |> Map.put("image", PhilomenaMedia.Filename.build(attrs["format"]))
+    |> Map.replace("description", new_description)
+    |> Enum.map(fn {k, v} ->
+      cond do
+        Map.has_key?(@field_translations, k) ->
+          {@field_translations[k], v}
+
+        true ->
+          {k, v}
+      end
+    end)
+    |> Map.new()
+  end
+
+  # Upload with less checks. For imports.
+  def create_image_unsafe(attribution, attrs \\ %{}) do
+    tags = Tags.get_or_create_tags(attrs["tag_input"])
+    sources = attrs["sources"]
+
+    image =
+      %Image{}
+      |> Image.import_changeset(attrs, attribution)
+      |> Image.source_changeset(attrs, [], sources)
+      |> Image.tag_changeset(attrs, [], tags)
+
+    Multi.new()
+    |> Multi.insert(:image, image)
+    |> Multi.run(:added_tag_count, fn repo, %{image: image} ->
+      tag_ids = image.added_tags |> Enum.map(& &1.id)
+      tags = Tag |> where([t], t.id in ^tag_ids)
+
+      {count, nil} = repo.update_all(tags, inc: [images_count: 1])
+
+      {:ok, count}
+    end)
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{image: image}} = result ->
+        sizes =
+          Philomena.Images.Thumbnailer.generated_sizes(%{
+            image_width: attrs["image_width"],
+            image_height: attrs["image_height"]
+          })
+
+        version_names = PhilomenaMedia.Processors.versions(attrs["image_mime_type"], sizes)
+
+        img_url_base =
+          Philomena.Images.Thumbnailer.image_url_base(%{image | id: attrs["id"]}, nil)
+
+        version_names
+        |> Enum.map(fn version ->
+          {version, "#{import_cdn()}#{Path.join(img_url_base, version)}"}
+        end)
+        |> Map.new()
+        |> Enum.uniq_by(fn {k, _v} -> k end)
+        |> Enum.each(fn {rep, url} ->
+          case PhilomenaProxy.Http.get(url) do
+            {:ok, %{body: body}} ->
+              file = Briefly.create!()
+              File.write(file, body)
+              try_upload_raw(image, file, rep, 0)
+
+            _ ->
+              Logger.error(
+                "Failed to fetch image version! #{rep} of #{image.id} (#{attrs["id"]})"
+              )
+          end
+        end)
+
+        ImageIntensities.create_image_intensity(image, %PhilomenaMedia.Intensities{
+          nw: attrs["intensities"]["nw"],
+          ne: attrs["intensities"]["ne"],
+          sw: attrs["intensities"]["sw"],
+          se: attrs["intensities"]["se"]
+        })
+
+        reindex_image(image)
+        Tags.reindex_tags(image.added_tags)
+        approve_image_no_fsa(image)
+
+        result
+
+      result ->
+        result
+    end
+  end
+
+  defp import_cdn, do: System.get_env("IMPORT_CDN", "https://derpicdn.net")
+  defp import_source, do: System.get_env("IMPORT_SOURCE", "https://derpibooru.org")
+  defp import_user, do: System.get_env("IMPORT_USER", "1")
+  defp import_filter, do: System.get_env("IMPORT_FILTER", "56027")
+
+  defp import_attribution do
+    {:ok, ip} = EctoNetwork.INET.cast({127, 0, 0, 1})
+    user = Repo.get_by!(User, id: import_user())
+
+    [
+      fingerprint: "ffff",
+      ip: ip,
+      user_id: user.id,
+      user: user
+    ]
+  end
+
+  defp api_request(path) do
+    PhilomenaProxy.Http.get("#{import_source()}/api/v1/json/#{path}")
+  end
+
+  defp api_image(id) do
+    api_request("images/#{to_string(id)}")
+  end
+
+  defp api_search(query, page) do
+    query = %{
+      "q" => query,
+      "sf" => "id",
+      "sd" => "asc",
+      "per_page" => 50,
+      "page" => page,
+      "filter_id" => import_filter()
+    }
+
+    api_request("search" <> "?" <> URI.encode_query(query))
+  end
+
+  def import_one(id) when is_integer(id) do
+    case api_image(id) do
+      {:ok, %{body: body, status: 200}} ->
+        import_one(Jason.decode!(body)["image"])
+
+      _ ->
+        Logger.error("Unable to import image #{id} from #{import_source()}")
+    end
+  end
+
+  def import_one(attrs) do
+    create_image_unsafe(import_attribution(), api_to_attrs(attrs))
+  end
+
+  def import_query(search_query) do
+    import_query(search_query, 1)
+  end
+
+  def import_query(search_query, page) do
+    case api_search(search_query, page) do
+      {:ok, %{body: body, status: 200}} ->
+        decoded = Jason.decode!(body)
+
+        if Enum.count(decoded["images"]) > 0 do
+          Enum.each(decoded["images"], fn img ->
+            import_one(img)
+          end)
+
+          :timer.sleep(2000)
+
+          import_query(search_query, page + 1)
+        end
+
+      _ ->
+        Logger.error(
+          "Unable to import query #{search_query} (page #{page}) from #{import_source()}"
+        )
+    end
+  end
+
   defp async_upload(image, plug_upload) do
     linked_pid =
       spawn(fn ->
@@ -140,6 +369,21 @@ defmodule Philomena.Images do
     send(linked_pid, :ready)
   end
 
+  defp try_upload_raw(image, file, filename, retry_count) when retry_count < 10 do
+    try do
+      Uploader.persist_upload_raw(image, file, filename)
+    rescue
+      e ->
+        Logger.error("Upload failed: #{inspect(e)} [try ##{retry_count}]")
+        Process.sleep(2500)
+        try_upload(image, retry_count + 1)
+    end
+  end
+
+  defp try_upload_raw(image, _file, _filename, retry_count) do
+    Logger.error("Aborting upload of #{image.id} after #{retry_count} retries")
+  end
+
   defp try_upload(image, retry_count) when retry_count < 100 do
     try do
       Uploader.persist_upload(image)
@@ -160,6 +404,24 @@ defmodule Philomena.Images do
     image
     |> Repo.preload(:user)
     |> Image.approve_changeset()
+    |> Repo.update()
+    |> case do
+      {:ok, image} ->
+        reindex_image(image)
+        increment_user_stats(image.user)
+        maybe_suggest_user_verification(image.user)
+
+        {:ok, image}
+
+      error ->
+        error
+    end
+  end
+
+  def approve_image_no_fsa(image) do
+    image
+    |> Repo.preload(:user)
+    |> Image.approve_no_fsa_changeset()
     |> Repo.update()
     |> case do
       {:ok, image} ->

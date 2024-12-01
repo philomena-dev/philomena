@@ -14,4 +14,8 @@ defmodule Philomena.Images.Uploader do
   def persist_upload(image) do
     Thumbnailer.upload_file(image, image.uploaded_image, "full.#{image.image_format}")
   end
+
+  def persist_upload_raw(image, file, filename) do
+    Thumbnailer.upload_file(image, file, "#{filename}")
+  end
 end

@@ -121,6 +121,33 @@ defmodule Philomena.Images.Image do
     |> validate_format(:source_url, ~r/\Ahttps?:\/\//)
   end
 
+  def import_changeset(image, attrs, attribution) do
+    image
+    |> cast(attrs, [
+      :anonymous,
+      :source_url,
+      :description,
+      :first_seen_at,
+      :created_at,
+      :image,
+      :image_name,
+      :image_width,
+      :image_height,
+      :image_size,
+      :image_orig_size,
+      :image_format,
+      :image_mime_type,
+      :image_duration,
+      :image_aspect_ratio,
+      :image_orig_sha512_hash,
+      :image_sha512_hash,
+      :image_is_animated
+    ])
+    |> change(attribution)
+    |> change(processed: true)
+    |> change(thumbnails_generated: true)
+  end
+
   def image_changeset(image, attrs) do
     image
     |> cast(attrs, [
@@ -333,6 +360,11 @@ defmodule Philomena.Images.Image do
     change(image)
     |> put_change(:approved, true)
     |> put_change(:first_seen_at, DateTime.utc_now(:second))
+  end
+
+  def approve_no_fsa_changeset(image) do
+    change(image)
+    |> put_change(:approved, true)
   end
 
   defp create_key do
