@@ -226,7 +226,7 @@ defmodule Philomena.Images do
             image_height: attrs["image_height"]
           })
 
-        version_names = PhilomenaMedia.Processors.versions(attrs["image_mime_type"], sizes) ++ ["full.#{attrs["format"]}"]
+        version_names = PhilomenaMedia.Processors.versions(attrs["image_mime_type"], sizes) ++ ["full.#{attrs["image_format"]}"]
 
         img_url_base =
           Philomena.Images.Thumbnailer.image_url_raw_base(%{image | id: attrs["id"]})
