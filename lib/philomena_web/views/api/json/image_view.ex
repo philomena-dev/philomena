@@ -2,8 +2,12 @@ defmodule PhilomenaWeb.Api.Json.ImageView do
   use PhilomenaWeb, :view
   alias PhilomenaWeb.ImageView
 
-  def render("index.json", %{images: images, interactions: interactions, total: total} = assigns) do
+  def render(
+        "index.json",
+        %{cursors: cursors, images: images, interactions: interactions, total: total} = assigns
+      ) do
     %{
+      cursors: cursors,
       images: render_many(images, PhilomenaWeb.Api.Json.ImageView, "image.json", assigns),
       interactions: interactions,
       total: total

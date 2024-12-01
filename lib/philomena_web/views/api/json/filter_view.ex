@@ -1,8 +1,9 @@
 defmodule PhilomenaWeb.Api.Json.FilterView do
   use PhilomenaWeb, :view
 
-  def render("index.json", %{filters: filters, total: total} = assigns) do
+  def render("index.json", %{cursors: cursors, filters: filters, total: total} = assigns) do
     %{
+      cursors: cursors,
       filters: render_many(filters, PhilomenaWeb.Api.Json.FilterView, "filter.json", assigns),
       total: total
     }

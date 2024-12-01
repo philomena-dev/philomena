@@ -1,6 +1,7 @@
 defmodule PhilomenaWeb.Api.Json.Search.PostController do
   use PhilomenaWeb, :controller
 
+  alias PhilomenaQuery.Cursor
   alias PhilomenaQuery.Search
   alias Philomena.Posts.Post
   alias Philomena.Posts.Query
@@ -11,7 +12,7 @@ defmodule PhilomenaWeb.Api.Json.Search.PostController do
 
     case Query.compile(params["q"], user: user) do
       {:ok, query} ->
-        posts =
+        {posts, cursors} =
           Post
           |> Search.search_definition(
             %{
@@ -24,15 +25,15 @@ defmodule PhilomenaWeb.Api.Json.Search.PostController do
                   ]
                 }
               },
-              sort: %{created_at: :desc}
+              sort: [%{created_at: :desc}, %{id: :desc}]
             },
             conn.assigns.pagination
           )
-          |> Search.search_records(preload(Post, [:user, :topic]))
+          |> Cursor.search_records(preload(Post, [:user, :topic]), params["search_after"])
 
         conn
         |> put_view(PhilomenaWeb.Api.Json.Forum.Topic.PostView)
-        |> render("index.json", posts: posts, total: posts.total_entries)
+        |> render("index.json", cursors: cursors, posts: posts, total: posts.total_entries)
 
       {:error, msg} ->
         conn
