@@ -60,7 +60,7 @@
 
 / Artist link block
 /.block
-  .block__header: span.block__header__title Artist Links
+  .block__header: span.block__header__title User Links
   - is_current = (current_user && current_user.id == @user.id)
   - if @links.present? || is_current
     = render partial: 'profiles/artist_link_area'

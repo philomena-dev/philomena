@@ -65,7 +65,7 @@
         = @report_count
 
   = if @artist_link_count do
-    = link to: ~p"/admin/artist_links", class: "header__link", title: "Artist Links" do
+    = link to: ~p"/admin/artist_links", class: "header__link", title: "User Links" do
       ' L
       span.header__counter__admin
         = @artist_link_count

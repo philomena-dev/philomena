@@ -36,12 +36,12 @@ defmodule PhilomenaWeb.Profile.ArtistLinkController do
       |> where(user_id: ^user.id)
       |> Repo.all()
 
-    render(conn, "index.html", title: "Artist Links", artist_links: artist_links)
+    render(conn, "index.html", title: "User Links", artist_links: artist_links)
   end
 
   def new(conn, _params) do
     changeset = ArtistLinks.change_artist_link(%ArtistLink{})
-    render(conn, "new.html", title: "New Artist Link", changeset: changeset)
+    render(conn, "new.html", title: "New User Link", changeset: changeset)
   end
 
   def create(conn, %{"artist_link" => artist_link_params}) do
@@ -61,13 +61,13 @@ defmodule PhilomenaWeb.Profile.ArtistLinkController do
 
   def show(conn, _params) do
     artist_link = conn.assigns.artist_link
-    render(conn, "show.html", title: "Showing Artist Link", artist_link: artist_link)
+    render(conn, "show.html", title: "Showing User Link", artist_link: artist_link)
   end
 
   def edit(conn, _params) do
     changeset = ArtistLinks.change_artist_link(conn.assigns.artist_link)
 
-    render(conn, "edit.html", title: "Editing Artist Link", changeset: changeset)
+    render(conn, "edit.html", title: "Editing User Link", changeset: changeset)
   end
 
   def update(conn, %{"artist_link" => artist_link_params}) do

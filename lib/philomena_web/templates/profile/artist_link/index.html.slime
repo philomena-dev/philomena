@@ -1,9 +1,9 @@
-h1 Artist Links
+h1 User Links
 p
   a.button href=~p"/profiles/#{@user}/artist_links/new"
     ' Request a link
 p
-  ' Artist links associate your account on Tantabus with tags about content you create and with accounts on sites elsewhere. This allows users to easily identify artists and staff to act more rapidly on takedown requests.
+  ' User links associate your account on Tantabus with tags about content you create and with accounts on sites elsewhere. This allows users to easily identify content creators and staff to act more rapidly on takedown requests.
 
 table.table
   thead

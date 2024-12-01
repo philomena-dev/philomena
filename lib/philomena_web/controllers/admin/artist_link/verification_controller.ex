@@ -17,14 +17,14 @@ defmodule PhilomenaWeb.Admin.ArtistLink.VerificationController do
       ArtistLinks.verify_artist_link(conn.assigns.artist_link, conn.assigns.current_user)
 
     conn
-    |> put_flash(:info, "Artist link successfully verified.")
+    |> put_flash(:info, "User link successfully verified.")
     |> moderation_log(details: &log_details/2, data: artist_link)
     |> redirect(to: ~p"/admin/artist_links")
   end
 
   defp log_details(_action, artist_link) do
     %{
-      body: "Verified artist link #{artist_link.uri} created by #{artist_link.user.name}",
+      body: "Verified user link #{artist_link.uri} created by #{artist_link.user.name}",
       subject_path: ~p"/profiles/#{artist_link.user}/artist_links/#{artist_link}"
     }
   end

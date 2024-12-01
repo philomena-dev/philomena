@@ -31,7 +31,7 @@
           ' to set it up.
       - else
         em
-          ' You must have a verified Artist Link to create a commission page.
+          ' You must have a verified User Link to create a commission page.
           => link "Click here", to: ~p"/profiles/#{@user}/artist_links/new"
           ' to set one up.
 

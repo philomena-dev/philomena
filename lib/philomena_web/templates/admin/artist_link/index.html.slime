@@ -1,6 +1,6 @@
-h1 Artist Links
+h1 User Links
 p Link creation is done via the Users menu.
-p Verifying a link will automatically award an artist badge if the link is public, no artist badge exists, and an "artist:" tag is specified.
+p Verifying a link will automatically award a content creator badge if the link is public, the user does not already have it, and an "artist:" tag is specified.
 
 = form_for :artist_link, ~p"/admin/artist_links", [method: "get", class: "hform"], fn f ->
   .field
@@ -67,9 +67,9 @@ p Verifying a link will automatically award an artist badge if the link is publi
               br
               = if not verified?(link) do
                 = if contacted?(link) do
-                  ' Artist contacted
+                  ' User contacted
                 - else
-                  = link "Artist contacted", to: ~p"/admin/artist_links/#{link}/contact", method: :post
+                  = link "User contacted", to: ~p"/admin/artist_links/#{link}/contact", method: :post
 
             td
               = public_text(link)

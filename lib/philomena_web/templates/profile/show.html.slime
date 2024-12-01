@@ -65,10 +65,10 @@
 
     .block
       = if current?(@user, @conn.assigns.current_user) or manages_links?(@conn, @user) do
-        a.block__header--single-item href=~p"/profiles/#{@user}/artist_links/new" Artist Links
+        a.block__header--single-item href=~p"/profiles/#{@user}/artist_links/new" User Links
       - else
         .block__header
-          span.block__header__title Artist Links
+          span.block__header__title User Links
       = for link <- @user.verified_links, should_see_link?(@conn, @user, link) do
         - watchers = if link.tag, do: @watcher_counts[link.tag.id] || 0, else: 0
 

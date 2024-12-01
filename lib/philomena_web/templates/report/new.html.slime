@@ -24,10 +24,10 @@ p
     .dnp-warning
       h3 Takedown Policy
       p
-        strong> Only an owner of an image's rights (normally the artist) can request a takedown.
-        ' If you're the artist, you'll
+        strong> Only an owner of an image's rights (artist, prompter, creator, etc) can request a takedown.
+        ' If you own the rights to the image, you'll
         strong> need
-        ' a verified artist link.
+        ' a verified user link.
       p
         ' For more information, please read the
         = link "takedown policy", to: "/pages/takedowns"
