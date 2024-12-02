@@ -1,54 +1,85 @@
-import { $, $$ } from './utils/dom';
+import { assertNotNull, assertNotUndefined } from './utils/assert';
+import { $, $$, showEl, hideEl } from './utils/dom';
+import { delegate, leftClick } from './utils/events';
 import { addTag } from './tagsinput';
 
-function showHelp(subject: string, type: string | null) {
-  $$<HTMLElement>('[data-search-help]').forEach(helpBox => {
-    if (helpBox.getAttribute('data-search-help') === type) {
-      const searchSubject = $<HTMLElement>('.js-search-help-subject', helpBox);
-
-      if (searchSubject) {
-        searchSubject.textContent = subject;
-      }
-
-      helpBox.classList.remove('hidden');
-    } else {
-      helpBox.classList.add('hidden');
-    }
-  });
-}
-
-function prependToLast(field: HTMLInputElement, value: string) {
-  const separatorIndex = field.value.lastIndexOf(',');
-  const advanceBy = field.value[separatorIndex + 1] === ' ' ? 2 : 1;
-  field.value =
-    field.value.slice(0, separatorIndex + advanceBy) + value + field.value.slice(separatorIndex + advanceBy);
-}
-
-function selectLast(field: HTMLInputElement, characterCount: number) {
+function focusAndSelectLast(field: HTMLInputElement, characterCount: number) {
   field.focus();
-
   field.selectionStart = field.value.length - characterCount;
   field.selectionEnd = field.value.length;
 }
 
-function executeFormHelper(e: PointerEvent) {
-  if (!e.target) {
-    return;
-  }
+function prependToLast(field: HTMLInputElement, value: string) {
+  // Find the last comma in the input and advance past it
+  const separatorIndex = field.value.lastIndexOf(',');
+  const advanceBy = field.value[separatorIndex + 1] === ' ' ? 2 : 1;
 
-  const searchField = $<HTMLInputElement>('.js-search-field');
-  const attr = (name: string) => e.target && (e.target as HTMLElement).getAttribute(name);
+  // Insert the value string at the new location
+  field.value = [
+    field.value.slice(0, separatorIndex + advanceBy),
+    value,
+    field.value.slice(separatorIndex + advanceBy),
+  ].join('');
+}
 
-  if (attr('data-search-add')) addTag(searchField, attr('data-search-add'));
-  if (attr('data-search-show-help')) showHelp((e.target as Node).textContent || '', attr('data-search-show-help'));
-  if (attr('data-search-select-last') && searchField) {
-    selectLast(searchField, parseInt(attr('data-search-select-last') || '', 10));
+function getAssociatedData(target: HTMLElement) {
+  const form = assertNotNull(target.closest('form'));
+  const input = assertNotNull($<HTMLInputElement>('.js-search-field', form));
+  const helpBoxes = $$<HTMLDivElement>('[data-search-help]', form);
+
+  return { input, helpBoxes };
+}
+
+function showHelp(helpBoxes: HTMLDivElement[], typeName: string, subject: string) {
+  for (const helpBox of helpBoxes) {
+    // Get the subject name span
+    const subjectName = assertNotNull($<HTMLElement>('.js-search-help-subject', helpBox));
+
+    // Take the appropriate action for this help box
+    if (helpBox.dataset.searchHelp === typeName) {
+      subjectName.textContent = subject;
+      showEl(helpBox);
+    } else {
+      hideEl(helpBox);
+    }
   }
-  if (attr('data-search-prepend') && searchField) prependToLast(searchField, attr('data-search-prepend') || '');
+}
+
+function onSearchAdd(_event: Event, target: HTMLAnchorElement) {
+  // Load form
+  const { input, helpBoxes } = getAssociatedData(target);
+
+  // Get data for this link
+  const addValue = assertNotUndefined(target.dataset.searchAdd);
+  const showHelpValue = assertNotUndefined(target.dataset.searchShowHelp);
+  const selectLastValue = target.dataset.searchSelectLast;
+
+  // Add the tag
+  addTag(input, addValue);
+
+  // Show associated help, if available
+  showHelp(helpBoxes, showHelpValue, assertNotNull(target.textContent));
+
+  // Select last characters, if requested
+  if (selectLastValue) {
+    focusAndSelectLast(input, Number(selectLastValue));
+  }
+}
+
+function onSearchPrepend(_event: Event, target: HTMLAnchorElement) {
+  // Load form
+  const { input } = getAssociatedData(target);
+
+  // Get data for this link
+  const prependValue = assertNotUndefined(target.dataset.searchPrepend);
+
+  // Prepend
+  prependToLast(input, prependValue);
 }
 
 export function setupSearch() {
-  const form = $<HTMLInputElement>('.js-search-form');
-
-  if (form) form.addEventListener('click', executeFormHelper as EventListener);
+  delegate(document, 'click', {
+    'form.js-search-form a[data-search-add][data-search-show-help]': leftClick(onSearchAdd),
+    'form.js-search-form a[data-search-prepend]': leftClick(onSearchPrepend),
+  });
 }
