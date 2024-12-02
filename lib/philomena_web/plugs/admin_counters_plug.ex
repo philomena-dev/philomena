@@ -36,14 +36,12 @@ defmodule PhilomenaWeb.AdminCountersPlug do
     duplicate_reports = DuplicateReports.count_duplicate_reports(user)
     reports = Reports.count_open_reports(user)
     artist_links = ArtistLinks.count_artist_links(user)
-    dnps = DnpEntries.count_dnp_entries(user)
 
     conn
     |> assign(:pending_approval_count, pending_approvals)
     |> assign(:duplicate_report_count, duplicate_reports)
     |> assign(:report_count, reports)
     |> assign(:artist_link_count, artist_links)
-    |> assign(:dnp_entry_count, dnps)
   end
 
   defp staff?(%{role: role}) when role in ["assistant", "moderator", "admin"], do: true

@@ -31,10 +31,6 @@
     {
       "title": "Takedown Requests",
       "url": "/pages/takedowns"
-    },
-    {
-      "title": "Do-Not-Post List",
-      "url": "/dnp"
     }
   ],
   "Help & Information": [
@@ -60,10 +56,6 @@
     {
       "title": "Advertising",
       "url": "/pages/advertising"
-    },
-    {
-      "title": "Onion Service",
-      "url": "/pages/onion"
     }
   ],
   "Community": [

@@ -55,6 +55,10 @@ defmodule PhilomenaWeb.Router do
     plug PhilomenaWeb.FilterBannedUsersPlug
   end
 
+  pipeline :disabled do
+    plug PhilomenaWeb.NotFoundPlug
+  end
+
   scope "/", PhilomenaWeb do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
 
@@ -160,15 +164,6 @@ defmodule PhilomenaWeb.Router do
   end
 
   scope "/", PhilomenaWeb do
-    pipe_through [:browser, :ensure_totp, :ensure_tor_authorized]
-
-    # A curiosity due to the fact that Phoenix routes cannot have constraints
-    scope "/channels", Channel, as: :channel do
-      resources "/nsfw", NsfwController, only: [:create, :delete], singleton: true
-    end
-  end
-
-  scope "/", PhilomenaWeb do
     pipe_through [:browser, :ensure_totp, :require_authenticated_user]
 
     scope "/notifications", Notification, as: :notification do
@@ -266,15 +261,6 @@ defmodule PhilomenaWeb.Router do
     end
 
     resources "/profiles", ProfileController, only: [] do
-      resources "/commission", Profile.CommissionController,
-        only: [:new, :create, :edit, :update, :delete],
-        singleton: true do
-        resources "/items", Profile.Commission.ItemController,
-          only: [:new, :create, :edit, :update, :delete]
-
-        resources "/reports", Profile.Commission.ReportController, only: [:new, :create]
-      end
-
       resources "/description", Profile.DescriptionController,
         only: [:edit, :update],
         singleton: true
@@ -317,16 +303,6 @@ defmodule PhilomenaWeb.Router do
         singleton: true
     end
 
-    resources "/channels", ChannelController, only: [] do
-      resources "/read", Channel.ReadController, only: [:create], singleton: true
-
-      resources "/subscription", Channel.SubscriptionController,
-        only: [:create, :delete],
-        singleton: true
-    end
-
-    resources "/dnp", DnpEntryController, only: [:new, :create, :edit, :update]
-
     resources "/ip_profiles", IpProfileController, only: [:show] do
       resources "/tag_changes", IpProfile.TagChangeController, only: [:index]
       resources "/source_changes", IpProfile.SourceChangeController, only: [:index]
@@ -354,10 +330,6 @@ defmodule PhilomenaWeb.Router do
 
         resources "/contact", ArtistLink.ContactController, only: [:create], singleton: true
         resources "/reject", ArtistLink.RejectController, only: [:create], singleton: true
-      end
-
-      resources "/dnp_entries", DnpEntryController, only: [:index] do
-        resources "/transition", DnpEntry.TransitionController, only: [:create], singleton: true
       end
 
       resources "/user_bans", UserBanController,
@@ -447,7 +419,44 @@ defmodule PhilomenaWeb.Router do
       singleton: true
 
     resources "/pages", PageController, only: [:index, :new, :create, :edit, :update]
-    resources "/channels", ChannelController, only: [:new, :create, :edit, :update, :delete]
+  end
+
+  scope "/", PhilomenaWeb do
+    pipe_through [:disabled]
+
+    resources "/profiles", ProfileController, only: [] do
+      resources "/commission", Profile.CommissionController,
+        only: [:new, :create, :edit, :update, :delete],
+        singleton: true do
+        resources "/items", Profile.Commission.ItemController,
+          only: [:new, :create, :edit, :update, :delete]
+
+        resources "/reports", Profile.Commission.ReportController, only: [:new, :create]
+      end
+    end
+
+    resources "/profiles", ProfileController, only: [] do
+      resources "/commission", Profile.CommissionController, singleton: true
+    end
+
+    resources "/commissions", CommissionController, only: [:index]
+
+    resources "/dnp", DnpEntryController, only: [:new, :create, :edit, :update, :index, :show]
+
+    scope "/admin", Admin, as: :admin do
+      resources "/dnp_entries", DnpEntryController, only: [:index] do
+        resources "/transition", DnpEntry.TransitionController, only: [:create], singleton: true
+      end
+    end
+
+    resources "/channels", ChannelController, only: [:new, :create, :edit, :update, :delete, :index, :show] do
+      resources "/read", Channel.ReadController, only: [:create], singleton: true
+      resources "/nsfw", Channel.NsfwController, only: [:create, :delete], singleton: true
+
+      resources "/subscription", Channel.SubscriptionController,
+        only: [:create, :delete],
+        singleton: true
+    end
   end
 
   scope "/", PhilomenaWeb do
@@ -522,7 +531,6 @@ defmodule PhilomenaWeb.Router do
 
     resources "/profiles", ProfileController, only: [:show] do
       resources "/reports", Profile.ReportController, only: [:new, :create]
-      resources "/commission", Profile.CommissionController, only: [:show], singleton: true
       resources "/tag_changes", Profile.TagChangeController, only: [:index]
       resources "/source_changes", Profile.SourceChangeController, only: [:index]
     end
@@ -532,7 +540,6 @@ defmodule PhilomenaWeb.Router do
     end
 
     resources "/posts", PostController, only: [:index]
-    resources "/commissions", CommissionController, only: [:index]
 
     resources "/galleries", GalleryController, only: [:index, :show] do
       resources "/reports", Gallery.ReportController, only: [:new, :create]
@@ -544,9 +551,7 @@ defmodule PhilomenaWeb.Router do
       resources "/history", Page.HistoryController, only: [:index]
     end
 
-    resources "/dnp", DnpEntryController, only: [:index, :show]
     resources "/staff", StaffController, only: [:index]
-    resources "/channels", ChannelController, only: [:index, :show]
     resources "/settings", SettingController, only: [:edit, :update], singleton: true
     resources "/duplicate_reports", DuplicateReportController, only: [:index, :show, :create]
 

@@ -21,11 +21,6 @@
         a.block__header--single-item.center href="/search?q=*&amp;sf=score&amp;sd=desc"
           ' All Time Top Scoring
       .block.hide-mobile
-        a.block__header--single-item.center href="/channels"
-          ' Streams
-        = for channel <- @streams do
-          = render PhilomenaWeb.ActivityView, "_channel_strip.html", channel: channel, conn: @conn
-      .block.hide-mobile
         a.block__header--single-item.center href="/forums"
           ' Forum Activity
         = for topic <- @topics do

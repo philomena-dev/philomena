@@ -23,12 +23,6 @@ nav#burger
   a href="/comments"
     i.fa.fa-fw.fa-comments<>
     ' Comments
-  a href="/commissions"
-    i.fa.fa-fw.fa-address-card<>
-    ' Commissions
-  a href="/channels"
-    i.fa.fa-fw.fa-podcast<>
-    ' Channels
   a href="/pages/donations"
     i.fa.fa-fw.fa-heart<>
     ' Donate

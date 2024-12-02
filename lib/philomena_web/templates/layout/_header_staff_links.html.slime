@@ -70,12 +70,6 @@
       span.header__counter__admin
         = @artist_link_count
 
-  = if @dnp_entry_count do
-    = link to: ~p"/admin/dnp_entries", class: "header__link", title: "DNP Requests" do
-      ' S
-      span.header__counter__admin
-        = @dnp_entry_count
-
   = if manages_bans?(@conn) do
     .dropdown.hide-mobile
       a.header__link title="Bans"

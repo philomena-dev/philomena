@@ -59,11 +59,6 @@
 .column-layout
   .column-layout__left
     .block
-      .block__header
-        span.block__header__title Commissions
-      = render PhilomenaWeb.ProfileView, "_commission.html", user: @user, commission_information: @commission_information, conn: @conn
-
-    .block
       = if current?(@user, @conn.assigns.current_user) or manages_links?(@conn, @user) do
         a.block__header--single-item href=~p"/profiles/#{@user}/artist_links/new" User Links
       - else

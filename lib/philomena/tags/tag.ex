@@ -26,7 +26,10 @@ defmodule Philomena.Tags.Tag do
     "series",
     "species",
     "spoiler",
-    "video"
+    "video",
+    "prompter",
+    "creator",
+    "generator"
   ]
 
   @namespace_categories %{
@@ -40,7 +43,10 @@ defmodule Philomena.Tags.Tag do
     "photographer" => "origin",
     "series" => "content-fanmade",
     "spoiler" => "spoiler",
-    "video" => "content-fanmade"
+    "video" => "content-fanmade",
+    "prompter" => "origin",
+    "creator" => "origin",
+    "generator" => "origin"
   }
 
   @underscore_safe_namespaces [
@@ -48,7 +54,10 @@ defmodule Philomena.Tags.Tag do
     "colorist:",
     "editor:",
     "oc:",
-    "photographer:"
+    "photographer:",
+    "prompter:",
+    "creator:",
+    "generator:"
   ]
 
   @derive {Phoenix.Param, key: :slug}

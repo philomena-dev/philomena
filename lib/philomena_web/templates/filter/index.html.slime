@@ -2,7 +2,7 @@
   .block.block--fixed.block--warning
     h2 Content Safety
     p
-      ' By default, content that is safe and suitable for all ages is all you'll see on the site, and how most of our users browse. The default filters focus on art, so filter out things like memes and what some users would consider "spam".
+      ' By default, content that is safe and suitable for all ages is all you'll see on the site, and how most of our users browse. The default filters focus on quality content, so filter out things like memes and what some users would consider "spam".
     p
       ' Filters let you customize what content you see on the site. This means that with the appropriate filter selected, you can access content which is not suitable for everyone, such as sexually explicit, grimdark or gory material.
     p
@@ -18,7 +18,7 @@
   h2 So how do these work?
   p
     ' You can select any filter you can see. This will become your
-    strong 
+    strong
       ' active filter
     ' and will affect how you see the site. You can edit filters if you own them - you can create a filter from scratch with the link under "My Filters" (if you're logged in, of course) or by clicking "Customize", which will copy an existing filter for you to edit.
   p
