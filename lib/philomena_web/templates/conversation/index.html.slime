@@ -25,7 +25,7 @@ h1 My Conversations
             td.table--communication-list__name
               => link c.title, to: ~p"/conversations/#{c}"
 
-              .small-text.hide-mobile
+              .small-text.hidden--mobile
                 => c.message_count
                 = pluralize("message", "messages", c.message_count)
                 ' ; started

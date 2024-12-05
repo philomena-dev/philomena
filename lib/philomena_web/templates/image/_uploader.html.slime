@@ -1,11 +1,11 @@
-span.image_uploader
+span.image-uploader
   ' by
   => render PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @image, awards: true, conn: @conn
 
   = if can?(@conn, :show, :ip_address) and not hide_staff_tools?(@conn) do
     => link_to_ip(@conn, @image.ip)
     => link_to_fingerprint(@conn, @image.fingerprint)
-    a#edit-uploader href="#" data-click-hide=".image_uploader" data-click-show="#uploader-form"
+    a#edit-uploader href="#" data-click-hide=".image-uploader" data-click-show="#uploader-form"
       i.fas.fa-edit
     a#edit-anonymous href="#" data-click-toggle=".image-anonymous"
       i.fas.fa-eye

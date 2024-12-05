@@ -1,0 +1,29 @@
+.slider {
+  display: flex;
+  flex: 1 0 auto;
+}
+
+.slider__body {
+  background: var(--primary-color);
+  min-height: var(--padding-small);
+  min-width: 100%;
+}
+
+.slider__head {
+  position: absolute;
+  background: var(--text-color);
+  width: var(--padding-normal);
+  height: var(--padding-normal);
+  border-radius: 100%;
+  transform: translateY(-2px);
+}
+
+.slider__minmax {
+  display: flex;
+  flex: 1 0 auto;
+}
+
+.slider__minmax .slider:last-child {
+  right: calc(100% - 2.2rem * 2);
+  position: relative;
+}

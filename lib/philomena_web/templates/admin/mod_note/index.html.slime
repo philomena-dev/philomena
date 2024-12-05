@@ -5,7 +5,7 @@ h2 Mod Notes
 
 .block
   .block__header
-    span.block__header__title Mod Notes
+    span Mod Notes
     = pagination
 
   .block__content

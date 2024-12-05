@@ -1,10 +1,13 @@
 = render PhilomenaWeb.ImageView, "_image_approval_banner.html", image: @image, conn: @conn
 = render PhilomenaWeb.ImageView, "_image_meta.html", image: @image, watching: @watching, user_galleries: @user_galleries, changeset: @image_changeset, conn: @conn
 = render PhilomenaWeb.ImageView, "_image_page.html", image: @image, conn: @conn
+= render PhilomenaWeb.ImageView, "_image_mobile_navigation.html", image: @image, conn: @conn
 
 .layout--narrow
   = if @conn.assigns.advert do
     = render PhilomenaWeb.AdvertView, "_box.html", advert: @conn.assigns.advert, conn: @conn
+
+  = render PhilomenaWeb.ImageView, "_image_mobile_information.html", image: @image, conn: @conn, changeset: @image_changeset
 
   .image-description
     = render PhilomenaWeb.ImageView, "_description.html", image: @image, body: @description, conn: @conn

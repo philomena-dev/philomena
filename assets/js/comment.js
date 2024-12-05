@@ -13,6 +13,7 @@ function handleError(response) {
   if (!response.ok) {
     return errorMessage;
   }
+
   return response.text();
 }
 

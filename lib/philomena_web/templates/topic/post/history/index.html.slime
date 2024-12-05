@@ -8,7 +8,7 @@ h1
 = for version <- @versions do
   article.block.communication
     .block__content.flex.flex--no-wrap
-      .flex__fixed.spacing-right
+      .flex__fixed.spacing--right
         = render PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html", object: @post, conn: @conn
 
       .flex__grow.communication__body

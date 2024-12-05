@@ -1,0 +1,44 @@
+.input {
+  border: 1px solid var(--invisible-color);
+  background: var(--primary-dark-color);
+  border-radius: var(--border-radius-inner);
+  color: var(--text-color);
+  padding: var(--padding-small);
+  box-sizing: border-box;
+  font-family: var(--font-family-monospace);
+  box-shadow: 0;
+}
+
+.input:hover,
+.input:focus {
+  background: var(--secondary-dark-color);
+}
+
+.input:focus {
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--secondary-border-color);
+}
+
+.input--wide {
+  width: 100%;
+}
+
+.input--text {
+  height: var(--input-text-height);
+  padding: var(--padding-normal) var(--padding-small);
+  cursor: text;
+}
+
+textarea.input:hover,
+textarea.input:focus,
+.input--text:hover,
+.input--text:focus {
+  border: 1px solid var(--secondary-border-color);
+}
+
+input[type="file"] {
+  padding-top: var(--padding-small);
+}

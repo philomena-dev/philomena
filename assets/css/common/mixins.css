@@ -1,0 +1,86 @@
+@define-mixin if-widescreen {
+  @media (min-width: calc($min-widescreen-width + 1px)) {
+    @mixin-content;
+  }
+}
+
+@define-mixin if-desktop {
+  @media (min-width: calc($min-desktop-width + 1px)) {
+    @mixin-content;
+  }
+}
+
+@define-mixin if-tablet {
+  @media (max-width: $min-desktop-width) and (min-width: calc($max-phone-width + 1px)) {
+    @mixin-content;
+  }
+}
+
+@define-mixin if-phone {
+  @media (max-width: $max-phone-width) {
+    @mixin-content;
+  }
+}
+
+@define-mixin if-mobile {
+  @media (max-width: $min-desktop-width) {
+    @mixin-content;
+  }
+}
+
+@define-mixin even-odd-type $classname, $type {
+  .$(classname):nth-child(odd).$(type),
+  .$(classname):nth-child(odd) .$(type) {
+    background: var(--$(type)-color);
+  }
+  .$(classname):nth-child(even).$(type),
+  .$(classname):nth-child(even) .$(type) {
+    background: var(--$(type)-dark-color);
+  }
+  .$(classname):nth-child(even) .$(classname):nth-child(odd).$(type),
+  .$(classname):nth-child(even) .$(classname):nth-child(odd) .$(type) {
+    background: var(--$(type)-color);
+  }
+}
+
+@define-mixin even-odd $classname {
+  .$(classname):nth-child(odd) {
+    background: var(--secondary-dark-color);
+  }
+  .$(classname):nth-child(even) {
+    background: var(--secondary-muted-color);
+  }
+
+  @mixin even-odd-type $classname, primary;
+  @mixin even-odd-type $classname, success;
+  @mixin even-odd-type $classname, warning;
+  @mixin even-odd-type $classname, danger;
+  @mixin even-odd-type $classname, information;
+  @mixin even-odd-type $classname, special;
+}
+
+@define-mixin animated-transition {
+  transition:
+    color var(--transition-animation-duration) ease,
+    background var(--transition-animation-duration) ease;
+}
+
+@define-mixin no-bottom-border-radius {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+@define-mixin no-top-border-radius {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+@define-mixin first-last-child-border-radius $classname {
+  .$(classname) > *:first-child {
+    @mixin no-top-border-radius;
+  }
+
+  $(classname) > *:last-child {
+    @mixin no-bottom-border-radius;
+  }
+}

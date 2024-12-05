@@ -2,6 +2,8 @@ defmodule Philomena.Commissions.Commission do
   use Ecto.Schema
   import Ecto.Changeset
 
+  import PhilomenaWeb.Gettext
+
   alias Philomena.Commissions.Item
   alias Philomena.Images.Image
   alias Philomena.Users.User
@@ -40,7 +42,7 @@ defmodule Philomena.Commissions.Commission do
     |> validate_length(:contact, max: 1000, count: :bytes)
     |> validate_length(:will_create, max: 1000, count: :bytes)
     |> validate_length(:will_not_create, max: 1000, count: :bytes)
-    |> validate_subset(:categories, Keyword.values(categories()))
+    |> validate_subset(:categories, category_values())
   end
 
   defp drop_blank_categories(changeset) do
@@ -54,19 +56,39 @@ defmodule Philomena.Commissions.Commission do
 
   def categories do
     [
-      Anthro: "Anthro",
-      "Canon Characters": "Canon Characters",
-      Comics: "Comics",
-      "Fetish Art": "Fetish Art",
-      "Human and EqG": "Human and EqG",
-      NSFW: "NSFW",
-      "Original Characters": "Original Characters",
-      "Original Species": "Original Species",
-      Pony: "Pony",
-      Requests: "Requests",
-      Safe: "Safe",
-      Shipping: "Shipping",
-      "Violence and Gore": "Violence and Gore"
+      {dgettext("commissions", "Anthro"), "Anthro"},
+      {dgettext("commissions", "Canon Characters"), "Canon Characters"},
+      {dgettext("commissions", "Comics"), "Comics"},
+      {dgettext("commissions", "Fetish Art"), "Fetish Art"},
+      {dgettext("commissions", "Human and Human-like"), "Human and Human-like"},
+      {dgettext("commissions", "NSFW"), "NSFW"},
+      {dgettext("commissions", "Original Characters"), "Original Characters"},
+      {dgettext("commissions", "Original Species"), "Original Species"},
+      {dgettext("commissions", "Non-Humanoid"), "Non-Humanoid"},
+      {dgettext("commissions", "Requests"), "Requests"},
+      {dgettext("commissions", "Safe"), "Safe"},
+      {dgettext("commissions", "Shipping"), "Shipping"},
+      {dgettext("commissions", "Violence and Gore"), "Violence and Gore"}
+    ]
+  end
+
+  # This is probably not the best way to do this,
+  # but I need dialyzer to shut up and do so fast.
+  def category_values do
+    [
+      "Anthro",
+      "Canon Characters",
+      "Comics",
+      "Fetish Art",
+      "Human and Human-like",
+      "NSFW",
+      "Original Characters",
+      "Original Species",
+      "Non-Humanoid",
+      "Requests",
+      "Safe",
+      "Shipping",
+      "Violence and Gore"
     ]
   end
 

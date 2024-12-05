@@ -1,0 +1,39 @@
+## See default.pot for more documentation.
+msgid "Rule #0: Namecalling, trolling, discrimination"
+msgstr ""
+
+msgid "Rule #1: DNP, content theft, pay content, trace/bad edit"
+msgstr ""
+
+msgid "Rule #2: Bad tagging/sourcing"
+msgstr ""
+
+msgid "Rule #3: Image not related to the topic of the site"
+msgstr ""
+
+msgid "Rule #4: Complaining about filterable content"
+msgstr ""
+
+msgid "Rule #5: Illegal/forbidden content / underage porn"
+msgstr ""
+
+msgid "Rule #6: Spam, off-topic, or general site abuse"
+msgstr ""
+
+msgid "Rule #7: Above topic rating (NOT swear words)"
+msgstr ""
+
+msgid "Rule #8: Privacy violation"
+msgstr ""
+
+msgid "Rule #9: Commissions"
+msgstr ""
+
+msgid "Rule #n: Spirit of the rules"
+msgstr ""
+
+msgid "Other (please explain)"
+msgstr ""
+
+msgid "Takedown request"
+msgstr ""

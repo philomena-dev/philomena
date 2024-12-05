@@ -1,0 +1,12 @@
+:root {
+  --navbar-input-width: 100%;
+  --navbar-input-max-width: 100%;
+}
+
+form.header__search {
+  flex: 1 0 auto;
+}
+
+header > .flex__grow {
+  display: none;
+}

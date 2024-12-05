@@ -12,7 +12,7 @@ h1 = @conversation.title
     ' Conversation with
     => render PhilomenaWeb.UserAttributionView, "_user.html", object: %{user: other}, conn: @conn
   .block__header--sub.block__header--light.page__header
-    span.block__header__title.page__title>
+    span.page__title>
       => @messages.total_entries
       = pluralize("message", "messages", @messages.total_entries)
     .page__pagination = pagination

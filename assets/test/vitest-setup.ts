@@ -23,6 +23,7 @@ window.booru = {
   spoileredFilter: matchNone(),
   interactions: [],
   tagsVersion: 5,
+  galleryImages: [],
 };
 
 // https://github.com/jsdom/jsdom/issues/1721#issuecomment-1484202038

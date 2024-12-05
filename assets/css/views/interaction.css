@@ -1,0 +1,47 @@
+@define-mixin interaction-type $type {
+  .interaction--$(type) {
+    position: relative;
+    color: var(--$(type)-color) !important;
+    padding: 0 var(--padding-tiny);
+    width: 1rem;
+  }
+
+  .interaction--$(type).interaction--nohover:hover {
+    color: var(--$(type)-color) !important;
+  }
+
+  .interaction--$(type).active,
+  .interaction--$(type):hover {
+    color: var(--text-color) !important;
+    background-color: var(--$(type)-color);
+  }
+}
+
+.interaction--optional {
+  display: none;
+}
+
+.interaction--nohover:hover {
+  background: 0 !important;
+}
+
+@mixin interaction-type fave;
+@mixin interaction-type upvote;
+@mixin interaction-type downvote;
+@mixin interaction-type comment;
+@mixin interaction-type hide;
+
+.comments-count {
+  position: absolute;
+  background: var(--background-color);
+  border: var(--number-badge-border) solid var(--background-color);
+  border-radius: 100%;
+  padding: var(--number-badge-padding);
+  line-height: var(--number-badge-size);
+  min-width: var(--number-badge-size);
+  top: var(--number-badge-vote-vertical-offset);
+}
+
+.interaction--comment:hover > .comments-count {
+  visibility: hidden;
+}
