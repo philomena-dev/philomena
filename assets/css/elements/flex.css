@@ -1,0 +1,109 @@
+.flex {
+  display: flex;
+}
+
+.flex__row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex__column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex__row--centered {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex__column--centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex--centered {
+  align-items: center;
+}
+
+.flex--center-distributed {
+  justify-content: center;
+}
+
+.flex--no-wrap {
+  flex-wrap: nowrap;
+}
+
+.flex--wrap {
+  flex-wrap: wrap;
+}
+
+.flex__right {
+  flex: 1 1 auto;
+  text-align: right;
+}
+
+.flex__grow {
+  flex: 1 0 0;
+}
+
+.flex__shrink {
+  flex: 0 1 auto;
+}
+
+.flex__fixed {
+  flex: 0 0 auto;
+}
+
+.flex--column {
+  flex-direction: column;
+}
+
+.flex--spaced-out {
+  justify-content: space-between;
+}
+
+.flex--small-gap {
+  gap: var(--padding-small);
+}
+
+.flex--normal-gap {
+  gap: var(--padding-normal);
+}
+
+.flex--large-gap {
+  gap: var(--padding-large);
+}
+
+.flex--start-bunched {
+  justify-content: flex-start;
+}
+
+.flex--end-bunched {
+  justify-content: flex-end;
+}
+
+.flex__spacer {
+  flex: 1 0 auto;
+}
+
+.flex__break {
+  flex-basis: 100%;
+  width: 0;
+}
+
+@mixin if-desktop {
+  .flex--maybe-wrap {
+    flex-wrap: nowrap;
+  }
+}
+
+@mixin if-mobile {
+  .flex--maybe-wrap {
+    flex-wrap: wrap;
+  }
+}

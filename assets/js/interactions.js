@@ -56,12 +56,15 @@ function setScore(imageId, data) {
   onImage(imageId, '.score', el => {
     el.textContent = data.score;
   });
+
   onImage(imageId, '.favorites', el => {
     el.textContent = data.faves;
   });
+
   onImage(imageId, '.upvotes', el => {
     el.textContent = data.upvotes;
   });
+
   onImage(imageId, '.downvotes', el => {
     el.textContent = data.downvotes;
   });

@@ -1,0 +1,114 @@
+@define-mixin tag-color $tagtype {
+  .tag[data-tag-category="$(tagtype)"] {
+    color: var(--tag-$(tagtype)-text-color);
+    background: var(--tag-$(tagtype)-color);
+    border-color: var(--tag-$(tagtype)-border-color);
+  }
+
+  .tag[data-tag-category="$(tagtype)"] .tag__state {
+    color: var(--tag-$(tagtype)-text-color);
+  }
+
+  .tag[data-tag-category="$(tagtype)"] .tag__name {
+    color: var(--tag-$(tagtype)-text-color);
+  }
+
+  .tag[data-tag-category="$(tagtype)"] .tag__count {
+    background: var(--tag-$(tagtype)-border-color);
+  }
+}
+
+.tag-list {
+  display: flex;
+  flex-flow: row wrap;
+  gap: var(--padding-small);
+  margin-bottom: var(--padding-normal);
+}
+
+.tag {
+  display: inline-table;
+  width: fit-content;
+  line-height: var(--tag-height);
+  color: var(--tag-default-text-color);
+  background: var(--tag-default-color);
+  border-radius: var(--border-radius-tag);
+  border: var(--tag-border-width) solid var(--tag-default-border-color);
+  font-weight: bold;
+}
+
+.tag a {
+  color: inherit;
+}
+
+@mixin tag-color error;
+@mixin tag-color rating;
+@mixin tag-color origin;
+@mixin tag-color character;
+@mixin tag-color oc;
+@mixin tag-color species;
+@mixin tag-color body-type;
+@mixin tag-color content-fanmade;
+@mixin tag-color content-official;
+@mixin tag-color spoiler;
+
+.tag > span {
+  display: table-cell;
+  white-space: pre;
+}
+
+.tag__state {
+  color: var(--tag-default-text-color);
+  padding-left: var(--padding-small);
+}
+
+.tag__name {
+  color: var(--tag-default-text-color);
+  padding-right: var(--padding-small);
+}
+
+.tag__count {
+  background: var(--tag-default-border-color);
+  color: var(--text-color);
+  padding: 0 var(--padding-small);
+  overflow: hidden;
+  border-top-right-radius: var(--border-radius-tag);
+  border-bottom-right-radius: var(--border-radius-tag);
+}
+
+.tag__dropdown__link {
+  background-color: var(--primary-muted-color);
+  padding: 0 var(--padding-small);
+}
+
+.tag__dropdown__link:hover {
+  background-color: var(--primary-dark-color);
+}
+
+.tag-info__image {
+  border: 1px solid var(--secondary-color);
+  font-size: var(--font-tiny-size);
+  text-align: center;
+}
+
+.tag-info__controls {
+  display: flex;
+}
+
+.tag-info__controls > .tag {
+  margin-right: var(--padding-normal);
+}
+
+.js-imagelist-info {
+  margin-bottom: var(--padding-normal);
+}
+
+.tagsinput {
+  display: flex;
+  gap: var(--padding-small);
+  flex-wrap: wrap;
+  background: var(--primary-dark-color);
+}
+
+.tagsinput .tag {
+  padding: 0 var(--padding-small);
+}

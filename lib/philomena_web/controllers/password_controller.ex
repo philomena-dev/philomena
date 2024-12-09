@@ -23,7 +23,7 @@ defmodule PhilomenaWeb.PasswordController do
     # Regardless of the outcome, show an impartial success/error message.
     conn
     |> put_flash(
-      :info,
+      :alert,
       "If your email is in our system, you will receive instructions to reset your password shortly."
     )
     |> redirect(to: "/")
@@ -54,7 +54,7 @@ defmodule PhilomenaWeb.PasswordController do
       conn |> assign(:user, user) |> assign(:token, token)
     else
       conn
-      |> put_flash(:error, "Reset password link is invalid or it has expired.")
+      |> put_flash(:warning, "Reset password link is invalid or it has expired.")
       |> redirect(to: "/")
       |> halt()
     end

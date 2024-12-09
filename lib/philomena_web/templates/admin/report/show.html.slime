@@ -1,17 +1,10 @@
 h1 Showing Report
 p
-  = link_to_reported_thing @report.reportable
+  = link_to_reported_thing(@report.reportable)
 
 article.block.communication
   .block__content.flex.flex--no-wrap
-    .flex__fixed.spacing-right
-      = render PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html", object: @report, conn: @conn
-    .flex__grow.communication__body
-      span.communication__body__sender-name = render PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @report, awards: true, conn: @conn
-      br
-      = render PhilomenaWeb.UserAttributionView, "_anon_user_title.html", object: @report, conn: @conn
-      .communication__body__text
-        =<> @body
+    = render PhilomenaWeb.CommunicationView, "_body.html", object: @report, body: @body, conn: @conn, name: "report"
 
   .block__content.communication__options
     .flex.flex--wrap.flex--spaced-out
@@ -35,7 +28,7 @@ article.block.communication
 
 p
   = if @report.user do
-    => link "Send PM", to: ~p"/conversations/new?#{[recipient: @report.user.name]}", class: "button button--link"
+    => link "Send PM", to: ~p"/conversations/new?#{[recipient: @report.user.name]}", class: "button"
 
   = if @report.open do
     => link "Close", to: ~p"/admin/reports/#{@report}/close", class: "button", data: [method: "post"]

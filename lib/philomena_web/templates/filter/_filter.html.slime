@@ -1,39 +1,59 @@
-.filter
-  h3
-    = @filter.name
+.block
+  .block__content
+    h3 = @filter.name
 
-  = if @filter.user do
-    p
-      ' Maintained by
-      = render PhilomenaWeb.UserAttributionView, "_user.html", object: @filter, conn: @conn
+    .flex.flex--row
+      .button__group--standalone
+        = link to: ~p"/filters/#{@filter}" do
+          i.fa.fa-eye>
+          | View this filter
+        .separator--vertical
+        = link to: ~p"/filters/new?#{[based_on: @filter]}" do
+          i.fa.fa-copy>
+          | Copy and customize
 
-  = if @filter.system do
-    p
-      ' Maintained by staff
-
-  .filter-options
-    ul
-      li
-        ' Spoilers
-        = length(@filter.spoilered_tag_ids)
-        ' , hides
-        = length(@filter.hidden_tag_ids)
-
-      li
-        = link "View this filter", to: ~p"/filters/#{@filter}", class: "button"
-      li
-        = link "Copy and Customize", to: ~p"/filters/new?#{[based_on: @filter]}", class: "button"
 
       = if can?(@conn, :edit, @filter) do
-        li
-          = link "Edit this filter", to: ~p"/filters/#{@filter}/edit", class: "button"
+        .button__group--standalone.button__group--warning
+          = link to: ~p"/filters/#{@filter}/edit" do
+            i.fa.fa-edit>
+            | Edit this filter
 
       = if @filter.id == @conn.assigns.current_filter.id do
-        li
-          strong Your current filter
+        .button__group--standalone.button__group--success
+          a
+            i.fa.fa-check>
+            | Your current filter
       - else
-        li
-          = button_to "Use this filter", ~p"/filters/current?#{[id: @filter]}", method: "put", class: "button"
+        .button__group--standalone
+          = button_to ~p"/filters/current?#{[id: @filter]}", method: "put", class: "button" do
+            i.fa.fa-arrow-right-to-bracket>
+            | Use this filter
+
+    = cond do
+      - @filter.user ->
+        p
+          i.fa.fa-wrench.icon--fixed>
+          ' Maintained by
+          = render PhilomenaWeb.UserAttributionView, "_user.html", object: @filter, conn: @conn
+      - @filter.system ->
+        p
+          i.fa.fa-wrench.icon--fixed>
+          ' Maintained by site staff
+      - true ->
+        p
+          ' Unknown maintainer
     p
+      i.fa.fa-shield.icon--fixed>
+      ' Spoilers
+      => length(@filter.spoilered_tag_ids)
+      ' tag(s)
+    p
+      i.fa.fa-eye-slash.icon--fixed>
+      ' Hides
+      => length(@filter.hidden_tag_ids)
+      ' tag(s)
+    p
+      i.fa.fa-circle-info.icon--fixed>
       em
         = @filter.description

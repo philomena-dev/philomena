@@ -1,0 +1,91 @@
+@define-mixin fix-interaction $type {
+  .metabar__interactions .interaction--$(type) {
+    padding: var(--padding-tiny) var(--padding-small);
+  }
+}
+
+.metabar__interactions {
+  display: block;
+}
+
+.metabar__interactions .comments-count {
+  background: 0;
+  border: 0;
+  position: static;
+}
+
+@mixin if-phone {
+  .metabar__interactions {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  @mixin fix-interaction fave;
+  @mixin fix-interaction upvote;
+  @mixin fix-interaction downvote;
+  @mixin fix-interaction hide;
+
+  .metabar__interactions * {
+    place-self: center center;
+  }
+
+  .metabar__mobile-separator {
+    height: 1px;
+    width: 100%;
+    margin-top: var(--padding-small);
+    margin-bottom: var(--padding-normal);
+    background: var(--primary-color);
+  }
+
+  .metabar__navigation {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: var(--padding-small);
+  }
+
+  .metabar__navigation a {
+    place-self: center center;
+  }
+}
+
+.metabar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  line-height: var(--block-header-height);
+}
+
+.metabar a,
+.metabar .score {
+  padding: var(--padding-small);
+}
+
+.metabar__user-credit {
+  display: flex;
+  flex-direction: row;
+  gap: var(--padding-small);
+}
+
+.metabar__user-credit .image-uploader {
+  display: flex;
+  align-items: center;
+  gap: var(--padding-small);
+}
+
+/* For some bizarre reason the icon appears to have
+ * comically large gap on desktop */
+@mixin if-desktop {
+  .image-uploader > .username-with-icon {
+    gap: 0;
+  }
+}
+
+.metabar__mobile-info td {
+  padding: var(--padding-small);
+}
+
+.badges {
+  display: inline-block;
+}

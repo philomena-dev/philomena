@@ -1,22 +1,56 @@
 = for notice <- @conn.assigns.site_notices do
-  .flash.flash--site-notice
-    strong>
-      = notice.title
-    => notice.text
-    = if notice.link not in [nil, ""] do
-      a href=notice.link
-        = notice.link_text
+  .flash.flash--special
+    .flash__icon
+      i.fa.fa-info-circle
+    .flash__message
+      strong>
+        = notice.title
+      => notice.text
+      = if notice.link not in [nil, ""] do
+        a href=notice.link
+          = notice.link_text
+
+.flash.flash--special
+  .flash__icon
+    i.fa.fa-dragon
+  .flash__message
+    strong> Here be dragons!
+    ' This is a work-in-progress branch of the site code. At current state, it is approximately
+    em> 40 percent
+    ' finished. Everything is subject to change, and will probably be changed.
+    ' Keep calm and don't freak out if something looks ugly/broken - it will be fixed.
+    a href="https://derpibooru.org/forums/meta/topics/so-you-found-the-redesign?post_id=5609737"
+      | Check out this topic for more info, the FAQ, and to yell at me about this.
 
 noscript.flash.flash--warning
-  strong You don't appear to have Javascript enabled
-  ' If you're using an add-on like NoScript, please allow
-  => cdn_host()
-  ' for the site to work properly.
+  .flash__icon
+    i.fa.fa-check
+  .flash__message
+    strong You don't appear to have Javascript enabled
+    ' If you're using an add-on like NoScript, please allow
+    => cdn_host()
+    ' for the site to work properly.
 = if get_flash(@conn, :info) do
-  .flash.flash--success = get_flash(@conn, :info)
+  .flash.flash--success
+    .flash__icon
+      i.fa.fa-check
+    .flash__message
+      = get_flash(@conn, :info)
 = if get_flash(@conn, :alert) do
-  .flash.flash--warning = get_flash(@conn, :alert)
+  .flash.flash--information
+    .flash__icon
+      i.fa.fa-info-circle
+    .flash__message
+      = get_flash(@conn, :alert)
 = if get_flash(@conn, :error) do
-  .flash.flash--warning = get_flash(@conn, :error)
+  .flash.flash--danger
+    .flash__icon
+      i.fa.fa-exclamation-triangle
+    .flash__message
+      = get_flash(@conn, :error)
 = if get_flash(@conn, :warning) do
-  .flash.flash--warning = get_flash(@conn, :warning)
+  .flash.flash--warning
+    .flash__icon
+      i.fa.fa-exclamation-circle
+    .flash__message
+      = get_flash(@conn, :warning)

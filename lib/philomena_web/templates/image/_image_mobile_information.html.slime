@@ -1,0 +1,43 @@
+.block.hidden--desktop.hidden--tablet
+  .block__header
+    i.fa.fa-info-circle>
+    ' Information
+  .block__content
+    .flex.flex--column
+      table.metabar__mobile-info
+        tr
+          td
+            i.fa.fa-clock>
+            ' Created
+          td
+            => pretty_time(@image.created_at)
+        = render PhilomenaWeb.ImageView, "_uploader_mobile.html", assigns
+        tr.hidden--desktop.hidden--tablet
+          td
+            i.fa.fa-info-circle>
+            ' Stats
+          td
+            span.image-size
+              | &nbsp;
+              = @image.image_width
+              | x
+              = @image.image_height
+
+              = if not is_nil(@image.image_duration) and @image.image_is_animated and @image.image_duration > 0 do
+                span.image-size title=@image.image_duration
+                  | &nbsp;
+                  - dur = trunc(@image.image_duration)
+                  - ms = trunc((@image.image_duration - dur)*100)
+                  - {mm, ss} = {div(dur, 60), rem(dur, 60)}
+                  = :io_lib.format("~2..0B:~2..0B.~2..0B", [mm, ss, ms])
+
+              =<> String.upcase(to_string(@image.image_format))
+              - size_kb = div(@image.image_size, 1000)
+              - size_mb = Float.round(size_kb / 1000.0, 2)
+              span title="#{size_kb} kB"
+                = if size_kb <= 1000 do
+                  => size_kb
+                  | kB
+                - else
+                  => size_mb
+                  | MB
