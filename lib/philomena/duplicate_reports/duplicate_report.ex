@@ -11,7 +11,7 @@ defmodule Philomena.DuplicateReports.DuplicateReport do
     belongs_to :user, User
     belongs_to :modifier, User
 
-    field :reason, :string
+    field :reason, :string, default: ""
     field :state, :string, default: "open"
 
     timestamps(inserted_at: :created_at, type: :utc_datetime)

@@ -57,7 +57,7 @@ defmodule Philomena.Channels.AutomaticUpdater do
     attrs =
       live_channels
       |> Map.get(channel.short_name, %{})
-      |> Map.merge(%{last_live_at: now, last_fetched_at: now})
+      |> Map.merge(%{last_fetched_at: now})
 
     Channels.update_channel_state(channel, attrs)
   end
