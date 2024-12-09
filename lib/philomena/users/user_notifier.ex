@@ -4,7 +4,7 @@ defmodule Philomena.Users.UserNotifier do
 
   defp deliver(to, subject, body) do
     Email.new(
-      to: to,
+      to: {to, to},
       from: {"noreply", mailer_address()},
       subject: subject,
       text_body: body
@@ -19,7 +19,7 @@ defmodule Philomena.Users.UserNotifier do
       |> Base.encode16()
       |> String.downcase()
 
-    "#{id}.#{mailer_address()}"
+    "<#{id}.#{mailer_address()}>"
   end
 
   defp mailer_address do
