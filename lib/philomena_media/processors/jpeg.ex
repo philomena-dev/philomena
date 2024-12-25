@@ -3,6 +3,7 @@ defmodule PhilomenaMedia.Processors.Jpeg do
 
   alias PhilomenaMedia.Intensities
   alias PhilomenaMedia.Analyzers.Result
+  alias PhilomenaMedia.Remote
   alias PhilomenaMedia.Processors.Processor
   alias PhilomenaMedia.Processors
 
@@ -42,7 +43,7 @@ defmodule PhilomenaMedia.Processors.Jpeg do
 
   defp requires_lossy_transformation?(file) do
     with {output, 0} <-
-           System.cmd("identify", ["-format", "%[orientation]\t%[profile:icc]", file]),
+           Remote.cmd("identify", ["-format", "%[orientation]\t%[profile:icc]", file]),
          [orientation, profile] <- String.split(output, "\t") do
       orientation not in ["Undefined", "TopLeft"] or profile != ""
     else
@@ -60,7 +61,7 @@ defmodule PhilomenaMedia.Processors.Jpeg do
       true ->
         # Transcode: strip EXIF, embedded profile and reorient image
         {_output, 0} =
-          System.cmd("convert", [
+          Remote.cmd("convert", [
             file,
             "-profile",
             srgb_profile(),
@@ -71,7 +72,7 @@ defmodule PhilomenaMedia.Processors.Jpeg do
 
       _ ->
         # Transmux only: Strip EXIF without touching orientation
-        validate_return(System.cmd("jpegtran", ["-copy", "none", "-outfile", stripped, file]))
+        validate_return(Remote.cmd("jpegtran", ["-copy", "none", "-outfile", stripped, file]))
     end
 
     stripped
@@ -80,7 +81,7 @@ defmodule PhilomenaMedia.Processors.Jpeg do
   defp optimize(file) do
     optimized = Briefly.create!(extname: ".jpg")
 
-    validate_return(System.cmd("jpegtran", ["-optimize", "-outfile", optimized, file]))
+    validate_return(Remote.cmd("jpegtran", ["-optimize", "-outfile", optimized, file]))
 
     optimized
   end
@@ -90,7 +91,7 @@ defmodule PhilomenaMedia.Processors.Jpeg do
     scale_filter = "scale=w=#{width}:h=#{height}:force_original_aspect_ratio=decrease"
 
     {_output, 0} =
-      System.cmd("ffmpeg", [
+      Remote.cmd("ffmpeg", [
         "-loglevel",
         "0",
         "-y",
@@ -103,7 +104,7 @@ defmodule PhilomenaMedia.Processors.Jpeg do
         scaled
       ])
 
-    {_output, 0} = System.cmd("jpegtran", ["-optimize", "-outfile", scaled, scaled])
+    {_output, 0} = Remote.cmd("jpegtran", ["-optimize", "-outfile", scaled, scaled])
 
     [{:copy, scaled, "#{thumb_name}.jpg"}]
   end

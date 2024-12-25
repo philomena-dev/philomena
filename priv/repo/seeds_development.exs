@@ -46,7 +46,7 @@ request_attributes = [
 
 IO.puts "---- Generating images"
 for image_def <- resources["remote_images"] do
-  file = Briefly.create!()
+  file = Briefly.create!(extname: ".png")
   now = DateTime.utc_now() |> DateTime.to_unix(:microsecond)
 
   IO.puts "Fetching #{image_def["url"]} ..."

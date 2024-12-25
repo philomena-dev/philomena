@@ -30,6 +30,7 @@ services:
       - IMAGE_URL_ROOT=/img
       - BADGE_URL_ROOT=/badge-img
       - TAG_URL_ROOT=/tag-img
+      - MEDIAPROC_ADDR=mediaproc:1500
       - OPENSEARCH_URL=http://opensearch:9200
       - REDIS_HOST=valkey
       - DATABASE_URL=ecto://postgres:postgres@postgres/philomena_dev
@@ -52,6 +53,7 @@ services:
       - app_deps_data:/srv/philomena/deps
       - app_native_data:/srv/philomena/priv/native
     depends_on:
+      - mediaproc
       - postgres
       - opensearch
       - valkey
@@ -88,6 +90,18 @@ services:
     volumes:
       - .:/srv/philomena
     attach: false
+
+  mediaproc:
+    build:
+      context: .
+      dockerfile: ./docker/mediaproc/Dockerfile
+    attach: false
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8gb
+          pids: 8192
 
   web:
     build:
