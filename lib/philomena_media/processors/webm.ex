@@ -3,6 +3,7 @@ defmodule PhilomenaMedia.Processors.Webm do
 
   alias PhilomenaMedia.Intensities
   alias PhilomenaMedia.Analyzers.Result
+  alias PhilomenaMedia.Broker
   alias PhilomenaMedia.GifPreview
   alias PhilomenaMedia.Processors.Processor
   alias PhilomenaMedia.Processors
@@ -55,7 +56,7 @@ defmodule PhilomenaMedia.Processors.Webm do
   defp preview(duration, file) do
     preview = Briefly.create!(extname: ".png")
 
-    {_output, 0} = System.cmd("mediathumb", [file, to_string(duration / 2), preview])
+    {_output, 0} = Broker.cmd("mediathumb", [file, to_string(duration / 2), preview])
 
     preview
   end
@@ -64,7 +65,7 @@ defmodule PhilomenaMedia.Processors.Webm do
     stripped = Briefly.create!(extname: ".webm")
 
     {_output, 0} =
-      System.cmd("ffmpeg", [
+      Broker.cmd("ffmpeg", [
         "-loglevel",
         "0",
         "-y",
@@ -109,7 +110,7 @@ defmodule PhilomenaMedia.Processors.Webm do
     mp4 = Briefly.create!(extname: ".mp4")
 
     {_output, 0} =
-      System.cmd("ffmpeg", [
+      Broker.cmd("ffmpeg", [
         "-loglevel",
         "0",
         "-y",
@@ -167,7 +168,7 @@ defmodule PhilomenaMedia.Processors.Webm do
     mp4 = Briefly.create!(extname: ".mp4")
 
     {_output, 0} =
-      System.cmd("ffmpeg", [
+      Broker.cmd("ffmpeg", [
         "-loglevel",
         "0",
         "-y",

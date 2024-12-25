@@ -3,6 +3,8 @@ defmodule PhilomenaMedia.GifPreview do
   GIF preview generation for video files.
   """
 
+  alias PhilomenaMedia.Broker
+
   @type duration :: float()
   @type dimensions :: {pos_integer(), pos_integer()}
 
@@ -46,7 +48,7 @@ defmodule PhilomenaMedia.GifPreview do
       end)
 
     {_output, 0} =
-      System.cmd(
+      Broker.cmd(
         "ffmpeg",
         commands(video, gif, clamp(duration), dimensions, num_images, target_framerate)
       )
