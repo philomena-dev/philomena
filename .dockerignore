@@ -4,3 +4,4 @@ _build
 deps
 .elixir_ls
 priv
+native/philomena/target
