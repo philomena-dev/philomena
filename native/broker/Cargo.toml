@@ -1,0 +1,23 @@
+[package]
+name = "broker"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "broker"
+path = "src/broker_client.rs"
+
+[[bin]]
+name = "broker_server"
+path = "src/broker_server.rs"
+
+[dependencies]
+env_logger = "0.11"
+clap = { version = "4.5", features = ["derive"] }
+futures = "0.3"
+once_cell = "1.20"
+serde = { version = "1.0", features = ["derive"] }
+tarpc = { version = "0.35", features = ["full"] }
+tempfile = "3"
+tokio = { version = "1.0", features = ["full"] }
+tracing = "0.1"
