@@ -1,6 +1,7 @@
 defmodule PhilomenaWeb.Api.Json.Search.TagController do
   use PhilomenaWeb, :controller
 
+  alias PhilomenaQuery.Cursor
   alias PhilomenaQuery.Search
   alias Philomena.Tags.Tag
   alias Philomena.Tags.Query
@@ -9,19 +10,20 @@ defmodule PhilomenaWeb.Api.Json.Search.TagController do
   def index(conn, params) do
     case Query.compile(params["q"]) do
       {:ok, query} ->
-        tags =
+        {tags, cursors} =
           Tag
           |> Search.search_definition(
-            %{query: query, sort: %{images: :desc}},
+            %{query: query, sort: [%{images: :desc}, %{id: :desc}]},
             conn.assigns.pagination
           )
-          |> Search.search_records(
-            preload(Tag, [:aliased_tag, :aliases, :implied_tags, :implied_by_tags, :dnp_entries])
+          |> Cursor.search_records(
+            preload(Tag, [:aliased_tag, :aliases, :implied_tags, :implied_by_tags, :dnp_entries]),
+            params["search_after"]
           )
 
         conn
         |> put_view(PhilomenaWeb.Api.Json.TagView)
-        |> render("index.json", tags: tags, total: tags.total_entries)
+        |> render("index.json", cursors: cursors, tags: tags, total: tags.total_entries)
 
       {:error, msg} ->
         conn
