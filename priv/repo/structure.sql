@@ -961,6 +961,37 @@ CREATE TABLE public.image_taggings (
 
 
 --
+-- Name: image_vectors; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.image_vectors (
+    id bigint NOT NULL,
+    image_id bigint NOT NULL,
+    type character varying(255) NOT NULL,
+    features double precision[] NOT NULL
+);
+
+
+--
+-- Name: image_vectors_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.image_vectors_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: image_vectors_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.image_vectors_id_seq OWNED BY public.image_vectors.id;
+
+
+--
 -- Name: image_votes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2415,6 +2446,13 @@ ALTER TABLE ONLY public.image_intensities ALTER COLUMN id SET DEFAULT nextval('p
 
 
 --
+-- Name: image_vectors id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.image_vectors ALTER COLUMN id SET DEFAULT nextval('public.image_vectors_id_seq'::regclass);
+
+
+--
 -- Name: images id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2781,6 +2819,14 @@ ALTER TABLE ONLY public.image_features
 
 ALTER TABLE ONLY public.image_intensities
     ADD CONSTRAINT image_intensities_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: image_vectors image_vectors_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.image_vectors
+    ADD CONSTRAINT image_vectors_pkey PRIMARY KEY (id);
 
 
 --
@@ -3257,7 +3303,14 @@ CREATE INDEX image_tag_locks_tag_id_index ON public.image_tag_locks USING btree 
 
 
 --
--- Name: images_approved_index; Type: INDEX; Schema: public; Owner: -
+-- Name: image_vectors_image_id_type_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX image_vectors_image_id_type_index ON public.image_vectors USING btree (image_id, type);
+
+
+--
+-- Name: images_hidden_from_users_approved_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX images_approved_index ON public.images USING btree (approved) WHERE (approved = false);
@@ -5488,6 +5541,14 @@ ALTER TABLE ONLY public.image_tag_locks
 
 
 --
+-- Name: image_vectors image_vectors_image_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.image_vectors
+    ADD CONSTRAINT image_vectors_image_id_fkey FOREIGN KEY (image_id) REFERENCES public.images(id) ON DELETE CASCADE;
+
+
+--
 -- Name: moderation_logs moderation_logs_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5586,6 +5647,7 @@ INSERT INTO public."schema_migrations" (version) VALUES (20220321173359);
 INSERT INTO public."schema_migrations" (version) VALUES (20240723122759);
 INSERT INTO public."schema_migrations" (version) VALUES (20240728191353);
 INSERT INTO public."schema_migrations" (version) VALUES (20241216165826);
+INSERT INTO public."schema_migrations" (version) VALUES (20250109155442);
 INSERT INTO public."schema_migrations" (version) VALUES (20250407021536);
 INSERT INTO public."schema_migrations" (version) VALUES (20250501174007);
 INSERT INTO public."schema_migrations" (version) VALUES (20250502110018);

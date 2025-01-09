@@ -1,6 +1,7 @@
 defmodule PhilomenaMedia.Processors.Gif do
   @moduledoc false
 
+  alias PhilomenaMedia.Features
   alias PhilomenaMedia.Intensities
   alias PhilomenaMedia.Analyzers.Result
   alias PhilomenaMedia.Remote
@@ -23,12 +24,14 @@ defmodule PhilomenaMedia.Processors.Gif do
     palette = palette(file)
 
     {:ok, intensities} = Intensities.file(preview)
+    {:ok, features} = Features.file(preview)
 
     scaled = Enum.flat_map(versions, &scale(palette, file, &1))
     videos = generate_videos(file)
 
     [
       intensities: intensities,
+      features: features,
       thumbnails: scaled ++ videos ++ [{:copy, preview, "rendered.png"}]
     ]
   end
@@ -36,6 +39,12 @@ defmodule PhilomenaMedia.Processors.Gif do
   @spec post_process(Result.t(), Path.t()) :: Processors.edit_script()
   def post_process(_analysis, file) do
     [replace_original: optimize(file)]
+  end
+
+  @spec features(Result.t(), Path.t()) :: Features.t()
+  def features(analysis, file) do
+    {:ok, features} = Features.file(preview(analysis.duration, file))
+    features
   end
 
   @spec intensities(Result.t(), Path.t()) :: Intensities.t()
