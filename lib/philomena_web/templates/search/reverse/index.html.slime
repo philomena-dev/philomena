@@ -3,11 +3,9 @@ h1 Reverse Search
 = form_for @changeset, ~p"/search/reverse", [multipart: true, as: :image], fn f ->
   .walloftext
     p
-      ' Basic image similarity search. Finds uploaded images similar to the one
-      ' provided based on simple intensities and uses the median frame of
-      ' animations; very low contrast images (such as sketches) will produce
-      ' poor results and, regardless of contrast, results may include seemingly
-      ' random images that look very different.
+      ' Advanced image similarity search. Finds uploaded images similar to the one
+      ' provided based on perceptual features and uses the median frame of
+      ' animations.
 
   .image-other
     #js-image-upload-previews
@@ -26,14 +24,7 @@ h1 Reverse Search
 
     .field-error-js.hidden.js-scraper
 
-  h4 Optional settings
-
-  .field
-    = label f, :distance, "Match distance (suggested values: between 0.2 and 0.5)"
-    br
-    = number_input f, :distance, min: 0, max: 1, step: 0.01, class: "input"
-    = error_tag f, :distance
-
+  = hidden_input f, :limit, value: @conn.assigns.image_pagination.page_size
   = error_tag f, :limit
 
   .field
