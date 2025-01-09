@@ -2,12 +2,13 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 16.4
--- Dumped by pg_dump version 16.6
+-- Dumped from database version 17.2
+-- Dumped by pg_dump version 17.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -957,6 +958,37 @@ CREATE TABLE public.image_taggings (
     image_id bigint NOT NULL,
     tag_id bigint NOT NULL
 );
+
+
+--
+-- Name: image_vectors; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.image_vectors (
+    id bigint NOT NULL,
+    image_id bigint NOT NULL,
+    type character varying(255) NOT NULL,
+    features double precision[] NOT NULL
+);
+
+
+--
+-- Name: image_vectors_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.image_vectors_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: image_vectors_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.image_vectors_id_seq OWNED BY public.image_vectors.id;
 
 
 --
@@ -2366,6 +2398,13 @@ ALTER TABLE ONLY public.image_intensities ALTER COLUMN id SET DEFAULT nextval('p
 
 
 --
+-- Name: image_vectors id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.image_vectors ALTER COLUMN id SET DEFAULT nextval('public.image_vectors_id_seq'::regclass);
+
+
+--
 -- Name: images id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2725,6 +2764,14 @@ ALTER TABLE ONLY public.image_features
 
 ALTER TABLE ONLY public.image_intensities
     ADD CONSTRAINT image_intensities_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: image_vectors image_vectors_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.image_vectors
+    ADD CONSTRAINT image_vectors_pkey PRIMARY KEY (id);
 
 
 --
@@ -3190,6 +3237,13 @@ CREATE UNIQUE INDEX image_tag_locks_image_id_tag_id_index ON public.image_tag_lo
 --
 
 CREATE INDEX image_tag_locks_tag_id_index ON public.image_tag_locks USING btree (tag_id);
+
+
+--
+-- Name: image_vectors_image_id_type_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX image_vectors_image_id_type_index ON public.image_vectors USING btree (image_id, type);
 
 
 --
@@ -5382,6 +5436,14 @@ ALTER TABLE ONLY public.image_tag_locks
 
 
 --
+-- Name: image_vectors image_vectors_image_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.image_vectors
+    ADD CONSTRAINT image_vectors_image_id_fkey FOREIGN KEY (image_id) REFERENCES public.images(id) ON DELETE CASCADE;
+
+
+--
 -- Name: moderation_logs moderation_logs_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5448,3 +5510,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20220321173359);
 INSERT INTO public."schema_migrations" (version) VALUES (20240723122759);
 INSERT INTO public."schema_migrations" (version) VALUES (20240728191353);
 INSERT INTO public."schema_migrations" (version) VALUES (20241216165826);
+INSERT INTO public."schema_migrations" (version) VALUES (20250109155442);
