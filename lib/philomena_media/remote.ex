@@ -7,8 +7,20 @@ defmodule PhilomenaMedia.Remote do
     :ok = Philomena.Native.async_process_command(mediaproc_addr(), command, args)
 
     receive do
-      {:command_reply, command_reply} ->
+      {:process_command_reply, command_reply} ->
         {command_reply.stdout, command_reply.status}
+    end
+  end
+
+  @doc """
+  Gets a feature vector for the given image path to use in reverse image search.
+  """
+  def get_features(path) do
+    :ok = Philomena.Native.async_get_features(mediaproc_addr(), path)
+
+    receive do
+      {:get_features_reply, get_features_reply} ->
+        get_features_reply
     end
   end
 

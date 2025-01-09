@@ -62,14 +62,16 @@ RUN cd /tmp \
 
 COPY native/philomena /tmp/philomena
 COPY docker/mediaproc/safe-rsvg-convert /usr/bin/safe-rsvg-convert
+ADD https://github.com/liamwhite/philomena-ris-inference-toolkit/releases/download/v1.0/dinov2-with-registers-base.pt /usr/share/dinov2-with-registers-base.pt
 
 RUN cd /tmp/philomena \
     && cargo build --release -p mediaproc_server \
-    && cp target/release/mediaproc_server /usr/bin/mediaproc_server
+    && cp target/release/mediaproc_server /usr/bin/mediaproc_server \
+    && find target/release/build -regextype posix-extended -regex '^.*\.so(\.[0-9]+)*$' -exec cp '{}' /usr/lib/ ';'
 
 # Set up unprivileged user account
 RUN useradd -ms /bin/bash mediaproc
 USER mediaproc
 WORKDIR /home/mediaproc
 ENV RUST_LOG=trace
-CMD ["/usr/bin/mediaproc_server", "0.0.0.0:1500"]
+CMD ["/usr/bin/mediaproc_server", "0.0.0.0:1500", "/usr/share/dinov2-with-registers-base.pt"]
