@@ -3,6 +3,7 @@ defmodule PhilomenaMedia.Processors.Png do
 
   alias PhilomenaMedia.Intensities
   alias PhilomenaMedia.Analyzers.Result
+  alias PhilomenaMedia.Remote
   alias PhilomenaMedia.Processors.Processor
   alias PhilomenaMedia.Processors
 
@@ -49,7 +50,7 @@ defmodule PhilomenaMedia.Processors.Png do
     optimized = Briefly.create!(extname: ".png")
 
     {_output, 0} =
-      System.cmd("optipng", ["-fix", "-i0", "-o2", "-quiet", "-clobber", file, "-out", optimized])
+      Remote.cmd("optipng", ["-fix", "-i0", "-o2", "-quiet", "-clobber", file, "-out", optimized])
 
     # Remove useless .bak file
     File.rm(optimized <> ".bak")
@@ -66,7 +67,7 @@ defmodule PhilomenaMedia.Processors.Png do
     {_output, 0} =
       cond do
         animated? ->
-          System.cmd("ffmpeg", [
+          Remote.cmd("ffmpeg", [
             "-loglevel",
             "0",
             "-y",
@@ -82,10 +83,10 @@ defmodule PhilomenaMedia.Processors.Png do
           ])
 
         true ->
-          System.cmd("ffmpeg", ["-loglevel", "0", "-y", "-i", file, "-vf", scale_filter, scaled])
+          Remote.cmd("ffmpeg", ["-loglevel", "0", "-y", "-i", file, "-vf", scale_filter, scaled])
       end
 
-    System.cmd("optipng", ["-i0", "-o1", "-quiet", "-clobber", scaled])
+    Remote.cmd("optipng", ["-i0", "-o1", "-quiet", "-clobber", scaled])
 
     [{:copy, scaled, "#{thumb_name}.png"}]
   end

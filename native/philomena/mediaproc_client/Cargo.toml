@@ -1,0 +1,9 @@
+[package]
+name = "mediaproc_client"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+mediaproc = { path = "../mediaproc" }
+tokio = { version = "1.0", features = ["full"] }
