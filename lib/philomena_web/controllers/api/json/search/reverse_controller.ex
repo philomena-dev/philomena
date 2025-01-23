@@ -1,6 +1,7 @@
 defmodule PhilomenaWeb.Api.Json.Search.ReverseController do
   use PhilomenaWeb, :controller
 
+  alias PhilomenaWeb.ImageLoader
   alias Philomena.DuplicateReports
   alias Philomena.Interactions
 
@@ -9,12 +10,12 @@ defmodule PhilomenaWeb.Api.Json.Search.ReverseController do
 
   def create(conn, %{"image" => image_params}) do
     user = conn.assigns.current_user
+    image_params = Map.put(image_params, "limit", conn.params["limit"])
 
     {images, total} =
-      image_params
-      |> Map.put("distance", conn.params["distance"])
-      |> Map.put("limit", conn.params["limit"])
-      |> DuplicateReports.execute_search_query()
+      conn
+      |> ImageLoader.reverse_filter()
+      |> DuplicateReports.execute_search_query_by_features(image_params)
       |> case do
         {:ok, images} ->
           {images, images.total_entries}

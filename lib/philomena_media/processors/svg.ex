@@ -1,8 +1,10 @@
 defmodule PhilomenaMedia.Processors.Svg do
   @moduledoc false
 
+  alias PhilomenaMedia.Features
   alias PhilomenaMedia.Intensities
   alias PhilomenaMedia.Analyzers.Result
+  alias PhilomenaMedia.Remote
   alias PhilomenaMedia.Processors.Processor
   alias PhilomenaMedia.Processors
 
@@ -20,18 +22,26 @@ defmodule PhilomenaMedia.Processors.Svg do
     preview = preview(file)
 
     {:ok, intensities} = Intensities.file(preview)
+    {:ok, features} = Features.file(preview)
 
     scaled = Enum.flat_map(versions, &scale(preview, &1))
     full = [{:copy, preview, "full.png"}]
 
     [
       intensities: intensities,
+      features: features,
       thumbnails: scaled ++ full ++ [{:copy, preview, "rendered.png"}]
     ]
   end
 
   @spec post_process(Result.t(), Path.t()) :: Processors.edit_script()
   def post_process(_analysis, _file), do: []
+
+  @spec features(Result.t(), Path.t()) :: Features.t()
+  def features(_analysis, file) do
+    {:ok, features} = Features.file(preview(file))
+    features
+  end
 
   @spec intensities(Result.t(), Path.t()) :: Intensities.t()
   def intensities(_analysis, file) do
@@ -42,7 +52,7 @@ defmodule PhilomenaMedia.Processors.Svg do
   defp preview(file) do
     preview = Briefly.create!(extname: ".png")
 
-    {_output, 0} = System.cmd("safe-rsvg-convert", [file, preview])
+    {_output, 0} = Remote.cmd("safe-rsvg-convert", [file, preview])
 
     preview
   end
@@ -52,9 +62,9 @@ defmodule PhilomenaMedia.Processors.Svg do
     scale_filter = "scale=w=#{width}:h=#{height}:force_original_aspect_ratio=decrease"
 
     {_output, 0} =
-      System.cmd("ffmpeg", ["-loglevel", "0", "-y", "-i", preview, "-vf", scale_filter, scaled])
+      Remote.cmd("ffmpeg", ["-loglevel", "0", "-y", "-i", preview, "-vf", scale_filter, scaled])
 
-    {_output, 0} = System.cmd("optipng", ["-i0", "-o1", "-quiet", "-clobber", scaled])
+    {_output, 0} = Remote.cmd("optipng", ["-i0", "-o1", "-quiet", "-clobber", scaled])
 
     [{:copy, scaled, "#{thumb_name}.png"}]
   end

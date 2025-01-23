@@ -27,7 +27,7 @@ defmodule PhilomenaMedia.Mime do
   """
   @spec file(Path.t()) :: {:ok, t()} | {:unsupported_mime, t()} | :error
   def file(path) do
-    System.cmd("file", ["-b", "--mime-type", path])
+    PhilomenaMedia.Remote.cmd("file", ["-b", "--mime-type", path])
     |> case do
       {output, 0} ->
         true_mime(String.trim(output))

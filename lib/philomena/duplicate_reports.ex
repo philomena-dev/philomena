@@ -9,6 +9,8 @@ defmodule Philomena.DuplicateReports do
   alias Ecto.Multi
   alias Philomena.Repo
 
+  alias PhilomenaMedia.Features
+  alias PhilomenaQuery.Search
   alias Philomena.DuplicateReports.DuplicateReport
   alias Philomena.DuplicateReports.SearchQuery
   alias Philomena.DuplicateReports.Uploader
@@ -20,7 +22,7 @@ defmodule Philomena.DuplicateReports do
     source = Repo.preload(source, :intensity)
 
     {source.intensity, source.image_aspect_ratio}
-    |> find_duplicates(dist: 0.2)
+    |> find_duplicates_by_intensities(dist: 0.2)
     |> where([i, _it], i.id != ^source.id)
     |> Repo.all()
     |> Enum.map(fn target ->
@@ -30,7 +32,77 @@ defmodule Philomena.DuplicateReports do
     end)
   end
 
-  def find_duplicates({intensities, aspect_ratio}, opts \\ []) do
+  def find_duplicates_by_features(features = %Features{}, filter, opts \\ []) do
+    min_score = Keyword.get(opts, :min_score, 0)
+    limit = Keyword.get(opts, :limit, 25)
+
+    # TODO: many issues with efficient filtering using k-NN plugin,
+    # use post_filter to work around for the time being
+    #
+    # https://github.com/opensearch-project/k-NN/issues/2222
+    # https://github.com/opensearch-project/k-NN/issues/2339
+    # https://github.com/opensearch-project/k-NN/issues/2347
+
+    query = %{
+      query: %{
+        nested: %{
+          path: "vectors",
+          query: %{
+            knn: %{
+              "vectors.f": %{
+                vector: features.features,
+                k: 100
+              }
+            }
+          }
+        }
+      },
+      post_filter: filter,
+      min_score: min_score
+    }
+
+    images =
+      Image
+      |> Search.search_definition(query, %{page_size: limit})
+      |> Search.search_records(preload(Image, [:user, :sources, tags: :aliases]))
+
+    images
+    |> Map.put(:total_entries, min(images.total_entries, limit))
+    |> Map.put(:total_pages, min(images.total_pages, 1))
+  end
+
+  @doc """
+  Executes the reverse image search query from parameters.
+
+  ## Examples
+
+      iex> execute_search_query_by_features(%{"image" => ...})
+      {:ok, [%Image{...}, ....]}
+
+      iex> execute_search_query_by_features(%{"image" => ...})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def execute_search_query_by_features(filter, attrs \\ %{}) do
+    %SearchQuery{}
+    |> SearchQuery.changeset(attrs)
+    |> Uploader.analyze_upload(attrs)
+    |> Ecto.Changeset.apply_action(:create)
+    |> case do
+      {:ok, search_query} ->
+        images =
+          search_query
+          |> generate_features()
+          |> find_duplicates_by_features(filter, limit: search_query.limit)
+
+        {:ok, images}
+
+      error ->
+        error
+    end
+  end
+
+  def find_duplicates_by_intensities({intensities, aspect_ratio}, opts \\ []) do
     aspect_dist = Keyword.get(opts, :aspect_dist, 0.05)
     limit = Keyword.get(opts, :limit, 10)
     dist = Keyword.get(opts, :dist, 0.25)
@@ -71,7 +143,7 @@ defmodule Philomena.DuplicateReports do
       {:error, %Ecto.Changeset{}}
 
   """
-  def execute_search_query(attrs \\ %{}) do
+  def execute_search_query_by_intensities(attrs \\ %{}) do
     %SearchQuery{}
     |> SearchQuery.changeset(attrs)
     |> Uploader.analyze_upload(attrs)
@@ -85,7 +157,7 @@ defmodule Philomena.DuplicateReports do
 
         images =
           {intensities, aspect}
-          |> find_duplicates(dist: dist, aspect_dist: dist, limit: limit)
+          |> find_duplicates_by_intensities(dist: dist, aspect_dist: dist, limit: limit)
           |> preload([:user, :intensity, [:sources, tags: :aliases]])
           |> Repo.paginate(page_size: 50)
 
@@ -101,6 +173,13 @@ defmodule Philomena.DuplicateReports do
     file = search_query.uploaded_image
 
     PhilomenaMedia.Processors.intensities(analysis, file)
+  end
+
+  defp generate_features(search_query) do
+    analysis = SearchQuery.to_analysis(search_query)
+    file = search_query.uploaded_image
+
+    PhilomenaMedia.Processors.features(analysis, file)
   end
 
   @doc """

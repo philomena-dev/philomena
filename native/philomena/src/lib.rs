@@ -1,10 +1,12 @@
 use jemallocator::Jemalloc;
-use rustler::{Atom, Binary};
+use rustler::{Atom, Binary, Env};
 use std::collections::HashMap;
 
+mod asyncnif;
 mod camo;
 mod domains;
 mod markdown;
+mod remote;
 #[cfg(test)]
 mod tests;
 mod zip;
@@ -33,6 +35,25 @@ fn markdown_to_html_unsafe(input: &str, reps: HashMap<String, String>) -> String
 #[rustler::nif]
 fn camo_image_url(input: &str) -> String {
     camo::image_url_careful(input)
+}
+
+// Remote NIF wrappers.
+
+#[rustler::nif]
+fn async_get_features(env: Env, server_addr: String, path: String) -> Atom {
+    let fut = remote::get_features(server_addr, path);
+    asyncnif::call_async(env, fut, remote::get_features_reply_with_env)
+}
+
+#[rustler::nif]
+fn async_process_command(
+    env: Env,
+    server_addr: String,
+    program: String,
+    arguments: Vec<String>,
+) -> Atom {
+    let fut = remote::process_command(server_addr, program, arguments);
+    asyncnif::call_async(env, fut, remote::command_reply_with_env)
 }
 
 // Zip NIF wrappers.

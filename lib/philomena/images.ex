@@ -858,6 +858,7 @@ defmodule Philomena.Images do
 
     [
       :gallery_interactions,
+      :vectors,
       sources: sources_query,
       user: user_query,
       favers: user_query,
