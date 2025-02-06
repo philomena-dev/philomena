@@ -1,8 +1,10 @@
 defmodule PhilomenaMedia.Processors.Webm do
   @moduledoc false
 
+  alias PhilomenaMedia.Features
   alias PhilomenaMedia.Intensities
   alias PhilomenaMedia.Analyzers.Result
+  alias PhilomenaMedia.Remote
   alias PhilomenaMedia.GifPreview
   alias PhilomenaMedia.Processors.Processor
   alias PhilomenaMedia.Processors
@@ -33,6 +35,7 @@ defmodule PhilomenaMedia.Processors.Webm do
     mp4 = scale_mp4_only(decoder, stripped, dimensions, dimensions)
 
     {:ok, intensities} = Intensities.file(preview)
+    {:ok, features} = Features.file(preview)
 
     scaled = Enum.flat_map(versions, &scale(decoder, stripped, duration, dimensions, &1))
     mp4 = [{:copy, mp4, "full.mp4"}]
@@ -40,12 +43,19 @@ defmodule PhilomenaMedia.Processors.Webm do
     [
       replace_original: stripped,
       intensities: intensities,
+      features: features,
       thumbnails: scaled ++ mp4 ++ [{:copy, preview, "rendered.png"}]
     ]
   end
 
   @spec post_process(Result.t(), Path.t()) :: Processors.edit_script()
   def post_process(_analysis, _file), do: []
+
+  @spec features(Result.t(), Path.t()) :: Features.t()
+  def features(analysis, file) do
+    {:ok, features} = Features.file(preview(analysis.duration, file))
+    features
+  end
 
   @spec intensities(Result.t(), Path.t()) :: Intensities.t()
   def intensities(analysis, file) do
@@ -56,7 +66,7 @@ defmodule PhilomenaMedia.Processors.Webm do
   defp preview(duration, file) do
     preview = Briefly.create!(extname: ".png")
 
-    {_output, 0} = System.cmd("mediathumb", [file, to_string(duration / 2), preview])
+    {_output, 0} = Remote.cmd("mediathumb", [file, to_string(duration / 2), preview])
 
     preview
   end
@@ -65,7 +75,7 @@ defmodule PhilomenaMedia.Processors.Webm do
     stripped = Briefly.create!(extname: ".webm")
 
     {_output, 0} =
-      System.cmd("ffmpeg", [
+      Remote.cmd("ffmpeg", [
         "-loglevel",
         "0",
         "-y",
@@ -110,7 +120,7 @@ defmodule PhilomenaMedia.Processors.Webm do
     mp4 = Briefly.create!(extname: ".mp4")
 
     {_output, 0} =
-      System.cmd("ffmpeg", [
+      Remote.cmd("ffmpeg", [
         "-loglevel",
         "0",
         "-y",
@@ -170,7 +180,7 @@ defmodule PhilomenaMedia.Processors.Webm do
     mp4 = Briefly.create!(extname: ".mp4")
 
     {_output, 0} =
-      System.cmd("ffmpeg", [
+      Remote.cmd("ffmpeg", [
         "-loglevel",
         "0",
         "-y",
@@ -213,7 +223,7 @@ defmodule PhilomenaMedia.Processors.Webm do
 
   defp select_decoder(file) do
     {output, 0} =
-      System.cmd("ffprobe", [
+      Remote.cmd("ffprobe", [
         "-loglevel",
         "0",
         "-select_streams",

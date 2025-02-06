@@ -1,8 +1,10 @@
 defmodule PhilomenaMedia.Processors.Png do
   @moduledoc false
 
+  alias PhilomenaMedia.Features
   alias PhilomenaMedia.Intensities
   alias PhilomenaMedia.Analyzers.Result
+  alias PhilomenaMedia.Remote
   alias PhilomenaMedia.Processors.Processor
   alias PhilomenaMedia.Processors
 
@@ -18,11 +20,13 @@ defmodule PhilomenaMedia.Processors.Png do
     animated? = analysis.animated?
 
     {:ok, intensities} = Intensities.file(file)
+    {:ok, features} = Features.file(file)
 
     scaled = Enum.flat_map(versions, &scale(file, animated?, &1))
 
     [
       intensities: intensities,
+      features: features,
       thumbnails: scaled
     ]
   end
@@ -37,6 +41,12 @@ defmodule PhilomenaMedia.Processors.Png do
     end
   end
 
+  @spec features(Result.t(), Path.t()) :: Features.t()
+  def features(_analysis, file) do
+    {:ok, features} = Features.file(file)
+    features
+  end
+
   @spec intensities(Result.t(), Path.t()) :: Intensities.t()
   def intensities(_analysis, file) do
     {:ok, intensities} = Intensities.file(file)
@@ -49,7 +59,7 @@ defmodule PhilomenaMedia.Processors.Png do
     optimized = Briefly.create!(extname: ".png")
 
     {_output, 0} =
-      System.cmd("optipng", ["-fix", "-i0", "-o2", "-quiet", "-clobber", file, "-out", optimized])
+      Remote.cmd("optipng", ["-fix", "-i0", "-o2", "-quiet", "-clobber", file, "-out", optimized])
 
     # Remove useless .bak file
     File.rm(optimized <> ".bak")
@@ -66,7 +76,7 @@ defmodule PhilomenaMedia.Processors.Png do
     {_output, 0} =
       cond do
         animated? ->
-          System.cmd("ffmpeg", [
+          Remote.cmd("ffmpeg", [
             "-loglevel",
             "0",
             "-y",
@@ -82,10 +92,10 @@ defmodule PhilomenaMedia.Processors.Png do
           ])
 
         true ->
-          System.cmd("ffmpeg", ["-loglevel", "0", "-y", "-i", file, "-vf", scale_filter, scaled])
+          Remote.cmd("ffmpeg", ["-loglevel", "0", "-y", "-i", file, "-vf", scale_filter, scaled])
       end
 
-    System.cmd("optipng", ["-i0", "-o1", "-quiet", "-clobber", scaled])
+    Remote.cmd("optipng", ["-i0", "-o1", "-quiet", "-clobber", scaled])
 
     [{:copy, scaled, "#{thumb_name}.png"}]
   end
