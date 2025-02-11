@@ -203,7 +203,7 @@ defmodule PhilomenaWeb.ImageController do
 
       not is_nil(image.duplicate_id) and
           (not Canada.Can.can?(conn.assigns.current_user, :show, image) or
-             conn.params["del"] != "1") ->
+             conn.params["del"] == nil) ->
         conn
         |> put_flash(
           :info,
