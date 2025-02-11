@@ -17,22 +17,8 @@ defmodule PhilomenaWeb.Api.Json.ImageView do
     }
   end
 
-  def render("image.json", %{
-        image: %{hidden_from_users: true, duplicate_id: duplicate_id} = image
-      })
-      when not is_nil(duplicate_id) do
-    %{
-      id: image.id,
-      created_at: image.created_at,
-      updated_at: image.updated_at,
-      first_seen_at: image.first_seen_at,
-      duplicate_of: image.duplicate_id,
-      deletion_reason: nil,
-      hidden_from_users: true
-    }
-  end
-
-  def render("image.json", %{image: %{hidden_from_users: true} = image}) do
+  def render("image.json", %{image: %{hidden_from_users: true} = image})
+      when is_nil(image.duplicate_id) do
     %{
       id: image.id,
       created_at: image.created_at,
@@ -44,13 +30,13 @@ defmodule PhilomenaWeb.Api.Json.ImageView do
     }
   end
 
-  def render("image.json", %{conn: conn, image: %{hidden_from_users: false} = image}) do
+  def render("image.json", %{conn: conn, image: image}) do
     result = render_one(image, PhilomenaWeb.Api.Json.ImageView, "image.json", %{image: image})
 
     Map.put(result, :spoilered, ImageView.filter_or_spoiler_hits?(conn, image))
   end
 
-  def render("image.json", %{image: %{hidden_from_users: false} = image}) do
+  def render("image.json", %{image: image}) do
     %{
       id: image.id,
       created_at: image.created_at,
@@ -84,13 +70,13 @@ defmodule PhilomenaWeb.Api.Json.ImageView do
       source_url:
         if(Enum.count(image.sources) > 0, do: Enum.at(image.sources, 0).source, else: ""),
       source_urls: Enum.map(image.sources, & &1.source),
-      view_url: ImageView.pretty_url(image, false, false),
-      representations: ImageView.thumb_urls(image, false),
+      view_url: ImageView.view_url(image),
+      representations: ImageView.thumb_urls(image, true),
       thumbnails_generated: image.thumbnails_generated,
       processed: image.processed,
       deletion_reason: nil,
-      duplicate_of: nil,
-      hidden_from_users: false
+      duplicate_of: image.duplicate_id,
+      hidden_from_users: image.hidden_from_users
     }
   end
 

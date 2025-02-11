@@ -70,6 +70,12 @@ defmodule PhilomenaWeb.ImageView do
     |> Map.get(version_name, :full)
   end
 
+  def view_url(%{hidden_from_users: false} = image),
+    do: pretty_url(image, false, false)
+
+  def view_url(%{hidden_from_users: true} = image),
+    do: thumb_url(image, true, :full)
+
   defp append_full_url(urls, %{hidden_from_users: false} = image, _show_hidden),
     do: Map.put(urls, :full, pretty_url(image, true, false))
 
