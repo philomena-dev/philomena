@@ -202,8 +202,9 @@ defmodule PhilomenaWeb.ImageController do
         PhilomenaWeb.NotFoundPlug.call(conn)
 
       not is_nil(image.duplicate_id) and
-          (not Canada.Can.can?(conn.assigns.current_user, :show, image) or
-             conn.params["del"] == nil) ->
+        (not Canada.Can.can?(conn.assigns.current_user, :show, image) or
+           conn.params["del"] == nil) and
+          not Canada.Can.can?(conn.assigns.current_user, :hide, image) ->
         conn
         |> put_flash(
           :info,
