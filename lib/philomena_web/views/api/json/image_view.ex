@@ -70,7 +70,7 @@ defmodule PhilomenaWeb.Api.Json.ImageView do
       source_url:
         if(Enum.count(image.sources) > 0, do: Enum.at(image.sources, 0).source, else: ""),
       source_urls: Enum.map(image.sources, & &1.source),
-      view_url: ImageView.view_url(image),
+      view_url: ImageView.pretty_url(image, true, false, false),
       representations: ImageView.thumb_urls(image, true),
       thumbnails_generated: image.thumbnails_generated,
       processed: image.processed,

@@ -70,20 +70,8 @@ defmodule PhilomenaWeb.ImageView do
     |> Map.get(version_name, :full)
   end
 
-  def view_url(%{hidden_from_users: false} = image),
-    do: pretty_url(image, false, false)
-
-  def view_url(%{hidden_from_users: true} = image),
-    do: thumb_url(image, true, :full)
-
-  defp append_full_url(urls, %{hidden_from_users: false} = image, _show_hidden),
-    do: Map.put(urls, :full, pretty_url(image, true, false))
-
-  defp append_full_url(urls, %{hidden_from_users: true} = image, true),
-    do: Map.put(urls, :full, thumb_url(image, true, :full))
-
-  defp append_full_url(urls, _image, _show_hidden),
-    do: urls
+  defp append_full_url(urls, image, show_hidden),
+    do: Map.put(urls, :full, pretty_url(image, show_hidden, true, false))
 
   defp append_gif_urls(urls, %{image_mime_type: "image/gif"} = image, show_hidden) do
     full_url = thumb_url(image, show_hidden, :full)
@@ -120,7 +108,10 @@ defmodule PhilomenaWeb.ImageView do
     "#{root}/#{year}/#{month}/#{day}/#{id_fragment}/#{name}.#{format}"
   end
 
-  def pretty_url(image, short, download) do
+  def pretty_url(%{hidden_from_users: true} = image, true, _short, _download),
+    do: thumb_url(image, true, :full)
+
+  def pretty_url(image, _show_hidden, short, download) do
     %{year: year, month: month, day: day} = image.created_at
     root = image_url_root()
 
