@@ -2,8 +2,9 @@ defmodule PhilomenaWeb.Api.Json.Forum.TopicView do
   use PhilomenaWeb, :view
   alias PhilomenaWeb.UserAttributionView
 
-  def render("index.json", %{topics: topics, total: total} = assigns) do
+  def render("index.json", %{cursors: cursors, topics: topics, total: total} = assigns) do
     %{
+      cursors: cursors,
       topics: render_many(topics, PhilomenaWeb.Api.Json.Forum.TopicView, "topic.json", assigns),
       total: total
     }
@@ -15,6 +16,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.TopicView do
 
   def render("topic.json", %{topic: %{hidden_from_users: true}}) do
     %{
+      id: nil,
       slug: nil,
       title: nil,
       post_count: nil,
@@ -29,6 +31,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.TopicView do
 
   def render("topic.json", %{topic: topic}) do
     %{
+      id: topic.id,
       slug: topic.slug,
       title: topic.title,
       post_count: topic.post_count,
