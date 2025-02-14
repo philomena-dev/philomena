@@ -3,12 +3,11 @@ defmodule PhilomenaWeb.ReactivationControllerTest do
 
   alias Swoosh.Adapters.Local.Storage.Memory
   alias Philomena.Users
-  alias Phoenix.Flash
 
   setup :register_and_log_in_user
 
   describe "GET /reactivations/:id" do
-    test "renders the reactivate account page", %{conn: conn, user: user} do
+    test "renders the reactivate account page", %{conn: conn} do
       conn = delete(conn, ~p"/deactivations")
       conn = get(conn, ~p"/reactivations/pinkie-pie-is-best-pony")
       response = html_response(conn, 200)
@@ -31,5 +30,4 @@ defmodule PhilomenaWeb.ReactivationControllerTest do
   defp extract_reactivation_link_from_email(email = %Swoosh.Email{}) do
     Regex.scan(~r/http:\/\/localhost:4002\/reactivations\/.*/, email.text_body) |> hd |> hd
   end
-
 end
