@@ -78,6 +78,8 @@ defmodule PhilomenaWeb.Router do
       :redirect_if_user_is_authenticated
     ]
 
+    get "/reactivations/:token", ReactivationController, :show
+    post "/reactivations/:token", ReactivationController, :post
     resources "/registrations", RegistrationController, only: [:new, :create], singleton: true
   end
 
@@ -104,7 +106,6 @@ defmodule PhilomenaWeb.Router do
     resources "/registrations", RegistrationController, only: [:edit, :update], singleton: true
     resources "/sessions", SessionController, only: [:delete], singleton: true
     resources "/deactivations", DeactivationController, only: [:show, :delete], singleton: true
-    get "/deactivations/:id/reactivate", DeactivationController, :index
 
     scope "/registrations", Registration, as: :registration do
       resources "/totp", TotpController, only: [:edit, :update], singleton: true

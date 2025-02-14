@@ -834,6 +834,27 @@ defmodule Philomena.Users do
   end
 
   @doc """
+  Gets the user by reactivation token.
+
+  ## Examples
+
+      iex> get_user_by_reactivation_token("validtoken")
+      %User{}
+
+      iex> get_user_by_reactivation_token("invalidtoken")
+      nil
+
+  """
+  def get_user_by_reactivation_token(token) do
+    with {:ok, query} <- UserToken.verify_email_token_query(token, "reactivate"),
+         %User{} = user <- Repo.one(query) do
+      user
+    else
+      _ -> nil
+    end
+  end
+
+  @doc """
   Generates a new API key for the user.
 
   ## Examples
