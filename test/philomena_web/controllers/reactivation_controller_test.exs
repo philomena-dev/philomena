@@ -18,7 +18,8 @@ defmodule PhilomenaWeb.ReactivationControllerTest do
   describe "POST /reactivations/:id" do
     test "reactivate account page works", %{conn: conn, user: user} do
       conn = delete(conn, ~p"/deactivations")
-      reactivation_link = Memory.all() |> hd |> extract_reactivation_link_from_email
+      reactivation_link = Memory.all() |> Enum.find(&(&1.subject == "Reactivation instructions for your account")) |> extract_reactivation_link_from_email()
+      assert reactivation_link != nil
       conn = post(conn, reactivation_link)
       assert redirected_to(conn) == ~p"/"
 
