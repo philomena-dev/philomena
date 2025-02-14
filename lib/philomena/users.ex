@@ -479,6 +479,15 @@ defmodule Philomena.Users do
     UserNotifier.deliver_reset_password_instructions(user, reset_password_url_fun.(encoded_token))
   end
 
+  @doc ~S"""
+  Delivers the reactivate account email to the given user.
+
+  ## Examples
+
+      iex> deliver_user_reactivation_instructions(user, &url(~p"/reactivations/#{&1}"))
+      {:ok, %{to: ..., body: ...}}
+
+  """
   def deliver_user_reactivation_instructions(%User{} = user, reactivation_url_fun)
       when is_function(reactivation_url_fun, 1) do
     {encoded_token, user_token} = UserToken.build_email_token(user, "reactivate")
