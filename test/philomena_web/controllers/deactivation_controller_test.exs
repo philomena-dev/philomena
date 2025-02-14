@@ -7,7 +7,7 @@ defmodule PhilomenaWeb.DeactivationControllerTest do
   setup :register_and_log_in_user
 
   describe "GET /deactivations" do
-    test "renders the deactive account page", %{conn: conn} do
+    test "renders the deactivate account page", %{conn: conn} do
       conn = get(conn, ~p"/deactivations")
       response = html_response(conn, 200)
       assert response =~ "<h1>Deactivate Account</h1>"
