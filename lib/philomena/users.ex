@@ -479,6 +479,13 @@ defmodule Philomena.Users do
     UserNotifier.deliver_reset_password_instructions(user, reset_password_url_fun.(encoded_token))
   end
 
+  def deliver_user_reactivation_instructions(%User{} = user, reactivation_url_fun)
+      when is_function(reactivation_url_fun, 1) do
+    {encoded_token, user_token} = UserToken.build_email_token(user, "reactivate")
+    Repo.insert!(user_token)
+    UserNotifier.deliver_reactivation_instructions(user, reactivation_url_fun.(encoded_token))
+  end
+
   @doc """
   Gets the user by reset password token.
 
@@ -808,6 +815,21 @@ defmodule Philomena.Users do
   def deactivate_user(moderator, %User{} = user) do
     user
     |> User.deactivate_changeset(moderator)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deactivates a user account with the user recorded performing the deactivation.
+
+  ## Examples
+
+      iex> deactivate_user(user)
+      {:ok, %User{}}
+
+  """
+  def deactivate_user(%User{} = user) do
+    user
+    |> User.deactivate_changeset(user)
     |> Repo.update()
   end
 

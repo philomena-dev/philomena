@@ -71,6 +71,6 @@ h3 Change password
   = submit "Change password", class: "button"
 
 h3 Deactivate Account 
-= button_to "Deactivate account", ~p"/deactivations"
-p 
-  ' Navigate to the account deactivation page
+p
+  ' Navigate to the account deactivation page.
+= button_to "Deactivate account", ~p"/deactivations", class: "button"
