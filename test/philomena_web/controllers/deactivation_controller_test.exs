@@ -20,7 +20,9 @@ defmodule PhilomenaWeb.DeactivationControllerTest do
       assert redirected_to(conn) == ~p"/"
       conn = get(conn, ~p"/registrations/edit")
       assert redirected_to(conn) == ~p"/sessions/new"
-      assert Memory.all() |> Enum.find(&(&1.subject == "Reactivation instructions for your account")) != nil
+
+      assert Memory.all()
+             |> Enum.find(&(&1.subject == "Reactivation instructions for your account")) != nil
 
       user = Users.get_user!(user.id)
       assert user.deleted_by_user_id == user.id
