@@ -55,7 +55,7 @@ defmodule PhilomenaWeb.RegistrationControllerTest do
       assert response =~ "Settings"
     end
 
-    test "renders the deactivation section of the settings page", %{conn: conn, user: user} do
+    test "renders the deactivation section of the settings page", %{conn: conn} do
       conn = get(conn, ~p"/registrations/edit")
       response = html_response(conn, 200)
       assert response =~ "<h3>Deactivate Account</h3>"
