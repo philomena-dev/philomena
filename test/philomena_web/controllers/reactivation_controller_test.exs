@@ -3,9 +3,7 @@ defmodule PhilomenaWeb.ReactivationControllerTest do
 
   alias Swoosh.Adapters.Local.Storage.Memory
   alias Philomena.Users
-  alias Philomena.Repo
   alias Phoenix.Flash
-  import Philomena.UsersFixtures
 
   setup :register_and_log_in_user
 
