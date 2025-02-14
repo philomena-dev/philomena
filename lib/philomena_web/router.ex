@@ -78,8 +78,7 @@ defmodule PhilomenaWeb.Router do
       :redirect_if_user_is_authenticated
     ]
 
-    get "/reactivations/:token", ReactivationController, :show
-    post "/reactivations/:token", ReactivationController, :post
+    resources "/reactivations", ReactivationController, only: [:show, :create]
     resources "/registrations", RegistrationController, only: [:new, :create], singleton: true
   end
 
