@@ -1,4 +1,6 @@
 defmodule PhilomenaWeb.DeactivationControllerTest do
+  import Philomena.TestUtilities
+
   use PhilomenaWeb.ConnCase, async: true
 
   alias Swoosh.Adapters.Local.Storage.Memory
@@ -24,8 +26,10 @@ defmodule PhilomenaWeb.DeactivationControllerTest do
       assert Memory.all()
              |> Enum.find(&(&1.subject == "Reactivation instructions for your account")) != nil
 
-      user = Users.get_user!(user.id)
-      assert user.deleted_by_user_id == user.id
+      assert_retry(fn ->
+        user = Users.get_user!(user.id)
+        user.deleted_by_user_id == user.id
+      end)
     end
   end
 end

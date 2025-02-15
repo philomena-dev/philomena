@@ -1,5 +1,6 @@
 defmodule PhilomenaWeb.ReactivationControllerTest do
   use PhilomenaWeb.ConnCase, async: true
+  import Philomena.TestUtilities
 
   alias Swoosh.Adapters.Local.Storage.Memory
   alias Philomena.Users
@@ -33,8 +34,10 @@ defmodule PhilomenaWeb.ReactivationControllerTest do
       conn = post(conn, url, %{"token" => token})
       assert redirected_to(conn) == ~p"/"
 
-      user = Users.get_user!(user.id)
-      assert user.deleted_by_user_id == nil
+      assert_retry(fn ->
+        user = Users.get_user!(user.id)
+        user.deleted_by_user_id == nil
+      end)
     end
   end
 
