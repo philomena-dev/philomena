@@ -25,8 +25,8 @@ interface History {
    * Used to track the version of the schema layout just in case we do any
    * breaking changes to this schema so that we can properly migrate old
    * search history data. It's also used to prevent older versions of
-   * the frontend code from trying to use the newer schema they no nothing
-   * about (extremely improbable, but just in case).
+   * the frontend code from trying to use the newer incompatible schema they
+   * know nothing about (extremely improbable, but just in case).
    */
   schemaVersion: 1;
 
@@ -78,7 +78,7 @@ export class HistoryStore {
   }
 
   /**
-   * Extracts the records from the history. To do this, it first needs to migrate
+   * Extracts the records from the history. To do this, we first need to migrate
    * the history object to the latest schema version if necessary.
    */
   private extractRecords(history: null | History): HistoryRecord[] {
@@ -88,7 +88,8 @@ export class HistoryStore {
     }
 
     // We have only one version at the time of this writing, so we don't need
-    // to do any migration yet. The schema should always be at the version `1`.
+    // to do any migration yet. Hopefully we never need to do a breaking change
+    // and this stays at version `1` forever.
     const latestSchemaVersion = 1;
 
     switch (history.schemaVersion) {

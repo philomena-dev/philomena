@@ -2,13 +2,14 @@ import { TermSuggestion } from 'utils/suggestions';
 import { InputHistory } from './history';
 import { HistoryStore } from './store';
 import { makeEl } from '../../utils/dom';
+
 /**
  * Stores a set of histories identified by their unique IDs.
  *
  * Instead, we could attach the history objects to the respective input HTML
  * elements by monkey-patching them, but that would look a bit uglier and otherwise
  * with this approach we wouldn't be able to share the same history object between
- * multiple input elements.
+ * multiple input elements that naturally.
  */
 class InputHistoriesPool {
   private histories = new Map<string, InputHistory>();
@@ -21,7 +22,6 @@ class InputHistoriesPool {
     }
 
     const store = new HistoryStore(historyId);
-
     const newHistory = new InputHistory(store);
     this.histories.set(historyId, newHistory);
 
@@ -34,7 +34,10 @@ type HistoryAutocompletableInputElement = (HTMLInputElement | HTMLTextAreaElemen
 };
 
 function hasHistoryAutocompletion(element: unknown): element is HistoryAutocompletableInputElement {
-  return element instanceof HTMLInputElement && Boolean(element.dataset.autocompleteHistoryId);
+  return (
+    (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) &&
+    Boolean(element.dataset.autocompleteHistoryId)
+  );
 }
 
 const histories = new InputHistoriesPool();
@@ -79,11 +82,20 @@ export function listSuggestions(element: HTMLInputElement | HTMLTextAreaElement,
     .load(element.dataset.autocompleteHistoryId)
     .listSuggestions(element.value, limit)
     .map(result => {
+      const icon = makeEl('i', {
+        className: 'fas fa-history',
+      });
+
+      const label = makeEl('span', {
+        textContent: ` ${result}`,
+      });
+
+      label.style.color = '#50C878';
+      label.style.fontWeight = 'bold';
+
       return {
-        value: result.target,
-        label: result.indexes.length
-          ? result.highlight(match => makeEl('strong', { innerText: match }))
-          : result.target,
+        value: result,
+        label: [icon, label],
       };
     });
 }

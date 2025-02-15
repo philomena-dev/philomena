@@ -1,5 +1,4 @@
 import { HistoryStore, HistoryRecord } from './store';
-import fuzzysort from 'fuzzysort';
 
 /**
  * Maximum number of records we keep in the history. If the limit is reached,
@@ -15,9 +14,7 @@ const maxInputLength = 256;
 
 /**
  * Input history is a mini DB limited in size and stored in the `localStorage`.
- * This class tracks the search history under the specified `historyId` key.
- * It takes care of versioning and schema migrations, and provides a simple
- * CRUD/watch API for the search history data.
+ * It provides a simple CRUD/watch API for the search history data.
  *
  * Note that `localStorage` is not transactional. Other browser tabs may modify
  * it concurrently, which may lead to version mismatches and potential TOCTOU
@@ -35,13 +32,6 @@ export class InputHistory {
    */
   private records: HistoryRecord[];
 
-  /**
-   * The length of this array must be equal to the length of `records`.
-   * Every element has a corresponding record from the `records` array.
-   * This list is fed to the fuzzy search algorithm to speed up the search.
-   */
-  private index: Fuzzysort.Prepared[];
-
   constructor(store: HistoryStore) {
     this.store = store;
 
@@ -49,7 +39,6 @@ export class InputHistory {
     this.records = store.read();
 
     const indexing = performance.now();
-    this.index = this.reindex();
 
     const end = performance.now();
     console.debug(
@@ -61,24 +50,22 @@ export class InputHistory {
 
     store.watch(records => {
       this.records = records;
-      this.index = this.reindex();
     });
-  }
-
-  reindex(): Fuzzysort.Prepared[] {
-    return this.records.map(record => fuzzysort.prepare(record.content));
   }
 
   /**
    * Save the input into the history and commit it to the `localStorage`.
    */
   write(input: string) {
-    if (input.trim() === '') {
+    // eslint-disable-next-line no-param-reassign
+    input = input.trim();
+
+    if (input === '') {
       return;
     }
 
     if (input.length > maxInputLength) {
-      console.warn(`The input is too long to be saved in the search history (length: ${input.length}.`);
+      console.warn(`The input is too long to be saved in the search history (length: ${input.length}).`);
     }
 
     const record = this.records.find(historyRecord => historyRecord.content === input);
@@ -114,25 +101,21 @@ export class InputHistory {
       createdAt: now,
       updatedAt: now,
     });
-
-    // Today this isn't required, because after a new record is added, the
-    // page is going to be re-rendered anyway, but preparing just one record
-    // should be fast enough to not worry about it. In return we guarantee
-    // the consistency of the `index` array with the `records` array.
-    this.index.unshift(fuzzysort.prepare(input));
   }
 
-  listSuggestions(query: string, limit: number): readonly Fuzzysort.Result[] {
-    const results = fuzzysort.go(query, this.index, {
-      limit,
+  listSuggestions(query: string, limit: number): string[] {
+    const results = [];
 
-      // 0 is a perfect match and -1000 is the worst match.
-      threshold: -500,
+    for (const record of this.records) {
+      if (results.length >= limit) {
+        break;
+      }
 
-      // Return all results for an empty search no matter what's the threshold.
-      all: true,
-    });
-    console.debug(results);
+      if (record.content.startsWith(query)) {
+        results.push(record.content);
+      }
+    }
+
     return results;
   }
 }

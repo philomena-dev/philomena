@@ -4,7 +4,7 @@
 
 import { LocalAutocompleter } from '../utils/local-autocompleter';
 import { getTermContexts } from '../match_query';
-import defineStore from '../utils/store';
+import store from '../utils/store';
 import { TermContext } from '../query/lex';
 import { $$ } from '../utils/dom';
 import {
@@ -153,7 +153,7 @@ function findSelectedTerm(targetInput: AutocompletableInputElement, searchQuery:
  * if it's disabled.
  */
 function toggleSearchNativeAutocomplete() {
-  const enable = defineStore.get('enable_search_ac');
+  const enable = store.get('enable_search_ac');
 
   const searchFields = $$<AutocompletableInputElement>(
     ':is(input, textarea)[data-autocomplete][data-autocomplete-mode=search]',
