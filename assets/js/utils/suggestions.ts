@@ -4,7 +4,7 @@ import { handleError } from './requests.ts';
 import { LocalAutocompleter, Result } from './local-autocompleter.ts';
 
 export interface TermSuggestion {
-  label: string;
+  label: string | (HTMLElement | string)[];
   value: string;
 }
 
@@ -62,8 +62,13 @@ export class SuggestionsPopup {
     for (const suggestedTerm of suggestions) {
       const listItem = makeEl('li', {
         className: 'autocomplete__item',
-        innerText: suggestedTerm.label,
       });
+
+      if (Array.isArray(suggestedTerm.label)) {
+        listItem.append(...suggestedTerm.label);
+      } else {
+        listItem.innerText = suggestedTerm.label;
+      }
 
       listItem.dataset.value = suggestedTerm.value;
 

@@ -2,18 +2,19 @@
  * Autocomplete.
  */
 
-import { LocalAutocompleter } from './utils/local-autocompleter';
-import { getTermContexts } from './match_query';
-import store from './utils/store';
-import { TermContext } from './query/lex';
-import { $$ } from './utils/dom';
+import { LocalAutocompleter } from '../utils/local-autocompleter';
+import { getTermContexts } from '../match_query';
+import defineStore from '../utils/store';
+import { TermContext } from '../query/lex';
+import { $$ } from '../utils/dom';
 import {
   formatLocalAutocompleteResult,
   fetchLocalAutocomplete,
   fetchSuggestions,
   SuggestionsPopup,
   TermSuggestion,
-} from './utils/suggestions';
+} from '../utils/suggestions';
+import * as history from './history/view';
 
 type AutocompletableInputElement = HTMLInputElement | HTMLTextAreaElement;
 
@@ -152,7 +153,7 @@ function findSelectedTerm(targetInput: AutocompletableInputElement, searchQuery:
  * if it's disabled.
  */
 function toggleSearchNativeAutocomplete() {
-  const enable = store.get('enable_search_ac');
+  const enable = defineStore.get('enable_search_ac');
 
   const searchFields = $$<AutocompletableInputElement>(
     ':is(input, textarea)[data-autocomplete][data-autocomplete-mode=search]',
@@ -178,6 +179,8 @@ function trimPrefixes(targetTerm: string): string {
  * here: https://javascript.info/event-delegation
  */
 export function listenAutocomplete() {
+  history.listen();
+
   let serverSideSuggestionsTimeout: number | undefined;
 
   let localAutocomplete: LocalAutocompleter | null = null;
@@ -195,33 +198,41 @@ export function listenAutocomplete() {
 
     targetedInput.addEventListener('keydown', keydownHandler as EventListener);
 
+    let suggestionsLimit;
+
+    if (isSearchField(targetedInput)) {
+      suggestionsLimit = 10;
+      originalQuery = targetedInput.value;
+      selectedTerm = findSelectedTerm(targetedInput, originalQuery);
+      originalTerm = selectedTerm?.[1].toLowerCase();
+    } else {
+      suggestionsLimit = 5;
+      originalTerm = targetedInput.value.toLowerCase();
+    }
+
+    // Show all most recent history suggestions if the input is empty
+    if (targetedInput.value.trim() === '') {
+      const suggestions = history.listSuggestions(targetedInput, suggestionsLimit);
+      popup.renderSuggestions(suggestions).showForField(targetedInput);
+      return;
+    }
+
+    const historySuggestions = history.listSuggestions(targetedInput, 3);
+    let termSuggestions: TermSuggestion[] = [];
+
     if (localAutocomplete !== null) {
       inputField = targetedInput;
-      let suggestionsCount = 5;
 
-      if (isSearchField(inputField)) {
-        originalQuery = inputField.value;
-        selectedTerm = findSelectedTerm(inputField, originalQuery);
-        suggestionsCount = 10;
-
-        // We don't need to run auto-completion if user is not selecting tag at all
-        if (!selectedTerm) {
-          return;
-        }
-
-        originalTerm = selectedTerm[1].toLowerCase();
-      } else {
-        originalTerm = inputField.value.toLowerCase();
+      if (originalTerm) {
+        termSuggestions = localAutocomplete
+          .matchPrefix(trimPrefixes(originalTerm), suggestionsLimit - historySuggestions.length)
+          .map(formatLocalAutocompleteResult);
       }
+    }
 
-      const suggestions = localAutocomplete
-        .matchPrefix(trimPrefixes(originalTerm), suggestionsCount)
-        .map(formatLocalAutocompleteResult);
-
-      if (suggestions.length) {
-        popup.renderSuggestions(suggestions).showForField(targetedInput);
-        return;
-      }
+    if (termSuggestions.length) {
+      popup.renderSuggestions([...historySuggestions, ...termSuggestions]).showForField(targetedInput);
+      return;
     }
 
     const { autocompleteMinLength: minTermLength, autocompleteSource: endpointUrl } = targetedInput.dataset;
@@ -237,10 +248,10 @@ export function listenAutocomplete() {
 
       if (minTermLength && fetchedTerm.length < parseInt(minTermLength, 10)) return;
 
-      fetchSuggestions(endpointUrl, fetchedTerm).then(suggestions => {
+      fetchSuggestions(endpointUrl, fetchedTerm).then(serverSuggestions => {
         // inputField could get overwritten while the suggestions are being fetched - use previously targeted input
         if (fetchedTerm === trimPrefixes(targetedInput.value)) {
-          popup.renderSuggestions(suggestions).showForField(targetedInput);
+          popup.renderSuggestions([...historySuggestions, ...serverSuggestions]).showForField(targetedInput);
         }
       });
     }, 300);
