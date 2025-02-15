@@ -26,6 +26,7 @@ header.header
         data-autocomplete="true"
         data-autocomplete-min-length="3"
         data-autocomplete-mode="search"
+        data-autocomplete-history-id="search-history"
       ]
 
       = if present?(@conn.params["sf"]) do
