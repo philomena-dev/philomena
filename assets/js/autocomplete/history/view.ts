@@ -1,7 +1,7 @@
 import { TermSuggestion } from 'utils/suggestions';
 import { InputHistory } from './history';
 import { HistoryStore } from './store';
-import { makeEl } from 'utils/dom';
+import { makeEl } from '../../utils/dom';
 /**
  * Stores a set of histories identified by their unique IDs.
  *
@@ -81,7 +81,9 @@ export function listSuggestions(element: HTMLInputElement | HTMLTextAreaElement,
     .map(result => {
       return {
         value: result.target,
-        label: result.highlight(char => makeEl('strong', { innerText: char })),
+        label: result.indexes.length
+          ? result.highlight(match => makeEl('strong', { innerText: match }))
+          : result.target,
       };
     });
 }

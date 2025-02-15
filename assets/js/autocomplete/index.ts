@@ -185,9 +185,11 @@ export function listenAutocomplete() {
 
   let localAutocomplete: LocalAutocompleter | null = null;
 
-  document.addEventListener('focusin', loadAutocompleteFromEvent);
+  document.addEventListener('focusin', suggest);
+  document.addEventListener('input', suggest);
 
-  document.addEventListener('input', event => {
+  function suggest(event: Event) {
+    console.log('suggest', event);
     popup.hide();
     loadAutocompleteFromEvent(event);
     window.clearTimeout(serverSideSuggestionsTimeout);
@@ -197,6 +199,8 @@ export function listenAutocomplete() {
     const targetedInput = event.target;
 
     targetedInput.addEventListener('keydown', keydownHandler as EventListener);
+
+    inputField = targetedInput;
 
     let suggestionsLimit;
 
@@ -221,8 +225,6 @@ export function listenAutocomplete() {
     let termSuggestions: TermSuggestion[] = [];
 
     if (localAutocomplete !== null) {
-      inputField = targetedInput;
-
       if (originalTerm) {
         termSuggestions = localAutocomplete
           .matchPrefix(trimPrefixes(originalTerm), suggestionsLimit - historySuggestions.length)
@@ -235,16 +237,17 @@ export function listenAutocomplete() {
       return;
     }
 
+    popup.renderSuggestions(historySuggestions).showForField(targetedInput);
+
     const { autocompleteMinLength: minTermLength, autocompleteSource: endpointUrl } = targetedInput.dataset;
 
     if (!endpointUrl) return;
 
     // Use a timeout to delay requests until the user has stopped typing
     serverSideSuggestionsTimeout = window.setTimeout(() => {
-      inputField = targetedInput;
-      originalTerm = inputField.value;
+      originalTerm = targetedInput.value;
 
-      const fetchedTerm = trimPrefixes(inputField.value);
+      const fetchedTerm = trimPrefixes(targetedInput.value);
 
       if (minTermLength && fetchedTerm.length < parseInt(minTermLength, 10)) return;
 
@@ -255,14 +258,12 @@ export function listenAutocomplete() {
         }
       });
     }, 300);
-  });
+  }
 
   // If there's a click outside the inputField, remove autocomplete
   document.addEventListener('click', event => {
+    console.log('click', event);
     if (event.target && event.target !== inputField) popup.hide();
-    if (inputField && event.target === inputField && isSearchField(inputField) && isSelectionOutsideCurrentTerm()) {
-      popup.hide();
-    }
   });
 
   // Lazy-load the local autocomplete index from the server only once.
