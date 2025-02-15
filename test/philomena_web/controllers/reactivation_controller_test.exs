@@ -6,6 +6,9 @@ defmodule PhilomenaWeb.ReactivationControllerTest do
 
   setup :register_and_log_in_user
 
+  @host PhilomenaWeb.Endpoint.config(:url)[:host]
+  @port PhilomenaWeb.Endpoint.config(:http)[:port]
+
   describe "GET /reactivations/:id" do
     test "renders the reactivate account page", %{conn: conn} do
       conn = delete(conn, ~p"/deactivations")
@@ -15,17 +18,19 @@ defmodule PhilomenaWeb.ReactivationControllerTest do
     end
   end
 
-  describe "POST /reactivations/:id" do
+  describe "POST /reactivations/" do
     test "reactivate account page works", %{conn: conn, user: user} do
       conn = delete(conn, ~p"/deactivations")
 
-      reactivation_link =
+      {token, url} =
         Memory.all()
         |> Enum.find(&(&1.subject == "Reactivation instructions for your account"))
         |> extract_reactivation_link_from_email()
 
-      assert reactivation_link != nil
-      conn = post(conn, reactivation_link)
+      assert token != nil
+      assert url != nil
+
+      conn = post(conn, url, %{"token" => token})
       assert redirected_to(conn) == ~p"/"
 
       user = Users.get_user!(user.id)
@@ -34,6 +39,12 @@ defmodule PhilomenaWeb.ReactivationControllerTest do
   end
 
   defp extract_reactivation_link_from_email(email = %Swoosh.Email{}) do
-    Regex.scan(~r/http:\/\/localhost:4002\/reactivations\/.*/, email.text_body) |> hd |> hd
+    %{"token" => token, "url" => url} =
+      Regex.named_captures(
+        ~r/(?<url>http:\/\/#{@host}:#{@port}\/reactivations)\/(?<token>.*)/,
+        email.text_body
+      )
+
+    {token, url}
   end
 end
