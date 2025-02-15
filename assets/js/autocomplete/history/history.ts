@@ -55,7 +55,8 @@ export class InputHistory {
     console.debug(
       `Loading input history took ${end - parsing}ms. ` +
         `Parsing: ${indexing - parsing}ms. ` +
-        `Indexing: ${end - indexing}ms.`,
+        `Indexing: ${end - indexing}ms. ` +
+        `Records: ${this.records.length}.`,
     );
 
     store.watch(records => {
@@ -72,7 +73,7 @@ export class InputHistory {
    * Save the input into the history and commit it to the `localStorage`.
    */
   write(input: string) {
-    if (this.records === null) {
+    if (input.trim() === '') {
       return;
     }
 
@@ -122,7 +123,7 @@ export class InputHistory {
   }
 
   listSuggestions(query: string, limit: number): readonly Fuzzysort.Result[] {
-    return fuzzysort.go(query, this.index, {
+    const results = fuzzysort.go(query, this.index, {
       limit,
 
       // 0 is a perfect match and -1000 is the worst match.
@@ -131,5 +132,7 @@ export class InputHistory {
       // Return all results for an empty search no matter what's the threshold.
       all: true,
     });
+    console.debug(results);
+    return results;
   }
 }
