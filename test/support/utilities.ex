@@ -14,6 +14,13 @@ defmodule Philomena.TestUtilities do
     end
   end
 
+  @doc """
+  Asserts the result of a lambda after at most max_retries times for a truthy value.
+
+  ## Examples
+      iex> assert_retry(&(false))
+      Expected truthy, got false
+  """
   def assert_retry(evaluation_lambda, max_retries \\ 3, timeout_in_ms \\ 1000)
       when is_function(evaluation_lambda) do
     assert assert_retry(evaluation_lambda, 0, max_retries, timeout_in_ms)
