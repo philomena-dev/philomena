@@ -12,7 +12,7 @@ import {
   fetchLocalAutocomplete,
   fetchSuggestions,
   SuggestionsPopup,
-  TermSuggestion,
+  Suggestion,
 } from '../utils/suggestions';
 import * as history from './history/view';
 
@@ -185,18 +185,40 @@ export function listenAutocomplete() {
 
   let localAutocomplete: LocalAutocompleter | null = null;
 
-  document.addEventListener('focusin', suggest);
-  document.addEventListener('input', suggest);
+  document.addEventListener('focusin', event => suggest(event.target));
+  document.addEventListener('input', event => suggest(event.target));
 
-  function suggest(event: Event) {
-    console.log('suggest', event);
-    popup.hide();
-    loadAutocompleteFromEvent(event);
+  // Lazy-load the local autocomplete index from the server only once.
+  let localAutocompleteFetchNeeded = true;
+
+  async function loadLocalAutocomplete() {
+    if (!localAutocompleteFetchNeeded) {
+      return;
+    }
+
+    localAutocompleteFetchNeeded = false;
+    localAutocomplete = await fetchLocalAutocomplete();
+  }
+
+  suggest(document.activeElement);
+
+  function suggest(element: unknown) {
+    if (!hasAutocompleteEnabled(element)) return;
+
+    loadLocalAutocomplete();
     window.clearTimeout(serverSideSuggestionsTimeout);
 
-    if (!hasAutocompleteEnabled(event.target)) return;
+    // This is a crutch to make `Ctrl+Shift+C` + click on completion item work
+    // when debugging the completions in devtools in browser. For some reason when
+    // you select a completion HTML element this way a `focusin` event is triggered
+    // against the input element again.
+    if (popup.isActive && inputField === element && originalQuery === element.value) {
+      return;
+    }
 
-    const targetedInput = event.target;
+    popup.hide();
+
+    const targetedInput = element;
 
     targetedInput.addEventListener('keydown', keydownHandler as EventListener);
 
@@ -216,13 +238,13 @@ export function listenAutocomplete() {
 
     // Show all most recent history suggestions if the input is empty
     if (targetedInput.value.trim() === '') {
-      const suggestions = history.listSuggestions(targetedInput, suggestionsLimit);
-      popup.renderSuggestions(suggestions).showForField(targetedInput);
+      const historySuggestions = history.listSuggestions(targetedInput, suggestionsLimit);
+      popup.renderSuggestions(historySuggestions, []).showForField(targetedInput);
       return;
     }
 
     const historySuggestions = history.listSuggestions(targetedInput, 3);
-    let termSuggestions: TermSuggestion[] = [];
+    let termSuggestions: Suggestion[] = [];
 
     if (localAutocomplete !== null) {
       if (originalTerm) {
@@ -232,12 +254,12 @@ export function listenAutocomplete() {
       }
     }
 
-    if (termSuggestions.length) {
-      popup.renderSuggestions([...historySuggestions, ...termSuggestions]).showForField(targetedInput);
+    if (termSuggestions.length !== 0) {
+      popup.renderSuggestions(historySuggestions, termSuggestions).showForField(targetedInput);
       return;
     }
 
-    popup.renderSuggestions(historySuggestions).showForField(targetedInput);
+    popup.renderSuggestions(historySuggestions, []).showForField(targetedInput);
 
     const { autocompleteMinLength: minTermLength, autocompleteSource: endpointUrl } = targetedInput.dataset;
 
@@ -254,7 +276,7 @@ export function listenAutocomplete() {
       fetchSuggestions(endpointUrl, fetchedTerm).then(serverSuggestions => {
         // inputField could get overwritten while the suggestions are being fetched - use previously targeted input
         if (fetchedTerm === trimPrefixes(targetedInput.value)) {
-          popup.renderSuggestions([...historySuggestions, ...serverSuggestions]).showForField(targetedInput);
+          popup.renderSuggestions(historySuggestions, serverSuggestions).showForField(targetedInput);
         }
       });
     }, 300);
@@ -262,25 +284,12 @@ export function listenAutocomplete() {
 
   // If there's a click outside the inputField, remove autocomplete
   document.addEventListener('click', event => {
-    console.log('click', event);
     if (event.target && event.target !== inputField) popup.hide();
   });
 
-  // Lazy-load the local autocomplete index from the server only once.
-  let localAutocompleteFetchNeeded = true;
-
-  async function loadAutocompleteFromEvent(event: Event) {
-    if (!localAutocompleteFetchNeeded || !hasAutocompleteEnabled(event.target)) {
-      return;
-    }
-
-    localAutocompleteFetchNeeded = false;
-    localAutocomplete = await fetchLocalAutocomplete();
-  }
-
   toggleSearchNativeAutocomplete();
 
-  popup.onItemSelected((event: CustomEvent<TermSuggestion>) => {
+  popup.onItemSelected((event: CustomEvent<Suggestion>) => {
     if (!event.detail || !inputField) return;
 
     const originalSuggestion = event.detail;
@@ -291,7 +300,7 @@ export function listenAutocomplete() {
     }
 
     inputField.dispatchEvent(
-      new CustomEvent<TermSuggestion>('autocomplete', {
+      new CustomEvent<Suggestion>('autocomplete', {
         detail: Object.assign(
           {
             type: 'click',

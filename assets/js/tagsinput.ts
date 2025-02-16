@@ -4,7 +4,7 @@
 
 import { assertNotNull, assertType } from './utils/assert';
 import { $, $$, clearEl, removeEl, showEl, hideEl, escapeCss, escapeHtml } from './utils/dom';
-import { TermSuggestion } from './utils/suggestions';
+import { Suggestion } from './utils/suggestions';
 
 export function setupTagsInput(tagBlock: HTMLDivElement) {
   const form = assertNotNull(tagBlock.closest('form'));
@@ -48,7 +48,7 @@ export function setupTagsInput(tagBlock: HTMLDivElement) {
     importTags();
   }
 
-  function handleAutocomplete(event: CustomEvent<TermSuggestion>) {
+  function handleAutocomplete(event: CustomEvent<Suggestion>) {
     insertTag(event.detail.value);
     inputField.focus();
   }

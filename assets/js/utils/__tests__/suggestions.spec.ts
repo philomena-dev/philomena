@@ -5,7 +5,7 @@ import {
   formatLocalAutocompleteResult,
   purgeSuggestionsCache,
   SuggestionsPopup,
-  TermSuggestion,
+  Suggestion,
 } from '../suggestions.ts';
 import fs from 'fs';
 import path from 'path';
@@ -202,9 +202,9 @@ describe('Suggestions', () => {
     it('should emit an event when item was clicked with mouse', () => {
       [popup, input] = mockBaseSuggestionsPopup(true);
 
-      let clickEvent: CustomEvent<TermSuggestion> | undefined;
+      let clickEvent: CustomEvent<Suggestion> | undefined;
 
-      const itemSelectedHandler = vi.fn((event: CustomEvent<TermSuggestion>) => {
+      const itemSelectedHandler = vi.fn((event: CustomEvent<Suggestion>) => {
         clickEvent = event;
       });
 

@@ -38,15 +38,8 @@ export class InputHistory {
     const parsing = performance.now();
     this.records = store.read();
 
-    const indexing = performance.now();
-
     const end = performance.now();
-    console.debug(
-      `Loading input history took ${end - parsing}ms. ` +
-        `Parsing: ${indexing - parsing}ms. ` +
-        `Indexing: ${end - indexing}ms. ` +
-        `Records: ${this.records.length}.`,
-    );
+    console.debug(`Loading input history took ${end - parsing}ms. Records: ${this.records.length}.`);
 
     store.watch(records => {
       this.records = records;
@@ -80,12 +73,12 @@ export class InputHistory {
   }
 
   private update(record: HistoryRecord) {
-    record.updatedAt = new Date();
+    record.updatedAt = nowRfc3339();
 
     // The records were fully sorted before we updated one of them. Fixing up
     // a nearly sorted sequence with `sort()` should be blazingly ⚡️ fast.
     // Usually, standard `sort` implementations are optimized for this case.
-    this.records.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+    this.records.sort((a, b) => (b.updatedAt > a.updatedAt ? 1 : -1));
   }
 
   private insert(input: string) {
@@ -94,7 +87,7 @@ export class InputHistory {
       this.records.pop();
     }
 
-    const now = new Date();
+    const now = nowRfc3339();
 
     this.records.unshift({
       content: input,
@@ -118,4 +111,11 @@ export class InputHistory {
 
     return results;
   }
+}
+
+function nowRfc3339(): string {
+  const date = new Date();
+  // Second-level precision is enough for our use case.
+  date.setMilliseconds(0);
+  return date.toISOString().replace('.000Z', 'Z');
 }

@@ -34,17 +34,49 @@
   user-select: none;
   white-space: nowrap;
   z-index: 999;
+  font-family: var(--font-family-monospace);
+}
+
+.autocomplete__list {
+  border-style: solid;
+  border-width: 1px;
+  border-top-width: 0;
+  border-color: var(--meta-border-color);
 }
 
 .autocomplete__item {
-  background: var(--base-color);
-  color: var(--link-light-color);
+  background: var(--background-color);
   padding: 5px;
 }
 
-.autocomplete__item--selected {
-  background: var(--link-light-color);
-  color: var(--base-color);
+.autocomplete-item-tag {
+  color: var(--foreground-color);
+  display: flex;
+  justify-content: space-between;
+  white-space: pre;
+}
+
+.autocomplete-item-history {
+  color: var(--block-header-link-text-color);
+}
+
+.autocomplete-item-history__icon {
+  /* Makes the history icon aligned in width with the autocomplete-item-tag's icon */
+  font-size: 11.38px;
+}
+
+.autocomplete-item-history__match {
+  font-weight: bold;
+
+  /* Use a lighter color to highlight the matched part of the query */
+  color: lch(from var(--block-header-link-text-color) calc(l + 20) c h);
+}
+
+.autocomplete__item--selected,
+.autocomplete__item--selected .autocomplete-item-history__match
+{
+  background: var(--foreground-color);
+  color: var(--background-color);
 }
 
 /* Tags */
