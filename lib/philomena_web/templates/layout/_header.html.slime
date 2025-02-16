@@ -25,6 +25,7 @@ header.header
         autocapitalize="none"
         data-autocomplete="true"
         data-autocomplete-min-length="3"
+        data-autocomplete-source="/autocomplete/tags?term="
         data-autocomplete-mode="search"
         data-autocomplete-history-id="search-history"
       ]

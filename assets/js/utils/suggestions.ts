@@ -3,7 +3,7 @@ import { mouseMoveThenOver } from './events.ts';
 import { handleError } from './requests.ts';
 import { LocalAutocompleter, Result } from './local-autocompleter.ts';
 
-export interface TermSuggestion {
+export interface Suggestion {
   label: string | (HTMLElement | string)[];
   value: string;
 }
@@ -17,7 +17,7 @@ export class SuggestionsPopup {
 
   constructor() {
     this.container = makeEl('div', {
-      className: 'autocomplete',
+      className: 'autocomplete hidden',
     });
 
     this.listElement = makeEl('ul', {
@@ -25,6 +25,9 @@ export class SuggestionsPopup {
     });
 
     this.container.appendChild(this.listElement);
+
+    // Make the container connected to DOM to make sure it's rendered when we unhide it
+    document.body.appendChild(this.container);
   }
 
   get selectedTerm(): string | null {
@@ -32,12 +35,12 @@ export class SuggestionsPopup {
   }
 
   get isActive(): boolean {
-    return this.container.isConnected;
+    return !this.container.classList.contains('hidden');
   }
 
   hide() {
     this.clearSelection();
-    this.container.remove();
+    this.container.classList.add('hidden');
   }
 
   private clearSelection() {
@@ -54,32 +57,39 @@ export class SuggestionsPopup {
     this.selectedElement.classList.add(selectedSuggestionClassName);
   }
 
-  renderSuggestions(suggestions: TermSuggestion[]): SuggestionsPopup {
+  renderSuggestions(historySuggestions: Suggestion[], termSuggestions: Suggestion[]): SuggestionsPopup {
     this.clearSelection();
 
     this.listElement.innerHTML = '';
 
-    for (const suggestedTerm of suggestions) {
-      const listItem = makeEl('li', {
-        className: 'autocomplete__item',
-      });
+    const suggestions = [
+      ['history', historySuggestions],
+      ['tag', termSuggestions],
+    ] as const;
 
-      if (Array.isArray(suggestedTerm.label)) {
-        listItem.append(...suggestedTerm.label);
-      } else {
-        listItem.innerText = suggestedTerm.label;
+    for (const [type, suggestionsList] of suggestions) {
+      for (const suggestedTerm of suggestionsList) {
+        const listItem = makeEl('li', {
+          className: `autocomplete__item autocomplete-item-${type}`,
+        });
+
+        if (Array.isArray(suggestedTerm.label)) {
+          listItem.append(...suggestedTerm.label);
+        } else {
+          listItem.innerText = suggestedTerm.label;
+        }
+
+        listItem.dataset.value = suggestedTerm.value;
+
+        this.watchItem(listItem, suggestedTerm);
+        this.listElement.appendChild(listItem);
       }
-
-      listItem.dataset.value = suggestedTerm.value;
-
-      this.watchItem(listItem, suggestedTerm);
-      this.listElement.appendChild(listItem);
     }
 
     return this;
   }
 
-  private watchItem(listItem: HTMLElement, suggestion: TermSuggestion) {
+  private watchItem(listItem: HTMLElement, suggestion: Suggestion) {
     // This makes sure the item isn't selected if the mouse pointer happens to
     // be right on top of the item when the list is rendered. So, the item may
     // only be selected on the first `mousemove` event occurring on the element.
@@ -135,25 +145,24 @@ export class SuggestionsPopup {
     }
 
     this.container.style.top = `${topPosition}px`;
-
-    document.body.appendChild(this.container);
+    this.container.classList.remove('hidden');
   }
 
-  onItemSelected(callback: (event: CustomEvent<TermSuggestion>) => void) {
+  onItemSelected(callback: (event: CustomEvent<Suggestion>) => void) {
     this.container.addEventListener('item_selected', callback as EventListener);
   }
 }
 
-const cachedSuggestions = new Map<string, Promise<TermSuggestion[]>>();
+const cachedSuggestions = new Map<string, Promise<Suggestion[]>>();
 
-export async function fetchSuggestions(endpoint: string, targetTerm: string): Promise<TermSuggestion[]> {
+export async function fetchSuggestions(endpoint: string, targetTerm: string): Promise<Suggestion[]> {
   const normalizedTerm = targetTerm.trim().toLowerCase();
 
   if (cachedSuggestions.has(normalizedTerm)) {
     return cachedSuggestions.get(normalizedTerm)!;
   }
 
-  const promisedSuggestions: Promise<TermSuggestion[]> = fetch(`${endpoint}${targetTerm}`)
+  const promisedSuggestions: Promise<Suggestion[]> = fetch(`${endpoint}${targetTerm}`)
     .then(handleError)
     .then(response => response.json())
     .catch(() => {
@@ -186,15 +195,31 @@ export async function fetchLocalAutocomplete(): Promise<LocalAutocompleter> {
     .then(buf => new LocalAutocompleter(buf));
 }
 
-export function formatLocalAutocompleteResult(result: Result): TermSuggestion {
+export function formatLocalAutocompleteResult(result: Result): Suggestion {
   let tagName = result.name;
 
   if (tagName !== result.aliasName) {
-    tagName = `${result.aliasName} ⇒ ${tagName}`;
+    tagName = `${result.aliasName} → ${tagName}`;
   }
+
+  const prefix = makeEl('div');
+  prefix.append(
+    makeEl('i', {
+      className: 'fa-solid fa-tag',
+    }),
+    makeEl('span', {
+      className: 'autocomplete-item-tag__name',
+      innerText: ` ${tagName}`,
+    }),
+  );
+
+  const imageCount = makeEl('span', {
+    className: 'autocomplete-item-tag__count',
+    innerText: ` ${result.imageCount}`,
+  });
 
   return {
     value: result.name,
-    label: `${tagName} (${result.imageCount})`,
+    label: [prefix, imageCount],
   };
 }

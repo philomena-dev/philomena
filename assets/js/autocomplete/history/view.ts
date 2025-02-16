@@ -1,15 +1,10 @@
-import { TermSuggestion } from 'utils/suggestions';
+import { Suggestion } from 'utils/suggestions';
 import { InputHistory } from './history';
 import { HistoryStore } from './store';
 import { makeEl } from '../../utils/dom';
 
 /**
  * Stores a set of histories identified by their unique IDs.
- *
- * Instead, we could attach the history objects to the respective input HTML
- * elements by monkey-patching them, but that would look a bit uglier and otherwise
- * with this approach we wouldn't be able to share the same history object between
- * multiple input elements that naturally.
  */
 class InputHistoriesPool {
   private histories = new Map<string, InputHistory>();
@@ -73,29 +68,33 @@ export function listen(): InputHistoriesPool {
   return histories;
 }
 
-export function listSuggestions(element: HTMLInputElement | HTMLTextAreaElement, limit: number): TermSuggestion[] {
+export function listSuggestions(element: HTMLInputElement | HTMLTextAreaElement, limit: number): Suggestion[] {
   if (!hasHistoryAutocompletion(element)) {
     return [];
   }
 
+  const query = element.value.trim();
+
   return histories
     .load(element.dataset.autocompleteHistoryId)
-    .listSuggestions(element.value, limit)
+    .listSuggestions(query, limit)
     .map(result => {
       const icon = makeEl('i', {
-        className: 'fas fa-history',
+        className: 'autocomplete-item-history__icon fa-solid fa-history',
       });
 
-      const label = makeEl('span', {
-        textContent: ` ${result}`,
+      const prefix = makeEl('span', {
+        textContent: ` ${query}`,
+        className: 'autocomplete-item-history__match',
       });
 
-      label.style.color = '#50C878';
-      label.style.fontWeight = 'bold';
+      const suffix = makeEl('span', {
+        textContent: result.slice(query.length),
+      });
 
       return {
         value: result,
-        label: [icon, label],
+        label: [icon, prefix, suffix],
       };
     });
 }

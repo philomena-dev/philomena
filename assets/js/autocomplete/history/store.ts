@@ -7,14 +7,16 @@ export interface HistoryRecord {
   content: string;
 
   /**
-   * Time when the content was first used, and thus the record was created.
+   * RCF3339 timestamp. Defines the time when the content was first used,
+   * and thus the record was created.
    */
-  createdAt: Date;
+  createdAt: string;
 
   /**
-   * Time when the content was last used, and thus the record was updated.
+   * RCF3339 timestamp. Defines the time when the content was last used,
+   * and thus the record was updated.
    */
-  updatedAt: Date;
+  updatedAt: string;
 }
 
 /**
