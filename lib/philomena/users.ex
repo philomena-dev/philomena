@@ -796,7 +796,7 @@ defmodule Philomena.Users do
   end
 
   @doc """
-  Reactivates a previously deactivated user account.
+  Reactivates a previously deactivated user account. Removes all "reactivate" user tokens for that user if they exist.
 
   ## Examples
 
@@ -805,6 +805,8 @@ defmodule Philomena.Users do
 
   """
   def reactivate_user(%User{} = user) do
+    UserToken.user_and_contexts_query(user, ["reactivate"]) |> Repo.delete_all()
+
     user
     |> User.reactivate_changeset()
     |> Repo.update()
