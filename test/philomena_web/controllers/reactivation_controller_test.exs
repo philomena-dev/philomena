@@ -21,7 +21,9 @@ defmodule PhilomenaWeb.ReactivationControllerTest do
     test "reactivate account page works", %{conn: conn, user: user} do
       conn = delete(conn, ~p"/deactivations")
 
-      {:ok, email} = Users.deliver_user_reactivation_instructions(user, &url(~p"/reactivations/#{&1}"))
+      {:ok, email} =
+        Users.deliver_user_reactivation_instructions(user, &url(~p"/reactivations/#{&1}"))
+
       {token, url} = extract_reactivation_link_from_email(email)
 
       assert token != nil
