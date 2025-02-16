@@ -39,7 +39,7 @@ defmodule PhilomenaWeb.ReactivationControllerTest do
       user = Users.get_user!(user.id)
       assert user.deleted_by_user_id == nil
 
-      assert not(UserToken.user_and_contexts_query(user, ["reactivate"]) |> Repo.exists?())
+      assert not (UserToken.user_and_contexts_query(user, ["reactivate"]) |> Repo.exists?())
     end
   end
 
