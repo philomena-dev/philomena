@@ -1,8 +1,6 @@
 defmodule PhilomenaWeb.ReactivationControllerTest do
   use PhilomenaWeb.ConnCase, async: true
-  import Philomena.TestUtilities
 
-  alias Swoosh.Adapters.Local.Storage.Memory
   alias Philomena.Users
 
   setup :register_and_log_in_user
@@ -23,10 +21,8 @@ defmodule PhilomenaWeb.ReactivationControllerTest do
     test "reactivate account page works", %{conn: conn, user: user} do
       conn = delete(conn, ~p"/deactivations")
 
-      {token, url} =
-        Memory.all()
-        |> Enum.find(&(&1.subject == "Reactivation instructions for your account"))
-        |> extract_reactivation_link_from_email()
+      {:ok, email} = Users.deliver_user_reactivation_instructions(user, &url(~p"/reactivations/#{&1}"))
+      {token, url} = extract_reactivation_link_from_email(email)
 
       assert token != nil
       assert url != nil
@@ -34,10 +30,8 @@ defmodule PhilomenaWeb.ReactivationControllerTest do
       conn = post(conn, url, %{"token" => token})
       assert redirected_to(conn) == ~p"/"
 
-      assert_retry(fn ->
-        user = Users.get_user!(user.id)
-        user.deleted_by_user_id == nil
-      end)
+      user = Users.get_user!(user.id)
+      assert user.deleted_by_user_id == nil
     end
   end
 
