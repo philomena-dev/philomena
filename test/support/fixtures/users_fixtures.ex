@@ -42,11 +42,11 @@ defmodule Philomena.UsersFixtures do
 
   If `deactivated_by_user` is `nil` the user will be deactivated by themselves.
   """
-  def deactivated_user_fixture(deactived_by_user \\ nil, attrs \\ %{}) do
+  def deactivated_user_fixture(deactivated_by_user \\ nil, attrs \\ %{}) do
     user = user_fixture(attrs)
 
     user
-    |> Users.User.deactivate_changeset(deactived_by_user || user)
+    |> Users.User.deactivate_changeset(deactivated_by_user || user)
     |> Repo.update!()
   end
 
