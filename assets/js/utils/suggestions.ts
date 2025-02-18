@@ -1,109 +1,236 @@
 import { makeEl } from './dom.ts';
-import { mouseMoveThenOver } from './events.ts';
 import { handleError } from './requests.ts';
-import { LocalAutocompleter, Result } from './local-autocompleter.ts';
+import { LocalAutocompleter } from './local-autocompleter.ts';
 
-export interface TermSuggestion {
-  label: string;
-  value: string;
+export class TagSuggestion {
+  /**
+   * If present, then this suggestion is for a tag alias.
+   * If absent, then this suggestion is for the `canonical` tag name.
+   */
+  aliasName?: string;
+
+  /**
+   * The canonical name of the tag (non-alias).
+   */
+  canonicalName: string;
+
+  /**
+   * Number of images tagged with this tag.
+   */
+  imageCount: number;
+
+  /**
+   * Length of the prefix in the suggestion that matches the prefix of the current input.
+   */
+  matchLength: number;
+
+  constructor(props: { aliasName?: string; canonicalName: string; imageCount: number; matchLength: number }) {
+    this.aliasName = props.aliasName;
+    this.canonicalName = props.canonicalName;
+    this.imageCount = props.imageCount;
+    this.matchLength = props.matchLength;
+  }
+
+  value(): string {
+    return this.canonicalName;
+  }
+
+  render(): HTMLElement[] {
+    const { aliasName, canonicalName, imageCount } = this;
+
+    const label = aliasName ? `${aliasName} → ${canonicalName}` : canonicalName;
+
+    const prefix = makeEl('div');
+
+    prefix.append(
+      makeEl('i', {
+        className: 'fa-solid fa-tag',
+      }),
+      makeEl('span', {
+        textContent: ` ${label.slice(0, this.matchLength)}`,
+        className: 'autocomplete-item-tag__match',
+      }),
+      makeEl('span', {
+        textContent: label.slice(this.matchLength),
+      }),
+    );
+
+    return [prefix, makeEl('span', { textContent: ` ${imageCount}` })];
+  }
 }
 
-const selectedSuggestionClassName = 'autocomplete__item--selected';
+export class HistorySuggestion {
+  /**
+   * Full query string that was previously searched and retrieved from the history.
+   */
+  content: string;
 
-export class SuggestionsPopup {
+  /**
+   * Length of the prefix in the suggestion that matches the prefix of the current input.
+   */
+  matchLength: number;
+
+  constructor(content: string, matchIndex: number) {
+    this.content = content;
+    this.matchLength = matchIndex;
+  }
+
+  value(): string {
+    return this.content;
+  }
+
+  render(): HTMLElement[] {
+    return [
+      makeEl('i', {
+        className: 'autocomplete-item-history__icon fa-solid fa-history',
+      }),
+      makeEl('span', {
+        textContent: ` ${this.content.slice(0, this.matchLength)}`,
+        className: 'autocomplete-item-history__match',
+      }),
+      makeEl('span', {
+        textContent: this.content.slice(this.matchLength),
+      }),
+    ];
+  }
+}
+
+export type Suggestion = TagSuggestion | HistorySuggestion;
+
+export interface Suggestions {
+  history: HistorySuggestion[];
+  tags: TagSuggestion[];
+}
+
+interface SuggestionItem {
+  element: HTMLElement;
+  suggestion: Suggestion;
+}
+
+export interface SelectionChangedEventDetail {
+  selectedSuggestion: Suggestion | null;
+}
+
+/**
+ * Responsible for rendering the suggestions dropdown.
+ */
+export class SuggestionsDropdown {
+  static selectedSuggestionClassName = 'autocomplete__item--selected';
+
   private readonly container: HTMLElement;
-  private readonly listElement: HTMLUListElement;
-  private selectedElement: HTMLElement | null = null;
+  private selectionIndex: number = -1;
+  private suggestionItems: SuggestionItem[];
 
   constructor() {
     this.container = makeEl('div', {
-      className: 'autocomplete',
+      className: 'autocomplete hidden',
     });
 
-    this.listElement = makeEl('ul', {
-      className: 'autocomplete__list',
-    });
-
-    this.container.appendChild(this.listElement);
+    // Make the container connected to DOM to make sure it's rendered when we unhide it
+    document.body.appendChild(this.container);
+    this.suggestionItems = [];
   }
 
-  get selectedTerm(): string | null {
-    return this.selectedElement?.dataset.value || null;
+  get selectedSuggestion(): Suggestion | null {
+    return this.selectedSuggestionItem?.suggestion ?? null;
+  }
+
+  private get selectedSuggestionItem(): SuggestionItem | null {
+    if (this.selectionIndex < 0) {
+      return null;
+    }
+
+    return this.suggestionItems[this.selectionIndex];
   }
 
   get isActive(): boolean {
-    return this.container.isConnected;
+    return !this.container.classList.contains('hidden');
   }
 
   hide() {
     this.clearSelection();
-    this.container.remove();
+    this.container.classList.add('hidden');
   }
 
   private clearSelection() {
-    if (!this.selectedElement) return;
-
-    this.selectedElement.classList.remove(selectedSuggestionClassName);
-    this.selectedElement = null;
+    this.setSelection(-1);
   }
 
-  private updateSelection(targetItem: HTMLElement) {
-    this.clearSelection();
+  private setSelection(index: number) {
+    if (this.selectionIndex === index) {
+      return;
+    }
 
-    this.selectedElement = targetItem;
-    this.selectedElement.classList.add(selectedSuggestionClassName);
+    if (index < -1 || index >= this.suggestionItems.length) {
+      throw new Error(`setSelection(): invalid selection index: ${index}`);
+    }
+
+    this.selectedSuggestionItem?.element.classList.remove(SuggestionsDropdown.selectedSuggestionClassName);
+    this.selectionIndex = index;
+
+    if (index >= 0) {
+      this.selectedSuggestionItem?.element.classList.add(SuggestionsDropdown.selectedSuggestionClassName);
+    }
   }
 
-  renderSuggestions(suggestions: TermSuggestion[]): SuggestionsPopup {
+  setSuggestions(params: Suggestions): SuggestionsDropdown {
     this.clearSelection();
 
-    this.listElement.innerHTML = '';
+    this.suggestionItems = [];
+    this.container.innerHTML = '';
 
-    for (const suggestedTerm of suggestions) {
-      const listItem = makeEl('li', {
-        className: 'autocomplete__item',
-        innerText: suggestedTerm.label,
-      });
+    for (const suggestion of params.history) {
+      this.appendSuggestion(suggestion);
+    }
 
-      listItem.dataset.value = suggestedTerm.value;
+    if (params.tags.length > 0) {
+      this.container.appendChild(makeEl('hr', { className: 'autocomplete__separator' }));
+    }
 
-      this.watchItem(listItem, suggestedTerm);
-      this.listElement.appendChild(listItem);
+    for (const suggestion of params.tags) {
+      this.appendSuggestion(suggestion);
     }
 
     return this;
   }
 
-  private watchItem(listItem: HTMLElement, suggestion: TermSuggestion) {
-    mouseMoveThenOver(listItem, () => this.updateSelection(listItem));
+  appendSuggestion(suggestion: Suggestion) {
+    const type = suggestion instanceof TagSuggestion ? 'tag' : 'history';
 
-    listItem.addEventListener('mouseout', () => this.clearSelection());
+    const element = makeEl('div', {
+      className: `autocomplete__item autocomplete-item-${type}`,
+    });
+    element.append(...suggestion.render());
 
-    listItem.addEventListener('click', () => {
-      if (!listItem.dataset.value) {
-        return;
-      }
+    const item: SuggestionItem = { element, suggestion };
 
-      this.container.dispatchEvent(new CustomEvent('item_selected', { detail: suggestion }));
+    this.watchItem(item);
+
+    this.suggestionItems.push(item);
+    this.container.appendChild(element);
+  }
+
+  private watchItem(item: SuggestionItem) {
+    item.element.addEventListener('click', () => {
+      this.hide();
+      this.container.dispatchEvent(new CustomEvent('item_selected', { detail: item.suggestion }));
     });
   }
 
   private changeSelection(direction: number) {
-    let nextTargetElement: Element | null;
-
-    if (!this.selectedElement) {
-      nextTargetElement = direction > 0 ? this.listElement.firstElementChild : this.listElement.lastElementChild;
-    } else {
-      nextTargetElement =
-        direction > 0 ? this.selectedElement.nextElementSibling : this.selectedElement.previousElementSibling;
-    }
-
-    if (!(nextTargetElement instanceof HTMLElement)) {
-      this.clearSelection();
+    if (this.suggestionItems.length === 0) {
       return;
     }
 
-    this.updateSelection(nextTargetElement);
+    const index = this.selectionIndex + direction;
+
+    if (index === -1 || index >= this.suggestionItems.length) {
+      this.clearSelection();
+    } else if (index < -1) {
+      this.setSelection(this.suggestionItems.length - 1);
+    } else {
+      this.setSelection(index);
+    }
   }
 
   selectNext() {
@@ -114,7 +241,7 @@ export class SuggestionsPopup {
     this.changeSelection(-1);
   }
 
-  showForField(targetElement: HTMLElement) {
+  showForElement(targetElement: HTMLElement) {
     this.container.style.position = 'absolute';
     this.container.style.left = `${targetElement.offsetLeft}px`;
 
@@ -125,25 +252,24 @@ export class SuggestionsPopup {
     }
 
     this.container.style.top = `${topPosition}px`;
-
-    document.body.appendChild(this.container);
+    this.container.classList.remove('hidden');
   }
 
-  onItemSelected(callback: (event: CustomEvent<TermSuggestion>) => void) {
+  onItemSelected(callback: (event: CustomEvent<Suggestion>) => void) {
     this.container.addEventListener('item_selected', callback as EventListener);
   }
 }
 
-const cachedSuggestions = new Map<string, Promise<TermSuggestion[]>>();
+const cachedSuggestions = new Map<string, Promise<Suggestion[]>>();
 
-export async function fetchSuggestions(endpoint: string, targetTerm: string): Promise<TermSuggestion[]> {
+export async function fetchSuggestions(endpoint: string, targetTerm: string): Promise<Suggestion[]> {
   const normalizedTerm = targetTerm.trim().toLowerCase();
 
   if (cachedSuggestions.has(normalizedTerm)) {
     return cachedSuggestions.get(normalizedTerm)!;
   }
 
-  const promisedSuggestions: Promise<TermSuggestion[]> = fetch(`${endpoint}${targetTerm}`)
+  const promisedSuggestions: Promise<Suggestion[]> = fetch(`${endpoint}${targetTerm}`)
     .then(handleError)
     .then(response => response.json())
     .catch(() => {
@@ -174,17 +300,4 @@ export async function fetchLocalAutocomplete(): Promise<LocalAutocompleter> {
     .then(handleError)
     .then(resp => resp.arrayBuffer())
     .then(buf => new LocalAutocompleter(buf));
-}
-
-export function formatLocalAutocompleteResult(result: Result): TermSuggestion {
-  let tagName = result.name;
-
-  if (tagName !== result.aliasName) {
-    tagName = `${result.aliasName} ⇒ ${tagName}`;
-  }
-
-  return {
-    value: result.name,
-    label: `${tagName} (${result.imageCount})`,
-  };
 }

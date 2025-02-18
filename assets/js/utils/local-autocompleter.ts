@@ -3,8 +3,8 @@ import { UniqueHeap } from './unique-heap';
 import store from './store';
 
 export interface Result {
-  aliasName: string;
-  name: string;
+  aliasName?: string;
+  canonicalName: string;
   imageCount: number;
 }
 
@@ -253,10 +253,15 @@ export class LocalAutocompleter {
     this.scanResults(referenceToAliasIndex, namespaceMatch, hasFilteredAssociation, isAlias, results);
 
     // Convert top K from heap into result array
-    return results.topK(k).map((i: TagReferenceIndex) => ({
-      aliasName: this.decoder.decode(this.referenceToName(i, false)),
-      name: this.decoder.decode(this.referenceToName(i)),
-      imageCount: this.getImageCount(i),
-    }));
+    return results.topK(k).map((i: TagReferenceIndex) => {
+      const aliasName = this.decoder.decode(this.referenceToName(i, false));
+      const canonicalName = this.decoder.decode(this.referenceToName(i));
+      return {
+        // eslint-disable-next-line no-undefined
+        aliasName: aliasName === canonicalName ? undefined : aliasName,
+        canonicalName,
+        imageCount: this.getImageCount(i),
+      };
+    });
   }
 }
