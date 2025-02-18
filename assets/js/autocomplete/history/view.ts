@@ -1,7 +1,7 @@
-import { Suggestion } from 'utils/suggestions';
+import { HistorySuggestion } from '../../utils/suggestions';
 import { InputHistory } from './history';
 import { HistoryStore } from './store';
-import { makeEl } from '../../utils/dom';
+import { AutocompletableInput } from '../../autocomplete/v2/input';
 
 /**
  * Stores a set of histories identified by their unique IDs.
@@ -24,29 +24,18 @@ class InputHistoriesPool {
   }
 }
 
-type HistoryAutocompletableInputElement = (HTMLInputElement | HTMLTextAreaElement) & {
-  dataset: { autocompleteHistoryId: string };
-};
-
-function hasHistoryAutocompletion(element: unknown): element is HistoryAutocompletableInputElement {
-  return (
-    (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) &&
-    Boolean(element.dataset.autocompleteHistoryId)
-  );
-}
-
 const histories = new InputHistoriesPool();
 
-export function listen(): InputHistoriesPool {
+export function listen() {
   // Only load the history for the input element when it gets focused.
   document.addEventListener('focusin', event => {
-    if (!hasHistoryAutocompletion(event.target)) {
+    const input = AutocompletableInput.fromElement(event.target);
+
+    if (!input?.historyId) {
       return;
     }
 
-    const historyId = event.target.dataset.autocompleteHistoryId;
-
-    histories.load(historyId);
+    histories.load(input.historyId);
   });
 
   document.addEventListener('submit', event => {
@@ -54,47 +43,30 @@ export function listen(): InputHistoriesPool {
       return;
     }
 
-    const input = [...event.target.elements].find(hasHistoryAutocompletion);
+    const input = [...event.target.elements]
+      .map(elem => AutocompletableInput.fromElement(elem))
+      .find(it => it !== null && it.hasHistory());
 
     if (!input) {
       return;
     }
 
-    const content = input.value.trim();
-
-    histories.load(input.dataset.autocompleteHistoryId).write(content);
+    histories.load(input.historyId).write(input.snapshot.trimmedValue);
   });
-
-  return histories;
 }
 
-export function listSuggestions(element: HTMLInputElement | HTMLTextAreaElement, limit: number): Suggestion[] {
-  if (!hasHistoryAutocompletion(element)) {
+/**
+ * Returns suggestions based on history for the input. Unless the `limit` is
+ * specified as an argument, it will return the maximum number of suggestions
+ * allowed by the input.
+ */
+export function listSuggestions(input: AutocompletableInput, limit?: number): HistorySuggestion[] {
+  if (!input.hasHistory()) {
     return [];
   }
 
-  const query = element.value.trim();
-
   return histories
-    .load(element.dataset.autocompleteHistoryId)
-    .listSuggestions(query, limit)
-    .map(result => {
-      const icon = makeEl('i', {
-        className: 'autocomplete-item-history__icon fa-solid fa-history',
-      });
-
-      const prefix = makeEl('span', {
-        textContent: ` ${query}`,
-        className: 'autocomplete-item-history__match',
-      });
-
-      const suffix = makeEl('span', {
-        textContent: result.slice(query.length),
-      });
-
-      return {
-        value: result,
-        label: [icon, prefix, suffix],
-      };
-    });
+    .load(input.historyId)
+    .listSuggestions(input.snapshot.trimmedValue, limit ?? input.maxSuggestions)
+    .map(content => new HistorySuggestion(content, input.snapshot.trimmedValue.length));
 }

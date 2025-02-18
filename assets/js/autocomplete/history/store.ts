@@ -1,24 +1,4 @@
 import store from '../../utils/store';
-
-export interface HistoryRecord {
-  /**
-   * The textual payload. It shapes the record's identity.
-   */
-  content: string;
-
-  /**
-   * RCF3339 timestamp. Defines the time when the content was first used,
-   * and thus the record was created.
-   */
-  createdAt: string;
-
-  /**
-   * RCF3339 timestamp. Defines the time when the content was last used,
-   * and thus the record was updated.
-   */
-  updatedAt: string;
-}
-
 /**
  * The root JSON object that contains the history records and is persisted to disk.
  */
@@ -33,9 +13,9 @@ interface History {
   schemaVersion: 1;
 
   /**
-   * The list of history records sorted by `updatedAt` in descending order.
+   * The list of history records sorted from the most recently used to the oldest unused.
    */
-  records: HistoryRecord[];
+  records: string[];
 }
 
 /**
@@ -52,11 +32,11 @@ export class HistoryStore {
     this.key = key;
   }
 
-  read(): HistoryRecord[] {
+  read(): string[] {
     return this.extractRecords(store.get<History>(this.key));
   }
 
-  write(records: HistoryRecord[]): void {
+  write(records: string[]): void {
     if (!this.writable) {
       return;
     }
@@ -73,7 +53,7 @@ export class HistoryStore {
     console.debug(`Writing ${records.length} history records to the localStorage took ${end - start}ms.`);
   }
 
-  watch(callback: (value: HistoryRecord[]) => void): void {
+  watch(callback: (value: string[]) => void): void {
     store.watch<History>(this.key, history => {
       callback(this.extractRecords(history));
     });
@@ -83,7 +63,7 @@ export class HistoryStore {
    * Extracts the records from the history. To do this, we first need to migrate
    * the history object to the latest schema version if necessary.
    */
-  private extractRecords(history: null | History): HistoryRecord[] {
+  private extractRecords(history: History | null): string[] {
     // `null` here means we are starting from the initial state (empty list of records).
     if (history === null) {
       return [];

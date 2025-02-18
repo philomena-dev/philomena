@@ -2,9 +2,9 @@ import { fetchMock } from '../../../test/fetch-mock.ts';
 import {
   fetchLocalAutocomplete,
   fetchSuggestions,
-  formatLocalAutocompleteResult,
+  renderTagSuggestion,
   purgeSuggestionsCache,
-  SuggestionsPopup,
+  SuggestionsDropdown,
   Suggestion,
 } from '../suggestions.ts';
 import fs from 'fs';
@@ -23,15 +23,15 @@ const mockedSuggestionsResponse = [
   { label: 'artist:moe (1)', value: 'artist:moe' },
 ];
 
-function mockBaseSuggestionsPopup(includeMockedSuggestions: boolean = false): [SuggestionsPopup, HTMLInputElement] {
+function mockBaseSuggestionsPopup(includeMockedSuggestions: boolean = false): [SuggestionsDropdown, HTMLInputElement] {
   const input = document.createElement('input');
-  const popup = new SuggestionsPopup();
+  const popup = new SuggestionsDropdown();
 
   document.body.append(input);
-  popup.showForField(input);
+  popup.showForElement(input);
 
   if (includeMockedSuggestions) {
-    popup.renderSuggestions(mockedSuggestionsResponse);
+    popup.setSuggestions({ history: [], tags: mockedSuggestionsResponse });
   }
 
   return [popup, input];
@@ -41,7 +41,7 @@ const selectedItemClassName = 'autocomplete__item--selected';
 
 describe('Suggestions', () => {
   let mockedAutocompleteBuffer: ArrayBuffer;
-  let popup: SuggestionsPopup | undefined;
+  let popup: SuggestionsDropdown | undefined;
   let input: HTMLInputElement | undefined;
 
   beforeAll(async () => {
@@ -192,11 +192,11 @@ describe('Suggestions', () => {
     it('should return selected item value', () => {
       [popup, input] = mockBaseSuggestionsPopup(true);
 
-      expect(popup.selectedTerm).toBe(null);
+      expect(popup.selectedSuggestion).toBe(null);
 
       popup.selectNext();
 
-      expect(popup.selectedTerm).toBe(mockedSuggestionsResponse[0].value);
+      expect(popup.selectedSuggestion).toBe(mockedSuggestionsResponse[0].value);
     });
 
     it('should emit an event when item was clicked with mouse', () => {
@@ -223,7 +223,7 @@ describe('Suggestions', () => {
     it('should not emit selection on items without value', () => {
       [popup, input] = mockBaseSuggestionsPopup();
 
-      popup.renderSuggestions([{ label: 'Option without value', value: '' }]);
+      popup.setSuggestions({ history: [], tags: [{ label: 'Option without value', query: '' }] });
 
       const itemSelectionHandler = vi.fn();
 
@@ -339,7 +339,7 @@ describe('Suggestions', () => {
       const tagName = 'safe';
       const tagCount = getRandomIntBetween(5, 10);
 
-      const resultObject = formatLocalAutocompleteResult({
+      const resultObject = renderTagSuggestion({
         name: tagName,
         aliasName: tagName,
         imageCount: tagCount,
@@ -354,7 +354,7 @@ describe('Suggestions', () => {
       const tagAlias = 'rating:safe';
       const tagCount = getRandomIntBetween(5, 10);
 
-      const resultObject = formatLocalAutocompleteResult({
+      const resultObject = renderTagSuggestion({
         name: tagName,
         aliasName: tagAlias,
         imageCount: tagCount,

@@ -88,55 +88,6 @@ describe('Event utils', () => {
     });
   });
 
-  describe('mouseMoveThenOver', () => {
-    it('should NOT fire on first mouseover', () => {
-      const mockButton = document.createElement('button');
-      const mockHandler = vi.fn();
-
-      mouseMoveThenOver(mockButton, mockHandler);
-
-      fireEvent.mouseOver(mockButton);
-
-      expect(mockHandler).toHaveBeenCalledTimes(0);
-    });
-
-    it('should fire on the first mousemove', () => {
-      const mockButton = document.createElement('button');
-      const mockHandler = vi.fn();
-
-      mouseMoveThenOver(mockButton, mockHandler);
-
-      fireEvent.mouseMove(mockButton);
-
-      expect(mockHandler).toHaveBeenCalledTimes(1);
-    });
-
-    it('should fire on subsequent mouseover', () => {
-      const mockButton = document.createElement('button');
-      const mockHandler = vi.fn();
-
-      mouseMoveThenOver(mockButton, mockHandler);
-
-      fireEvent.mouseMove(mockButton);
-      fireEvent.mouseOver(mockButton);
-
-      expect(mockHandler).toHaveBeenCalledTimes(2);
-    });
-
-    it('should NOT fire on subsequent mousemove', () => {
-      const mockButton = document.createElement('button');
-      const mockHandler = vi.fn();
-
-      mouseMoveThenOver(mockButton, mockHandler);
-
-      fireEvent.mouseMove(mockButton);
-      fireEvent.mouseOver(mockButton);
-      fireEvent.mouseMove(mockButton);
-
-      expect(mockHandler).toHaveBeenCalledTimes(2);
-    });
-  });
-
   describe('oncePersistedPageShown', () => {
     it('should NOT fire on usual page show', () => {
       const mockHandler = vi.fn();

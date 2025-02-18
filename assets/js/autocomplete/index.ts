@@ -8,10 +8,10 @@ import store from '../utils/store';
 import { TermContext } from '../query/lex';
 import { $$ } from '../utils/dom';
 import {
-  formatLocalAutocompleteResult,
+  renderTagSuggestion,
   fetchLocalAutocomplete,
   fetchSuggestions,
-  SuggestionsPopup,
+  SuggestionsDropdown,
   Suggestion,
 } from '../utils/suggestions';
 import * as history from './history/view';
@@ -30,7 +30,7 @@ let originalTerm: string | undefined;
 let originalQuery: string | undefined;
 let selectedTerm: TermContext | null = null;
 
-const popup = new SuggestionsPopup();
+const popup = new SuggestionsDropdown();
 
 function isSearchField(targetInput: HTMLElement): boolean {
   return targetInput.dataset.autocompleteMode === 'search';
@@ -43,9 +43,7 @@ function restoreOriginalValue() {
     inputField.value = originalQuery;
 
     if (selectedTerm) {
-      const [, selectedTermEnd] = selectedTerm[0];
-
-      inputField.setSelectionRange(selectedTermEnd, selectedTermEnd);
+      inputField.setSelectionRange(selectedTerm.range.end, selectedTerm.range.end);
     }
 
     return;
@@ -71,9 +69,9 @@ function applySelectedValue(selection: string) {
   }
 
   if (selectedTerm && originalQuery) {
-    const [startIndex, endIndex] = selectedTerm[0];
-    inputField.value = originalQuery.slice(0, startIndex) + selection + originalQuery.slice(endIndex);
-    inputField.setSelectionRange(startIndex + selection.length, startIndex + selection.length);
+    const { range } = selectedTerm;
+    inputField.value = originalQuery.slice(0, range.start) + selection + originalQuery.slice(range.end);
+    inputField.setSelectionRange(range.start + selection.length, range.start + selection.length);
     inputField.focus();
   }
 }
@@ -83,9 +81,9 @@ function isSelectionOutsideCurrentTerm(): boolean {
   if (inputField.selectionStart === null || inputField.selectionEnd === null) return true;
 
   const selectionIndex = Math.min(inputField.selectionStart, inputField.selectionEnd);
-  const [startIndex, endIndex] = selectedTerm[0];
+  const { range } = selectedTerm;
 
-  return startIndex > selectionIndex || endIndex < selectionIndex;
+  return range.start > selectionIndex || range.end < selectionIndex;
 }
 
 function keydownHandler(event: KeyboardEvent) {
@@ -93,7 +91,7 @@ function keydownHandler(event: KeyboardEvent) {
 
   if (inputField && isSearchField(inputField)) {
     // Prevent submission of the search field when Enter was hit
-    if (popup.selectedTerm && event.keyCode === 13) event.preventDefault(); // Enter
+    if (popup.selectedSuggestion && event.keyCode === 13) event.preventDefault(); // Enter
 
     // Close autocompletion popup when text cursor is outside current tag
     if (selectedTerm && (event.keyCode === 37 || event.keyCode === 39)) {
@@ -111,8 +109,8 @@ function keydownHandler(event: KeyboardEvent) {
   if (event.keyCode === 13 || event.keyCode === 27 || event.keyCode === 188) popup.hide(); // Enter || Esc || Comma
   if (event.keyCode === 38 || event.keyCode === 40) {
     // ArrowUp || ArrowDown
-    if (popup.selectedTerm) {
-      applySelectedValue(popup.selectedTerm);
+    if (popup.selectedSuggestion) {
+      applySelectedValue(popup.selectedSuggestion);
     } else {
       restoreOriginalValue();
     }
@@ -134,14 +132,14 @@ function findSelectedTerm(targetInput: AutocompletableInputElement, searchQuery:
 
   const terms = getTermContexts(targetQuery);
   const searchIndex = selectionIndex - activeLineStart;
-  const term = terms.find(([range]) => range[0] < searchIndex && range[1] >= searchIndex) ?? null;
+  const term = terms.find(({ range }) => range.start < searchIndex && range.end >= searchIndex) ?? null;
 
   // Converting line-specific indexes back to absolute ones.
   if (term) {
-    const [range] = term;
+    const { range } = term;
 
-    range[0] += activeLineStart;
-    range[1] += activeLineStart;
+    range.start += activeLineStart;
+    range.end += activeLineStart;
   }
 
   return term;
@@ -230,7 +228,7 @@ export function listenAutocomplete() {
       suggestionsLimit = 10;
       originalQuery = targetedInput.value;
       selectedTerm = findSelectedTerm(targetedInput, originalQuery);
-      originalTerm = selectedTerm?.[1].toLowerCase();
+      originalTerm = selectedTerm?.content.toLowerCase();
     } else {
       suggestionsLimit = 5;
       originalTerm = targetedInput.value.toLowerCase();
@@ -239,7 +237,7 @@ export function listenAutocomplete() {
     // Show all most recent history suggestions if the input is empty
     if (targetedInput.value.trim() === '') {
       const historySuggestions = history.listSuggestions(targetedInput, suggestionsLimit);
-      popup.renderSuggestions(historySuggestions, []).showForField(targetedInput);
+      popup.setSuggestions(historySuggestions, []).showForField(targetedInput);
       return;
     }
 
@@ -250,16 +248,16 @@ export function listenAutocomplete() {
       if (originalTerm) {
         termSuggestions = localAutocomplete
           .matchPrefix(trimPrefixes(originalTerm), suggestionsLimit - historySuggestions.length)
-          .map(formatLocalAutocompleteResult);
+          .map(renderTagSuggestion);
       }
     }
 
     if (termSuggestions.length !== 0) {
-      popup.renderSuggestions(historySuggestions, termSuggestions).showForField(targetedInput);
+      popup.setSuggestions(historySuggestions, termSuggestions).showForField(targetedInput);
       return;
     }
 
-    popup.renderSuggestions(historySuggestions, []).showForField(targetedInput);
+    popup.setSuggestions(historySuggestions, []).showForField(targetedInput);
 
     const { autocompleteMinLength: minTermLength, autocompleteSource: endpointUrl } = targetedInput.dataset;
 
@@ -276,7 +274,7 @@ export function listenAutocomplete() {
       fetchSuggestions(endpointUrl, fetchedTerm).then(serverSuggestions => {
         // inputField could get overwritten while the suggestions are being fetched - use previously targeted input
         if (fetchedTerm === trimPrefixes(targetedInput.value)) {
-          popup.renderSuggestions(historySuggestions, serverSuggestions).showForField(targetedInput);
+          popup.setSuggestions(historySuggestions, serverSuggestions).showForField(targetedInput);
         }
       });
     }, 300);
@@ -289,7 +287,7 @@ export function listenAutocomplete() {
 
   toggleSearchNativeAutocomplete();
 
-  popup.onItemSelected((event: CustomEvent<Suggestion>) => {
+  popup.onSuggestionAccepted((event: CustomEvent<Suggestion>) => {
     if (!event.detail || !inputField) return;
 
     const originalSuggestion = event.detail;

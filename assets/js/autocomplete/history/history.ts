@@ -1,4 +1,4 @@
-import { HistoryStore, HistoryRecord } from './store';
+import { HistoryStore } from './store';
 
 /**
  * Maximum number of records we keep in the history. If the limit is reached,
@@ -28,9 +28,9 @@ export class InputHistory {
   private readonly store: HistoryStore;
 
   /**
-   * The list of history records sorted by `updatedAt` in descending order.
+   * The list of history records sorted from the most recently used to the oldest unused.
    */
-  private records: HistoryRecord[];
+  private records: string[];
 
   constructor(store: HistoryStore) {
     this.store = store;
@@ -61,42 +61,27 @@ export class InputHistory {
       console.warn(`The input is too long to be saved in the search history (length: ${input.length}).`);
     }
 
-    const record = this.records.find(historyRecord => historyRecord.content === input);
+    const index = this.records.findIndex(historyRecord => historyRecord === input);
 
-    if (record) {
-      this.update(record);
-    } else {
-      this.insert(input);
-    }
-
-    this.store.write(this.records);
-  }
-
-  private update(record: HistoryRecord) {
-    record.updatedAt = nowRfc3339();
-
-    // The records were fully sorted before we updated one of them. Fixing up
-    // a nearly sorted sequence with `sort()` should be blazingly ⚡️ fast.
-    // Usually, standard `sort` implementations are optimized for this case.
-    this.records.sort((a, b) => (b.updatedAt > a.updatedAt ? 1 : -1));
-  }
-
-  private insert(input: string) {
-    if (this.records.length >= maxRecords) {
+    if (index >= 0) {
+      this.records.splice(index, 1);
+    } else if (this.records.length >= maxRecords) {
       // Bye-bye, least popular record! 👋 Nopony will miss you 🔪🩸
       this.records.pop();
     }
 
-    const now = nowRfc3339();
+    // Put the record on the top of the list as the most recently used.
+    this.records.unshift(input);
 
-    this.records.unshift({
-      content: input,
-      createdAt: now,
-      updatedAt: now,
-    });
+    this.store.write(this.records);
   }
 
   listSuggestions(query: string, limit: number): string[] {
+    // Waiting for iterator combinators such as `Iterator.prototype.filter()`
+    // and `Iterator.prototype.take()` to reach a greater availability 🙏:
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator/filter
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator/take
+
     const results = [];
 
     for (const record of this.records) {
@@ -104,18 +89,11 @@ export class InputHistory {
         break;
       }
 
-      if (record.content.startsWith(query)) {
-        results.push(record.content);
+      if (record.startsWith(query)) {
+        results.push(record);
       }
     }
 
     return results;
   }
-}
-
-function nowRfc3339(): string {
-  const date = new Date();
-  // Second-level precision is enough for our use case.
-  date.setMilliseconds(0);
-  return date.toISOString().replace('.000Z', 'Z');
 }
