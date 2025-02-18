@@ -386,6 +386,10 @@ defimpl Canada.Can, for: [Atom, Philomena.Users.User] do
       when action in [:show, :index],
       do: true
 
+  def can?(_user, action, %Image{hidden_from_users: true, duplicate_id: duplicate_id})
+      when action in [:show, :index] and not is_nil(duplicate_id),
+      do: true
+
   def can?(_user, :show, %Tag{}), do: true
 
   # Comment on images where that is allowed
