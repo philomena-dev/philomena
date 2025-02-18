@@ -4,7 +4,8 @@
 
 import { whenReady } from './utils/dom';
 
-import { listenAutocomplete } from './autocomplete';
+import { listenAutocompleteV2 } from './autocomplete/v2/view';
+// import { listenAutocomplete } from './autocomplete';
 import { loadBooruData } from './booru';
 import { registerEvents } from './boorujs';
 import { setupBurgerMenu } from './burger';
@@ -36,7 +37,8 @@ import { imageSourcesCreator } from './sources';
 
 whenReady(() => {
   loadBooruData();
-  listenAutocomplete();
+  // listenAutocomplete();
+  listenAutocompleteV2();
   registerEvents();
   setupBurgerMenu();
   bindCaptchaLinks();

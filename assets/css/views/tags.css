@@ -24,7 +24,7 @@
 }
 
 /* Autocomplete */
-.autocomplete__list {
+.autocomplete {
   cursor: pointer;
   display: inline-block;
   list-style: none;
@@ -35,17 +35,20 @@
   white-space: nowrap;
   z-index: 999;
   font-family: var(--font-family-monospace);
-}
 
-.autocomplete__list {
   border-style: solid;
   border-width: 1px;
   border-top-width: 0;
   border-color: var(--meta-border-color);
+
+  background: var(--background-color);
+}
+
+.autocomplete__separator {
+  margin: 0;
 }
 
 .autocomplete__item {
-  background: var(--background-color);
   padding: 5px;
 }
 
@@ -72,8 +75,22 @@
   color: lch(from var(--block-header-link-text-color) calc(l + 20) c h);
 }
 
+.autocomplete-item-tag__match {
+  font-weight: bold;
+}
+
+.autocomplete__item-tag__match:not(.autocomplete__item--selected) {
+  /* Use a lighter color to highlight the matched part of the query */
+  color: lch(from var(--foreground-color) calc(l + 20) c h);
+}
+
+.autocomplete__item:hover:not(.autocomplete__item--selected) {
+  background: lch(from var(--background-color) calc(l + 10) c h);
+}
+
 .autocomplete__item--selected,
-.autocomplete__item--selected .autocomplete-item-history__match
+.autocomplete__item--selected .autocomplete-item-history__match,
+.autocomplete__item--selected .autocomplete-item-tag__match
 {
   background: var(--foreground-color);
   color: var(--background-color);

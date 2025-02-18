@@ -23,10 +23,9 @@ header.header
         value=@conn.params["q"]
         placeholder="Search"
         autocapitalize="none"
-        data-autocomplete="true"
-        data-autocomplete-min-length="3"
-        data-autocomplete-source="/autocomplete/tags?term="
-        data-autocomplete-mode="search"
+        autocomplete=if(@conn.cookies["enable_search_ac"], do: "on", else: "off")
+        data-autocomplete="multi-tags"
+        data-autocomplete-condition="enable_search_ac"
         data-autocomplete-history-id="search-history"
       ]
 

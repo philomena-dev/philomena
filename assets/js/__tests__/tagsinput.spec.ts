@@ -96,7 +96,7 @@ describe('Fancy tags input', () => {
 
   it('should respond to autocomplete events', () => {
     setupTagsInput(tagBlock);
-    fancyText.dispatchEvent(new CustomEvent<Suggestion>('autocomplete', { detail: { value: 'a', label: 'a' } }));
+    fancyText.dispatchEvent(new CustomEvent<Suggestion>('autocomplete', { detail: { content: 'a', label: 'a' } }));
     expect($$('span.tag', fancyInput)).toHaveLength(1);
   });
 
