@@ -449,7 +449,8 @@ defmodule PhilomenaWeb.Router do
       end
     end
 
-    resources "/channels", ChannelController, only: [:new, :create, :edit, :update, :delete, :index, :show] do
+    resources "/channels", ChannelController,
+      only: [:new, :create, :edit, :update, :delete, :index, :show] do
       resources "/read", Channel.ReadController, only: [:create], singleton: true
       resources "/nsfw", Channel.NsfwController, only: [:create, :delete], singleton: true
 

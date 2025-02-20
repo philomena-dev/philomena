@@ -226,7 +226,9 @@ defmodule Philomena.Images do
             image_height: attrs["image_height"]
           })
 
-        version_names = PhilomenaMedia.Processors.versions(attrs["image_mime_type"], sizes) ++ ["full.#{attrs["image_format"]}"]
+        version_names =
+          PhilomenaMedia.Processors.versions(attrs["image_mime_type"], sizes) ++
+            ["full.#{attrs["image_format"]}"]
 
         img_url_base =
           Philomena.Images.Thumbnailer.image_url_raw_base(%{image | id: attrs["id"]})
@@ -303,6 +305,7 @@ defmodule Philomena.Images do
       "page" => 1,
       "filter_id" => import_filter()
     }
+
     api_request("search" <> "?" <> URI.encode_query(query))
   end
 
@@ -336,7 +339,7 @@ defmodule Philomena.Images do
 
           :timer.sleep(2000)
 
-          last_id = Enum.max_by(decoded["images"], &(&1["id"]))["id"]
+          last_id = Enum.max_by(decoded["images"], & &1["id"])["id"]
           import_query(search_query, last_id)
         end
 
