@@ -7,9 +7,17 @@ import { getTermContexts } from './match_query';
 import store from './utils/store';
 import { TermContext } from './query/lex';
 import { $$ } from './utils/dom';
-import { fetchLocalAutocomplete, fetchSuggestions, SuggestionsPopup, TermSuggestion } from './utils/suggestions';
+import {
+  formatLocalAutocompleteResult,
+  fetchLocalAutocomplete,
+  fetchSuggestions,
+  SuggestionsPopup,
+  TermSuggestion,
+} from './utils/suggestions';
 
-let inputField: HTMLInputElement | null = null,
+type InputFieldElement = HTMLInputElement | HTMLTextAreaElement;
+
+let inputField: InputFieldElement | null = null,
   originalTerm: string | undefined,
   originalQuery: string | undefined,
   selectedTerm: TermContext | null = null;
@@ -44,7 +52,13 @@ function applySelectedValue(selection: string) {
   if (!inputField) return;
 
   if (!isSearchField(inputField)) {
-    inputField.value = selection;
+    let resultValue = selection;
+
+    if (originalTerm?.startsWith('-')) {
+      resultValue = `-${selection}`;
+    }
+
+    inputField.value = resultValue;
     return;
   }
 
@@ -99,19 +113,36 @@ function keydownHandler(event: KeyboardEvent) {
   }
 }
 
-function findSelectedTerm(targetInput: HTMLInputElement, searchQuery: string): TermContext | null {
+function findSelectedTerm(targetInput: InputFieldElement, searchQuery: string): TermContext | null {
   if (targetInput.selectionStart === null || targetInput.selectionEnd === null) return null;
 
   const selectionIndex = Math.min(targetInput.selectionStart, targetInput.selectionEnd);
-  const terms = getTermContexts(searchQuery);
 
-  return terms.find(([range]) => range[0] < selectionIndex && range[1] >= selectionIndex) ?? null;
+  // Multi-line textarea elements should treat each line as the different search queries. Here we're looking for the
+  // actively edited line and use it instead of the whole value.
+  const activeLineStart = searchQuery.slice(0, selectionIndex).lastIndexOf('\n') + 1;
+  const lengthAfterSelectionIndex = Math.max(searchQuery.slice(selectionIndex).indexOf('\n'), 0);
+  const targetQuery = searchQuery.slice(activeLineStart, selectionIndex + lengthAfterSelectionIndex);
+
+  const terms = getTermContexts(targetQuery);
+  const searchIndex = selectionIndex - activeLineStart;
+  const term = terms.find(([range]) => range[0] < searchIndex && range[1] >= searchIndex) ?? null;
+
+  // Converting line-specific indexes back to absolute ones.
+  if (term) {
+    const [range] = term;
+
+    range[0] += activeLineStart;
+    range[1] += activeLineStart;
+  }
+
+  return term;
 }
 
 function toggleSearchAutocomplete() {
   const enable = store.get('enable_search_ac');
 
-  for (const searchField of $$<HTMLInputElement>('input[data-ac-mode=search]')) {
+  for (const searchField of $$<InputFieldElement>(':is(input, textarea)[data-ac-mode=search]')) {
     if (enable) {
       searchField.autocomplete = 'off';
     } else {
@@ -119,6 +150,10 @@ function toggleSearchAutocomplete() {
       searchField.autocomplete = 'on';
     }
   }
+}
+
+function trimPrefixes(targetTerm: string): string {
+  return targetTerm.trim().replace(/^-/, '');
 }
 
 function listenAutocomplete() {
@@ -134,13 +169,13 @@ function listenAutocomplete() {
     loadAutocompleteFromEvent(event);
     window.clearTimeout(serverSideSuggestionsTimeout);
 
-    if (!(event.target instanceof HTMLInputElement)) return;
+    if (!(event.target instanceof HTMLInputElement) && !(event.target instanceof HTMLTextAreaElement)) return;
 
     const targetedInput = event.target;
 
     if (!targetedInput.dataset.ac) return;
 
-    targetedInput.addEventListener('keydown', keydownHandler);
+    targetedInput.addEventListener('keydown', keydownHandler as EventListener);
 
     if (localAc !== null) {
       inputField = targetedInput;
@@ -162,9 +197,8 @@ function listenAutocomplete() {
       }
 
       const suggestions = localAc
-        .matchPrefix(originalTerm)
-        .topK(suggestionsCount)
-        .map(({ name, imageCount }) => ({ label: `${name} (${imageCount})`, value: name }));
+        .matchPrefix(trimPrefixes(originalTerm), suggestionsCount)
+        .map(formatLocalAutocompleteResult);
 
       if (suggestions.length) {
         popup.renderSuggestions(suggestions).showForField(targetedInput);
@@ -181,13 +215,13 @@ function listenAutocomplete() {
       inputField = targetedInput;
       originalTerm = inputField.value;
 
-      const fetchedTerm = inputField.value;
+      const fetchedTerm = trimPrefixes(inputField.value);
 
       if (minTermLength && fetchedTerm.length < parseInt(minTermLength, 10)) return;
 
       fetchSuggestions(endpointUrl, fetchedTerm).then(suggestions => {
         // inputField could get overwritten while the suggestions are being fetched - use previously targeted input
-        if (fetchedTerm === targetedInput.value) {
+        if (fetchedTerm === trimPrefixes(targetedInput.value)) {
           popup.renderSuggestions(suggestions).showForField(targetedInput);
         }
       });
@@ -203,7 +237,7 @@ function listenAutocomplete() {
   });
 
   function loadAutocompleteFromEvent(event: Event) {
-    if (!(event.target instanceof HTMLInputElement)) return;
+    if (!(event.target instanceof HTMLInputElement) && !(event.target instanceof HTMLTextAreaElement)) return;
 
     if (!isLocalLoading && event.target.dataset.ac) {
       isLocalLoading = true;
@@ -222,8 +256,12 @@ function listenAutocomplete() {
     const originalSuggestion = event.detail;
     applySelectedValue(originalSuggestion.value);
 
+    if (originalTerm?.startsWith('-')) {
+      originalSuggestion.value = `-${originalSuggestion.value}`;
+    }
+
     inputField.dispatchEvent(
-      new CustomEvent('autocomplete', {
+      new CustomEvent<TermSuggestion>('autocomplete', {
         detail: Object.assign(
           {
             type: 'click',

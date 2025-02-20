@@ -1,24 +1,34 @@
-export type Compare<T> = (a: T, b: T) => boolean;
+export type Compare<T> = (a: T, b: T) => number;
+export type Unique<T> = (a: T) => unknown;
+export type Collection<T> = {
+  [index: number]: T;
+  length: number;
+};
 
-export class UniqueHeap<T extends object> {
-  private keys: Set<unknown>;
-  private values: T[];
-  private keyName: keyof T;
+export class UniqueHeap<T> {
+  private keys: Map<unknown, number>;
+  private values: Collection<T>;
+  private length: number;
   private compare: Compare<T>;
+  private unique: Unique<T>;
 
-  constructor(compare: Compare<T>, keyName: keyof T) {
-    this.keys = new Set();
-    this.values = [];
-    this.keyName = keyName;
+  constructor(compare: Compare<T>, unique: Unique<T>, values: Collection<T>) {
+    this.keys = new Map();
+    this.values = values;
+    this.length = 0;
     this.compare = compare;
+    this.unique = unique;
   }
 
-  append(value: T) {
-    const key = value[this.keyName];
+  append(value: T, forceReplace: boolean = false) {
+    const key = this.unique(value);
+    const prevIndex = this.keys.get(key);
 
-    if (!this.keys.has(key)) {
-      this.keys.add(key);
-      this.values.push(value);
+    if (prevIndex === undefined) {
+      this.keys.set(key, this.length);
+      this.values[this.length++] = value;
+    } else if (forceReplace) {
+      this.values[prevIndex] = value;
     }
   }
 
@@ -38,8 +48,7 @@ export class UniqueHeap<T extends object> {
   }
 
   *results(): Generator<T, void, void> {
-    const { values } = this;
-    const length = values.length;
+    const { values, length } = this;
 
     // Build the heap.
     for (let i = (length >> 1) - 1; i >= 0; i--) {
@@ -69,12 +78,12 @@ export class UniqueHeap<T extends object> {
       const right = 2 * i + 2;
       let largest = i;
 
-      if (left < length && compare(values[largest], values[left])) {
+      if (left < length && compare(values[largest], values[left]) < 0) {
         // Left child is in-bounds and larger than parent. Swap with left.
         largest = left;
       }
 
-      if (right < length && compare(values[largest], values[right])) {
+      if (right < length && compare(values[largest], values[right]) < 0) {
         // Right child is in-bounds and larger than parent or left. Swap with right.
         largest = right;
       }

@@ -82,7 +82,7 @@ services:
     attach: false
 
   files:
-    image: andrewgaul/s3proxy:sha-4976e17
+    image: andrewgaul/s3proxy:sha-3ff077f
     environment:
       - JCLOUDS_FILESYSTEM_BASEDIR=/srv/philomena/priv/s3
     volumes:
