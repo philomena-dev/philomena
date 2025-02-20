@@ -161,9 +161,6 @@ defmodule PhilomenaWeb.TagView do
   defp manages_links?(conn),
     do: can?(conn, :index, Philomena.ArtistLinks.ArtistLink)
 
-  defp manages_dnp?(conn),
-    do: can?(conn, :index, Philomena.DnpEntries.DnpEntry)
-
   defp tag_url_root do
     Application.get_env(:philomena, :tag_url_root)
   end

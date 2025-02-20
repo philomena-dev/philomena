@@ -8,7 +8,6 @@ defmodule PhilomenaWeb.AdminCountersPlug do
   alias Philomena.DuplicateReports
   alias Philomena.Reports
   alias Philomena.ArtistLinks
-  alias Philomena.DnpEntries
   alias Philomena.Images
 
   import Plug.Conn, only: [assign: 3]
