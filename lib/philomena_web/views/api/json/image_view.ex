@@ -65,15 +65,13 @@ defmodule PhilomenaWeb.Api.Json.ImageView do
           processed: image.processed,
           deletion_reason: nil,
           duplicate_of: image.duplicate_id,
-          hidden_from_users: image.hidden_from_users
+          hidden_from_users: image.hidden_from_users,
+          spoilered:
+            case assigns do
+              %{conn: conn} -> ImageView.filter_or_spoiler_hits?(conn, image)
+              _ -> false
+            end
         }
-        |> Map.put(
-          :spoilered,
-          case assigns do
-            %{conn: conn} -> ImageView.filter_or_spoiler_hits?(conn, image)
-            _ -> false
-          end
-        )
 
       false ->
         %{
