@@ -37,6 +37,8 @@ defmodule Philomena.Users do
   """
   def get_user_by_authentication_token(token) when is_binary(token) do
     Repo.get_by(User, authentication_token: token)
+    |> Repo.preload([:roles])
+    |> setup_roles()
   end
 
   @doc """
