@@ -90,7 +90,8 @@
     {"name": "moderator", "resource_type": "Topic"},
     {"name": "admin", "resource_type": "Advert"},
     {"name": "admin", "resource_type": "StaticPage"},
-    {"name": "admin", "resource_type": "Image"}
+    {"name": "admin", "resource_type": "Image"},
+    {"name": "duplicate_access", "resource_type": "Image"}
   ],
   "pages": []
 }
