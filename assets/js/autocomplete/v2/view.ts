@@ -1,20 +1,21 @@
 import { LocalAutocompleter } from '../../utils/local-autocompleter';
 import * as history from '../history/view';
 import { AutocompletableInput, TextInputElement } from './input';
-import {
-  fetchLocalAutocomplete,
-  SuggestionsPopup,
-  Suggestions,
-  TagSuggestion,
-  Suggestion,
-  HistorySuggestion,
-} from '../../utils/suggestions';
+import { SuggestionsPopup, Suggestions, TagSuggestion, Suggestion, HistorySuggestion } from '../../utils/suggestions';
 import { $$ } from '../../utils/dom';
+import { AutocompleteClient, GetTagSuggestionsRequest } from './client';
+import { DebouncedCache } from './debounced-cache';
+
+// eslint-disable-next-line no-use-before-define
+type EnabledAutocomplete = Autocomplete & { input: AutocompletableInput };
 
 class Autocomplete {
-  localAutocompleter: 'fetching' | 'unavailable' | LocalAutocompleter | null = null;
+  index: 'fetching' | 'unavailable' | LocalAutocompleter | null = null;
   input: AutocompletableInput | null = null;
   popup = new SuggestionsPopup();
+  client = new AutocompleteClient();
+
+  serverSideTagSuggestions = new DebouncedCache(this.client.getTagSuggestions.bind(this.client));
 
   constructor() {
     this.popup.onItemSelected(this.onItemSelected.bind(this));
@@ -24,25 +25,28 @@ class Autocomplete {
    * Lazy-load the local autocomplete data.
    */
   async fetchLocalAutocomplete() {
-    if (this.localAutocompleter) {
+    if (this.index) {
       // The autocompleter is already either fetching or initialized, so nothing to do.
       return;
     }
 
     // Indicate that the autocompleter is in the process of fetching so that
     // we don't try to fetch it again while it's still loading.
-    this.localAutocompleter = 'fetching';
+    this.index = 'fetching';
     try {
-      this.localAutocompleter = await fetchLocalAutocomplete();
+      const index = await this.client.getCompiledAutocomplete();
+      this.index = new LocalAutocompleter(index);
       this.refresh();
     } catch (error) {
-      this.localAutocompleter = 'unavailable';
+      this.index = 'unavailable';
       console.error('Failed to fetch local autocomplete data', error);
     }
   }
 
-  refresh(event) {
-    console.log('refresh', event);
+  refresh(event?: Event) {
+    this.serverSideTagSuggestions.abortLastCall();
+
+    console.debug('refresh', event);
 
     this.input = AutocompletableInput.fromElement(document.activeElement);
     if (!this.isEnabled()) {
@@ -57,13 +61,11 @@ class Autocomplete {
     this.fetchLocalAutocomplete();
 
     // Show all history suggestions if the input is empty.
-    if (input.snapshot.trimmedValue === '') {
-      this.popup
-        .setSuggestions({
-          history: history.listSuggestions(input),
-          tags: [],
-        })
-        .showForElement(input.element);
+    if (input.snapshot.normalizedValue === '') {
+      this.showSuggestions({
+        history: history.listSuggestions(input),
+        tags: [],
+      });
       return;
     }
 
@@ -74,45 +76,88 @@ class Autocomplete {
       tags: [],
     };
 
-    if (!input.snapshot.activeTerm) {
-      this.popup.setSuggestions(suggestions).showForElement(input.element);
-      return;
-    }
-
     // There may be several scenarios here:
     //
-    // 1. The `localAutocompleter` is still `fetching`.
+    // 1. The `index` is still `fetching`.
     //    We should wait until it's done. Doing concurrent server-side suggestions
     //    request in this case would be optimistically wasteful.
     //
-    // 2. The `localAutocompleter` is `unavailable`.
+    // 2. The `index` is `unavailable`.
     //    We shouldn't fetch server suggestions either because there may be something
     //    horribly wrong on the backend, so we don't want to spam it with even more
     //    requests. This scenario should be extremely rare though.
     //
-    // 3. The `localAutocompleter` was loaded (Flutter-Yay 🎉).
-    if (!(this.localAutocompleter instanceof LocalAutocompleter)) {
+    // 3. The `index` was loaded (Flutter-Yay 🎉).
+    if (
+      !input.snapshot.activeTerm ||
+      !(this.index instanceof LocalAutocompleter) ||
+      suggestions.history.length === this.input.maxSuggestions
+    ) {
+      this.showSuggestions(suggestions);
       return;
     }
 
     const activeTerm = input.snapshot.activeTerm.term;
 
-    suggestions.tags = this.localAutocompleter
-      .matchPrefix(activeTerm, input.maxSuggestions - suggestions.history.length)
-      .map(result => new TagSuggestion({ ...result, matchLength: activeTerm.length }));
+    // suggestions.tags = this.index
+    //   .matchPrefix(activeTerm, input.maxSuggestions - suggestions.history.length)
+    //   .map(result => new TagSuggestion({ ...result, matchLength: activeTerm.length }));
 
-    // Only if the local autocompleter had its chance to provide suggestions
+    // Show suggestions that we arledy have early without waiting for a potential
+    // server-side suggestions request.
+    this.showSuggestions(suggestions);
+
+    // Only if the index had its chance to provide suggestions
     // and produced nothing, do we try to fetch server suggestions.
-    if (suggestions.tags.length === 0) {
-      // TODO: fetch server suggestions. Use the min length of the term 3 as a condition as well.
-      // TODO: clicking on history item should submit the form right away?
+    if (suggestions.tags.length > 0 || activeTerm.length < 3) {
+      return;
     }
 
-    this.popup.setSuggestions(suggestions).showForElement(input.element);
+    this.scheduleServerSideSuggestions(activeTerm, suggestions.history);
   }
 
-  onFocusIn(event) {
-    console.log('focusin', event);
+  scheduleServerSideSuggestions(this: EnabledAutocomplete, term: string, historySuggestions: HistorySuggestion[]) {
+    const request: GetTagSuggestionsRequest = {
+      term,
+      limit: this.input.maxSuggestions - historySuggestions.length,
+    };
+
+    this.serverSideTagSuggestions.schedule(request, async responsePromise => {
+      let response;
+      try {
+        response = await responsePromise;
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          console.debug('Server-side suggestions request was aborted');
+          return;
+        }
+
+        throw error;
+      }
+
+      if (!this.isEnabled()) {
+        return;
+      }
+
+      this.showSuggestions({
+        history: historySuggestions,
+        tags: response.suggestions.map(
+          suggestion =>
+            new TagSuggestion({
+              ...suggestion,
+              matchLength: term.length,
+            }),
+        ),
+      });
+    });
+  }
+
+  showSuggestions(this: EnabledAutocomplete, suggestions: Suggestions) {
+    this.popup.setSuggestions(suggestions).showForElement(this.input.element);
+  }
+
+  onFocusIn(event?: FocusEvent) {
+    console.debug('focusin', event);
     if (this.popup.isHidden) {
       // The event we are processing comes before the input's selection is settled.
       // Defer the refresh to the next frame to get the updated selection.
@@ -121,7 +166,7 @@ class Autocomplete {
   }
 
   onClick(event: MouseEvent) {
-    console.log('click', event);
+    console.debug('click', event);
     if (this.input?.isEnabled() && this.input.element !== event.target) {
       // We lost focus. Hide the popup.
       // We use this method instead of the `focusout` event because this way it's
@@ -231,16 +276,16 @@ class Autocomplete {
     element.setSelectionRange(newCursorIndex, newCursorIndex);
   }
 
-  isEnabled(): this is this & { input: AutocompletableInput } {
+  isEnabled(): this is EnabledAutocomplete {
     return Boolean(this.input?.isEnabled());
   }
 
-  assertEnabled(): asserts this is this & { input: AutocompletableInput } {
+  assertEnabled(): asserts this is EnabledAutocomplete {
     if (this.isEnabled()) {
       return;
     }
 
-    console.debug('Current input', this.input);
+    console.debug('Current input when the error happened', this.input);
     throw new Error(`Expected enabled autocomplete, but it's not enabled`);
   }
 }

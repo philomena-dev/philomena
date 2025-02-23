@@ -48,11 +48,9 @@ export class InputHistory {
 
   /**
    * Save the input into the history and commit it to the `localStorage`.
+   * Expects a normalized input i.e. trimmed from whitespace and lowercased.
    */
   write(input: string) {
-    // eslint-disable-next-line no-param-reassign
-    input = input.trim();
-
     if (input === '') {
       return;
     }

@@ -1,42 +1,47 @@
 import { makeEl } from './dom.ts';
-import { handleError } from './requests.ts';
-import { LocalAutocompleter } from './local-autocompleter.ts';
 
-export class TagSuggestion {
+interface TagSuggestionsParams {
   /**
    * If present, then this suggestion is for a tag alias.
    * If absent, then this suggestion is for the `canonical` tag name.
    */
-  aliasName?: string;
+  alias?: null | string;
 
   /**
    * The canonical name of the tag (non-alias).
    */
-  canonicalName: string;
+  canonical: string;
 
   /**
    * Number of images tagged with this tag.
    */
-  imageCount: number;
+  images: number;
 
   /**
    * Length of the prefix in the suggestion that matches the prefix of the current input.
    */
   matchLength: number;
+}
 
-  constructor(props: { aliasName?: string; canonicalName: string; imageCount: number; matchLength: number }) {
-    this.aliasName = props.aliasName;
-    this.canonicalName = props.canonicalName;
-    this.imageCount = props.imageCount;
-    this.matchLength = props.matchLength;
+export class TagSuggestion {
+  alias?: null | string;
+  canonical: string;
+  images: number;
+  matchLength: number;
+
+  constructor(params: TagSuggestionsParams) {
+    this.alias = params.alias;
+    this.canonical = params.canonical;
+    this.images = params.images;
+    this.matchLength = params.matchLength;
   }
 
   value(): string {
-    return this.canonicalName;
+    return this.canonical;
   }
 
   render(): HTMLElement[] {
-    const { aliasName, canonicalName, imageCount } = this;
+    const { alias: aliasName, canonical: canonicalName, images: imageCount } = this;
 
     const label = aliasName ? `${aliasName} → ${canonicalName}` : canonicalName;
 
@@ -325,46 +330,4 @@ export class SuggestionsPopup {
   onItemSelected(callback: (event: CustomEvent<Suggestion>) => void) {
     this.container.addEventListener('item_selected', callback as EventListener);
   }
-}
-
-const cachedSuggestions = new Map<string, Promise<Suggestion[]>>();
-
-export async function fetchSuggestions(endpoint: string, targetTerm: string): Promise<Suggestion[]> {
-  const normalizedTerm = targetTerm.trim().toLowerCase();
-
-  if (cachedSuggestions.has(normalizedTerm)) {
-    return cachedSuggestions.get(normalizedTerm)!;
-  }
-
-  const promisedSuggestions: Promise<Suggestion[]> = fetch(`${endpoint}${targetTerm}`)
-    .then(handleError)
-    .then(response => response.json())
-    .catch(() => {
-      // Deleting the promised result from cache to allow retrying
-      cachedSuggestions.delete(normalizedTerm);
-
-      // And resolve failed promise with empty array
-      return [];
-    });
-
-  cachedSuggestions.set(normalizedTerm, promisedSuggestions);
-
-  return promisedSuggestions;
-}
-
-export function purgeSuggestionsCache() {
-  cachedSuggestions.clear();
-}
-
-export async function fetchLocalAutocomplete(): Promise<LocalAutocompleter> {
-  const now = new Date();
-  const cacheKey = `${now.getUTCFullYear()}-${now.getUTCMonth()}-${now.getUTCDate()}`;
-
-  return await fetch(`/autocomplete/compiled?vsn=2&key=${cacheKey}`, {
-    credentials: 'omit',
-    cache: 'force-cache',
-  })
-    .then(handleError)
-    .then(resp => resp.arrayBuffer())
-    .then(buf => new LocalAutocompleter(buf));
 }

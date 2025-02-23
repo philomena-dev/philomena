@@ -51,7 +51,7 @@ export function listen() {
       return;
     }
 
-    histories.load(input.historyId).write(input.snapshot.trimmedValue);
+    histories.load(input.historyId).write(input.snapshot.normalizedValue);
   });
 }
 
@@ -67,6 +67,6 @@ export function listSuggestions(input: AutocompletableInput, limit?: number): Hi
 
   return histories
     .load(input.historyId)
-    .listSuggestions(input.snapshot.trimmedValue, limit ?? input.maxSuggestions)
-    .map(content => new HistorySuggestion(content, input.snapshot.trimmedValue.length));
+    .listSuggestions(input.snapshot.normalizedValue, limit ?? input.maxSuggestions)
+    .map(content => new HistorySuggestion(content, input.snapshot.normalizedValue.length));
 }

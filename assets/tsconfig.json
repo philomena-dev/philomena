@@ -7,7 +7,7 @@
     "allowJs": true,
     "skipLibCheck": true,
     "lib": [
-      "ES2016",
+      "ES2022.Error",
       "DOM",
       "DOM.Iterable"
     ],

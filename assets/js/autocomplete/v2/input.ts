@@ -35,9 +35,10 @@ interface AutocompleteInputSnapshot {
   origValue: string;
 
   /**
-   * The value of the input element at the time when it was created, trimmed from whitespace.
+   * The value of the input element at the time when it was created, but
+   * trimmed from whitespace and lowercased.
    */
-  trimmedValue: string;
+  normalizedValue: string;
 
   /**
    * Can be `null` if the input value is empty.
@@ -134,7 +135,7 @@ export class AutocompletableInput {
     this.type = type;
     this.snapshot = {
       origValue: element.value,
-      trimmedValue: element.value.trim(),
+      normalizedValue: element.value.trim().toLowerCase(),
       activeTerm: findActiveTerm(type, element),
       selection: {
         start: element.selectionStart,
