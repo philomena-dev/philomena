@@ -62,7 +62,7 @@ defmodule PhilomenaWeb.Api.Json.ImageView do
         representations: ImageView.thumb_urls(image, true),
         thumbnails_generated: image.thumbnails_generated,
         processed: image.processed,
-        deletion_reason: nil,
+        deletion_reason: image.deletion_reason,
         duplicate_of: image.duplicate_id,
         hidden_from_users: image.hidden_from_users,
         spoilered: spoilered(assigns, image)
