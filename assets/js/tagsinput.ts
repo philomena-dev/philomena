@@ -4,7 +4,6 @@
 
 import { assertNotNull, assertType } from './utils/assert';
 import { $, $$, clearEl, removeEl, showEl, hideEl, escapeCss, escapeHtml } from './utils/dom';
-import { ItemSelectedEventDetail } from './utils/suggestions';
 
 export function setupTagsInput(tagBlock: HTMLDivElement) {
   const form = assertNotNull(tagBlock.closest('form'));

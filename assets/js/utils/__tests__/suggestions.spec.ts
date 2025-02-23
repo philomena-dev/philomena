@@ -4,7 +4,7 @@ import {
   fetchSuggestions,
   renderTagSuggestion,
   purgeSuggestionsCache,
-  SuggestionsDropdown,
+  SuggestionsPopup,
   Suggestion,
 } from '../suggestions.ts';
 import fs from 'fs';
@@ -23,9 +23,9 @@ const mockedSuggestionsResponse = [
   { label: 'artist:moe (1)', value: 'artist:moe' },
 ];
 
-function mockBaseSuggestionsPopup(includeMockedSuggestions: boolean = false): [SuggestionsDropdown, HTMLInputElement] {
+function mockBaseSuggestionsPopup(includeMockedSuggestions: boolean = false): [SuggestionsPopup, HTMLInputElement] {
   const input = document.createElement('input');
-  const popup = new SuggestionsDropdown();
+  const popup = new SuggestionsPopup();
 
   document.body.append(input);
   popup.showForElement(input);
@@ -41,7 +41,7 @@ const selectedItemClassName = 'autocomplete__item--selected';
 
 describe('Suggestions', () => {
   let mockedAutocompleteBuffer: ArrayBuffer;
-  let popup: SuggestionsDropdown | undefined;
+  let popup: SuggestionsPopup | undefined;
   let input: HTMLInputElement | undefined;
 
   beforeAll(async () => {
@@ -78,7 +78,7 @@ describe('Suggestions', () => {
       [popup, input] = mockBaseSuggestionsPopup();
 
       expect(document.querySelector('.autocomplete')).toBeInstanceOf(HTMLElement);
-      expect(popup.isActive).toBe(true);
+      expect(popup.isHidden).toBe(false);
     });
 
     it('should be removed when hidden', () => {
@@ -87,7 +87,7 @@ describe('Suggestions', () => {
       popup.hide();
 
       expect(document.querySelector('.autocomplete')).not.toBeInstanceOf(HTMLElement);
-      expect(popup.isActive).toBe(false);
+      expect(popup.isHidden).toBe(true);
     });
 
     it('should render suggestions', () => {
@@ -99,7 +99,7 @@ describe('Suggestions', () => {
     it('should initially select first element when selectNext called', () => {
       [popup, input] = mockBaseSuggestionsPopup(true);
 
-      popup.selectNext();
+      popup.selectDown();
 
       expect(document.querySelector('.autocomplete__item:first-child')).toHaveClass(selectedItemClassName);
     });
@@ -107,7 +107,7 @@ describe('Suggestions', () => {
     it('should initially select last element when selectPrevious called', () => {
       [popup, input] = mockBaseSuggestionsPopup(true);
 
-      popup.selectPrevious();
+      popup.selectUp();
 
       expect(document.querySelector('.autocomplete__item:last-child')).toHaveClass(selectedItemClassName);
     });
@@ -153,7 +153,7 @@ describe('Suggestions', () => {
 
       expect(secondItem).toHaveClass(selectedItemClassName);
 
-      popup.selectNext();
+      popup.selectDown();
 
       expect(secondItem).not.toHaveClass(selectedItemClassName);
       expect(thirdItem).toHaveClass(selectedItemClassName);
@@ -172,19 +172,19 @@ describe('Suggestions', () => {
 
       expect(lastItem).toHaveClass(selectedItemClassName);
 
-      popup.selectNext();
+      popup.selectDown();
 
       expect(document.querySelector(`.${selectedItemClassName}`)).toBeNull();
 
-      popup.selectNext();
+      popup.selectDown();
 
       expect(firstItem).toHaveClass(selectedItemClassName);
 
-      popup.selectPrevious();
+      popup.selectUp();
 
       expect(document.querySelector(`.${selectedItemClassName}`)).toBeNull();
 
-      popup.selectPrevious();
+      popup.selectUp();
 
       expect(lastItem).toHaveClass(selectedItemClassName);
     });
@@ -194,7 +194,7 @@ describe('Suggestions', () => {
 
       expect(popup.selectedSuggestion).toBe(null);
 
-      popup.selectNext();
+      popup.selectDown();
 
       expect(popup.selectedSuggestion).toBe(mockedSuggestionsResponse[0].value);
     });

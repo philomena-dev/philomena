@@ -1,12 +1,4 @@
-import {
-  delegate,
-  fire,
-  mouseMoveThenOver,
-  leftClick,
-  on,
-  PhilomenaAvailableEventsMap,
-  oncePersistedPageShown,
-} from '../events';
+import { delegate, fire, leftClick, on, PhilomenaAvailableEventsMap, oncePersistedPageShown } from '../events';
 import { getRandomArrayItem } from '../../../test/randomness';
 import { fireEvent } from '@testing-library/dom';
 

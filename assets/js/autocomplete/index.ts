@@ -11,7 +11,7 @@ import {
   renderTagSuggestion,
   fetchLocalAutocomplete,
   fetchSuggestions,
-  SuggestionsDropdown,
+  SuggestionsPopup,
   Suggestion,
 } from '../utils/suggestions';
 import * as history from './history/view';
@@ -30,7 +30,7 @@ let originalTerm: string | undefined;
 let originalQuery: string | undefined;
 let selectedTerm: TermContext | null = null;
 
-const popup = new SuggestionsDropdown();
+const popup = new SuggestionsPopup();
 
 function isSearchField(targetInput: HTMLElement): boolean {
   return targetInput.dataset.autocompleteMode === 'search';
@@ -102,10 +102,10 @@ function keydownHandler(event: KeyboardEvent) {
     }
   }
 
-  if (!popup.isActive) return;
+  if (popup.isHidden) return;
 
-  if (event.keyCode === 38) popup.selectPrevious(); // ArrowUp
-  if (event.keyCode === 40) popup.selectNext(); // ArrowDown
+  if (event.keyCode === 38) popup.selectUp(); // ArrowUp
+  if (event.keyCode === 40) popup.selectDown(); // ArrowDown
   if (event.keyCode === 13 || event.keyCode === 27 || event.keyCode === 188) popup.hide(); // Enter || Esc || Comma
   if (event.keyCode === 38 || event.keyCode === 40) {
     // ArrowUp || ArrowDown
@@ -210,7 +210,7 @@ export function listenAutocomplete() {
     // when debugging the completions in devtools in browser. For some reason when
     // you select a completion HTML element this way a `focusin` event is triggered
     // against the input element again.
-    if (popup.isActive && inputField === element && originalQuery === element.value) {
+    if (!popup.isHidden && inputField === element && originalQuery === element.value) {
       return;
     }
 

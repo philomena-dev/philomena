@@ -55,7 +55,13 @@ export class TagSuggestion {
       }),
     );
 
-    return [prefix, makeEl('span', { textContent: ` ${imageCount}` })];
+    return [
+      prefix,
+      makeEl('span', {
+        className: 'autocomplete-item-tag__count',
+        textContent: ` ${imageCount}`,
+      }),
+    ];
   }
 }
 
@@ -107,44 +113,43 @@ interface SuggestionItem {
   suggestion: Suggestion;
 }
 
-export interface SelectionChangedEventDetail {
-  selectedSuggestion: Suggestion | null;
-}
-
 /**
  * Responsible for rendering the suggestions dropdown.
  */
-export class SuggestionsDropdown {
-  static selectedSuggestionClassName = 'autocomplete__item--selected';
-
+export class SuggestionsPopup {
+  /**
+   * Index of the currently selected suggestion. -1 means an imaginary item
+   * before the first item that represents the state where no item is selected.
+   */
+  private cursor: number = -1;
+  private items: SuggestionItem[];
   private readonly container: HTMLElement;
-  private selectionIndex: number = -1;
-  private suggestionItems: SuggestionItem[];
 
   constructor() {
     this.container = makeEl('div', {
       className: 'autocomplete hidden',
+      tabIndex: -1,
     });
 
     // Make the container connected to DOM to make sure it's rendered when we unhide it
     document.body.appendChild(this.container);
-    this.suggestionItems = [];
+    this.items = [];
   }
 
   get selectedSuggestion(): Suggestion | null {
-    return this.selectedSuggestionItem?.suggestion ?? null;
+    return this.selectedItem?.suggestion ?? null;
   }
 
-  private get selectedSuggestionItem(): SuggestionItem | null {
-    if (this.selectionIndex < 0) {
+  private get selectedItem(): SuggestionItem | null {
+    if (this.cursor < 0) {
       return null;
     }
 
-    return this.suggestionItems[this.selectionIndex];
+    return this.items[this.cursor];
   }
 
-  get isActive(): boolean {
-    return !this.container.classList.contains('hidden');
+  get isHidden(): boolean {
+    return this.container.classList.contains('hidden');
   }
 
   hide() {
@@ -157,26 +162,27 @@ export class SuggestionsDropdown {
   }
 
   private setSelection(index: number) {
-    if (this.selectionIndex === index) {
+    if (this.cursor === index) {
       return;
     }
 
-    if (index < -1 || index >= this.suggestionItems.length) {
+    if (index < -1 || index >= this.items.length) {
       throw new Error(`setSelection(): invalid selection index: ${index}`);
     }
 
-    this.selectedSuggestionItem?.element.classList.remove(SuggestionsDropdown.selectedSuggestionClassName);
-    this.selectionIndex = index;
+    const selectedClass = 'autocomplete__item--selected';
+
+    this.selectedItem?.element.classList.remove(selectedClass);
+    this.cursor = index;
 
     if (index >= 0) {
-      this.selectedSuggestionItem?.element.classList.add(SuggestionsDropdown.selectedSuggestionClassName);
+      this.selectedItem?.element.classList.add(selectedClass);
     }
   }
 
-  setSuggestions(params: Suggestions): SuggestionsDropdown {
-    this.clearSelection();
-
-    this.suggestionItems = [];
+  setSuggestions(params: Suggestions): SuggestionsPopup {
+    this.cursor = -1;
+    this.items = [];
     this.container.innerHTML = '';
 
     for (const suggestion of params.history) {
@@ -206,39 +212,100 @@ export class SuggestionsDropdown {
 
     this.watchItem(item);
 
-    this.suggestionItems.push(item);
+    this.items.push(item);
     this.container.appendChild(element);
   }
 
   private watchItem(item: SuggestionItem) {
-    item.element.addEventListener('click', () => {
-      this.hide();
+    item.element.addEventListener('pointerdown', event => {
+      if (event.button !== 0) {
+        return;
+      }
+
+      // This prevent focusing on the element and thus losing focus on the input field.
+      // This ensures that the user can always continue typing in the input, and we
+      // don't need to refocus the input back if the user clicks on the suggestion.
+      event.preventDefault();
+
       this.container.dispatchEvent(new CustomEvent('item_selected', { detail: item.suggestion }));
     });
   }
 
   private changeSelection(direction: number) {
-    if (this.suggestionItems.length === 0) {
+    if (this.items.length === 0) {
       return;
     }
 
-    const index = this.selectionIndex + direction;
+    const index = this.cursor + direction;
 
-    if (index === -1 || index >= this.suggestionItems.length) {
+    if (index === -1 || index >= this.items.length) {
       this.clearSelection();
     } else if (index < -1) {
-      this.setSelection(this.suggestionItems.length - 1);
+      this.setSelection(this.items.length - 1);
     } else {
       this.setSelection(index);
     }
   }
 
-  selectNext() {
+  selectDown() {
     this.changeSelection(1);
   }
 
-  selectPrevious() {
+  selectUp() {
     this.changeSelection(-1);
+  }
+
+  /**
+   * The user wants to jump to the next lower block of types of suggestions.
+   */
+  selectCtrlDown() {
+    if (this.items.length === 0) {
+      return;
+    }
+
+    if (this.cursor >= this.items.length - 1) {
+      this.setSelection(0);
+      return;
+    }
+
+    let index = this.cursor + 1;
+    const type = this.itemType(index);
+
+    while (index < this.items.length - 1 && this.itemType(index) === type) {
+      index += 1;
+    }
+
+    this.setSelection(index);
+  }
+
+  /**
+   * The user wants to jump to the next upper block of types of suggestions.
+   */
+  selectCtrlUp() {
+    if (this.items.length === 0) {
+      return;
+    }
+
+    if (this.cursor <= 0) {
+      this.setSelection(this.items.length - 1);
+      return;
+    }
+
+    let index = this.cursor - 1;
+    const type = this.itemType(index);
+
+    while (index > 0 && this.itemType(index) === type) {
+      index -= 1;
+    }
+
+    this.setSelection(index);
+  }
+
+  /**
+   * Returns the item's prototype that can be viewed as the item's type identifier.
+   */
+  private itemType(index: number) {
+    return this.items[index].suggestion instanceof TagSuggestion ? 'tag' : 'history';
   }
 
   showForElement(targetElement: HTMLElement) {

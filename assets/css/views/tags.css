@@ -79,10 +79,15 @@
   font-weight: bold;
 }
 
-.autocomplete__item-tag__match:not(.autocomplete__item--selected) {
+.autocomplete-item-tag__match:not(.autocomplete__item--selected) {
   /* Use a lighter color to highlight the matched part of the query */
   color: lch(from var(--foreground-color) calc(l + 20) c h);
 }
+
+.autocomplete-item-tag__count {
+  color: var(--foreground-half-color);
+}
+
 
 .autocomplete__item:hover:not(.autocomplete__item--selected) {
   background: lch(from var(--background-color) calc(l + 10) c h);

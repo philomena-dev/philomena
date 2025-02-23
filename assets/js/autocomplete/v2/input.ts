@@ -50,6 +50,7 @@ interface AutocompleteInputSnapshot {
   selection: {
     start: number | null;
     end: number | null;
+    direction: TextInputElement['selectionDirection'];
   };
 }
 
@@ -138,6 +139,7 @@ export class AutocompletableInput {
       selection: {
         start: element.selectionStart,
         end: element.selectionEnd,
+        direction: element.selectionDirection,
       },
     };
 
@@ -146,7 +148,7 @@ export class AutocompletableInput {
     this.maxSuggestions = maxSuggestions ? parseInt(maxSuggestions, 10) : 10;
   }
 
-  hasHistory(): this is this & Required<Pick<this, 'historyId'>> {
+  hasHistory(): this is this & { historyId: string } {
     return Boolean(this.historyId);
   }
 
@@ -174,7 +176,7 @@ function findActiveTerm(
   const terms = getTermContexts(line);
   const searchIndex = cursorIndex - lineStart;
 
-  const term = terms.find(({ range }) => range.start < searchIndex && range.end >= searchIndex) ?? null;
+  const term = terms.find(({ range }) => range.start <= searchIndex && range.end >= searchIndex) ?? null;
 
   if (!term) {
     return null;
