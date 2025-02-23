@@ -1,4 +1,4 @@
-import { HttpClient } from '../../utils/http-client.ts';
+import { HttpClient } from '../utils/http-client.ts';
 
 export interface TagSuggestion {
   alias?: null | string;

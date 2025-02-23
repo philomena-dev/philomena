@@ -17,6 +17,17 @@ export interface RetryParams {
    * grows exponentially very fast.
    */
   maxDelayMs?: number;
+
+  /**
+   * If present determines if the error should be retried or immediately re-thrown.
+   */
+  isRetryable?(error: unknown): boolean;
+
+  /**
+   * Human-readable message to identify the operation being retried. By default
+   * the function name is used.
+   */
+  label?: string;
 }
 
 /**
@@ -44,6 +55,8 @@ export async function retry<R>(func: (attempt: number) => Promise<R>, params?: R
     throw new Error(`Invalid 'maxDelayMs' for retry: ${maxDelayMs}`);
   }
 
+  const label = params?.label || func.name || '{unnamed routine}';
+
   const backoffExponent = 2;
 
   let attempt = 1;
@@ -57,6 +70,10 @@ export async function retry<R>(func: (attempt: number) => Promise<R>, params?: R
       const result = await func(attempt);
       return result;
     } catch (error) {
+      if (params?.isRetryable && !params.isRetryable(error)) {
+        throw error;
+      }
+
       // Equal jitter algorithm taken from AWS blog post's code reference:
       // https://github.com/aws-samples/aws-arch-backoff-simulator/blob/66cb169277051eea207dbef8c7f71767fe6af144/src/backoff_simulator.py#L35-L38
       const expo = Math.min(maxDelayMs, minDelayMs * backoffExponent ** attempt);
@@ -66,13 +83,13 @@ export async function retry<R>(func: (attempt: number) => Promise<R>, params?: R
       attempt += 1;
 
       if (attempt > maxAttempts) {
-        throw new Error(`All ${maxAttempts} attempts of running ${func.name} failed`, {
+        throw new Error(`All ${maxAttempts} attempts of running ${label} failed`, {
           cause: error,
         });
       }
 
       console.warn(
-        `[Attempt ${attempt}/${maxAttempts}] Error when running ${func.name}. Retrying in ${delay} milliseconds...`,
+        `[Attempt ${attempt}/${maxAttempts}] Error when running ${label}. Retrying in ${delay} milliseconds...`,
         error,
       );
 

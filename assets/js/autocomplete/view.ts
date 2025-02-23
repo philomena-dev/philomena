@@ -1,8 +1,8 @@
-import { LocalAutocompleter } from '../../utils/local-autocompleter';
-import * as history from '../history/view';
+import { LocalAutocompleter } from '../utils/local-autocompleter';
+import * as history from './history/view';
 import { AutocompletableInput, TextInputElement } from './input';
-import { SuggestionsPopup, Suggestions, TagSuggestion, Suggestion, HistorySuggestion } from '../../utils/suggestions';
-import { $$ } from '../../utils/dom';
+import { SuggestionsPopup, Suggestions, TagSuggestion, Suggestion, HistorySuggestion } from '../utils/suggestions';
+import { $$ } from '../utils/dom';
 import { AutocompleteClient, GetTagSuggestionsRequest } from './client';
 import { DebouncedCache } from './debounced-cache';
 
@@ -44,7 +44,7 @@ class Autocomplete {
   }
 
   refresh(event?: Event) {
-    this.serverSideTagSuggestions.abortLastCall();
+    this.serverSideTagSuggestions.abortLastCall('[Autocomplete] A new user input was received');
 
     console.debug('refresh', event);
 
@@ -99,9 +99,9 @@ class Autocomplete {
 
     const activeTerm = input.snapshot.activeTerm.term;
 
-    // suggestions.tags = this.index
-    //   .matchPrefix(activeTerm, input.maxSuggestions - suggestions.history.length)
-    //   .map(result => new TagSuggestion({ ...result, matchLength: activeTerm.length }));
+    suggestions.tags = this.index
+      .matchPrefix(activeTerm, input.maxSuggestions - suggestions.history.length)
+      .map(result => new TagSuggestion({ ...result, matchLength: activeTerm.length }));
 
     // Show suggestions that we arledy have early without waiting for a potential
     // server-side suggestions request.
@@ -122,19 +122,7 @@ class Autocomplete {
       limit: this.input.maxSuggestions - historySuggestions.length,
     };
 
-    this.serverSideTagSuggestions.schedule(request, async responsePromise => {
-      let response;
-      try {
-        response = await responsePromise;
-      } catch (error) {
-        if (error instanceof DOMException && error.name === 'AbortError') {
-          console.debug('Server-side suggestions request was aborted');
-          return;
-        }
-
-        throw error;
-      }
-
+    this.serverSideTagSuggestions.schedule(request, async response => {
       if (!this.isEnabled()) {
         return;
       }

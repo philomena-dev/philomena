@@ -1,6 +1,6 @@
-import store from '../../utils/store';
-import { getTermContexts } from '../../match_query';
-import { Range } from '../../query/lex';
+import store from '../utils/store';
+import { getTermContexts } from '../match_query';
+import { Range } from '../query/lex';
 
 export type TextInputElement = HTMLInputElement | HTMLTextAreaElement;
 

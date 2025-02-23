@@ -50,21 +50,28 @@ export class HttpClient {
     // accumulated side-effects.
     params.headers['X-Request-Id'] = generateRequestId();
 
-    return retry(async attempt => {
-      params.headers!['X-Retry-Attempt'] = String(attempt);
+    return retry(
+      async (attempt: number) => {
+        params.headers!['X-Retry-Attempt'] = String(attempt);
 
-      // TODO: we should respect the `Retry-After` header from the response,
-      // to allow for granular rerty control from the backend side.
-      // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After
-      const response = await fetch(url, params);
+        // TODO: we should respect the `Retry-After` header from the response,
+        // to allow for granular rerty control from the backend side.
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After
+        const response = await fetch(url, params);
 
-      if (!response.ok) {
-        throw new Error('Received error from server', { cause: response });
-      }
+        if (!response.ok) {
+          throw new Error('Received error from server', { cause: response });
+        }
 
-      return response;
-    });
+        return response;
+      },
+      { isRetryable, label: `HTTP ${params.method ?? 'GET'} ${url}` },
+    );
   }
+}
+
+function isRetryable(error: unknown): boolean {
+  return !(error instanceof Error && error.name === 'AbortError');
 }
 
 function generateRequestId(): string {

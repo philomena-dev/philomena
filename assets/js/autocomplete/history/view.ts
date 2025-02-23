@@ -1,7 +1,7 @@
 import { HistorySuggestion } from '../../utils/suggestions';
 import { InputHistory } from './history';
 import { HistoryStore } from './store';
-import { AutocompletableInput } from '../../autocomplete/v2/input';
+import { AutocompletableInput } from '../input';
 
 /**
  * Stores a set of histories identified by their unique IDs.

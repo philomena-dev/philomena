@@ -34,7 +34,7 @@ export class DebouncedCache<Args extends unknown[], R> {
   }
 
   schedule(...params: [...Args, onResult: (result: R) => void]): void {
-    this.abortLastCall();
+    this.abortLastCall('[DebouncedCache] A new call was scheduled');
 
     // There is no native support for destructuring after an ellipsis, so we have
     // to do some type casting work here.
@@ -72,8 +72,8 @@ export class DebouncedCache<Args extends unknown[], R> {
     try {
       result = await resultPromise;
     } catch (error) {
-      if (error instanceof DOMException && error.name !== 'AbortError') {
-        console.debug(`A call to ${this.func.name} was aborted while it was in progress.`, error);
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.debug(`A call to '${this.func.name}' was aborted while it was in progress.`, error);
         return;
       }
 
@@ -83,12 +83,12 @@ export class DebouncedCache<Args extends unknown[], R> {
     onResult(result);
   }
 
-  abortLastCall(): void {
+  abortLastCall(reason: string): void {
     if (!this.lastSchedule) {
       return;
     }
 
     clearTimeout(this.lastSchedule.timeout);
-    this.lastSchedule.abortController.abort();
+    this.lastSchedule.abortController.abort(new DOMException(reason, 'AbortError'));
   }
 }
