@@ -4,7 +4,7 @@
 
 import { whenReady } from './utils/dom';
 
-import { listenAutocomplete } from './autocomplete/view';
+import { listenAutocomplete } from './autocomplete';
 import { loadBooruData } from './booru';
 import { registerEvents } from './boorujs';
 import { setupBurgerMenu } from './burger';

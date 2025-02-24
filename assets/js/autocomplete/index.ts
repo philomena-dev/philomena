@@ -1,5 +1,5 @@
 import { LocalAutocompleter } from '../utils/local-autocompleter';
-import * as history from './history/view';
+import * as history from './history';
 import { AutocompletableInput, TextInputElement } from './input';
 import { SuggestionsPopup, Suggestions, TagSuggestion, Suggestion, HistorySuggestion } from '../utils/suggestions';
 import { $$ } from '../utils/dom';
@@ -7,7 +7,7 @@ import { AutocompleteClient, GetTagSuggestionsRequest } from './client';
 import { DebouncedCache } from './debounced-cache';
 
 // eslint-disable-next-line no-use-before-define
-type EnabledAutocomplete = Autocomplete & { input: AutocompletableInput };
+type ActiveAutocomplete = Autocomplete & { input: AutocompletableInput };
 
 class Autocomplete {
   index: 'fetching' | 'unavailable' | LocalAutocompleter | null = null;
@@ -26,11 +26,11 @@ class Autocomplete {
    */
   async fetchLocalAutocomplete() {
     if (this.index) {
-      // The autocompleter is already either fetching or initialized, so nothing to do.
+      // The index is already either fetching or initialized, so nothing to do.
       return;
     }
 
-    // Indicate that the autocompleter is in the process of fetching so that
+    // Indicate that the index is in the process of fetching so that
     // we don't try to fetch it again while it's still loading.
     this.index = 'fetching';
     try {
@@ -44,12 +44,12 @@ class Autocomplete {
   }
 
   refresh(event?: Event) {
-    this.serverSideTagSuggestions.abortLastCall('[Autocomplete] A new user input was received');
+    this.serverSideTagSuggestions.abortLastSchedule('[Autocomplete] A new user input was received');
 
     console.debug('refresh', event);
 
     this.input = AutocompletableInput.fromElement(document.activeElement);
-    if (!this.isEnabled()) {
+    if (!this.isActive()) {
       // If the input is not enabled, we don't need to show the popup.
       this.popup.hide();
       return;
@@ -116,14 +116,14 @@ class Autocomplete {
     this.scheduleServerSideSuggestions(activeTerm, suggestions.history);
   }
 
-  scheduleServerSideSuggestions(this: EnabledAutocomplete, term: string, historySuggestions: HistorySuggestion[]) {
+  scheduleServerSideSuggestions(this: ActiveAutocomplete, term: string, historySuggestions: HistorySuggestion[]) {
     const request: GetTagSuggestionsRequest = {
       term,
       limit: this.input.maxSuggestions - historySuggestions.length,
     };
 
-    this.serverSideTagSuggestions.schedule(request, async response => {
-      if (!this.isEnabled()) {
+    this.serverSideTagSuggestions.schedule(request, response => {
+      if (!this.isActive()) {
         return;
       }
 
@@ -140,7 +140,7 @@ class Autocomplete {
     });
   }
 
-  showSuggestions(this: EnabledAutocomplete, suggestions: Suggestions) {
+  showSuggestions(this: ActiveAutocomplete, suggestions: Suggestions) {
     this.popup.setSuggestions(suggestions).showForElement(this.input.element);
   }
 
@@ -166,7 +166,7 @@ class Autocomplete {
   }
 
   onKeyDown(event: KeyboardEvent) {
-    if (!this.isEnabled() || this.input.element !== event.target) {
+    if (!this.isActive() || this.input.element !== event.target) {
       return;
     }
 
@@ -227,7 +227,7 @@ class Autocomplete {
   }
 
   onItemSelected(event: CustomEvent<Suggestion>) {
-    this.assertEnabled();
+    this.assertActive();
 
     const { detail: suggestion } = event;
 
@@ -240,6 +240,8 @@ class Autocomplete {
     const newEvent = new CustomEvent<string>('autocomplete', { detail });
 
     this.input.element.dispatchEvent(newEvent);
+
+    this.popup.hide();
   }
 
   updateInputWithSelectedValue(this: Autocomplete & { input: AutocompletableInput }, suggestion: Suggestion) {
@@ -263,17 +265,17 @@ class Autocomplete {
     element.setSelectionRange(newCursorIndex, newCursorIndex);
   }
 
-  isEnabled(): this is EnabledAutocomplete {
+  isActive(): this is ActiveAutocomplete {
     return Boolean(this.input?.isEnabled());
   }
 
-  assertEnabled(): asserts this is EnabledAutocomplete {
-    if (this.isEnabled()) {
+  assertActive(): asserts this is ActiveAutocomplete {
+    if (this.isActive()) {
       return;
     }
 
     console.debug('Current input when the error happened', this.input);
-    throw new Error(`Expected enabled autocomplete, but it's not enabled`);
+    throw new Error(`Expected active autocomplete, but it isn't`);
   }
 }
 

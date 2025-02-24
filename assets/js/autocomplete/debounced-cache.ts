@@ -2,49 +2,65 @@ export interface DebouncedCacheParams {
   /**
    * Time in milliseconds to wait before calling the function.
    */
-  debounceThresholdMs?: number;
+  thresholdMs?: number;
 }
 
 /**
- * Wraps a function, caches its results and debounces calls to its.
+ * Wraps a function, caches its results and debounces calls to it.
+ *
+ * *Debouncing* means that if the function is called multiple times within
+ * the `thresholdMs` interval, then every new call resets the timer
+ * and only the last call to the function will be executed after the timer
+ * reaches the `thresholdMs` value. Also, in-progress operation
+ * will be aborted.
  *
  * See more details about the concept of debouncing here:
  * https://lodash.com/docs/4.17.15#debounce.
  *
- * If the function is called multiple times within the `waitMs` interval,
- * only the last call will be actually made.
  *
  * If the function is called with the arguments that were already cached,
  * then the cached result will be returned immediately and the previous
  * scheduled call will be cancelled.
  */
 export class DebouncedCache<Args extends unknown[], R> {
-  private debounceThresholdMs: number;
-  private func: (...args: [...Args, AbortSignal]) => Promise<R>;
+  private thresholdMs: number;
   private cache = new Map<string, Promise<R>>();
+  private func: (...args: [...Args, AbortSignal]) => Promise<R>;
 
   private lastSchedule?: {
     timeout: ReturnType<typeof setTimeout>;
     abortController: AbortController;
   };
 
+  /**
+   * The `func`'s arguments' JSON representation will be used as the cache key.
+   * The `func` will also be provided with an `AbortSignal` as the last argument.
+   * that it can use to abort the operation when a new call is scheduled while
+   * it's executing.
+   */
   constructor(func: (...args: [...Args, abortSignal: AbortSignal]) => Promise<R>, params?: DebouncedCacheParams) {
-    this.debounceThresholdMs = params?.debounceThresholdMs ?? 300;
+    this.thresholdMs = params?.thresholdMs ?? 300;
     this.func = func;
   }
 
+  /**
+   * Schedules a call to the wrapped function, that will take place only after
+   * a `thresholdMs` delay given no new calls to `schedule` are made within that
+   * time frame. If they are made, than the scheduled call will be canceled and
+   * the abort signal will be triggered for the previous call.
+   */
   schedule(...params: [...Args, onResult: (result: R) => void]): void {
-    this.abortLastCall('[DebouncedCache] A new call was scheduled');
+    this.abortLastSchedule(`[DebouncedCache] A new call to '${this.func.name}' was scheduled`);
 
     // There is no native support for destructuring after an ellipsis, so we have
     // to do some type casting work here.
-    const onResult = params.pop() as (result: R) => void;
+    const callback = params.pop() as (result: R) => void;
     const args = params as unknown as Args;
 
     const key = JSON.stringify(args);
 
     if (this.cache.has(key)) {
-      this.onFulfilled(this.cache.get(key)!, onResult);
+      this.onFulfilled(this.cache.get(key)!, callback);
       return;
     }
 
@@ -58,11 +74,11 @@ export class DebouncedCache<Args extends unknown[], R> {
       // do the retries if necessary.
       this.cache.set(key, promise);
 
-      this.onFulfilled(promise, onResult);
+      this.onFulfilled(promise, callback);
     };
 
     this.lastSchedule = {
-      timeout: setTimeout(afterTimeout, this.debounceThresholdMs),
+      timeout: setTimeout(afterTimeout, this.thresholdMs),
       abortController,
     };
   }
@@ -83,7 +99,7 @@ export class DebouncedCache<Args extends unknown[], R> {
     onResult(result);
   }
 
-  abortLastCall(reason: string): void {
+  abortLastSchedule(reason: string): void {
     if (!this.lastSchedule) {
       return;
     }
