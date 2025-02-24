@@ -20,7 +20,9 @@ defmodule PhilomenaWeb.Autocomplete.TagController do
       json(conn, %{suggestions: suggestions})
     else
       {:error, message} ->
-        json(conn, %{message: message})
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{message: message})
     end
   end
 

@@ -12,6 +12,7 @@ import {
 import { $$ } from '../utils/dom';
 import { AutocompleteClient, GetTagSuggestionsRequest } from './client';
 import { DebouncedCache } from './debounced-cache';
+import store from '../utils/store';
 
 // eslint-disable-next-line no-use-before-define
 type ActiveAutocomplete = Autocomplete & { input: AutocompletableInput };
@@ -110,13 +111,26 @@ class Autocomplete {
       .matchPrefix(activeTerm, input.maxSuggestions - suggestions.history.length)
       .map(result => new TagSuggestion({ ...result, matchLength: activeTerm.length }));
 
+    // Used for debugging server-side completions. Paste this into the console to
+    // ensure that only server-side tag completions are rendered:
+    // ---
+    // localStorage.setItem('SERVER_SIDE_COMPLETIONS_ONLY', true)
+    // ---
+    // Use this to revert back to the normal behavior:
+    // ---
+    // localStorage.removeItem('SERVER_SIDE_COMPLETIONS_ONLY')
+    // ---
+    if (store.get('SERVER_SIDE_COMPLETIONS_ONLY')) {
+      suggestions.tags = [];
+    }
+
     // Show suggestions that we arledy have early without waiting for a potential
     // server-side suggestions request.
     this.showSuggestions(suggestions);
 
     // Only if the index had its chance to provide suggestions
     // and produced nothing, do we try to fetch server suggestions.
-    if (suggestions.tags.length > 0 || activeTerm.length < 3) {
+    if (suggestions.tags.length > 0 || activeTerm.length < 1) {
       return;
     }
 
