@@ -116,6 +116,7 @@ export interface Suggestions {
 export interface ItemSelectedEvent {
   suggestion: Suggestion;
   shiftKey: boolean;
+  ctrlKey: boolean;
 }
 
 interface SuggestionItem {
@@ -240,6 +241,7 @@ export class SuggestionsPopup {
       const detail: ItemSelectedEvent = {
         suggestion: item.suggestion,
         shiftKey: event.shiftKey,
+        ctrlKey: event.ctrlKey,
       };
 
       this.container.dispatchEvent(new CustomEvent('item_selected', { detail }));

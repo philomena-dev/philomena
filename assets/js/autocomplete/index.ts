@@ -196,6 +196,7 @@ class Autocomplete {
           this.confirmSuggestion({
             suggestion: selectedSuggestion,
             shiftKey: event.shiftKey,
+            ctrlKey: event.ctrlKey,
           });
         }
         return;
@@ -247,7 +248,7 @@ class Autocomplete {
     }
   }
 
-  confirmSuggestion({ suggestion, shiftKey }: ItemSelectedEvent) {
+  confirmSuggestion({ suggestion, shiftKey, ctrlKey }: ItemSelectedEvent) {
     this.assertActive();
 
     this.updateInputWithSelectedValue(suggestion);
@@ -260,7 +261,7 @@ class Autocomplete {
 
     this.input.element.dispatchEvent(newEvent);
 
-    if (suggestion instanceof HistorySuggestion && !shiftKey) {
+    if (ctrlKey || (suggestion instanceof HistorySuggestion && !shiftKey)) {
       this.input.element.form?.submit();
     }
 
