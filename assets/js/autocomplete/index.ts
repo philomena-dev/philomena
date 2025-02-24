@@ -111,15 +111,13 @@ class Autocomplete {
       .matchPrefix(activeTerm, input.maxSuggestions - suggestions.history.length)
       .map(result => new TagSuggestion({ ...result, matchLength: activeTerm.length }));
 
-    // Used for debugging server-side completions. Paste this into the console to
-    // ensure that only server-side tag completions are rendered:
-    // ---
+    // Used for debugging server-side completions, to ensure local autocomplete
+    // doesn't prevent sever-side completions from being shown. Use these console
+    // commands to enable/disable server-side completions:
+    // ```js
     // localStorage.setItem('SERVER_SIDE_COMPLETIONS_ONLY', true)
-    // ---
-    // Use this to revert back to the normal behavior:
-    // ---
     // localStorage.removeItem('SERVER_SIDE_COMPLETIONS_ONLY')
-    // ---
+    // ```
     if (store.get('SERVER_SIDE_COMPLETIONS_ONLY')) {
       suggestions.tags = [];
     }
@@ -130,7 +128,7 @@ class Autocomplete {
 
     // Only if the index had its chance to provide suggestions
     // and produced nothing, do we try to fetch server suggestions.
-    if (suggestions.tags.length > 0 || activeTerm.length < 1) {
+    if (suggestions.tags.length > 0 || activeTerm.length < 3) {
       return;
     }
 
