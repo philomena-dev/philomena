@@ -1,7 +1,14 @@
 import { LocalAutocompleter } from '../utils/local-autocompleter';
 import * as history from './history';
 import { AutocompletableInput, TextInputElement } from './input';
-import { SuggestionsPopup, Suggestions, TagSuggestion, Suggestion, HistorySuggestion } from '../utils/suggestions';
+import {
+  SuggestionsPopup,
+  Suggestions,
+  TagSuggestion,
+  Suggestion,
+  HistorySuggestion,
+  ItemSelectedEvent,
+} from '../utils/suggestions';
 import { $$ } from '../utils/dom';
 import { AutocompleteClient, GetTagSuggestionsRequest } from './client';
 import { DebouncedCache } from './debounced-cache';
@@ -18,7 +25,7 @@ class Autocomplete {
   serverSideTagSuggestions = new DebouncedCache(this.client.getTagSuggestions.bind(this.client));
 
   constructor() {
-    this.popup.onItemSelected(this.onItemSelected.bind(this));
+    this.popup.onItemSelected(this.confirmSuggestion.bind(this));
   }
 
   /**
@@ -170,12 +177,26 @@ class Autocomplete {
       return;
     }
 
+    if ((event.key === ',' || event.code === 'Enter') && this.input.type === 'single-tag') {
+      // Coma means the end of input for the current tag in single-tag mode.
+      this.popup.hide();
+      return;
+    }
+
     switch (event.code) {
       case 'Enter': {
-        // Prevent submission of the search field when Enter was hit
-        if (this.popup.selectedSuggestion) {
+        const { selectedSuggestion } = this.popup;
+        if (selectedSuggestion) {
+          // Prevent submission of the form when Enter was hit.
+          // Note, however, that `confirmSuggestion` may still submit the form
+          // manually if the selected suggestion is a history suggestion and
+          // no `Shift` key was pressed.
           event.preventDefault();
-          this.popup.hide();
+
+          this.confirmSuggestion({
+            suggestion: selectedSuggestion,
+            shiftKey: event.shiftKey,
+          });
         }
         return;
       }
@@ -226,10 +247,8 @@ class Autocomplete {
     }
   }
 
-  onItemSelected(event: CustomEvent<Suggestion>) {
+  confirmSuggestion({ suggestion, shiftKey }: ItemSelectedEvent) {
     this.assertActive();
-
-    const { detail: suggestion } = event;
 
     this.updateInputWithSelectedValue(suggestion);
 
@@ -240,6 +259,10 @@ class Autocomplete {
     const newEvent = new CustomEvent<string>('autocomplete', { detail });
 
     this.input.element.dispatchEvent(newEvent);
+
+    if (suggestion instanceof HistorySuggestion && !shiftKey) {
+      this.input.element.form?.submit();
+    }
 
     this.popup.hide();
   }

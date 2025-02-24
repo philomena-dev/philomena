@@ -113,6 +113,11 @@ export interface Suggestions {
   tags: TagSuggestion[];
 }
 
+export interface ItemSelectedEvent {
+  suggestion: Suggestion;
+  shiftKey: boolean;
+}
+
 interface SuggestionItem {
   element: HTMLElement;
   suggestion: Suggestion;
@@ -232,7 +237,12 @@ export class SuggestionsPopup {
       // don't need to refocus the input back if the user clicks on the suggestion.
       event.preventDefault();
 
-      this.container.dispatchEvent(new CustomEvent('item_selected', { detail: item.suggestion }));
+      const detail: ItemSelectedEvent = {
+        suggestion: item.suggestion,
+        shiftKey: event.shiftKey,
+      };
+
+      this.container.dispatchEvent(new CustomEvent('item_selected', { detail }));
     });
   }
 
@@ -327,7 +337,9 @@ export class SuggestionsPopup {
     this.container.classList.remove('hidden');
   }
 
-  onItemSelected(callback: (event: CustomEvent<Suggestion>) => void) {
-    this.container.addEventListener('item_selected', callback as EventListener);
+  onItemSelected(callback: (event: ItemSelectedEvent) => void) {
+    this.container.addEventListener('item_selected', event => {
+      callback((event as CustomEvent<ItemSelectedEvent>).detail);
+    });
   }
 }
