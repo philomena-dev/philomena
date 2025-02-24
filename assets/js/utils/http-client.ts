@@ -44,14 +44,15 @@ export class HttpClient {
 
     params.headers ??= {};
 
-    // The request ID header may server as an idempotency token to identify
-    // retries of the same request. The backend may use this information to
-    // ensure that the same retried request doesn't result in multiple
-    // accumulated side-effects.
-    params.headers['X-Request-Id'] = generateRequestId();
+    // This header serves as an idempotency token that identifies the sequence
+    // of retries of the same request. The backend may use this information to
+    // ensure that the same retried request doesn't result in multiple accumulated
+    // side-effects.
+    params.headers['X-Retry-Sequence-Id'] = generateId('rs-');
 
     return retry(
       async (attempt: number) => {
+        params.headers!['X-Request-Id'] = generateId('req-');
         params.headers!['X-Retry-Attempt'] = String(attempt);
 
         // TODO: we should respect the `Retry-After` header from the response,
@@ -74,14 +75,18 @@ function isRetryable(error: unknown): boolean {
   return !(error instanceof Error && error.name === 'AbortError');
 }
 
-function generateRequestId(): string {
+/**
+ * Generates a base32 ID with the given prefix as the request ID discriminator.
+ * The prefix is useful when reading or grepping thru logs to identify the type
+ * of the ID (i.e. it's visually clear that strings that start with `req-` are
+ * request IDs).
+ */
+function generateId(prefix: string) {
   // Base32 alphabet without any ambiguous characters.
   // (details: https://github.com/maksverver/key-encoding#eliminating-ambiguous-characters)
   const alphabet = '23456789abcdefghjklmnpqrstuvwxyz';
 
-  // Use `req-` prefix as the request ID discriminator. Useful when reading or
-  // grepping thru logs to identify request IDs (i.e. strings that start with `req-`).
-  const chars = ['req-'];
+  const chars = [prefix];
 
   for (let i = 0; i < 10; i++) {
     chars.push(alphabet[Math.floor(Math.random() * alphabet.length)]);
