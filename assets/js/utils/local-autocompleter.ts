@@ -257,7 +257,6 @@ export class LocalAutocompleter {
       const alias = this.decoder.decode(this.referenceToName(i, false));
       const canonical = this.decoder.decode(this.referenceToName(i));
       return {
-        // eslint-disable-next-line no-undefined
         alias: alias === canonical ? undefined : alias,
         canonical,
         images: this.getImageCount(i),

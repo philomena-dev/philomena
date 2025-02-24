@@ -213,7 +213,6 @@ class Autocomplete {
           const { element, snapshot } = this.input;
           const { selection } = snapshot;
           element.value = snapshot.origValue;
-          // eslint-disable-next-line no-undefined
           element.setSelectionRange(selection.start, selection.end, selection.direction ?? undefined);
         }
 
@@ -296,7 +295,7 @@ function refreshNativeAutocomplete() {
   }
 }
 
-export function listenAutocompleteV2() {
+export function listenAutocomplete() {
   history.listen();
 
   // TODO: refresh autocomplete when the store value changes

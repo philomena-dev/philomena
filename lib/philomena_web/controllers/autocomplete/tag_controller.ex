@@ -8,6 +8,13 @@ defmodule PhilomenaWeb.Autocomplete.TagController do
   def show(conn, %{"vsn" => "2"} = params), do: show_v2(conn, params)
   def show(conn, params), do: show_v1(conn, params)
 
+  @doc """
+  Returns a list of tag suggestions for an incomplete term. Does a prefix search
+  on the canonical tag names and their aliases.
+
+  See the docs on `show_v1` for the explanation on the breaking change we made
+  in the `v2` version.
+  """
   defp show_v2(conn, params) do
     with {:ok, term} <- extract_term_v2(params),
          {:ok, limit} <- extract_limit(params) do
@@ -87,8 +94,16 @@ defmodule PhilomenaWeb.Autocomplete.TagController do
     )
   end
 
-  # Version 1 is kept for backwards compatibility with the older versions of
-  # the frontend application that may still be cached in user's browsers.
+  @doc """
+  Version 1 is kept for backwards compatibility with the older versions of
+  the frontend application that may still be cached in user's browsers. Don't
+  change this code! All the new development should be done in the `v2` version.
+
+  The problem of `v1` was that it was doing the work of formatting the completion
+  results on the backend, which was not ideal. So instead, the `v2` version
+  was created to return the raw data in fully structured JSON format, which
+  the frontend application can then format and style as needed.
+  """
   defp show_v1(conn, params) do
     tags =
       case extract_term(params) do
@@ -96,8 +111,28 @@ defmodule PhilomenaWeb.Autocomplete.TagController do
           []
 
         term ->
-          search(term, 5)
-          |> Enum.map(&%{label: "#{&1.canonical} (#{&1.images})", value: &1.canonical})
+          Tag
+          |> Search.search_definition(
+            %{
+              query: %{
+                bool: %{
+                  should: [
+                    %{prefix: %{name: term}},
+                    %{prefix: %{name_in_namespace: term}}
+                  ]
+                }
+              },
+              sort: %{images: :desc}
+            },
+            %{page_size: 10}
+          )
+          |> Search.search_records(preload(Tag, :aliased_tag))
+          |> Enum.map(&(&1.aliased_tag || &1))
+          |> Enum.uniq_by(& &1.id)
+          |> Enum.filter(&(&1.images_count > 0))
+          |> Enum.sort_by(&(-&1.images_count))
+          |> Enum.take(5)
+          |> Enum.map(&%{label: "#{&1.name} (#{&1.images_count})", value: &1.name})
       end
 
     conn
