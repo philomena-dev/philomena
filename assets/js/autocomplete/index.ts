@@ -351,7 +351,7 @@ export function listenAutocomplete() {
   const autocomplete = new Autocomplete();
 
   store.watchAll(key => {
-    if (!key || (key !== 'enable_search_ac' && !key.startsWith('autocomplete'))) {
+    if (key && key !== 'enable_search_ac' && !key.startsWith('autocomplete')) {
       return;
     }
 

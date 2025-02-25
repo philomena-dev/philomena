@@ -56,6 +56,7 @@ export default {
     return () => window.removeEventListener('storage', handler);
   },
 
+  // `null` key means the store was purged with `localStorage.clear()`
   watchAll(callback: (key: null | string) => void) {
     window.addEventListener('storage', event => callback(event.key));
     localUpdates.addEventListener('storage-update', event => callback((event as StorageUpdateEvent).detail));
