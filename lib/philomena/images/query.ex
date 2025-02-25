@@ -2,6 +2,7 @@ defmodule Philomena.Images.Query do
   alias PhilomenaQuery.Parse.Parser
   alias Philomena.Repo
   alias Philomena.Filters.Filter
+  import Ecto.Query
 
   defp gallery_id_transform(_ctx, value) do
     case Integer.parse(value) do
@@ -19,7 +20,11 @@ defmodule Philomena.Images.Query do
   defp filter_id_transform(%{user: user} = ctx, value) do
     case Integer.parse(value) do
       {value, ""} when value >= 0 ->
-        filter = Repo.get(Filter, value)
+        filter =
+          case ctx do
+            %{filters: %{^value => filter}} -> filter
+            _ -> nil
+          end
 
         if is_nil(filter) or not Canada.Can.can?(user, :show, filter) do
           {:error, "Invalid filter `#{value}`."}
@@ -171,7 +176,31 @@ defmodule Philomena.Images.Query do
     )
   end
 
+  defp parse_filter_ids(query_string),
+    do:
+      Regex.scan(~r/\bfilter_id:(\d+)/, query_string, capture: :all_but_first)
+      |> List.flatten()
+      |> Enum.map(&String.to_integer/1)
+
+  defp preload_filters([], context), do: context
+
+  defp preload_filters(ids, context) do
+    filters =
+      Filter
+      |> where([f], f.id in ^ids)
+      |> Repo.all()
+      |> Map.new(&{&1.id, &1})
+
+    Map.put(
+      context,
+      :filters,
+      filters
+    )
+  end
+
   defp parse(fields, context, query_string) do
+    context = query_string |> parse_filter_ids() |> preload_filters(context)
+
     fields
     |> Parser.new()
     |> Parser.parse(query_string, context)
