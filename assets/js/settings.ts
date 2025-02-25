@@ -28,17 +28,42 @@ function setupThemeSettings() {
   themeColorSelect.addEventListener('change', themePreviewCallback);
 }
 
+function hideIf(element: HTMLElement, condition: boolean) {
+  if (condition) {
+    element.classList.add('hidden');
+  } else {
+    element.classList.remove('hidden');
+  }
+}
+
+function setupAutocompleteSettings() {
+  const autocompleteSettings = assertNotNull($<HTMLElement>('.autocomplete-settings'));
+
+  assertNotNull($('#user_enable_search_ac')).addEventListener('change', event => {
+    hideIf(autocompleteSettings, !(event.target as HTMLInputElement).checked);
+  });
+
+  const autocompleteSearchHistorySettings = assertNotNull($<HTMLElement>('.autocomplete-search-history-settings'));
+
+  assertNotNull($('#user_autocomplete_search_history_hidden')).addEventListener('change', event => {
+    hideIf(autocompleteSearchHistorySettings, (event.target as HTMLInputElement).checked);
+  });
+}
+
 export function setupSettings() {
   if (!$('#js-setting-table')) return;
 
-  const localCheckboxes = $$<HTMLInputElement>('[data-tab="local"] input[type="checkbox"]');
+  const localCheckboxes = $$<HTMLInputElement>('[data-tab="local"] input');
 
   // Local settings
-  localCheckboxes.forEach(checkbox => {
-    checkbox.addEventListener('change', () => {
-      store.set(checkbox.id.replace('user_', ''), checkbox.checked);
+  localCheckboxes.forEach(input => {
+    input.addEventListener('change', () => {
+      const newValue = input.type === 'checkbox' ? input.checked : input.value;
+
+      store.set(input.id.replace('user_', ''), newValue);
     });
   });
 
   setupThemeSettings();
+  setupAutocompleteSettings();
 }

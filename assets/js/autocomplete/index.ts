@@ -17,6 +17,16 @@ import store from '../utils/store';
 // eslint-disable-next-line no-use-before-define
 type ActiveAutocomplete = Autocomplete & { input: AutocompletableInput };
 
+function readHistoryConfig() {
+  if (store.get<boolean>('autocomplete_search_history_hidden')) {
+    return null;
+  }
+
+  return {
+    maxSuggestionsWhenTyping: store.get<number>('autocomplete_search_history_max_suggestions_when_typing') ?? 3,
+  };
+}
+
 class Autocomplete {
   index: 'fetching' | 'unavailable' | LocalAutocompleter | null = null;
   input: AutocompletableInput | null = null;
@@ -68,8 +78,10 @@ class Autocomplete {
     // Initiate the lazy local autocomplete fetch if it hasn't been done yet.
     this.fetchLocalAutocomplete();
 
+    const historyConfig = readHistoryConfig();
+
     // Show all history suggestions if the input is empty.
-    if (input.snapshot.normalizedValue === '') {
+    if (historyConfig && input.snapshot.normalizedValue === '') {
       this.showSuggestions({
         history: history.listSuggestions(input),
         tags: [],
@@ -80,7 +92,7 @@ class Autocomplete {
     // When the input is not empty the history suggestions take up
     // only a small portion of the suggestions.
     const suggestions: Suggestions = {
-      history: history.listSuggestions(input, 3),
+      history: historyConfig ? history.listSuggestions(input, historyConfig.maxSuggestionsWhenTyping) : [],
       tags: [],
     };
 
@@ -336,10 +348,18 @@ function refreshNativeAutocomplete() {
 export function listenAutocomplete() {
   history.listen();
 
-  // TODO: refresh autocomplete when the store value changes
-  refreshNativeAutocomplete();
-
   const autocomplete = new Autocomplete();
+
+  store.watchAll(key => {
+    if (!key || (key !== 'enable_search_ac' && !key.startsWith('autocomplete'))) {
+      return;
+    }
+
+    refreshNativeAutocomplete();
+    autocomplete.refresh();
+  });
+
+  refreshNativeAutocomplete();
 
   // By the time this script loads, the input elements may already be focused,
   // so we refresh the autocomplete state immediately to trigger the initial completions.
