@@ -173,7 +173,7 @@ defmodule Philomena.Images.Query do
       |> Enum.map(&String.to_integer/1)
       |> Enum.filter(&(&1 <= 2_147_483_647))
 
-  defp preload_filters([], context), do: context
+  defp preload_filters([], context), do: Map.put(context, :filters, %{})
 
   defp preload_filters(ids, context) do
     filters =
