@@ -192,11 +192,7 @@ defmodule Philomena.Images.Query do
       |> Repo.all()
       |> Map.new(&{&1.id, &1})
 
-    Map.put(
-      context,
-      :filters,
-      filters
-    )
+    Map.put(context, :filters, filters)
   end
 
   defp parse(fields, context, query_string) do
