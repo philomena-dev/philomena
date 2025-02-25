@@ -181,6 +181,7 @@ defmodule Philomena.Images.Query do
       Regex.scan(~r/\bfilter_id:(\d+)/, query_string, capture: :all_but_first)
       |> List.flatten()
       |> Enum.map(&String.to_integer/1)
+      |> Enum.filter(&(&1 <= 2_147_483_647))
 
   defp preload_filters([], context), do: context
 
