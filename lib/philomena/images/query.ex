@@ -173,24 +173,37 @@ defmodule Philomena.Images.Query do
       |> Enum.map(&String.to_integer/1)
       |> Enum.filter(&(&1 <= 2_147_483_647))
 
-  defp preload_filters([], context), do: Map.put(context, :filters, %{})
+  defp load_filters([], _context), do: {:ok, %{}}
 
-  defp preload_filters(ids, context) do
+  defp load_filters(_ids, %{filter: true}),
+    do: {:error, "Filter queries inside filters are not allowed."}
+
+  defp load_filters(ids, _context) do
     filters =
       Filter
       |> where([f], f.id in ^ids)
       |> Repo.all()
       |> Map.new(&{&1.id, &1})
 
-    Map.put(context, :filters, filters)
+    {:ok, filters}
+  end
+
+  defp prepare_context(context, query_string) do
+    with {:ok, filters} <- query_string |> parse_filter_ids() |> load_filters(context) do
+      {:ok, Map.merge(context, %{filters: filters})}
+    end
   end
 
   defp parse(fields, context, query_string) do
-    context = query_string |> parse_filter_ids() |> preload_filters(context)
+    case prepare_context(context, query_string) do
+      {:ok, context} ->
+        fields
+        |> Parser.new()
+        |> Parser.parse(query_string, context)
 
-    fields
-    |> Parser.new()
-    |> Parser.parse(query_string, context)
+      {:error, error} ->
+        {:error, error}
+    end
   end
 
   defp fields_for(nil), do: anonymous_fields()
