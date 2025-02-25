@@ -1,6 +1,4 @@
 defmodule Philomena.Images.Query do
-  import Ecto.Query, warn: false
-
   alias PhilomenaQuery.Parse.Parser
   alias Philomena.Repo
   alias Philomena.Filters.Filter
