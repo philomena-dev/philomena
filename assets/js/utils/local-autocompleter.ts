@@ -3,9 +3,9 @@ import { UniqueHeap } from './unique-heap';
 import store from './store';
 
 export interface Result {
-  aliasName: string;
-  name: string;
-  imageCount: number;
+  alias?: string;
+  canonical: string;
+  images: number;
 }
 
 /**
@@ -253,10 +253,14 @@ export class LocalAutocompleter {
     this.scanResults(referenceToAliasIndex, namespaceMatch, hasFilteredAssociation, isAlias, results);
 
     // Convert top K from heap into result array
-    return results.topK(k).map((i: TagReferenceIndex) => ({
-      aliasName: this.decoder.decode(this.referenceToName(i, false)),
-      name: this.decoder.decode(this.referenceToName(i)),
-      imageCount: this.getImageCount(i),
-    }));
+    return results.topK(k).map((i: TagReferenceIndex) => {
+      const alias = this.decoder.decode(this.referenceToName(i, false));
+      const canonical = this.decoder.decode(this.referenceToName(i));
+      return {
+        alias: alias === canonical ? undefined : alias,
+        canonical,
+        images: this.getImageCount(i),
+      };
+    });
   }
 }
