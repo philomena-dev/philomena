@@ -19,7 +19,7 @@ defmodule Philomena.Images.Query do
   defp filter_id_transform(%{user: user} = ctx, value) do
     case Integer.parse(value) do
       {value, ""} when value >= 0 ->
-        filter = Repo.get_by(Filter, id: value)
+        filter = Repo.get(Filter, value)
 
         if is_nil(filter) or not Canada.Can.can?(user, :show, filter) do
           {:error, "Invalid filter `#{value}`."}
