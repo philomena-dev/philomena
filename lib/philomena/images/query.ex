@@ -18,32 +18,22 @@ defmodule Philomena.Images.Query do
     do: {:error, "Filter queries inside filters are not allowed."}
 
   defp filter_id_transform(%{user: user} = ctx, value) do
-    case Integer.parse(value) do
-      {value, ""} when value >= 0 ->
-        filter =
-          case ctx do
-            %{filters: %{^value => filter}} -> filter
-            _ -> nil
-          end
+    with {value, ""} <- Integer.parse(value),
+         {:ok, filter} <- Map.fetch(ctx.filters, value),
+         true <- Canada.Can.can?(user, :show, filter) do
+      ctx = Map.merge(ctx, %{filter: true})
 
-        if is_nil(filter) or not Canada.Can.can?(user, :show, filter) do
-          {:error, "Invalid filter `#{value}`."}
-        else
-          ctx = Map.merge(ctx, %{filter: true})
-
-          {:ok,
-           %{
-             bool: %{
-               must_not: [
-                 %{terms: %{tag_ids: filter.hidden_tag_ids}},
-                 invalid_filter_guard(ctx, filter.hidden_complex_str)
-               ]
-             }
-           }}
-        end
-
-      _error ->
-        {:error, "Invalid filter `#{value}`."}
+      {:ok,
+       %{
+         bool: %{
+           must_not: [
+             %{terms: %{tag_ids: filter.hidden_tag_ids}},
+             invalid_filter_guard(ctx, filter.hidden_complex_str)
+           ]
+         }
+       }}
+    else
+      _ -> {:error, "Invalid filter `#{value}`."}
     end
   end
 
