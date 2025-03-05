@@ -37,6 +37,8 @@ defmodule Philomena.Users do
   """
   def get_user_by_authentication_token(token) when is_binary(token) do
     Repo.get_by(User, authentication_token: token)
+    |> Repo.preload([:roles])
+    |> setup_roles()
   end
 
   @doc """
@@ -943,7 +945,10 @@ defmodule Philomena.Users do
   defp setup_roles(nil), do: nil
 
   defp setup_roles(user) do
-    role_map = Map.new(user.roles, &{&1.resource_type || &1.name, &1.name})
+    role_map =
+      user.roles
+      |> Enum.group_by(& &1.resource_type, & &1.name)
+      |> Map.new(fn {type, names} -> {type, Map.new(names, &{&1, []})} end)
 
     %{user | role_map: role_map}
   end
