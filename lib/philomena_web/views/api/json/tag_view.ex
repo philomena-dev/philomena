@@ -1,8 +1,9 @@
 defmodule PhilomenaWeb.Api.Json.TagView do
   use PhilomenaWeb, :view
 
-  def render("index.json", %{tags: tags, total: total} = assigns) do
+  def render("index.json", %{cursors: cursors, tags: tags, total: total} = assigns) do
     %{
+      cursors: cursors,
       tags: render_many(tags, PhilomenaWeb.Api.Json.TagView, "tag.json", assigns),
       total: total
     }
