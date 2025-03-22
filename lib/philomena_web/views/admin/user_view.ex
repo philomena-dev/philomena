@@ -58,6 +58,8 @@ defmodule PhilomenaWeb.Admin.UserView do
   def description("admin", "StaticPage"), do: "Manage static pages"
   def description("admin", "Image"), do: "Hard-delete images"
 
+  def description("duplicate_access", "Image"), do: "View duplicate images"
+
   def description(_name, _resource_type), do: "(unknown permission)"
 
   def filtered_roles(permission_set, roles) do
@@ -68,6 +70,7 @@ defmodule PhilomenaWeb.Admin.UserView do
 
   def general_permissions do
     [
+      ["duplicate_access", "Image"],
       ["batch_update", "Tag"]
     ]
   end
