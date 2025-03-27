@@ -23,11 +23,6 @@ defmodule Philomena.DevSeeds do
   def seed() do
     {:ok, _} = Application.ensure_all_started(:plug)
 
-    # resources =
-    #   "priv/repo/seeds/seeds_development.json"
-    #   |> File.read!()
-    #   |> Jason.decode!()
-
     communications =
       "priv/repo/seeds/dev/communications.json"
       |> File.read!()
