@@ -13,7 +13,6 @@
 alias Philomena.{
   Repo,
   Comments.Comment,
-  Filters.Filter,
   Forums.Forum,
   Galleries.Gallery,
   Posts.Post,
