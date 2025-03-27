@@ -40,19 +40,55 @@
   ],
   "titles": {
     "first": [
-      "Doing", "Summoning", "Best practices of", "Ensuring", "Creating",
-      "Making", "Pretending to be", "I want", "The", "Writing",
-      "A", "Realizing", "Retconning", "Real", "Incredible"
+      "Doing",
+      "Summoning",
+      "Best practices of",
+      "Ensuring",
+      "Creating",
+      "Making",
+      "Pretending to be",
+      "I want",
+      "The",
+      "Writing",
+      "A",
+      "Realizing",
+      "Retconning",
+      "Real",
+      "Incredible"
     ],
     "second": [
-      "pancakes", "monsters", "furries", "people", "mods",
-      "admins", "devs", "foxes", "wolves", "Jeff Bezos",
-      "cats", "dogs", "fruits", "code", "games"
+      "pancakes",
+      "monsters",
+      "furries",
+      "people",
+      "mods",
+      "admins",
+      "devs",
+      "foxes",
+      "wolves",
+      "Jeff Bezos",
+      "cats",
+      "dogs",
+      "fruits",
+      "code",
+      "games"
     ],
     "third": [
-      "for fun!", "for profit!", "for fun and profit!", "for free", "thread",
-      "- a discussion", "- forum game", "- where to download?", "problem", "for the glory of the mods!",
-      "- a different perspective", "I dunno", "so I can be more popular", "for lolz", "- is it real??"
+      "for fun!",
+      "for profit!",
+      "for fun and profit!",
+      "for free",
+      "thread",
+      "- a discussion",
+      "- forum game",
+      "- where to download?",
+      "problem",
+      "for the glory of the mods!",
+      "- a different perspective",
+      "I dunno",
+      "so I can be more popular",
+      "for lolz",
+      "- is it real??"
     ]
   }
 }
