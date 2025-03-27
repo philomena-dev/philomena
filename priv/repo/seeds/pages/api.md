@@ -10,15 +10,15 @@ If images are used, the artist must always be credited (if provided) and the ori
 
 This is a list of general parameters that are useful when working with the API. Not all parameters may be used in every request.
 
-Name | Description
---- | ---
-`filter_id` Assuming | the user can access the filter ID given by the parameter, overrides the current filter for this request. This is primarily `useful` | for unauthenticated API access.
-`key` | An optional authentication token. If omitted, no user will be authenticated. You can find your authentication token in your [account settings](/registration/edit).
-`page` | Controls the current page of the response, if the response is paginated. Empty values default to the first page.
-`per_page` | Controls the number of results per page, up to a limit of 50, if the response is paginated. The default is 25.
-`q` | The current search query, if the request is a search request.
-`sd` | The current sort direction, if the request is a search request.
-`sf` | The current sort field, if the request is a search request.
+| Name                 | Description                                                                                                                                                         |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `filter_id` Assuming | the user can access the filter ID given by the parameter, overrides the current filter for this request. This is primarily `useful`                                 | for unauthenticated API access. |
+| `key`                | An optional authentication token. If omitted, no user will be authenticated. You can find your authentication token in your [account settings](/registration/edit). |
+| `page`               | Controls the current page of the response, if the response is paginated. Empty values default to the first page.                                                    |
+| `per_page`           | Controls the number of results per page, up to a limit of 50, if the response is paginated. The default is 25.                                                      |
+| `q`                  | The current search query, if the request is a search request.                                                                                                       |
+| `sd`                 | The current sort direction, if the request is a search request.                                                                                                     |
+| `sf`                 | The current sort field, if the request is a search request.                                                                                                         |
 
 ## Routes
 
@@ -227,15 +227,16 @@ The interested reader may find the implementations of these endpoints [here](htt
 
 Posting images should be done via request body parameters. An example with all parameters included is shown below.
 
-You are *strongly recommended* to test code using this endpoint using a local copy of the website's source code. Abuse of the endpoint **will result in a ban**.
+You are _strongly recommended_ to test code using this endpoint using a local copy of the website's source code. Abuse of the endpoint **will result in a ban**.
 
-You *must* provide the direct link to the image in the `url` parameter.
+You _must_ provide the direct link to the image in the `url` parameter.
 
-You *must* set the `content-type` header to `application/json` for the site to process your request.
+You _must_ set the `content-type` header to `application/json` for the site to process your request.
 
 ```
 POST /api/v1/json/images?key=API_KEY
 ```
+
 ```
 {
 "image": {
