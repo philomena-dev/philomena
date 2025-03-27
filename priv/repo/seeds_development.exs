@@ -50,7 +50,8 @@ defmodule Philomena.DevSeeds do
 
     Logger.configure(level: :warning)
 
-    IO.puts "---- Generating users"
+    IO.puts("---- Generating users")
+
     for user_def <- users do
       {:ok, user} = Users.register_user(user_def)
 
@@ -65,12 +66,13 @@ defmodule Philomena.DevSeeds do
     pleb = Repo.get_by!(User, name: "Pleb")
     pleb_attrs = request_attrs(pleb)
 
-    IO.puts "---- Generating images"
+    IO.puts("---- Generating images")
+
     for image_def <- images do
       file = Briefly.create!()
       now = DateTime.utc_now() |> DateTime.to_unix(:microsecond)
 
-      IO.puts "Fetching #{image_def["url"]} ..."
+      IO.puts("Fetching #{image_def["url"]} ...")
       {:ok, %{body: body}} = PhilomenaProxy.Http.get(image_def["url"])
 
       File.write!(file, body)
@@ -81,7 +83,7 @@ defmodule Philomena.DevSeeds do
         filename: "fixtures-#{now}"
       }
 
-      IO.puts "Inserting ..."
+      IO.puts("Inserting ...")
 
       Images.create_image(
         pleb_attrs,
@@ -93,14 +95,15 @@ defmodule Philomena.DevSeeds do
           Images.reindex_image(image)
           Tags.reindex_tags(image.added_tags)
 
-          IO.puts "Created image ##{image.id}"
+          IO.puts("Created image ##{image.id}")
 
         {:error, :image, changeset, _so_far} ->
-          IO.inspect changeset.errors
+          IO.inspect(changeset.errors)
       end
     end
 
-    IO.puts "---- Generating comments for image #1"
+    IO.puts("---- Generating comments for image #1")
+
     for comment_body <- communications["demos"] do
       image = Images.get_image!(1)
 
@@ -116,13 +119,14 @@ defmodule Philomena.DevSeeds do
           Images.reindex_image(image)
 
         {:error, :comment, changeset, _so_far} ->
-          IO.inspect changeset.errors
+          IO.inspect(changeset.errors)
       end
     end
 
     all_imgs = Image |> where([i], i.id > 1) |> Repo.all()
 
-    IO.puts "---- Generating random comments for images other than 1"
+    IO.puts("---- Generating random comments for images other than 1")
+
     for _ <- 1..1000 do
       image = Enum.random(all_imgs)
       user = random_user(users)
@@ -139,11 +143,12 @@ defmodule Philomena.DevSeeds do
           Images.reindex_image(image)
 
         {:error, :comment, changeset, _so_far} ->
-          IO.inspect changeset.errors
+          IO.inspect(changeset.errors)
       end
     end
 
-    IO.puts "---- Generating forum posts"
+    IO.puts("---- Generating forum posts")
+
     for _ <- 1..500 do
       random_topic_no_replies(communications, users)
     end
@@ -152,7 +157,7 @@ defmodule Philomena.DevSeeds do
       random_topic(communications, users)
     end
 
-    IO.puts "---- Done."
+    IO.puts("---- Done.")
 
     Logger.configure(level: :debug)
   end
@@ -182,15 +187,17 @@ defmodule Philomena.DevSeeds do
   defp random_body(%{"random" => random}) do
     count = :rand.uniform(3)
 
-    (0..count)
+    0..count
     |> Enum.map(fn _ -> Enum.random(random) end)
     |> Enum.join("\n\n")
   end
 
   defp random_title(%{"titles" => titles}) do
-    Enum.random(titles["first"]) <> " "
-    <> Enum.random(titles["second"]) <> " "
-    <> Enum.random(titles["third"])
+    Enum.random(titles["first"]) <>
+      " " <>
+      Enum.random(titles["second"]) <>
+      " " <>
+      Enum.random(titles["third"])
   end
 
   defp random_topic(comm, users) do
@@ -204,7 +211,7 @@ defmodule Philomena.DevSeeds do
         "title" => random_title(comm),
         "posts" => %{
           "0" => %{
-            "body" => random_body(comm),
+            "body" => random_body(comm)
           }
         }
       }
@@ -228,14 +235,14 @@ defmodule Philomena.DevSeeds do
               Posts.reindex_post(post)
 
             {:error, :post, changeset, _so_far} ->
-              IO.inspect changeset.errors
+              IO.inspect(changeset.errors)
           end
         end
 
         IO.puts("    -> created #{count} replies for topic ##{topic.id}")
 
       {:error, :topic, changeset, _so_far} ->
-        IO.inspect changeset.errors
+        IO.inspect(changeset.errors)
     end
   end
 
@@ -250,7 +257,7 @@ defmodule Philomena.DevSeeds do
         "title" => random_title(comm),
         "posts" => %{
           "0" => %{
-            "body" => random_body(comm),
+            "body" => random_body(comm)
           }
         }
       }
@@ -260,7 +267,7 @@ defmodule Philomena.DevSeeds do
         IO.puts("  -> created topic ##{topic.id}")
 
       {:error, :topic, changeset, _so_far} ->
-        IO.inspect changeset.errors
+        IO.inspect(changeset.errors)
     end
   end
 end
