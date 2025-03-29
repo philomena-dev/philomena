@@ -7,6 +7,24 @@ defmodule PhilomenaWeb.ImageLoader do
   alias Philomena.Repo
   import Ecto.Query
 
+  def default_query(conn, options \\ [])
+
+  def default_query(conn, options) when conn.assigns.current_user.role != "user",
+    do: query(conn, %{match_all: %{}}, options)
+
+  def default_query(conn, options),
+    do:
+      query(
+        conn,
+        %{
+          bool: %{
+            must: [%{range: %{created_at: %{lte: "now-3m"}}}],
+            must_not: [%{term: %{thumbnails_generated: false}}]
+          }
+        },
+        options
+      )
+
   # sobelow_skip ["SQL.Query"]
   def search_string(conn, search_string, options \\ []) do
     user = conn.assigns.current_user
