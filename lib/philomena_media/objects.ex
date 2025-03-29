@@ -61,11 +61,20 @@ defmodule PhilomenaMedia.Objects do
     contents =
       backends()
       |> Enum.find_value(fn opts ->
-        ExAws.S3.get_object(opts[:bucket], key)
+        bucket = opts[:bucket]
+
+        ExAws.S3.get_object(bucket, key)
         |> ExAws.request(opts[:config_overrides])
         |> case do
-          {:ok, result} -> result
-          _ -> nil
+          {:ok, result} ->
+            result
+
+          {:err, err} ->
+            Logger.warning(
+              "Failed to download #{key} from #{bucket}: #{inspect(err, pretty: true)}"
+            )
+
+            nil
         end
       end)
 
