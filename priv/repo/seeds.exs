@@ -13,7 +13,6 @@
 alias Philomena.{
   Repo,
   Comments.Comment,
-  Filters.Filter,
   Forums.Forum,
   Galleries.Gallery,
   Posts.Post,
@@ -40,7 +39,7 @@ for model <- [Image, Comment, Gallery, Tag, Post, Report, Filter] do
 end
 
 resources =
-  "priv/repo/seeds.json"
+  "priv/repo/seeds/seeds.json"
   |> File.read!()
   |> Jason.decode!()
 
