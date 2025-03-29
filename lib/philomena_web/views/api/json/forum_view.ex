@@ -1,8 +1,9 @@
 defmodule PhilomenaWeb.Api.Json.ForumView do
   use PhilomenaWeb, :view
 
-  def render("index.json", %{forums: forums, total: total} = assigns) do
+  def render("index.json", %{cursors: cursors, forums: forums, total: total} = assigns) do
     %{
+      cursors: cursors,
       forums: render_many(forums, PhilomenaWeb.Api.Json.ForumView, "forum.json", assigns),
       total: total
     }
@@ -14,6 +15,7 @@ defmodule PhilomenaWeb.Api.Json.ForumView do
 
   def render("forum.json", %{forum: %{access_level: "normal"} = forum}) do
     %{
+      id: forum.id,
       name: forum.name,
       short_name: forum.short_name,
       description: forum.description,
