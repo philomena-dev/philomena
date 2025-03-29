@@ -19,17 +19,13 @@ defmodule Philomena.DevSeeds do
   alias Philomena.Posts
   alias Philomena.Tags
   import Ecto.Query
+  require Logger
 
   def seed() do
     {:ok, _} = Application.ensure_all_started(:plug)
 
     communications =
       "priv/repo/seeds/dev/communications.json"
-      |> File.read!()
-      |> Jason.decode!()
-
-    images =
-      "priv/repo/seeds/dev/images.json"
       |> File.read!()
       |> Jason.decode!()
 
@@ -63,39 +59,7 @@ defmodule Philomena.DevSeeds do
 
     IO.puts("---- Generating images")
 
-    for image_def <- images do
-      file = Briefly.create!()
-      now = DateTime.utc_now() |> DateTime.to_unix(:microsecond)
-
-      IO.puts("Fetching #{image_def["url"]} ...")
-      {:ok, %{body: body}} = PhilomenaProxy.Http.get(image_def["url"])
-
-      File.write!(file, body)
-
-      upload = %Plug.Upload{
-        path: file,
-        content_type: "application/octet-stream",
-        filename: "fixtures-#{now}"
-      }
-
-      IO.puts("Inserting ...")
-
-      Images.create_image(
-        pleb_attrs,
-        Map.merge(image_def, %{"image" => upload})
-      )
-      |> case do
-        {:ok, %{image: image}} ->
-          Images.approve_image(image)
-          Images.reindex_image(image)
-          Tags.reindex_tags(image.added_tags)
-
-          IO.puts("Created image ##{image.id}")
-
-        {:error, :image, changeset, _so_far} ->
-          IO.inspect(changeset.errors)
-      end
-    end
+    generate_images(pleb_attrs)
 
     IO.puts("---- Generating comments for image #1")
 
@@ -155,6 +119,48 @@ defmodule Philomena.DevSeeds do
     IO.puts("---- Done.")
 
     Logger.configure(level: :debug)
+  end
+
+  defp generate_images(pleb_attrs) do
+    images =
+      "priv/repo/seeds/dev/images.json"
+      |> File.read!()
+      |> Jason.decode!()
+
+    ingest_image = fn image_def ->
+      file = Briefly.create!()
+      now = DateTime.utc_now() |> DateTime.to_unix(:microsecond)
+
+      IO.puts("Fetching #{image_def["url"]} ...")
+      {:ok, %{body: body}} = PhilomenaProxy.Http.get(image_def["url"])
+
+      File.write!(file, body)
+
+      upload = %Plug.Upload{
+        path: file,
+        content_type: "application/octet-stream",
+        filename: "fixtures-#{now}"
+      }
+
+      IO.puts("Inserting ...")
+
+      Images.create_image(pleb_attrs, Map.merge(image_def, %{"image" => upload}))
+      |> case do
+        {:ok, %{image: image}} ->
+          Images.approve_image(image)
+          Images.reindex_image(image)
+          Tags.reindex_tags(image.added_tags)
+
+          IO.puts("Created image ##{image.id}")
+
+        {:error, :image, changeset, _so_far} ->
+          IO.inspect(changeset.errors)
+      end
+    end
+
+    images
+    |> Task.async_stream(ingest_image, max_concurrency: 20, ordered: false)
+    |> Stream.run()
   end
 
   defp default_ip() do
