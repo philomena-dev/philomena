@@ -31,12 +31,18 @@ alias Philomena.Tags
 alias Philomena.Filters
 import Ecto.Query
 
-IO.puts("---- Creating search indices")
+IO.puts("---- Creating OpeanSearch indices")
 
-for model <- [Image, Comment, Gallery, Tag, Post, Report, Filter] do
-  Search.delete_index!(model)
-  Search.create_index!(model)
-end
+[Image, Comment, Gallery, Tag, Post, Report, Filter]
+|> Task.async_stream(
+  fn model ->
+    Search.delete_index!(model)
+    Search.create_index!(model)
+    IO.puts("OpenSearch index created: #{inspect(model)}")
+  end,
+  timeout: 15_000
+)
+|> Stream.run()
 
 resources =
   "priv/repo/seeds/seeds.json"
