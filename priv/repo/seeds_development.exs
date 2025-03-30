@@ -131,7 +131,7 @@ defmodule Philomena.DevSeeds do
       file = Briefly.create!()
       now = DateTime.utc_now() |> DateTime.to_unix(:microsecond)
 
-      IO.puts("Fetching #{image_def["url"]} ...")
+      IO.puts("[Images] Fetching #{image_def["url"]} ...")
       {:ok, %{body: body}} = PhilomenaProxy.Http.get(image_def["url"])
 
       File.write!(file, body)
@@ -142,16 +142,19 @@ defmodule Philomena.DevSeeds do
         filename: "fixtures-#{now}"
       }
 
-      IO.puts("Inserting ...")
+      IO.puts("[Images] Creating image ...")
 
       Images.create_image(pleb_attrs, Map.merge(image_def, %{"image" => upload}))
       |> case do
-        {:ok, %{image: image}} ->
+        {:ok, %{image: image, upload_pid: upload_pid}} ->
+          # Delete the temp file only after the async image upload finishes
+          Briefly.give_away(file, upload_pid)
+
           Images.approve_image(image)
           Images.reindex_image(image)
           Tags.reindex_tags(image.added_tags)
 
-          IO.puts("Created image ##{image.id}")
+          IO.puts("[Images] Created image ##{image.id}")
 
         {:error, :image, changeset, _so_far} ->
           IO.inspect(changeset.errors)
@@ -159,7 +162,7 @@ defmodule Philomena.DevSeeds do
     end
 
     images
-    |> Task.async_stream(ingest_image, max_concurrency: 20, ordered: false)
+    |> Task.async_stream(ingest_image, max_concurrency: 100, ordered: false)
     |> Stream.run()
   end
 
