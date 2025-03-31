@@ -139,8 +139,8 @@ defmodule Philomena.Tags do
         {:ok, ok} ->
           ok
 
-        {:error, err} ->
-          raise "get_or_create_tags failed: #{inspect(err)}\ntag_names: #{inspect(tag_names)}"
+        result ->
+          raise "get_or_create_tags failed: #{inspect(result)}\ntag_names: #{inspect(tag_names)}"
       end
 
     new_tags
