@@ -49,7 +49,7 @@ defmodule Philomena.DevSeeds do
       |> File.read!()
       |> Jason.decode!()
 
-    IO.puts("---- Generating users")
+    Logger.info("---- Generating users")
 
     for user_def <- users do
       {:ok, user} = Users.register_user(user_def)
@@ -65,11 +65,11 @@ defmodule Philomena.DevSeeds do
     pleb = Repo.get_by!(User, name: "Pleb")
     pleb_attrs = request_attrs(pleb)
 
-    IO.puts("---- Generating images")
+    Logger.info("---- Generating images")
 
     generate_images(pleb_attrs)
 
-    IO.puts("---- Generating comments for image #1")
+    Logger.info("---- Generating comments for image #1")
 
     for comment_body <- communications["demos"] do
       image = Images.get_image!(1)
@@ -92,7 +92,7 @@ defmodule Philomena.DevSeeds do
 
     all_imgs = Image |> where([i], i.id > 1) |> Repo.all()
 
-    IO.puts("---- Generating random comments for images other than 1")
+    Logger.info("---- Generating random comments for images other than 1")
 
     for _ <- 1..1000 do
       image = Enum.random(all_imgs)
@@ -114,7 +114,7 @@ defmodule Philomena.DevSeeds do
       end
     end
 
-    IO.puts("---- Generating forum posts")
+    Logger.info("---- Generating forum posts")
 
     for _ <- 1..500 do
       random_topic_no_replies(communications, users)
@@ -124,7 +124,7 @@ defmodule Philomena.DevSeeds do
       random_topic(communications, users)
     end
 
-    IO.puts("---- Done.")
+    Logger.info("---- Done.")
 
     Logger.configure(level: :debug)
   end
@@ -139,7 +139,7 @@ defmodule Philomena.DevSeeds do
       file = Briefly.create!()
       now = DateTime.utc_now() |> DateTime.to_unix(:microsecond)
 
-      IO.puts("[Images] Fetching #{image_def["url"]} ...")
+      Logger.info("[Images] Fetching #{image_def["url"]} ...")
       {:ok, %{body: body}} = PhilomenaProxy.Http.get(image_def["url"])
 
       File.write!(file, body)
@@ -150,7 +150,7 @@ defmodule Philomena.DevSeeds do
         filename: "fixtures-#{now}"
       }
 
-      IO.puts("[Images] Creating image ...")
+      Logger.info("[Images] Creating image ...")
 
       Images.create_image(pleb_attrs, Map.merge(image_def, %{"image" => upload}))
       |> case do
@@ -162,7 +162,7 @@ defmodule Philomena.DevSeeds do
           Images.reindex_image(image)
           Tags.reindex_tags(image.added_tags)
 
-          IO.puts("[Images] Created image ##{image.id}")
+          Logger.info("[Images] Created image ##{image.id}")
 
         {:error, :image, changeset, _so_far} ->
           IO.inspect(changeset.errors)
@@ -228,7 +228,7 @@ defmodule Philomena.DevSeeds do
     )
     |> case do
       {:ok, %{topic: topic}} ->
-        IO.puts("  -> created topic ##{topic.id}")
+        Logger.info("  -> created topic ##{topic.id}")
         count = :rand.uniform(250) + 5
 
         for _ <- 1..count do
@@ -249,7 +249,7 @@ defmodule Philomena.DevSeeds do
           end
         end
 
-        IO.puts("    -> created #{count} replies for topic ##{topic.id}")
+        Logger.info("    -> created #{count} replies for topic ##{topic.id}")
 
       {:error, :topic, changeset, _so_far} ->
         IO.inspect(changeset.errors)
@@ -274,7 +274,7 @@ defmodule Philomena.DevSeeds do
     )
     |> case do
       {:ok, %{topic: topic}} ->
-        IO.puts("  -> created topic ##{topic.id}")
+        Logger.info("  -> created topic ##{topic.id}")
 
       {:error, :topic, changeset, _so_far} ->
         IO.inspect(changeset.errors)
