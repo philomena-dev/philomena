@@ -22,6 +22,16 @@ defmodule Philomena.DevSeeds do
   require Logger
 
   def seed() do
+    exclude_log_event? = fn event ->
+      # Skip DB logs, they are too verbose
+      Map.get(event.meta, :application) == :ecto_sql
+    end
+
+    :logger.add_primary_filter(
+      :sql_logs,
+      {fn event, _ -> if(exclude_log_event?.(event), do: :stop, else: :ignore) end, []}
+    )
+
     {:ok, _} = Application.ensure_all_started(:plug)
 
     communications =
@@ -38,8 +48,6 @@ defmodule Philomena.DevSeeds do
       "priv/repo/seeds/dev/users.json"
       |> File.read!()
       |> Jason.decode!()
-
-    Logger.configure(level: :warning)
 
     IO.puts("---- Generating users")
 
