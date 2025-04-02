@@ -7,7 +7,7 @@ defmodule PhilomenaMedia.Objects do
   recommended to maintain a secondary storage provider, such as in the
   [3-2-1 backup strategy](https://www.backblaze.com/blog/the-3-2-1-backup-strategy/).
 
-  Functions in this module replicate operations on both the primary and secondary storage
+  Functions in this module replicate_request operations on both the primary and secondary storage
   providers. Alternatively, a mode with only a primary storage provider is supported.
 
   This module assumes storage endpoints are S3-compatible and can be communicated with via the
@@ -42,9 +42,11 @@ defmodule PhilomenaMedia.Objects do
 
   """
   alias PhilomenaMedia.Mime
+  alias ExAws.S3
   require Logger
 
   @type key :: String.t()
+  @typep operation_fn :: (... -> ExAws.Operation.S3.t())
 
   @doc """
   Fetch a key from the storage backend and write it into the destination path.
@@ -61,19 +63,11 @@ defmodule PhilomenaMedia.Objects do
     contents =
       backends()
       |> Enum.find_value(fn opts ->
-        bucket = opts[:bucket]
+        case request(&S3.get_object/2, [opts[:bucket], key], opts) do
+          {:ok, contents} ->
+            contents
 
-        ExAws.S3.get_object(bucket, key)
-        |> ExAws.request(opts[:config_overrides])
-        |> case do
-          {:ok, result} ->
-            result
-
-          {:err, err} ->
-            Logger.warning(
-              "Failed to download #{key} from #{bucket}: #{inspect(err, pretty: true)}"
-            )
-
+          {:error, _} ->
             nil
         end
       end)
@@ -96,10 +90,10 @@ defmodule PhilomenaMedia.Objects do
     {_, mime} = Mime.file(file_path)
     contents = File.read!(file_path)
 
-    run_all(fn opts ->
-      ExAws.S3.put_object(opts[:bucket], key, contents, content_type: mime)
-      |> ExAws.request!(opts[:config_overrides])
-    end)
+    replicate_request(
+      &S3.put_object/4,
+      &[&1[:bucket], key, {:log_byte_size, contents}, [content_type: mime]]
+    )
   end
 
   @doc """
@@ -136,11 +130,7 @@ defmodule PhilomenaMedia.Objects do
   def copy(source_key, dest_key) do
     # Potential workaround for inconsistent PutObjectCopy on R2
     #
-    # run_all(fn opts->
-    #   ExAws.S3.put_object_copy(opts[:bucket], dest_key, opts[:bucket], source_key)
-    #   |> ExAws.request!(opts[:config_overrides])
-    # end)
-
+    # replicate_request(ExAws.S3.put_object_copy, &[&1[:bucket], dest_key, &1[:bucket], source_key])
     try do
       file_path = Briefly.create!()
       download_file(source_key, file_path)
@@ -163,10 +153,7 @@ defmodule PhilomenaMedia.Objects do
   """
   @spec delete(key()) :: :ok
   def delete(key) do
-    run_all(fn opts ->
-      ExAws.S3.delete_object(opts[:bucket], key)
-      |> ExAws.request!(opts[:config_overrides])
-    end)
+    replicate_request(&S3.delete_object/2, &[&1[:bucket], key])
   end
 
   @doc """
@@ -185,34 +172,70 @@ defmodule PhilomenaMedia.Objects do
   """
   @spec delete_multiple([key()]) :: :ok
   def delete_multiple(keys) do
-    run_all(fn opts ->
-      ExAws.S3.delete_multiple_objects(opts[:bucket], keys)
-      |> ExAws.request!(opts[:config_overrides])
-    end)
+    replicate_request(&S3.delete_multiple_objects/2, &[&1[:bucket], keys])
   end
 
-  defp run_all(wrapped) do
-    fun = fn opts ->
-      try do
-        wrapped.(opts)
-        :ok
-      catch
-        _kind, _value -> :error
-      end
-    end
+  @spec request(operation_fn(), [term()], keyword()) :: term()
+  defp request(operation, args, opts) do
+    {:name, operation_name} = Function.info(operation, :name)
 
-    backends()
-    |> Task.async_stream(fun, timeout: :infinity)
-    |> Enum.any?(fn {_, v} -> v == :error end)
+    Logger.debug(fn ->
+      args_debug =
+        args
+        |> Enum.map(fn
+          {:log_byte_size, arg} -> "#{(byte_size(arg) / 1_000_000) |> Float.round(2)} MB"
+          arg -> inspect(arg)
+        end)
+        |> Enum.join(", ")
+
+      "S3.#{operation_name}(#{args_debug})"
+    end)
+
+    args =
+      args
+      |> Enum.map(fn
+        {:log_byte_size, arg} -> arg
+        arg -> arg
+      end)
+
+    operation
+    |> apply(args)
+    |> ExAws.request(opts[:config_overrides])
     |> case do
-      true ->
-        Logger.warning("Failed to operate on all backends")
+      {:ok, output} ->
+        {:ok, output}
 
-      _ ->
+      {:error, {:http_error, status_code, %{body: body}} = err} ->
+        Logger.warning("S3.#{operation_name} failed (#{inspect(status_code)})\nError: #{body}")
+        {:error, err}
+
+      {:error, err} ->
+        Logger.warning("S3.#{operation_name} failed\nError: #{inspect(err, pretty: true)}")
+        {:error, err}
+    end
+  end
+
+  @spec replicate_request(operation_fn(), (keyword() -> [term()])) :: :ok
+  defp replicate_request(operation, args) do
+    operation_name = Function.info(operation, :name)
+    backends = backends()
+
+    total_err =
+      backends
+      |> Task.async_stream(&request(operation, args.(&1), &1), timeout: :infinity)
+      |> Enum.filter(&(not match?({:ok, {:ok, _}}, &1)))
+      |> Enum.count()
+
+    cond do
+      total_err > 0 and total_err == length(backends) ->
+        Logger.error("S3.#{operation_name} failed for all backends")
+
+      total_err > 0 ->
+        Logger.warning("S3.#{operation_name} failed for #{total_err} backends")
+
+      true ->
         :ok
     end
-
-    :ok
   end
 
   defp backends do
