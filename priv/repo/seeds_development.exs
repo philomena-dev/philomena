@@ -22,16 +22,6 @@ defmodule Philomena.DevSeeds do
   require Logger
 
   def seed() do
-    exclude_log_event? = fn event ->
-      # Skip DB logs, they are too verbose
-      Map.get(event.meta, :application) == :ecto_sql
-    end
-
-    :logger.add_primary_filter(
-      :sql_logs,
-      {fn event, _ -> if(exclude_log_event?.(event), do: :stop, else: :ignore) end, []}
-    )
-
     {:ok, _} = Application.ensure_all_started(:plug)
 
     communications =
@@ -39,27 +29,15 @@ defmodule Philomena.DevSeeds do
       |> File.read!()
       |> Jason.decode!()
 
+    # TODO: add pages to the seeds too
     # pages =
     #   "priv/repo/seeds/dev/pages.json"
     #   |> File.read!()
     #   |> Jason.decode!()
 
-    users =
-      "priv/repo/seeds/dev/users.json"
-      |> File.read!()
-      |> Jason.decode!()
-
     Logger.info("---- Generating users")
 
-    for user_def <- users do
-      {:ok, user} = Users.register_user(user_def)
-
-      user
-      |> Repo.preload([:roles])
-      |> User.confirm_changeset()
-      |> User.update_changeset(%{role: user_def["role"]}, [])
-      |> Repo.update!()
-    end
+    generate_users()
 
     users = Repo.all(User)
     pleb = Repo.get_by!(User, name: "Pleb")
@@ -69,64 +47,51 @@ defmodule Philomena.DevSeeds do
 
     generate_images(pleb_attrs)
 
-    Logger.info("---- Generating comments for image #1")
+    last_image_id = Image |> Repo.aggregate(:max, :id)
 
-    for comment_body <- communications["demos"] do
-      image = Images.get_image!(1)
+    Logger.info("---- Generating comments for image #{last_image_id}")
 
-      Comments.create_comment(
-        image,
-        pleb_attrs,
-        %{"body" => comment_body}
-      )
-      |> case do
-        {:ok, %{comment: comment}} ->
-          Comments.approve_comment(comment, pleb)
-          Comments.reindex_comment(comment)
-          Images.reindex_image(image)
+    generate_predefined_image_comments(pleb, pleb_attrs, communications, last_image_id)
 
-        {:error, :comment, changeset, _so_far} ->
-          IO.inspect(changeset.errors)
-      end
-    end
-
-    all_imgs = Image |> where([i], i.id > 1) |> Repo.all()
+    other_images = Image |> where([i], i.id != ^last_image_id) |> Repo.all()
 
     Logger.info("---- Generating random comments for images other than 1")
 
-    for _ <- 1..1000 do
-      image = Enum.random(all_imgs)
-      user = random_user(users)
-
-      Comments.create_comment(
-        image,
-        request_attrs(user),
-        %{"body" => random_body(communications)}
-      )
-      |> case do
-        {:ok, %{comment: comment}} ->
-          Comments.approve_comment(comment, user)
-          Comments.reindex_comment(comment)
-          Images.reindex_image(image)
-
-        {:error, :comment, changeset, _so_far} ->
-          IO.inspect(changeset.errors)
-      end
-    end
+    generate_random_image_comments(other_images, users, communications)
 
     Logger.info("---- Generating forum posts")
 
-    for _ <- 1..500 do
-      random_topic_no_replies(communications, users)
-    end
+    1..500
+    |> Task.async_stream(fn _ -> generate_topic_without_replies(communications, users) end)
+    |> Stream.run()
 
-    for _ <- 1..20 do
-      random_topic(communications, users)
-    end
+    1..20
+    |> Task.async_stream(fn _ -> generate_topic_with_replies(communications, users) end)
+    |> Stream.run()
 
     Logger.info("---- Done.")
+  end
 
-    Logger.configure(level: :debug)
+  defp generate_users() do
+    users =
+      "priv/repo/seeds/dev/users.json"
+      |> File.read!()
+      |> Jason.decode!()
+
+    users
+    |> Task.async_stream(
+      fn user_def ->
+        {:ok, user} = Users.register_user(user_def)
+
+        user
+        |> Repo.preload([:roles])
+        |> User.confirm_changeset()
+        |> User.update_changeset(%{role: user_def["role"]}, [])
+        |> Repo.update!()
+      end,
+      timeout: :infinity
+    )
+    |> Stream.run()
   end
 
   defp generate_images(pleb_attrs) do
@@ -135,12 +100,13 @@ defmodule Philomena.DevSeeds do
       |> File.read!()
       |> Jason.decode!()
 
-    ingest_image = fn image_def ->
+    generate_image = fn image_def ->
       file = Briefly.create!()
       now = DateTime.utc_now() |> DateTime.to_unix(:microsecond)
 
-      Logger.info("[Images] Fetching #{image_def["url"]} ...")
       {:ok, %{body: body}} = PhilomenaProxy.Http.get(image_def["url"])
+
+      Logger.info("[Images] Fetched #{image_def["url"]}")
 
       File.write!(file, body)
 
@@ -165,12 +131,63 @@ defmodule Philomena.DevSeeds do
           Logger.info("[Images] Created image ##{image.id}")
 
         {:error, :image, changeset, _so_far} ->
-          IO.inspect(changeset.errors)
+          Logger.error(inspect(changeset.errors))
       end
     end
 
     images
-    |> Task.async_stream(ingest_image, max_concurrency: 100, ordered: false)
+    |> Task.async_stream(generate_image)
+    |> Stream.run()
+  end
+
+  defp generate_predefined_image_comments(pleb, pleb_attrs, communications, image_id) do
+    generate_comment = fn comment_body ->
+      image = Images.get_image!(image_id)
+
+      Comments.create_comment(
+        image,
+        pleb_attrs,
+        %{"body" => comment_body}
+      )
+      |> case do
+        {:ok, %{comment: comment}} ->
+          Comments.approve_comment(comment, pleb)
+          Comments.reindex_comment(comment)
+          Images.reindex_image(image)
+
+        {:error, :comment, changeset, _so_far} ->
+          Logger.error(inspect(changeset.errors))
+      end
+    end
+
+    communications["demos"]
+    |> Task.async_stream(generate_comment)
+    |> Stream.run()
+  end
+
+  defp generate_random_image_comments(images, users, communications) do
+    generate_comment = fn _ ->
+      image = Enum.random(images)
+      user = random_user(users)
+
+      Comments.create_comment(
+        image,
+        request_attrs(user),
+        %{"body" => random_body(communications)}
+      )
+      |> case do
+        {:ok, %{comment: comment}} ->
+          Comments.approve_comment(comment, user)
+          Comments.reindex_comment(comment)
+          Images.reindex_image(image)
+
+        {:error, :comment, changeset, _so_far} ->
+          Logger.error(inspect(changeset.errors))
+      end
+    end
+
+    1..1000
+    |> Task.async_stream(generate_comment)
     |> Stream.run()
   end
 
@@ -210,7 +227,7 @@ defmodule Philomena.DevSeeds do
       Enum.random(titles["third"])
   end
 
-  defp random_topic(comm, users) do
+  defp generate_topic_with_replies(communications, users) do
     forum = Repo.get_by!(Forum, short_name: random_forum())
     op = random_user(users)
 
@@ -218,26 +235,25 @@ defmodule Philomena.DevSeeds do
       forum,
       request_attrs(op),
       %{
-        "title" => random_title(comm),
+        "title" => random_title(communications),
         "posts" => %{
           "0" => %{
-            "body" => random_body(comm)
+            "body" => random_body(communications)
           }
         }
       }
     )
     |> case do
       {:ok, %{topic: topic}} ->
-        Logger.info("  -> created topic ##{topic.id}")
         count = :rand.uniform(250) + 5
 
-        for _ <- 1..count do
+        generate_post = fn _ ->
           user = random_user(users)
 
           Posts.create_post(
             topic,
             request_attrs(user),
-            %{"body" => random_body(comm)}
+            %{"body" => random_body(communications)}
           )
           |> case do
             {:ok, %{post: post}} ->
@@ -245,18 +261,21 @@ defmodule Philomena.DevSeeds do
               Posts.reindex_post(post)
 
             {:error, :post, changeset, _so_far} ->
-              IO.inspect(changeset.errors)
+              Logger.error(inspect(changeset.errors))
           end
         end
 
-        Logger.info("    -> created #{count} replies for topic ##{topic.id}")
+        1..count
+        |> Task.async_stream(generate_post, timeout: :infinity)
+
+        Logger.info("[Topics] Created topic ##{topic.id} with #{count} replies")
 
       {:error, :topic, changeset, _so_far} ->
-        IO.inspect(changeset.errors)
+        Logger.error(inspect(changeset.errors))
     end
   end
 
-  defp random_topic_no_replies(comm, users) do
+  defp generate_topic_without_replies(communications, users) do
     forum = Repo.get_by!(Forum, short_name: random_forum())
     op = random_user(users)
 
@@ -264,20 +283,20 @@ defmodule Philomena.DevSeeds do
       forum,
       request_attrs(op),
       %{
-        "title" => random_title(comm),
+        "title" => random_title(communications),
         "posts" => %{
           "0" => %{
-            "body" => random_body(comm)
+            "body" => random_body(communications)
           }
         }
       }
     )
     |> case do
       {:ok, %{topic: topic}} ->
-        Logger.info("  -> created topic ##{topic.id}")
+        Logger.info("[Topics] Created topic ##{topic.id}")
 
       {:error, :topic, changeset, _so_far} ->
-        IO.inspect(changeset.errors)
+        Logger.error(inspect(changeset.errors))
     end
   end
 end
