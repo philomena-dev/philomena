@@ -6,6 +6,16 @@ defmodule Philomena.Application do
   use Application
 
   def start(_type, _args) do
+    exclude_log_event? = fn event ->
+      # Skip DB logs, they are too verbose
+      Map.get(event.meta, :application) in [:ecto_sql, :exq]
+    end
+
+    :logger.add_primary_filter(
+      :sql_logs,
+      {fn event, _ -> if(exclude_log_event?.(event), do: :stop, else: :ignore) end, []}
+    )
+
     # List all child processes to be supervised
     children = [
       # Start the Ecto repository

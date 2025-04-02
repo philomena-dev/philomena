@@ -84,3 +84,7 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+config :logger, :console, format: "$time $metadata[$level] $message\n"
+# Uncomment to show additional metadata i the logs to see where they come from
+# metadata: [:application, :mfa]
