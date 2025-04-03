@@ -29,16 +29,17 @@ alias PhilomenaQuery.Search
 alias Philomena.Users
 alias Philomena.Tags
 alias Philomena.Filters
+require Logger
 import Ecto.Query
 
-IO.puts("---- Creating OpeanSearch indices")
+Logger.info("---- Creating OpenSearch indices")
 
 [Image, Comment, Gallery, Tag, Post, Report, Filter]
 |> Task.async_stream(
   fn model ->
     Search.delete_index!(model)
     Search.create_index!(model)
-    IO.puts("OpenSearch index created: #{inspect(model)}")
+    Logger.info("OpenSearch index created: #{inspect(model)}")
   end,
   timeout: 15_000
 )
@@ -49,7 +50,7 @@ resources =
   |> File.read!()
   |> Jason.decode!()
 
-IO.puts("---- Generating rating tags")
+Logger.info("---- Generating rating tags")
 
 for tag_name <- resources["rating_tags"] do
   %Tag{category: "rating"}
@@ -57,7 +58,7 @@ for tag_name <- resources["rating_tags"] do
   |> Repo.insert(on_conflict: :nothing)
 end
 
-IO.puts("---- Generating system filters")
+Logger.info("---- Generating system filters")
 
 for filter_def <- resources["system_filters"] do
   spoilered_tag_list = Enum.join(filter_def["spoilered"], ",")
@@ -80,7 +81,7 @@ for filter_def <- resources["system_filters"] do
   end
 end
 
-IO.puts("---- Generating forums")
+Logger.info("---- Generating forums")
 
 for forum_def <- resources["forums"] do
   %Forum{}
@@ -88,7 +89,7 @@ for forum_def <- resources["forums"] do
   |> Repo.insert(on_conflict: :nothing)
 end
 
-IO.puts("---- Generating users")
+Logger.info("---- Generating users")
 
 for user_def <- resources["users"] do
   {:ok, user} = Users.register_user(user_def)
@@ -100,7 +101,7 @@ for user_def <- resources["users"] do
   |> Repo.update!()
 end
 
-IO.puts("---- Generating roles")
+Logger.info("---- Generating roles")
 
 for role_def <- resources["roles"] do
   %Role{name: role_def["name"], resource_type: role_def["resource_type"]}
@@ -108,7 +109,7 @@ for role_def <- resources["roles"] do
   |> Repo.insert(on_conflict: :nothing)
 end
 
-IO.puts("---- Generating static pages")
+Logger.info("---- Generating static pages")
 
 for page_def <- resources["pages"] do
   %StaticPage{title: page_def["title"], slug: page_def["slug"], body: page_def["body"]}
@@ -116,7 +117,7 @@ for page_def <- resources["pages"] do
   |> Repo.insert(on_conflict: :nothing)
 end
 
-IO.puts("---- Indexing content")
+Logger.info("---- Indexing content")
 Search.reindex(Tag |> preload(^Tags.indexing_preloads()), Tag)
 
-IO.puts("---- Done.")
+Logger.info("---- Done.")
