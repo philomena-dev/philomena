@@ -12,6 +12,9 @@ services:
       context: .
       dockerfile: ./docker/app/Dockerfile
     environment:
+      # Set this env var to `1` if you want to drop your current postgres DB and
+      # reseed the DB from scratch again.
+      - DROP_DB
       - MIX_ENV=dev
       - PGPASSWORD=postgres
       - ANONYMOUS_NAME_SALT=2fmJRo0OgMFe65kyAJBxPT0QtkVes/jnKDdtP21fexsRqiw8TlSY7yO+uFyMZycp
@@ -82,7 +85,7 @@ services:
     attach: false
 
   files:
-    image: andrewgaul/s3proxy:sha-3ff077f
+    image: andrewgaul/s3proxy:sha-f5d14ba
     environment:
       - JCLOUDS_FILESYSTEM_BASEDIR=/srv/philomena/priv/s3
     volumes:

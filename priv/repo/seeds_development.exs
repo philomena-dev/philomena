@@ -1,6 +1,6 @@
 # Script for populating the database. You can run it as:
 #
-#     mix run priv/repo/seeds.exs
+#     mix run priv/repo/seeds_development.exs
 #
 # Inside the script, you can read and write to any of your
 # repositories directly:
@@ -10,134 +10,295 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-alias Philomena.{Repo, Forums.Forum, Users, Users.User}
-alias Philomena.Comments
-alias Philomena.Images
-alias Philomena.Topics
-alias Philomena.Posts
-alias Philomena.Tags
+defmodule Philomena.DevSeeds do
+  alias Philomena.{Repo, Forums.Forum, Users, Users.User}
+  alias Philomena.Comments
+  alias Philomena.Images
+  alias Philomena.Images.Image
+  alias Philomena.Topics
+  alias Philomena.Posts
+  alias Philomena.Tags
+  import Ecto.Query
+  require Logger
 
-{:ok, ip} = EctoNetwork.INET.cast({203, 0, 113, 0})
-{:ok, _} = Application.ensure_all_started(:plug)
+  def seed() do
+    {:ok, _} = Application.ensure_all_started(:plug)
 
-resources =
-  "priv/repo/seeds_development.json"
-  |> File.read!()
-  |> Jason.decode!()
+    communications =
+      "priv/repo/seeds/dev/communications.json"
+      |> File.read!()
+      |> Jason.decode!()
 
-IO.puts "---- Generating users"
-for user_def <- resources["users"] do
-  {:ok, user} = Users.register_user(user_def)
+    # TODO: add pages to the seeds too
+    # pages =
+    #   "priv/repo/seeds/dev/pages.json"
+    #   |> File.read!()
+    #   |> Jason.decode!()
 
-  user
-  |> Repo.preload([:roles])
-  |> User.confirm_changeset()
-  |> User.update_changeset(%{role: user_def["role"]}, [])
-  |> Repo.update!()
-end
+    Logger.info("---- Generating users")
 
-pleb = Repo.get_by!(User, name: "Pleb")
-request_attributes = [
-  fingerprint: "c1836832948",
-  ip: ip,
-  user_id: pleb.id,
-  user: pleb
-]
+    generate_users()
 
-IO.puts "---- Generating images"
-for image_def <- resources["remote_images"] do
-  file = Briefly.create!()
-  now = DateTime.utc_now() |> DateTime.to_unix(:microsecond)
+    users = Repo.all(User)
+    pleb = Repo.get_by!(User, name: "Pleb")
+    pleb_attrs = request_attrs(pleb)
 
-  IO.puts "Fetching #{image_def["url"]} ..."
-  {:ok, %{body: body}} = PhilomenaProxy.Http.get(image_def["url"])
+    Logger.info("---- Generating images")
 
-  File.write!(file, body)
+    generate_images(pleb_attrs)
 
-  upload = %Plug.Upload{
-    path: file,
-    content_type: "application/octet-stream",
-    filename: "fixtures-#{now}"
-  }
+    last_image_id = Image |> Repo.aggregate(:max, :id)
 
-  IO.puts "Inserting ..."
+    Logger.info("---- Generating comments for image #{last_image_id}")
 
-  Images.create_image(
-    request_attributes,
-    Map.merge(image_def, %{"image" => upload})
-  )
-  |> case do
-    {:ok, %{image: image}} ->
-      Images.approve_image(image)
-      Images.reindex_image(image)
-      Tags.reindex_tags(image.added_tags)
+    generate_predefined_image_comments(pleb, pleb_attrs, communications, last_image_id)
 
-      IO.puts "Created image ##{image.id}"
+    other_images = Image |> where([i], i.id != ^last_image_id) |> Repo.all()
 
-    {:error, :image, changeset, _so_far} ->
-      IO.inspect changeset.errors
+    Logger.info("---- Generating random comments for images other than 1")
+
+    generate_random_image_comments(other_images, users, communications)
+
+    Logger.info("---- Generating forum posts")
+
+    1..500
+    |> Task.async_stream(fn _ -> generate_topic_without_replies(communications, users) end)
+    |> Stream.run()
+
+    1..20
+    |> Task.async_stream(fn _ -> generate_topic_with_replies(communications, users) end)
+    |> Stream.run()
+
+    Logger.info("---- Done.")
   end
-end
 
-IO.puts "---- Generating comments for image #1"
-for comment_body <- resources["comments"] do
-  image = Images.get_image!(1)
+  defp generate_users() do
+    users =
+      "priv/repo/seeds/dev/users.json"
+      |> File.read!()
+      |> Jason.decode!()
 
-  Comments.create_comment(
-    image,
-    request_attributes,
-    %{"body" => comment_body}
-  )
-  |> case do
-    {:ok, %{comment: comment}} ->
-      Comments.approve_comment(comment, pleb)
-      Comments.reindex_comment(comment)
-      Images.reindex_image(image)
+    users
+    |> Task.async_stream(
+      fn user_def ->
+        {:ok, user} = Users.register_user(user_def)
 
-    {:error, :comment, changeset, _so_far} ->
-      IO.inspect changeset.errors
+        user
+        |> Repo.preload([:roles])
+        |> User.confirm_changeset()
+        |> User.update_changeset(%{role: user_def["role"]}, [])
+        |> Repo.update!()
+      end,
+      timeout: :infinity
+    )
+    |> Stream.run()
   end
-end
 
-IO.puts "---- Generating forum posts"
-for %{"forum" => forum_name, "topics" => topics} <- resources["forum_posts"] do
-  forum = Repo.get_by!(Forum, short_name: forum_name)
+  defp generate_images(pleb_attrs) do
+    images =
+      "priv/repo/seeds/dev/images.json"
+      |> File.read!()
+      |> Jason.decode!()
 
-  for %{"title" => topic_name, "posts" => [first_post | posts]} <- topics do
+    generate_image = fn image_def ->
+      file = Briefly.create!()
+      now = DateTime.utc_now() |> DateTime.to_unix(:microsecond)
+
+      {:ok, %{body: body}} = PhilomenaProxy.Http.get(image_def["url"])
+
+      Logger.info("[Images] Fetched #{image_def["url"]}")
+
+      File.write!(file, body)
+
+      upload = %Plug.Upload{
+        path: file,
+        content_type: "application/octet-stream",
+        filename: "fixtures-#{now}"
+      }
+
+      Logger.info("[Images] Creating image ...")
+
+      Images.create_image(pleb_attrs, Map.merge(image_def, %{"image" => upload}))
+      |> case do
+        {:ok, %{image: image, upload_pid: upload_pid}} ->
+          # Delete the temp file only after the async image upload finishes
+          Briefly.give_away(file, upload_pid)
+
+          Images.approve_image(image)
+          Images.reindex_image(image)
+          Tags.reindex_tags(image.added_tags)
+
+          Logger.info("[Images] Created image ##{image.id}")
+
+        {:error, :image, changeset, _so_far} ->
+          Logger.error(inspect(changeset.errors))
+      end
+    end
+
+    images
+    |> Task.async_stream(generate_image)
+    |> Stream.run()
+  end
+
+  defp generate_predefined_image_comments(pleb, pleb_attrs, communications, image_id) do
+    generate_comment = fn comment_body ->
+      image = Images.get_image!(image_id)
+
+      Comments.create_comment(
+        image,
+        pleb_attrs,
+        %{"body" => comment_body}
+      )
+      |> case do
+        {:ok, %{comment: comment}} ->
+          Comments.approve_comment(comment, pleb)
+          Comments.reindex_comment(comment)
+          Images.reindex_image(image)
+
+        {:error, :comment, changeset, _so_far} ->
+          Logger.error(inspect(changeset.errors))
+      end
+    end
+
+    communications["demos"]
+    |> Task.async_stream(generate_comment)
+    |> Stream.run()
+  end
+
+  defp generate_random_image_comments(images, users, communications) do
+    generate_comment = fn _ ->
+      image = Enum.random(images)
+      user = random_user(users)
+
+      Comments.create_comment(
+        image,
+        request_attrs(user),
+        %{"body" => random_body(communications)}
+      )
+      |> case do
+        {:ok, %{comment: comment}} ->
+          Comments.approve_comment(comment, user)
+          Comments.reindex_comment(comment)
+          Images.reindex_image(image)
+
+        {:error, :comment, changeset, _so_far} ->
+          Logger.error(inspect(changeset.errors))
+      end
+    end
+
+    1..1000
+    |> Task.async_stream(generate_comment)
+    |> Stream.run()
+  end
+
+  defp default_ip() do
+    {:ok, ip} = EctoNetwork.INET.cast({203, 0, 113, 0})
+    ip
+  end
+
+  defp available_forums(), do: ["dis", "art", "rp", "meta", "shows"]
+
+  defp random_forum(), do: Enum.random(available_forums())
+
+  defp random_user(users), do: Enum.random(users)
+
+  defp request_attrs(%{id: id} = user) do
+    [
+      fingerprint: "d015c342859dde3",
+      ip: default_ip(),
+      user_id: id,
+      user: user
+    ]
+  end
+
+  defp random_body(%{"random" => random}) do
+    count = :rand.uniform(3)
+
+    0..count
+    |> Enum.map(fn _ -> Enum.random(random) end)
+    |> Enum.join("\n\n")
+  end
+
+  defp random_title(%{"titles" => titles}) do
+    Enum.random(titles["first"]) <>
+      " " <>
+      Enum.random(titles["second"]) <>
+      " " <>
+      Enum.random(titles["third"])
+  end
+
+  defp generate_topic_with_replies(communications, users) do
+    forum = Repo.get_by!(Forum, short_name: random_forum())
+    op = random_user(users)
+
     Topics.create_topic(
       forum,
-      request_attributes,
+      request_attrs(op),
       %{
-        "title" => topic_name,
+        "title" => random_title(communications),
         "posts" => %{
           "0" => %{
-            "body" => first_post,
+            "body" => random_body(communications)
           }
         }
       }
     )
     |> case do
       {:ok, %{topic: topic}} ->
-        for post <- posts do
+        count = :rand.uniform(250) + 5
+
+        generate_post = fn _ ->
+          user = random_user(users)
+
           Posts.create_post(
             topic,
-            request_attributes,
-            %{"body" => post}
+            request_attrs(user),
+            %{"body" => random_body(communications)}
           )
           |> case do
             {:ok, %{post: post}} ->
-              Posts.approve_post(post, pleb)
+              Posts.approve_post(post, op)
               Posts.reindex_post(post)
 
             {:error, :post, changeset, _so_far} ->
-              IO.inspect changeset.errors
+              Logger.error(inspect(changeset.errors))
           end
         end
 
+        1..count
+        |> Task.async_stream(generate_post, timeout: :infinity)
+
+        Logger.info("[Topics] Created topic ##{topic.id} with #{count} replies")
+
       {:error, :topic, changeset, _so_far} ->
-        IO.inspect changeset.errors
+        Logger.error(inspect(changeset.errors))
+    end
+  end
+
+  defp generate_topic_without_replies(communications, users) do
+    forum = Repo.get_by!(Forum, short_name: random_forum())
+    op = random_user(users)
+
+    Topics.create_topic(
+      forum,
+      request_attrs(op),
+      %{
+        "title" => random_title(communications),
+        "posts" => %{
+          "0" => %{
+            "body" => random_body(communications)
+          }
+        }
+      }
+    )
+    |> case do
+      {:ok, %{topic: topic}} ->
+        Logger.info("[Topics] Created topic ##{topic.id}")
+
+      {:error, :topic, changeset, _so_far} ->
+        Logger.error(inspect(changeset.errors))
     end
   end
 end
 
-IO.puts "---- Done."
+Philomena.DevSeeds.seed()
