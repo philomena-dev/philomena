@@ -40,6 +40,8 @@ defmodule PhilomenaWeb.ActivityController do
         conn,
         %{range: %{first_seen_at: %{gt: "now-3d"}}},
         sorts: &%{query: &1, sorts: [%{wilson_score: :desc}, %{first_seen_at: :desc}]},
+        # FIXME: if there is very little activity for the last 3 days this may return
+        # no results as it may select the page number that doesn't exist.
         pagination: %{page_number: :rand.uniform(6), page_size: 4}
       )
 
