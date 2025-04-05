@@ -70,11 +70,11 @@ defmodule Philomena.DevSeeds do
     }
 
     1..500
-    |> Task.async_stream(fn _ -> generate_topic_without_replies(topic_params) end)
+    |> Task.async_stream(fn _ -> generate_topic_without_posts(topic_params) end)
     |> Stream.run()
 
-    1..20
-    |> Task.async_stream(fn _ -> generate_topic_with_replies(topic_params) end)
+    500..520
+    |> Task.async_stream(fn _ -> generate_topic_with_posts(topic_params) end)
     |> Stream.run()
 
     Logger.info("---- Done.")
@@ -223,71 +223,72 @@ defmodule Philomena.DevSeeds do
     |> Enum.join("\n\n")
   end
 
+  # `nonce` is a unique number for each topic that is used in the title to make
+  # sure we don't generate conflicting titles
   defp random_title(%{"titles" => titles}) do
-    Enum.random(titles["first"]) <>
-      " " <>
-      Enum.random(titles["second"]) <>
-      " " <>
+    [
+      Enum.random(titles["first"]),
+      Enum.random(titles["second"]),
       Enum.random(titles["third"])
+    ]
+    |> Enum.join(" ")
   end
 
-  defp generate_topic_with_replies(params) do
-    forum = Enum.random(params.forums)
-    op = random_user(params.users)
+  defp generate_topic_posts(params, topic, op) do
+    count = :rand.uniform(250) + 5
 
-    Topics.create_topic(
-      forum,
-      request_attrs(op),
-      %{
-        "title" => random_title(params.communications),
-        "posts" => %{
-          "0" => %{
-            "body" => random_body(params.communications)
-          }
-        }
-      }
-    )
-    |> case do
-      {:ok, %{topic: topic}} ->
-        count = :rand.uniform(250) + 5
+    generate_post = fn _ ->
+      user = random_user(params.users)
 
-        generate_post = fn _ ->
-          user = random_user(params.users)
+      Posts.create_post(
+        topic,
+        request_attrs(user),
+        %{"body" => random_body(params.communications)}
+      )
+      |> case do
+        {:ok, %{post: post}} ->
+          Posts.approve_post(post, op)
+          Posts.reindex_post(post)
 
-          Posts.create_post(
-            topic,
-            request_attrs(user),
-            %{"body" => random_body(params.communications)}
-          )
-          |> case do
-            {:ok, %{post: post}} ->
-              Posts.approve_post(post, op)
-              Posts.reindex_post(post)
+        {:error, :post, changeset, _so_far} ->
+          Logger.error("Failed to create a post: #{inspect(changeset.errors)}")
+      end
+    end
 
-            {:error, :post, changeset, _so_far} ->
-              Logger.error(inspect(changeset.errors))
-          end
-        end
+    1..count
+    |> Task.async_stream(generate_post, timeout: :infinity)
 
-        1..count
-        |> Task.async_stream(generate_post, timeout: :infinity)
+    Logger.info("[Topics] Created topic ##{topic.id} with #{count} replies")
+  end
 
-        Logger.info("[Topics] Created topic ##{topic.id} with #{count} replies")
+  defp generate_topic_with_posts(params) do
+    result = generate_topic(params)
 
-      {:error, :topic, changeset, _so_far} ->
-        Logger.error(inspect(changeset.errors))
+    if !is_nil(result) do
+      {topic, op} = result
+      generate_topic_posts(params, topic, op)
     end
   end
 
-  defp generate_topic_without_replies(params) do
+  defp generate_topic_without_posts(params) do
+    result = generate_topic(params)
+
+    if !is_nil(result) do
+      {topic, _op} = result
+      Logger.info("[Topics] Created topic ##{topic.id}")
+    end
+  end
+
+  defp generate_topic(params) do
     forum = Enum.random(params.forums)
     op = random_user(params.users)
+    title = random_title(params.communications)
 
     Topics.create_topic(
       forum,
       request_attrs(op),
       %{
-        "title" => random_title(params.communications),
+        "title" => title,
         "posts" => %{
           "0" => %{
             "body" => random_body(params.communications)
@@ -297,10 +298,16 @@ defmodule Philomena.DevSeeds do
     )
     |> case do
       {:ok, %{topic: topic}} ->
-        Logger.info("[Topics] Created topic ##{topic.id}")
+        {topic, op}
 
-      {:error, :topic, changeset, _so_far} ->
-        Logger.error(inspect(changeset.errors))
+      {:error, :topic, %{errors: errors}, _changes_so_far} ->
+        if inspect(errors) |> String.contains?("already exists") do
+          Logger.info("[Topics] Random title collision (#{title}), retrying...")
+          generate_topic(params)
+        else
+          Logger.error("[Topics] Failed to create a topic: #{inspect(errors)}")
+          nil
+        end
     end
   end
 end
