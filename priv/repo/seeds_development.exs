@@ -187,7 +187,6 @@ defmodule Philomena.DevSeeds do
       |> case do
         {:ok, %{comment: comment}} ->
           Comments.approve_comment(comment, user)
-          Comments.reindex_comment(comment)
           {:ok, image}
 
         {:error, :comment, changeset, _so_far} ->
