@@ -61,12 +61,20 @@ defmodule Philomena.DevSeeds do
 
     Logger.info("---- Generating forum posts")
 
+    forums = Repo.all(Forum)
+
+    topic_params = %{
+      communications: communications,
+      users: users,
+      forums: forums
+    }
+
     1..500
-    |> Task.async_stream(fn _ -> generate_topic_without_replies(communications, users) end)
+    |> Task.async_stream(fn _ -> generate_topic_without_replies(topic_params) end)
     |> Stream.run()
 
     1..20
-    |> Task.async_stream(fn _ -> generate_topic_with_replies(communications, users) end)
+    |> Task.async_stream(fn _ -> generate_topic_with_replies(topic_params) end)
     |> Stream.run()
 
     Logger.info("---- Done.")
@@ -196,10 +204,6 @@ defmodule Philomena.DevSeeds do
     ip
   end
 
-  defp available_forums(), do: ["dis", "art", "rp", "meta", "shows"]
-
-  defp random_forum(), do: Enum.random(available_forums())
-
   defp random_user(users), do: Enum.random(users)
 
   defp request_attrs(%{id: id} = user) do
@@ -227,18 +231,18 @@ defmodule Philomena.DevSeeds do
       Enum.random(titles["third"])
   end
 
-  defp generate_topic_with_replies(communications, users) do
-    forum = Repo.get_by!(Forum, short_name: random_forum())
-    op = random_user(users)
+  defp generate_topic_with_replies(params) do
+    forum = Enum.random(params.forums)
+    op = random_user(params.users)
 
     Topics.create_topic(
       forum,
       request_attrs(op),
       %{
-        "title" => random_title(communications),
+        "title" => random_title(params.communications),
         "posts" => %{
           "0" => %{
-            "body" => random_body(communications)
+            "body" => random_body(params.communications)
           }
         }
       }
@@ -248,12 +252,12 @@ defmodule Philomena.DevSeeds do
         count = :rand.uniform(250) + 5
 
         generate_post = fn _ ->
-          user = random_user(users)
+          user = random_user(params.users)
 
           Posts.create_post(
             topic,
             request_attrs(user),
-            %{"body" => random_body(communications)}
+            %{"body" => random_body(params.communications)}
           )
           |> case do
             {:ok, %{post: post}} ->
@@ -275,18 +279,18 @@ defmodule Philomena.DevSeeds do
     end
   end
 
-  defp generate_topic_without_replies(communications, users) do
-    forum = Repo.get_by!(Forum, short_name: random_forum())
-    op = random_user(users)
+  defp generate_topic_without_replies(params) do
+    forum = Enum.random(params.forums)
+    op = random_user(params.users)
 
     Topics.create_topic(
       forum,
       request_attrs(op),
       %{
-        "title" => random_title(communications),
+        "title" => random_title(params.communications),
         "posts" => %{
           "0" => %{
-            "body" => random_body(communications)
+            "body" => random_body(params.communications)
           }
         }
       }
