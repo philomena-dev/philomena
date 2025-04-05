@@ -69,13 +69,19 @@ defmodule Philomena.DevSeeds do
       forums: forums
     }
 
-    1..500
-    |> Task.async_stream(fn _ -> generate_topic_without_posts(topic_params) end)
-    |> Stream.run()
+    total =
+      1..500
+      |> Task.async_stream(fn _ -> generate_topic(topic_params) end)
+      |> Enum.count(&(not is_nil(&1)))
 
-    500..520
-    |> Task.async_stream(fn _ -> generate_topic_with_posts(topic_params) end)
-    |> Stream.run()
+    Logger.info("---- Generating #{total} topics without posts")
+
+    total =
+      500..520
+      |> Task.async_stream(fn _ -> generate_topic_with_posts(topic_params) end)
+      |> Enum.count(&(not is_nil(&1)))
+
+    Logger.info("---- Generating #{total} topics with posts")
 
     Logger.info("---- Done.")
   end
@@ -113,9 +119,6 @@ defmodule Philomena.DevSeeds do
       now = DateTime.utc_now() |> DateTime.to_unix(:microsecond)
 
       {:ok, %{body: body}} = PhilomenaProxy.Http.get(image_def["url"])
-
-      Logger.info("[Images] Fetched #{image_def["url"]}")
-
       File.write!(file, body)
 
       upload = %Plug.Upload{
@@ -123,8 +126,6 @@ defmodule Philomena.DevSeeds do
         content_type: "application/octet-stream",
         filename: "fixtures-#{now}"
       }
-
-      Logger.info("[Images] Creating image ...")
 
       Images.create_image(pleb_attrs, Map.merge(image_def, %{"image" => upload}))
       |> case do
@@ -136,7 +137,7 @@ defmodule Philomena.DevSeeds do
           Images.reindex_image(image)
           Tags.reindex_tags(image.added_tags)
 
-          Logger.info("[Images] Created image ##{image.id}")
+          Logger.info("[Images] Created #{image_def["url"]} with id ##{image.id}")
 
         {:error, :image, changeset, _so_far} ->
           Logger.error(inspect(changeset.errors))
@@ -257,8 +258,6 @@ defmodule Philomena.DevSeeds do
 
     1..count
     |> Task.async_stream(generate_post, timeout: :infinity)
-
-    Logger.info("[Topics] Created topic ##{topic.id} with #{count} replies")
   end
 
   defp generate_topic_with_posts(params) do
@@ -267,15 +266,6 @@ defmodule Philomena.DevSeeds do
     if !is_nil(result) do
       {topic, op} = result
       generate_topic_posts(params, topic, op)
-    end
-  end
-
-  defp generate_topic_without_posts(params) do
-    result = generate_topic(params)
-
-    if !is_nil(result) do
-      {topic, _op} = result
-      Logger.info("[Topics] Created topic ##{topic.id}")
     end
   end
 
