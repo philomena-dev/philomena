@@ -188,15 +188,20 @@ defmodule Philomena.DevSeeds do
         {:ok, %{comment: comment}} ->
           Comments.approve_comment(comment, user)
           Comments.reindex_comment(comment)
-          Images.reindex_image(image)
+          {:ok, image}
 
         {:error, :comment, changeset, _so_far} ->
-          Logger.error(inspect(changeset.errors))
+          Logger.error("Failed to create image comments: #{inspect(changeset.errors)}")
+          {:error, nil}
       end
     end
 
-    1..1000
-    |> Task.async_stream(generate_comment)
+    images = 1..1000 |> Task.async_stream(generate_comment, timeout: :infinity)
+
+    # Reindex all images that got comments
+    for({:ok, {:ok, image}} <- images, do: image)
+    |> Enum.uniq_by(& &1.id)
+    |> Task.async_stream(&Images.reindex_image/1)
     |> Stream.run()
   end
 
