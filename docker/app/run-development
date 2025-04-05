@@ -52,11 +52,6 @@ until step wget --no-check-certificate -qO - http://opensearch:9200; do
   sleep 2
 done
 
-# If `DROP_DB` env var is set, drop the database
-if [[ "${DROP_DB:-}" == "1" ]]; then
-  step dropdb -h postgres -U postgres philomena_dev
-fi
-
 # Try to create the database if it doesn't exist yet
 if step createdb -h postgres -U postgres philomena_dev; then
   step mix ecto.setup_dev
