@@ -7,10 +7,9 @@ set -euo pipefail
 
 # Set this env var to `1` if you want to drop your current postgres DB and
 # reseed the DB from scratch again.
-drop_db=${drop_db:-0}
+DROP_DB=${DROP_DB:-0}
 
-
-if [[ "$drop_db" == "1" ]]; then
+if [[ "$DROP_DB" == "1" ]]; then
   info "Dropping databases..."
 
   # It's important to stop all containers to make sure they shut down cleanly.
