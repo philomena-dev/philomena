@@ -12,9 +12,6 @@ services:
       context: .
       dockerfile: ./docker/app/Dockerfile
     environment:
-      # Set this env var to `1` if you want to drop your current postgres DB and
-      # reseed the DB from scratch again.
-      - DROP_DB
       # Use this env variable to control the logs levels from different modules.
       # The syntax is `{module.function}=level,...` and the `module.function`.
       # The filter evaluation stops on the first `{module.function}` that has a
@@ -22,7 +19,7 @@ services:
       # in the list of filters should be a bare `level` which will be used as a
       # catch-all for all other log events that do not match any of the previous
       # filters.
-      - PHILOMENA_LOG=${PHILOMENA_LOG-Ecto=none,Exq=none,debug}
+      - PHILOMENA_LOG=${PHILOMENA_LOG-Ecto=none,Exq=none,PhilomenaMedia.Objects=none,debug}
       - MIX_ENV=dev
       - PGPASSWORD=postgres
       - ANONYMOUS_NAME_SALT=2fmJRo0OgMFe65kyAJBxPT0QtkVes/jnKDdtP21fexsRqiw8TlSY7yO+uFyMZycp
