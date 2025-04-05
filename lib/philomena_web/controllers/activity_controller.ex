@@ -17,13 +17,21 @@ defmodule PhilomenaWeb.ActivityController do
   alias Philomena.Repo
   import Ecto.Query
 
+  # Delay displaying new uploads on the homepage to give the users some time to
+  # add last-minute tags on the image after the fact of upload.
+  @new_uploads_hidden_duration Application.compile_env(
+                                 :philomena,
+                                 :new_uploads_hidden_duration,
+                                 "3 minutes"
+                               )
+
   def index(conn, _params) do
     user = conn.assigns.current_user
 
     {:ok, {images, _tags}} =
       ImageLoader.search_string(
         conn,
-        "created_at.lte:3 minutes ago, -thumbnails_generated:false",
+        "created_at.lte:#{@new_uploads_hidden_duration} ago, -thumbnails_generated:false",
         pagination: %{conn.assigns.image_pagination | page_number: 1}
       )
 

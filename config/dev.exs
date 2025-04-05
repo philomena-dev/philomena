@@ -78,6 +78,10 @@ config :philomena, csp_relaxed: true
 # Enable Vite HMR
 config :philomena, vite_reload: true
 
+# Display the uploads immediately once thumbnails are generated, we don't need
+# to wait more than that in dev mode.
+config :philomena, new_uploads_hidden_duration: "0 minutes"
+
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
 config :phoenix, :stacktrace_depth, 20
