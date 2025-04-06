@@ -104,5 +104,3 @@ jobs:
         uses: actions/setup-node@v4
 
       - run: ./scripts/init.sh
-      - run: typos --version
-      - run: npx prettier --version
