@@ -33,6 +33,10 @@ if command_exists typos; then
   echo "$files" | step xargs typos
 fi
 
+if command_exists shellcheck; then
+  step "$script_dir/shellcheck.sh"
+fi
+
 if command_exists npx; then
   echo "$files" | step xargs npx prettier --ignore-unknown --write
 fi
