@@ -81,8 +81,13 @@ function colorize_command {
   echo -e "\033[1;32m${program}\033[0m ${args[*]}"
 }
 
-script_dir=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
+repo=$(git rev-parse --show-toplevel)
+tools_dir="$repo/.tools"
 
 # Add `.tools` to the PATH to make the tools installed via `init.sh` available
 # to the scripts.
-export PATH="$script_dir/../.tools:$PATH"
+export PATH="$tools_dir:$PATH"
+
+if [[ -v CI ]]; then
+  step echo "$tools_dir" >>"$GITHUB_PATH"
+fi
