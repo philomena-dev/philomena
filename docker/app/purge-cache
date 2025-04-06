@@ -7,9 +7,9 @@
 #
 # {"files":[]}
 
-body="$1"
-api_token=
-zone_id=
+# body="$1"
+# api_token=
+# zone_id=
 
 # curl -XPOST \
 #      -H "Content-Type: application/json" \
