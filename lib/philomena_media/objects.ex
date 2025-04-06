@@ -217,7 +217,7 @@ defmodule PhilomenaMedia.Objects do
 
   @spec replicate_request(operation_fn(), (keyword() -> [term()])) :: :ok
   defp replicate_request(operation, args) do
-    operation_name = Function.info(operation, :name)
+    {:name, operation_name} = Function.info(operation, :name)
     backends = backends()
 
     total_err =
