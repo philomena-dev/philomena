@@ -67,6 +67,6 @@ npm-debug.log
 
 # The tool output directory is used by the repo init script to store various
 # tools that are used for development. We use this repo-local folder and avoid
-# using system-wide directories to avoid polluting the dev's environment which
+# using system-wide directories to prevent polluting the dev's environment which
 # may be shared with other projects.
 .tools
