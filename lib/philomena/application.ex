@@ -85,24 +85,16 @@ defmodule Philomena.Application do
 
     if not Enum.empty?(filters) do
       allow_log_event? = fn event ->
-        case(Map.get(event.meta, :mfa)) do
-          nil ->
-            false
-
-          {module, function, _arity} ->
-            scope = "#{inspect(module)}.#{function}"
-
-            filters
-            |> Enum.find(fn {selector, _level} ->
-              is_nil(selector) or String.starts_with?(scope, selector)
-            end)
-            |> case do
-              nil ->
-                false
-
-              {_selector, level} ->
-                Logger.compare_levels(event.level, level) != :lt
-            end
+        with {module, function, _arity} <- Map.get(event.meta, :mfa),
+             scope <- "#{inspect(module)}.#{function}",
+             {_selector, level} when not is_nil(filters) <-
+               filters
+               |> Enum.find(fn {selector, _level} ->
+                 is_nil(selector) or String.starts_with?(scope, selector)
+               end) do
+          Logger.compare_levels(event.level, level) != :lt
+        else
+          _ -> false
         end
       end
 
