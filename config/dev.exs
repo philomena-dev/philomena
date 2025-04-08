@@ -78,6 +78,10 @@ config :philomena, csp_relaxed: true
 # Enable Vite HMR
 config :philomena, vite_reload: true
 
+# Display the uploads immediately once thumbnails are generated, we don't need
+# to wait more than that in dev mode.
+config :philomena, new_uploads_hidden_duration: "0 minutes"
+
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
 
