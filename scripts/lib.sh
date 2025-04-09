@@ -8,14 +8,14 @@ eval "exec $global_stdout>&1"
 
 # Log a message at the info level
 function info {
-  local message=$1
+  local message="$*"
 
   echo -e "\033[32;1m[INFO]\033[0m \033[0;32m$message\033[0m" >&2
 }
 
 # Log a message at the warn level
 function warn {
-  local message=$1
+  local message="$*"
 
   echo -e "\033[33;1m[WARN]\033[0m \033[0;33m$message\033[0m" >&2
 }
@@ -79,4 +79,13 @@ function colorize_command {
   # Luckily, we don't pass commands without positional arguments to this function,
   # and we use bash >= v5. If this ever becomes a problem, you know the why.
   echo -e "\033[1;32m${program}\033[0m ${args[*]}"
+}
+
+_repo=""
+function repo {
+  if [[ -z $_repo ]]; then
+    _repo=$(git rev-parse --show-toplevel)
+  fi
+
+  echo "$_repo"
 }

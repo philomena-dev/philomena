@@ -39,7 +39,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: crate-ci/typos@master
+      - run: ./scripts/install/typos.sh
+      - run: typos
+
+  shellcheck:
+    name: 'Shellcheck'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./scripts/install/shellcheck.sh
+      - run: ./scripts/shellcheck.sh
 
   cargo:
     name: Rust Linting and Unit Tests
@@ -104,5 +113,3 @@ jobs:
         uses: actions/setup-node@v4
 
       - run: ./scripts/init.sh
-      - run: typos --version
-      - run: npx prettier --version
