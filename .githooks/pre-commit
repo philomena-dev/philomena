@@ -34,7 +34,7 @@ if command_exists typos; then
 fi
 
 if command_exists shellcheck; then
-  step "$repo/scripts/shellcheck.sh"
+  step "$(repo)/scripts/shellcheck.sh"
 fi
 
 if command_exists npx; then
