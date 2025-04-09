@@ -53,6 +53,11 @@ services:
       - AWS_SECRET_ACCESS_KEY=local-credential
     working_dir: /srv/philomena
     tty: true
+
+    # The `HOST_USER` is set by the wrapper script. This prevents the polluting
+    # the repo directory with root-owned files.
+    user: ${HOST_USER:-root}
+
     volumes:
       - .:/srv/philomena
       - app_cargo_data:/srv/philomena/.cargo
