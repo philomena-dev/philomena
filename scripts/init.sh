@@ -5,9 +5,6 @@ set -euo pipefail
 
 . "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-step "$repo/scripts/install/typos.sh"
-step "$repo/scripts/install/shellcheck.sh"
-
 # Install prettier (see top-level package.json)
 step npm ci --ignore-scripts
 step npx prettier --version
