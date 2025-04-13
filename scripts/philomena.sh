@@ -14,7 +14,7 @@ function up {
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --drop-db) drop_db=true ;;
-      *) die "Unknown option: $1" ;;
+      *) break ;;
     esac
     shift
   done
@@ -23,7 +23,7 @@ function up {
     down --drop-db
   fi
 
-  step exec docker compose up --no-log-prefix
+  step exec docker compose up --no-log-prefix "$@"
 }
 
 function down {
