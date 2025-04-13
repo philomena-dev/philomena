@@ -5,14 +5,10 @@ FROM elixir:1.18.3-alpine
 
 ADD https://api.github.com/repos/philomena-dev/FFmpeg/git/refs/heads/release/6.1 /tmp/ffmpeg_version.json
 
-# Use buildx mount for the apk cache directory to speed up installation
-RUN --mount=type=cache,target=/var/cache/apk,sharing=locked \
-    ( \
+RUN ( \
       echo "https://github.com/philomena-dev/prebuilt-ffmpeg/raw/master"; \
       cat /etc/apk/repositories \
     ) > /tmp/repositories \
-    && ln -fs /var/cache/apk /etc/apk/cache \
-    && ls -lah /etc/apk/cache \
     && cp /tmp/repositories /etc/apk/repositories \
     && apk add --update \
       bash \
