@@ -14,11 +14,4 @@ function fetch {
     "$@"
 }
 
-tools_dir=${TOOLS_DIR:-"$repo/.tools"}
-
-# Add `.tools` to the PATH to make the tools installed via `init.sh` available
-# to the scripts.
-export PATH="$tools_dir:$PATH"
-
-
-step mkdir -p "$tools_dir"
+export tools_dir="/usr/local/bin"
