@@ -55,8 +55,8 @@ ENV PATH=$PATH:$TOOLS_DIR
 ENV PATH=$PATH:/root/.cargo/bin
 
 WORKDIR /app
-RUN --mount=target=. ./scripts/install/typos.sh
-RUN --mount=target=. ./scripts/install/shellcheck.sh
+RUN --mount=source=./scripts,target=./scripts ./scripts/install/typos.sh
+RUN --mount=source=./scripts,target=./scripts ./scripts/install/shellcheck.sh
 
 EXPOSE 5173
 CMD ["run-development"]
