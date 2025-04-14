@@ -47,11 +47,8 @@ RUN git clone --depth 1 https://github.com/philomena-dev/mediatools /tmp/mediato
     && cd /tmp/mediatools \
     && make -j$(nproc) install
 
-ENV TOOLS_DIR=/tools
-
 # docker-compose configures a bind-mount of the repo root dir to /srv/philomena
 ENV PATH=$PATH:/srv/philomena/docker/app
-ENV PATH=$PATH:$TOOLS_DIR
 ENV PATH=$PATH:/root/.cargo/bin
 
 WORKDIR /app
