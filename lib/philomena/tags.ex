@@ -827,4 +827,55 @@ defmodule Philomena.Tags do
   def change_implication(%Implication{} = implication) do
     Implication.changeset(implication, %{})
   end
+
+  @doc """
+  Deletes all tags that meet all of the following conditions:
+  - No category assigned
+  - Zero images count
+  - No description
+  - No short description
+  - No mod notes
+  - No image attached
+  - Not aliased to another tag
+  - Has no aliases pointing to it
+  - Does not imply any other tags
+  - Is not implied by any other tags
+
+  Also removes the deleted tags from the search index.
+
+  ## Examples
+
+      iex> cleanup!()
+      {3, [1, 2, 3]}
+
+  """
+  def cleanup! do
+    tag_ids =
+      from(t in Tag,
+        where: is_nil(t.category),
+        where: t.images_count == 0,
+        where: t.description == "",
+        where: is_nil(t.short_description) or t.short_description == "",
+        where: is_nil(t.mod_notes) or t.mod_notes == "",
+        where: is_nil(t.image),
+        where: is_nil(t.aliased_tag_id),
+        left_join: a in assoc(t, :aliases),
+        left_join: it in assoc(t, :implied_tags),
+        left_join: ibt in assoc(t, :implied_by_tags),
+        where: is_nil(a.id) and is_nil(it.id) and is_nil(ibt.id),
+        select: t.id
+      )
+      |> Repo.all()
+
+    {count, _} =
+      Tag
+      |> where([t], t.id in ^tag_ids)
+      |> Repo.delete_all()
+
+    if count > 0 do
+      PhilomenaQuery.Search.delete_documents(tag_ids, Tag)
+    end
+
+    {count, tag_ids}
+  end
 end

@@ -674,4 +674,22 @@ defmodule PhilomenaQuery.Search do
       %{page | entries: records}
     end)
   end
+
+  @doc ~S"""
+  Remove multiple documents from the index named by the module using bulk API.
+
+  ## Examples
+
+      iex> Search.delete_documents([1, 2, 3], Image)
+
+  """
+  @spec delete_documents([term()], schema_module()) :: any()
+  def delete_documents(ids, module) when is_list(ids) do
+    index = @policy.index_for(module)
+    index_name = index.index_name()
+
+    lines = Enum.map(ids, &%{delete: %{_index: index_name, _id: &1}})
+
+    Api.bulk(@policy.opensearch_url(), lines)
+  end
 end
