@@ -54,6 +54,10 @@ ENV PATH=$PATH:/root/.cargo/bin
 WORKDIR /app
 RUN --mount=source=./scripts,target=./scripts ./scripts/install/typos.sh
 RUN --mount=source=./scripts,target=./scripts ./scripts/install/shellcheck.sh
+RUN --mount=source=./package.json,target=./package.json \
+    --mount=source=./package-lock.json,target=./package-lock.json \
+    npm ci --ignore-scripts
 
 EXPOSE 5173
+
 CMD ["run-development"]
