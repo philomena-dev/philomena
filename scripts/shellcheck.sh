@@ -20,4 +20,4 @@ function shell_script_files {
 
 mapfile -t files < <(shell_script_files "$@" | sort --unique)
 
-step shellcheck --source-path SCRIPTDIR "${files[@]}"
+toolbox shellcheck --source-path SCRIPTDIR "${files[@]}"

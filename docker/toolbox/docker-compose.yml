@@ -1,0 +1,16 @@
+# Defines a persistent "toolbox" container that hosts our development tooling
+# for various scripts.
+services:
+  toolbox:
+    container_name: philomena-toolbox
+    build:
+      dockerfile: docker/app/Dockerfile
+      context: ../..
+
+    volumes: [../..:/app]
+
+    # This prevents polluting the host with root-owned files.
+    user: ${HOST_USER:?run this via a script wrapper that sets the `HOST_USER` variable}
+
+    # Run a dummy command that does nothing, but keeps the container alive.
+    command: tail -f /dev/null

@@ -5,9 +5,10 @@ set -euo pipefail
 
 . "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-# Install prettier (see top-level package.json)
-step npm ci --ignore-scripts
-step npx prettier --version
-
 # Install the pre-commit hook. It's a symlink, to make sure it stays always up-to-date.
 step ln -sf ../../.githooks/pre-commit .git/hooks/pre-commit
+
+step cd docker/toolbox
+
+# Kick off a toolbox container used by our scripts to get the necessary command dependencies.
+start_toolbox_container --build
