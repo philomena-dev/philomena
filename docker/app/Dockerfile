@@ -1,11 +1,18 @@
+# Welcome 👋! This is the image used for local development and CI.
+# It includes the tools that are required to format, lint, build and run Philomena.
+
 FROM elixir:1.18.3-alpine
 
 ADD https://api.github.com/repos/philomena-dev/FFmpeg/git/refs/heads/release/6.1 /tmp/ffmpeg_version.json
-RUN (echo "https://github.com/philomena-dev/prebuilt-ffmpeg/raw/master"; cat /etc/apk/repositories) > /tmp/repositories \
+
+RUN ( \
+      echo "https://github.com/philomena-dev/prebuilt-ffmpeg/raw/master"; \
+      cat /etc/apk/repositories \
+    ) > /tmp/repositories \
     && cp /tmp/repositories /etc/apk/repositories \
-    && apk update --allow-untrusted \
-    && apk add --allow-untrusted \
+    && apk add --update \
       bash \
+      curl \
       inotify-tools \
       build-base \
       git \
@@ -41,7 +48,16 @@ RUN git clone --depth 1 https://github.com/philomena-dev/mediatools /tmp/mediato
     && make -j$(nproc) install
 
 # docker-compose configures a bind-mount of the repo root dir to /srv/philomena
-ENV PATH=$PATH:/root/.cargo/bin:/srv/philomena/docker/app
+ENV PATH=$PATH:/srv/philomena/docker/app
+ENV PATH=$PATH:/root/.cargo/bin
+
+WORKDIR /app
+RUN --mount=source=./scripts,target=./scripts ./scripts/install/typos.sh
+RUN --mount=source=./scripts,target=./scripts ./scripts/install/shellcheck.sh
+RUN --mount=source=./package.json,target=./package.json \
+    --mount=source=./package-lock.json,target=./package-lock.json \
+    npm ci --ignore-scripts
 
 EXPOSE 5173
-CMD run-development
+
+CMD ["run-development"]
