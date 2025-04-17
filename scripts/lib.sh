@@ -89,3 +89,43 @@ function repo {
 
   echo "$_repo"
 }
+
+# We pass additional `--build` argument in `init.sh` script
+# shellcheck disable=SC2120
+function start_toolbox_container {
+  info "Starting the philomena-toolbox container..."
+
+  local file
+  file="$(repo)/docker/toolbox/docker-compose.yml"
+
+  HOST_USER="$(id -u):$(id -g)" step docker compose --file "$file" up --detach --wait "$@"
+}
+
+function exec_in_toolbox {
+  colorized_cmd=$(colorize_command "$@")
+  echo >&$global_stdout -e "\033[32;1m(toolbox) ❱\033[0m $colorized_cmd" >&2
+  docker exec --interactive philomena-toolbox "$@"
+}
+
+# Run a command in the toolbox container with the current directory bind-mounted.
+function toolbox {
+  # Optimistically try to run the command in the toolbox container.
+  # It should be up most of the time, but it isn't we'll start it and retry.
+  set +e
+  exec_in_toolbox "$@"
+  local status=$?
+  set -e
+
+  if [[ $status -eq 0 ]]; then
+    return $status
+  fi
+
+  # If the toolbox container was running but the command failed, then it was not
+  # the reason of the failure and we need to propagate it to the caller.
+  if ! docker ps --all --format '{{.Names}}' | grep -wq philomena-toolbox; then
+    return $status
+  fi
+
+  start_toolbox_container
+  exec_in_toolbox "$@"
+}
