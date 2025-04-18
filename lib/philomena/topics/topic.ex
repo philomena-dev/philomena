@@ -53,15 +53,25 @@ defmodule Philomena.Topics.Topic do
       changes
       |> get_field(:anonymous)
 
+    changes =
+      changes
+      |> validate_length(:title, min: 4, max: 96, count: :bytes)
+      |> put_slug()
+      |> change(forum: forum, user: attribution[:user])
+      |> validate_required(:forum)
+      |> cast_assoc(:poll, with: &Poll.changeset/2)
+      |> cast_assoc(:posts, with: &Post.topic_creation_changeset(&1, &2, attribution, anonymous?))
+      |> validate_length(:posts, is: 1)
+
     changes
-    |> validate_length(:title, min: 4, max: 96, count: :bytes)
-    |> put_slug()
-    |> change(forum: forum, user: attribution[:user])
-    |> validate_required(:forum)
-    |> cast_assoc(:poll, with: &Poll.changeset/2)
-    |> cast_assoc(:posts, with: &Post.topic_creation_changeset(&1, &2, attribution, anonymous?))
-    |> validate_length(:posts, is: 1)
-    |> unique_constraint(:slug, name: :index_topics_on_forum_id_and_slug)
+    |> unique_constraint(
+      :slug,
+      name: :index_topics_on_forum_id_and_slug,
+      message:
+        "A topic with the similar name already exists. " <>
+          "Choose a different name that doesn't collide with the following " <>
+          "slug (name in the URL): '#{get_change(changes, :slug)}'"
+    )
   end
 
   def stick_changeset(topic) do

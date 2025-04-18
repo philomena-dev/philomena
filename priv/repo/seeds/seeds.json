@@ -22,7 +22,7 @@
     },
     {
       "name": "Shows and Movies",
-      "short_name": "pony",
+      "short_name": "shows",
       "description": "Discuss TV shows and movies, as well as their characters and theories.",
       "access_level": "normal"
     },
