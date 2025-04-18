@@ -2,7 +2,7 @@ defmodule PhilomenaWeb.Api.Json.Search.ImageController do
   use PhilomenaWeb, :controller
 
   alias PhilomenaWeb.ImageLoader
-  alias PhilomenaQuery.Search
+  alias PhilomenaQuery.Cursor
   alias Philomena.Interactions
   alias Philomena.Images.Image
   import Ecto.Query
@@ -13,13 +13,14 @@ defmodule PhilomenaWeb.Api.Json.Search.ImageController do
 
     case ImageLoader.search_string(conn, params["q"]) do
       {:ok, {images, _tags}} ->
-        images = Search.search_records(images, queryable)
+        {images, cursors} = Cursor.search_records(images, queryable, params["search_after"])
         interactions = Interactions.user_interactions(images, user)
 
         conn
         |> put_view(PhilomenaWeb.Api.Json.ImageView)
         |> render("index.json",
           images: images,
+          cursors: cursors,
           total: images.total_entries,
           interactions: interactions
         )
