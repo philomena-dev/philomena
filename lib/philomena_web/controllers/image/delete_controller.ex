@@ -47,15 +47,13 @@ defmodule PhilomenaWeb.Image.DeleteController do
   end
 
   defp verify_deleted(conn, _opts) do
-    case conn.assigns.image.hidden_from_users do
-      true ->
-        conn
-
-      _false ->
-        conn
-        |> put_flash(:error, "Cannot change hide reason on a non-hidden image!")
-        |> redirect(to: ~p"/images/#{conn.assigns.image}")
-        |> halt()
+    if conn.assigns.image.hidden_from_users do
+      conn
+    else
+      conn
+      |> put_flash(:error, "Cannot change hide reason on a non-hidden image!")
+      |> redirect(to: ~p"/images/#{conn.assigns.image}")
+      |> halt()
     end
   end
 
