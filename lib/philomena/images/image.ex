@@ -368,9 +368,10 @@ defmodule Philomena.Images.Image do
   end
 
   defp validate_not_approved(changeset) do
-    case get_field(changeset, :approved) do
-      true -> add_error(changeset, :approved, "must be false")
-      false -> changeset
+    if get_field(changeset, :approved) do
+      add_error(changeset, :approved, "must be false")
+    else
+      changeset
     end
   end
 end
