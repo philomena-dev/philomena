@@ -19,17 +19,17 @@ if [[ -z "$files" ]]; then
 fi
 
 {
-  echo "$files" | toolbox xargs typos &
+  echo "$files" | step xargs typos &
   "$(repo)/scripts/shellcheck.sh" &
   echo "$files" | step xargs npx prettier --ignore-unknown --write &
 
   # `rustfmt` doesn't ignore non-rust files automatically
   rust_files=$(echo "$files" | { grep -E '\.rs$' || true; })
   if [[ -n "$rust_files" ]]; then
-    echo "$rust_files" | toolbox xargs cargo fmt --manifest-path native/Cargo.toml -- &
+    echo "$rust_files" | step xargs cargo fmt --manifest-path native/Cargo.toml -- &
   fi
 
-  echo "$files" | toolbox xargs mix format &
+  echo "$files" | step xargs mix format &
 
   # Wait for all background processes to complete
   wait
