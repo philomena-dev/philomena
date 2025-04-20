@@ -77,7 +77,7 @@ RUN --mount=source=./package.json,target=./package.json \
 
 EXPOSE 5173
 
-ENTRYPOINT [ "docker-init.sh" ]
+ENTRYPOINT ["docker-init.sh"]
 
 # Keep the dev container alive
 CMD ["sleep", "infinity"]

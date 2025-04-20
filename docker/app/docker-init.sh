@@ -45,4 +45,6 @@ function setup_rootless_docker {
   fi
 }
 
+setup_rootless_docker
+
 step exec "$@"
