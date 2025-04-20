@@ -60,14 +60,16 @@ RUN git clone --depth 1 https://github.com/philomena-dev/mediatools /tmp/mediato
 # Create a non-root user to avoid polluting the bind-mounted directories with
 # root-owned files on the host machine.
 ARG USER=philomena
-ENV CONTAINER_WORKSPACE=/home/$USER/philomena
+ARG WORKSPACE=/srv/philomena
+ENV WORKSPACE=$WORKSPACE
 
 # docker-compose configures a bind-mount of the repo root dir to $REPO
-ENV PATH=$PATH:/root/.cargo/bin
-ENV PATH=$PATH:$CONTAINER_WORKSPACE/docker/app
-ENV PATH=$PATH:$CONTAINER_WORKSPACE/scripts/path
+ENV PATH=$PATH:/home/$USER/.cargo/bin
+ENV PATH=$PATH:$WORKSPACE/docker/app
+ENV PATH=$PATH:$WORKSPACE/scripts/path
+ENV PATH=$PATH:$WORKSPACE/node_modules/.bin
 
-WORKDIR $CONTAINER_WORKSPACE
+WORKDIR $WORKSPACE
 
 RUN --mount=source=./scripts,target=./scripts ./scripts/install/typos.sh
 RUN --mount=source=./scripts,target=./scripts ./scripts/install/shellcheck.sh
