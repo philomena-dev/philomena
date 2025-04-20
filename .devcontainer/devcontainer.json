@@ -1,7 +1,11 @@
 {
   "build": {
     "dockerfile": "../docker/app/Dockerfile",
-    "context": ".."
+    "context": "..",
+    "args": {
+      "WORKSPACE": "${localWorkspaceFolder}",
+      "USER": "${localEnv:USER:philomena}"
+    }
   },
 
   "mounts": [
@@ -14,11 +18,19 @@
     }
   ],
 
-  "workspaceMount": "source=${localWorkspaceFolder},target=/home/philomena/philomena,type=bind",
-  "workspaceFolder": "/home/philomena/philomena",
+  // Mount the repository at the same path as it is on the host within the container.
+  // This is needed to work around the problem that some tools like `docker compose`
+  // and Docker VSCode extension don't specially handle the devcontainer environment
+  // with the "docker-outside-of-docker" setup. For example if we use relative paths
+  // in `docker-compose.yml`, then they'll be sent to the host's docker daemon using
+  // the paths canonicalized within the devcontainer's view of the file system, which
+  // will be different from the host's view of the mount. Having the host and the
+  // devcontainer use the same path to the workspace fixes this and simplifies our life.
+  "workspaceMount": "source=${localWorkspaceFolder},target=${localWorkspaceFolder},type=bind",
+  "workspaceFolder": "${localWorkspaceFolder}",
 
   "containerEnv": {
-    "HOST_WORKSPACE": "${localWorkspaceFolder}"
+    "WORKSPACE": "${localWorkspaceFolder}"
   },
 
   // While technically optional, --init enables an init process to properly handle
@@ -30,6 +42,11 @@
 
   "customizations": {
     "vscode": {
+      "settings": {
+        // Rust Analyzer struggles to discover the cargo workspace unless there
+        // is a `Cargo.toml` in the repo root. So, we give it a small hint.
+        "rust-analyzer.linkedProjects": ["./native/philomena/Cargo.toml"]
+      },
       "extensions": [
         // Rust LSP
         "rust-lang.rust-analyzer",

@@ -12,6 +12,9 @@ services:
     build:
       context: .
       dockerfile: ./docker/app/Dockerfile
+      args:
+        WORKSPACE: ${WORKSPACE-/srv/philomena}
+        USER: ${USER:-philomena}
 
     command: run-development
 
@@ -54,15 +57,15 @@ services:
       - S3_BUCKET=philomena
       - AWS_ACCESS_KEY_ID=local-identity
       - AWS_SECRET_ACCESS_KEY=local-credential
-    working_dir: /srv/philomena
+
     tty: true
 
     volumes:
-      - ${HOST_WORKSPACE-.}:/home/philomena/philomena
-      - app_cargo_data:/srv/philomena/.cargo
-      - app_build_data:/srv/philomena/_build
-      - app_deps_data:/srv/philomena/deps
-      - app_native_data:/srv/philomena/priv/native
+      - .:${WORKSPACE-/srv/philomena}
+      - app_cargo_data:${WORKSPACE-/srv/philomena}/.cargo
+      - app_build_data:${WORKSPACE-/srv/philomena}/_build
+      - app_deps_data:${WORKSPACE-/srv/philomena}/deps
+      - app_native_data:${WORKSPACE-/srv/philomena}/priv/native
     depends_on:
       - postgres
       - opensearch
@@ -82,7 +85,7 @@ services:
     image: opensearchproject/opensearch:3.0.0
     volumes:
       - opensearch_data:/usr/share/opensearch/data
-      - ${HOST_WORKSPACE-.}/docker/opensearch/opensearch.yml:/usr/share/opensearch/config/opensearch.yml
+      - ./docker/opensearch/opensearch.yml:/usr/share/opensearch/config/opensearch.yml
     attach: false
     ulimits:
       nofile:
@@ -96,9 +99,9 @@ services:
   files:
     image: andrewgaul/s3proxy:sha-db34f6b
     environment:
-      - JCLOUDS_FILESYSTEM_BASEDIR=/srv/philomena/priv/s3
+      - JCLOUDS_FILESYSTEM_BASEDIR=${WORKSPACE-/srv/philomena}/priv/s3
     volumes:
-      - ${HOST_WORKSPACE-.}:/srv/philomena
+      - .:${WORKSPACE-/srv/philomena}
     attach: false
 
   web:

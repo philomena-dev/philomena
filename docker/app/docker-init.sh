@@ -36,7 +36,7 @@ function setup_rootless_docker {
     info "Group with the host docker socket GID already exists: ${existing_group}. Reusing it."
   fi
 
-  user=$(id -u -n)
+  user=$(whoami)
 
   if [ "$(id "$user" | grep -E "groups=.*(=|,)${docker_gid}\\(")" = '' ]; then
     step sudo usermod --append --groups "${docker_gid}" "$user"
