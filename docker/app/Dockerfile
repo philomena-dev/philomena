@@ -42,6 +42,8 @@ RUN apk add --update \
     docker-cli-compose \
     # Needed for the `usermod` command
     shadow \
+    # Required for the Github Pull Requests VSCode extension to fetch via git SSH URLs
+    openssh \
     sudo
 
 ADD https://api.github.com/repos/philomena-dev/cli_intensities/git/refs/heads/master /tmp/cli_intensities_version.json
@@ -75,7 +77,10 @@ RUN --mount=source=./package.json,target=./package.json \
 
 EXPOSE 5173
 
-CMD ["run-development"]
+ENTRYPOINT [ "docker-init.sh" ]
+
+# Keep the dev container alive
+CMD ["sleep", "infinity"]
 
 # The UID of 1000 is the default for most Linux distributions, which should make
 # this user map to the default user on the host system for bind-mounted volumes.
