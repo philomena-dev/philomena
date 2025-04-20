@@ -12,6 +12,9 @@ services:
     build:
       context: .
       dockerfile: ./docker/app/Dockerfile
+
+    command: run-development
+
     environment:
       - MIX_ENV=dev
       - PGPASSWORD=postgres
@@ -47,12 +50,8 @@ services:
     working_dir: /srv/philomena
     tty: true
 
-    # The `HOST_USER` is set by the wrapper script. This prevents the polluting
-    # the repo directory with root-owned files.
-    user: ${HOST_USER:-root}
-
     volumes:
-      - .:/srv/philomena
+      - ${HOST_WORKSPACE-.}:/home/philomena/philomena
       - app_cargo_data:/srv/philomena/.cargo
       - app_build_data:/srv/philomena/_build
       - app_deps_data:/srv/philomena/deps
@@ -76,7 +75,7 @@ services:
     image: opensearchproject/opensearch:2.19.1
     volumes:
       - opensearch_data:/usr/share/opensearch/data
-      - ./docker/opensearch/opensearch.yml:/usr/share/opensearch/config/opensearch.yml
+      - ${HOST_WORKSPACE-.}/docker/opensearch/opensearch.yml:/usr/share/opensearch/config/opensearch.yml
     attach: false
     ulimits:
       nofile:
@@ -92,7 +91,7 @@ services:
     environment:
       - JCLOUDS_FILESYSTEM_BASEDIR=/srv/philomena/priv/s3
     volumes:
-      - .:/srv/philomena
+      - ${HOST_WORKSPACE-.}:/srv/philomena
     attach: false
 
   web:
