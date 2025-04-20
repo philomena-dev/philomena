@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-. "$(dirname "${BASH_SOURCE[0]}")/../scripts/lib.sh"
+. "$(dirname "${BASH_SOURCE[0]}")/../../scripts/lib.sh"
 
 # Add the current user to the docker group to allow running docker commands
 # without sudo. We have to do this right at the start of the container instead
@@ -38,4 +38,4 @@ else
   info "User ${user} is already in the group ${docker_gid}. No need to add it again."
 fi
 
-step exec sleep infinity
+step exec "$@"
