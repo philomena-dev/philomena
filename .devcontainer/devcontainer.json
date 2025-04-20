@@ -8,6 +8,10 @@
     }
   },
 
+  // While technically optional, --init enables an init process to properly handle
+  // signals and ensure Zombie Processes are cleaned up.
+  "runArgs": ["--init"],
+
   "mounts": [
     // Use a "docker outside of docker" setup where we reuse the host's docker daemon:
     // https://github.com/microsoft/vscode-dev-containers/tree/main/containers/docker-from-docker
@@ -32,10 +36,6 @@
   "containerEnv": {
     "WORKSPACE": "${localWorkspaceFolder}"
   },
-
-  // While technically optional, --init enables an init process to properly handle
-  // signals and ensure Zombie Processes are cleaned up.
-  "runArgs": ["--init"],
 
   // Make sure our custom `docker-init.sh` script is run at startup
   "overrideCommand": false,
