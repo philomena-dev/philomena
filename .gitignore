@@ -29,7 +29,7 @@ philomena-*.tar
 npm-debug.log
 
 # The directory NPM downloads your dependencies sources to.
-/assets/node_modules/
+node_modules/
 
 # Since we are building assets from assets/,
 # we ignore priv/static. You may want to comment
@@ -64,9 +64,3 @@ npm-debug.log
 
 # Vitest coverage
 /assets/coverage
-
-# The tool output directory is used by the repo init script to store various
-# tools that are used for development. We use this repo-local folder and avoid
-# using system-wide directories to prevent polluting the dev's environment which
-# may be shared with other projects.
-.tools

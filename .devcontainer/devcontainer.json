@@ -1,0 +1,75 @@
+{
+  "build": {
+    "dockerfile": "../docker/app/Dockerfile",
+    "context": ".."
+  },
+
+  "mounts": [
+    // Use a "docker outside of docker" setup where we reuse the host's docker daemon:
+    // https://github.com/microsoft/vscode-dev-containers/tree/main/containers/docker-from-docker
+    {
+      "source": "/var/run/docker.sock",
+      "target": "/var/run/docker.sock",
+      "type": "bind"
+    }
+  ],
+
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/philomena/philomena,type=bind",
+  "workspaceFolder": "/home/philomena/philomena",
+
+  "containerEnv": {
+    "HOST_WORKSPACE": "${localWorkspaceFolder}"
+  },
+
+  // While technically optional, --init enables an init process to properly handle
+  // signals and ensure Zombie Processes are cleaned up.
+  "runArgs": [
+    "--init",
+
+    // Do some initial setup tasks at runtime.
+    "--entrypoint",
+    "${containerWorkspaceFolder}/.devcontainer/docker-init.sh"
+  ],
+
+  // Make sure our custom `docker-init.sh` script is run at startup
+  "overrideCommand": false,
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // Rust LSP
+        "rust-lang.rust-analyzer",
+
+        // Elixir LSP
+        "lexical-lsp.lexical",
+
+        // Dockerfile LSP
+        "ms-azuretools.vscode-docker",
+
+        // Github Actions LSP
+        "github.vscode-github-actions",
+
+        // Bash LSP
+        "mads-hartmann.bash-ide-vscode",
+
+        // `.slime` syntax highlighting
+        "xolan.slime",
+
+        // `.js`, `.ts` linter
+        "dbaeumer.vscode-eslint",
+
+        // `.css` linter
+        "stylelint.vscode-stylelint",
+
+        // `.js`, `.ts`. `.css`, `.json`, `.yaml`, `.md` formatter
+        "esbenp.prettier-vscode",
+
+        // Spell checker enforced on CI
+        "tekumara.typos-vscode",
+
+        // `.toMatchInlineSnapshot()` syntax highlighting
+        "tlent.jest-snapshot-language-support"
+      ]
+    }
+  }
+}
