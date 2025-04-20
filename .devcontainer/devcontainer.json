@@ -23,13 +23,7 @@
 
   // While technically optional, --init enables an init process to properly handle
   // signals and ensure Zombie Processes are cleaned up.
-  "runArgs": [
-    "--init",
-
-    // Do some initial setup tasks at runtime.
-    "--entrypoint",
-    "${containerWorkspaceFolder}/.devcontainer/docker-init.sh"
-  ],
+  "runArgs": ["--init"],
 
   // Make sure our custom `docker-init.sh` script is run at startup
   "overrideCommand": false,
