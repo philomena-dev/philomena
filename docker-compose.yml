@@ -7,16 +7,20 @@ volumes:
   app_deps_data: {}
   app_native_data: {}
 
+networks:
+  default:
+    external: true
+    name: philomena
+
 services:
   app:
     build:
       context: .
       dockerfile: ./docker/app/Dockerfile
+      target: app
       args:
         WORKSPACE: ${WORKSPACE-/srv/philomena}
         USER: ${USER:-philomena}
-
-    command: run-development
 
     environment:
       - MIX_ENV=dev
