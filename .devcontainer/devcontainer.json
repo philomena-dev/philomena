@@ -8,9 +8,18 @@
     }
   },
 
-  // While technically optional, --init enables an init process to properly handle
+  // While technically optional, `init` enables an init process to properly handle
   // signals and ensure Zombie Processes are cleaned up.
-  "runArgs": ["--init"],
+  "init": true,
+
+  // Create the `philomena` network that will be shared with other docker containers
+  // spawned by the devcontainer.
+  "initializeCommand": "docker network create philomena || echo \"It's fine if the network already exists\"",
+  "runArgs": ["--network=philomena"],
+
+  // The devcontainer is on the same network as our main app docker compose services,
+  // which means that that other containers are available by their service names.
+  "forwardPorts": ["app:5173", "web:80"],
 
   "mounts": [
     // Use a "docker outside of docker" setup where we reuse the host's docker daemon:
@@ -45,14 +54,24 @@
       "settings": {
         // Rust Analyzer struggles to discover the cargo workspace unless there
         // is a `Cargo.toml` in the repo root. So, we give it a small hint.
-        "rust-analyzer.linkedProjects": ["./native/philomena/Cargo.toml"]
+        "rust-analyzer.linkedProjects": ["./native/philomena/Cargo.toml"],
+
+        // VSCode seems to do a pretty bad job of auto-inferring the forwarded ports
+        "remote.autoForwardPorts": false,
+
+        // Listen on `0.0.0.0` on the local machine to allow for access the site
+        // on the local network, e.g. via WiFi and a phone
+        "remote.localPortHost": "allInterfaces"
       },
       "extensions": [
+        // Elixir LSP
+        "lexical-lsp.lexical",
+
         // Rust LSP
         "rust-lang.rust-analyzer",
 
-        // Elixir LSP
-        "lexical-lsp.lexical",
+        // TOML LSP
+        "tamasfe.even-better-toml",
 
         // Dockerfile LSP
         "ms-azuretools.vscode-docker",
