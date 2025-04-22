@@ -96,9 +96,9 @@ services:
   files:
     image: andrewgaul/s3proxy:sha-db34f6b
     environment:
-      - JCLOUDS_FILESYSTEM_BASEDIR=${WORKSPACE-/srv/philomena}/priv/s3
+      - JCLOUDS_FILESYSTEM_BASEDIR=/srv/philomena/priv/s3
     volumes:
-      - .:${WORKSPACE-/srv/philomena}
+      - .:/srv/philomena
     attach: false
 
   web:
