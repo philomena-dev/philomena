@@ -12,14 +12,14 @@
   // signals and ensure Zombie Processes are cleaned up.
   "init": true,
 
-  // Create the `philomena` network that will be shared with other docker containers
-  // spawned by the devcontainer.
-  "initializeCommand": "docker network create philomena || echo \"It's fine if the network already exists\"",
-  "runArgs": ["--network=philomena"],
+  // Create the `philomena` network if it doesn't exist. This network is shared
+  // with other docker containers spawned by the devcontainer.
+  // "initializeCommand": "docker network inspect philomena >/dev/null 2>&1 || docker network create philomena",
+  "runArgs": ["--network=host"],
 
   // The devcontainer is on the same network as our main app docker compose services,
   // which means that that other containers are available by their service names.
-  "forwardPorts": ["app:5173", "web:80"],
+  "forwardPorts": ["localhost:5173", "localhost:8080"],
 
   "mounts": [
     // Use a "docker outside of docker" setup where we reuse the host's docker daemon:
@@ -56,7 +56,8 @@
         // is a `Cargo.toml` in the repo root. So, we give it a small hint.
         "rust-analyzer.linkedProjects": ["./native/philomena/Cargo.toml"],
 
-        // VSCode seems to do a pretty bad job of auto-inferring the forwarded ports
+        // VSCode seems to do a pretty bad job of auto-inferring the forwarded ports.
+        // We declare the ports of interest explicitly anyway, so we don't need this.
         "remote.autoForwardPorts": false,
 
         // Listen on `0.0.0.0` on the local machine to allow for access the site
