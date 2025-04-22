@@ -16,13 +16,7 @@
 	}
 }
 
-# We add `:8080` here because when we are working in a devcontainer then that
-# devcontainer lives on the same docker network as caddy container meaning that it
-# needs to use the port declared here to access it. Since we are forwarding ports
-# from the devcontainer to the local machine we don't want the forwarded ports to
-# use privileged numbers such as `80`. Unfortunately, there isn't a way to override
-# the local port for a forwarded port in devcontainers config =(
-:80, :8080 {
+:80 {
 	# Handle images
 	@allimages path /img/* /avatars/* /spns/* /badge-img/* /tag-img/*
 	@imgdownload path_regexp ^/img/download/(.+)/([0-9]+).*\.([A-Za-z0-9]+)$

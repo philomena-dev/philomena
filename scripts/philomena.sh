@@ -23,6 +23,8 @@ function up {
     down --drop-db
   fi
 
+  export WORKSPACE=${WORKSPACE:-/srv/philomena}
+  export USER=${USER:-$(whoami)}
   step exec docker compose up --no-log-prefix "$@"
 }
 

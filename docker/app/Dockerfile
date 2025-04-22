@@ -49,10 +49,10 @@ RUN git clone --depth 1 https://github.com/philomena-dev/mediatools /tmp/mediato
 
 # Create a non-root user to avoid polluting the bind-mounted directories with
 # root-owned files on the host machine.
-ARG USER=philomena
+ARG USER
 ENV USER=$USER
 
-ARG WORKSPACE=/srv/philomena
+ARG WORKSPACE
 ENV WORKSPACE=$WORKSPACE
 
 # docker-compose configures a bind-mount of the repo root dir to $WORKSPACE
