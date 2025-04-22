@@ -1,4 +1,6 @@
 {
+  "name": "philomena-devcontainer",
+
   "build": {
     "dockerfile": "../docker/app/Dockerfile",
     "context": "..",
@@ -12,14 +14,23 @@
   // signals and ensure Zombie Processes are cleaned up.
   "init": true,
 
-  // Create the `philomena` network if it doesn't exist. This network is shared
-  // with other docker containers spawned by the devcontainer.
-  // "initializeCommand": "docker network inspect philomena >/dev/null 2>&1 || docker network create philomena",
-  "runArgs": ["--network=host"],
+  "runArgs": [
+    // Use host networking to get access to containers spawned by the devcontainer.
+    // We could instead define a custom docker network for the devcontainer and reuse
+    // it in our docker-compose stack, but that is a bit more cumbersome since we need
+    // to make sure the network is created before the devcontainer and we need docker
+    // compose to depend on it (external: true). This would make it more annoying to
+    // run the docker compose stack outside of the devcontainer, because the developer
+    // would need to create the docker network manually.
+    "--network=host",
+
+    // Give a human-readable name to our devcontainer in `docker ps` output
+    "--name=philomena-devcontainer"
+  ],
 
   // The devcontainer is on the same network as our main app docker compose services,
   // which means that that other containers are available by their service names.
-  "forwardPorts": ["localhost:5173", "localhost:8080"],
+  "forwardPorts": [5173, 8080],
 
   "mounts": [
     // Use a "docker outside of docker" setup where we reuse the host's docker daemon:
