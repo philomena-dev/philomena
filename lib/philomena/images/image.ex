@@ -1,6 +1,7 @@
 defmodule Philomena.Images.Image do
   use Ecto.Schema
 
+  import Bitwise
   import Ecto.Changeset
 
   alias Philomena.ImageIntensities.ImageIntensity
@@ -187,8 +188,8 @@ defmodule Philomena.Images.Image do
           "contents corrupt, not recognized, or dimensions are too large to process"
         )
 
-      width > 32767 or height > 32767 ->
-        add_error(changeset, :image, "side dimensions are larger than 32767 px")
+      ((width + 63 &&& -64) * 8 + 1024) * (height + 128) >= 2_147_483_647 ->
+        add_error(changeset, :image, "dimensions are too large to process")
 
       true ->
         changeset
@@ -343,6 +344,7 @@ defmodule Philomena.Images.Image do
 
   def approve_changeset(image) do
     change(image)
+    |> validate_not_approved()
     |> put_change(:approved, true)
     |> put_change(:first_seen_at, DateTime.utc_now(:second))
   end
@@ -362,6 +364,13 @@ defmodule Philomena.Images.Image do
     case get_field(changeset, :hidden_from_users) do
       true -> add_error(changeset, :hidden_from_users, "must be false")
       false -> changeset
+    end
+  end
+
+  defp validate_not_approved(changeset) do
+    case get_field(changeset, :approved) do
+      true -> add_error(changeset, :approved, "must be false")
+      _ -> changeset
     end
   end
 end

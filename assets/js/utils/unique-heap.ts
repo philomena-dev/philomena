@@ -20,11 +20,11 @@ export class UniqueHeap<T> {
     this.unique = unique;
   }
 
-  append(value: T, forceReplace: boolean = false) {
+  append(value: T, forceReplace = false) {
     const key = this.unique(value);
     const prevIndex = this.keys.get(key);
 
-    if (typeof prevIndex === 'undefined') {
+    if (prevIndex === undefined) {
       this.keys.set(key, this.length);
       this.values[this.length++] = value;
     } else if (forceReplace) {

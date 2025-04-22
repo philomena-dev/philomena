@@ -19,7 +19,13 @@ const endpoints = {
 
 const spoilerDownvoteMsg = 'Neigh! - Remove spoilered tags from your filters to downvote from thumbnails';
 
-/* Quick helper function to less verbosely iterate a QSA */
+/**
+ * Quick helper function to less verbosely iterate a QSA
+ *
+ * @param {string} id
+ * @param {string} selector
+ * @param {(node: HTMLElement) => void} cb
+ */
 function onImage(id, selector, cb) {
   [].forEach.call(document.querySelectorAll(`${selector}[data-image-id="${id}"]`), cb);
 }
@@ -135,7 +141,7 @@ function loadInteractions() {
 
   /* Next part is only for image index pages
    * TODO: find a better way to do this */
-  if (!document.getElementById('imagelist-container')) return;
+  if (!$('#imagelist-container')) return;
 
   /* Users will blind downvote without this */
   window.booru.imagesWithDownvotingDisabled.forEach(i => {
@@ -145,14 +151,6 @@ function loadInteractions() {
 
       icon.setAttribute('title', spoilerDownvoteMsg);
       a.classList.add('disabled');
-      a.addEventListener(
-        'click',
-        event => {
-          event.stopPropagation();
-          event.preventDefault();
-        },
-        true,
-      );
     });
   });
 }
@@ -163,6 +161,10 @@ const targets = {
     interact('vote', imageId, 'DELETE').then(() => resetVoted(imageId));
   },
   '.interaction--downvote.active'(imageId) {
+    if (downvoteRestricted(imageId)) {
+      return;
+    }
+
     interact('vote', imageId, 'DELETE').then(() => resetVoted(imageId));
   },
   '.interaction--fave.active'(imageId) {
@@ -180,6 +182,10 @@ const targets = {
     });
   },
   '.interaction--downvote:not(.active)'(imageId) {
+    if (downvoteRestricted(imageId)) {
+      return;
+    }
+
     interact('vote', imageId, 'POST', { up: false }).then(() => {
       resetVoted(imageId);
       showDownvoted(imageId);
@@ -198,6 +204,17 @@ const targets = {
     });
   },
 };
+
+/**
+ * Allow downvoting of the images only if the user is on the image page
+ * or the image is not spoilered.
+ *
+ * @param {string} imageId
+ */
+function downvoteRestricted(imageId) {
+  // The `imagelist-container` indicates that we are on the page with the list of images
+  return Boolean($('#imagelist-container')) && window.booru.imagesWithDownvotingDisabled.includes(imageId);
+}
 
 function bindInteractions() {
   document.addEventListener('click', event => {

@@ -61,6 +61,7 @@ export function removeEl<E extends HTMLElement>(...elements: E[] | ConcatArray<E
 export function makeEl<Tag extends keyof HTMLElementTagNameMap>(
   tag: Tag,
   attr?: Partial<HTMLElementTagNameMap[Tag]>,
+  children: (HTMLElement | string)[] = [],
 ): HTMLElementTagNameMap[Tag] {
   const el = document.createElement(tag);
   if (attr) {
@@ -71,6 +72,7 @@ export function makeEl<Tag extends keyof HTMLElementTagNameMap>(
       }
     }
   }
+  el.append(...children);
   return el;
 }
 
@@ -107,4 +109,12 @@ export function escapeCss(css: string): string {
 
 export function findFirstTextNode<N extends Node>(of: Node): N {
   return Array.prototype.filter.call(of.childNodes, el => el.nodeType === Node.TEXT_NODE)[0];
+}
+
+export function hideIf(condition: boolean, element: HTMLElement) {
+  if (condition) {
+    element.classList.add('hidden');
+  } else {
+    element.classList.remove('hidden');
+  }
 }
