@@ -83,6 +83,9 @@
         // Bash LSP
         "mads-hartmann.bash-ide-vscode",
 
+        // Caddyfile LSP
+        "matthewpi.caddyfile-support",
+
         // `.slime` syntax highlighting
         "xolan.slime",
 
