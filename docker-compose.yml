@@ -7,11 +7,6 @@ volumes:
   app_deps_data: {}
   app_native_data: {}
 
-networks:
-  default:
-    external: true
-    name: philomena
-
 services:
   app:
     build:
@@ -19,8 +14,8 @@ services:
       dockerfile: ./docker/app/Dockerfile
       target: app
       args:
-        WORKSPACE: ${WORKSPACE-/srv/philomena}
-        USER: ${USER:-philomena}
+        WORKSPACE: ${WORKSPACE?}
+        USER: ${USER?}
 
     environment:
       # Use this env variable to control the logs levels from different modules.
@@ -65,11 +60,11 @@ services:
     tty: true
 
     volumes:
-      - .:${WORKSPACE-/srv/philomena}
-      - app_cargo_data:${WORKSPACE-/srv/philomena}/.cargo
-      - app_build_data:${WORKSPACE-/srv/philomena}/_build
-      - app_deps_data:${WORKSPACE-/srv/philomena}/deps
-      - app_native_data:${WORKSPACE-/srv/philomena}/priv/native
+      - .:${WORKSPACE?}
+      - app_cargo_data:${WORKSPACE?}/.cargo
+      - app_build_data:${WORKSPACE?}/_build
+      - app_deps_data:${WORKSPACE?}/deps
+      - app_native_data:${WORKSPACE?}/priv/native
     depends_on:
       - postgres
       - opensearch
@@ -103,21 +98,24 @@ services:
   files:
     image: andrewgaul/s3proxy:sha-db34f6b
     environment:
-      - JCLOUDS_FILESYSTEM_BASEDIR=/srv/philomena/priv/s3
+      - JCLOUDS_FILESYSTEM_BASEDIR=${WORKSPACE?}/priv/s3
     volumes:
-      - .:/srv/philomena
+      - .:${WORKSPACE?}
     attach: false
 
   web:
     build:
       context: .
       dockerfile: ./docker/web/Dockerfile
+      # args:
+      #   USER: ${USER?}
+
     volumes:
-      - .:/srv/philomena
+      - .:${WORKSPACE?}
       - ./docker/web/config:/etc/caddy
       - caddy_data:/data
     environment:
-      - APP_DIR=/srv/philomena
+      - APP_DIR=${WORKSPACE?}
       - S3_ENDPOINT=http://files:80
       - S3_BUCKET=philomena
       - AWS_ACCESS_KEY_ID=local-identity
