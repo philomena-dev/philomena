@@ -55,7 +55,7 @@ ENV USER=$USER
 ARG WORKSPACE=/srv/philomena
 ENV WORKSPACE=$WORKSPACE
 
-# docker-compose configures a bind-mount of the repo root dir to $REPO
+# docker-compose configures a bind-mount of the repo root dir to $WORKSPACE
 ENV PATH=$PATH:/home/$USER/.cargo/bin
 ENV PATH=$PATH:$WORKSPACE/docker/app
 ENV PATH=$PATH:$WORKSPACE/scripts/path
@@ -94,11 +94,13 @@ CMD ["sleep", "infinity"]
 # Dev-only tools
 RUN apk add --update \
     bottom \
+    # Required by Caddyfile LSP for autoformatting
+    caddy \
     docker-cli-compose \
-    # Needed for the `usermod` command
-    shadow \
     # Required for the Github Pull Requests VSCode extension to fetch via git SSH URLs
     openssh \
+    # Needed for the `usermod` command
+    shadow \
     sudo
 
 RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER
