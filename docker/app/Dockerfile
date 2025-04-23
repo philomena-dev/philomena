@@ -71,6 +71,8 @@ WORKDIR $WORKSPACE
 # https://code.visualstudio.com/remote/advancedcontainers/add-nonroot-user#_specifying-the-default-container-user
 RUN adduser $USER --uid 1000 --shell /bin/bash --disabled-password
 
+USER $USER
+
 EXPOSE 5173
 
 CMD [ "run-development" ]
@@ -79,6 +81,9 @@ CMD [ "run-development" ]
 #
 # This image extends the `app` image with devcontainer-specific tools and configs.
 FROM app AS devcontainer
+
+# Return to `root` for a brief moment to do some more install work
+USER root
 
 RUN --mount=source=./scripts,target=./scripts ./scripts/install/typos.sh
 RUN --mount=source=./scripts,target=./scripts ./scripts/install/shellcheck.sh
