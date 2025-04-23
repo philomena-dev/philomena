@@ -1,6 +1,18 @@
 # Philomena
 
-![Philomena](/assets/static/images/phoenix.svg)
+[open-in-devcontainer]: https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/philomena/philomena
+
+[![Philomena](/assets/static/images/phoenix.svg)][open-in-devcontainer]
+
+<div align="center">
+    <a href="https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/philomena/philomena">
+        <img
+            alt="Link to open in a VSCode Dev Container"
+            src="https://img.shields.io/badge/Open%20in%20a%20Dev%20Container-VSCode-e77a22?style=for-the-badge&labelColor=d91b39&logo=docker&logoColor=white"
+            height="30"
+        />
+    </a>
+</div>
 
 ## Getting Started
 
