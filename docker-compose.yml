@@ -17,6 +17,8 @@ services:
         WORKSPACE: ${WORKSPACE?}
         USER: ${USER?}
 
+    user: ${USER?}
+
     environment:
       # Use this env variable to control the logs levels from different modules.
       # The syntax is `{module.function}=level,...`. The filter evaluation stops

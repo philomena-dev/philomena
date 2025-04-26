@@ -34,6 +34,7 @@ RUN ( \
       wget \
       rust \
       cargo \
+      sudo \
     && mix local.hex --force \
     && mix local.rebar --force
 
@@ -69,9 +70,16 @@ WORKDIR $WORKSPACE
 # However, if you are running this in a devcontainer via VSCode, then it'll update
 # the UID/GID of this user to match the UID/GID of the user on the host automatically:
 # https://code.visualstudio.com/remote/advancedcontainers/add-nonroot-user#_specifying-the-default-container-user
-RUN adduser $USER --uid 1000 --shell /bin/zsh --disabled-password
+RUN adduser $USER --uid 1000 --shell /bin/zsh --disabled-password \
+    # Allow paswordless sudo for the non-root user
+    && echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER
 
 USER $USER
+
+RUN sudo chown -R "$(id -u):$(id -g)" . \
+# Precreate the cache directories. This way they are owned by the non-root when
+# volumes are mounted at these locations.
+    && mkdir -p ./.cargo ./_build ./deps ./priv/native
 
 EXPOSE 5173
 
@@ -92,9 +100,10 @@ ENV DEVCONTAINER=1
 
 RUN --mount=source=./scripts,target=./scripts ./scripts/install/typos.sh
 RUN --mount=source=./scripts,target=./scripts ./scripts/install/shellcheck.sh
-RUN --mount=source=./package.json,target=./package.json \
-    --mount=source=./package-lock.json,target=./package-lock.json \
-    npm ci --ignore-scripts
+# RUN --mount=source=./package.json,target=./package.json \
+#     --mount=source=./package-lock.json,target=./package-lock.json \
+#     --mount=source=./node_modules,target=./node_modules \
+#     npm ci --ignore-scripts
 
 RUN apk add --update \
     # Required by Caddyfile LSP for autoformatting
@@ -107,12 +116,8 @@ RUN apk add --update \
     openssh \
     # Needed for the `usermod` command
     shadow \
-    sudo \
     zsh \
     zsh-syntax-highlighting
-
-# Allow paswordless sudo for the non-root user
-RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER
 
 USER $USER
 
@@ -127,11 +132,9 @@ RUN git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/cust
 # Store the history in a specific location that is persisted via a volume
 RUN mkdir $HOME/shell-history && touch $HOME/shell-history/history
 
-RUN ln -sf $WORKSPACE/.devcontainer/.zshrc $HOME/.zshrc
+RUN ln -sf $WORKSPACE/.devcontainer/common/.zshrc $HOME/.zshrc
 
-ENTRYPOINT ["./.devcontainer/init-container.sh"]
+ENTRYPOINT ["./.devcontainer/common/init-container.sh"]
 
 # Make sure the process doesn't exit to keep the container alive
 CMD ["sleep", "infinity"]
-
-USER root

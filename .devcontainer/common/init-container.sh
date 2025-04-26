@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-. "$(dirname "${BASH_SOURCE[0]}")/../scripts/lib.sh"
+. "$(dirname "${BASH_SOURCE[0]}")/../../scripts/lib.sh"
 
 function setup_rootless_docker {
   # Add the current user to the docker group to allow running docker commands
@@ -16,7 +16,8 @@ function setup_rootless_docker {
   fi
 
   if [[ "${docker_gid}" == '0' ]]; then
-    die "Unsupported configuration: docker socket is owned by root"
+    info "Can't configure rootless docker. The docker socket is owned by root"
+    return 0
   fi
 
   # This is really annoying, but to provide sudo-less access to the docker socket,
@@ -45,6 +46,6 @@ function setup_rootless_docker {
   fi
 }
 
-# setup_rootless_docker
+setup_rootless_docker
 
 step exec "$@"

@@ -20,7 +20,15 @@ if [[ "$user" == "root" ]]; then
   user=philomena
 fi
 
+if [[ -v CODESPACES ]]; then
+  # Codespaces are using the `codespace` user by default.
+  workspace="/workspaces/${CODESPACE_NAME}"
+else
+  workspace=$(realpath "$script_dir/../..")
+fi
+
+
 cat > "$script_dir/.env" << EOF
-WORKSPACE='$(realpath "$script_dir/..")'
+WORKSPACE='$workspace'
 USER='$user'
 EOF
