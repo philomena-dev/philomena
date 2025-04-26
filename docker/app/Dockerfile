@@ -133,3 +133,5 @@ ENTRYPOINT ["./.devcontainer/init-container.sh"]
 
 # Make sure the process doesn't exit to keep the container alive
 CMD ["sleep", "infinity"]
+
+USER root
