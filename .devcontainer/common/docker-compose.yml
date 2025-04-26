@@ -40,11 +40,6 @@ services:
     network_mode: host
 
     volumes:
-      # Use a "docker outside of docker" setup where we reuse the host's docker
-      # daemon:
-      # https://github.com/microsoft/vscode-dev-containers/tree/main/containers/docker-from-docker
-      - /var/run/docker.sock:/var/run/docker.sock
-
       # Persist shell history between container restarts
       - shell-history:/shell-history
 
