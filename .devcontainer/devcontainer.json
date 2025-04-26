@@ -55,7 +55,7 @@
         // TOML LSP
         "tamasfe.even-better-toml",
 
-        // Dockerfile LSP
+        // Container management extension by Microsoft
         "ms-azuretools.vscode-docker",
 
         // Github Actions LSP
