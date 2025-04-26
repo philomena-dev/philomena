@@ -3,7 +3,9 @@
 
 FROM elixir:1.18.3-alpine AS app
 
-ADD https://api.github.com/repos/philomena-dev/FFmpeg/git/refs/heads/release/6.1 /tmp/ffmpeg_version.json
+RUN apk add curl
+
+RUN curl -L https://api.github.com/repos/philomena-dev/FFmpeg/git/refs/heads/release/6.1 -o /tmp/ffmpeg_version.json
 
 RUN ( \
       echo "https://github.com/philomena-dev/prebuilt-ffmpeg/raw/master"; \
@@ -12,7 +14,6 @@ RUN ( \
     && cp /tmp/repositories /etc/apk/repositories \
     && apk add --update \
       bash \
-      curl \
       inotify-tools \
       build-base \
       git \

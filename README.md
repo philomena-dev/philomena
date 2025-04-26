@@ -1,6 +1,6 @@
 # Philomena
 
-[open-in-devcontainer]: https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/philomena-dev/philomena
+[open-in-devcontainer]: https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/MareStare/philomena
 
 [![Philomena](/assets/static/images/phoenix.svg)][open-in-devcontainer]
 
