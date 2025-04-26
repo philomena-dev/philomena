@@ -78,7 +78,7 @@ CMD ["./docker/app/run-development"]
 
 # === Devcontainer ===
 #
-# This image extends the `app` image with devcontainer-specific tools and configs.
+# This stage extends the `app` image with devcontainer-specific tools and configs.
 FROM app AS devcontainer
 
 # The base image uses a non-root user, but we need to switch to root for a brief
@@ -123,12 +123,10 @@ RUN git clone https://github.com/popstas/zsh-command-time.git ~/.oh-my-zsh/custo
 RUN git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
 RUN git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
 
-
-RUN ln -sf $WORKSPACE/.devcontainer/.zshrc $HOME/.zshrc
-ARG USERNAME=user-name-goes-here
-
 # Store the history in a specific location that is persisted via a volume
 RUN mkdir $HOME/shell-history && touch $HOME/shell-history/history
+
+RUN ln -sf $WORKSPACE/.devcontainer/.zshrc $HOME/.zshrc
 
 ENTRYPOINT ["./.devcontainer/init-container.sh"]
 
