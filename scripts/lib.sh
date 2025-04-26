@@ -89,3 +89,46 @@ function repo {
 
   echo "$_repo"
 }
+
+# While it's recommended to use the devcontainer setup, it's not required. Developers
+# who aren't using devcontainers can still benefit from our devcontainer image. We spin up
+# a "background" devcontainer for them called "philomena-devcontainer". Then, we use `docker exec`
+# where we run our scripts instead. This way the scripts can use any dependencies installed
+# in the devcontainer image.
+function devcontainer_up {
+  info "Starting the philomena-devcontainer container..."
+
+  local file
+  file="$(repo)/docker/devcontainer/docker-compose.yml"
+
+  HOST_USER="$(id -u):$(id -g)" step docker compose --file "$file" up --detach --wait --build
+}
+
+function devcontainer_exec {
+  colorized_cmd=$(colorize_command "$@")
+  echo >&$global_stdout -e "\033[32;1m(devcontainer) ❱\033[0m $colorized_cmd" >&2
+  docker exec --interactive philomena-devcontainer "$@"
+}
+
+# Run a command in the devcontainer container with the current directory bind-mounted.
+function devcontainer {
+  # Optimistically try to run the command in the devcontainer container.
+  # It should be up most of the time, but it isn't we'll start it and retry.
+  set +e
+  devcontainer_exec "$@"
+  local status=$?
+  set -e
+
+  if [[ $status -eq 0 ]]; then
+    return $status
+  fi
+
+  # If the devcontainer container was running but the command failed, then it was not
+  # the reason of the failure and we need to propagate it to the caller.
+  if ! docker ps --all --format '{{.Names}}' | grep -wq philomena-devcontainer; then
+    return $status
+  fi
+
+  devcontainer_up
+  devcontainer_exec "$@"
+}
