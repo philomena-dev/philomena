@@ -12,10 +12,6 @@
 
 name: philomena-devcontainer
 
-volumes:
-  # Persist shell history between container restarts
-  shell-history:
-
 services:
   devcontainer:
     # Give a human-readable name to our devcontainer in `docker ps` output
@@ -63,4 +59,9 @@ services:
       # daemon:
       # https://github.com/microsoft/vscode-dev-containers/tree/main/containers/docker-from-docker
       - /var/run/docker.sock:/var/run/docker.sock
+
+      # Persist shell history between container restarts
       - shell-history:/shell-history
+
+volumes:
+  shell-history:

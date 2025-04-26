@@ -100,8 +100,6 @@ services:
     build:
       context: .
       dockerfile: ./docker/web/Dockerfile
-      # args:
-      #   USER: ${USER?}
 
     volumes:
       - .:${WORKSPACE?}
