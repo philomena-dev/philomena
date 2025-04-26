@@ -100,10 +100,6 @@ ENV DEVCONTAINER=1
 
 RUN --mount=source=./scripts,target=./scripts ./scripts/install/typos.sh
 RUN --mount=source=./scripts,target=./scripts ./scripts/install/shellcheck.sh
-# RUN --mount=source=./package.json,target=./package.json \
-#     --mount=source=./package-lock.json,target=./package-lock.json \
-#     --mount=source=./node_modules,target=./node_modules \
-#     npm ci --ignore-scripts
 
 RUN apk add --update \
     # Required by Caddyfile LSP for autoformatting
