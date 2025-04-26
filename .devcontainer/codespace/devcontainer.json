@@ -1,5 +1,5 @@
 {
-  "name": "codespaces",
+  "name": "codespace",
 
   // We are using docker-compose to reuse the devcontainer definition in our
   // scripts in case if they are invoked from host. They can spin up their own
