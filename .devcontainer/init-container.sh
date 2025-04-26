@@ -16,7 +16,7 @@ function setup_rootless_docker {
   fi
 
   if [[ "${docker_gid}" == '0' ]]; then
-    die "Unsupported configuration: docker socket is owned by root"
+    # die "Unsupported configuration: docker socket is owned by root"
   fi
 
   # This is really annoying, but to provide sudo-less access to the docker socket,
