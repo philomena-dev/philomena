@@ -1,79 +1,49 @@
 {
   "name": "philomena-devcontainer",
 
-  "build": {
-    "dockerfile": "../docker/app/Dockerfile",
-    "context": "..",
-    "args": {
-      "WORKSPACE": "${localWorkspaceFolder}",
-      "USER": "${localEnv:USER:philomena}"
-    }
-  },
+  // We are using docker-compose to reuse the devcontainer definition in our
+  // scripts in case if they are invoked from host. They can spin up their own
+  // devcontainer to get access to the external dependencies they require unless
+  // they are already running inside a devcontainer.
+  "dockerComposeFile": "./docker-compose.yml",
+  "service": "devcontainer",
 
-  // While technically optional, `init` enables an init process to properly handle
-  // signals and ensure Zombie Processes are cleaned up.
-  "init": true,
-
-  "runArgs": [
-    // Use host networking to get access to containers spawned by the devcontainer.
-    // We could instead define a custom docker network for the devcontainer and reuse
-    // it in our docker-compose stack, but that is a bit more cumbersome since we need
-    // to make sure the network is created before the devcontainer and we need docker
-    // compose to depend on it (external: true). This would make it more annoying to
-    // run the docker compose stack outside of the devcontainer, because the developer
-    // would need to create the docker network manually.
-    "--network=host",
-
-    // Give a human-readable name to our devcontainer in `docker ps` output
-    "--name=philomena-devcontainer"
-  ],
-
-  // The devcontainer is on the same network as our main app docker compose services,
-  // which means that that other containers are available by their service names.
-  "forwardPorts": [5173, 8080],
-
-  "mounts": [
-    // Use a "docker outside of docker" setup where we reuse the host's docker daemon:
-    // https://github.com/microsoft/vscode-dev-containers/tree/main/containers/docker-from-docker
-    {
-      "source": "/var/run/docker.sock",
-      "target": "/var/run/docker.sock",
-      "type": "bind"
-    }
-  ],
-
-  // Mount the repository at the same path as it is on the host within the container.
-  // This is needed to work around the problem that some tools like `docker compose`
-  // and Docker VSCode extension don't specially handle the devcontainer environment
-  // with the "docker-outside-of-docker" setup. For example if we use relative paths
-  // in `docker-compose.yml`, then they'll be sent to the host's docker daemon using
-  // the paths canonicalized within the devcontainer's view of the file system, which
-  // will be different from the host's view of the mount. Having the host and the
-  // devcontainer use the same path to the workspace fixes this and simplifies our life.
-  "workspaceMount": "source=${localWorkspaceFolder},target=${localWorkspaceFolder},type=bind",
+  // The repo is mounted in the container using the same path as it is on host.
+  // See more reasoning for this in the `docker-compose.yml` volumes config.
   "workspaceFolder": "${localWorkspaceFolder}",
 
-  "containerEnv": {
-    "WORKSPACE": "${localWorkspaceFolder}"
-  },
+  // Keep the container running even when the IDE is closed. The container just
+  // sleeps when it's inactive, so it's not incurring any considerable load.
+  // This speeds up the startup times a bit.
+  "shutdownAction": "none",
 
-  // Make sure our custom `docker-init.sh` script is run at startup
+  // The devcontainer is on the same network as our main app docker compose
+  // services, which means that that other containers are available by their
+  // service names.
+  "forwardPorts": [5173, 8080],
+
+  "initializeCommand": "./.devcontainer/init-host.sh",
+
+  // Make sure our custom `init-container.sh` script is run at startup
   "overrideCommand": false,
 
   "customizations": {
     "vscode": {
       "settings": {
+        // Don't rely on auto-inference for forwarded ports, make it reliable.
+        "remote.autoForwardPorts": false,
+
+        // Listen on `0.0.0.0` on the host machine to allow for access the site
+        // on the local network, e.g. via WiFi and a phone.
+        "remote.localPortHost": "allInterfaces",
+
         // Rust Analyzer struggles to discover the cargo workspace unless there
         // is a `Cargo.toml` in the repo root. So, we give it a small hint.
         "rust-analyzer.linkedProjects": ["./native/philomena/Cargo.toml"],
 
-        // VSCode seems to do a pretty bad job of auto-inferring the forwarded ports.
-        // We declare the ports of interest explicitly anyway, so we don't need this.
-        "remote.autoForwardPorts": false,
-
-        // Listen on `0.0.0.0` on the local machine to allow for access the site
-        // on the local network, e.g. via WiFi and a phone
-        "remote.localPortHost": "allInterfaces"
+        // This notification is too noisy. It pops up on every devcontainer
+        // rebuild
+        "lexical.notifyOnServerAutoUpdate": false
       },
       "extensions": [
         // Elixir LSP

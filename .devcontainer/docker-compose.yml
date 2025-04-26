@@ -1,0 +1,61 @@
+# A persistent container that hosts our development tooling.
+#
+# This is meant to work in conjunction with the `devcontainer` spec:
+# https://containers.dev. If your IDE supports it, you can develop directly
+# inside of the container. This way you have all the dependencies and as other
+# developers making it easier for us to maintain a shared development
+# environment configuration.
+#
+# Alternatively, if you aren't running your IDE in a devcontainer, then our
+# scripts detect this and they automatically start the devcontainer for you and
+# run inside of it even if you are running them directly from the host.
+
+name: philomena-devcontainer
+
+services:
+  devcontainer:
+    # Give a human-readable name to our devcontainer in `docker ps` output
+    container_name: philomena-devcontainer
+
+    build:
+      context: ..
+      dockerfile: docker/app/Dockerfile
+      target: devcontainer
+      args:
+        WORKSPACE: ${WORKSPACE?}
+        USER: ${USER?}
+
+    # While technically optional, `init` enables an init process to properly
+    # handle signals and ensure Zombie Processes are cleaned up.
+    init: true
+
+    # Use host networking to get access to containers spawned by the
+    # devcontainer. We could instead define a custom docker network for the
+    # devcontainer and reuse it our docker-compose stack, but that is a bit more
+    # cumbersome since we need to make sure the network is created before the
+    # devcontainer and we need docker compose to depend on it (external: true).
+    # This would make it more annoying to run the docker compose stack outside
+    # of the devcontainer, because the developer would need to create the docker
+    # network manually.
+    network_mode: host
+
+    volumes:
+      # Mount the repository at the same path as it is on the host within the
+      # container (the `$WORKSPACE` env variable is supposed to be set by
+      # `init-host.sh` script).
+      #
+      # This is needed to work around the problem of relative paths mapping
+      # between the container and the host. For example if we use relative paths
+      # in `docker-compose.yml`, then they'll be sent to the host's docker
+      # daemon using the paths canonicalized within the devcontainer's view of
+      # the file system, which will be different from the host's view of the
+      # mount. A similar problem occurs with the VSCode docker extension.
+      #
+      # Having the host and the devcontainer use the same path to the workspace
+      # fixes  this and simplifies our life.
+      - ..:/${WORKSPACE?}:cached
+
+      # Use a "docker outside of docker" setup where we reuse the host's docker
+      # daemon:
+      # https://github.com/microsoft/vscode-dev-containers/tree/main/containers/docker-from-docker
+      - /var/run/docker.sock:/var/run/docker.sock

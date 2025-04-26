@@ -64,3 +64,10 @@ node_modules/
 
 # Vitest coverage
 /assets/coverage
+
+# Logs from various scripts can be stored in a directory or with a `.log` extension
+log/
+*.log
+
+# Can be used for dirty scripts that you don't want to commit
+*dbg*

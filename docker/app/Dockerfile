@@ -57,7 +57,6 @@ ENV WORKSPACE=$WORKSPACE
 
 # docker-compose configures a bind-mount of the repo root dir to $WORKSPACE
 ENV PATH=$PATH:/home/$USER/.cargo/bin
-ENV PATH=$PATH:$WORKSPACE/docker/app
 ENV PATH=$PATH:$WORKSPACE/scripts/path
 ENV PATH=$PATH:$WORKSPACE/node_modules/.bin
 
@@ -75,7 +74,7 @@ USER $USER
 
 EXPOSE 5173
 
-CMD [ "run-development" ]
+CMD ["./docker/app/run-development"]
 
 # === Devcontainer ===
 #
@@ -85,15 +84,18 @@ FROM app AS devcontainer
 # Return to `root` for a brief moment to do some more install work
 USER root
 
+# This env variable is used by the scripts to detect if they are running in a devcontainer
+ENV DEVCONTAINER=1
+
 RUN --mount=source=./scripts,target=./scripts ./scripts/install/typos.sh
 RUN --mount=source=./scripts,target=./scripts ./scripts/install/shellcheck.sh
 RUN --mount=source=./package.json,target=./package.json \
     --mount=source=./package-lock.json,target=./package-lock.json \
     npm ci --ignore-scripts
 
-ENTRYPOINT ["docker-init.sh"]
+ENTRYPOINT ["./.devcontainer/init-container.sh"]
 
-# Keep the devcontainer alive
+# Make sure the process doesn't exit to keep the container alive
 CMD ["sleep", "infinity"]
 
 # Dev-only tools
