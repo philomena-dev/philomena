@@ -13,7 +13,14 @@ script_dir="$(dirname "${BASH_SOURCE[0]}")"
 # It's really sad that this is necessary, but that's the solution.
 # Related: https://stackoverflow.com/a/62123142/9259330
 
+user=$(whoami)
+
+# Codepaces are using the `root` user by default.
+if [[ "$user" == "root" ]]; then
+  user=philomena
+fi
+
 cat > "$script_dir/.env" << EOF
 WORKSPACE='$(realpath "$script_dir/..")'
-USER='$(whoami)'
+USER='$user'
 EOF
