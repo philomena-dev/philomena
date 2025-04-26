@@ -7,5 +7,3 @@ set -euo pipefail
 
 # Install the pre-commit hook. It's a symlink, to make sure it stays always up-to-date.
 step ln -sf ../../.githooks/pre-commit .git/hooks/pre-commit
-
-step cd docker/toolbox
