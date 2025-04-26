@@ -48,4 +48,6 @@ function setup_rootless_docker {
 
 setup_rootless_docker
 
+step npm install --ignore-scripts
+
 step exec "$@"
