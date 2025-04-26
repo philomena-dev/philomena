@@ -90,6 +90,18 @@ function repo {
   echo "$_repo"
 }
 
+# `curl` wrapper with better defaults
+function fetch {
+  step curl \
+    --fail \
+    --silent \
+    --show-error \
+    --location \
+    --retry 5 \
+    --retry-all-errors \
+    "$@"
+}
+
 # While it's recommended to use the devcontainer setup, it's not required. Developers
 # who aren't using devcontainers can still benefit from our devcontainer image. We spin up
 # a "background" devcontainer for them called "philomena-devcontainer". Then, we use `docker exec`
