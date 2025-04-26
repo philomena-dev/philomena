@@ -1,0 +1,17 @@
+services:
+  devcontainer:
+    volumes:
+      # Mount the repository at the same path as it is on the host within the
+      # container (the `$WORKSPACE` env variable is supposed to be set by
+      # `init-host.sh` script).
+      #
+      # This is needed to work around the problem of relative paths mapping
+      # between the container and the host. For example if we use relative paths
+      # in `docker-compose.yml`, then they'll be sent to the host's docker
+      # daemon using the paths canonicalized within the devcontainer's view of
+      # the file system, which will be different from the host's view of the
+      # mount. A similar problem occurs with the VSCode docker extension.
+      #
+      # Having the host and the devcontainer use the same path to the workspace
+      # fixes  this and simplifies our life.
+      - ../..:/${WORKSPACE?}:cached

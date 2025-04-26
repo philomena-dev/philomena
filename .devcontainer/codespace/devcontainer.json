@@ -1,0 +1,27 @@
+{
+  "name": "codespaces",
+
+  // We are using docker-compose to reuse the devcontainer definition in our
+  // scripts in case if they are invoked from host. They can spin up their own
+  // devcontainer to get access to the external dependencies they require unless
+  // they are already running inside a devcontainer.
+  "dockerComposeFile": ["../common/docker-compose.yml"],
+  "service": "devcontainer",
+  "initializeCommand": "./.devcontainer/common/init-host.sh",
+
+  // Make sure our custom `init-container.sh` script is run at startup
+  "overrideCommand": false,
+
+  // Keep the container running even when the IDE is closed. This speeds up the
+  // startup times a bit.
+  "shutdownAction": "none",
+
+  // The devcontainer is on the same network as our main app docker compose
+  // services, which means that that other containers are available by their
+  // service names.
+  "forwardPorts": [5173, 8080],
+
+  "features": {
+    "../common": {}
+  }
+}

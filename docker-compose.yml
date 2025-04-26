@@ -17,6 +17,8 @@ services:
         WORKSPACE: ${WORKSPACE?}
         USER: ${USER?}
 
+    user: ${USER?}
+
     environment:
       - MIX_ENV=dev
       - PGPASSWORD=postgres
