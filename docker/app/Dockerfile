@@ -68,7 +68,7 @@ WORKDIR $WORKSPACE
 # However, if you are running this in a devcontainer via VSCode, then it'll update
 # the UID/GID of this user to match the UID/GID of the user on the host automatically:
 # https://code.visualstudio.com/remote/advancedcontainers/add-nonroot-user#_specifying-the-default-container-user
-RUN adduser $USER --uid 1000 --shell /bin/bash --disabled-password
+RUN adduser $USER --uid 1000 --shell /bin/zsh --disabled-password
 
 USER $USER
 
@@ -108,8 +108,11 @@ RUN apk add --update \
     openssh \
     # Needed for the `usermod` command
     shadow \
-    sudo
+    sudo \
+    zsh
 
 RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER
 
 USER $USER
+
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
