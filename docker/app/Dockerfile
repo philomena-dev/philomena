@@ -96,9 +96,6 @@ RUN --mount=source=./package.json,target=./package.json \
     npm ci --ignore-scripts
 
 RUN apk add --update \
-    # Process management like `top` or `htop` but written in Rust, so it's
-    # modern, cool and blazingly fast ⚡️. The CLI is called `btm`.
-    bottom \
     # Required by Caddyfile LSP for autoformatting
     caddy \
     # Fzf provides better search history navigation via Ctrl+R
