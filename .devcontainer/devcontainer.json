@@ -7,14 +7,17 @@
   // they are already running inside a devcontainer.
   "dockerComposeFile": "./docker-compose.yml",
   "service": "devcontainer",
+  "initializeCommand": "./.devcontainer/init-host.sh",
+
+  // Make sure our custom `init-container.sh` script is run at startup
+  "overrideCommand": false,
 
   // The repo is mounted in the container using the same path as it is on host.
   // See more reasoning for this in the `docker-compose.yml` volumes config.
   "workspaceFolder": "${localWorkspaceFolder}",
 
-  // Keep the container running even when the IDE is closed. The container just
-  // sleeps when it's inactive, so it's not incurring any considerable load.
-  // This speeds up the startup times a bit.
+  // Keep the container running even when the IDE is closed. This speeds up the
+  // startup times a bit.
   "shutdownAction": "none",
 
   // The devcontainer is on the same network as our main app docker compose
@@ -22,19 +25,14 @@
   // service names.
   "forwardPorts": [5173, 8080],
 
-  "initializeCommand": "./.devcontainer/init-host.sh",
-
-  // Make sure our custom `init-container.sh` script is run at startup
-  "overrideCommand": false,
-
   "customizations": {
     "vscode": {
       "settings": {
         // Don't rely on auto-inference for forwarded ports, make it reliable.
         "remote.autoForwardPorts": false,
 
-        // Listen on `0.0.0.0` on the host machine to allow for access the site
-        // on the local network, e.g. via WiFi and a phone.
+        // Listen on `0.0.0.0` on the host machine to allow accessing the site
+        // via the local network, e.g. with a phone connected to the same WiFi
         "remote.localPortHost": "allInterfaces",
 
         // Rust Analyzer struggles to discover the cargo workspace unless there
@@ -43,7 +41,12 @@
 
         // This notification is too noisy. It pops up on every devcontainer
         // rebuild
-        "lexical.notifyOnServerAutoUpdate": false
+        "lexical.notifyOnServerAutoUpdate": false,
+
+        "[dockercompose]": {
+          // Prettier is the source of truth for YAML formatting
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        }
       },
       "extensions": [
         // Elixir LSP
