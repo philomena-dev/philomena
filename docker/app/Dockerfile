@@ -101,6 +101,8 @@ RUN apk add --update \
     bottom \
     # Required by Caddyfile LSP for autoformatting
     caddy \
+    # Fzf provides better search history navigation via Ctrl+R
+    fzf \
     docker-cli-compose \
     # Required for the Github Pull Requests VSCode extension to fetch via git
     # SSH URLs
@@ -108,7 +110,8 @@ RUN apk add --update \
     # Needed for the `usermod` command
     shadow \
     sudo \
-    zsh
+    zsh \
+    zsh-syntax-highlighting
 
 # Allow paswordless sudo for the non-root user
 RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER
@@ -116,7 +119,19 @@ RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER
 USER $USER
 
 # Install oh-my-zsh
-RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+RUN curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh
+
+# Install some zsh plugins
+RUN git clone https://github.com/popstas/zsh-command-time.git ~/.oh-my-zsh/custom/plugins/command-time
+RUN git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+RUN git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+
+
+RUN ln -sf $WORKSPACE/.devcontainer/.zshrc $HOME/.zshrc
+ARG USERNAME=user-name-goes-here
+
+# Store the history in a specific location that is persisted via a volume
+RUN mkdir $HOME/shell-history && touch $HOME/shell-history/history
 
 ENTRYPOINT ["./.devcontainer/init-container.sh"]
 
