@@ -81,10 +81,12 @@ CMD ["./docker/app/run-development"]
 # This image extends the `app` image with devcontainer-specific tools and configs.
 FROM app AS devcontainer
 
-# Return to `root` for a brief moment to do some more install work
+# The base image uses a non-root user, but we need to switch to root for a brief
+# moment to install some additional dependencies.
 USER root
 
-# This env variable is used by the scripts to detect if they are running in a devcontainer
+# This env variable is used by the scripts to detect if they are running in a
+# devcontainer
 ENV DEVCONTAINER=1
 
 RUN --mount=source=./scripts,target=./scripts ./scripts/install/typos.sh
@@ -93,26 +95,30 @@ RUN --mount=source=./package.json,target=./package.json \
     --mount=source=./package-lock.json,target=./package-lock.json \
     npm ci --ignore-scripts
 
-ENTRYPOINT ["./.devcontainer/init-container.sh"]
-
-# Make sure the process doesn't exit to keep the container alive
-CMD ["sleep", "infinity"]
-
-# Dev-only tools
 RUN apk add --update \
+    # Process management like `top` or `htop` but written in Rust, so it's
+    # modern, cool and blazingly fast ⚡️. The CLI is called `btm`.
     bottom \
     # Required by Caddyfile LSP for autoformatting
     caddy \
     docker-cli-compose \
-    # Required for the Github Pull Requests VSCode extension to fetch via git SSH URLs
+    # Required for the Github Pull Requests VSCode extension to fetch via git
+    # SSH URLs
     openssh \
     # Needed for the `usermod` command
     shadow \
     sudo \
     zsh
 
+# Allow paswordless sudo for the non-root user
 RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER
 
 USER $USER
 
+# Install oh-my-zsh
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+ENTRYPOINT ["./.devcontainer/init-container.sh"]
+
+# Make sure the process doesn't exit to keep the container alive
+CMD ["sleep", "infinity"]
