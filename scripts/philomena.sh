@@ -109,6 +109,15 @@ case "$subcommand" in
   down) down "$@" ;;
   clean) clean "$@" ;;
   init) init "$@" ;;
+
+  # Run the given command in the devcontainer via `docker exec`. This script
+  # runs it directly here, because `lib.sh` forwards its execution to the
+  # devcontainer automatically already.
+  exec) "$@" ;;
+
+  # Shortcut for `philomena exec docker compose`
+  compose) docker compose "$@" ;;
+
   *)
     die "See the available sub-commands in ${BASH_SOURCE[0]}"
     ;;
