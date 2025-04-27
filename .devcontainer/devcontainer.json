@@ -1,6 +1,4 @@
 {
-  "name": "local",
-
   // We are using docker-compose to reuse the devcontainer definition in our
   // scripts in case if they are invoked from host. They can spin up their own
   // devcontainer to get access to the external dependencies they require unless
