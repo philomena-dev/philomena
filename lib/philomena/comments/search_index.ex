@@ -49,7 +49,7 @@ defmodule Philomena.Comments.SearchIndex do
       fingerprint: comment.fingerprint,
       image_id: comment.image_id,
       user_id: comment.user_id,
-      author: String.downcase(comment.user.name),
+      author: if(!!comment.user, do: String.downcase(comment.user.name)),
       image_tag_ids: comment.image.tags |> Enum.map(& &1.id),
       anonymous: comment.anonymous,
       hidden_from_users: comment.image.hidden_from_users || comment.hidden_from_users,
