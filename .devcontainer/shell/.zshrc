@@ -75,3 +75,6 @@ function zsh_command_time {
 
   echo "${fg_bold[white]}Took $timer_show$reset_color"
 }
+
+# Short alias for the philomena dev tool
+alias p=philomena
