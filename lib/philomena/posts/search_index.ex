@@ -50,7 +50,7 @@ defmodule Philomena.Posts.SearchIndex do
       id: post.id,
       topic_id: post.topic_id,
       body: post.body,
-      author: String.downcase(post.user.name),
+      author: if(!!post.user, do: String.downcase(post.user.name)),
       subject: post.topic.title,
       ip: to_string(post.ip),
       fingerprint: post.fingerprint,
