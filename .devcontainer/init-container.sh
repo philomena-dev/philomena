@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-. "$(dirname "${BASH_SOURCE[0]}")/../../scripts/lib.sh"
+. "$(dirname "${BASH_SOURCE[0]}")/../scripts/lib.sh"
 
 function setup_rootless_docker {
   # Add the current user to the docker group to allow running docker commands
