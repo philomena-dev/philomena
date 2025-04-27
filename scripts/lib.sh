@@ -113,7 +113,18 @@ function devcontainer_up {
   local file
   file="$(repo)/.devcontainer/docker-compose.yml"
 
+  set -e
   step docker compose --file "$file" up --detach --wait --build
+  local status=$?
+  set +e
+
+  if [[ "$status" = "0" ]]; then
+    return 0
+  fi
+
+  step docker compose logs
+
+  return "$status"
 }
 
 function devcontainer_forward {
