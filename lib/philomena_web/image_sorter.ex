@@ -16,6 +16,7 @@ defmodule PhilomenaWeb.ImageSorter do
     pixels
     size
     duration
+    hides
   )
 
   def parse_sort(params, query) do

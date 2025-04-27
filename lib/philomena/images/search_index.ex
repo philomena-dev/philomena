@@ -88,7 +88,8 @@ defmodule Philomena.Images.SearchIndex do
           content_fanmade_tag_count: %{type: "integer"},
           content_official_tag_count: %{type: "integer"},
           spoiler_tag_count: %{type: "integer"},
-          scratchpad: %{type: "text", analyzer: "snowball"}
+          scratchpad: %{type: "text", analyzer: "snowball"},
+          hides: %{type: "integer"}
         }
       }
     }
@@ -102,6 +103,7 @@ defmodule Philomena.Images.SearchIndex do
       downvotes: image.downvotes_count,
       score: image.score,
       faves: image.faves_count,
+      hides: image.hides_count,
       comment_count: image.comments_count,
       width: image.image_width,
       height: image.image_height,
