@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-. "$(dirname "${BASH_SOURCE[0]}")/../../../scripts/lib.sh"
+. "$(dirname "${BASH_SOURCE[0]}")/../../scripts/lib.sh"
 
 fetch https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh
 

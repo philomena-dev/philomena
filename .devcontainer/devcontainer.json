@@ -10,13 +10,7 @@
   // Make sure our custom `init-container.sh` script is run at startup
   "overrideCommand": false,
 
-  // The repo is mounted in the container using the same path as it is on host.
-  // See more reasoning for this in the `docker-compose.yml` volumes config.
   "workspaceFolder": "/home/philomena/philomena",
-
-  // Keep the container running even when the IDE is closed. This speeds up the
-  // startup times a bit.
-  "shutdownAction": "none",
 
   // The devcontainer is on the same network as our main app docker compose
   // services, which means that that other containers are available by their
