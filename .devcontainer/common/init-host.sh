@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+FORCE_HOST=true
+
 . "$(dirname "${BASH_SOURCE[0]}")/../../scripts/lib.sh"
 
 script_dir="$(dirname "${BASH_SOURCE[0]}")"

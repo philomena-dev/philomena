@@ -21,7 +21,7 @@ function up {
     down "${down_args[@]}"
   fi
 
-  docker_compose up --build --no-log-prefix "$@"
+  step docker compose up --build --no-log-prefix "$@"
 }
 
 function down {
@@ -101,18 +101,6 @@ function init {
   "$(dirname "${BASH_SOURCE[0]}")/init.sh"
 }
 
-# Thin wrapper over the `docker compose` that ensures the correct env variables
-# are specified.
-function docker_compose {
-  local env_file=./.devcontainer/common/.env
-
-  if [[ ! -f "$env_file" ]]; then
-    step ./.devcontainer/scripts/host-init.sh
-  fi
-
-  step docker compose --env-file "$env_file" "$@"
-}
-
 subcommand="${1:-}"
 shift || true
 
@@ -121,7 +109,6 @@ case "$subcommand" in
   down) down "$@" ;;
   clean) clean "$@" ;;
   init) init "$@" ;;
-  compose) docker_compose "$@" ;;
   *)
     die "See the available sub-commands in ${BASH_SOURCE[0]}"
     ;;

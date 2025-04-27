@@ -1,3 +1,6 @@
+# Ensure a consistent project name regardless of how the repo directory is named
+name: philomena
+
 volumes:
   postgres_data: {}
   opensearch_data: {}
