@@ -122,7 +122,7 @@ function devcontainer_up {
     return 0
   fi
 
-  step docker compose logs
+  step docker compose --file "$file" logs
 
   return "$status"
 }
