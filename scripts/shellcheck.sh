@@ -18,6 +18,6 @@ function shell_script_files {
   git grep --files-with-matches '^#!/usr/bin/env sh'
 }
 
-mapfile -t files < <(shell_script_files "$@" | sort --unique)
+mapfile -t files < <(shell_script_files "$@" | sort -u)
 
 step shellcheck --source-path SCRIPTDIR "${files[@]}"
