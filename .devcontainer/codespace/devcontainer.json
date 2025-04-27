@@ -9,6 +9,8 @@
   "service": "devcontainer",
   "initializeCommand": "./.devcontainer/common/init-host.sh",
 
+  "workspaceFolder": "/var/lib/docker/codespacemount/workspace/philomena",
+
   // Make sure our custom `init-container.sh` script is run at startup
   "overrideCommand": false,
 
