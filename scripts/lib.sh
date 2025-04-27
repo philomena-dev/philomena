@@ -130,7 +130,7 @@ function devcontainer_forward {
 }
 
 # Re-run this script in a the devcontainer if we aren't already in one.
-if [[ ! -v DEVCONTAINER ]] && [[ ! -v FORCE_HOST ]]; then
+if [[ ! -v CONTAINER ]] && [[ ! -v FORCE_HOST ]]; then
   devcontainer_forward "$@"
   exit $?
 fi
