@@ -22,7 +22,7 @@ fi
 
 if [[ -v CODESPACES ]]; then
   # Codespaces are using the `codespace` user by default.
-  workspace="/workspaces/${CODESPACE_NAME}"
+  workspace="/workspaces/philomena"
 else
   workspace=$(realpath "$script_dir/../..")
 fi
