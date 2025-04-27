@@ -22,6 +22,9 @@ services:
       dockerfile: docker/app/Dockerfile
       target: devcontainer
 
+    environment:
+      HOST_WORKSPACE: $PWD
+
     # While technically optional, `init` enables an init process to properly
     # handle signals and ensure Zombie Processes are cleaned up.
     init: true
@@ -36,9 +39,10 @@ services:
     # network manually.
     network_mode: host
 
-    env_file: .env
-
     volumes:
+      # Mount the repository
+      - ..:/home/philomena/philomena:cached
+
       # Persist shell history between container restarts
       - shell-history:/shell-history
 
@@ -46,21 +50,6 @@ services:
       # daemon:
       # https://github.com/microsoft/vscode-dev-containers/tree/main/containers/docker-from-docker
       - /var/run/docker.sock:/var/run/docker.sock
-
-      # Mount the repository at the same path as it is on the host within the
-      # container (the `$CONTAINER_WORKSPACE` env variable is supposed to be set by
-      # `init-host.sh` script).
-      #
-      # This is needed to work around the problem of relative paths mapping
-      # between the container and the host. For example if we use relative paths
-      # in `docker-compose.yml`, then they'll be sent to the host's docker
-      # daemon using the paths canonicalized within the devcontainer's view of
-      # the file system, which will be different from the host's view of the
-      # mount. A similar problem occurs with the VSCode docker extension.
-      #
-      # Having the host and the devcontainer use the same path to the workspace
-      # fixes this and simplifies our life.
-      - ..:${CONTAINER_WORKSPACE?}:cached
 
 volumes:
   shell-history:

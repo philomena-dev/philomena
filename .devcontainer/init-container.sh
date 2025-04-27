@@ -15,6 +15,8 @@ function setup_rootless_docker {
     return 0
   fi
 
+  # This should never realistically happen, thus we don't bother handling this
+  # situation. Handling it would require running a `socat` proxy for the socket
   if [[ "${docker_gid}" == '0' ]]; then
     warn "Can't configure rootless docker. The docker socket is owned by root"
     return 0
