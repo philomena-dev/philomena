@@ -110,14 +110,14 @@ function fetch {
 function devcontainer_up {
   info "Creating the devcontainer..."
 
-  local env_file=./.devcontainer/common/.env
+  local env_file=./.devcontainer/.env
 
   if [[ ! -f "$env_file" ]]; then
     step ./.devcontainer/scripts/host-init.sh
   fi
 
   local file
-  file="$(repo)/.devcontainer/common/docker-compose.yml"
+  file="$(repo)/.devcontainer/docker-compose.yml"
 
   HOST_USER="$(id -u):$(id -g)" step docker compose --file "$file" up --detach --wait --build
 }

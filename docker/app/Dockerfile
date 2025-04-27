@@ -119,12 +119,12 @@ RUN sudo apk add --repository https://dl-cdn.alpinelinux.org/alpine/edge/communi
     # Use the bleeding edge of `typos`. Its dictionary is often updated
     typos=1.31.1-r0
 
-ARG OMZ=./.devcontainer/common/shell/oh-my-zsh.sh
+ARG OMZ=./.devcontainer/shell/oh-my-zsh.sh
 RUN --mount=source=./scripts,target=./scripts --mount=source=$OMZ,target=$OMZ $OMZ
 
-RUN ln -sf "$CONTAINER_WORKSPACE/.devcontainer/common/shell/.zshrc" "$HOME/.zshrc"
+RUN ln -sf "$CONTAINER_WORKSPACE/.devcontainer/shell/.zshrc" "$HOME/.zshrc"
 
-ENTRYPOINT ["./.devcontainer/common/init-container.sh"]
+ENTRYPOINT ["./.devcontainer/init-container.sh"]
 
 # Make sure the process doesn't exit to keep the container alive
 CMD ["sleep", "infinity"]
