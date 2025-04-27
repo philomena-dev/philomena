@@ -6,8 +6,10 @@ jobs:
   build:
     name: 'Build Elixir app'
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+      - run: echo "$GITHUB_WORKSPACE/scripts/path" >> "$GITHUB_PATH"
 
       - name: Cache mix deps
         uses: actions/cache@v4
@@ -23,31 +25,23 @@ jobs:
           # Disable volumes so caching can take effect
           sed -i -Ee 's/- app_[a-z]+_data:.*$//g' docker-compose.yml
 
-          # Make ourselves the owner
-          echo "RUN addgroup -g $(id -g) -S appgroup && adduser -u $(id -u) -S appuser -G appgroup" >> docker/app/Dockerfile
-          echo "USER appuser" >> docker/app/Dockerfile
-          echo "RUN mix local.hex --force && mix local.rebar --force" >> docker/app/Dockerfile
-
-      - run: docker compose pull
-      - run: docker compose build
-
-      - name: Build and test
-        run: docker compose run app run-test
+      - run: philomena compose pull
+      - run: philomena compose build
+      - run: philomena compose run app run-test
 
   typos:
     name: 'Check for spelling errors'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: ./scripts/install/typos.sh
-      - run: typos
+      - run: echo "$GITHUB_WORKSPACE/scripts/path" >> "$GITHUB_PATH"
+      - run: philomena exec typos
 
   shellcheck:
     name: 'Shellcheck'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: ./scripts/install/shellcheck.sh
       - run: ./scripts/shellcheck.sh
 
   cargo:
@@ -103,13 +97,3 @@ jobs:
 
       - run: npm run build
         working-directory: ./assets
-
-  repo-init-script:
-    name: 'Repo Init Script'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-
-      - run: ./scripts/init.sh
