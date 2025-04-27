@@ -62,6 +62,8 @@ ENV PATH=$PATH:/home/$USER/.cargo/bin
 ENV PATH=$PATH:$WORKSPACE/scripts/path
 ENV PATH=$PATH:$WORKSPACE/node_modules/.bin
 
+RUN mkdir -p $WORKSPACE
+
 WORKDIR $WORKSPACE
 
 # The UID of 1000 is the default for most Linux distributions, which should make
@@ -77,8 +79,8 @@ RUN adduser $USER --uid 1000 --shell /bin/zsh --disabled-password \
 USER $USER
 
 RUN sudo chown -R "$(id -u):$(id -g)" . \
-# Precreate the cache directories. This way they are owned by the non-root when
-# volumes are mounted at these locations.
+    # Precreate the cache directories. This way they are owned by the non-root when
+    # volumes are mounted at these locations.
     && mkdir -p ./.cargo ./_build ./deps ./priv/native
 
 EXPOSE 5173
