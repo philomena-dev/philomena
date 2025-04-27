@@ -77,8 +77,9 @@ defmodule Philomena.Posts.Query do
     fields = user_fields()
 
     Keyword.merge(fields,
-      numeric_fields: fields[:numeric_fields] ++ ~W(user_id),
-      literal_fields: fields[:literal_fields] ++ ~W(author fingerprint),
+      numeric_fields: fields[:numeric_fields] ++ ~W(user_id deleted_by_user_id),
+      literal_fields: fields[:literal_fields] ++ ~W(author fingerprint deleted_by_user),
+      ngram_fields: fields[:ngram_fields] ++ ~W(deletion_reason),
       ip_fields: ~W(ip),
       bool_fields: ~W(anonymous deleted),
       custom_fields: fields[:custom_fields] -- ~W(author user_id),

@@ -35,7 +35,10 @@ defmodule Philomena.Posts.SearchIndex do
           hidden_from_users: %{type: "boolean"},
           access_level: %{type: "keyword"},
           destroyed_content: %{type: "boolean"},
-          approved: %{type: "boolean"}
+          approved: %{type: "boolean"},
+          deleted_by_user: %{type: "keyword"},
+          deleted_by_user_id: %{type: "keyword"},
+          deletion_reason: %{type: "text", analyzer: "snowball"}
         }
       }
     }
@@ -47,7 +50,7 @@ defmodule Philomena.Posts.SearchIndex do
       id: post.id,
       topic_id: post.topic_id,
       body: post.body,
-      author: if(!!post.user and !post.anonymous, do: String.downcase(post.user.name)),
+      author: String.downcase(post.user.name),
       subject: post.topic.title,
       ip: to_string(post.ip),
       fingerprint: post.fingerprint,
@@ -61,7 +64,10 @@ defmodule Philomena.Posts.SearchIndex do
       hidden_from_users: post.hidden_from_users,
       access_level: post.topic.forum.access_level,
       destroyed_content: post.destroyed_content,
-      approved: post.approved
+      approved: post.approved,
+      deleted_by_user: if(!!post.deleted_by, do: String.downcase(post.deleted_by.name)),
+      deleted_by_user_id: post.deleted_by_id,
+      deletion_reason: post.deletion_reason
     }
   end
 
@@ -70,8 +76,18 @@ defmodule Philomena.Posts.SearchIndex do
     new_name = String.downcase(new_name)
 
     %{
-      query: %{term: %{author: old_name}},
-      replacements: [%{path: ["author"], old: old_name, new: new_name}],
+      query: %{
+        bool: %{
+          should: [
+            %{term: %{author: old_name}},
+            %{term: %{deleted_by_user: old_name}}
+          ]
+        }
+      },
+      replacements: [
+        %{path: ["author"], old: old_name, new: new_name},
+        %{path: ["deleted_by_user"], old: old_name, new: new_name}
+      ],
       set_replacements: []
     }
   end
