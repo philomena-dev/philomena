@@ -5,16 +5,11 @@
   // they are already running inside a devcontainer.
   "dockerComposeFile": "./docker-compose.yml",
   "service": "devcontainer",
-  "initializeCommand": "./.devcontainer/init-host.sh",
 
   // Make sure our custom `init-container.sh` script is run at startup
   "overrideCommand": false,
 
   "workspaceFolder": "/home/philomena/philomena",
-
-  "containerEnv": {
-    "HOST_WORKSPACE": "${localWorkspaceFolder}"
-  },
 
   // The devcontainer is on the same network as our main app docker compose
   // services, which means that that other containers are available by their
