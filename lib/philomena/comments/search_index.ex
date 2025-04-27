@@ -27,8 +27,8 @@ defmodule Philomena.Comments.SearchIndex do
           user_id: %{type: "keyword"},
           author: %{type: "keyword"},
           image_tag_ids: %{type: "keyword"},
-          anonymous: %{type: "keyword"},
-          hidden_from_users: %{type: "keyword"},
+          anonymous: %{type: "boolean"},
+          hidden_from_users: %{type: "boolean"},
           body: %{type: "text", analyzer: "snowball"},
           approved: %{type: "boolean"}
         }

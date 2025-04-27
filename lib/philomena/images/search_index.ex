@@ -41,7 +41,7 @@ defmodule Philomena.Images.SearchIndex do
           height: %{type: "integer"},
           hidden_by_user_ids: %{type: "keyword"},
           hidden_by_users: %{type: "keyword"},
-          hidden_from_users: %{type: "keyword"},
+          hidden_from_users: %{type: "boolean"},
           id: %{type: "integer"},
           ip: %{type: "ip"},
           mime_type: %{type: "keyword"},
