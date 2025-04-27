@@ -49,6 +49,9 @@ function setup_rootless_docker {
 }
 
 setup_rootless_docker
+
 philomena init
+
+step npm install --ignore-scripts
 
 step exec "$@"
