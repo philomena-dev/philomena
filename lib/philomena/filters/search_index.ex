@@ -30,8 +30,6 @@ defmodule Philomena.Filters.SearchIndex do
           hidden_count: %{type: "integer"},
           spoilered_tag_ids: %{type: "keyword"},
           hidden_tag_ids: %{type: "keyword"},
-          spoilered_tags: %{type: "keyword"},
-          hidden_tags: %{type: "keyword"},
           spoilered_complex_str: %{type: "keyword"},
           hidden_complex_str: %{type: "keyword"},
           user_count: %{type: "integer"}

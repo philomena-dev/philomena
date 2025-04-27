@@ -82,7 +82,8 @@ defmodule Philomena.Posts.Query do
       ip_fields: ~W(ip),
       bool_fields: ~W(anonymous deleted),
       custom_fields: fields[:custom_fields] -- ~W(author user_id),
-      transforms: Map.drop(fields[:transforms], ["user_id", "author"])
+      transforms: Map.drop(fields[:transforms], ["user_id", "author"]),
+      aliases: %{"deleted" => "hidden_from_users"}
     )
   end
 

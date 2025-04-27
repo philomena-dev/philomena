@@ -94,7 +94,7 @@ defmodule PhilomenaWeb.ProfileController do
               ]
             }
           },
-          sort: %{posted_at: :desc}
+          sort: %{created_at: :desc}
         },
         %{page_size: 3}
       )
@@ -108,7 +108,7 @@ defmodule PhilomenaWeb.ProfileController do
               must: [
                 %{term: %{user_id: user.id}},
                 %{term: %{anonymous: false}},
-                %{term: %{deleted: false}},
+                %{term: %{hidden_from_users: false}},
                 %{term: %{access_level: "normal"}}
               ]
             }

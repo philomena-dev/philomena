@@ -58,7 +58,7 @@ defmodule PhilomenaWeb.PostController do
   defp filters(_user) do
     [
       %{term: %{access_level: "normal"}},
-      %{term: %{deleted: false}}
+      %{term: %{hidden_from_users: false}}
     ]
   end
 end

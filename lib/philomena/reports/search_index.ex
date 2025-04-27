@@ -44,7 +44,7 @@ defmodule Philomena.Reports.SearchIndex do
       id: report.id,
       image_id: image_id(report),
       created_at: report.created_at,
-      ip: report.ip |> to_string(),
+      ip: to_string(report.ip),
       state: report.state,
       user: if(report.user, do: String.downcase(report.user.name)),
       user_id: report.user_id,

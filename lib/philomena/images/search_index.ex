@@ -22,7 +22,6 @@ defmodule Philomena.Images.SearchIndex do
           anonymous: %{type: "boolean"},
           aspect_ratio: %{type: "float"},
           comment_count: %{type: "integer"},
-          commenters: %{type: "keyword"},
           created_at: %{type: "date"},
           deleted_by_user: %{type: "keyword"},
           deleted_by_user_id: %{type: "keyword"},
@@ -39,8 +38,6 @@ defmodule Philomena.Images.SearchIndex do
           file_name: %{type: "keyword"},
           fingerprint: %{type: "keyword"},
           first_seen_at: %{type: "date"},
-          fps: %{type: "float"},
-          frames: %{type: "integer"},
           height: %{type: "integer"},
           hidden_by_user_ids: %{type: "keyword"},
           hidden_by_users: %{type: "keyword"},
@@ -60,7 +57,6 @@ defmodule Philomena.Images.SearchIndex do
           source_count: %{type: "integer"},
           tag_count: %{type: "integer"},
           tag_ids: %{type: "keyword"},
-          tags: %{type: "text", analyzer: "keyword"},
           thumbnails_generated: %{type: "boolean"},
           true_uploader: %{type: "keyword"},
           true_uploader_id: %{type: "keyword"},
@@ -80,8 +76,6 @@ defmodule Philomena.Images.SearchIndex do
               position: %{type: "integer"}
             }
           },
-          gallery_id: %{type: "keyword"},
-          gallery_position: %{type: "object", enabled: false},
           namespaced_tags: %{
             properties: %{
               name: %{type: "keyword"},
@@ -99,7 +93,8 @@ defmodule Philomena.Images.SearchIndex do
           body_type_tag_count: %{type: "integer"},
           content_fanmade_tag_count: %{type: "integer"},
           content_official_tag_count: %{type: "integer"},
-          spoiler_tag_count: %{type: "integer"}
+          spoiler_tag_count: %{type: "integer"},
+          scratchpad: %{type: "text", analyzer: "snowball"}
         }
       }
     }
@@ -127,7 +122,7 @@ defmodule Philomena.Images.SearchIndex do
       created_at: image.created_at,
       updated_at: image.updated_at,
       first_seen_at: image.first_seen_at,
-      ip: image.ip |> to_string,
+      ip: to_string(image.ip),
       tag_ids: image.tags |> Enum.map(& &1.id),
       mime_type: image.image_mime_type,
       uploader: if(!!image.user and !image.anonymous, do: String.downcase(image.user.name)),
@@ -158,8 +153,6 @@ defmodule Philomena.Images.SearchIndex do
       namespaced_tags: %{
         name: image.tags |> Enum.flat_map(&([&1] ++ &1.aliases)) |> Enum.map(& &1.name)
       },
-      gallery_id: Enum.map(image.gallery_interactions, & &1.gallery_id),
-      gallery_position: Map.new(image.gallery_interactions, &{&1.gallery_id, &1.position}),
       favourited_by_users: image.favers |> Enum.map(&String.downcase(&1.name)),
       hidden_by_users: image.hiders |> Enum.map(&String.downcase(&1.name)),
       upvoters: image.upvoters |> Enum.map(&String.downcase(&1.name)),
@@ -175,7 +168,8 @@ defmodule Philomena.Images.SearchIndex do
       body_type_tag_count: Enum.count(image.tags, &(&1.category == "body-type")),
       content_fanmade_tag_count: Enum.count(image.tags, &(&1.category == "content-fanmade")),
       content_official_tag_count: Enum.count(image.tags, &(&1.category == "content-official")),
-      spoiler_tag_count: Enum.count(image.tags, &(&1.category == "spoiler"))
+      spoiler_tag_count: Enum.count(image.tags, &(&1.category == "spoiler")),
+      scratchpad: image.scratchpad
     }
   end
 
