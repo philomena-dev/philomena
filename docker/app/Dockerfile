@@ -81,12 +81,13 @@ RUN sudo chown -R "$(id -u):$(id -g)" . \
 
 ENV PATH="$PATH:$HOME/.cargo/bin"
 ENV PATH="$PATH:$HOME/.tools"
+ENV PATH="$PATH:$CONTAINER_WORKSPACE/docker/app"
 ENV PATH="$PATH:$CONTAINER_WORKSPACE/scripts/path"
 ENV PATH="$PATH:$CONTAINER_WORKSPACE/node_modules/.bin"
 
 EXPOSE 5173
 
-CMD ["bash", "-c", "ls -lah && ./docker/app/run-development"]
+CMD ["run-development"]
 
 # ====================
 # === Devcontainer ===
