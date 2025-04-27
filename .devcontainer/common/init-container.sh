@@ -20,14 +20,14 @@ function setup_rootless_docker {
     return 0
   fi
 
-  # This is really annoying, but to provide sudo-less access to the docker socket,
-  # we need to add the current user to the group that owns the socket. Because we
-  # mount it from the host the group may have arbitrary ID that we can't easily
-  # control.
+  # This is really annoying, but to provide sudo-less access to the docker
+  # socket, we need to add the current user to the group that owns the socket.
+  # Because we mount it from the host the group may have arbitrary ID that we
+  # can't easily control.
   #
   # There can also be an existing group in the container with the ID of the host
-  # docker socket group, which is very likely to happen given that the usual docker
-  # group has ID 999 and Alpine Linux uses this GID for the `ping` group:
+  # docker socket group, which is very likely to happen given that the usual
+  # docker group has ID 999 and Alpine Linux uses this GID for the `ping` group:
   # https://github.com/alpinelinux/docker-alpine/issues/323
   existing_group=$(getent group "${docker_gid}" || true)
 
@@ -47,7 +47,6 @@ function setup_rootless_docker {
 }
 
 setup_rootless_docker
-
-step npm install --ignore-scripts
+philomena init
 
 step exec "$@"

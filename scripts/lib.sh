@@ -108,7 +108,13 @@ function fetch {
 # where we run our scripts instead. This way the scripts can use any dependencies installed
 # in the devcontainer image.
 function devcontainer_up {
-  info "Starting the philomena-devcontainer container..."
+  info "Creating the philomena-devcontainer..."
+
+  env_file=./.devcontainer/common/.env
+
+  if [[ ! -f "$env_file" ]]; then
+    step ./.devcontainer/scripts/host-init.sh
+  fi
 
   local file
   file="$(repo)/docker/devcontainer/docker-compose.yml"
@@ -117,22 +123,21 @@ function devcontainer_up {
 }
 
 function devcontainer_exec {
-  colorized_cmd=$(colorize_command "$@")
-  echo >&$global_stdout -e "\033[32;1m(devcontainer) ❱\033[0m $colorized_cmd" >&2
-  docker exec --interactive philomena-devcontainer "$@"
+  info "Running this command in the devcontainer..."
+  docker exec --interactive philomena-devcontainer "$0" "$@"
 }
 
-# Run a command in the devcontainer container with the current directory bind-mounted.
-function devcontainer {
-  # Optimistically try to run the command in the devcontainer container.
-  # It should be up most of the time, but it isn't we'll start it and retry.
+# Re-run this script in a the devcontainer if we aren't already in one.
+if [[ ! -v DEVCONTAINER ]] && [[ ! -v FORCE_HOST ]]; then
+  # Optimistically try to run the command in the devcontainer assuming it's up.
+  # It should be up most of the time, but if it isn't we'll start it and retry.
   set +e
   devcontainer_exec "$@"
-  local status=$?
+  status=$?
   set -e
 
   if [[ $status -eq 0 ]]; then
-    return $status
+    exit $status
   fi
 
   # If the devcontainer container was running but the command failed, then it was not
@@ -143,4 +148,4 @@ function devcontainer {
 
   devcontainer_up
   devcontainer_exec "$@"
-}
+fi

@@ -36,6 +36,8 @@ services:
     # network manually.
     network_mode: host
 
+    env_file: .env
+
     volumes:
       # Persist shell history between container restarts
       - shell-history:/shell-history
