@@ -15,8 +15,3 @@ services:
       # Having the host and the devcontainer use the same path to the workspace
       # fixes  this and simplifies our life.
       - ../..:/${WORKSPACE?}:cached
-
-      # Use a "docker outside of docker" setup where we reuse the host's docker
-      # daemon:
-      # https://github.com/microsoft/vscode-dev-containers/tree/main/containers/docker-from-docker
-      - /var/run/docker.sock:/var/run/docker.sock
