@@ -1,3 +1,4 @@
+# Ignore lints about referencing unknown variables and unused variables.
 # shellcheck disable=SC2034 disable=SC2154
 
 # Available themes: https://github.com/ohmyzsh/ohmyzsh/wiki/themes
@@ -27,24 +28,25 @@ FZF_DEFAULT_OPTS='--height 40% --layout=reverse'
 
 typeset -A ZSH_HIGHLIGHT_STYLES
 
-ZSH_HIGHLIGHT_STYLES[reserved-word]='fg=#08dc92'
+ZSH_HIGHLIGHT_STYLES['reserved-word']='fg=#08dc92'
 
 ZSH_HIGHLIGHT_STYLES[assign]='fg=#9cdcfe,bold'
-ZSH_HIGHLIGHT_STYLES[dollar-double-quoted-argument]='fg=#9cdcfe,bold'
+ZSH_HIGHLIGHT_STYLES['dollar-double-quoted-argument']='fg=#9cdcfe,bold'
 ZSH_HIGHLIGHT_STYLES[alias]='fg=#dfff6d,bold'
 ZSH_HIGHLIGHT_STYLES[command]='fg=#dfff6d,bold'
 ZSH_HIGHLIGHT_STYLES[builtin]='fg=#dfff6d,bold'
 ZSH_HIGHLIGHT_STYLES[function]='fg=#dfff6d,bold'
 ZSH_HIGHLIGHT_STYLES[path]="fg=#ce9178"
-ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=#ce9178'
-ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=#ce9178'
-ZSH_HIGHLIGHT_STYLES[double-hyphen-option]='fg=#dfad40,bold'
-ZSH_HIGHLIGHT_STYLES[single-hyphen-option]='fg=#dfad40,bold'
+ZSH_HIGHLIGHT_STYLES['single-quoted-argument']='fg=#ce9178'
+ZSH_HIGHLIGHT_STYLES['double-quoted-argument']='fg=#ce9178'
+ZSH_HIGHLIGHT_STYLES['double-hyphen-option']='fg=#dfad40,bold'
+ZSH_HIGHLIGHT_STYLES['single-hyphen-option']='fg=#dfad40,bold'
 ZSH_HIGHLIGHT_STYLES[commandseparator]='fg=#e81e31,bold'
 ZSH_HIGHLIGHT_STYLES[default]='fg=#ffffff'
 
 ### ====================
 
+# Shellcheck can't dive into this file, that's expected.
 # shellcheck disable=SC1091
 . "$HOME/.oh-my-zsh/oh-my-zsh.sh"
 

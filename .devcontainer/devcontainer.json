@@ -12,6 +12,10 @@
 
   "workspaceFolder": "/home/philomena/philomena",
 
+  "containerEnv": {
+    "HOST_WORKSPACE": "${localWorkspaceFolder}"
+  },
+
   // The devcontainer is on the same network as our main app docker compose
   // services, which means that that other containers are available by their
   // service names.

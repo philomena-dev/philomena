@@ -18,7 +18,7 @@ services:
     container_name: philomena-devcontainer
 
     build:
-      context: ../..
+      context: ..
       dockerfile: docker/app/Dockerfile
       target: devcontainer
 
@@ -59,8 +59,8 @@ services:
       # mount. A similar problem occurs with the VSCode docker extension.
       #
       # Having the host and the devcontainer use the same path to the workspace
-      # fixes  this and simplifies our life.
-      - ${HOST_WORKSPACE?}:${CONTAINER_WORKSPACE?}:cached
+      # fixes this and simplifies our life.
+      - ..:${CONTAINER_WORKSPACE?}:cached
 
 volumes:
   shell-history:
