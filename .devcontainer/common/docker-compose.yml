@@ -21,9 +21,6 @@ services:
       context: ../..
       dockerfile: docker/app/Dockerfile
       target: devcontainer
-      args:
-        WORKSPACE: ${WORKSPACE?}
-        USER: ${USER?}
 
     # While technically optional, `init` enables an init process to properly
     # handle signals and ensure Zombie Processes are cleaned up.
@@ -47,9 +44,9 @@ services:
       # daemon:
       # https://github.com/microsoft/vscode-dev-containers/tree/main/containers/docker-from-docker
       - /var/run/docker.sock:/var/run/docker.sock
-      
+
       # Mount the repository at the same path as it is on the host within the
-      # container (the `$WORKSPACE` env variable is supposed to be set by
+      # container (the `$CONTAINER_WORKSPACE` env variable is supposed to be set by
       # `init-host.sh` script).
       #
       # This is needed to work around the problem of relative paths mapping
@@ -61,8 +58,7 @@ services:
       #
       # Having the host and the devcontainer use the same path to the workspace
       # fixes  this and simplifies our life.
-      - ../..:/${WORKSPACE?}:cached
-
+      - ${HOST_WORKSPACE?}:${CONTAINER_WORKSPACE?}:cached
 
 volumes:
   shell-history:
