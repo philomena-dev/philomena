@@ -51,7 +51,7 @@ defmodule Philomena.Comments.Query do
   defp anonymous_fields do
     [
       int_fields: ~W(id),
-      date_fields: ~W(created_at),
+      date_fields: ~W(created_at updated_at),
       literal_fields: ~W(image_id),
       ngram_fields: ~W(body),
       custom_fields: ~W(author user_id),
@@ -59,8 +59,7 @@ defmodule Philomena.Comments.Query do
       transforms: %{
         "user_id" => &user_id_transform/2,
         "author" => &author_transform/2
-      },
-      aliases: %{"created_at" => "posted_at"}
+      }
     ]
   end
 
@@ -81,8 +80,8 @@ defmodule Philomena.Comments.Query do
       ip_fields: ~W(ip),
       bool_fields: ~W(anonymous deleted),
       custom_fields: fields[:custom_fields] -- ~W(author user_id),
-      aliases: Map.merge(fields[:aliases], %{"deleted" => "hidden_from_users"}),
-      transforms: Map.drop(fields[:transforms], ~W(author user_id))
+      transforms: Map.drop(fields[:transforms], ~W(author user_id)),
+      aliases: %{"deleted" => "hidden_from_users"}
     )
   end
 
