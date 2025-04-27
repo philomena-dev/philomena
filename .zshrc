@@ -1,0 +1,1 @@
+/home/philomena/philomena/.devcontainer/common/.zshrc /home/philomena/.zshrc

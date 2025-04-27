@@ -13,11 +13,6 @@ services:
       context: .
       dockerfile: ./docker/app/Dockerfile
       target: app
-      args:
-        WORKSPACE: ${WORKSPACE?}
-        USER: ${USER?}
-
-    user: ${USER?}
 
     environment:
       # Use this env variable to control the logs levels from different modules.
@@ -62,11 +57,11 @@ services:
     tty: true
 
     volumes:
-      - .:${WORKSPACE?}
-      - app_cargo_data:${WORKSPACE?}/.cargo
-      - app_build_data:${WORKSPACE?}/_build
-      - app_deps_data:${WORKSPACE?}/deps
-      - app_native_data:${WORKSPACE?}/priv/native
+      - ${HOST_WORKSPACE?}:${CONTAINER_WORKSPACE?}
+      - app_cargo_data:${CONTAINER_WORKSPACE?}/.cargo
+      - app_build_data:${CONTAINER_WORKSPACE?}/_build
+      - app_deps_data:${CONTAINER_WORKSPACE?}/deps
+      - app_native_data:${CONTAINER_WORKSPACE?}/priv/native
     depends_on:
       - postgres
       - opensearch
@@ -86,7 +81,7 @@ services:
     image: opensearchproject/opensearch:3.0.0
     volumes:
       - opensearch_data:/usr/share/opensearch/data
-      - ./docker/opensearch/opensearch.yml:/usr/share/opensearch/config/opensearch.yml
+      - ${HOST_WORKSPACE?}/docker/opensearch/opensearch.yml:/usr/share/opensearch/config/opensearch.yml
     attach: false
     ulimits:
       nofile:
@@ -100,9 +95,9 @@ services:
   files:
     image: andrewgaul/s3proxy:sha-db34f6b
     environment:
-      - JCLOUDS_FILESYSTEM_BASEDIR=${WORKSPACE?}/priv/s3
+      - JCLOUDS_FILESYSTEM_BASEDIR=${CONTAINER_WORKSPACE?}/priv/s3
     volumes:
-      - .:${WORKSPACE?}
+      - ${HOST_WORKSPACE?}:${CONTAINER_WORKSPACE?}
     attach: false
 
   web:
@@ -111,11 +106,11 @@ services:
       dockerfile: ./docker/web/Dockerfile
 
     volumes:
-      - .:${WORKSPACE?}
-      - ./docker/web/config:/etc/caddy
+      - ${HOST_WORKSPACE?}:${CONTAINER_WORKSPACE?}
+      - ${HOST_WORKSPACE?}/docker/web/config:/etc/caddy
       - caddy_data:/data
     environment:
-      - APP_DIR=${WORKSPACE?}
+      - APP_DIR=${CONTAINER_WORKSPACE?}
       - S3_ENDPOINT=http://files:80
       - S3_BUCKET=philomena
       - AWS_ACCESS_KEY_ID=local-identity

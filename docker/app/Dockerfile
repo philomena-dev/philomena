@@ -51,20 +51,8 @@ RUN git clone --depth 1 https://github.com/philomena-dev/mediatools /tmp/mediato
 
 # Create a non-root user to avoid polluting the bind-mounted directories with
 # root-owned files on the host machine.
-ARG USER
-ENV USER=$USER
-
-ARG WORKSPACE
-ENV WORKSPACE=$WORKSPACE
-
-# docker-compose configures a bind-mount of the repo root dir to $WORKSPACE
-ENV PATH=$PATH:/home/$USER/.cargo/bin
-ENV PATH=$PATH:$WORKSPACE/scripts/path
-ENV PATH=$PATH:$WORKSPACE/node_modules/.bin
-
-RUN mkdir -p $WORKSPACE
-
-WORKDIR $WORKSPACE
+ENV USER=philomena
+ENV HOME=/home/$USER
 
 # The UID of 1000 is the default for most Linux distributions, which should make
 # this user map to the default user on the host system for bind-mounted volumes.
@@ -72,65 +60,69 @@ WORKDIR $WORKSPACE
 # However, if you are running this in a devcontainer via VSCode, then it'll update
 # the UID/GID of this user to match the UID/GID of the user on the host automatically:
 # https://code.visualstudio.com/remote/advancedcontainers/add-nonroot-user#_specifying-the-default-container-user
-RUN adduser $USER --uid 1000 --shell /bin/zsh --disabled-password \
+RUN adduser "$USER" --uid 1000 --shell /bin/zsh --disabled-password \
     # Allow paswordless sudo for the non-root user
-    && echo "$USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER
+    && echo "$USER ALL=(ALL) NOPASSWD:ALL" > "/etc/sudoers.d/$USER"
 
 USER $USER
+
+# docker-compose configures a bind-mount of the repo root dir to $CONTAINER_WORKSPACE
+ENV CONTAINER_WORKSPACE=$HOME/philomena
+WORKDIR $CONTAINER_WORKSPACE
 
 RUN sudo chown -R "$(id -u):$(id -g)" . \
     # Precreate the cache directories. This way they are owned by the non-root when
     # volumes are mounted at these locations.
-    && mkdir -p ./.cargo ./_build ./deps ./priv/native
+    && mkdir -p $HOME/.tools ./.cargo ./_build ./deps ./priv/native
+
+ENV PATH="$PATH:$HOME/.cargo/bin"
+ENV PATH="$PATH:$HOME/.tools"
+ENV PATH="$PATH:$CONTAINER_WORKSPACE/scripts/path"
+ENV PATH="$PATH:$CONTAINER_WORKSPACE/node_modules/.bin"
 
 EXPOSE 5173
 
-CMD ["./docker/app/run-development"]
+CMD ["bash", "-c", "ls -lah && ./docker/app/run-development"]
 
+# ====================
 # === Devcontainer ===
+# ====================
 #
 # This stage extends the `app` image with devcontainer-specific tools and configs.
 FROM app AS devcontainer
 
-# The base image uses a non-root user, but we need to switch to root for a brief
-# moment to install some additional dependencies.
-USER root
-
 # This env variable is used by the scripts to detect if they are running in a
 # devcontainer
-ENV DEVCONTAINER=1
+ENV DEVCONTAINER=true
 
-RUN --mount=source=./scripts,target=./scripts ./scripts/install/typos.sh
-RUN --mount=source=./scripts,target=./scripts ./scripts/install/shellcheck.sh
+# Store the history in a specific location that is persisted via a volume
+ENV HISTFILE="$HOME/shell-history/history"
+RUN mkdir "$(dirname $HISTFILE)" && touch "$HISTFILE"
 
-RUN apk add --update \
+RUN sudo apk add \
     # Required by Caddyfile LSP for autoformatting
     caddy \
     # Fzf provides better search history navigation via Ctrl+R
     fzf \
-    docker-cli-compose \
     # Required for the Github Pull Requests VSCode extension to fetch via git
     # SSH URLs
     openssh \
     # Needed for the `usermod` command
     shadow \
-    zsh \
-    zsh-syntax-highlighting
+    shellcheck=0.10.0-r1 \
+    zsh
 
-USER $USER
+RUN sudo apk add --repository https://dl-cdn.alpinelinux.org/alpine/edge/community \
+    # This version of `docker-compose` contains a fix for the following annoying
+    # terminal flickering bug: https://github.com/docker/compose/issues/12435
+    docker-cli-compose=2.35.1-r0 \
+    # Use the bleeding edge of `typos`. Its dictionary is often updated
+    typos=1.31.1-r0
 
-# Install oh-my-zsh
-RUN curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh
+ARG OMZ=./.devcontainer/common/shell/oh-my-zsh.sh
+RUN --mount=source=./scripts,target=./scripts --mount=source=$OMZ,target=$OMZ $OMZ
 
-# Install some zsh plugins
-RUN git clone https://github.com/popstas/zsh-command-time.git ~/.oh-my-zsh/custom/plugins/command-time
-RUN git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
-RUN git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
-
-# Store the history in a specific location that is persisted via a volume
-RUN mkdir $HOME/shell-history && touch $HOME/shell-history/history
-
-RUN ln -sf $WORKSPACE/.devcontainer/common/.zshrc $HOME/.zshrc
+RUN ln -sf "$CONTAINER_WORKSPACE/.devcontainer/common/shell/.zshrc" "$HOME/.zshrc"
 
 ENTRYPOINT ["./.devcontainer/common/init-container.sh"]
 

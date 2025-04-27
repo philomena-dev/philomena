@@ -14,8 +14,6 @@ plugins=(
   zsh-syntax-highlighting
 )
 
-HISTFILE="$HOME/shell-history/history"
-
 # === zsh-autosuggestions ===
 
 # The default is just `history`. Include default completion suggestions too.

@@ -16,7 +16,7 @@ function setup_rootless_docker {
   fi
 
   if [[ "${docker_gid}" == '0' ]]; then
-    die "Can't configure rootless docker. The docker socket is owned by root"
+    warn "Can't configure rootless docker. The docker socket is owned by root"
     return 0
   fi
 
