@@ -16,7 +16,7 @@ function setup_rootless_docker {
   fi
 
   if [[ "${docker_gid}" == '0' ]]; then
-    info "Can't configure rootless docker. The docker socket is owned by root"
+    die "Can't configure rootless docker. The docker socket is owned by root"
     return 0
   fi
 
@@ -29,7 +29,7 @@ function setup_rootless_docker {
   # docker socket group, which is very likely to happen given that the usual docker
   # group has ID 999 and Alpine Linux uses this GID for the `ping` group:
   # https://github.com/alpinelinux/docker-alpine/issues/323
-  existing_group=$(getent group "${docker_gid}")
+  existing_group=$(getent group "${docker_gid}" || true)
 
   if [ "$existing_group" = '' ]; then
     step sudo groupadd --gid "${docker_gid}" docker-host
