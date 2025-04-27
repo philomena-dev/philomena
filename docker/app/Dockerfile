@@ -3,6 +3,10 @@
 
 FROM elixir:1.18.3-alpine AS app
 
+# This env variable is used by the scripts to detect if they are running in a
+# container and thus don't need to forward the execution to the devcontainer.
+ENV CONTAINER=true
+
 RUN apk add curl
 
 RUN curl -fsSL https://api.github.com/repos/philomena-dev/FFmpeg/git/refs/heads/release/6.1 -o /tmp/ffmpeg_version.json
@@ -90,10 +94,6 @@ CMD ["bash", "-c", "ls -lah && ./docker/app/run-development"]
 #
 # This stage extends the `app` image with devcontainer-specific tools and configs.
 FROM app AS devcontainer
-
-# This env variable is used by the scripts to detect if they are running in a
-# devcontainer
-ENV DEVCONTAINER=true
 
 # Store the history in a specific location that is persisted via a volume
 ENV HISTFILE="$HOME/shell-history/history"
