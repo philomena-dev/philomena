@@ -108,44 +108,35 @@ function fetch {
 # where we run our scripts instead. This way the scripts can use any dependencies installed
 # in the devcontainer image.
 function devcontainer_up {
-  info "Creating the philomena-devcontainer..."
+  info "Creating the devcontainer..."
 
-  env_file=./.devcontainer/common/.env
+  local env_file=./.devcontainer/common/.env
 
   if [[ ! -f "$env_file" ]]; then
     step ./.devcontainer/scripts/host-init.sh
   fi
 
   local file
-  file="$(repo)/docker/devcontainer/docker-compose.yml"
+  file="$(repo)/.devcontainer/common/docker-compose.yml"
 
   HOST_USER="$(id -u):$(id -g)" step docker compose --file "$file" up --detach --wait --build
 }
 
-function devcontainer_exec {
-  info "Running this command in the devcontainer..."
-  docker exec --interactive philomena-devcontainer "$0" "$@"
+function devcontainer_forward {
+  # Make sure the devcontainer is up and running.
+  if ! docker ps --all --format '{{.Names}}' | grep -wq philomena-devcontainer; then
+    devcontainer_up
+  fi
+
+  local script
+  script=$(realpath "$0")
+  script="${script#"$(repo)/"}"
+
+  docker exec --interactive philomena-devcontainer "$script" "$@"
 }
 
 # Re-run this script in a the devcontainer if we aren't already in one.
 if [[ ! -v DEVCONTAINER ]] && [[ ! -v FORCE_HOST ]]; then
-  # Optimistically try to run the command in the devcontainer assuming it's up.
-  # It should be up most of the time, but if it isn't we'll start it and retry.
-  set +e
-  devcontainer_exec "$@"
-  status=$?
-  set -e
-
-  if [[ $status -eq 0 ]]; then
-    exit $status
-  fi
-
-  # If the devcontainer container was running but the command failed, then it was not
-  # the reason of the failure and we need to propagate it to the caller.
-  if ! docker ps --all --format '{{.Names}}' | grep -wq philomena-devcontainer; then
-    return $status
-  fi
-
-  devcontainer_up
-  devcontainer_exec "$@"
+  devcontainer_forward "$@"
+  exit $?
 fi
