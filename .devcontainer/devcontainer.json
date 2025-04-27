@@ -25,7 +25,72 @@
   // service names.
   "forwardPorts": [5173, 8080],
 
-  "features": {
-    "../common": {}
+  "customizations": {
+    "vscode": {
+      "settings": {
+        // Don't rely on auto-inference for forwarded ports, make it reliable.
+        "remote.autoForwardPorts": false,
+
+        // Listen on `0.0.0.0` on the host machine to allow accessing the site
+        // via the local network, e.g. with a phone connected to the same WiFi
+        "remote.localPortHost": "allInterfaces",
+
+        // Rust Analyzer struggles to discover the cargo workspace unless there
+        // is a `Cargo.toml` in the repo root. So, we give it a small hint.
+        "rust-analyzer.linkedProjects": ["./native/philomena/Cargo.toml"],
+
+        // This notification is too noisy. It pops up on every devcontainer
+        // rebuild
+        "lexical.notifyOnServerAutoUpdate": false,
+
+        "[dockercompose]": {
+          // Prettier is the source of truth for YAML formatting
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        }
+      },
+      "extensions": [
+        // Elixir LSP
+        "lexical-lsp.lexical",
+
+        // Rust LSP
+        "rust-lang.rust-analyzer",
+
+        // TOML LSP
+        "tamasfe.even-better-toml",
+
+        // Container management extension by Microsoft
+        "ms-azuretools.vscode-docker",
+
+        // Github Actions LSP
+        "github.vscode-github-actions",
+
+        // Bash LSP
+        "mads-hartmann.bash-ide-vscode",
+
+        // Caddyfile LSP
+        "matthewpi.caddyfile-support",
+
+        // `.slime` syntax highlighting
+        "xolan.slime",
+
+        // `.js`, `.ts` linter
+        "dbaeumer.vscode-eslint",
+
+        // `.css` linter
+        "stylelint.vscode-stylelint",
+
+        // `.js`, `.ts`. `.css`, `.json`, `.yaml`, `.md` formatter
+        "esbenp.prettier-vscode",
+
+        // Spell checker enforced on CI
+        "tekumara.typos-vscode",
+
+        // `.toMatchInlineSnapshot()` syntax highlighting
+        "tlent.jest-snapshot-language-support",
+
+        // Inline git blame annotations
+        "eamodio.gitlens"
+      ]
+    }
   }
 }
