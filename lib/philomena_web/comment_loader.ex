@@ -43,9 +43,14 @@ defmodule PhilomenaWeb.CommentLoader do
   end
 
   def last_page(conn, image) do
+    user = conn.assigns.current_user
+    show_hidden? = staff?(user)
+
     offset =
       Comment
       |> where(image_id: ^image.id)
+      |> filter_deleted(show_hidden?)
+      |> filter_non_approved(user, show_hidden?)
       |> Repo.aggregate(:count, :id)
 
     page_size = conn.assigns.comment_scrivener[:page_size]
