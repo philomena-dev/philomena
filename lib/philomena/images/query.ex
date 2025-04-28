@@ -120,7 +120,7 @@ defmodule Philomena.Images.Query do
       bool_fields: ~W(animated processed thumbnails_generated),
       ngram_fields: ~W(description),
       custom_fields: ~W(gallery_id filter_id),
-      default_field: {"namespaced_tags.name", :term},
+      default_field: {"tags", :term},
       transforms: %{
         "gallery_id" => &gallery_id_transform/2,
         "filter_id" => &filter_id_transform/2
@@ -130,7 +130,7 @@ defmodule Philomena.Images.Query do
         "faved_by_id" => "favourited_by_user_ids"
       },
       no_downcase_fields: ~W(file_name),
-      normalizations: %{"namespaced_tags.name" => &Tag.clean_tag_name/1}
+      normalizations: %{"tags" => &Tag.clean_tag_name/1}
     ]
   end
 
