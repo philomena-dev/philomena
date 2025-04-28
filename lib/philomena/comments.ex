@@ -382,7 +382,8 @@ defmodule Philomena.Comments do
 
     [
       user: user_query,
-      image: image_query
+      image: image_query,
+      deleted_by: user_query
     ]
   end
 
