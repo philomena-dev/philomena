@@ -127,5 +127,11 @@ RUN ln -sf "$CONTAINER_WORKSPACE/.devcontainer/shell/.zshrc" "$HOME/.zshrc"
 
 ENTRYPOINT ["./.devcontainer/init-container.sh"]
 
+# Check for the presence of a special marker file that indicates that the
+# container has been initialized. Use a big `--interval` to "disable"
+# healthchecks after initialization completes.
+HEALTHCHECK --start-period=10s --start-interval=0.5s --interval=9999h \
+    CMD [ "test", "-f", "$HOME/.initialized" ]
+
 # Make sure the process doesn't exit to keep the container alive
 CMD ["sleep", "infinity"]
