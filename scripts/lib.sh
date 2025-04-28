@@ -122,6 +122,7 @@ function devcontainer_up {
     return 0
   fi
 
+  error "Failed to create the devcontainer. Dumping its logs below..."
   step docker compose --file "$file" logs
 
   return "$status"
