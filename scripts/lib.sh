@@ -123,7 +123,7 @@ function devcontainer_up {
   fi
 
   error "Failed to create the devcontainer. Dumping its logs below..."
-  step docker compose --file "$file" logs
+  step docker compose --file "$file" logs --no-log-prefix
 
   return "$status"
 }
