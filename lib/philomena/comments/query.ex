@@ -1,5 +1,6 @@
 defmodule Philomena.Comments.Query do
   alias PhilomenaQuery.Parse.Parser
+  alias Philomena.Tags.Tag
 
   defp user_my_transform(%{user: %{id: id}}, "comments"),
     do: {:ok, %{term: %{true_author_id: id}}}
@@ -40,7 +41,8 @@ defmodule Philomena.Comments.Query do
         Map.merge(fields[:aliases], %{
           "deleted" => "hidden_from_users",
           "image.deleted" => "image.hidden_from_users"
-        })
+        }),
+      normalizations: %{"image.tags" => &Tag.clean_tag_name/1}
     )
   end
 
