@@ -72,6 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: ./scripts/philomena.sh exec npm install --prefix assets
       - run: ./scripts/philomena.sh exec npm run --prefix assets lint
       - run: ./scripts/philomena.sh exec npm run --prefix assets test
       - run: ./scripts/philomena.sh exec npm run --prefix assets build
