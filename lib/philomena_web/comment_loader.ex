@@ -1,18 +1,36 @@
 defmodule PhilomenaWeb.CommentLoader do
   alias Philomena.Comments.Comment
   alias Philomena.Repo
+  alias PhilomenaQuery.Search
   import Ecto.Query
 
   def load_comments(conn, image) do
-    pref = load_direction(conn.assigns.current_user)
+    user = conn.assigns.current_user
+    pref = load_direction(user)
+
+    show_hidden? = staff?(user)
 
     Comment
     |> where(image_id: ^image.id)
+    |> filter_deleted(show_hidden?)
+    |> filter_non_approved(user, show_hidden?)
     |> order_by([{^pref, :created_at}])
     |> preload([:image, :deleted_by, user: [awards: :badge]])
     |> Repo.paginate(conn.assigns.comment_scrivener)
   end
 
+  def filter_deleted(query, true), do: query
+  def filter_deleted(query, _show_hidden?), do: where(query, [c], not c.destroyed_content)
+
+  def filter_non_approved(query, _user, true), do: query
+
+  def filter_non_approved(query, %{id: user_id}, _show_hidden?),
+    do: where(query, [c], c.approved or c.user_id == ^user_id)
+
+  def filter_non_approved(query, _user, _show_hidden?),
+    do: where(query, [c], c.approved)
+
+  # TODO new `where` filters fuck this
   def find_page(conn, image, comment_id) do
     user = conn.assigns.current_user
 
@@ -54,4 +72,67 @@ defmodule PhilomenaWeb.CommentLoader do
 
   defp filter_direction(query, time, _user),
     do: where(query, [c], c.created_at >= ^time)
+
+  def query(conn, body, options \\ []) do
+    pagination = Keyword.get(options, :pagination, conn.assigns.pagination)
+    show_hidden? = Keyword.get(options, :show_hidden, true)
+
+    user = conn.assigns.current_user
+    filter = conn.assigns.current_filter
+    filters = create_filters(user, filter, show_hidden?)
+
+    Search.search_definition(
+      Comment,
+      %{
+        query: %{
+          bool: %{
+            must: body,
+            must_not: filters
+          }
+        },
+        sort: %{created_at: :desc}
+      },
+      pagination
+    )
+  end
+
+  defp create_filters(user, filter, show_hidden?) do
+    show_hidden? = show_hidden? and staff?(user)
+
+    [%{terms: %{"image.tag_ids" => filter.hidden_tag_ids}}]
+    |> hide_deleted(show_hidden?)
+    |> hide_non_approved(user, show_hidden?)
+  end
+
+  defp staff?(%{role: role}) when role in ~W(assistant moderator admin), do: true
+  defp staff?(_user), do: false
+
+  defp hide_deleted(filters, true), do: filters
+
+  defp hide_deleted(filters, _show_hidden?),
+    do: [
+      %{term: %{hidden_from_users: true}},
+      %{term: %{"image.hidden_from_users" => true}}
+      | filters
+    ]
+
+  defp hide_non_approved(filters, _user, true), do: filters
+
+  defp hide_non_approved(filters, %{id: user_id}, _show_hidden?),
+    do: [
+      %{
+        bool: %{
+          should: [%{term: %{approved: false}}, %{term: %{"image.approved" => false}}],
+          must_not: [%{term: %{user_id: user_id}}]
+        }
+      }
+      | filters
+    ]
+
+  defp hide_non_approved(filters, _user, _show_hidden?),
+    do: [
+      %{term: %{approved: false}},
+      %{term: %{"image.approved" => false}}
+      | filters
+    ]
 end

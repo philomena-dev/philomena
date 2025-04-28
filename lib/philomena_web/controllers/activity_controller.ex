@@ -2,6 +2,7 @@ defmodule PhilomenaWeb.ActivityController do
   use PhilomenaWeb, :controller
 
   alias PhilomenaWeb.ImageLoader
+  alias PhilomenaWeb.CommentLoader
   alias PhilomenaQuery.Search
 
   alias Philomena.{
@@ -34,23 +35,11 @@ defmodule PhilomenaWeb.ActivityController do
       )
 
     comments =
-      Search.search_definition(
-        Comment,
-        %{
-          query: %{
-            bool: %{
-              must: %{
-                range: %{created_at: %{gt: "now-1w"}}
-              },
-              must_not: [
-                %{terms: %{image_tag_ids: conn.assigns.current_filter.hidden_tag_ids}},
-                %{term: %{hidden_from_users: true}}
-              ]
-            }
-          },
-          sort: %{created_at: :desc}
-        },
-        %{page_number: 1, page_size: 6}
+      CommentLoader.query(
+        conn,
+        %{range: %{created_at: %{gt: "now-1w"}}},
+        pagination: %{page_number: 1, page_size: 6},
+        show_hidden: false
       )
 
     watched =

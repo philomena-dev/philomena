@@ -2,6 +2,7 @@ defmodule PhilomenaWeb.ProfileController do
   use PhilomenaWeb, :controller
 
   alias PhilomenaWeb.ImageLoader
+  alias PhilomenaWeb.CommentLoader
   alias PhilomenaQuery.Search
   alias PhilomenaWeb.MarkdownRenderer
   alias Philomena.UserStatistics.UserStatistic
@@ -40,7 +41,6 @@ defmodule PhilomenaWeb.ProfileController do
   plug :set_name_changes
 
   def show(conn, _params) do
-    current_filter = conn.assigns.current_filter
     current_user = conn.assigns.current_user
     user = Repo.preload(conn.assigns.user, [:forced_filter])
 
@@ -81,23 +81,14 @@ defmodule PhilomenaWeb.ProfileController do
     recent_artwork = recent_artwork(conn, tags)
 
     recent_comments =
-      Search.search_definition(
-        Comment,
-        %{
-          query: %{
-            bool: %{
-              must: [
-                %{term: %{author_id: user.id}},
-                %{term: %{hidden_from_users: false}}
-              ],
-              must_not: [
-                %{terms: %{image_tag_ids: current_filter.hidden_tag_ids}}
-              ]
-            }
-          },
-          sort: %{created_at: :desc}
-        },
-        %{page_size: 3}
+      CommentLoader.query(
+        conn,
+        [
+          %{term: %{author_id: user.id}},
+          %{term: %{hidden_from_users: false}}
+        ],
+        pagination: %{page_size: 3},
+        show_hidden: false
       )
 
     recent_posts =

@@ -28,7 +28,6 @@ defmodule Philomena.Comments.SearchIndex do
           author: %{type: "keyword"},
           true_author_id: %{type: "keyword"},
           true_author: %{type: "keyword"},
-          image_tag_ids: %{type: "keyword"},
           anonymous: %{type: "boolean"},
           hidden_from_users: %{type: "boolean"},
           body: %{type: "text", analyzer: "snowball"},
@@ -36,7 +35,14 @@ defmodule Philomena.Comments.SearchIndex do
           deleted_by_user: %{type: "keyword"},
           deleted_by_user_id: %{type: "keyword"},
           deletion_reason: %{type: "text", analyzer: "snowball"},
-          destroyed_content: %{type: "boolean"}
+          destroyed_content: %{type: "boolean"},
+          image: %{
+            properties: %{
+              tag_ids: %{type: "keyword"},
+              hidden_from_users: %{type: "boolean"},
+              approved: %{type: "boolean"}
+            }
+          }
         }
       }
     }
@@ -55,15 +61,20 @@ defmodule Philomena.Comments.SearchIndex do
       author: if(!!comment.user and !comment.anonymous, do: String.downcase(comment.user.name)),
       true_author_id: comment.user_id,
       true_author: if(!!comment.user, do: String.downcase(comment.user.name)),
-      image_tag_ids: comment.image.tags |> Enum.map(& &1.id),
       anonymous: comment.anonymous,
-      hidden_from_users: comment.image.hidden_from_users || comment.hidden_from_users,
+      hidden_from_users: comment.hidden_from_users,
       body: comment.body,
-      approved: comment.image.approved && comment.approved,
+      approved: comment.approved,
       deleted_by_user: if(!!comment.deleted_by, do: String.downcase(comment.deleted_by.name)),
       deleted_by_user_id: comment.deleted_by_id,
       deletion_reason: comment.deletion_reason,
-      destroyed_content: comment.destroyed_content
+      destroyed_content: comment.destroyed_content,
+      image: %{
+        tag_ids: comment.image.tags |> Enum.map(& &1.id),
+        tags: comment.image.tags |> Enum.map(& &1.name),
+        hidden_from_users: comment.image.hidden_from_users,
+        approved: comment.image.approved
+      }
     }
   end
 
