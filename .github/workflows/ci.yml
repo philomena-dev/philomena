@@ -9,7 +9,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - run: echo "$GITHUB_WORKSPACE/scripts/path" >> "$GITHUB_PATH"
 
       - name: Cache mix deps
         uses: actions/cache@v4
@@ -25,17 +24,16 @@ jobs:
           # Disable volumes so caching can take effect
           sed -i -Ee 's/- app_[a-z]+_data:.*$//g' docker-compose.yml
 
-      - run: philomena compose pull
-      - run: philomena compose build
-      - run: philomena compose run app run-test
+      - run: ./scripts/philomena.sh compose pull
+      - run: ./scripts/philomena.sh compose build
+      - run: ./scripts/philomena.sh compose run app run-test
 
   typos:
     name: 'Check for spelling errors'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: echo "$GITHUB_WORKSPACE/scripts/path" >> "$GITHUB_PATH"
-      - run: philomena exec typos
+      - run: ./scripts/philomena.sh exec typos
 
   shellcheck:
     name: 'Shellcheck'
@@ -67,33 +65,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-      - run: npm ci --ignore-scripts
-      - run: npx prettier --check .
+      - run: ./scripts/philomena.sh exec prettier --check .
 
   lint-and-test:
     name: 'JavaScript Linting and Unit Tests'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-
-      - run: npm ci --ignore-scripts
-        working-directory: ./assets
-
-      - run: npm run lint
-        working-directory: ./assets
-
-      - run: npm run test
-        working-directory: ./assets
-
-      - run: npm run build
-        working-directory: ./assets
+      - run: ./scripts/philomena.sh exec npm run --prefix assets lint
+      - run: ./scripts/philomena.sh exec npm run --prefix assets test
+      - run: ./scripts/philomena.sh exec npm run --prefix assets build

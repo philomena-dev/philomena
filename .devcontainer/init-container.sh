@@ -52,6 +52,6 @@ setup_rootless_docker
 
 philomena init
 
-step npm install --ignore-scripts
+step ci install --ignore-scripts
 
 step exec "$@"
