@@ -6,13 +6,9 @@ defmodule PhilomenaWeb.CommentLoader do
 
   def load_comments(conn, image) do
     user = conn.assigns.current_user
-    show_hidden? = staff?(user)
     direction = load_direction(user)
 
-    Comment
-    |> where(image_id: ^image.id)
-    |> filter_deleted(show_hidden?)
-    |> filter_non_approved(user, show_hidden?)
+    query_all(conn, image)
     |> order_by([{^direction, :created_at}])
     |> preload([:image, :deleted_by, user: [awards: :badge]])
     |> Repo.paginate(conn.assigns.comment_scrivener)
@@ -20,7 +16,6 @@ defmodule PhilomenaWeb.CommentLoader do
 
   def find_page(conn, image, comment_id) do
     user = conn.assigns.current_user
-    show_hidden? = staff?(user)
 
     comment =
       Comment
@@ -29,10 +24,7 @@ defmodule PhilomenaWeb.CommentLoader do
       |> Repo.one!()
 
     offset =
-      Comment
-      |> where(image_id: ^image.id)
-      |> filter_deleted(show_hidden?)
-      |> filter_non_approved(user, show_hidden?)
+      query_all(conn, image)
       |> filter_direction(comment.created_at, user)
       |> Repo.aggregate(:count, :id)
 
@@ -43,20 +35,24 @@ defmodule PhilomenaWeb.CommentLoader do
   end
 
   def last_page(conn, image) do
-    user = conn.assigns.current_user
-    show_hidden? = staff?(user)
-
     offset =
-      Comment
-      |> where(image_id: ^image.id)
-      |> filter_deleted(show_hidden?)
-      |> filter_non_approved(user, show_hidden?)
+      query_all(conn, image)
       |> Repo.aggregate(:count, :id)
 
     page_size = conn.assigns.comment_scrivener[:page_size]
 
     # Pagination starts at page 1
     div(offset, page_size) + 1
+  end
+
+  defp query_all(conn, image) do
+    user = conn.assigns.current_user
+    show_hidden? = staff?(user)
+
+    Comment
+    |> where(image_id: ^image.id)
+    |> filter_deleted(show_hidden?)
+    |> filter_non_approved(user, show_hidden?)
   end
 
   defp staff?(%{role: role}) when role in ~W(assistant moderator admin), do: true
