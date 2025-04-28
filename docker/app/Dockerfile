@@ -9,6 +9,8 @@ ENV CONTAINER=true
 
 RUN apk add curl
 
+# Not using the `ADD` instruction here. For some reason it fails with a 403
+# error when building on Github CodeSpaces that way (yeah, weird).
 RUN curl -fsSL https://api.github.com/repos/philomena-dev/FFmpeg/git/refs/heads/release/6.1 -o /tmp/ffmpeg_version.json
 
 RUN ( \
