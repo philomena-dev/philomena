@@ -76,13 +76,7 @@ defmodule Philomena.Images.SearchIndex do
               position: %{type: "integer"}
             }
           },
-          namespaced_tags: %{
-            properties: %{
-              name: %{type: "keyword"},
-              name_in_namespace: %{type: "keyword"},
-              namespace: %{type: "keyword"}
-            }
-          },
+          tags: %{type: "keyword"},
           approved: %{type: "boolean"},
           error_tag_count: %{type: "integer"},
           rating_tag_count: %{type: "integer"},
@@ -150,9 +144,7 @@ defmodule Philomena.Images.SearchIndex do
       duplicate_id: image.duplicate_id,
       galleries:
         image.gallery_interactions |> Enum.map(&%{id: &1.gallery_id, position: &1.position}),
-      namespaced_tags: %{
-        name: image.tags |> Enum.flat_map(&([&1] ++ &1.aliases)) |> Enum.map(& &1.name)
-      },
+      tags: image.tags |> Enum.flat_map(&([&1] ++ &1.aliases)) |> Enum.map(& &1.name),
       favourited_by_users: image.favers |> Enum.map(&String.downcase(&1.name)),
       hidden_by_users: image.hiders |> Enum.map(&String.downcase(&1.name)),
       upvoters: image.upvoters |> Enum.map(&String.downcase(&1.name)),
