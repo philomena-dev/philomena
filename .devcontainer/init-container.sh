@@ -52,7 +52,7 @@ setup_rootless_docker
 
 philomena init
 
-step npm ci install --ignore-scripts
+step npm ci --ignore-scripts
 
 # Create an empty file which indicates to the healthcheck that the container
 # finished initializing. This precents race conditions with `docker exec` commands

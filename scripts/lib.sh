@@ -118,11 +118,15 @@ function devcontainer_up {
   local status=$?
   set -e
 
+  # Ideally compose should stream the logs from the container while it's
+  # starting, unfortunately, this issue has been open for years:
+  # https://github.com/docker/compose/issues/9122
   if [[ "$status" = "0" ]]; then
-    return 0
+    info "Dumping the devcontainer logs..."
+  else
+    error "Failed to create the devcontainer. Dumping its logs below..."
   fi
 
-  error "Failed to create the devcontainer. Dumping its logs below..."
   step docker compose --file "$file" logs --no-log-prefix
 
   return "$status"
@@ -130,7 +134,7 @@ function devcontainer_up {
 
 function devcontainer_forward {
   # Make sure the devcontainer is up and running.
-  if ! docker ps --all --format '{{.Names}}' | grep -wq philomena-devcontainer; then
+  if ! docker ps --filter "health=healthy" --format '{{.Names}}' | grep -wq philomena-devcontainer; then
     devcontainer_up
   fi
 

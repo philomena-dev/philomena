@@ -130,8 +130,11 @@ ENTRYPOINT ["./.devcontainer/init-container.sh"]
 # Check for the presence of a special marker file that indicates that the
 # container has been initialized. Use a big `--interval` to "disable"
 # healthchecks after initialization completes.
-HEALTHCHECK --start-period=10s --start-interval=0.5s --interval=9999h \
-    CMD [ "test", "-f", "$HOME/.initialized" ]
+#
+# Also, don't be fooled - docker dosn't interpolate env vars in the CMD exec
+# form, so we explicitly use `bash -c` to expand the `$HOME` variable.
+HEALTHCHECK --start-period=10s --start-interval=0.5s --retries=1 --interval=9999h \
+    CMD [ "bash", "-c", "test -f $HOME/.initialized" ]
 
 # Make sure the process doesn't exit to keep the container alive
 CMD ["sleep", "infinity"]
