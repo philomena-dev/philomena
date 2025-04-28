@@ -98,7 +98,7 @@ defmodule PhilomenaMedia.Uploader do
 
   The file root is the location at which files of the given schema type are located under
   the storage path. For example, the file root for the Adverts schema may be
-  `/srv/philomena/priv/s3/philomena/adverts` in development with the file backend,
+  `priv/s3/philomena/adverts` in development with the file backend,
   and just `adverts` in production with the S3 backend.
 
   It is not recommended to perform persist or unpersist operations in the scope of an `m:Ecto.Multi`,

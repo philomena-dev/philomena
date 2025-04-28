@@ -4,7 +4,7 @@ set -e
 export MIX_ENV=test
 
 # Always install mix dependencies
-(cd /srv/philomena && mix deps.get)
+mix deps.get
 
 # Run formatting check
 mix format --check-formatted
