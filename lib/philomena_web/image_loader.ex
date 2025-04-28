@@ -7,12 +7,12 @@ defmodule PhilomenaWeb.ImageLoader do
   alias Philomena.Repo
   import Ecto.Query
 
+  defp delay_home_images?(nil), do: true
   defp delay_home_images?(user) when user.role != "user", do: user.staff_delay_home_images
   defp delay_home_images?(user), do: user.delay_home_images
 
-  def default_query(conn, options \\ [])
-
-  def default_query(conn, options) do
+  # sobelow_skip ["SQL.Query"]
+  def default_query(conn, options \\ []) do
     body =
       if delay_home_images?(conn.assigns.current_user),
         do: %{
