@@ -54,4 +54,9 @@ philomena init
 
 step npm ci install --ignore-scripts
 
+# Create an empty file which indicates to the healthcheck that the container
+# finished initializing. This precents race conditions with `docker exec` commands
+# if the caller waits for the healtheck to pass before running them.
+step touch "$HOME/.initialized"
+
 step exec "$@"
