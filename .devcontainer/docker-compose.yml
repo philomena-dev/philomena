@@ -24,7 +24,7 @@ services:
 
     environment:
       HOST_WORKSPACE: $PWD
-      CI: ${CI:-false}
+      CI:
 
     # While technically optional, `init` enables an init process to properly
     # handle signals and ensure Zombie Processes are cleaned up.
