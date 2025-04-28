@@ -12,7 +12,7 @@ defmodule Philomena.Comments.Query do
       int_fields: ~W(id),
       numeric_fields: ~W(author_id image_id),
       date_fields: ~W(created_at updated_at),
-      literal_fields: ~W(author),
+      literal_fields: ~W(author image.tags),
       ngram_fields: ~W(body),
       default_field: {"body", :ngram}
     ]

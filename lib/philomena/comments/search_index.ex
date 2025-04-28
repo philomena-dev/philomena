@@ -39,6 +39,7 @@ defmodule Philomena.Comments.SearchIndex do
           image: %{
             properties: %{
               tag_ids: %{type: "keyword"},
+              tags: %{type: "keyword"},
               hidden_from_users: %{type: "boolean"},
               approved: %{type: "boolean"}
             }
