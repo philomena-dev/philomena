@@ -33,7 +33,8 @@ defmodule Philomena.Comments.SearchIndex do
           approved: %{type: "boolean"},
           deleted_by_user: %{type: "keyword"},
           deleted_by_user_id: %{type: "keyword"},
-          deletion_reason: %{type: "text", analyzer: "snowball"}
+          deletion_reason: %{type: "text", analyzer: "snowball"},
+          destroyed_content: %{type: "boolean"}
         }
       }
     }
@@ -57,7 +58,8 @@ defmodule Philomena.Comments.SearchIndex do
       approved: comment.image.approved && comment.approved,
       deleted_by_user: if(!!comment.deleted_by, do: String.downcase(comment.deleted_by.name)),
       deleted_by_user_id: comment.deleted_by_id,
-      deletion_reason: comment.deletion_reason
+      deletion_reason: comment.deletion_reason,
+      destroyed_content: comment.destroyed_content
     }
   end
 

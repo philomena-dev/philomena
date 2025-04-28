@@ -81,7 +81,7 @@ defmodule Philomena.Comments.Query do
           ~W(user_id author fingerprint deleted_by_user_id deleted_by_user),
       ngram_fields: fields[:ngram_fields] ++ ~W(deletion_reason),
       ip_fields: ~W(ip),
-      bool_fields: ~W(anonymous deleted),
+      bool_fields: ~W(anonymous deleted destroyed_content),
       custom_fields: fields[:custom_fields] -- ~W(author user_id),
       transforms: Map.drop(fields[:transforms], ~W(author user_id)),
       aliases: %{"deleted" => "hidden_from_users"}
