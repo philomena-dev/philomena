@@ -111,7 +111,7 @@ h1 Content Settings
 
         - delay_home_images = if staff?(@conn.assigns.current_user), do: :staff_delay_home_images, else: :delay_home_images
         = field_with_help( \
-          "Delay images on the home page for 3 minutes and until thumbnails are generated",
+          "Hide images without thumbnails on the homepage and for the first 3 minutes after upload (to allow for last-minute tag changes)",
           [ \
             checkbox(f, delay_home_images, class: "checkbox"),
             label(f, delay_home_images, "Delay home images"),
