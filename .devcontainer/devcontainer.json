@@ -1,4 +1,6 @@
 {
+  // See the docs at https://containers.dev/implementors/json_reference/
+
   // We are using docker-compose to reuse the devcontainer definition in our
   // scripts in case if they are invoked from host. They can spin up their own
   // devcontainer to get access to the external dependencies they require unless
@@ -14,14 +16,23 @@
   // The devcontainer is on the same network as our main app docker compose
   // services, which means that that other containers are available by their
   // service names.
-  "forwardPorts": [5173, 8080],
+  "forwardPorts": [8080, 5173],
+  "portsAttributes": {
+    "5173": {
+      "label": "Frotnend HMR"
+    },
+    "8080": {
+      "label": "Frontend Main"
+    }
+  },
+  "otherPortsAttributes": {
+    // Don't rely on auto-inference for forwarded ports, make it reliable.
+    "onAutoForward": "ignore"
+  },
 
   "customizations": {
     "vscode": {
       "settings": {
-        // Don't rely on auto-inference for forwarded ports, make it reliable.
-        "remote.autoForwardPorts": false,
-
         // Listen on `0.0.0.0` on the host machine to allow accessing the site
         // via the local network, e.g. with a phone connected to the same WiFi
         "remote.localPortHost": "allInterfaces",
@@ -51,6 +62,9 @@
 
         // Container management extension by Microsoft
         "ms-azuretools.vscode-docker",
+
+        // Dockerfile LSP by Docker Inc.
+        "docker.docker",
 
         // Github Actions LSP
         "github.vscode-github-actions",

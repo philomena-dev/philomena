@@ -72,6 +72,3 @@ log/
 
 # Can be used for dirty scripts that you don't want to commit
 *dbg*
-
-# Dependencies installed by our custom scripts
-.tools
