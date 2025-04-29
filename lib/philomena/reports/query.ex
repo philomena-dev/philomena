@@ -8,7 +8,7 @@ defmodule Philomena.Reports.Query do
       date_fields: ~W(created_at),
       literal_fields: ~W(state user admin reportable_type fingerprint),
       ip_fields: ~W(ip),
-      bool_fields: ~W(open),
+      bool_fields: ~W(open system),
       ngram_fields: ~W(reason),
       default_field: {"reason", :ngram},
       no_downcase_fields: ~W(reportable_type)
