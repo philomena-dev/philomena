@@ -4,91 +4,45 @@ h1 Users
   .field
     => text_input f, :uq, name: :uq, value: @conn.params["uq"], class: "hform__text input", placeholder: "Search query", spellcheck: "false"
     = submit "Search", class: "button hform__button"
+  .field
+    elixir:
+      sort_fields = [
+        "Sort by user ID": :id,
+        "Sort by uploads": :uploads_count,
+        "Sort by favorites": :images_favourited_count,
+        "Sort by comments": :comments_posted_count,
+        "Sort by votes": :votes_cast_count,
+        "Sort by metadata updates": :metadata_updates_count,
+        "Sort by forum posts": :forum_posts_count,
+        "Sort by topics": :topic_count,
+      ]
 
-=> link "Site staff", to: ~p"/admin/users?#{[staff: 1]}"
+      sort_directions = [
+        "Descending": :desc,
+        "Ascending": :asc
+      ]
+
+    = select f, :usf, sort_fields, class: "input", name: "usf", autocomplete: "off", selected: @conn.params["usf"]
+    = select f, :usd, sort_directions, class: "input input--separate-left", name: "usd", autocomplete: "off", selected: @conn.params["usd"]
+
+=> link "Site staff", to: ~p"/admin/users?#{[uq: "NOT role:user"]}"
 ' &bull;
-=> link "2FA users", to: ~p"/admin/users?#{[twofactor: 1]}"
+=> link "2FA users", to: ~p"/admin/users?#{[uq: "otp_required_for_login:true"]}"
 
-- route = fn p -> ~p"/admin/users?#{p}" end
-- pagination = render PhilomenaWeb.PaginationView, "_pagination.html", page: @users, route: route, conn: @conn, params: page_params(@conn.params)
+h2 Search Results
 
-.block
-  .block__header
-    .page__pagination = pagination
+= cond do
+  - Enum.any?(@users) ->
+    - route = fn p -> ~p"/admin/users?#{p}" end
+    - pagination = render PhilomenaWeb.PaginationView, "_pagination.html", page: @users, route: route, conn: @conn, params: scope(@conn)
 
-  .block__content
-    table.table
-      thead
-        tr
-          th Name
-          th Email
-          th Activated
-          th Role
-          th Created
-          th Options
-      tbody
-        = for user <- @users do
-          tr
-            td
-              = link user.name, to: ~p"/profiles/#{user}"
+    = render PhilomenaWeb.Admin.UserView, "_list.html", users: @users, conn: @conn, pagination: pagination
+  
+  - assigns[:error] ->
+    .block.block--fixed.block--danger
+      ' Oops, there was an error parsing your query! Check for mistakes like mismatched parentheses. The error was:
+    pre = assigns[:error]
 
-              = cond do
-                - user.otp_required_for_login ->
-                  span.banner__2fa.success
-                    i.fas.fa-check>
-                    ' 2FA
-
-                - user.role != "user" and !user.otp_required_for_login ->
-                  span.banner__2fa.danger
-                    i.fas.fa-times>
-                    ' 2FA
-
-                - true ->
-
-            td
-              = if can?(@conn, :edit, Philomena.Users.User) do
-                = user.email
-              - else
-                i N/A
-
-            td
-              = cond do
-                - user.deleted_at ->
-                  strong> Deactivated
-                  = pretty_time user.deleted_at
-
-                - user.confirmed_at ->
-                  ' Active
-
-                - true ->
-                  strong> Unconfirmed
-
-            td
-              = String.capitalize(user.role)
-
-            td
-              = pretty_time user.created_at
-
-            td
-              = if can?(@conn, :edit, user) do
-                => link to: ~p"/admin/users/#{user}/edit" do
-                  i.fa.fa-fw.fa-user-edit
-                  ' Edit
-
-              /= if user.deleted_at do
-              /  => link_to 'Reactivate', admin_user_activation_path(user), data: { confirm: t('are_you_sure') }, method: :create
-              /- else
-              /  => link_to 'Deactivate', admin_user_activation_path(user), data: { confirm: t('are_you_sure') }, method: :delete
-              /' &bull;
-
-              = if can?(@conn, :index, Philomena.Bans.User) do
-                => link to: ~p"/admin/user_bans/new?#{[user_id: user.id]}" do
-                  i.fa.fa-fw.fa-ban
-                  ' Ban
-              = if can?(@conn, :edit, Philomena.ArtistLinks.ArtistLink) do
-                => link to: ~p"/profiles/#{user}/artist_links/new" do
-                  i.fa.fa-fw.fa-link
-                  ' Add link
-
-  .block__header.block__header--light
-    .page__pagination = pagination
+  - true ->
+    p
+      ' No users found!
