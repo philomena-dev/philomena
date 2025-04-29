@@ -4,6 +4,10 @@
 # Available themes: https://github.com/ohmyzsh/ohmyzsh/wiki/themes
 ZSH_THEME="simple"
 
+# For some reason zsh overwrites the `HISTFILE` variable set in the Dockerfile
+# so we have to force it here again.
+HISTFILE="$HOME/shell-history/history"
+
 plugins=(
   command-time
   fzf
