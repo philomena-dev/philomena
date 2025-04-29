@@ -7,6 +7,7 @@ defmodule Philomena.UserStatistics do
   alias Philomena.Repo
 
   alias Philomena.UserStatistics.UserStatistic
+  alias Philomena.Users
   alias Philomena.Users.User
 
   @permitted_actions [
@@ -55,5 +56,14 @@ defmodule Philomena.UserStatistics do
         conflict_target: [:day, :user_id]
       )
     end)
+    |> case do
+      {:ok, _} ->
+        Users.reindex_user(%User{id: user_id})
+
+        {:ok, nil}
+
+      error ->
+        error
+    end
   end
 end
