@@ -19,6 +19,7 @@ defmodule Philomena.Users.SearchIndex do
         dynamic: false,
         properties: %{
           id: %{type: "integer"},
+          name_or_email: %{type: "keyword"},
           name: %{type: "keyword"},
           slug: %{type: "keyword"},
           role: %{type: "keyword"},
@@ -51,6 +52,7 @@ defmodule Philomena.Users.SearchIndex do
   def as_json(user) do
     %{
       id: user.id,
+      name_or_email: [String.downcase(user.name), String.downcase(user.email)],
       name: String.downcase(user.name),
       slug: String.downcase(user.slug),
       role: user.role,
