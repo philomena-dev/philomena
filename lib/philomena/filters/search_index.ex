@@ -31,8 +31,7 @@ defmodule Philomena.Filters.SearchIndex do
           spoilered_tag_ids: %{type: "keyword"},
           hidden_tag_ids: %{type: "keyword"},
           spoilered_complex_str: %{type: "keyword"},
-          hidden_complex_str: %{type: "keyword"},
-          user_count: %{type: "integer"}
+          hidden_complex_str: %{type: "keyword"}
         }
       }
     }
@@ -56,8 +55,7 @@ defmodule Philomena.Filters.SearchIndex do
       spoilered_complex_str:
         if(!!filter.spoilered_complex_str, do: String.downcase(filter.spoilered_complex_str)),
       hidden_complex_str:
-        if(!!filter.hidden_complex_str, do: String.downcase(filter.hidden_complex_str)),
-      user_count: filter.user_count
+        if(!!filter.hidden_complex_str, do: String.downcase(filter.hidden_complex_str))
     }
   end
 
