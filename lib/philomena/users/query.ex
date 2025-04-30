@@ -10,7 +10,7 @@ defmodule Philomena.Users.Query do
       literal_fields: ~W(name slug role email deleted_by_user deleted_by_user_id),
       bool_fields: ~W(custom_avatar verified),
       ngram_fields: ~W(description scratchpad personal_title),
-      default_field: {"name", :term}
+      default_field: {"name_or_email", :term}
     ]
   end
 
