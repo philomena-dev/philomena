@@ -3,6 +3,7 @@ defmodule PhilomenaWeb.Filter.CurrentController do
 
   @cookie_opts [max_age: 788_923_800, same_site: "Lax"]
 
+  alias Philomena.Users
   alias Philomena.{Filters, Filters.Filter, Users.User}
   alias Philomena.Repo
 
@@ -34,6 +35,7 @@ defmodule PhilomenaWeb.Filter.CurrentController do
       user
       |> User.filter_changeset(filter)
       |> Repo.update()
+      |> Users.reindex_after_update()
 
     conn
   end

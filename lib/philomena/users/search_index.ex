@@ -42,7 +42,9 @@ defmodule Philomena.Users.SearchIndex do
           scratchpad: %{type: "text", analyzer: "snowball"},
           custom_avatar: %{type: "boolean"},
           verified: %{type: "boolean"},
-          personal_title: %{type: "text", analyzer: "snowball"}
+          personal_title: %{type: "text", analyzer: "snowball"},
+          current_filter_id: %{type: "keyword"},
+          forced_filter_id: %{type: "keyword"}
         }
       }
     }
@@ -75,7 +77,9 @@ defmodule Philomena.Users.SearchIndex do
       scratchpad: String.downcase(user.scratchpad || ""),
       custom_avatar: !!user.avatar,
       verified: user.verified,
-      personal_title: String.downcase(user.personal_title || "")
+      personal_title: String.downcase(user.personal_title || ""),
+      current_filter_id: user.current_filter_id,
+      forced_filter_id: user.forced_filter_id
     }
   end
 

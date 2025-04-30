@@ -1,6 +1,7 @@
 defmodule PhilomenaWeb.CurrentFilterPlug do
   import Plug.Conn
 
+  alias Philomena.Users
   alias Philomena.{Filters, Filters.Filter, Users.User}
   alias Philomena.Repo
 
@@ -38,6 +39,7 @@ defmodule PhilomenaWeb.CurrentFilterPlug do
       user
       |> User.filter_changeset(filter)
       |> Repo.update()
+      |> Users.reindex_after_update()
 
     Map.put(user, :current_filter, filter)
   end
