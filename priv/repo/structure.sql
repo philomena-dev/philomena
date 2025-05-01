@@ -2,12 +2,13 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 16.4
--- Dumped by pg_dump version 16.6
+-- Dumped from database version 17.4
+-- Dumped by pg_dump version 17.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -1976,7 +1977,6 @@ ALTER SEQUENCE public.user_name_changes_id_seq OWNED BY public.user_name_changes
 --
 
 CREATE TABLE public.user_statistics (
-    id integer NOT NULL,
     user_id integer NOT NULL,
     day integer DEFAULT 0 NOT NULL,
     uploads integer DEFAULT 0 NOT NULL,
@@ -1984,27 +1984,9 @@ CREATE TABLE public.user_statistics (
     comments_posted integer DEFAULT 0 NOT NULL,
     metadata_updates integer DEFAULT 0 NOT NULL,
     images_favourited integer DEFAULT 0 NOT NULL,
-    forum_posts integer DEFAULT 0 NOT NULL
+    forum_posts integer DEFAULT 0 NOT NULL,
+    topics integer DEFAULT 0
 );
-
-
---
--- Name: user_statistics_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.user_statistics_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: user_statistics_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.user_statistics_id_seq OWNED BY public.user_statistics.id;
 
 
 --
@@ -2119,7 +2101,7 @@ CREATE TABLE public.users (
     watched_images_query_str character varying DEFAULT ''::character varying NOT NULL,
     watched_images_exclude_str character varying DEFAULT ''::character varying NOT NULL,
     forum_posts_count integer DEFAULT 0 NOT NULL,
-    topic_count integer DEFAULT 0 NOT NULL,
+    topics_count integer DEFAULT 0 NOT NULL,
     recent_filter_ids integer[] DEFAULT '{}'::integer[] NOT NULL,
     unread_notification_ids integer[] DEFAULT '{}'::integer[] NOT NULL,
     watched_tag_ids integer[] DEFAULT '{}'::integer[] NOT NULL,
@@ -2541,13 +2523,6 @@ ALTER TABLE ONLY public.user_name_changes ALTER COLUMN id SET DEFAULT nextval('p
 
 
 --
--- Name: user_statistics id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.user_statistics ALTER COLUMN id SET DEFAULT nextval('public.user_statistics_id_seq'::regclass);
-
-
---
 -- Name: user_tokens id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2940,7 +2915,7 @@ ALTER TABLE ONLY public.user_name_changes
 --
 
 ALTER TABLE ONLY public.user_statistics
-    ADD CONSTRAINT user_statistics_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT user_statistics_pkey PRIMARY KEY (user_id, day);
 
 
 --
@@ -5448,3 +5423,5 @@ INSERT INTO public."schema_migrations" (version) VALUES (20220321173359);
 INSERT INTO public."schema_migrations" (version) VALUES (20240723122759);
 INSERT INTO public."schema_migrations" (version) VALUES (20240728191353);
 INSERT INTO public."schema_migrations" (version) VALUES (20241216165826);
+INSERT INTO public."schema_migrations" (version) VALUES (20250430092058);
+INSERT INTO public."schema_migrations" (version) VALUES (20250501023533);

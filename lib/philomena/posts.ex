@@ -10,6 +10,7 @@ defmodule Philomena.Posts do
   alias PhilomenaQuery.Search
   alias Philomena.Topics.Topic
   alias Philomena.Topics
+  alias Philomena.Forums
   alias Philomena.UserStatistics
   alias Philomena.Users.User
   alias Philomena.Posts.Post
@@ -208,25 +209,13 @@ defmodule Philomena.Posts do
 
   """
   def hide_post(%Post{} = post, attrs, user) do
-    report_query = Reports.close_report_query({"Post", post.id}, user)
-
-    topics =
-      Topic
-      |> where(last_post_id: ^post.id)
-      |> update(set: [last_post_id: nil])
-
-    forums =
-      Forum
-      |> where(last_post_id: ^post.id)
-      |> update(set: [last_post_id: nil])
-
-    post = Post.hide_changeset(post, attrs, user)
+    post = post |> Repo.preload(:topic)
 
     Multi.new()
-    |> Multi.update(:post, post)
-    |> Multi.update_all(:reports, report_query, [])
-    |> Multi.update_all(:topics, topics, [])
-    |> Multi.update_all(:forums, forums, [])
+    |> Multi.update(:post, Post.hide_changeset(post, attrs, user))
+    |> Multi.update_all(:reports, Reports.close_report_query({"Post", post.id}, user), [])
+    |> Multi.update_all(:topic, Topics.update_topic_last_post_query(post.topic_id), [])
+    |> Multi.update_all(:forum, Forums.update_forum_last_post_query(post.topic.forum_id), [])
     |> Repo.transaction()
     |> case do
       {:ok, %{post: post, reports: {_count, reports}}} ->
@@ -250,10 +239,22 @@ defmodule Philomena.Posts do
 
   """
   def unhide_post(%Post{} = post) do
-    post
-    |> Post.unhide_changeset()
-    |> Repo.update()
-    |> reindex_after_update()
+    post = post |> Repo.preload(:topic)
+
+    Multi.new()
+    |> Multi.update(:post, Post.unhide_changeset(post))
+    |> Multi.update_all(:topic, Topics.update_topic_last_post_query(post.topic_id), [])
+    |> Multi.update_all(:forum, Forums.update_forum_last_post_query(post.topic.forum_id), [])
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{post: post}} ->
+        reindex_post(post)
+
+        {:ok, post}
+
+      error ->
+        error
+    end
   end
 
   @doc """
@@ -266,10 +267,31 @@ defmodule Philomena.Posts do
 
   """
   def destroy_post(%Post{} = post) do
-    post
-    |> Post.destroy_changeset()
-    |> Repo.update()
-    |> reindex_after_update()
+    post = post |> Repo.preload([:topic, :user])
+
+    Multi.new()
+    |> Multi.update(:post, Post.destroy_changeset(post))
+    |> Multi.update_all(
+      :topic,
+      Topic |> where(id: ^post.topic_id),
+      inc: [post_count: -1]
+    )
+    |> Multi.update_all(
+      :forum,
+      Forum |> where(id: ^post.topic.forum_id),
+      inc: [post_count: -1]
+    )
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{post: post}} ->
+        UserStatistics.inc_stat(post.user, :forum_posts, -1)
+        reindex_post(post)
+
+        {:ok, post}
+
+      error ->
+        error
+    end
   end
 
   @doc """

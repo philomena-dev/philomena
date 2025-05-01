@@ -96,7 +96,7 @@ defmodule Philomena.Users.User do
 
     # Counters
     field :forum_posts_count, :integer, default: 0
-    field :topic_count, :integer, default: 0
+    field :topics_count, :integer, default: 0
     field :uploads_count, :integer, default: 0
     field :votes_cast_count, :integer, default: 0
     field :comments_posted_count, :integer, default: 0

@@ -32,7 +32,8 @@ defmodule Philomena.UserStatistics do
              :comments_posted,
              :votes_cast,
              :metadata_updates,
-             :forum_posts
+             :forum_posts,
+             :topics
            ] do
     now =
       DateTime.utc_now()
