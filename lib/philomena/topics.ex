@@ -8,8 +8,10 @@ defmodule Philomena.Topics do
   alias Philomena.Repo
 
   alias Philomena.Topics.Topic
+  alias Philomena.Forums
   alias Philomena.Forums.Forum
   alias Philomena.Posts
+  alias Philomena.UserStatistics
   alias Philomena.Notifications
 
   use Philomena.Subscriptions,
@@ -77,6 +79,7 @@ defmodule Philomena.Topics do
     |> Repo.transaction()
     |> case do
       {:ok, %{topic: topic}} = result ->
+        UserStatistics.inc_stat(topic.user, :topics)
         Posts.reindex_post(hd(topic.posts))
         Posts.report_non_approved(hd(topic.posts))
 
@@ -205,26 +208,19 @@ defmodule Philomena.Topics do
   """
   def move_topic(topic, new_forum_id) do
     old_forum_id = topic.forum_id
-    topic_changes = Topic.move_changeset(topic, new_forum_id)
 
     Multi.new()
-    |> Multi.update(:topic, topic_changes)
-    |> Multi.run(:update_old_forum, fn repo, %{topic: topic} ->
-      {count, nil} =
-        Forum
-        |> where(id: ^old_forum_id)
-        |> repo.update_all(inc: [post_count: -topic.post_count, topic_count: -1])
-
-      {:ok, count}
-    end)
-    |> Multi.run(:update_new_forum, fn repo, %{topic: topic} ->
-      {count, nil} =
-        Forum
-        |> where(id: ^topic.forum_id)
-        |> repo.update_all(inc: [post_count: topic.post_count, topic_count: 1])
-
-      {:ok, count}
-    end)
+    |> Multi.update(:topic, Topic.move_changeset(topic, new_forum_id))
+    |> Multi.update_all(
+      :old_forum,
+      Forums.update_forum_last_post_query(old_forum_id),
+      inc: [post_count: -topic.post_count, topic_count: -1]
+    )
+    |> Multi.update_all(
+      :new_forum,
+      Forums.update_forum_last_post_query(new_forum_id),
+      inc: [post_count: topic.post_count, topic_count: 1]
+    )
     |> Repo.transaction()
   end
 
@@ -238,20 +234,20 @@ defmodule Philomena.Topics do
 
   """
   def hide_topic(topic, deletion_reason, user) do
-    topic_changes = Topic.hide_changeset(topic, deletion_reason, user)
-
-    forums =
-      Forum
-      |> join(:inner, [f], _ in assoc(f, :last_post))
-      |> where([f, p], p.topic_id == ^topic.id)
-      |> update(set: [last_post_id: nil])
+    topic = topic |> Repo.preload(:user)
 
     Multi.new()
-    |> Multi.update(:topic, topic_changes)
-    |> Multi.update_all(:forums, forums, [])
+    |> Multi.update(:topic, Topic.hide_changeset(topic, deletion_reason, user))
+    |> Multi.update_all(
+      :forum,
+      Forums.update_forum_last_post_query(topic.forum_id),
+      inc: [post_count: -topic.post_count, topic_count: -1]
+    )
     |> Repo.transaction()
     |> case do
       {:ok, %{topic: topic}} ->
+        UserStatistics.inc_stat(topic.user, :topics, -1)
+
         {:ok, topic}
 
       error ->
@@ -269,8 +265,25 @@ defmodule Philomena.Topics do
 
   """
   def unhide_topic(topic) do
-    Topic.unhide_changeset(topic)
-    |> Repo.update()
+    topic = topic |> Repo.preload(:user)
+
+    Multi.new()
+    |> Multi.update(:topic, Topic.unhide_changeset(topic))
+    |> Multi.update_all(
+      :forum,
+      Forums.update_forum_last_post_query(topic.forum_id),
+      inc: [post_count: topic.post_count, topic_count: 1]
+    )
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{topic: topic}} ->
+        UserStatistics.inc_stat(topic.user, :topics)
+
+        {:ok, topic}
+
+      error ->
+        error
+    end
   end
 
   @doc """
@@ -301,5 +314,28 @@ defmodule Philomena.Topics do
     Notifications.clear_forum_post_notification(topic, user)
     Notifications.clear_forum_topic_notification(topic, user)
     :ok
+  end
+
+  @doc """
+  Returns an `m:Ecto.Query` which updates the last post for the given topic.
+
+  ## Examples
+
+      iex> update_topic_last_post_query(1)
+      #Ecto.Query<...>
+
+  """
+  def update_topic_last_post_query(topic_id) do
+    Topic
+    |> where(id: ^topic_id)
+    |> update(
+      set: [
+        last_post_id:
+          fragment(
+            "SELECT max(id) FROM posts WHERE topic_id = ? AND hidden_from_users IS FALSE",
+            ^topic_id
+          )
+      ]
+    )
   end
 end

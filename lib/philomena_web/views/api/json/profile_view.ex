@@ -17,7 +17,7 @@ defmodule PhilomenaWeb.Api.Json.ProfileView do
       comments_count: user.comments_posted_count,
       uploads_count: user.uploads_count,
       posts_count: user.forum_posts_count,
-      topics_count: user.topic_count,
+      topics_count: user.topics_count,
       links:
         render_many(
           user.public_links,

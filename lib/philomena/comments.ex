@@ -179,10 +179,26 @@ defmodule Philomena.Comments do
 
   """
   def destroy_comment(%Comment{} = comment) do
-    comment
-    |> Comment.destroy_changeset()
-    |> Repo.update()
-    |> reindex_after_update()
+    comment = comment |> Repo.preload(:user)
+
+    Multi.new()
+    |> Multi.update(:comment, Comment.destroy_changeset(comment))
+    |> Multi.update_all(
+      :image,
+      Image |> where(id: ^comment.image_id),
+      inc: [comments_count: -1]
+    )
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{comment: comment}} ->
+        UserStatistics.inc_stat(comment.user, :comments_posted, -1)
+        reindex_comment(comment)
+
+        {:ok, comment}
+
+      error ->
+        error
+    end
   end
 
   defp reindex_after_update(result) do

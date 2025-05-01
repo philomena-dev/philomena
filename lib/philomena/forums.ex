@@ -104,4 +104,27 @@ defmodule Philomena.Forums do
   def change_forum(%Forum{} = forum) do
     Forum.changeset(forum, %{})
   end
+
+  @doc """
+  Returns an `m:Ecto.Query` which updates the last post for the given forum.
+
+  ## Examples
+
+      iex> update_forum_last_post_query(1)
+      #Ecto.Query<...>
+
+  """
+  def update_forum_last_post_query(forum_id) do
+    Forum
+    |> where(id: ^forum_id)
+    |> update(
+      set: [
+        last_post_id:
+          fragment(
+            "SELECT max(posts.id) FROM posts JOIN topics ON posts.topic_id = topics.id WHERE topics.forum_id = ? AND topics.hidden_from_users IS FALSE AND posts.hidden_from_users IS FALSE",
+            ^forum_id
+          )
+      ]
+    )
+  end
 end
