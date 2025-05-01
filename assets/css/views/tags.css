@@ -180,6 +180,10 @@
 @mixin tag-category species;
 @mixin tag-category body-type;
 
+.tag__delete {
+  font-weight: normal;
+}
+
 .tag-page .tag,
 .tagsinput .tag {
   font-family: var(--font-family-base);

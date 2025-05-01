@@ -66,6 +66,13 @@ export function makeEl<Tag extends keyof HTMLElementTagNameMap>(
   const el = document.createElement(tag);
   if (attr) {
     for (const prop in attr) {
+      // Specially handle dataset, because this property is readonly in the
+      // created element
+      if (prop === 'dataset') {
+        Object.assign(el.dataset, attr[prop] as DOMStringMap);
+        continue;
+      }
+
       const newValue = attr[prop];
       if (newValue) {
         el[prop] = newValue;

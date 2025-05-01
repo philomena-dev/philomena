@@ -3,7 +3,7 @@
  */
 
 import { assertNotNull, assertType } from './utils/assert';
-import { $, $$, clearEl, removeEl, showEl, hideEl, escapeCss, escapeHtml } from './utils/dom';
+import { $, $$, clearEl, removeEl, showEl, hideEl, escapeCss, escapeHtml, makeEl } from './utils/dom';
 
 export function setupTagsInput(tagBlock: HTMLDivElement) {
   const form = assertNotNull(tagBlock.closest('form'));
@@ -121,8 +121,29 @@ export function setupTagsInput(tagBlock: HTMLDivElement) {
     textarea.value = tags.join(', ');
 
     // Insert the new element
-    const el = `<span class="tag">${escapeHtml(name)} <a href="#" data-click-focus=".js-taginput-input" data-tag-name="${escapeHtml(name)}">x</a></span>`;
-    inputField.insertAdjacentHTML('beforebegin', el);
+    const el = makeEl(
+      'span',
+      {
+        className: 'tag',
+      },
+      [
+        name,
+        makeEl(
+          'a',
+          {
+            href: '#',
+            className: 'tag__delete',
+            dataset: {
+              clickFocus: '.js-taginput-input',
+              tagName: name,
+            },
+          },
+          [makeEl('span', { className: 'tag__delete' }, ['✕'])],
+        ),
+      ],
+    );
+
+    inputField.insertAdjacentElement('beforebegin', el);
     inputField.value = '';
   }
 
