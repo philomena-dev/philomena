@@ -86,7 +86,7 @@ declare const KeyCodeBrand: unique symbol;
  */
 export type KeyboardKey = string & { [KeyCodeBrand]: never };
 
-// Even though `event.code` is deprecated, it is still the most reliable way to
+// Even though `event.keyCode` is deprecated, it is still the most reliable way to
 // detect the key pressed.
 const keysMapping = {
   8: 'Backspace',
