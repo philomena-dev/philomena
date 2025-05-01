@@ -240,6 +240,12 @@ class Autocomplete {
   }
 
   onKeyDown(event: KeyboardEvent) {
+    console.log({
+      key: event.key,
+      code: event.code,
+      keyCode: event.keyCode,
+    });
+
     if (!this.isActive() || this.input.element !== event.target) {
       return;
     }
@@ -247,8 +253,9 @@ class Autocomplete {
     let keyCode = event.code;
 
     // Chrome & Firefox on Android devices return empty code when "Enter" is pressed.
-    if (!keyCode && event.key === 'Enter') {
-      keyCode = event.key;
+    // Also, there can be a case of `code === "NumpadEnter`, which has `Enter` key.
+    if (event.key === 'Enter') {
+      keyCode = 'Enter';
     }
 
     if ((event.key === ',' || keyCode === 'Enter') && this.input.type === 'single-tag') {

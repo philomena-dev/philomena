@@ -75,3 +75,64 @@ export function delegate<K extends keyof PhilomenaAvailableEventsMap, Target ext
     }
   });
 }
+
+declare const KeyCodeBrand: unique symbol;
+
+/**
+ * Newtype for a keyboard key to force the developers use the `keys` map of
+ * well-known keyboard keys and extend it if needed. This forces the developer
+ * to think carefully about handling the new keyboard key that isn't yet handled
+ * by the `normalizedKeyboardKey` function.
+ */
+export type KeyboardKey = string & { [KeyCodeBrand]: never };
+
+// Even though `event.code` is deprecated, it is still the most reliable way to
+// detect the key pressed.
+const keysMapping = {
+  8: 'Backspace',
+
+  // Covers the numpad enter too
+  13: 'Enter',
+
+  // Covers numpad arrows too
+  37: 'ArrowLeft',
+  38: 'ArrowUp',
+  39: 'ArrowRight',
+  40: 'ArrowDown',
+
+  188: 'Comma',
+} as const;
+
+type WellKnownKey = keyof typeof keysMapping;
+
+/**
+ * A map of known keys to be used in code to avoid typos.
+ */
+export const keys = Object.fromEntries(Object.values(keysMapping).map(key => [key, key])) as Record<
+  WellKnownKey,
+  KeyboardKey
+>;
+
+/**
+ * There are many inconsistencies in the way different browsers handle keyboard
+ * events. This function is a heroic attempt to normalize them.
+ *
+ * There are the following nuances discovered so far:
+ *
+ * For example:
+ * - Chrome & Firefox on Android devices return empty `code` when "Enter" is
+ *   pressed via the virtual keyboard.
+ * - There seems to be no way to reliably detect the `,` key on virtual
+ *   keyboards on phones.
+ * - The `event.code` uses `NumpadEnter` for the numpad enter key on regular
+ *   keyboards
+ */
+export function normalizedKeyboardKey(event: KeyboardEvent): KeyboardKey {
+  const code = keysMapping[event.keyCode];
+
+  if (code) {
+    return code;
+  }
+
+  return event.code as KeyboardKey;
+}

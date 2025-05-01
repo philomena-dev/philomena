@@ -2,6 +2,7 @@
  * Fancy tag editor.
  */
 
+import { normalizedKeyboardKey } from 'utils/events';
 import { assertNotNull, assertType } from './utils/assert';
 import { $, $$, clearEl, removeEl, showEl, hideEl, escapeCss, escapeHtml } from './utils/dom';
 
@@ -70,10 +71,12 @@ export function setupTagsInput(tagBlock: HTMLDivElement) {
   }
 
   function handleKeyEvent(event: KeyboardEvent) {
-    const { keyCode, ctrlKey, shiftKey } = event;
+    const { ctrlKey, shiftKey } = event;
+
+    const key = normalizedKeyboardKey(event);
 
     // allow form submission with ctrl+enter if no text was typed
-    if (keyCode === 13 && ctrlKey && inputField.value === '') {
+    if (key === 'Enter' && ctrlKey && inputField.value === '') {
       return;
     }
 
