@@ -1100,6 +1100,7 @@ defmodule Philomena.Users do
 
       iex> reindex_user(user)
       %User{}
+
   """
   def reindex_user(%User{} = user) do
     Exq.enqueue(Exq, "indexing", IndexWorker, ["Users", "id", [user.id]])
