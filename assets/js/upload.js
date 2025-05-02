@@ -3,6 +3,7 @@
  */
 
 import { assertNotNull } from './utils/assert';
+import { normalizedKeyboardKey, keys } from './utils/keyboard';
 import { fetchJson, handleError } from './utils/requests';
 import { $, $$, clearEl, hideEl, makeEl, showEl } from './utils/dom';
 import { addTag } from './tagsinput';
@@ -143,7 +144,9 @@ function setupImageUpload() {
 
   // Fetch on "enter" in url field
   remoteUrl.addEventListener('keydown', event => {
-    if (event.keyCode === 13) {
+    const key = normalizedKeyboardKey(event);
+
+    if (key === keys.Enter) {
       // Hit enter
       fetchButton.click();
     }

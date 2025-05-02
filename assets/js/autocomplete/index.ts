@@ -14,6 +14,7 @@ import { $$ } from '../utils/dom';
 import { AutocompleteClient, GetTagSuggestionsRequest } from './client';
 import { DebouncedCache } from '../utils/debounced-cache';
 import store from '../utils/store';
+import { normalizedKeyboardKey, keys } from '../utils/keyboard';
 
 // This lint is dumb, especially in this case because this type alias depends on
 // the `Autocomplete` symbol, and methods on the `Autocomplete` class depend on
@@ -240,32 +241,20 @@ class Autocomplete {
   }
 
   onKeyDown(event: KeyboardEvent) {
-    console.log({
-      key: event.key,
-      code: event.code,
-      keyCode: event.keyCode,
-    });
-
     if (!this.isActive() || this.input.element !== event.target) {
       return;
     }
 
-    let keyCode = event.code;
+    const key = normalizedKeyboardKey(event);
 
-    // Chrome & Firefox on Android devices return empty code when "Enter" is pressed.
-    // Also, there can be a case of `code === "NumpadEnter`, which has `Enter` key.
-    if (event.key === 'Enter') {
-      keyCode = 'Enter';
-    }
-
-    if ((event.key === ',' || keyCode === 'Enter') && this.input.type === 'single-tag') {
+    if ((event.key === ',' || key === keys.Enter) && this.input.type === 'single-tag') {
       // Comma/Enter mean the end of input for the current tag in single-tag mode.
       this.hidePopup(`The user accepted the existing input via key: '${event.key}', code: '${event.code}'`);
       return;
     }
 
-    switch (keyCode) {
-      case 'Enter': {
+    switch (key) {
+      case keys.Enter: {
         const { selectedSuggestion } = this.popup;
         if (!selectedSuggestion) {
           return;
@@ -284,19 +273,19 @@ class Autocomplete {
         });
         return;
       }
-      case 'Escape': {
+      case keys.Escape: {
         this.hidePopup('User pressed "Escape"');
         return;
       }
-      case 'ArrowLeft':
-      case 'ArrowRight': {
+      case keys.ArrowLeft:
+      case keys.ArrowRight: {
         // The event we are processing comes before the input's selection is updated.
         // Defer the refresh to the next frame to get the updated selection.
         requestAnimationFrame(() => this.refresh());
         return;
       }
-      case 'ArrowUp':
-      case 'ArrowDown': {
+      case keys.ArrowUp:
+      case keys.ArrowDown: {
         if (event.code === 'ArrowUp') {
           if (event.ctrlKey) {
             this.popup.selectCtrlUp();
