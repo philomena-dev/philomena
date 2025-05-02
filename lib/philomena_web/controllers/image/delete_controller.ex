@@ -47,15 +47,13 @@ defmodule PhilomenaWeb.Image.DeleteController do
   end
 
   defp verify_deleted(conn, _opts) do
-    case conn.assigns.image.hidden_from_users do
-      true ->
-        conn
-
-      _false ->
-        conn
-        |> put_flash(:error, "Cannot change deletion reason on a non-deleted image!")
-        |> redirect(to: ~p"/images/#{conn.assigns.image}")
-        |> halt()
+    if conn.assigns.image.hidden_from_users do
+      conn
+    else
+      conn
+      |> put_flash(:error, "Cannot change deletion reason on a non-deleted image!")
+      |> redirect(to: ~p"/images/#{conn.assigns.image}")
+      |> halt()
     end
   end
 
@@ -73,9 +71,9 @@ defmodule PhilomenaWeb.Image.DeleteController do
   defp log_details(action, image) do
     body =
       case action do
-        :create -> "Deleted image >>#{image.id} (#{image.deletion_reason})"
-        :update -> "Changed deletion reason of >>#{image.id} (#{image.deletion_reason})"
-        :delete -> "Restored image >>#{image.id}"
+        :create -> "Deleted image #{image.id} (#{image.deletion_reason})"
+        :update -> "Changed deletion reason of #{image.id} (#{image.deletion_reason})"
+        :delete -> "Restored image #{image.id}"
       end
 
     %{
