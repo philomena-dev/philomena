@@ -1,5 +1,6 @@
 defmodule Philomena.Comments.Query do
   alias PhilomenaQuery.Parse.Parser
+  alias Philomena.Tags.Tag
 
   defp user_id_transform(_ctx, data) do
     case Integer.parse(data) do
@@ -52,7 +53,7 @@ defmodule Philomena.Comments.Query do
     [
       int_fields: ~W(id),
       date_fields: ~W(created_at),
-      literal_fields: ~W(image_id),
+      literal_fields: ~W(image_id image.tags),
       ngram_fields: ~W(body),
       custom_fields: ~W(author user_id),
       default_field: {"body", :ngram},
@@ -77,12 +78,17 @@ defmodule Philomena.Comments.Query do
     fields = user_fields()
 
     Keyword.merge(fields,
-      literal_fields: ~W(image_id user_id author fingerprint),
+      literal_fields: fields[:literal_fields] ++ ~W(user_id author fingerprint),
       ip_fields: ~W(ip),
-      bool_fields: ~W(anonymous deleted),
+      bool_fields: ~W(anonymous deleted image.deleted approved image.approved),
       custom_fields: fields[:custom_fields] -- ~W(author user_id),
-      aliases: Map.merge(fields[:aliases], %{"deleted" => "hidden_from_users"}),
-      transforms: Map.drop(fields[:transforms], ~W(author user_id))
+      aliases:
+        Map.merge(fields[:aliases], %{
+          "deleted" => "hidden_from_users",
+          "image.deleted" => "image.hidden_from_users"
+        }),
+      transforms: Map.drop(fields[:transforms], ~W(author user_id)),
+      normalizations: %{"image.tags" => &Tag.clean_tag_name/1}
     )
   end
 

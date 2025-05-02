@@ -357,7 +357,7 @@ defmodule Philomena.Comments do
   """
   def indexing_preloads do
     user_query = select(User, [u], map(u, [:id, :name]))
-    tag_query = select(Tag, [t], map(t, [:id]))
+    tag_query = select(Tag, [t], map(t, [:id, :name]))
 
     image_query =
       Image

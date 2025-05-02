@@ -25,13 +25,20 @@ defmodule Philomena.Comments.SearchIndex do
           image_id: %{type: "keyword"},
           user_id: %{type: "keyword"},
           author: %{type: "keyword"},
-          image_tag_ids: %{type: "keyword"},
           # boolean
           anonymous: %{type: "keyword"},
           # boolean
           hidden_from_users: %{type: "keyword"},
           body: %{type: "text", analyzer: "snowball"},
-          approved: %{type: "boolean"}
+          approved: %{type: "boolean"},
+          image: %{
+            properties: %{
+              tag_ids: %{type: "keyword"},
+              tags: %{type: "keyword"},
+              hidden_from_users: %{type: "boolean"},
+              approved: %{type: "boolean"}
+            }
+          }
         }
       }
     }
@@ -47,11 +54,16 @@ defmodule Philomena.Comments.SearchIndex do
       image_id: comment.image_id,
       user_id: comment.user_id,
       author: if(!!comment.user and !comment.anonymous, do: comment.user.name),
-      image_tag_ids: comment.image.tags |> Enum.map(& &1.id),
       anonymous: comment.anonymous,
-      hidden_from_users: comment.image.hidden_from_users || comment.hidden_from_users,
+      hidden_from_users: comment.hidden_from_users,
       body: comment.body,
-      approved: comment.image.approved && comment.approved
+      approved: comment.approved,
+      image: %{
+        tag_ids: comment.image.tags |> Enum.map(& &1.id),
+        tags: comment.image.tags |> Enum.map(& &1.name),
+        hidden_from_users: comment.image.hidden_from_users,
+        approved: comment.image.approved
+      }
     }
   end
 

@@ -1,6 +1,7 @@
 defmodule PhilomenaWeb.CommentController do
   use PhilomenaWeb, :controller
 
+  alias PhilomenaWeb.CommentLoader
   alias PhilomenaWeb.MarkdownRenderer
   alias PhilomenaQuery.Search
   alias Philomena.{Comments.Query, Comments.Comment}
@@ -15,26 +16,12 @@ defmodule PhilomenaWeb.CommentController do
 
     cq
     |> Query.compile(user: user)
-    |> render_index(conn, user)
+    |> render_index(conn)
   end
 
-  defp render_index({:ok, query}, conn, user) do
+  defp render_index({:ok, query}, conn) do
     comments =
-      Comment
-      |> Search.search_definition(
-        %{
-          query: %{
-            bool: %{
-              must: [query | filters(user)],
-              must_not: %{
-                terms: %{image_tag_ids: conn.assigns.current_filter.hidden_tag_ids}
-              }
-            }
-          },
-          sort: %{posted_at: :desc}
-        },
-        conn.assigns.pagination
-      )
+      CommentLoader.query(conn, query)
       |> Search.search_records(
         preload(Comment, [:deleted_by, image: [:sources, tags: :aliases], user: [awards: :badge]])
       )
@@ -46,12 +33,7 @@ defmodule PhilomenaWeb.CommentController do
     render(conn, "index.html", title: "Comments", comments: comments)
   end
 
-  defp render_index({:error, msg}, conn, _user) do
+  defp render_index({:error, msg}, conn) do
     render(conn, "index.html", title: "Comments", error: msg, comments: [])
   end
-
-  defp filters(%{role: role}) when role in ["assistant", "moderator", "admin"], do: []
-
-  defp filters(_user),
-    do: [%{term: %{hidden_from_users: false}}]
 end
