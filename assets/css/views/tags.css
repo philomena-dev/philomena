@@ -144,6 +144,8 @@
 }
 
 .tag__dropdown-icon {
+  /* The width was chosen to cover the widest icon. This makes sure icons are
+  visually aligned with each other */
   width: 15px;
   display: inline-flex;
   justify-content: center;
