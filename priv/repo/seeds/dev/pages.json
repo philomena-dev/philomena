@@ -1,0 +1,70 @@
+[
+  {
+    "title": "About Philomena",
+    "slug": "about"
+  },
+  {
+    "title": "Advertising on this Site",
+    "slug": "advertising"
+  },
+  {
+    "title": "API Documentation",
+    "slug": "api"
+  },
+  {
+    "title": "Approval Queue",
+    "slug": "approval"
+  },
+  {
+    "title": "Contact Us",
+    "slug": "contact"
+  },
+  {
+    "title": "Donations",
+    "slug": "donations"
+  },
+  {
+    "title": "Frequently Asked Questions",
+    "slug": "faq"
+  },
+  {
+    "title": "Markdown Syntax Guide",
+    "slug": "markdown"
+  },
+  {
+    "title": "Privacy Policy",
+    "slug": "privacy"
+  },
+  {
+    "title": "Site Rules",
+    "slug": "rules"
+  },
+  {
+    "title": "Search Syntax",
+    "slug": "search_syntax"
+  },
+  {
+    "title": "Keyboard Shortcuts",
+    "slug": "shortcuts"
+  },
+  {
+    "title": "Spoiler Guidelines",
+    "slug": "spoilers"
+  },
+  {
+    "title": "Getting Started",
+    "slug": "start"
+  },
+  {
+    "title": "Tag Help",
+    "slug": "tags"
+  },
+  {
+    "title": "Takedown Policy",
+    "slug": "takedowns"
+  },
+  {
+    "title": "Uploading Help",
+    "slug": "uploading"
+  }
+]
