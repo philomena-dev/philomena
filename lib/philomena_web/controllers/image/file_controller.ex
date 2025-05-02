@@ -16,6 +16,7 @@ defmodule PhilomenaWeb.Image.FileController do
       {:ok, image} ->
         conn
         |> put_flash(:info, "Successfully updated file.")
+        |> moderation_log(details: &log_details/2, data: image)
         |> redirect(to: ~p"/images/#{image}")
 
       _error ->
@@ -34,5 +35,9 @@ defmodule PhilomenaWeb.Image.FileController do
     else
       conn
     end
+  end
+
+  defp log_details(_action, image) do
+    %{body: "Updated file of image #{image.id}", subject_path: ~p"/images/#{image}"}
   end
 end

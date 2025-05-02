@@ -33,7 +33,7 @@ defmodule PhilomenaWeb.Image.FeatureController do
 
   defp log_details(_action, image) do
     %{
-      body: "Featured image >>#{image.id}",
+      body: "Featured image #{image.id}",
       subject_path: ~p"/images/#{image}"
     }
   end
