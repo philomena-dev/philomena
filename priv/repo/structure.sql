@@ -3196,10 +3196,10 @@ CREATE INDEX image_tag_locks_tag_id_index ON public.image_tag_locks USING btree 
 
 
 --
--- Name: images_hidden_from_users_approved_index; Type: INDEX; Schema: public; Owner: -
+-- Name: images_approved_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX images_hidden_from_users_approved_index ON public.images USING btree (hidden_from_users, approved) WHERE ((hidden_from_users = false) AND (approved = false));
+CREATE INDEX images_approved_index ON public.images USING btree (approved) WHERE (approved = false);
 
 
 --
@@ -5452,3 +5452,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20240723122759);
 INSERT INTO public."schema_migrations" (version) VALUES (20240728191353);
 INSERT INTO public."schema_migrations" (version) VALUES (20241216165826);
 INSERT INTO public."schema_migrations" (version) VALUES (20250407021536);
+INSERT INTO public."schema_migrations" (version) VALUES (20250502110018);
