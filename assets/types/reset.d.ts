@@ -24,7 +24,7 @@ declare global {
      *
      *```ts
      * const keys = ["a", "b"] as const;
-     * const bruh: { a: number, b: number } = Object.fromEntries(keyss.map(key => [key, 1]));
+     * const bruh: { a: number, b: number } = Object.fromEntries(keys.map(key => [key, 1]));
      * ```
      */
     fromEntries<E extends readonly [PropertyKey, unknown]>(entries: Iterable<E>): Record<E[0], E[1]>;
