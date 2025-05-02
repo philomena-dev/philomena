@@ -3,6 +3,9 @@
   span
     a.tag__name< href=pretty_tag_path(@tag) title="#{@tag.short_description}" = @tag.name
 
+  span.tag__count
+    = @tag.images_count
+
   div.dropdown__content
     a.tag__dropdown__link.hidden data-method="delete" data-remote="true" data-tag-action="unwatch" href=~p"/tags/#{@tag}/watch"
       i.fa.fa-bookmark.tag__dropdown-icon
