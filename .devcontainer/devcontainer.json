@@ -45,6 +45,29 @@
         // rebuild
         "lexical.notifyOnServerAutoUpdate": false,
 
+        "dbcode.connections": [
+          {
+            "connectionId": "philomena_dev",
+            "name": "philomena_dev",
+            "driver": "postgres",
+            "connectionType": "host",
+            "host": "localhost",
+            "port": 5400,
+            "ssl": false,
+            "username": "postgres",
+            "password": "postgres",
+            "database": "philomena_dev"
+          }
+        ],
+
+        "github.copilot.enable": {
+          // https://dbcode.io/docs/query/inline-completion#provide-schema-to-copilot-for-sql-files
+          "sql": false
+        },
+
+        "dbcode.resultLocation": "panel",
+        "dbcode.orderByPrimaryKey": "Descending",
+
         "[dockercompose]": {
           // Prettier is the source of truth for YAML formatting
           "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -53,6 +76,9 @@
       "extensions": [
         // Elixir LSP
         "lexical-lsp.lexical",
+
+        // DB explorer
+        "dbcode.dbcode",
 
         // Rust LSP
         "rust-lang.rust-analyzer",
