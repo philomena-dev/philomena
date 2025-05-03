@@ -4,7 +4,8 @@ defmodule Philomena.Galleries.Query do
   defp fields do
     [
       int_fields: ~W(id image_count watcher_count),
-      literal_fields: ~W(title user_id user image_ids thumbnail_id),
+      numeric_fields: ~W(user_id image_ids thumbnail_id),
+      literal_fields: ~W(title user),
       date_fields: ~W(created_at updated_at),
       ngram_fields: ~W(description spoiler_warning),
       default_field: {"title", :term},

@@ -51,8 +51,9 @@ defmodule Philomena.Posts.Query do
   defp anonymous_fields do
     [
       int_fields: ~W(id topic_position),
+      numeric_fields: ~W(forum_id topic_id),
       date_fields: ~W(created_at updated_at),
-      literal_fields: ~W(forum forum_id topic_id),
+      literal_fields: ~W(forum),
       ngram_fields: ~W(body subject),
       custom_fields: ~W(author user_id),
       default_field: {"body", :ngram},
@@ -76,9 +77,10 @@ defmodule Philomena.Posts.Query do
     fields = user_fields()
 
     Keyword.merge(fields,
+      numeric_fields: fields[:numeric_fields] ++ ~W(user_id deleted_by_user_id),
       literal_fields:
         fields[:literal_fields] ++
-          ~W(user_id author fingerprint deleted_by_user_id deleted_by_user),
+          ~W(author fingerprint deleted_by_user),
       ngram_fields: fields[:ngram_fields] ++ ~W(deletion_reason),
       ip_fields: ~W(ip),
       bool_fields: ~W(anonymous deleted destroyed_content),

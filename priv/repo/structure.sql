@@ -2,12 +2,13 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 16.4
--- Dumped by pg_dump version 16.6
+-- Dumped from database version 17.4
+-- Dumped by pg_dump version 17.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -2156,7 +2157,11 @@ CREATE TABLE public.users (
     scratchpad character varying,
     bypass_rate_limits boolean DEFAULT false,
     scale_large_images character varying(255) DEFAULT 'true'::character varying NOT NULL,
-    verified boolean DEFAULT false
+    verified boolean DEFAULT false,
+    delay_home_images boolean DEFAULT true,
+    staff_delay_home_images boolean DEFAULT false,
+    borderless_tags boolean DEFAULT false,
+    rounded_tags boolean DEFAULT false
 );
 
 
@@ -3193,10 +3198,10 @@ CREATE INDEX image_tag_locks_tag_id_index ON public.image_tag_locks USING btree 
 
 
 --
--- Name: images_hidden_from_users_approved_index; Type: INDEX; Schema: public; Owner: -
+-- Name: images_approved_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX images_hidden_from_users_approved_index ON public.images USING btree (hidden_from_users, approved) WHERE ((hidden_from_users = false) AND (approved = false));
+CREATE INDEX images_approved_index ON public.images USING btree (approved) WHERE (approved = false);
 
 
 --
@@ -5448,3 +5453,6 @@ INSERT INTO public."schema_migrations" (version) VALUES (20220321173359);
 INSERT INTO public."schema_migrations" (version) VALUES (20240723122759);
 INSERT INTO public."schema_migrations" (version) VALUES (20240728191353);
 INSERT INTO public."schema_migrations" (version) VALUES (20241216165826);
+INSERT INTO public."schema_migrations" (version) VALUES (20250407021536);
+INSERT INTO public."schema_migrations" (version) VALUES (20250501174007);
+INSERT INTO public."schema_migrations" (version) VALUES (20250502110018);

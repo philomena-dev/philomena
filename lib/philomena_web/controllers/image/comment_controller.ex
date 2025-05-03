@@ -82,7 +82,7 @@ defmodule PhilomenaWeb.Image.CommentController do
         Images.reindex_image(conn.assigns.image)
 
         if comment.approved do
-          UserStatistics.inc_stat(conn.assigns.current_user, :comments_posted)
+          UserStatistics.inc_stat(conn.assigns.current_user.id, :comments_posted)
         else
           Comments.report_non_approved(comment)
         end
@@ -136,16 +136,18 @@ defmodule PhilomenaWeb.Image.CommentController do
     image = conn.assigns.image
 
     image =
-      case is_nil(image.duplicate_id) do
-        true -> image
-        _false -> Images.get_image!(image.duplicate_id)
+      if is_nil(image.duplicate_id) do
+        image
+      else
+        Images.get_image!(image.duplicate_id)
       end
 
     conn = assign(conn, :image, image)
 
-    case Canada.Can.can?(conn.assigns.current_user, :show, image) do
-      true -> conn
-      _false -> PhilomenaWeb.NotAuthorizedPlug.call(conn)
+    if Canada.Can.can?(conn.assigns.current_user, :show, image) do
+      conn
+    else
+      PhilomenaWeb.NotAuthorizedPlug.call(conn)
     end
   end
 end
