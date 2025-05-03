@@ -34,8 +34,11 @@ defmodule Philomena.Users.SearchIndex do
           metadata_updates_count: %{type: "integer"},
           images_favourited_count: %{type: "integer"},
           created_at: %{type: "date"},
+          confirmed: %{type: "boolean"},
           confirmed_at: %{type: "date"},
+          locked: %{type: "boolean"},
           locked_at: %{type: "date"},
+          deleted: %{type: "boolean"},
           deleted_at: %{type: "date"},
           deleted_by_user_id: %{type: "keyword"},
           deleted_by_user: %{type: "keyword"},
@@ -44,7 +47,8 @@ defmodule Philomena.Users.SearchIndex do
           verified: %{type: "boolean"},
           personal_title: %{type: "text", analyzer: "snowball"},
           current_filter_id: %{type: "keyword"},
-          forced_filter_id: %{type: "keyword"}
+          forced_filter_id: %{type: "keyword"},
+          banned_until: %{type: "date"}
         }
       }
     }
@@ -69,8 +73,11 @@ defmodule Philomena.Users.SearchIndex do
       metadata_updates_count: user.metadata_updates_count,
       images_favourited_count: user.images_favourited_count,
       created_at: user.created_at,
+      confirmed: !!user.confirmed_at,
       confirmed_at: user.confirmed_at,
+      locked: !!user.locked_at,
       locked_at: user.locked_at,
+      deleted: !!user.deleted_at,
       deleted_at: user.deleted_at,
       deleted_by_user_id: user.deleted_by_user_id,
       deleted_by_user: if(!!user.deleted_by_user, do: String.downcase(user.deleted_by_user.name)),
@@ -79,7 +86,8 @@ defmodule Philomena.Users.SearchIndex do
       verified: user.verified,
       personal_title: String.downcase(user.personal_title || ""),
       current_filter_id: user.current_filter_id,
-      forced_filter_id: user.forced_filter_id
+      forced_filter_id: user.forced_filter_id,
+      banned_until: user.bans |> Enum.filter(& &1.enabled) |> Enum.map(& &1.valid_until)
     }
   end
 

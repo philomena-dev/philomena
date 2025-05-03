@@ -12,6 +12,7 @@ defmodule Philomena.Bans do
   alias Philomena.Bans.SubnetCreator
   alias Philomena.Bans.Subnet
   alias Philomena.Bans.User
+  alias Philomena.Users
 
   @doc """
   Returns the list of fingerprint bans.
@@ -255,6 +256,7 @@ defmodule Philomena.Bans do
     |> Repo.transaction()
     |> case do
       {:ok, %{user_ban: user_ban}} ->
+        Users.reindex_user(%Users.User{id: user_ban.user_id})
         {:ok, user_ban}
 
       {:error, :user_ban, changeset, _changes} ->
@@ -278,6 +280,14 @@ defmodule Philomena.Bans do
     user
     |> User.changeset(attrs)
     |> Repo.update()
+    |> case do
+      {:ok, user} ->
+        Users.reindex_user(%Users.User{id: user.user_id})
+        {:ok, user}
+
+      error ->
+        error
+    end
   end
 
   @doc """
@@ -294,6 +304,14 @@ defmodule Philomena.Bans do
   """
   def delete_user(%User{} = user) do
     Repo.delete(user)
+    |> case do
+      {:ok, user} ->
+        Users.reindex_user(%Users.User{id: user.user_id})
+        {:ok, user}
+
+      error ->
+        error
+    end
   end
 
   @doc """
