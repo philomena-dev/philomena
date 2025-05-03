@@ -16,7 +16,7 @@
     // Unfortunately there seems to be no way to configure separate tsconfig
     // just for application files in the IDE to make sure IDE suggests only the
     // features of maximum ECMA standard version that we support. However, as a
-    // workaround we use a separate `tsconfig.build.json` that we use for our
+    // workaround we have a separate `tsconfig.build.json` that we use for our
     // final builds and on CI. That `tsconfig` doesn't include `vitest`, and
     // consequently any of its transitive `@types/node`, `es2020` dependencies.
     // This way we still have a check that we don't depend on ES features higher
