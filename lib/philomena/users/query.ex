@@ -8,7 +8,7 @@ defmodule Philomena.Users.Query do
       numeric_fields: ~W(deleted_by_user_id current_filter_id forced_filter_id),
       date_fields: ~W(created_at confirmed_at locked_at deleted_at banned_until),
       literal_fields: ~W(name slug role email deleted_by_user),
-      bool_fields: ~W(custom_avatar verified),
+      bool_fields: ~W(otp_required_for_login confirmed locked deleted custom_avatar verified),
       ngram_fields: ~W(description scratchpad personal_title),
       default_field: {"name_or_email", :term}
     ]
