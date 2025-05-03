@@ -12,6 +12,7 @@ defmodule Philomena.Users do
   alias Philomena.Users
   alias Philomena.Users.{User, UserToken, UserNotifier, Uploader}
   alias Philomena.{Forums, Forums.Forum}
+  alias Philomena.Bans
   alias Philomena.Topics
   alias Philomena.Roles.Role
   alias Philomena.UserNameChanges.UserNameChange
@@ -1118,8 +1119,12 @@ defmodule Philomena.Users do
   """
   def indexing_preloads do
     user_query = select(User, [u], map(u, [:id, :name]))
+    ban_query = select(Bans.User, [b], map(b, [:id, :enabled, :valid_until]))
 
-    [deleted_by_user: user_query]
+    [
+      deleted_by_user: user_query,
+      bans: ban_query
+    ]
   end
 
   @doc """
