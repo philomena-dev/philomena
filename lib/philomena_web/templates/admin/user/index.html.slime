@@ -85,6 +85,13 @@ table.table
         code = link "slug:princess+celestia", to: ~p"/admin/users?#{[uq: "slug:princess+celestia"]}"
     tr
       td
+        code email
+      td Literal
+      td Matches the email of the user.
+      td
+        code = link "email:admin@example.com", to: ~p"/admin/users?#{[uq: "email:admin@example.com"]}"
+    tr
+      td
         code role
       td Literal
       td Matches the role of the user.
@@ -92,11 +99,11 @@ table.table
         code = link "role:admin", to: ~p"/admin/users?#{[uq: "role:admin"]}"
     tr
       td
-        code email
-      td Literal
-      td Matches the email of the user.
+        code personal_title
+      td Full Text
+      td Matches the personal title of the user's profile.
       td
-        code = link "email:admin@example.com", to: ~p"/admin/users?#{[uq: "email:admin@example.com"]}"
+        code = link "personal_title:pony", to: ~p"/admin/users?#{[uq: "personal_title:pony"]}"
     tr
       td
         code description
@@ -106,11 +113,11 @@ table.table
         code = link "description:pony", to: ~p"/admin/users?#{[uq: "description:pony"]}"
     tr
       td
-        code otp_required_for_login
+        code custom_avatar
       td Boolean
-      td Matches whether the user has two-factor authentication enabled.
+      td Matches whether the user has a custom avatar.
       td
-        code = link "otp_required_for_login:true", to: ~p"/admin/users?#{[uq: "otp_required_for_login:true"]}"
+        code = link "custom_avatar:true", to: ~p"/admin/users?#{[uq: "custom_avatar:true"]}"
     tr
       td
         code created_at
@@ -132,6 +139,13 @@ table.table
       td Matches the date and time the user account was confirmed.
       td
         code = link "confirmed_at.lt:2 weeks ago", to: ~p"/admin/users?#{[uq: "confirmed_at.lt:2 weeks ago"]}"
+    tr
+      td
+        code verified
+      td Boolean
+      td Matches whether the user has been granted verification.
+      td
+        code = link "verified:true", to: ~p"/admin/users?#{[uq: "verified:true"]}"
     tr
       td
         code locked
@@ -176,46 +190,18 @@ table.table
         code = link "deleted_by_user:moderator", to: ~p"/admin/users?#{[uq: "deleted_by_user:moderator"]}"
     tr
       td
-        code scratchpad
-      td Full Text
-      td Matches the moderation scratchpad content on the user's profile.
+        code banned_until
+      td Date/Time
+      td Matches the date and time of any enabled bans on the user.
       td
-        code = link "scratchpad:pony", to: ~p"/admin/users?#{[uq: "scratchpad:pony"]}"
+        code = link "banned_until.gt:0 seconds ago", to: ~p"/admin/users?#{[uq: "banned_until.gt:0 seconds ago"]}"
     tr
       td
-        code custom_avatar
+        code otp_required_for_login
       td Boolean
-      td Matches whether the user has a custom avatar.
+      td Matches whether the user has two-factor authentication enabled.
       td
-        code = link "custom_avatar:true", to: ~p"/admin/users?#{[uq: "custom_avatar:true"]}"
-    tr
-      td
-        code verified
-      td Boolean
-      td Matches whether the user has been granted verification.
-      td
-        code = link "verified:true", to: ~p"/admin/users?#{[uq: "verified:true"]}"
-    tr
-      td
-        code personal_title
-      td Full Text
-      td Matches the personal title of the user.
-      td
-        code = link "personal_title:pony", to: ~p"/admin/users?#{[uq: "personal_title:pony"]}"
-    tr
-      td
-        code current_filter_id
-      td Numeric
-      td Matches the ID of the filter the user is currently using.
-      td
-        code = link "current_filter_id:123", to: ~p"/admin/users?#{[uq: "current_filter_id:123"]}"
-    tr
-      td
-        code forced_filter_id
-      td Numeric
-      td Matches the ID of the filter that was forced on the user.
-      td
-        code = link "forced_filter_id:123", to: ~p"/admin/users?#{[uq: "forced_filter_id:123"]}"
+        code = link "otp_required_for_login:true", to: ~p"/admin/users?#{[uq: "otp_required_for_login:true"]}"
     tr
       td
         code uploads_count
@@ -267,8 +253,22 @@ table.table
         code = link "topics_count.gte:10", to: ~p"/admin/users?#{[uq: "topics_count.gte:10"]}"
     tr
       td
-        code banned_until
-      td Date/Time
-      td Matches the date and time of any enabled bans on the user.
+        code current_filter_id
+      td Numeric
+      td Matches the ID of the filter the user is currently using.
       td
-        code = link "banned_until.gt:0 seconds ago", to: ~p"/admin/users?#{[uq: "banned_until.gt:0 seconds ago"]}"
+        code = link "current_filter_id:123", to: ~p"/admin/users?#{[uq: "current_filter_id:123"]}"
+    tr
+      td
+        code forced_filter_id
+      td Numeric
+      td Matches the ID of the filter that was forced on the user.
+      td
+        code = link "forced_filter_id:123", to: ~p"/admin/users?#{[uq: "forced_filter_id:123"]}"
+    tr
+      td
+        code scratchpad
+      td Full Text
+      td Matches the moderation scratchpad content on the user's profile.
+      td
+        code = link "scratchpad:pony", to: ~p"/admin/users?#{[uq: "scratchpad:pony"]}"
