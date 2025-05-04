@@ -20,7 +20,7 @@ defmodule Philomena.Users.User do
   alias Philomena.UserIps.UserIp
   alias Philomena.Bans
   alias Philomena.Donations.Donation
-  alias Philomena.Users.UserNameChange
+  alias Philomena.UserNameChanges.UserNameChange
 
   @derive {Phoenix.Param, key: :slug}
   @derive {Inspect, except: [:password]}
