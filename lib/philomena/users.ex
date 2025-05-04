@@ -1114,16 +1114,18 @@ defmodule Philomena.Users do
   ## Examples
 
       iex> indexing_preloads()
-      [deleted_by_user: query]
+      [deleted_by_user: query, bans: query, name_changes: query]
 
   """
   def indexing_preloads do
-    user_query = select(User, [u], map(u, [:id, :name]))
-    ban_query = select(Bans.User, [b], map(b, [:id, :enabled, :valid_until]))
+    user_query = select(User, [u], map(u, [:name]))
+    ban_query = select(Bans.User, [b], map(b, [:enabled, :valid_until]))
+    name_change_query = select(UserNameChange, [n], map(n, [:name]))
 
     [
       deleted_by_user: user_query,
-      bans: ban_query
+      bans: ban_query,
+      name_changes: name_change_query
     ]
   end
 
