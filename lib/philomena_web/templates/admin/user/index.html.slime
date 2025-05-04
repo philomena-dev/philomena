@@ -15,6 +15,7 @@ h1 Users
         "Sort by metadata updates": :metadata_updates_count,
         "Sort by forum posts": :forum_posts_count,
         "Sort by topics": :topic_count,
+        "Sort by relevance": :_score
       ]
 
       sort_directions = [
