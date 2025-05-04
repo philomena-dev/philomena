@@ -2,7 +2,7 @@ defmodule PhilomenaWeb.CurrentFilterPlug do
   import Plug.Conn
 
   alias Philomena.Users
-  alias Philomena.Filters
+  alias Philomena.{Filters, Filters.Filter}
   alias Philomena.Repo
 
   # No options
