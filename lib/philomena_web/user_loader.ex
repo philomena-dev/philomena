@@ -23,7 +23,7 @@ defmodule PhilomenaWeb.UserLoader do
   defp parse_sd(_params), do: "desc"
 
   defp parse_sf(%{"usf" => sf}, sd)
-       when sf in ~W(uploads_count images_favourited_count comments_posted_count votes_cast_count metadata_updates_count forum_posts_count topic_count),
+       when sf in ~W(uploads_count images_favourited_count comments_posted_count votes_cast_count metadata_updates_count forum_posts_count topic_count _score),
        do: [%{sf => sd}, %{"id" => sd}]
 
   defp parse_sf(_params, sd),
