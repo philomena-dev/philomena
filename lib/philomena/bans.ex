@@ -257,6 +257,7 @@ defmodule Philomena.Bans do
     |> case do
       {:ok, %{user_ban: user_ban}} ->
         Users.reindex_user(%Users.User{id: user_ban.user_id})
+
         {:ok, user_ban}
 
       {:error, :user_ban, changeset, _changes} ->
@@ -283,6 +284,7 @@ defmodule Philomena.Bans do
     |> case do
       {:ok, user} ->
         Users.reindex_user(%Users.User{id: user.user_id})
+
         {:ok, user}
 
       error ->
@@ -307,6 +309,7 @@ defmodule Philomena.Bans do
     |> case do
       {:ok, user} ->
         Users.reindex_user(%Users.User{id: user.user_id})
+
         {:ok, user}
 
       error ->
