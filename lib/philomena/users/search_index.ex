@@ -91,7 +91,7 @@ defmodule Philomena.Users.SearchIndex do
       forced_filter_id: user.forced_filter_id,
       banned_until: user.bans |> Enum.filter(& &1.enabled) |> Enum.map(& &1.valid_until),
       last_renamed_at: user.last_renamed_at,
-      names: user.name_changes |> Enum.map(& &1.name) |> Enum.map(&String.downcase/1)
+      names: user.name_changes |> Enum.map(&String.downcase(&1.name))
     }
   end
 
