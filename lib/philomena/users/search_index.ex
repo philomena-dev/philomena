@@ -48,7 +48,9 @@ defmodule Philomena.Users.SearchIndex do
           personal_title: %{type: "text", analyzer: "snowball"},
           current_filter_id: %{type: "keyword"},
           forced_filter_id: %{type: "keyword"},
-          banned_until: %{type: "date"}
+          banned_until: %{type: "date"},
+          last_renamed_at: %{type: "date"},
+          names: %{type: "keyword"}
         }
       }
     }
@@ -87,7 +89,9 @@ defmodule Philomena.Users.SearchIndex do
       personal_title: String.downcase(user.personal_title || ""),
       current_filter_id: user.current_filter_id,
       forced_filter_id: user.forced_filter_id,
-      banned_until: user.bans |> Enum.filter(& &1.enabled) |> Enum.map(& &1.valid_until)
+      banned_until: user.bans |> Enum.filter(& &1.enabled) |> Enum.map(& &1.valid_until),
+      last_renamed_at: user.last_renamed_at,
+      names: user.name_changes |> Enum.map(& &1.name)
     }
   end
 
