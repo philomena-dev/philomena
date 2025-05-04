@@ -272,3 +272,17 @@ table.table
       td Matches the moderation scratchpad content on the user's profile.
       td
         code = link "scratchpad:pony", to: ~p"/admin/users?#{[uq: "scratchpad:pony"]}"
+    tr
+      td
+        code last_renamed_at
+      td Date/Time
+      td Matches the date and time the user was last renamed.
+      td
+        code = link "last_renamed_at.gt:1 month ago", to: ~p"/admin/users?#{[uq: "last_renamed_at.gt:1 month ago"]}"
+    tr
+      td
+        code names
+      td Literal
+      td Matches previous names the user has had.
+      td
+        code = link "names:old_username", to: ~p"/admin/users?#{[uq: "names:old_username"]}"
