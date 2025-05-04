@@ -7,12 +7,9 @@ defmodule Philomena.Users do
   alias Ecto.Multi
   alias Philomena.Repo
 
-<<<<<<< HEAD
   alias Philomena.Schema.Approval
-=======
   alias PhilomenaQuery.Search
   alias Philomena.Users
->>>>>>> f059792e (Index users)
   alias Philomena.Users.{User, UserToken, UserNotifier, Uploader}
   alias Philomena.Users.SearchIndex, as: UserIndex
   alias Philomena.Bans.User, as: UserBan
@@ -27,6 +24,7 @@ defmodule Philomena.Users do
   alias Philomena.Reports
   alias Philomena.Filters
   alias Philomena.TagChanges
+  alias Philomena.Filters.Filter
   alias Philomena.IndexWorker
   alias Philomena.UserEraseWorker
   alias Philomena.UserRenameWorker
@@ -943,6 +941,22 @@ defmodule Philomena.Users do
   end
 
   @doc """
+  Updates a user's current filter.
+
+  ## Examples
+
+      iex> update_filter(user, filter)
+      {:ok, %User{}}
+
+  """
+  def update_filter(%User{} = user, %Filter{} = filter) do
+    user
+    |> User.filter_changeset(filter)
+    |> Repo.update()
+    |> reindex_after_update()
+  end
+
+  @doc """
   Forces a specific filter on a user's account, which will be applied in
   conjunction to the user's current filter.
 
@@ -1153,7 +1167,7 @@ defmodule Philomena.Users do
     |> Search.reindex(User)
   end
 
-  def reindex_after_update(result) do
+  defp reindex_after_update(result) do
     case result do
       {:ok, user} ->
         reindex_user(user)
