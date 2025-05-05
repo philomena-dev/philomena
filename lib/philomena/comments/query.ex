@@ -22,6 +22,8 @@ defmodule Philomena.Comments.Query do
   end
 
   defp author_transform(_ctx, data) do
+    data = String.downcase(data)
+
     {
       :ok,
       %{
