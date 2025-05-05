@@ -3,9 +3,8 @@
     .block__header__title.hide-mobile
       ' Viewing related images for
       = link to: ~p"/images/#{@image}" do
-          strong>
-          | image #
-          = @image.id
+        | image #
+        = @image.id
 
   .block__content.js-resizable-media-container
     = for image <- @images do
