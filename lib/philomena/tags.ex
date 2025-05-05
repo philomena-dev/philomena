@@ -830,16 +830,17 @@ defmodule Philomena.Tags do
 
   @doc """
   Deletes all tags that meet all of the following conditions:
-  - No category assigned
-  - Zero images count
+  - Not present on any images
   - No description
   - No short description
   - No mod notes
-  - No image attached
+  - No spoiler image set
   - Not aliased to another tag
   - Has no aliases pointing to it
   - Does not imply any other tags
   - Is not implied by any other tags
+  - Has no artist links
+  - Has no DNP entries
 
   Also removes the deleted tags from the search index.
 
@@ -852,17 +853,24 @@ defmodule Philomena.Tags do
   def cleanup! do
     tag_ids =
       from(t in Tag,
-        where: is_nil(t.category),
-        where: t.images_count == 0,
         where: t.description == "",
         where: is_nil(t.short_description) or t.short_description == "",
         where: is_nil(t.mod_notes) or t.mod_notes == "",
         where: is_nil(t.image),
         where: is_nil(t.aliased_tag_id),
+        left_join: tg in "image_taggings",
+        on: tg.tag_id == t.id,
+        where: is_nil(tg),
         left_join: a in assoc(t, :aliases),
+        where: is_nil(a),
         left_join: it in assoc(t, :implied_tags),
+        where: is_nil(it),
         left_join: ibt in assoc(t, :implied_by_tags),
-        where: is_nil(a.id) and is_nil(it.id) and is_nil(ibt.id),
+        where: is_nil(ibt),
+        left_join: al in "artist_links",
+        where: is_nil(al),
+        left_join: dnp in "dnp_entries",
+        where: is_nil(dnp),
         select: t.id
       )
       |> Repo.all()
