@@ -3,7 +3,8 @@
 
   "compilerOptions": {
     // Disable `vitest/globals` that transitively include `@types/node` and
-    // node's version of ES standard lib `<reference>`
+    // node's version of ES standard lib via a `<reference>` directive.
+    // More details in the main tsconfig.json.
     "types": []
   },
 
