@@ -22,6 +22,8 @@ defmodule Philomena.Posts.Query do
   end
 
   defp author_transform(_ctx, data) do
+    data = String.downcase(data)
+
     {
       :ok,
       %{
@@ -31,8 +33,8 @@ defmodule Philomena.Posts.Query do
             %{
               bool: %{
                 should: [
-                  %{term: %{author: String.downcase(data)}},
-                  %{wildcard: %{author: String.downcase(data)}}
+                  %{term: %{author: data}},
+                  %{wildcard: %{author: data}}
                 ]
               }
             }
