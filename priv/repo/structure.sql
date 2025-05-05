@@ -2158,10 +2158,9 @@ CREATE TABLE public.users (
     bypass_rate_limits boolean DEFAULT false,
     scale_large_images character varying(255) DEFAULT 'true'::character varying NOT NULL,
     verified boolean DEFAULT false,
-    delay_home_images boolean DEFAULT true,
-    staff_delay_home_images boolean DEFAULT false,
     borderless_tags boolean DEFAULT false,
-    rounded_tags boolean DEFAULT false
+    rounded_tags boolean DEFAULT false,
+    delay_home_images boolean
 );
 
 
@@ -5456,3 +5455,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20241216165826);
 INSERT INTO public."schema_migrations" (version) VALUES (20250407021536);
 INSERT INTO public."schema_migrations" (version) VALUES (20250501174007);
 INSERT INTO public."schema_migrations" (version) VALUES (20250502110018);
+INSERT INTO public."schema_migrations" (version) VALUES (20250505013749);

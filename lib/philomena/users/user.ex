@@ -93,8 +93,9 @@ defmodule Philomena.Users.User do
     field :show_hidden_items, :boolean, default: false
     field :hide_vote_counts, :boolean, default: false
     field :hide_advertisements, :boolean, default: false
-    field :delay_home_images, :boolean, default: true
-    field :staff_delay_home_images, :boolean, default: false
+    # This column is nullable, if it's null, then the default behavior is
+    # `true` for regular users and `false` for staff.
+    field :delay_home_images, :boolean
     field :borderless_tags, :boolean, default: false
     field :rounded_tags, :boolean, default: false
 
@@ -134,6 +135,13 @@ defmodule Philomena.Users.User do
     field :role_map, :any, virtual: true
 
     timestamps(inserted_at: :created_at, type: :utc_datetime)
+  end
+
+  def delay_home_images?(nil), do: true
+
+  def delay_home_images?(%User{} = user) do
+    delay = Map.get(user, :delay_home_images)
+    if(is_nil(delay), do: user.role == "user", else: delay)
   end
 
   @doc """
@@ -332,7 +340,6 @@ defmodule Philomena.Users.User do
       :messages_newest_first,
       :show_sidebar_and_watched_images,
       :delay_home_images,
-      :staff_delay_home_images,
       :borderless_tags,
       :rounded_tags
     ])

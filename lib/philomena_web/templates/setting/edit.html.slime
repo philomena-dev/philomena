@@ -125,12 +125,12 @@ h1 Content Settings
           => label f, :scale_large_images
           = error_tag f, :scale_large_images
 
-        - delay_home_images = if staff?(@conn.assigns.current_user), do: :staff_delay_home_images, else: :delay_home_images
+        - delay_home_images = Philomena.Users.User.delay_home_images?(@conn.assigns.current_user)
         = field_with_help( \
           "Hide images without thumbnails on the homepage and for the first 3 minutes after upload (to allow for last-minute tag changes)",
           [ \
-            checkbox(f, delay_home_images, class: "checkbox"),
-            label(f, delay_home_images, "Delay home images"),
+            checkbox(f, :delay_home_images, class: "checkbox", checked: delay_home_images),
+            label(f, :delay_home_images, "Delay home images"),
           ] \
         )
 
