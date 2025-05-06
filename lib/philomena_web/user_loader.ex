@@ -3,6 +3,8 @@ defmodule PhilomenaWeb.UserLoader do
   alias Philomena.Users.User
 
   @sortable_fields ~W(
+    name
+    updated_at
     uploads_count
     images_favourited_count
     comments_posted_count

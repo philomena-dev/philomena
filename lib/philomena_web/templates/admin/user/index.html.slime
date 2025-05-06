@@ -8,6 +8,8 @@ h1 Users
     elixir:
       sort_fields = [
         "Sort by user ID": :id,
+        "Sort by name": :name,
+        "Sort by update date": :updated_at,
         "Sort by uploads": :uploads_count,
         "Sort by favorites": :images_favourited_count,
         "Sort by comments": :comments_posted_count,
@@ -126,6 +128,13 @@ table.table
       td Matches the date and time the user account was created.
       td
         code = link "created_at.lt:2 weeks ago", to: ~p"/admin/users?#{[uq: "created_at.lt:2 weeks ago"]}"
+    tr
+      td
+        code updated_at
+      td Date/Time
+      td Matches the date and time the user was last updated.
+      td
+        code = link "updated_at.gt:1 month ago", to: ~p"/admin/users?#{[uq: "updated_at.gt:1 month ago"]}"
     tr
       td
         code confirmed
