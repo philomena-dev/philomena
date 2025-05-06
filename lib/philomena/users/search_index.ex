@@ -50,7 +50,8 @@ defmodule Philomena.Users.SearchIndex do
           forced_filter_id: %{type: "keyword"},
           banned_until: %{type: "date"},
           last_renamed_at: %{type: "date"},
-          names: %{type: "keyword"}
+          names: %{type: "keyword"},
+          updated_at: %{type: "date"}
         }
       }
     }
@@ -91,7 +92,8 @@ defmodule Philomena.Users.SearchIndex do
       forced_filter_id: user.forced_filter_id,
       banned_until: user.bans |> Enum.filter(& &1.enabled) |> Enum.map(& &1.valid_until),
       last_renamed_at: user.last_renamed_at,
-      names: user.name_changes |> Enum.map(&String.downcase(&1.name))
+      names: user.name_changes |> Enum.map(&String.downcase(&1.name)),
+      updated_at: user.updated_at
     }
   end
 
