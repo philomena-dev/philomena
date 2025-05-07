@@ -144,9 +144,7 @@ function setupImageUpload() {
 
   // Fetch on "enter" in url field
   remoteUrl.addEventListener('keydown', event => {
-    const key = normalizedKeyboardKey(event);
-
-    if (key === keys.Enter) {
+    if (normalizedKeyboardKey(event) === keys.Enter) {
       // Hit enter
       fetchButton.click();
     }

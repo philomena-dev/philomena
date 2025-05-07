@@ -97,9 +97,7 @@ export function setupTagsInput(tagBlock: HTMLDivElement) {
   function handleCtrlEnter(event: KeyboardEvent) {
     const { ctrlKey } = event;
 
-    const key = normalizedKeyboardKey(event);
-
-    if (key !== keys.Enter || !ctrlKey) return;
+    if (normalizedKeyboardKey(event) !== keys.Enter || !ctrlKey) return;
 
     submitButton.click();
   }
