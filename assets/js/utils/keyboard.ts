@@ -62,10 +62,8 @@ export const keys = Object.fromEntries(Object.values(keysMapping).map(key => [ke
  *   keyboards
  */
 export function normalizedKeyboardKey(event: KeyboardEvent): string {
-  const key = asRecord(keysMapping)[event.keyCode];
-
   // It is possible that this chain goes all the way to the `event.key` because
   // on mobile phones the `Enter` key has empty `code` for some reason, but it
   // has `Enter` as `key`.
-  return key || event.code || event.key;
+  return asRecord(keysMapping)[event.keyCode] || event.code || event.key;
 }
