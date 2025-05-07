@@ -4,13 +4,11 @@ defmodule Philomena.TagChanges.TagChange do
 
   schema "tag_changes" do
     belongs_to :user, Philomena.Users.User
-    belongs_to :tag, Philomena.Tags.Tag
     belongs_to :image, Philomena.Images.Image
+    has_many :tags, Philomena.TagChangeTags.TagChangeTag
 
     field :ip, EctoNetwork.INET
     field :fingerprint, :string
-    field :added, :boolean
-    field :tag_name_cache, :string, default: ""
 
     timestamps(inserted_at: :created_at, type: :utc_datetime)
   end
