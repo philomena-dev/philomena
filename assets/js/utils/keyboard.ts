@@ -7,18 +7,14 @@ import { asRecord } from './types';
  */
 const keysMapping = {
   8: 'Backspace',
-
   // Covers the numpad enter too
   13: 'Enter',
-
   27: 'Escape',
-
   // Covers numpad arrows too
   37: 'ArrowLeft',
   38: 'ArrowUp',
   39: 'ArrowRight',
   40: 'ArrowDown',
-
   66: 'KeyB',
   69: 'KeyE',
   70: 'KeyF',
@@ -31,7 +27,6 @@ const keysMapping = {
   83: 'KeyS',
   85: 'KeyU',
   86: 'KeyV',
-
   188: 'Comma',
 } as const;
 
