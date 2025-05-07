@@ -4,7 +4,9 @@ defmodule PhilomenaWeb.UserLoader do
 
   @sortable_fields ~W(
     name
+    confirmed_at
     updated_at
+    deleted_at
     uploads_count
     images_favourited_count
     comments_posted_count
