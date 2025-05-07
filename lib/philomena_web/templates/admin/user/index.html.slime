@@ -9,7 +9,9 @@ h1 Users
       sort_fields = [
         "Sort by user ID": :id,
         "Sort by name": :name,
-        "Sort by update date": :updated_at,
+        "Sort by confirmation date": :confirmed_at,
+        "Sort by last update date": :updated_at,
+        "Sort by deactivation date": :deleted_at,
         "Sort by uploads": :uploads_count,
         "Sort by favorites": :images_favourited_count,
         "Sort by comments": :comments_posted_count,
@@ -174,14 +176,14 @@ table.table
       td
         code deleted
       td Boolean
-      td Matches whether the user account has been deleted.
+      td Matches whether the user account has been deactivated.
       td
         code = link "deleted:true", to: ~p"/admin/users?#{[uq: "deleted:true"]}"  
     tr
       td
         code deleted_at
       td Date/Time
-      td Matches the date and time the user account was deleted.
+      td Matches the date and time the user account was deactivated.
       td
         code = link "deleted_at.gt:1 week ago", to: ~p"/admin/users?#{[uq: "deleted_at.gt:1 week ago"]}"
     tr
