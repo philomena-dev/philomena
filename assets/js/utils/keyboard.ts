@@ -1,11 +1,9 @@
-import { asRecord } from './types';
-
 /**
  * Even though `keyCode` is deprecated, it is still the most reliable way to
  * detect the key pressed. So this object maps the `keyCode` numeric value to a
  * more readable string representation.
  */
-const keysMapping = {
+const keysMapping: Record<string, string> = {
   8: 'Backspace',
   // Covers the numpad enter too
   13: 'Enter',
@@ -65,5 +63,5 @@ export function normalizedKeyboardKey(event: KeyboardEvent): string {
   // It is possible that this chain goes all the way to the `event.key` because
   // on mobile phones the `Enter` key has empty `code` for some reason, but it
   // has `Enter` as `key`.
-  return asRecord(keysMapping)[event.keyCode] || event.code || event.key;
+  return keysMapping[event.keyCode] || event.code || event.key;
 }
