@@ -72,7 +72,6 @@ export function setupTagsInput(tagBlock: HTMLDivElement) {
 
   function handleKeyEvent(event: KeyboardEvent) {
     const { ctrlKey, shiftKey } = event;
-
     const key = normalizedKeyboardKey(event);
 
     // allow form submission with ctrl+enter if no text was typed
