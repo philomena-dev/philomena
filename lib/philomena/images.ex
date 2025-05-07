@@ -25,7 +25,7 @@ defmodule Philomena.Images do
   alias Philomena.Notifications.ImageCommentNotification
   alias Philomena.Notifications.ImageMergeNotification
   alias Philomena.TagChanges.Limits
-  alias Philomena.TagChanges.TagChange
+  alias Philomena.TagChanges
   alias Philomena.Tags
   alias Philomena.UserStatistics
   alias Philomena.Tags.Tag
@@ -607,8 +607,7 @@ defmodule Philomena.Images do
       {:ok,
        %{
          image: image,
-         added_tag_changes: 1,
-         removed_tag_changes: 0
+         tag_changes: {1, 0}
        }}
 
   """
@@ -634,23 +633,13 @@ defmodule Philomena.Images do
     |> Multi.run(:check_limits, fn _repo, %{image: {image, _added, _removed}} ->
       check_tag_change_limits_before_commit(image, attribution)
     end)
-    |> Multi.run(:added_tag_changes, fn repo, %{image: {image, added_tags, _removed}} ->
-      tag_changes =
-        added_tags
-        |> Enum.map(&tag_change_attributes(attribution, image, &1, true, attribution[:user]))
-
-      {count, nil} = repo.insert_all(TagChange, tag_changes)
-
-      {:ok, count}
-    end)
-    |> Multi.run(:removed_tag_changes, fn repo, %{image: {image, _added, removed_tags}} ->
-      tag_changes =
+    |> Multi.run(:tag_changes, fn repo, %{image: {image, added_tags, removed_tags}} ->
+      TagChanges.create_tag_change(
+        image,
+        attribution,
+        added_tags,
         removed_tags
-        |> Enum.map(&tag_change_attributes(attribution, image, &1, false, attribution[:user]))
-
-      {count, nil} = repo.insert_all(TagChange, tag_changes)
-
-      {:ok, count}
+      )
     end)
     |> Multi.run(:added_tag_count, fn
       _repo, %{image: {%{hidden_from_users: true}, _added, _removed}} ->
@@ -726,28 +715,6 @@ defmodule Philomena.Images do
     :ok = Limits.update_tag_count_after_update(user, ip, tag_changed_count)
     :ok = Limits.update_rating_count_after_update(user, ip, rating_changed_count)
     :ok
-  end
-
-  defp tag_change_attributes(attribution, image, tag, added, user) do
-    now = DateTime.utc_now(:second)
-
-    user_id =
-      case user do
-        nil -> nil
-        user -> user.id
-      end
-
-    %{
-      image_id: image.id,
-      tag_id: tag.id,
-      user_id: user_id,
-      created_at: now,
-      updated_at: now,
-      tag_name_cache: tag.name,
-      ip: attribution[:ip],
-      fingerprint: attribution[:fingerprint],
-      added: added
-    }
   end
 
   @doc """
@@ -1078,92 +1045,92 @@ defmodule Philomena.Images do
 
   """
   def batch_update(image_ids, added_tags, removed_tags, tag_change_attributes) do
-    image_ids =
-      Image
-      |> where([i], i.id in ^image_ids and i.hidden_from_users == false)
-      |> select([i], i.id)
-      |> Repo.all()
+    # image_ids =
+    #   Image
+    #   |> where([i], i.id in ^image_ids and i.hidden_from_users == false)
+    #   |> select([i], i.id)
+    #   |> Repo.all()
 
-    added_tags = Enum.map(added_tags, & &1.id)
-    removed_tags = Enum.map(removed_tags, & &1.id)
+    # added_tags = Enum.map(added_tags, & &1.id)
+    # removed_tags = Enum.map(removed_tags, & &1.id)
 
-    # Change everything in one go, ignoring any validation errors
+    # # Change everything in one go, ignoring any validation errors
 
-    # Note: computing the Cartesian product
-    insertions =
-      for tag_id <- added_tags, image_id <- image_ids do
-        %{tag_id: tag_id, image_id: image_id}
-      end
+    # # Note: computing the Cartesian product
+    # insertions =
+    #   for tag_id <- added_tags, image_id <- image_ids do
+    #     %{tag_id: tag_id, image_id: image_id}
+    #   end
 
-    deletions =
-      Tagging
-      |> where([t], t.image_id in ^image_ids and t.tag_id in ^removed_tags)
-      |> select([t], [t.image_id, t.tag_id])
+    # deletions =
+    #   Tagging
+    #   |> where([t], t.image_id in ^image_ids and t.tag_id in ^removed_tags)
+    #   |> select([t], [t.image_id, t.tag_id])
 
-    now = DateTime.utc_now(:second)
-    tag_change_attributes = Map.merge(tag_change_attributes, %{created_at: now, updated_at: now})
-    tag_attributes = %{name: "", slug: "", created_at: now, updated_at: now}
+    # now = DateTime.utc_now(:second)
+    # tag_change_attributes = Map.merge(tag_change_attributes, %{created_at: now, updated_at: now})
+    # tag_attributes = %{name: "", slug: "", created_at: now, updated_at: now}
 
-    Repo.transaction(fn ->
-      {_count, inserted} =
-        Repo.insert_all(Tagging, insertions,
-          on_conflict: :nothing,
-          returning: [:image_id, :tag_id]
-        )
+    # Repo.transaction(fn ->
+    #   {_count, inserted} =
+    #     Repo.insert_all(Tagging, insertions,
+    #       on_conflict: :nothing,
+    #       returning: [:image_id, :tag_id]
+    #     )
 
-      {_count, deleted} = Repo.delete_all(deletions)
+    #   {_count, deleted} = Repo.delete_all(deletions)
 
-      inserted = Enum.map(inserted, &[&1.image_id, &1.tag_id])
+    #   inserted = Enum.map(inserted, &[&1.image_id, &1.tag_id])
 
-      added_changes =
-        Enum.map(inserted, fn [image_id, tag_id] ->
-          Map.merge(tag_change_attributes, %{image_id: image_id, tag_id: tag_id, added: true})
-        end)
+    #   added_changes =
+    #     Enum.map(inserted, fn [image_id, tag_id] ->
+    #       Map.merge(tag_change_attributes, %{image_id: image_id, tag_id: tag_id, added: true})
+    #     end)
 
-      removed_changes =
-        Enum.map(deleted, fn [image_id, tag_id] ->
-          Map.merge(tag_change_attributes, %{image_id: image_id, tag_id: tag_id, added: false})
-        end)
+    #   removed_changes =
+    #     Enum.map(deleted, fn [image_id, tag_id] ->
+    #       Map.merge(tag_change_attributes, %{image_id: image_id, tag_id: tag_id, added: false})
+    #     end)
 
-      changes = added_changes ++ removed_changes
+    #   changes = added_changes ++ removed_changes
 
-      Repo.insert_all(TagChange, changes)
+    #   Repo.insert_all(TagChange, changes)
 
-      # In order to merge into the existing tables here in one go, insert_all
-      # is used with a query that is guaranteed to conflict on every row by
-      # using the primary key.
+    #   # In order to merge into the existing tables here in one go, insert_all
+    #   # is used with a query that is guaranteed to conflict on every row by
+    #   # using the primary key.
 
-      added_upserts =
-        inserted
-        |> Enum.group_by(fn [_image_id, tag_id] -> tag_id end)
-        |> Enum.map(fn {tag_id, instances} ->
-          Map.merge(tag_attributes, %{id: tag_id, images_count: length(instances)})
-        end)
+    #   added_upserts =
+    #     inserted
+    #     |> Enum.group_by(fn [_image_id, tag_id] -> tag_id end)
+    #     |> Enum.map(fn {tag_id, instances} ->
+    #       Map.merge(tag_attributes, %{id: tag_id, images_count: length(instances)})
+    #     end)
 
-      removed_upserts =
-        deleted
-        |> Enum.group_by(fn [_image_id, tag_id] -> tag_id end)
-        |> Enum.map(fn {tag_id, instances} ->
-          Map.merge(tag_attributes, %{id: tag_id, images_count: -length(instances)})
-        end)
+    #   removed_upserts =
+    #     deleted
+    #     |> Enum.group_by(fn [_image_id, tag_id] -> tag_id end)
+    #     |> Enum.map(fn {tag_id, instances} ->
+    #       Map.merge(tag_attributes, %{id: tag_id, images_count: -length(instances)})
+    #     end)
 
-      update_query = update(Tag, inc: [images_count: fragment("EXCLUDED.images_count")])
+    #   update_query = update(Tag, inc: [images_count: fragment("EXCLUDED.images_count")])
 
-      upserts = added_upserts ++ removed_upserts
+    #   upserts = added_upserts ++ removed_upserts
 
-      Repo.insert_all(Tag, upserts, on_conflict: update_query, conflict_target: [:id])
-    end)
-    |> case do
-      {:ok, _} = result ->
-        reindex_images(image_ids)
-        Comments.reindex_comments_on_images(image_ids)
-        Tags.reindex_tags(Enum.map(added_tags ++ removed_tags, &%{id: &1}))
+    #   Repo.insert_all(Tag, upserts, on_conflict: update_query, conflict_target: [:id])
+    # end)
+    # |> case do
+    #   {:ok, _} = result ->
+    #     reindex_images(image_ids)
+    #     Comments.reindex_comments_on_images(image_ids)
+    #     Tags.reindex_tags(Enum.map(added_tags ++ removed_tags, &%{id: &1}))
 
-        result
+    #     result
 
-      result ->
-        result
-    end
+    #   result ->
+    #     result
+    # end
   end
 
   @doc """
