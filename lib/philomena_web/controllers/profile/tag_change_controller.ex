@@ -27,7 +27,7 @@ defmodule PhilomenaWeb.Profile.TagChangeController do
 
     tag_changes =
       common_query
-      |> preload([:tags, :user, image: [:user, :sources, tags: :aliases]])
+      |> preload([:user, image: [:user, :sources, tags: :aliases], tags: [:tag]])
       |> order_by(desc: :id)
       |> Repo.paginate(conn.assigns.scrivener)
 
