@@ -32,7 +32,6 @@
 @import "elements/header";
 @import "elements/layout";
 @import "elements/media";
-@import "elements/shame";
 @import "elements/text";
 
 /* Style elements specific to certain pages. */
@@ -56,4 +55,5 @@
 @import "views/search";
 @import "views/staff";
 @import "views/stats";
+@import "views/tag_change";
 @import "views/tags";

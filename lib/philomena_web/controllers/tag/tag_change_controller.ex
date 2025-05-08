@@ -3,6 +3,7 @@ defmodule PhilomenaWeb.Tag.TagChangeController do
 
   alias Philomena.Tags.Tag
   alias Philomena.TagChanges.TagChange
+  alias Philomena.TagChangeTags.TagChangeTag
   alias Philomena.Repo
   import Ecto.Query
 
@@ -14,16 +15,20 @@ defmodule PhilomenaWeb.Tag.TagChangeController do
 
     tag_changes =
       TagChange
+      |> order_by(desc: :id)
+      |> preload([:user, image: [:user, :sources, tags: :aliases]])
+
+    tag_change_tags =
+      TagChangeTag
       |> where(tag_id: ^tag.id)
       |> added_filter(params)
-      |> preload([:tags, :user, image: [:user, :sources, tags: :aliases]])
-      |> order_by(desc: :id)
+      |> preload(tag_change: ^tag_changes)
       |> Repo.paginate(conn.assigns.scrivener)
 
     render(conn, "index.html",
       title: "Tag Changes for Tag `#{tag.name}'",
       tag: tag,
-      tag_changes: tag_changes
+      tag_change_tags: tag_change_tags
     )
   end
 
