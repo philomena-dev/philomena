@@ -13,7 +13,6 @@ export default tsEslint.config(
   // Custom tweaks on top of the standard recommended configs
   {
     name: 'PhilomenaConfig',
-    files: ['**/*.js', '**/*.ts'],
     languageOptions: {
       globals: {
         ...globals.browser,
