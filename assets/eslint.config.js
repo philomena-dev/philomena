@@ -170,7 +170,7 @@ export default tsEslint.config(
       // TODO: replace all non-null assertions with explicit errors
       '@typescript-eslint/no-non-null-assertion': 0,
 
-      // Not very useful. An empty function is sometimes is passed where the api
+      // Not very useful. An empty function is sometimes passed where the api
       // requires some function, but we have nothing to do in it.
       '@typescript-eslint/no-empty-function': 0,
 
