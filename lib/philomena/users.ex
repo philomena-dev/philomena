@@ -7,7 +7,11 @@ defmodule Philomena.Users do
   alias Ecto.Multi
   alias Philomena.Repo
 
+  alias PhilomenaQuery.Search
+  alias Philomena.Users
   alias Philomena.Users.{User, UserToken, UserNotifier, Uploader}
+  alias Philomena.Users.SearchIndex, as: UserIndex
+  alias Philomena.Bans.User, as: UserBan
   alias Philomena.{Forums, Forums.Forum}
   alias Philomena.Topics
   alias Philomena.Roles.Role
@@ -18,6 +22,8 @@ defmodule Philomena.Users do
   alias Philomena.Galleries
   alias Philomena.Reports
   alias Philomena.Filters
+  alias Philomena.Filters.Filter
+  alias Philomena.IndexWorker
   alias Philomena.UserEraseWorker
   alias Philomena.UserRenameWorker
 
@@ -95,11 +101,13 @@ defmodule Philomena.Users do
         user
         |> User.successful_attempt_changeset()
         |> Repo.update!()
+        |> reindex_user()
 
       true ->
         user
         |> User.failed_attempt_changeset()
         |> Repo.update!()
+        |> reindex_user()
         |> maybe_send_unlock_instructions(unlock_url_fun)
 
         nil
@@ -115,6 +123,7 @@ defmodule Philomena.Users do
     user
     |> User.lock_changeset()
     |> Repo.update!()
+    |> reindex_user()
     |> deliver_user_unlock_instructions(unlock_url_fun)
 
     nil
@@ -154,6 +163,7 @@ defmodule Philomena.Users do
     %User{}
     |> User.registration_changeset(attrs)
     |> Repo.insert()
+    |> reindex_after_update()
   end
 
   @doc """
@@ -216,6 +226,8 @@ defmodule Philomena.Users do
     with {:ok, query} <- UserToken.verify_change_email_token_query(token, context),
          %UserToken{sent_to: email} <- Repo.one(query),
          {:ok, _} <- Repo.transaction(user_email_multi(user, email, context)) do
+      reindex_user(user)
+
       :ok
     else
       _ -> :error
@@ -257,6 +269,8 @@ defmodule Philomena.Users do
     with {:ok, query} <- UserToken.verify_email_token_query(token, "unlock"),
          %User{} = user <- Repo.one(query),
          {:ok, %{user: user}} <- Repo.transaction(unlock_user_multi(user)) do
+      reindex_user(user)
+
       {:ok, user}
     else
       _ -> :error
@@ -284,6 +298,7 @@ defmodule Philomena.Users do
     user
     |> User.unlock_changeset()
     |> Repo.update()
+    |> reindex_after_update()
   end
 
   @doc ~S"""
@@ -342,8 +357,13 @@ defmodule Philomena.Users do
     |> Ecto.Multi.delete_all(:tokens, UserToken.user_and_contexts_query(user, :all))
     |> Repo.transaction()
     |> case do
-      {:ok, %{user: user}} -> {:ok, user}
-      {:error, :user, changeset, _} -> {:error, changeset}
+      {:ok, %{user: user}} ->
+        reindex_user(user)
+
+        {:ok, user}
+
+      {:error, :user, changeset, _} ->
+        {:error, changeset}
     end
   end
 
@@ -449,6 +469,8 @@ defmodule Philomena.Users do
     with {:ok, query} <- UserToken.verify_email_token_query(token, "confirm"),
          %User{} = user <- Repo.one(query),
          {:ok, %{user: user}} <- Repo.transaction(confirm_user_multi(user)) do
+      reindex_user(user)
+
       {:ok, user}
     else
       _ -> :error
@@ -518,8 +540,13 @@ defmodule Philomena.Users do
     |> Ecto.Multi.delete_all(:tokens, UserToken.user_and_contexts_query(user, :all))
     |> Repo.transaction()
     |> case do
-      {:ok, %{user: user}} -> {:ok, user}
-      {:error, :user, changeset, _} -> {:error, changeset}
+      {:ok, %{user: user}} ->
+        reindex_user(user)
+
+        {:ok, user}
+
+      {:error, :user, changeset, _} ->
+        {:error, changeset}
     end
   end
 
@@ -565,8 +592,13 @@ defmodule Philomena.Users do
     end)
     |> Repo.transaction()
     |> case do
-      {:ok, %{user: user}} -> {:ok, user}
-      {:error, :user, changeset, _} -> {:error, changeset}
+      {:ok, %{user: user}} ->
+        reindex_user(user)
+
+        {:ok, user}
+
+      {:error, :user, changeset, _} ->
+        {:error, changeset}
     end
   end
 
@@ -589,6 +621,7 @@ defmodule Philomena.Users do
     user
     |> User.spoiler_type_changeset(attrs)
     |> Repo.update()
+    |> reindex_after_update()
   end
 
   @doc """
@@ -607,6 +640,7 @@ defmodule Philomena.Users do
     user
     |> User.settings_changeset(attrs)
     |> Repo.update()
+    |> reindex_after_update()
   end
 
   @doc """
@@ -625,6 +659,7 @@ defmodule Philomena.Users do
     user
     |> User.description_changeset(attrs)
     |> Repo.update()
+    |> reindex_after_update()
   end
 
   @doc """
@@ -640,6 +675,7 @@ defmodule Philomena.Users do
     user
     |> User.scratchpad_changeset(attrs)
     |> Repo.update()
+    |> reindex_after_update()
   end
 
   @doc """
@@ -657,6 +693,7 @@ defmodule Philomena.Users do
     user
     |> User.watched_tags_changeset(watched_tag_ids)
     |> Repo.update()
+    |> reindex_after_update()
   end
 
   @doc """
@@ -674,6 +711,7 @@ defmodule Philomena.Users do
     user
     |> User.watched_tags_changeset(watched_tag_ids)
     |> Repo.update()
+    |> reindex_after_update()
   end
 
   @doc """
@@ -695,6 +733,8 @@ defmodule Philomena.Users do
       {:ok, user} ->
         Uploader.persist_upload(user)
         Uploader.unpersist_old_upload(user)
+
+        reindex_user(user)
 
         {:ok, user}
 
@@ -719,6 +759,8 @@ defmodule Philomena.Users do
     |> case do
       {:ok, user} ->
         Uploader.unpersist_old_upload(user)
+
+        reindex_user(user)
 
         {:ok, user}
 
@@ -752,6 +794,8 @@ defmodule Philomena.Users do
       {:ok, %{account: %{name: new_name} = account}} ->
         Exq.enqueue(Exq, "indexing", UserRenameWorker, [old_name, new_name])
 
+        reindex_user(account)
+
         {:ok, account}
 
       {:error, :account, changeset, _changes} ->
@@ -777,6 +821,7 @@ defmodule Philomena.Users do
     Galleries.user_name_reindex(old_name, new_name)
     Reports.user_name_reindex(old_name, new_name)
     Filters.user_name_reindex(old_name, new_name)
+    Users.user_name_reindex(old_name, new_name)
   end
 
   @doc """
@@ -792,6 +837,7 @@ defmodule Philomena.Users do
     user
     |> User.reactivate_changeset()
     |> Repo.update()
+    |> reindex_after_update()
   end
 
   @doc """
@@ -809,6 +855,7 @@ defmodule Philomena.Users do
     user
     |> User.deactivate_changeset(moderator)
     |> Repo.update()
+    |> reindex_after_update()
   end
 
   @doc """
@@ -824,6 +871,23 @@ defmodule Philomena.Users do
     user
     |> User.api_key_changeset()
     |> Repo.update()
+    |> reindex_after_update()
+  end
+
+  @doc """
+  Updates a user's current filter.
+
+  ## Examples
+
+      iex> update_filter(user, filter)
+      {:ok, %User{}}
+
+  """
+  def update_filter(%User{} = user, %Filter{} = filter) do
+    user
+    |> User.filter_changeset(filter)
+    |> Repo.update()
+    |> reindex_after_update()
   end
 
   @doc """
@@ -843,6 +907,7 @@ defmodule Philomena.Users do
     user
     |> User.force_filter_changeset(user_params)
     |> Repo.update()
+    |> reindex_after_update()
   end
 
   @doc """
@@ -858,6 +923,7 @@ defmodule Philomena.Users do
     user
     |> User.unforce_filter_changeset()
     |> Repo.update()
+    |> reindex_after_update()
   end
 
   @doc """
@@ -873,6 +939,7 @@ defmodule Philomena.Users do
     user
     |> User.clear_recent_filters_changeset()
     |> Repo.update()
+    |> reindex_after_update()
   end
 
   defp load_with_roles(query) do
@@ -896,6 +963,7 @@ defmodule Philomena.Users do
     user
     |> User.verify_changeset()
     |> Repo.update()
+    |> reindex_after_update()
   end
 
   @doc """
@@ -911,6 +979,7 @@ defmodule Philomena.Users do
     user
     |> User.unverify_changeset()
     |> Repo.update()
+    |> reindex_after_update()
   end
 
   @doc """
@@ -971,5 +1040,92 @@ defmodule Philomena.Users do
       |> Repo.delete_all()
 
     {:ok, nil}
+  end
+
+  @doc """
+  Queues a single user for search index updates.
+  Returns the user struct unchanged, for use in a pipeline.
+
+  ## Examples
+
+      iex> reindex_user(user)
+      %User{}
+
+  """
+  def reindex_user(%User{} = user) do
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["Users", "id", [user.id]])
+
+    user
+  end
+
+  @doc """
+  Returns the preload configuration for user indexing.
+
+  Specifies which associations should be preloaded when indexing users,
+  optimizing the queries for better performance.
+
+  ## Examples
+
+      iex> indexing_preloads()
+      [deleted_by_user: query, bans: query, name_changes: query]
+
+  """
+  def indexing_preloads do
+    user_query = select(User, [u], map(u, [:name]))
+    ban_query = select(UserBan, [b], map(b, [:enabled, :valid_until]))
+    name_change_query = select(UserNameChange, [n], map(n, [:name]))
+
+    [
+      deleted_by_user: user_query,
+      bans: ban_query,
+      name_changes: name_change_query
+    ]
+  end
+
+  @doc """
+  Performs a search reindex operation on users matching the given criteria.
+
+  ## Parameters
+  - column: The database column to filter on (e.g., :id)
+  - condition: A list of values to match against the column
+
+  ## Examples
+
+      iex> perform_reindex(:id, [1, 2, 3])
+      :ok
+
+  """
+  def perform_reindex(column, condition) do
+    User
+    |> preload(^indexing_preloads())
+    |> where([i], field(i, ^column) in ^condition)
+    |> Search.reindex(User)
+  end
+
+  defp reindex_after_update(result) do
+    case result do
+      {:ok, user} ->
+        reindex_user(user)
+
+        {:ok, user}
+
+      error ->
+        error
+    end
+  end
+
+  @doc """
+  Updates user search indices when a user's name changes.
+
+  ## Examples
+
+      iex> user_name_reindex("old_username", "new_username")
+      :ok
+
+  """
+  def user_name_reindex(old_name, new_name) do
+    data = UserIndex.user_name_update_by_query(old_name, new_name)
+
+    Search.update_by_query(User, data.query, data.set_replacements, data.replacements)
   end
 end

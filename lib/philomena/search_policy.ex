@@ -6,6 +6,7 @@ defmodule Philomena.SearchPolicy do
   alias Philomena.Reports.Report
   alias Philomena.Tags.Tag
   alias Philomena.Filters.Filter
+  alias Philomena.Users.User
 
   alias Philomena.Comments.SearchIndex, as: CommentIndex
   alias Philomena.Galleries.SearchIndex, as: GalleryIndex
@@ -14,8 +15,9 @@ defmodule Philomena.SearchPolicy do
   alias Philomena.Reports.SearchIndex, as: ReportIndex
   alias Philomena.Tags.SearchIndex, as: TagIndex
   alias Philomena.Filters.SearchIndex, as: FilterIndex
+  alias Philomena.Users.SearchIndex, as: UserIndex
 
-  @type schema_module :: Comment | Gallery | Image | Post | Report | Tag | Filter
+  @type schema_module :: Comment | Gallery | Image | Post | Report | Tag | Filter | User
 
   @doc """
   For a given schema module (e.g. `m:Philomena.Images.Image`), return the associated module
@@ -38,6 +40,7 @@ defmodule Philomena.SearchPolicy do
   def index_for(Report), do: ReportIndex
   def index_for(Tag), do: TagIndex
   def index_for(Filter), do: FilterIndex
+  def index_for(User), do: UserIndex
 
   @doc """
   Return the path used to interact with the search engine.

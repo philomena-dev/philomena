@@ -34,7 +34,7 @@ import Ecto.Query
 
 IO.puts("---- Creating search indices")
 
-for model <- [Image, Comment, Gallery, Tag, Post, Report, Filter] do
+for model <- [Image, Comment, Gallery, Tag, Post, Report, Filter, User] do
   Search.delete_index!(model)
   Search.create_index!(model)
 end

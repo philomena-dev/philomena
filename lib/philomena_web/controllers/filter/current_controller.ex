@@ -3,8 +3,8 @@ defmodule PhilomenaWeb.Filter.CurrentController do
 
   @cookie_opts [max_age: 788_923_800, same_site: "Lax"]
 
-  alias Philomena.{Filters, Filters.Filter, Users.User}
-  alias Philomena.Repo
+  alias Philomena.Users
+  alias Philomena.{Filters, Filters.Filter}
 
   plug :load_resource, model: Filter
 
@@ -30,10 +30,7 @@ defmodule PhilomenaWeb.Filter.CurrentController do
   end
 
   defp update_filter(conn, user, filter) do
-    {:ok, _user} =
-      user
-      |> User.filter_changeset(filter)
-      |> Repo.update()
+    {:ok, _user} = Users.update_filter(user, filter)
 
     conn
   end
