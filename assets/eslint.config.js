@@ -1,10 +1,16 @@
-import tsLints from 'typescript-eslint';
+import jsEslint from '@eslint/js';
+import tsEslint from 'typescript-eslint';
 import vitestPlugin from '@vitest/eslint-plugin';
 import globals from 'globals';
 
-export default tsLints.config(
-  ...tsLints.configs.strict,
-  ...tsLints.configs.stylistic,
+export default tsEslint.config(
+  // Standard configs as per the docs to get the strictest linting possible.
+  // https://typescript-eslint.io/users/configs#projects-with-type-checking
+  jsEslint.configs.recommended,
+  tsEslint.configs.strict,
+  tsEslint.configs.stylistic,
+
+  // Custom tweaks on top of the standard recommended configs
   {
     name: 'PhilomenaConfig',
     files: ['**/*.js', '**/*.ts'],
