@@ -22,6 +22,8 @@ defmodule Philomena.Comments.Query do
   end
 
   defp author_transform(_ctx, data) do
+    data = String.downcase(data)
+
     {
       :ok,
       %{
@@ -52,15 +54,14 @@ defmodule Philomena.Comments.Query do
     [
       int_fields: ~W(id),
       numeric_fields: ~W(image_id),
-      date_fields: ~W(created_at),
+      date_fields: ~W(created_at updated_at),
       ngram_fields: ~W(body),
       custom_fields: ~W(author user_id),
       default_field: {"body", :ngram},
       transforms: %{
         "user_id" => &user_id_transform/2,
         "author" => &author_transform/2
-      },
-      aliases: %{"created_at" => "posted_at"}
+      }
     ]
   end
 
@@ -77,13 +78,14 @@ defmodule Philomena.Comments.Query do
     fields = user_fields()
 
     Keyword.merge(fields,
-      numeric_fields: fields[:numeric_fields] ++ ~W(user_id),
-      literal_fields: ~W(author fingerprint),
+      numeric_fields: fields[:numeric_fields] ++ ~W(user_id deleted_by_user_id),
+      literal_fields: ~W(author fingerprint deleted_by_user),
+      ngram_fields: fields[:ngram_fields] ++ ~W(deletion_reason),
       ip_fields: ~W(ip),
-      bool_fields: ~W(anonymous deleted),
+      bool_fields: ~W(anonymous deleted destroyed_content),
       custom_fields: fields[:custom_fields] -- ~W(author user_id),
-      aliases: Map.merge(fields[:aliases], %{"deleted" => "hidden_from_users"}),
-      transforms: Map.drop(fields[:transforms], ~W(author user_id))
+      transforms: Map.drop(fields[:transforms], ~W(author user_id)),
+      aliases: %{"deleted" => "hidden_from_users"}
     )
   end
 

@@ -22,6 +22,8 @@ defmodule Philomena.Posts.Query do
   end
 
   defp author_transform(_ctx, data) do
+    data = String.downcase(data)
+
     {
       :ok,
       %{
@@ -31,8 +33,8 @@ defmodule Philomena.Posts.Query do
             %{
               bool: %{
                 should: [
-                  %{term: %{author: String.downcase(data)}},
-                  %{wildcard: %{author: String.downcase(data)}}
+                  %{term: %{author: data}},
+                  %{wildcard: %{author: data}}
                 ]
               }
             }
@@ -77,12 +79,16 @@ defmodule Philomena.Posts.Query do
     fields = user_fields()
 
     Keyword.merge(fields,
-      numeric_fields: fields[:numeric_fields] ++ ~W(user_id),
-      literal_fields: fields[:literal_fields] ++ ~W(author fingerprint),
+      numeric_fields: fields[:numeric_fields] ++ ~W(user_id deleted_by_user_id),
+      literal_fields:
+        fields[:literal_fields] ++
+          ~W(author fingerprint deleted_by_user),
+      ngram_fields: fields[:ngram_fields] ++ ~W(deletion_reason),
       ip_fields: ~W(ip),
-      bool_fields: ~W(anonymous deleted),
+      bool_fields: ~W(anonymous deleted destroyed_content),
       custom_fields: fields[:custom_fields] -- ~W(author user_id),
-      transforms: Map.drop(fields[:transforms], ["user_id", "author"])
+      transforms: Map.drop(fields[:transforms], ["user_id", "author"]),
+      aliases: %{"deleted" => "hidden_from_users"}
     )
   end
 

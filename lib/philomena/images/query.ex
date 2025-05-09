@@ -95,14 +95,14 @@ defmodule Philomena.Images.Query do
       bool_fields: ~W(animated processed thumbnails_generated),
       ngram_fields: ~W(description),
       custom_fields: ~W(gallery_id),
-      default_field: {"namespaced_tags.name", :term},
+      default_field: {"tags", :term},
       transforms: %{"gallery_id" => &gallery_id_transform/2},
       aliases: %{
         "faved_by" => "favourited_by_users",
         "faved_by_id" => "favourited_by_user_ids"
       },
       no_downcase_fields: ~W(file_name),
-      normalizations: %{"namespaced_tags.name" => &Tag.clean_tag_name/1}
+      normalizations: %{"tags" => &Tag.clean_tag_name/1}
     ]
   end
 
@@ -125,7 +125,7 @@ defmodule Philomena.Images.Query do
       literal_fields:
         fields[:literal_fields] ++
           ~W(fingerprint upvoted_by downvoted_by true_uploader hidden_by deleted_by_user),
-      ngram_fields: fields[:ngram_fields] ++ ~W(deletion_reason),
+      ngram_fields: fields[:ngram_fields] ++ ~W(deletion_reason scratchpad),
       ip_fields: ~W(ip),
       bool_fields: fields[:bool_fields] ++ ~W(anonymous deleted),
       aliases:
