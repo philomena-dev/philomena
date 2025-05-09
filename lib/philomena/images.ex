@@ -1441,19 +1441,11 @@ defmodule Philomena.Images do
     added_filter(tag_changes, params)
   end
 
-  defp added_filter(query, %{"added" => "1"}) do
+  defp added_filter(query, %{"added" => added}) do
     from t in query,
       inner_join: tt in TagChanges.Tag,
       on: t.id == tt.tag_change_id,
-      where: tt.added == true,
-      group_by: t.id
-  end
-
-  defp added_filter(query, %{"added" => "0"}) do
-    from t in query,
-      inner_join: tt in TagChanges.Tag,
-      on: t.id == tt.tag_change_id,
-      where: tt.added == false,
+      where: tt.added == ^if(added == "1", do: true, else: false),
       group_by: t.id
   end
 
