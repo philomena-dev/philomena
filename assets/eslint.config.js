@@ -205,11 +205,7 @@ export default tsEslint.config(
     },
     rules: {
       ...vitestPlugin.configs.recommended.rules,
-      'no-undef': 'off',
-      'no-undefined': 'off',
-      'no-unused-expressions': 0,
       'vitest/valid-expect': 0,
-      '@typescript-eslint/no-unused-expressions': 0,
       'vitest/expect-expect': [
         'error',
         {

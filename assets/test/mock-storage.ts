@@ -10,21 +10,21 @@ export function mockStorage<Keys extends MockStorageKeys>(
   const removeItemSpy = 'removeItem' in options ? vi.spyOn(Storage.prototype, 'removeItem') : undefined;
 
   beforeAll(() => {
-    getItemSpy && getItemSpy.mockImplementation((options as Storage).getItem);
-    setItemSpy && setItemSpy.mockImplementation((options as Storage).setItem);
-    removeItemSpy && removeItemSpy.mockImplementation((options as Storage).removeItem);
+    if (getItemSpy) getItemSpy.mockImplementation((options as Storage).getItem);
+    if (setItemSpy) setItemSpy.mockImplementation((options as Storage).setItem);
+    if (removeItemSpy) removeItemSpy.mockImplementation((options as Storage).removeItem);
   });
 
   afterEach(() => {
-    getItemSpy && getItemSpy.mockClear();
-    setItemSpy && setItemSpy.mockClear();
-    removeItemSpy && removeItemSpy.mockClear();
+    if (getItemSpy) getItemSpy.mockClear();
+    if (setItemSpy) setItemSpy.mockClear();
+    if (removeItemSpy) removeItemSpy.mockClear();
   });
 
   afterAll(() => {
-    getItemSpy && getItemSpy.mockRestore();
-    setItemSpy && setItemSpy.mockRestore();
-    removeItemSpy && removeItemSpy.mockRestore();
+    if (getItemSpy) getItemSpy.mockRestore();
+    if (setItemSpy) setItemSpy.mockRestore();
+    if (removeItemSpy) removeItemSpy.mockRestore();
   });
 
   return { getItemSpy, setItemSpy, removeItemSpy } as ReturnType<typeof mockStorage>;
