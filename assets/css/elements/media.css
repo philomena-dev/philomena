@@ -5,6 +5,9 @@
   grid-gap: var(--padding-small);
 }
 
+/* Ensure the shape of the image list entries is square
+   plus the media header height. */
+
 .media-list:before {
   content: "";
   width: 0;
@@ -30,6 +33,9 @@
   overflow: hidden;
   border: var(--media-border);
 }
+
+/* Shift the image list by 1 element introduced due to
+   the .media-list:before rule */
 
 .media-box:first-child {
   grid-row: 1 / 1;
