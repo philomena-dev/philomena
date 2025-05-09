@@ -72,25 +72,26 @@ span.spoiler div.image-container {
 
 /* .image-container sizes, set by the partial. */
 .thumb {
-  max-width: 250px;
-  max-height: 250px;
+  max-width: max(var(--media-medium-container-width), 100%);
+  max-height: max(var(--media-medium-container-width), 100%);
 }
 
 .thumb_small {
-  max-width: 150px;
-  max-height: 150px;
+  max-width: max(var(--media-small-container-width), 100%);
+  max-height: max(var(--media-small-container-width), 100%);
 }
 
 .thumb_tiny,
 .thumb_tiny img {
   max-width: var(--media-tiny-container-width);
-  max-height: var(--media-tiny-container-width);
+  max-height: var(--media-tiny-container-width) !important;
 }
 
 /* Used for elements that wrap .image-container */
 .thumb-tiny-container {
   width: var(--media-tiny-container-width);
   height: var(--media-tiny-container-width);
+  place-content: center;
 }
 
 /* embedded images. kinda like image-container, but this one also shows a text, link to filter page, etc */
@@ -187,6 +188,7 @@ div.image-container video {
 div.image-container img,
 div.image-container video {
   max-height: 100%;
+  max-width: 100%;
   margin: auto;
 }
 

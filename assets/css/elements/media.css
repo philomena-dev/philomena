@@ -106,7 +106,7 @@ a.media-box__header--link:hover {
 
 .media-box__content--featured {
   width: var(--media-featured-width);
-  height: var(--media-featured-width);
+  height: auto;
 }
 
 .media-box__content--featured .image-container {
@@ -114,12 +114,10 @@ a.media-box__header--link:hover {
 }
 
 .media-box__content--large {
-  max-width: var(--media-medium-container-width);
   max-height: var(--media-medium-container-width);
 }
 
 .media-box__content--small {
-  max-width: var(--media-small-container-width);
   max-height: var(--media-small-container-width);
 }
 
