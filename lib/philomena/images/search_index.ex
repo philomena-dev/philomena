@@ -31,7 +31,7 @@ defmodule Philomena.Images.SearchIndex do
           downvoter_ids: %{type: "keyword"},
           downvoters: %{type: "keyword"},
           downvotes: %{type: "integer"},
-          duplicate_id: %{type: "integer"},
+          duplicate_id: %{type: "keyword"},
           duration: %{type: "float"},
           faves: %{type: "integer"},
           favourited_by_user_ids: %{type: "keyword"},
