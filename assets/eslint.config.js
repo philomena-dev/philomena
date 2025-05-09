@@ -125,7 +125,6 @@ export default tsEslint.config(
       'no-this-before-super': 2,
       'no-throw-literal': 2,
       'no-undef-init': 2,
-      'no-undef': 2,
       'no-undefined': 0,
       'no-underscore-dangle': 0,
       'no-unexpected-multiline': 2,
@@ -136,7 +135,6 @@ export default tsEslint.config(
       'no-unsafe-negation': 2,
       'no-unused-expressions': [2, { allowShortCircuit: true, allowTernary: true }],
       'no-unused-labels': 2,
-      'no-unused-vars': [2, { vars: 'all', args: 'after-used', varsIgnorePattern: '^_', argsIgnorePattern: '^_' }],
       'no-use-before-define': [2, 'nofunc'],
       'no-useless-call': 2,
       'no-useless-computed-key': 2,
@@ -171,6 +169,16 @@ export default tsEslint.config(
       'valid-typeof': 2,
       'vars-on-top': 2,
       yoda: [2, 'never'],
+
+      '@typescript-eslint/no-unused-vars': [
+        2,
+        {
+          vars: 'all',
+          args: 'all',
+          varsIgnorePattern: '^_.*',
+          argsIgnorePattern: '^_.*',
+        },
+      ],
     },
     ignores: ['js/vendor/*', 'vite.config.ts'],
   },
@@ -179,21 +187,14 @@ export default tsEslint.config(
     rules: {
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-unused-expressions': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
     },
   },
   {
     files: ['**/*.ts'],
     rules: {
-      'no-undef': 'off',
-      'no-unused-vars': 'off',
       'no-redeclare': 'off',
       'no-shadow': 'off',
 
-      '@typescript-eslint/no-unused-vars': [
-        2,
-        { vars: 'all', args: 'after-used', varsIgnorePattern: '^_.*', argsIgnorePattern: '^_.*' },
-      ],
       '@typescript-eslint/no-redeclare': 2,
       '@typescript-eslint/no-shadow': 2,
     },

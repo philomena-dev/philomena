@@ -89,7 +89,7 @@ function insertParentPost(data, clickedLink, fullComment) {
   filterNode(fullComment.previousSibling);
 }
 
-function clearParentPost(clickedLink, fullComment) {
+function clearParentPost(_clickedLink, fullComment) {
   // Remove any previous siblings with the class fetched-comment
   while (fullComment.previousSibling && fullComment.previousSibling.classList.contains('fetched-comment')) {
     fullComment.previousSibling.parentNode.removeChild(fullComment.previousSibling);
