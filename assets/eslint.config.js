@@ -8,10 +8,10 @@ export default tsEslint.config(
     name: 'PhilomenaConfig',
     files: ['**/*.js', '**/*.ts'],
     languageOptions: {
-      ecmaVersion: 6,
+      ecmaVersion: 2019,
       sourceType: 'module',
       parserOptions: {
-        ecmaVersion: 6,
+        ecmaVersion: 2019,
         sourceType: 'module',
       },
       globals: {
@@ -107,7 +107,6 @@ export default tsEslint.config(
       'no-plusplus': 0,
       'no-proto': 2,
       'no-prototype-builtins': 0,
-      'no-redeclare': 2,
       'no-regex-spaces': 2,
       'no-restricted-globals': [2, 'event'],
       'no-restricted-imports': 2,
@@ -178,20 +177,14 @@ export default tsEslint.config(
           argsIgnorePattern: '^_',
         },
       ],
+
+      'no-shadow': 0,
+      '@typescript-eslint/no-shadow': 2,
     },
     ignores: ['js/vendor/*', 'vite.config.ts'],
   },
   {
-    files: ['**/*.ts'],
-    rules: {
-      'no-redeclare': 'off',
-      'no-shadow': 'off',
-
-      '@typescript-eslint/no-redeclare': 2,
-      '@typescript-eslint/no-shadow': 2,
-    },
-  },
-  {
+    name: 'Tests',
     files: ['**/*.spec.ts', '**/test/*.ts'],
     plugins: {
       vitest: vitestPlugin,
