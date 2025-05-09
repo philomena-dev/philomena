@@ -1,3 +1,6 @@
+# Ensure a consistent project name regardless of how the repo directory is named
+name: philomena
+
 volumes:
   postgres_data: {}
   opensearch_data: {}
@@ -12,6 +15,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/app/Dockerfile
+      target: app
+
     environment:
       - MIX_ENV=dev
       - PGPASSWORD=postgres
@@ -44,14 +49,15 @@ services:
       - S3_BUCKET=philomena
       - AWS_ACCESS_KEY_ID=local-identity
       - AWS_SECRET_ACCESS_KEY=local-credential
-    working_dir: /srv/philomena
+
     tty: true
+
     volumes:
-      - .:/srv/philomena
-      - app_cargo_data:/srv/philomena/.cargo
-      - app_build_data:/srv/philomena/_build
-      - app_deps_data:/srv/philomena/deps
-      - app_native_data:/srv/philomena/priv/native
+      - ${HOST_WORKSPACE?}:${CONTAINER_WORKSPACE?}
+      - app_cargo_data:${CONTAINER_WORKSPACE?}/.cargo
+      - app_build_data:${CONTAINER_WORKSPACE?}/_build
+      - app_deps_data:${CONTAINER_WORKSPACE?}/deps
+      - app_native_data:${CONTAINER_WORKSPACE?}/priv/native
     depends_on:
       - postgres
       - opensearch
@@ -65,13 +71,19 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+    # Expose DB port for connecting from a DB viewer client. Use a port that is
+    # not likely to be used by some other postgres instances from other
+    # projects, for example.
+    ports: [5400:5432]
+
     attach: false
 
   opensearch:
     image: opensearchproject/opensearch:2.19.1
     volumes:
       - opensearch_data:/usr/share/opensearch/data
-      - ./docker/opensearch/opensearch.yml:/usr/share/opensearch/config/opensearch.yml
+      - ${HOST_WORKSPACE?}/docker/opensearch/opensearch.yml:/usr/share/opensearch/config/opensearch.yml
     attach: false
     ulimits:
       nofile:
@@ -85,21 +97,22 @@ services:
   files:
     image: andrewgaul/s3proxy:sha-db34f6b
     environment:
-      - JCLOUDS_FILESYSTEM_BASEDIR=/srv/philomena/priv/s3
+      - JCLOUDS_FILESYSTEM_BASEDIR=${CONTAINER_WORKSPACE?}/priv/s3
     volumes:
-      - .:/srv/philomena
+      - ${HOST_WORKSPACE?}:${CONTAINER_WORKSPACE?}
     attach: false
 
   web:
     build:
       context: .
       dockerfile: ./docker/web/Dockerfile
+
     volumes:
-      - .:/srv/philomena
-      - ./docker/web/config:/etc/caddy
+      - ${HOST_WORKSPACE?}:${CONTAINER_WORKSPACE?}
+      - ${HOST_WORKSPACE?}/docker/web/config:/etc/caddy
       - caddy_data:/data
     environment:
-      - APP_DIR=/srv/philomena
+      - APP_DIR=${CONTAINER_WORKSPACE?}
       - S3_ENDPOINT=http://files:80
       - S3_BUCKET=philomena
       - AWS_ACCESS_KEY_ID=local-identity

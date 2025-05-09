@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 # Set up environment
+# shellcheck disable=SC1090
 source ~/bin/philomena-env
 
-read oldrev newrev ref
+read -r oldrev newrev ref
 echo "Updating $oldrev -> $newrev ($ref)"
 
 # Clear variable set to '.' so git commands don't complain
@@ -16,13 +19,13 @@ die() {
     exit 1
 }
 
-if git diff --name-only $oldrev $newrev | grep -Ee "^mix.(exs|lock)"; then
+if git diff --name-only "$oldrev" "$newrev" | grep -Ee "^mix.(exs|lock)"; then
   echo "Fetching deps"
   mix deps.get || die "mix failed to update"
 fi
 
 # Compile assets
-if git diff --name-only $oldrev $newrev | grep "^assets/"; then
+if git diff --name-only "$oldrev" "$newrev" | grep "^assets/"; then
   echo "Compiling assets"
   npm install --prefix ./assets || die "assets install failed"
   npm run deploy --prefix ./assets
@@ -33,7 +36,7 @@ echo "Building release"
 mix release --overwrite || die "failed to generate release"
 
 # Run migrations
-if git diff --name-only $oldrev $newrev | grep "^priv/repo/migrations"; then
+if git diff --name-only "$oldrev" "$newrev" | grep "^priv/repo/migrations"; then
   echo "Running database migrations"
   _build/prod/rel/philomena/bin/philomena eval "Philomena.Release.migrate()" || die "ecto.migrate failed"
 fi
