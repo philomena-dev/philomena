@@ -2,8 +2,8 @@ defmodule PhilomenaWeb.Tag.TagChangeController do
   use PhilomenaWeb, :controller
 
   alias Philomena.Tags.Tag
+  alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
-  alias Philomena.TagChangeTags.TagChangeTag
   alias Philomena.Repo
   import Ecto.Query
 
@@ -19,7 +19,7 @@ defmodule PhilomenaWeb.Tag.TagChangeController do
       |> preload([:user, image: [:user, :sources, tags: :aliases]])
 
     tag_change_tags =
-      TagChangeTag
+      TagChanges.Tag
       |> where(tag_id: ^tag.id)
       |> added_filter(params)
       |> preload(tag_change: ^tag_changes)

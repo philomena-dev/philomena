@@ -24,8 +24,9 @@ defmodule Philomena.Images do
   alias Philomena.SourceChanges.SourceChange
   alias Philomena.Notifications.ImageCommentNotification
   alias Philomena.Notifications.ImageMergeNotification
-  alias Philomena.TagChanges.Limits
   alias Philomena.TagChanges
+  alias Philomena.TagChanges.Limits
+  alias Philomena.TagChanges.TagChange
   alias Philomena.Tags
   alias Philomena.UserStatistics
   alias Philomena.Tags.Tag
@@ -1427,4 +1428,34 @@ defmodule Philomena.Images do
     Notifications.clear_image_merge_notification(image, user)
     :ok
   end
+
+  def load_tag_changes(%Image{} = image), do: load_tag_changes(image, %{})
+
+  def load_tag_changes(%Image{} = image, params) do
+    tag_changes =
+      from t in TagChange,
+        where: t.image_id == ^image.id,
+        preload: [:user, image: [:user, :sources, tags: :aliases], tags: [:tag]],
+        order_by: [desc: t.id]
+
+    added_filter(tag_changes, params)
+  end
+
+  defp added_filter(query, %{"added" => "1"}) do
+    from t in query,
+      inner_join: tt in TagChanges.Tag,
+      on: t.id == tt.tag_change_id,
+      where: tt.added == true,
+      group_by: t.id
+  end
+
+  defp added_filter(query, %{"added" => "0"}) do
+    from t in query,
+      inner_join: tt in TagChanges.Tag,
+      on: t.id == tt.tag_change_id,
+      where: tt.added == false,
+      group_by: t.id
+  end
+
+  defp added_filter(query, _params), do: query
 end

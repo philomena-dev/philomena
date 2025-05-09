@@ -7,14 +7,14 @@ defmodule Philomena.TagChanges do
   alias Philomena.Repo
 
   alias Philomena.TagChangeRevertWorker
+  alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
-  alias Philomena.TagChangeTags
-  alias Philomena.TagChangeTags.TagChangeTag
   alias Philomena.Images.Tagging
   alias Philomena.Tags.Tag
   alias Philomena.Images
   alias Philomena.Comments
   alias Philomena.Tags
+
   # TODO: this is substantially similar to Images.batch_update/4.
   # Perhaps it should be extracted.
   def mass_revert(ids, attributes) do
@@ -158,10 +158,11 @@ defmodule Philomena.TagChanges do
       }
       |> Repo.insert()
 
-    {added_count, nil} = Repo.insert_all(TagChangeTag, tag_changes_to_tags(tc, added_tags, true))
+    {added_count, nil} =
+      Repo.insert_all(TagChanges.Tag, tag_changes_to_tags(tc, added_tags, true))
 
     {removed_count, nil} =
-      Repo.insert_all(TagChangeTag, tag_changes_to_tags(tc, removed_tags, false))
+      Repo.insert_all(TagChanges.Tag, tag_changes_to_tags(tc, removed_tags, false))
 
     {:ok, {added_count, removed_count}}
   end
