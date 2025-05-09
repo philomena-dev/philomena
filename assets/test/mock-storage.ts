@@ -4,7 +4,7 @@ type MockStorageKeys = 'getItem' | 'setItem' | 'removeItem';
 
 export function mockStorage<Keys extends MockStorageKeys>(
   options: Pick<Storage, Keys>,
-): { [k in `${Keys}Spy`]: MockInstance } {
+): Record<`${Keys}Spy`, MockInstance> {
   const getItemSpy = 'getItem' in options ? vi.spyOn(Storage.prototype, 'getItem') : undefined;
   const setItemSpy = 'setItem' in options ? vi.spyOn(Storage.prototype, 'setItem') : undefined;
   const removeItemSpy = 'removeItem' in options ? vi.spyOn(Storage.prototype, 'removeItem') : undefined;
@@ -30,7 +30,7 @@ export function mockStorage<Keys extends MockStorageKeys>(
   return { getItemSpy, setItemSpy, removeItemSpy } as ReturnType<typeof mockStorage>;
 }
 
-type MockStorageImplApi = { [k in `${MockStorageKeys}Spy`]: MockInstance } & {
+type MockStorageImplApi = Record<`${MockStorageKeys}Spy`, MockInstance> & {
   /**
    * Forces the mock storage back to its default (empty) state
    * @param value
@@ -50,22 +50,22 @@ type MockStorageImplApi = { [k in `${MockStorageKeys}Spy`]: MockInstance } & {
 
 export function mockStorageImpl(): MockStorageImplApi {
   let shouldThrow = false;
-  let tempStorage: Record<string, string> = {};
+  let tempStorage = new Map<string, string>();
   const mockStorageSpies = mockStorage({
     setItem(key, value) {
       if (shouldThrow) throw new Error('Mock error thrown by mockStorageImpl.setItem');
 
-      tempStorage[key] = String(value);
+      tempStorage.set(key, String(value));
     },
     getItem(key: string): string | null {
       if (shouldThrow) throw new Error('Mock error thrown by mockStorageImpl.getItem');
 
-      return key in tempStorage ? tempStorage[key] : null;
+      return tempStorage.get(key) ?? null;
     },
     removeItem(key: string) {
       if (shouldThrow) throw new Error('Mock error thrown by mockStorageImpl.removeItem');
 
-      delete tempStorage[key];
+      tempStorage.delete(key);
     },
   });
   const forceStorageError: MockStorageImplApi['forceStorageError'] = func => {
@@ -81,7 +81,7 @@ export function mockStorageImpl(): MockStorageImplApi {
     });
   };
   const setStorageValue: MockStorageImplApi['setStorageValue'] = value => {
-    tempStorage = value;
+    tempStorage = new Map(Object.entries(value));
   };
   const clearStorage = () => setStorageValue({});
 

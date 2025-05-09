@@ -1,19 +1,14 @@
-import tsEslint from 'typescript-eslint';
+import tsLints from 'typescript-eslint';
 import vitestPlugin from '@vitest/eslint-plugin';
 import globals from 'globals';
 
-export default tsEslint.config(
-  ...tsEslint.configs.recommended,
+export default tsLints.config(
+  ...tsLints.configs.strict,
+  ...tsLints.configs.stylistic,
   {
     name: 'PhilomenaConfig',
     files: ['**/*.js', '**/*.ts'],
     languageOptions: {
-      ecmaVersion: 2019,
-      sourceType: 'module',
-      parserOptions: {
-        ecmaVersion: 2019,
-        sourceType: 'module',
-      },
       globals: {
         ...globals.browser,
       },
@@ -65,7 +60,6 @@ export default tsEslint.config(
       'no-duplicate-imports': 2,
       'no-else-return': 2,
       'no-empty-character-class': 2,
-      'no-empty-function': 0,
       'no-empty-pattern': 2,
       'no-empty': 2,
       'no-eq-null': 2,
@@ -168,6 +162,14 @@ export default tsEslint.config(
       'vars-on-top': 2,
       yoda: [2, 'never'],
 
+      // TODO: replace all non-null assertions with explicit errors
+      '@typescript-eslint/no-non-null-assertion': 0,
+
+      // Not very useful. An empty function is sometimes is passed where the api
+      // requires some function, but we have nothing to do in it.
+      '@typescript-eslint/no-empty-function': 0,
+
+      // Make it possible to ignore unused variables with `_` prefix
       '@typescript-eslint/no-unused-vars': [
         2,
         {
@@ -178,6 +180,8 @@ export default tsEslint.config(
         },
       ],
 
+      // For some reason `@typescript-eslint/no-shadown` doesn't disable the
+      // default eslint's rule (`no-shadow`) like other typescript rules
       'no-shadow': 0,
       '@typescript-eslint/no-shadow': 2,
     },
