@@ -133,7 +133,6 @@ export default tsEslint.config(
       'no-unreachable': 2,
       'no-unsafe-finally': 2,
       'no-unsafe-negation': 2,
-      'no-unused-expressions': [2, { allowShortCircuit: true, allowTernary: true }],
       'no-unused-labels': 2,
       'no-use-before-define': [2, 'nofunc'],
       'no-useless-call': 2,
@@ -175,19 +174,12 @@ export default tsEslint.config(
         {
           vars: 'all',
           args: 'all',
-          varsIgnorePattern: '^_.*',
-          argsIgnorePattern: '^_.*',
+          varsIgnorePattern: '^_',
+          argsIgnorePattern: '^_',
         },
       ],
     },
     ignores: ['js/vendor/*', 'vite.config.ts'],
-  },
-  {
-    files: ['**/*.js'],
-    rules: {
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/no-unused-expressions': 'off',
-    },
   },
   {
     files: ['**/*.ts'],

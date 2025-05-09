@@ -169,7 +169,7 @@ function setupComments() {
       // Left-click only
       for (const target in targets) {
         if (event.target && event.target.closest(target)) {
-          targets[target](event) && event.preventDefault();
+          if (targets[target](event)) event.preventDefault();
         }
       }
     }
