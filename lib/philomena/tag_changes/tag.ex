@@ -1,4 +1,4 @@
-defmodule Philomena.TagChangeTags.TagChangeTag do
+defmodule Philomena.TagChanges.Tag do
   use Ecto.Schema
   import Ecto.Changeset
 

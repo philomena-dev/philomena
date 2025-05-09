@@ -1,10 +1,10 @@
 defmodule PhilomenaWeb.Image.TagChangeController do
   use PhilomenaWeb, :controller
 
+  alias Philomena.Images
   alias Philomena.Images.Image
   alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
-  alias Philomena.Tags.Tag
   alias Philomena.Repo
   import Ecto.Query
 
@@ -13,25 +13,21 @@ defmodule PhilomenaWeb.Image.TagChangeController do
 
   plug :load_and_authorize_resource,
     model: TagChange,
-    preload: [:tag],
+    preload: [:user, tags: [:tag]],
     persisted: true,
     only: [:delete]
 
   def index(conn, params) do
     image = conn.assigns.image
 
-    tag_changes =
-      TagChange
-      |> where(image_id: ^image.id)
-      |> added_filter(params)
-      |> preload([:user, image: [:user, :sources, tags: :aliases], tags: [:tag]])
-      |> order_by(desc: :id)
-      |> Repo.paginate(conn.assigns.scrivener)
-
     render(conn, "index.html",
       title: "Tag Changes on Image #{image.id}",
       image: image,
-      tag_changes: tag_changes
+      tag_changes:
+        Repo.paginate(
+          Images.load_tag_changes(image, params),
+          conn.assigns.scrivener
+        )
     )
   end
 
@@ -50,21 +46,13 @@ defmodule PhilomenaWeb.Image.TagChangeController do
     |> redirect(to: ~p"/images/#{image}")
   end
 
-  defp added_filter(query, %{"added" => "1"}),
-    do: where(query, added: true)
-
-  defp added_filter(query, %{"added" => "0"}),
-    do: where(query, added: false)
-
-  defp added_filter(query, _params),
-    do: query
-
   defp log_details(_action, %{image: image, details: details}) do
     %{
-      body: "Deleted tag change #{details} on image #{image.id} from history",
+      body: "Deleted tag change batch #{details} on image #{image.id} from history",
       subject_path: ~p"/images/#{image}"
     }
   end
 
-  defp tag_change_details(_), do: "+fixthis"
+  defp tag_change_details(%{user: %{name: name}, tags: tags}),
+    do: "by #{name} containing #{Enum.count(tags)} change(s)"
 end
