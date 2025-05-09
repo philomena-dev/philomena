@@ -1,11 +1,11 @@
-.media-container {
+.media-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--media-container-width), 1fr));
   grid-auto-rows: 1fr;
   grid-gap: var(--padding-small);
 }
 
-.media-container:before {
+.media-list:before {
   content: "";
   width: 0;
   padding-bottom: calc(100% + var(--media-box-header-height));
@@ -14,7 +14,7 @@
 }
 
 @media (max-width: $min-desktop-width) {
-  .media-container {
+  .media-list {
     grid-template-columns: repeat(auto-fill, minmax(var(--media-small-container-width), 1fr));
   }
 }
