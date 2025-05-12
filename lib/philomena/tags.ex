@@ -616,7 +616,7 @@ defmodule Philomena.Tags do
 
         tag_ids = Enum.map(taggings, & &1.tag_id)
 
-        update_images_counts(Repo, +1, tag_ids)
+        update_images_counts(Repo, 1, tag_ids)
 
         tag_ids
       end)

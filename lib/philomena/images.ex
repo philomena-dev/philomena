@@ -97,7 +97,7 @@ defmodule Philomena.Images do
     |> Multi.run(:added_tag_count, fn repo, %{image: image} ->
       tag_ids = image.added_tags |> Enum.map(& &1.id)
 
-      count = Tags.update_images_counts(repo, +1, tag_ids)
+      count = Tags.update_images_counts(repo, 1, tag_ids)
 
       {:ok, count}
     end)
