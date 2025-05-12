@@ -616,7 +616,7 @@ defmodule Philomena.Tags do
 
         tag_ids = Enum.map(taggings, & &1.tag_id)
 
-        update_images_counts(Repo, 1, tag_ids)
+        update_image_counts(Repo, 1, tag_ids)
 
         tag_ids
       end)
@@ -629,22 +629,20 @@ defmodule Philomena.Tags do
   @doc """
   Accepts IDs of tags and increments their `images_count` by 1.
   """
-  @spec update_images_counts(term(), integer(), [integer()]) :: integer()
-  def update_images_counts(repo, diff, tag_ids) do
-    case tag_ids do
-      [] ->
-        0
+  @spec update_image_counts(term(), integer(), [integer()]) :: integer()
+  def update_image_counts(repo, diff, tag_ids)
 
-      _ ->
-        locked_tags = vectorized_mutation_lock("FOR NO KEY UPDATE", tag_ids)
+  def update_image_counts(nil, _diff, []), do: 0
 
-        {rows_affected, _} =
-          Tag
-          |> where([t], t.id in subquery(locked_tags))
-          |> repo.update_all(inc: [images_count: diff])
+  def update_image_counts(repo, diff, tag_ids) do
+    locked_tags = vectorized_mutation_lock("FOR NO KEY UPDATE", tag_ids)
 
-        rows_affected
-    end
+    {rows_affected, _} =
+      Tag
+      |> where([t], t.id in subquery(locked_tags))
+      |> repo.update_all(inc: [images_count: diff])
+
+    rows_affected
   end
 
   @doc """
