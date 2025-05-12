@@ -93,29 +93,29 @@ defmodule Philomena.Tags do
       tag_names
       |> Enum.sort()
       |> Enum.dedup()
-      |> Enum.map(
-        &(%Tag{}
-          |> Tag.creation_changeset(%{name: &1})
-          |> Ecto.Changeset.apply_changes()
-          |> Map.take([
-            :slug,
-            :name,
-            :category,
-            :images_count,
-            :description,
-            :short_description,
-            :namespace,
-            :name_in_namespace,
-            :image,
-            :image_format,
-            :image_mime_type,
-            :mod_notes
-          ])
-          |> Map.merge(%{
-            created_at: {:placeholder, :timestamp},
-            updated_at: {:placeholder, :timestamp}
-          }))
-      )
+      |> Enum.map(fn tag_name ->
+        %Tag{}
+        |> Tag.creation_changeset(%{name: tag_name})
+        |> Ecto.Changeset.apply_changes()
+        |> Map.take([
+          :slug,
+          :name,
+          :category,
+          :images_count,
+          :description,
+          :short_description,
+          :namespace,
+          :name_in_namespace,
+          :image,
+          :image_format,
+          :image_mime_type,
+          :mod_notes
+        ])
+        |> Map.merge(%{
+          created_at: {:placeholder, :timestamp},
+          updated_at: {:placeholder, :timestamp}
+        })
+      end)
 
     %{new_tags: {_rows_affected, new_tags}, all_tags: all_tags} =
       Multi.new()
