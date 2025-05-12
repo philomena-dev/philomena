@@ -5,8 +5,6 @@ defmodule PhilomenaWeb.Image.TagChangeController do
   alias Philomena.Images.Image
   alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
-  alias Philomena.Repo
-  import Ecto.Query
 
   plug PhilomenaWeb.CanaryMapPlug, index: :show
   plug :load_and_authorize_resource, model: Image, id_name: "image_id", persisted: true
@@ -23,11 +21,7 @@ defmodule PhilomenaWeb.Image.TagChangeController do
     render(conn, "index.html",
       title: "Tag Changes on Image #{image.id}",
       image: image,
-      tag_changes:
-        Repo.paginate(
-          Images.load_tag_changes(image, params),
-          conn.assigns.scrivener
-        )
+      tag_changes: Images.load_tag_changes(image, conn, params)
     )
   end
 

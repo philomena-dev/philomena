@@ -213,4 +213,49 @@ defmodule Philomena.TagChanges do
   def change_tag_change(%TagChange{} = tag_change) do
     TagChange.changeset(tag_change, %{})
   end
+
+  def load(%{field: field_name, value: value} = attrs, count_field \\ false, pagination \\ []) do
+    query = from t in TagChange, where: field(t, ^field_name) == ^value
+    query = added_or_tag_field(query, attrs)
+
+    item_count =
+      if count_field do
+        Repo.one(from t in query, select: count(field(t, ^count_field), :distinct))
+      end
+
+    query =
+      query
+      |> preload([:user, image: [:user, :sources, tags: :aliases], tags: [:tag]])
+      |> group_by([t], t.id)
+
+    {Repo.paginate(query, pagination), item_count}
+  end
+
+  defp added_or_tag_field(query, %{added: nil, tag: nil}), do: query
+
+  defp added_or_tag_field(query, attrs) do
+    query =
+      from t in query,
+        inner_join: tt in TagChanges.Tag,
+        as: :tags,
+        on: t.id == tt.tag_change_id
+
+    query
+    |> added_field(attrs)
+    |> tag_field(attrs)
+  end
+
+  defp added_field(query, %{added: nil}), do: query
+
+  defp added_field(query, %{added: added}),
+    do: from([_t, tags: tt] in query, where: tt.added == ^added)
+
+  defp added_field(query, _), do: query
+
+  defp tag_field(query, %{tag: nil}), do: query
+
+  defp tag_field(query, %{tag: tag}),
+    do: from([_t, tags: tt] in query, where: tt.tag_name_cache == ^tag)
+
+  defp tag_field(query, _), do: query
 end
