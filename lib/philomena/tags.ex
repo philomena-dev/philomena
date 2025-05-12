@@ -632,7 +632,7 @@ defmodule Philomena.Tags do
   @spec update_image_counts(term(), integer(), [integer()]) :: integer()
   def update_image_counts(repo, diff, tag_ids)
 
-  def update_image_counts(nil, _diff, []), do: 0
+  def update_image_counts(_repo, _diff, []), do: 0
 
   def update_image_counts(repo, diff, tag_ids) do
     locked_tags = vectorized_mutation_lock("FOR NO KEY UPDATE", tag_ids)
