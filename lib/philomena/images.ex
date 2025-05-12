@@ -1427,19 +1427,4 @@ defmodule Philomena.Images do
     Notifications.clear_image_merge_notification(image, user)
     :ok
   end
-
-  def load_tag_changes(%Image{id: id}, conn, params) do
-    {tag_changes, _} =
-      TagChanges.load(
-        %{
-          field: :image_id,
-          value: id,
-          added: params["added"]
-        },
-        nil,
-        conn.assigns.scrivener
-      )
-
-    tag_changes
-  end
 end

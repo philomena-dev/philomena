@@ -214,9 +214,17 @@ defmodule Philomena.TagChanges do
     TagChange.changeset(tag_change, %{})
   end
 
-  def load(%{field: field_name, value: value} = attrs, count_field \\ false, pagination \\ []) do
-    query = from t in TagChange, where: field(t, ^field_name) == ^value
-    query = added_or_tag_field(query, attrs)
+  def load(attrs, pagination) do
+    {tag_changes, _} = load(attrs, nil, pagination)
+
+    tag_changes
+  end
+
+  def load(attrs, count_field, pagination) do
+    query =
+      attrs
+      |> base_query()
+      |> added_or_tag_field(attrs)
 
     item_count =
       if count_field do
@@ -229,6 +237,14 @@ defmodule Philomena.TagChanges do
       |> group_by([t], t.id)
 
     {Repo.paginate(query, pagination), item_count}
+  end
+
+  defp base_query(%{ip: ip}) do
+    from t in TagChange, where: fragment("? >>= ip", ^ip)
+  end
+
+  defp base_query(%{field: field_name, value: value}) do
+    from t in TagChange, where: field(t, ^field_name) == ^value
   end
 
   defp added_or_tag_field(query, %{added: nil, tag: nil}), do: query

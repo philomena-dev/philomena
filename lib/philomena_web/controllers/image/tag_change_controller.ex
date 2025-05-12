@@ -21,7 +21,15 @@ defmodule PhilomenaWeb.Image.TagChangeController do
     render(conn, "index.html",
       title: "Tag Changes on Image #{image.id}",
       image: image,
-      tag_changes: Images.load_tag_changes(image, conn, params)
+      tag_changes:
+        TagChanges.load(
+          %{
+            field: :image_id,
+            value: image.id,
+            added: params["added"]
+          },
+          conn.assigns.scrivener
+        )
     )
   end
 
