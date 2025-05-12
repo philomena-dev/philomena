@@ -44,7 +44,6 @@ defmodule Philomena.MixProject do
       {:phoenix_view, "~> 2.0"},
       {:phoenix_live_reload, "~> 1.4", only: :dev},
       {:gettext, "~> 0.22"},
-      {:jason, "~> 1.4"},
       {:bandit, "~> 1.2"},
       {:slime, "~> 1.3.1"},
       {:phoenix_slime, "~> 0.13",
@@ -70,6 +69,10 @@ defmodule Philomena.MixProject do
       {:sweet_xml, "~> 0.7"},
       {:inet_cidr, "~> 1.0"},
 
+      # Serialization
+      {:jason, "~> 1.4"},
+      {:yaml_elixir, "~> 2.11", only: [:test]},
+
       # SMTP
       {:swoosh, "~> 1.17"},
       {:mua, "~> 0.2.0"},
@@ -93,7 +96,10 @@ defmodule Philomena.MixProject do
 
       # Fixes for Elixir v1.15+
       {:canary, "~> 1.1",
-       github: "marcinkoziej/canary", ref: "704debde7a2c0600f78c687807884bf37c45bd79"}
+       github: "marcinkoziej/canary", ref: "704debde7a2c0600f78c687807884bf37c45bd79"},
+
+      # Automated testing
+      {:assert_value, "~> 0.10.4", only: [:dev, :test]}
     ]
   end
 

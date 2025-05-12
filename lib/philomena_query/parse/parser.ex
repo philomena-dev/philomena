@@ -53,6 +53,9 @@ defmodule PhilomenaQuery.Parse.Parser do
   @typedoc "Query in the search engine JSON query language."
   @type query :: map()
 
+  @typedoc "Result of calling the `parse/3` function."
+  @type result :: {:ok, query()} | {:error, String.t()}
+
   @typedoc "Whether the default field is `:term` (not analyzed) or `:ngram` (analyzed)."
   @type default_field_type :: :term | :ngram
 
@@ -100,9 +103,7 @@ defmodule PhilomenaQuery.Parse.Parser do
           transforms: %{String.t() => transform()},
           aliases: %{String.t() => String.t()},
           no_downcase_fields: [String.t()],
-          normalizations: %{String.t() => normalizer()},
-          __fields__: map(),
-          __data__: context()
+          normalizations: %{String.t() => normalizer()}
         }
 
   defstruct [
@@ -126,25 +127,55 @@ defmodule PhilomenaQuery.Parse.Parser do
 
   @max_clause_count 512
 
+  @typedoc "Options for the new/1 function."
+  @type options :: [
+          # Booleans
+          bool_fields: [String.t()],
+
+          # Dates
+          date_fields: [String.t()],
+
+          # Floating point numbers
+          float_fields: [String.t()],
+
+          # Signed integers
+          int_fields: [String.t()],
+
+          # Numeric values (unsigned integers without fuzzing
+          # or range queries)
+          numeric_fields: [String.t()],
+
+          # IP CIDR masks
+          ip_fields: [String.t()],
+
+          # Wildcardable fields which are searched as the exact value
+          literal_fields: [String.t()],
+
+          # Wildcardable fields which are searched as stemmed values
+          ngram_fields: [String.t()],
+
+          # Fields which do not exist on the document and are created by a callback
+          custom_fields: [String.t()],
+
+          # A map of custom field names to transform functions
+          transforms: %{String.t() => transform()},
+
+          # A map of field names to the names they should have in the search engine
+          aliases: %{String.t() => String.t()},
+
+          # A list of field names which do not have string downcasing applied
+          no_downcase_fields: [String.t()],
+
+          # a map of field names to normalization functions (see `t:normalizer/0`)
+          normalizations: %{String.t() => normalizer()}
+        ]
+
   @doc """
   Creates a `Parser` suitable for safely parsing user-input queries.
 
-  Fields refer to attributes of the indexed document which will be searchable with
-  `m:PhilomenaQuery.Search`.
-
-  Available options:
-  - `bool_fields` - a list of field names parsed as booleans
-  - `float_fields` - a list of field names parsed as floats
-  - `int_fields` - a list of field names parsed as signed integers
-  - `numeric_fields` - a list of field names parsed as numeric values (unsigned integers without fuzzing or range queries)
-  - `ip_fields` - a list of field names parsed as IP CIDR masks
-  - `literal_fields` - wildcardable fields which are searched as the exact value
-  - `ngram_fields` - wildcardable fields which are searched as stemmed values
-  - `custom_fields` - fields which do not exist on the document and are created by a callback
-  - `transforms` - a map of custom field names to transform functions
-  - `aliases` - a map of field names to the names they should have in the search engine
-  - `no_downcase_fields` - a list of field names which do not have string downcasing applied
-  - `normalizations` - a map of field names to normalization functions (see `t:normalizer/0`)
+  Fields refer to attributes of the indexed document which will be searchable
+  with `m:PhilomenaQuery.Search`. See the available options described in the
+  `t:options/0` typespec.
 
   ## Example
 
@@ -160,7 +191,7 @@ defmodule PhilomenaQuery.Parse.Parser do
       Parser.new(options)
 
   """
-  @spec new(keyword()) :: t()
+  @spec new(options()) :: t()
   def new(options) do
     parser = struct(Parser, options)
 
@@ -205,10 +236,8 @@ defmodule PhilomenaQuery.Parse.Parser do
       {:error, "Imbalanced parentheses."}
 
   """
-  @spec parse(t(), String.t(), context()) :: {:ok, query()} | {:error, String.t()}
-  def parse(parser, input, context \\ nil)
-
-  def parse(%Parser{} = parser, input, context) do
+  @spec parse(t(), String.t(), context()) :: result()
+  def parse(%Parser{} = parser, input, context \\ nil) do
     parser = %{parser | __data__: context}
 
     with {:ok, input} <- coerce_string(input),

@@ -197,6 +197,9 @@ defmodule Philomena.Images.Query do
     end
   end
 
+  @type options :: [user: %{role: String.t()}, watch: boolean()]
+
+  @spec parse(Parser.options(), options(), String.t()) :: Parser.result()
   defp parse(fields, context, query_string) do
     case prepare_context(context, query_string) do
       {:ok, context} ->
@@ -214,6 +217,7 @@ defmodule Philomena.Images.Query do
   defp fields_for(%{role: role}) when role in ~W(moderator admin), do: moderator_fields()
   defp fields_for(_), do: raise(ArgumentError, "Unknown user role.")
 
+  @spec compile(String.t(), options()) :: Parser.result()
   def compile(query_string, opts \\ []) do
     user = Keyword.get(opts, :user)
     watch = Keyword.get(opts, :watch, false)
