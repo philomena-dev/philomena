@@ -9,26 +9,17 @@ defmodule Philomena.TagChanges do
   alias Philomena.TagChangeRevertWorker
   alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
-  alias Philomena.Images.Tagging
-  alias Philomena.Tags.Tag
   alias Philomena.Images
-  alias Philomena.Comments
-  alias Philomena.Tags
 
-  # TODO: this is substantially similar to Images.batch_update/4.
-  # Perhaps it should be extracted.
   def mass_revert(ids, attributes) do
-    now = DateTime.utc_now(:second)
-    tag_attributes = %{name: "", slug: "", created_at: now, updated_at: now}
-
-    query =
-      from tc in TagChange,
-        inner_join: i in assoc(tc, :image),
-        where: tc.id in ^ids and i.hidden_from_users == false,
-        order_by: [desc: :created_at],
-        preload: [tags: [:tag_change]]
-
-    tag_changes = Repo.all(query)
+    tag_changes =
+      Repo.all(
+        from tc in TagChange,
+          inner_join: i in assoc(tc, :image),
+          where: tc.id in ^ids and i.hidden_from_users == false,
+          order_by: [desc: :created_at],
+          preload: [tags: [:tag, :tag_change]]
+      )
 
     tags =
       tag_changes
@@ -43,153 +34,29 @@ defmodule Philomena.TagChanges do
       |> Enum.map(& &1.tag_change.image_id)
       |> Enum.uniq()
 
-    tag_ids =
-      tags
-      |> Enum.map(& &1.tag_id)
-      |> Enum.uniq()
-
-    cached_tag_names =
-      tags
-      |> Enum.map(&{&1.tag_id, &1.tag_name_cache})
-      |> Enum.uniq()
-      |> Map.new()
-
-    # load data so that we can cache tag names
-    tag_names =
-      Tag
-      |> where([t], t.id in ^tag_ids)
-      |> select([t], [t.id, t.name])
-      |> Repo.all()
-      |> Map.new(fn [id, name] -> {id, name} end)
-
-    # merge newly loaded tags on top of cached tag names,
-    # since they would be guaranteed to have up-to-date
-    # names
-    tag_names = Map.merge(cached_tag_names, tag_names)
-
-    to_remove =
-      added
-      |> Enum.map(&{&1.tag_change.image_id, &1.tag_id})
-      |> Enum.reduce(where(Tagging, fragment("'t' = 'f'")), fn {image_id, tag_id}, q ->
-        or_where(q, image_id: ^image_id, tag_id: ^tag_id)
-      end)
-      |> select([t], [t.image_id, t.tag_id])
-
-    to_add = Enum.map(removed, &%{image_id: &1.tag_change.image_id, tag_id: &1.tag_id})
-
-    Repo.transaction(fn ->
-      {_count, inserted} =
-        Repo.insert_all(Tagging, to_add, on_conflict: :nothing, returning: [:image_id, :tag_id])
-
-      {_count, deleted} = Repo.delete_all(to_remove)
-
-      inserted = Enum.map(inserted, &[&1.image_id, &1.tag_id])
-
-      all_changed = inserted ++ deleted
-
-      # Create tag change batches for every image ID.
-      new_tag_changes =
-        all_changed
-        |> Enum.uniq_by(fn [image_id, _] -> image_id end)
-        |> Enum.map(fn [image_id, _] ->
-          {:ok, tc} =
-            %TagChange{
-              image_id: image_id,
-              user_id: attributes[:user_id],
-              ip: attributes[:ip],
-              fingerprint: attributes[:fingerprint],
-              created_at: now,
-              updated_at: now
-            }
-            |> Repo.insert()
-
-          {image_id, tc}
-        end)
-        |> Map.new()
-
-      # Create tags belonging to tag changes.
-      added_changes =
-        Enum.map(inserted, fn [image_id, tag_id] ->
-          %{id: id} = Map.get(new_tag_changes, image_id)
-          name = Map.get(tag_names, tag_id)
-
-          # fail the entire transaction in case of missing tag data
-          if is_nil(name) do
-            raise "tag data for tag #{tag_id} is nil"
-          end
-
+    {:ok, _result} =
+      Images.batch_update(
+        Enum.map(image_ids, fn id ->
           %{
-            tag_change_id: id,
-            tag_id: tag_id,
-            tag_name_cache: name,
-            added: true
+            image_id: id,
+            added_tags:
+              removed
+              |> Enum.filter(&(&1.tag_change.image_id == id))
+              |> Enum.map(fn t ->
+                t.tag
+              end),
+            removed_tags:
+              added
+              |> Enum.filter(&(&1.tag_change.image_id == id))
+              |> Enum.map(fn t ->
+                t.tag
+              end)
           }
-        end)
+        end),
+        attributes
+      )
 
-      removed_changes =
-        Enum.map(deleted, fn [image_id, tag_id] ->
-          %{id: id} = Map.get(new_tag_changes, image_id)
-          name = Map.get(tag_names, tag_id)
-
-          # fail the entire transaction in case of missing tag data
-          if is_nil(name) do
-            raise "tag data for tag #{tag_id} is nil"
-          end
-
-          %{
-            tag_change_id: id,
-            tag_id: tag_id,
-            tag_name_cache: name,
-            added: false
-          }
-        end)
-
-      # Insert them all at once.
-      Repo.insert_all(TagChanges.Tag, added_changes ++ removed_changes)
-
-      # In order to merge into the existing tables here in one go, insert_all
-      # is used with a query that is guaranteed to conflict on every row by
-      # using the primary key.
-
-      added_upserts =
-        inserted
-        |> Enum.group_by(fn [_image_id, tag_id] -> tag_id end)
-        |> Enum.map(fn {tag_id, instances} ->
-          Map.merge(tag_attributes, %{
-            name: Map.get(tag_names, tag_id, ""),
-            id: tag_id,
-            images_count: length(instances)
-          })
-        end)
-
-      removed_upserts =
-        deleted
-        |> Enum.group_by(fn [_image_id, tag_id] -> tag_id end)
-        |> Enum.map(fn {tag_id, instances} ->
-          Map.merge(tag_attributes, %{
-            name: Map.get(tag_names, tag_id, ""),
-            id: tag_id,
-            images_count: -length(instances)
-          })
-        end)
-
-      update_query = update(Tag, inc: [images_count: fragment("EXCLUDED.images_count")])
-
-      upserts = added_upserts ++ removed_upserts
-
-      Repo.insert_all(Tag, upserts, on_conflict: update_query, conflict_target: [:id])
-    end)
-    |> case do
-      {:ok, _result} ->
-        Images.reindex_images(image_ids)
-        Comments.reindex_comments_on_images(image_ids)
-        Tags.reindex_tags(Enum.map(tag_ids, &%{id: &1}))
-
-        {:ok, tag_changes}
-
-      error ->
-        error
-    end
+    {:ok, tag_changes}
   end
 
   def full_revert(%{user_id: _user_id, attributes: _attributes} = params),
