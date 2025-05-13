@@ -34,29 +34,33 @@ defmodule Philomena.TagChanges do
       |> Enum.map(& &1.tag_change.image_id)
       |> Enum.uniq()
 
-    {:ok, _result} =
-      Images.batch_update(
-        Enum.map(image_ids, fn id ->
-          %{
-            image_id: id,
-            added_tags:
-              removed
-              |> Enum.filter(&(&1.tag_change.image_id == id))
-              |> Enum.map(fn t ->
-                t.tag
-              end),
-            removed_tags:
-              added
-              |> Enum.filter(&(&1.tag_change.image_id == id))
-              |> Enum.map(fn t ->
-                t.tag
-              end)
-          }
-        end),
-        attributes
-      )
+    Images.batch_update(
+      Enum.map(image_ids, fn id ->
+        %{
+          image_id: id,
+          added_tags:
+            removed
+            |> Enum.filter(&(&1.tag_change.image_id == id))
+            |> Enum.map(fn t ->
+              t.tag
+            end),
+          removed_tags:
+            added
+            |> Enum.filter(&(&1.tag_change.image_id == id))
+            |> Enum.map(fn t ->
+              t.tag
+            end)
+        }
+      end),
+      attributes
+    )
+    |> case do
+      {:ok, _result} ->
+        {:ok, tag_changes}
 
-    {:ok, tag_changes}
+      error ->
+        error
+    end
   end
 
   def full_revert(%{user_id: _user_id, attributes: _attributes} = params),
