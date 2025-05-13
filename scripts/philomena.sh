@@ -91,7 +91,7 @@ function init {
 }
 
 # Update the `queries.json` test snapshots after the implementation changes.
-function update_query_tests {
+function update_phiql_tests {
   ASSERT_VALUE_ACCEPT_DIFFS=y step docker compose run \
     --remove-orphans \
     app run-test 'test/philomena/images/query_test.exs'
@@ -109,7 +109,7 @@ case "$subcommand" in
   down) down "$@" ;;
   clean) clean "$@" ;;
   init) init "$@" ;;
-  update-query-tests) update_query_tests "$@" ;;
+  update-phiql-tests) update_phiql_tests "$@" ;;
   *)
     die "See the available sub-commands in ${BASH_SOURCE[0]}"
     ;;
