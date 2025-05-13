@@ -48,6 +48,25 @@ defmodule Philomena.TagChanges do
       |> Enum.map(& &1.tag_id)
       |> Enum.uniq()
 
+    cached_tag_names =
+      tags
+      |> Enum.map(&{&1.tag_id, &1.tag_name_cache})
+      |> Enum.uniq()
+      |> Map.new()
+
+    # load data so that we can cache tag names
+    tag_names =
+      Tag
+      |> where([t], t.id in ^tag_ids)
+      |> select([t], [t.id, t.name])
+      |> Repo.all()
+      |> Map.new(fn [id, name] -> {id, name} end)
+
+    # merge newly loaded tags on top of cached tag names,
+    # since they would be guaranteed to have up-to-date
+    # names
+    tag_names = Map.merge(cached_tag_names, tag_names)
+
     to_remove =
       added
       |> Enum.map(&{&1.tag_change.image_id, &1.tag_id})
@@ -88,24 +107,11 @@ defmodule Philomena.TagChanges do
         end)
         |> Map.new()
 
-      # Load tag data for all tags which were actually inserted/deleted.
-      tag_ids =
-        all_changed
-        |> Enum.uniq_by(fn [_, tag_id] -> tag_id end)
-        |> Enum.map(fn [_, tag_id] -> tag_id end)
-
-      tag_data =
-        Tag
-        |> where([t], t.id in ^tag_ids)
-        |> Repo.all()
-        |> Enum.map(&{&1.id, &1.name})
-        |> Map.new()
-
-      # Create tag change tags.
+      # Create tags belonging to tag changes.
       added_changes =
         Enum.map(inserted, fn [image_id, tag_id] ->
           %{id: id} = Map.get(new_tag_changes, image_id)
-          name = Map.get(tag_data, tag_id)
+          name = Map.get(tag_names, tag_id)
 
           # fail the entire transaction in case of missing tag data
           if is_nil(name) do
@@ -123,7 +129,7 @@ defmodule Philomena.TagChanges do
       removed_changes =
         Enum.map(deleted, fn [image_id, tag_id] ->
           %{id: id} = Map.get(new_tag_changes, image_id)
-          name = Map.get(tag_data, tag_id)
+          name = Map.get(tag_names, tag_id)
 
           # fail the entire transaction in case of missing tag data
           if is_nil(name) do
@@ -149,14 +155,22 @@ defmodule Philomena.TagChanges do
         inserted
         |> Enum.group_by(fn [_image_id, tag_id] -> tag_id end)
         |> Enum.map(fn {tag_id, instances} ->
-          Map.merge(tag_attributes, %{id: tag_id, images_count: length(instances)})
+          Map.merge(tag_attributes, %{
+            name: Map.get(tag_names, tag_id, ""),
+            id: tag_id,
+            images_count: length(instances)
+          })
         end)
 
       removed_upserts =
         deleted
         |> Enum.group_by(fn [_image_id, tag_id] -> tag_id end)
         |> Enum.map(fn {tag_id, instances} ->
-          Map.merge(tag_attributes, %{id: tag_id, images_count: -length(instances)})
+          Map.merge(tag_attributes, %{
+            name: Map.get(tag_names, tag_id, ""),
+            id: tag_id,
+            images_count: -length(instances)
+          })
         end)
 
       update_query = update(Tag, inc: [images_count: fragment("EXCLUDED.images_count")])
