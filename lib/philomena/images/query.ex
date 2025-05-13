@@ -197,9 +197,9 @@ defmodule Philomena.Images.Query do
     end
   end
 
-  @type options :: [user: %{role: String.t()}, watch: boolean()]
+  @type context :: [user: %{role: String.t()}, watch: boolean()]
 
-  @spec parse(Parser.options(), options(), String.t()) :: Parser.result()
+  @spec parse(Parser.options(), context(), String.t()) :: Parser.result()
   defp parse(fields, context, query_string) do
     case prepare_context(context, query_string) do
       {:ok, context} ->
