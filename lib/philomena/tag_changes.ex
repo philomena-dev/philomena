@@ -18,89 +18,164 @@ defmodule Philomena.TagChanges do
   # TODO: this is substantially similar to Images.batch_update/4.
   # Perhaps it should be extracted.
   def mass_revert(ids, attributes) do
-    # now = DateTime.utc_now(:second)
-    # tag_change_attributes = Map.merge(attributes, %{created_at: now, updated_at: now})
-    # tag_attributes = %{name: "", slug: "", created_at: now, updated_at: now}
+    now = DateTime.utc_now(:second)
+    tag_attributes = %{name: "", slug: "", created_at: now, updated_at: now}
 
-    # tag_changes =
-    #   TagChange
-    #   |> join(:inner, [tc], _ in assoc(tc, :image))
-    #   |> where([tc, i], tc.id in ^ids and i.hidden_from_users == false)
-    #   |> order_by(desc: :created_at)
-    #   |> Repo.all()
-    #   |> Enum.reject(&is_nil(&1.tag_id))
-    #   |> Enum.uniq_by(&{&1.image_id, &1.tag_id})
+    query =
+      from tc in TagChange,
+        inner_join: i in assoc(tc, :image),
+        where: tc.id in ^ids and i.hidden_from_users == false,
+        order_by: [desc: :created_at],
+        preload: [tags: [:tag_change]]
 
-    # {added, removed} = Enum.split_with(tag_changes, & &1.added)
+    tag_changes = Repo.all(query)
 
-    # image_ids =
-    #   tag_changes
-    #   |> Enum.map(& &1.image_id)
-    #   |> Enum.uniq()
+    tags =
+      tag_changes
+      |> Enum.flat_map(& &1.tags)
+      |> Enum.reject(&is_nil(&1.tag_id))
+      |> Enum.uniq_by(&{&1.tag_id, &1.tag_change.image_id})
 
-    # to_remove =
-    #   added
-    #   |> Enum.map(&{&1.image_id, &1.tag_id})
-    #   |> Enum.reduce(where(Tagging, fragment("'t' = 'f'")), fn {image_id, tag_id}, q ->
-    #     or_where(q, image_id: ^image_id, tag_id: ^tag_id)
-    #   end)
-    #   |> select([t], [t.image_id, t.tag_id])
+    {added, removed} = Enum.split_with(tags, & &1.added)
 
-    # to_add = Enum.map(removed, &%{image_id: &1.image_id, tag_id: &1.tag_id})
+    image_ids =
+      tags
+      |> Enum.map(& &1.tag_change.image_id)
+      |> Enum.uniq()
 
-    # Repo.transaction(fn ->
-    #   {_count, inserted} =
-    #     Repo.insert_all(Tagging, to_add, on_conflict: :nothing, returning: [:image_id, :tag_id])
+    tag_ids =
+      tags
+      |> Enum.map(& &1.tag_id)
+      |> Enum.uniq()
 
-    #   {_count, deleted} = Repo.delete_all(to_remove)
+    to_remove =
+      added
+      |> Enum.map(&{&1.tag_change.image_id, &1.tag_id})
+      |> Enum.reduce(where(Tagging, fragment("'t' = 'f'")), fn {image_id, tag_id}, q ->
+        or_where(q, image_id: ^image_id, tag_id: ^tag_id)
+      end)
+      |> select([t], [t.image_id, t.tag_id])
 
-    #   inserted = Enum.map(inserted, &[&1.image_id, &1.tag_id])
+    to_add = Enum.map(removed, &%{image_id: &1.tag_change.image_id, tag_id: &1.tag_id})
 
-    #   added_changes =
-    #     Enum.map(inserted, fn [image_id, tag_id] ->
-    #       Map.merge(tag_change_attributes, %{image_id: image_id, tag_id: tag_id, added: true})
-    #     end)
+    Repo.transaction(fn ->
+      {_count, inserted} =
+        Repo.insert_all(Tagging, to_add, on_conflict: :nothing, returning: [:image_id, :tag_id])
 
-    #   removed_changes =
-    #     Enum.map(deleted, fn [image_id, tag_id] ->
-    #       Map.merge(tag_change_attributes, %{image_id: image_id, tag_id: tag_id, added: false})
-    #     end)
+      {_count, deleted} = Repo.delete_all(to_remove)
 
-    #   Repo.insert_all(TagChange, added_changes ++ removed_changes)
+      inserted = Enum.map(inserted, &[&1.image_id, &1.tag_id])
 
-    #   # In order to merge into the existing tables here in one go, insert_all
-    #   # is used with a query that is guaranteed to conflict on every row by
-    #   # using the primary key.
+      all_changed = inserted ++ deleted
 
-    #   added_upserts =
-    #     inserted
-    #     |> Enum.group_by(fn [_image_id, tag_id] -> tag_id end)
-    #     |> Enum.map(fn {tag_id, instances} ->
-    #       Map.merge(tag_attributes, %{id: tag_id, images_count: length(instances)})
-    #     end)
+      # Create tag change batches for every image ID.
+      new_tag_changes =
+        all_changed
+        |> Enum.uniq_by(fn [image_id, _] -> image_id end)
+        |> Enum.map(fn [image_id, _] ->
+          {:ok, tc} =
+            %TagChange{
+              image_id: image_id,
+              user_id: attributes[:user_id],
+              ip: attributes[:ip],
+              fingerprint: attributes[:fingerprint],
+              created_at: now,
+              updated_at: now
+            }
+            |> Repo.insert()
 
-    #   removed_upserts =
-    #     deleted
-    #     |> Enum.group_by(fn [_image_id, tag_id] -> tag_id end)
-    #     |> Enum.map(fn {tag_id, instances} ->
-    #       Map.merge(tag_attributes, %{id: tag_id, images_count: -length(instances)})
-    #     end)
+          {image_id, tc}
+        end)
+        |> Map.new()
 
-    #   update_query = update(Tag, inc: [images_count: fragment("EXCLUDED.images_count")])
+      # Load tag data for all tags which were actually inserted/deleted.
+      tag_ids =
+        all_changed
+        |> Enum.uniq_by(fn [_, tag_id] -> tag_id end)
+        |> Enum.map(fn [_, tag_id] -> tag_id end)
 
-    #   upserts = added_upserts ++ removed_upserts
+      tag_data =
+        Tag
+        |> where([t], t.id in ^tag_ids)
+        |> Repo.all()
+        |> Enum.map(&{&1.id, &1.name})
+        |> Map.new()
 
-    #   Repo.insert_all(Tag, upserts, on_conflict: update_query, conflict_target: [:id])
-    # end)
-    # |> case do
-    #   {:ok, _result} ->
-    #     Images.reindex_images(image_ids)
+      # Create tag change tags.
+      added_changes =
+        Enum.map(inserted, fn [image_id, tag_id] ->
+          %{id: id} = Map.get(new_tag_changes, image_id)
+          name = Map.get(tag_data, tag_id)
 
-    #     {:ok, tag_changes}
+          # fail the entire transaction in case of missing tag data
+          if is_nil(name) do
+            raise "tag data for tag #{tag_id} is nil"
+          end
 
-    #   error ->
-    #     error
-    # end
+          %{
+            tag_change_id: id,
+            tag_id: tag_id,
+            tag_name_cache: name,
+            added: true
+          }
+        end)
+
+      removed_changes =
+        Enum.map(deleted, fn [image_id, tag_id] ->
+          %{id: id} = Map.get(new_tag_changes, image_id)
+          name = Map.get(tag_data, tag_id)
+
+          # fail the entire transaction in case of missing tag data
+          if is_nil(name) do
+            raise "tag data for tag #{tag_id} is nil"
+          end
+
+          %{
+            tag_change_id: id,
+            tag_id: tag_id,
+            tag_name_cache: name,
+            added: false
+          }
+        end)
+
+      # Insert them all at once.
+      Repo.insert_all(TagChanges.Tag, added_changes ++ removed_changes)
+
+      # In order to merge into the existing tables here in one go, insert_all
+      # is used with a query that is guaranteed to conflict on every row by
+      # using the primary key.
+
+      added_upserts =
+        inserted
+        |> Enum.group_by(fn [_image_id, tag_id] -> tag_id end)
+        |> Enum.map(fn {tag_id, instances} ->
+          Map.merge(tag_attributes, %{id: tag_id, images_count: length(instances)})
+        end)
+
+      removed_upserts =
+        deleted
+        |> Enum.group_by(fn [_image_id, tag_id] -> tag_id end)
+        |> Enum.map(fn {tag_id, instances} ->
+          Map.merge(tag_attributes, %{id: tag_id, images_count: -length(instances)})
+        end)
+
+      update_query = update(Tag, inc: [images_count: fragment("EXCLUDED.images_count")])
+
+      upserts = added_upserts ++ removed_upserts
+
+      Repo.insert_all(Tag, upserts, on_conflict: update_query, conflict_target: [:id])
+    end)
+    |> case do
+      {:ok, _result} ->
+        Images.reindex_images(image_ids)
+        Comments.reindex_comments_on_images(image_ids)
+        Tags.reindex_tags(Enum.map(tag_ids, &%{id: &1}))
+
+        {:ok, tag_changes}
+
+      error ->
+        error
+    end
   end
 
   def full_revert(%{user_id: _user_id, attributes: _attributes} = params),
@@ -128,9 +203,9 @@ defmodule Philomena.TagChanges do
   """
   def get_tag_change!(id), do: Repo.get!(TagChange, id)
 
-  defp tag_changes_to_tags(_, nil, _), do: []
+  defp tags_to_tag_change(_, nil, _), do: []
 
-  defp tag_changes_to_tags(tag_change, tags, added) do
+  defp tags_to_tag_change(tag_change, tags, added) do
     tags
     |> Enum.map(
       &%{
@@ -159,10 +234,10 @@ defmodule Philomena.TagChanges do
       |> Repo.insert()
 
     {added_count, nil} =
-      Repo.insert_all(TagChanges.Tag, tag_changes_to_tags(tc, added_tags, true))
+      Repo.insert_all(TagChanges.Tag, tags_to_tag_change(tc, added_tags, true))
 
     {removed_count, nil} =
-      Repo.insert_all(TagChanges.Tag, tag_changes_to_tags(tc, removed_tags, false))
+      Repo.insert_all(TagChanges.Tag, tags_to_tag_change(tc, removed_tags, false))
 
     {:ok, {added_count, removed_count}}
   end
@@ -214,6 +289,10 @@ defmodule Philomena.TagChanges do
     TagChange.changeset(tag_change, %{})
   end
 
+  def count_tag_changes(field_name, value) do
+    Repo.aggregate(from(t in TagChange, where: field(t, ^field_name) == ^value), :count, :id)
+  end
+
   def load(attrs, pagination) do
     {tag_changes, _} = load(attrs, nil, pagination)
 
@@ -247,6 +326,10 @@ defmodule Philomena.TagChanges do
     from t in TagChange, where: field(t, ^field_name) == ^value
   end
 
+  defp base_query(_) do
+    from(t in TagChange)
+  end
+
   defp added_or_tag_field(query, %{added: nil, tag: nil}), do: query
 
   defp added_or_tag_field(query, attrs) do
@@ -259,6 +342,7 @@ defmodule Philomena.TagChanges do
     query
     |> added_field(attrs)
     |> tag_field(attrs)
+    |> tag_id_field(attrs)
   end
 
   defp added_field(query, %{added: nil}), do: query
@@ -274,4 +358,11 @@ defmodule Philomena.TagChanges do
     do: from([_t, tags: tt] in query, where: tt.tag_name_cache == ^tag)
 
   defp tag_field(query, _), do: query
+
+  defp tag_id_field(query, %{tag_id: nil}), do: query
+
+  defp tag_id_field(query, %{tag_id: id}),
+    do: from([_t, tags: tt] in query, where: tt.tag_id == ^id)
+
+  defp tag_id_field(query, _), do: query
 end

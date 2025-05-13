@@ -1,7 +1,6 @@
 defmodule PhilomenaWeb.Image.TagChangeController do
   use PhilomenaWeb, :controller
 
-  alias Philomena.Images
   alias Philomena.Images.Image
   alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
