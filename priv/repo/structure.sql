@@ -1661,7 +1661,6 @@ ALTER SEQUENCE public.subnet_bans_id_seq OWNED BY public.subnet_bans.id;
 CREATE TABLE public.tag_change_tags (
     tag_change_id bigint NOT NULL,
     tag_id bigint NOT NULL,
-    tag_name_cache character varying(255) DEFAULT 'UNKNOWN TAG'::character varying NOT NULL,
     added boolean NOT NULL
 );
 
@@ -1676,8 +1675,7 @@ CREATE TABLE public.tag_changes (
     user_id bigint,
     ip inet NOT NULL,
     fingerprint character varying(255) NOT NULL,
-    created_at timestamp(0) without time zone NOT NULL,
-    updated_at timestamp(0) without time zone NOT NULL
+    created_at timestamp(0) without time zone NOT NULL
 );
 
 

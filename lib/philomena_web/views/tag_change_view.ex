@@ -19,12 +19,8 @@ defmodule PhilomenaWeb.TagChangeView do
 
   def non_retained_tags(%{image: image, tags: tags}) do
     tags
-    |> Enum.filter(fn tc ->
-      if tc.tag do
-        tc.added != Enum.any?(image.tags, &(&1.id == tc.tag.id))
-      else
-        tc.added != Enum.any?(image.tags, &(&1.name == tc.tag_name_cache))
-      end
+    |> Enum.filter(fn tct ->
+      tct.added != Enum.any?(image.tags, &(&1.id == tct.tag.id))
     end)
   end
 

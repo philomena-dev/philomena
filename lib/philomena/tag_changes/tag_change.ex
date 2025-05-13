@@ -10,7 +10,7 @@ defmodule Philomena.TagChanges.TagChange do
     field :ip, EctoNetwork.INET
     field :fingerprint, :string
 
-    timestamps(inserted_at: :created_at, type: :utc_datetime)
+    timestamps(inserted_at: :created_at, updated_at: false, type: :utc_datetime)
   end
 
   @doc false

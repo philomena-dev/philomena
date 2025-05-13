@@ -10,6 +10,7 @@ defmodule Philomena.TagChanges do
   alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
   alias Philomena.Images
+  alias Philomena.Tags.Tag
 
   def mass_revert(ids, attributes) do
     tag_changes =
@@ -41,14 +42,14 @@ defmodule Philomena.TagChanges do
           added_tags:
             removed
             |> Enum.filter(&(&1.tag_change.image_id == id))
-            |> Enum.map(fn t ->
-              t.tag
+            |> Enum.map(fn tct ->
+              tct.tag
             end),
           removed_tags:
             added
             |> Enum.filter(&(&1.tag_change.image_id == id))
-            |> Enum.map(fn t ->
-              t.tag
+            |> Enum.map(fn tct ->
+              tct.tag
             end)
         }
       end),
@@ -96,7 +97,6 @@ defmodule Philomena.TagChanges do
       &%{
         tag_change_id: tag_change.id,
         tag_id: &1.id,
-        tag_name_cache: &1.name,
         added: added
       }
     )
@@ -175,7 +175,7 @@ defmodule Philomena.TagChanges do
   end
 
   def count_tag_changes(field_name, value) do
-    Repo.aggregate(from(t in TagChange, where: field(t, ^field_name) == ^value), :count, :id)
+    Repo.aggregate(from(tc in TagChange, where: field(tc, ^field_name) == ^value), :count, :id)
   end
 
   def load(attrs, pagination) do
@@ -192,37 +192,37 @@ defmodule Philomena.TagChanges do
 
     item_count =
       if count_field do
-        Repo.one(from t in query, select: count(field(t, ^count_field), :distinct))
+        Repo.one(from tc in query, select: count(field(tc, ^count_field), :distinct))
       end
 
     query =
       query
       |> preload([:user, image: [:user, :sources, tags: :aliases], tags: [:tag]])
-      |> group_by([t], t.id)
+      |> group_by([tc], tc.id)
+      |> order_by([desc: :created_at])
 
     {Repo.paginate(query, pagination), item_count}
   end
 
   defp base_query(%{ip: ip}) do
-    from t in TagChange, where: fragment("? >>= ip", ^ip)
+    from tc in TagChange, where: fragment("? >>= ip", ^ip)
   end
 
   defp base_query(%{field: field_name, value: value}) do
-    from t in TagChange, where: field(t, ^field_name) == ^value
+    from tc in TagChange, where: field(tc, ^field_name) == ^value
   end
 
   defp base_query(_) do
-    from(t in TagChange)
+    from(tc in TagChange)
   end
 
   defp added_or_tag_field(query, %{added: nil, tag: nil}), do: query
 
   defp added_or_tag_field(query, attrs) do
     query =
-      from t in query,
-        inner_join: tt in TagChanges.Tag,
-        as: :tags,
-        on: t.id == tt.tag_change_id
+      from tc in query,
+        inner_join: tct in TagChanges.Tag,
+        on: tc.id == tct.tag_change_id
 
     query
     |> added_field(attrs)
@@ -233,21 +233,21 @@ defmodule Philomena.TagChanges do
   defp added_field(query, %{added: nil}), do: query
 
   defp added_field(query, %{added: added}),
-    do: from([_t, tags: tt] in query, where: tt.added == ^added)
+    do: from([_tc, tct] in query, where: tct.added == ^added)
 
   defp added_field(query, _), do: query
 
   defp tag_field(query, %{tag: nil}), do: query
 
   defp tag_field(query, %{tag: tag}),
-    do: from([_t, tags: tt] in query, where: tt.tag_name_cache == ^tag)
+    do: from([_tc, tct] in query, inner_join: t in Tag, on: t.id == tct.tag_id, where: t.name == ^tag)
 
   defp tag_field(query, _), do: query
 
   defp tag_id_field(query, %{tag_id: nil}), do: query
 
   defp tag_id_field(query, %{tag_id: id}),
-    do: from([_t, tags: tt] in query, where: tt.tag_id == ^id)
+    do: from([_tc, tct] in query, where: tct.tag_id == ^id)
 
   defp tag_id_field(query, _), do: query
 end

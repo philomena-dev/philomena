@@ -1119,8 +1119,7 @@ defmodule Philomena.Images do
               user_id: attributes[:user_id],
               ip: attributes[:ip],
               fingerprint: attributes[:fingerprint],
-              created_at: now,
-              updated_at: now
+              created_at: now
             }
             |> Repo.insert()
 
@@ -1132,17 +1131,10 @@ defmodule Philomena.Images do
       added_changes =
         Enum.map(inserted, fn [image_id, tag_id] ->
           %{id: id} = Map.get(new_tag_changes, image_id)
-          name = Map.get(tag_names, tag_id)
-
-          # fail the entire transaction in case of missing tag data
-          if is_nil(name) do
-            raise "tag data for tag #{tag_id} is nil"
-          end
 
           %{
             tag_change_id: id,
             tag_id: tag_id,
-            tag_name_cache: name,
             added: true
           }
         end)
@@ -1150,17 +1142,10 @@ defmodule Philomena.Images do
       removed_changes =
         Enum.map(deleted, fn [image_id, tag_id] ->
           %{id: id} = Map.get(new_tag_changes, image_id)
-          name = Map.get(tag_names, tag_id)
-
-          # fail the entire transaction in case of missing tag data
-          if is_nil(name) do
-            raise "tag data for tag #{tag_id} is nil"
-          end
 
           %{
             tag_change_id: id,
             tag_id: tag_id,
-            tag_name_cache: name,
             added: false
           }
         end)

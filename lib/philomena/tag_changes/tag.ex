@@ -7,7 +7,6 @@ defmodule Philomena.TagChanges.Tag do
     belongs_to :tag_change, Philomena.TagChanges.TagChange
     belongs_to :tag, Philomena.Tags.Tag
 
-    field :tag_name_cache, :string, default: "UNKNOWN TAG"
     field :added, :boolean
   end
 
