@@ -53,12 +53,10 @@ defmodule Philomena.QueryCase do
     assert_value(actual == File.read!(test.snapshot))
   end
 
-  @spec compile_input(phiql_test(), String.t()) :: map()
+  @spec compile_input(phiql_test(), String.t()) :: [map()]
   defp compile_input(test, input) do
     test.contexts
-    |> IO.inspect(label: "Contexts 1")
     |> multimap_cartesian_product()
-    |> IO.inspect(label: "Contexts 2")
     |> Enum.group_by(fn ctx ->
       ctx = map_values(ctx, &Labeled.prefer_value/1)
 
@@ -91,24 +89,17 @@ defmodule Philomena.QueryCase do
   defp multimap_cartesian_product(map) when map_size(map) == 0, do: [%{}]
 
   defp multimap_cartesian_product(map) do
-    IO.inspect(map, label: "iter 0")
-
     {key, values} = map |> Enum.at(0)
-
-    IO.inspect({key, values}, label: "iter 1")
 
     rest = map |> Map.delete(key)
 
-    IO.inspect(rest, label: "iter 1.1")
-
     for value <- values,
-        rest <- multimap_cartesian_product(rest) |> IO.inspect(label: "Return") do
-      IO.inspect({key, value, rest}, label: "iter 2")
+        rest <- multimap_cartesian_product(rest) do
       Map.put_new(rest, key, value)
     end
   end
 
-  @spec normalize_contexts([contexts_schema()], [map()]) :: map()
+  @spec normalize_contexts([contexts_schema()], [map()]) :: [map()]
   defp normalize_contexts(schema, contexts)
 
   defp normalize_contexts(schema, contexts) when map_size(schema) == 0 do
