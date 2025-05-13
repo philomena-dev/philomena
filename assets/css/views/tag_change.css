@@ -14,8 +14,9 @@
 
 .tag__change--staff {
   border: 1px solid var(--success-color);
-  box-shadow: inset 1px 1px 4px var(--success-light-color),
-              inset -1px -1px 4px var(--success-light-color);
+  box-shadow:
+    inset 1px 1px 4px var(--success-light-color),
+    inset -1px -1px 4px var(--success-light-color);
 }
 
 .tag__change-info {
