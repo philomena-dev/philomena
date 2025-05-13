@@ -101,6 +101,17 @@ function init {
   "$(dirname "${BASH_SOURCE[0]}")/init.sh"
 }
 
+# Update the `queries.json` test snapshots after the implementation changes.
+function update_query_tests {
+  ASSERT_VALUE_ACCEPT_DIFFS=y step docker compose run \
+    --remove-orphans \
+    app run-test 'test/philomena/images/query_test.exs'
+
+  step docker compose down
+
+  step npx prettier --write test/philomena/images/queries.json
+}
+
 subcommand="${1:-}"
 shift || true
 
@@ -118,6 +129,7 @@ case "$subcommand" in
   # Shortcut for `philomena exec docker compose`
   compose) docker compose "$@" ;;
 
+  update-query-tests) update_query_tests "$@" ;;
   *)
     die "See the available sub-commands in ${BASH_SOURCE[0]}"
     ;;
