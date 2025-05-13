@@ -1,35 +1,37 @@
-#!/usr/bin/env sh
-set -e
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+. "$(dirname "${BASH_SOURCE[0]}")/../../scripts/lib.sh"
 
 export MIX_ENV=test
 
 # Always install mix dependencies
-(cd /srv/philomena && mix deps.get)
+cd /srv/philomena
+
+step mix deps.get
 
 # Run formatting check
-mix format --check-formatted
+step mix format --check-formatted
 
 # Sleep to allow OpenSearch to finish initializing
 # if it's not done doing whatever it does yet
-echo -n "Waiting for OpenSearch"
+step echo -n "Waiting for OpenSearch"
 
-until wget -qO - opensearch:9200; do
-  echo -n "."
+until step wget -qO - http://opensearch:9200; do
   sleep 2
 done
 
-echo
-
 # Create the database
-mix ecto.create
-mix ecto.load
+step mix ecto.create
+step mix ecto.load
 
 # Test the application
-mix test
+step mix test "$@"
 
 # Security lint
-mix sobelow --config
-mix deps.audit
+step mix sobelow --config
+step mix deps.audit
 
 # Static analysis
 exec mix dialyzer
