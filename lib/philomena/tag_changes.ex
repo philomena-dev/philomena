@@ -199,7 +199,7 @@ defmodule Philomena.TagChanges do
       query
       |> preload([:user, image: [:user, :sources, tags: :aliases], tags: [:tag]])
       |> group_by([tc], tc.id)
-      |> order_by([desc: :created_at])
+      |> order_by(desc: :created_at)
 
     {Repo.paginate(query, pagination), item_count}
   end
@@ -240,7 +240,12 @@ defmodule Philomena.TagChanges do
   defp tag_field(query, %{tag: nil}), do: query
 
   defp tag_field(query, %{tag: tag}),
-    do: from([_tc, tct] in query, inner_join: t in Tag, on: t.id == tct.tag_id, where: t.name == ^tag)
+    do:
+      from([_tc, tct] in query,
+        inner_join: t in Tag,
+        on: t.id == tct.tag_id,
+        where: t.name == ^tag
+      )
 
   defp tag_field(query, _), do: query
 
