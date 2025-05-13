@@ -1,0 +1,124 @@
+{
+  "wildcard": [
+    {
+      "philomena": "*",
+      "opensearch": {
+        "match_all": {}
+      }
+    },
+    {
+      "philomena": "artist:*",
+      "opensearch": {
+        "wildcard": {
+          "namespaced_tags.name": "artist:*"
+        }
+      }
+    },
+    {
+      "philomena": "artist:mare",
+      "opensearch": {
+        "term": {
+          "namespaced_tags.name": "artist:mare"
+        }
+      }
+    }
+  ],
+  "operators": [
+    {
+      "philomena": "safe OR pony",
+      "opensearch": {
+        "bool": {
+          "should": [
+            {
+              "term": {
+                "namespaced_tags.name": "safe"
+              }
+            },
+            {
+              "term": {
+                "namespaced_tags.name": "pony"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "philomena": "safe AND pony",
+      "opensearch": {
+        "bool": {
+          "must": [
+            {
+              "term": {
+                "namespaced_tags.name": "safe"
+              }
+            },
+            {
+              "term": {
+                "namespaced_tags.name": "pony"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "philomena": "safe AND (solo OR pony)",
+      "opensearch": {
+        "bool": {
+          "must": [
+            {
+              "term": {
+                "namespaced_tags.name": "safe"
+              }
+            },
+            {
+              "bool": {
+                "should": [
+                  {
+                    "term": {
+                      "namespaced_tags.name": "solo"
+                    }
+                  },
+                  {
+                    "term": {
+                      "namespaced_tags.name": "pony"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "authenticated_user": [
+    {
+      "contexts": [
+        {
+          "user": ["user", "moderator", "admin", "assistant"]
+        }
+      ],
+      "philomena": "my:faves",
+      "opensearch": {
+        "term": {
+          "favourited_by_user_ids": "{user_id}"
+        }
+      }
+    },
+    {
+      "contexts": [
+        {
+          "user": ["anon"]
+        }
+      ],
+      "philomena": "my:faves",
+      "opensearch": {
+        "term": {
+          "namespaced_tags.name": "my:faves"
+        }
+      }
+    }
+  ]
+}
