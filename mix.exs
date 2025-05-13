@@ -44,6 +44,7 @@ defmodule Philomena.MixProject do
       {:phoenix_view, "~> 2.0"},
       {:phoenix_live_reload, "~> 1.4", only: :dev},
       {:gettext, "~> 0.22"},
+      {:jason, "~> 1.4"},
       {:bandit, "~> 1.2"},
       {:slime, "~> 1.3.1"},
       {:phoenix_slime, "~> 0.13",
@@ -68,9 +69,6 @@ defmodule Philomena.MixProject do
       {:ex_aws_s3, "~> 2.0"},
       {:sweet_xml, "~> 0.7"},
       {:inet_cidr, "~> 1.0"},
-
-      # Serialization
-      {:jason, "~> 1.4"},
 
       # SMTP
       {:swoosh, "~> 1.17"},
