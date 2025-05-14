@@ -11,6 +11,9 @@ cd /srv/philomena
 # Always install mix dependencies
 step mix deps.get
 
+# Some tests depend on prettier
+step npm ci --no-scripts
+
 # Run formatting check
 step mix format --check-formatted
 

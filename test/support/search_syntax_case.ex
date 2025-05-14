@@ -56,6 +56,20 @@ defmodule Philomena.SearchSyntaxCase do
       |> Jason.OrderedObject.new()
       |> Jason.encode!(pretty: true)
 
+    # This is really dumb, but Elixir's subprocess API doesn't support
+    # passing custom payload via stdin for a command.
+    {actual, 0} =
+      System.cmd(
+        "bash",
+        [
+          "-c",
+          "echo \"$1\" | npx prettier --stdin-filepath \"$2\" --parser json",
+          "--",
+          actual,
+          test.snapshot
+        ]
+      )
+
     assert_value(actual == File.read!(test.snapshot))
   end
 
