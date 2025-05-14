@@ -1180,6 +1180,7 @@ defmodule Philomena.Images do
         removed_tags: removed
       }
     end)
+    |> Enum.reject(&(Enum.empty?(&1.added_tags) && Enum.empty?(&1.removed_tags)))
   end
 
   # Generate data for TagChanges.Tag struct.
