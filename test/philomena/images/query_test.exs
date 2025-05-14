@@ -7,17 +7,15 @@ defmodule Philomena.Images.QueryTest do
   use Philomena.SearchSyntaxCase
 
   defp make_user(attrs) do
-    # Set the user ID to a dummy value to make sure it's consistent between
-    # the test cases of different users. This way we avoid generating extra
-    # test cases in the snapshot that just differ by user ID.
-    # |> Map.put(:id, 1)
-    attrs |> user_fixture()
+    # Pretend that all users have the same ID. This doesn't influence the parser
+    # logic because it doesn't load the users from the DB.
+    attrs |> user_fixture() |> Map.put(:id, 1)
   end
 
   test "search syntax" do
     users = [
       Labeled.new(:anon, nil),
-      Labeled.new(:user, make_user(%{confirmed: true})),
+      Labeled.new(:user, make_user(%{role: "user"})),
       Labeled.new(:assistant, make_user(%{role: "assistant"})),
       Labeled.new(:moderator, make_user(%{role: "moderator"})),
       Labeled.new(:admin, make_user(%{role: "admin"}))
@@ -49,12 +47,12 @@ defmodule Philomena.Images.QueryTest do
         wildcard: [
           "*",
           "artist:*",
-          "artist:mare"
+          "artist:artist1"
         ],
         operators: [
-          "safe OR pony",
-          "safe AND pony",
-          "safe AND (solo OR pony)"
+          "tag1 OR tag2",
+          "tag1 AND tag2",
+          "tag1 AND (tag2 OR tag3)"
         ],
         authenticated_user: [
           "my:faves",

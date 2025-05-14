@@ -15,28 +15,28 @@
       }
     },
     {
-      "philomena": "artist:mare",
+      "philomena": "artist:artist1",
       "opensearch": {
         "term": {
-          "namespaced_tags.name": "artist:mare"
+          "namespaced_tags.name": "artist:artist1"
         }
       }
     }
   ],
   "operators": [
     {
-      "philomena": "safe OR pony",
+      "philomena": "tag1 OR tag2",
       "opensearch": {
         "bool": {
           "should": [
             {
               "term": {
-                "namespaced_tags.name": "safe"
+                "namespaced_tags.name": "tag1"
               }
             },
             {
               "term": {
-                "namespaced_tags.name": "pony"
+                "namespaced_tags.name": "tag2"
               }
             }
           ]
@@ -44,18 +44,18 @@
       }
     },
     {
-      "philomena": "safe AND pony",
+      "philomena": "tag1 AND tag2",
       "opensearch": {
         "bool": {
           "must": [
             {
               "term": {
-                "namespaced_tags.name": "safe"
+                "namespaced_tags.name": "tag1"
               }
             },
             {
               "term": {
-                "namespaced_tags.name": "pony"
+                "namespaced_tags.name": "tag2"
               }
             }
           ]
@@ -63,13 +63,13 @@
       }
     },
     {
-      "philomena": "safe AND (solo OR pony)",
+      "philomena": "tag1 AND (tag2 OR tag3)",
       "opensearch": {
         "bool": {
           "must": [
             {
               "term": {
-                "namespaced_tags.name": "safe"
+                "namespaced_tags.name": "tag1"
               }
             },
             {
@@ -77,12 +77,12 @@
                 "should": [
                   {
                     "term": {
-                      "namespaced_tags.name": "solo"
+                      "namespaced_tags.name": "tag2"
                     }
                   },
                   {
                     "term": {
-                      "namespaced_tags.name": "pony"
+                      "namespaced_tags.name": "tag3"
                     }
                   }
                 ]
@@ -97,52 +97,13 @@
     {
       "contexts": [
         {
-          "user": ["user"]
+          "user": ["user", "moderator", "admin", "assistant"]
         }
       ],
       "philomena": "my:faves",
       "opensearch": {
         "term": {
-          "favourited_by_user_ids": 504
-        }
-      }
-    },
-    {
-      "contexts": [
-        {
-          "user": ["assistant"]
-        }
-      ],
-      "philomena": "my:faves",
-      "opensearch": {
-        "term": {
-          "favourited_by_user_ids": 505
-        }
-      }
-    },
-    {
-      "contexts": [
-        {
-          "user": ["moderator"]
-        }
-      ],
-      "philomena": "my:faves",
-      "opensearch": {
-        "term": {
-          "favourited_by_user_ids": 506
-        }
-      }
-    },
-    {
-      "contexts": [
-        {
-          "user": ["admin"]
-        }
-      ],
-      "philomena": "my:faves",
-      "opensearch": {
-        "term": {
-          "favourited_by_user_ids": 507
+          "favourited_by_user_ids": 1
         }
       }
     },
