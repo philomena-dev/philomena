@@ -1,7 +1,6 @@
-defmodule Philomena.QueryCase do
+defmodule Philomena.SearchSyntaxCase do
   @moduledoc """
-  This module defines the setup for testing the PhiQL (Philomena Query
-  Language) parsing.
+  This module defines the setup for testing the Philomena Search Syntax parser.
   """
 
   alias PhilomenaQuery.Parse.Parser
@@ -13,7 +12,7 @@ defmodule Philomena.QueryCase do
   using do
     quote do
       alias Philomena.Labeled
-      alias Philomena.QueryCase
+      import Philomena.SearchSyntaxCase, only: [assert_search_syntax: 1]
     end
   end
 
@@ -22,9 +21,10 @@ defmodule Philomena.QueryCase do
   # between the keys of this map.
   @type contexts_schema :: %{String.t() => [Labeled.t(any()) | any()]}
 
-  @type phiql_test :: %{
-          # The so-called "system under test". This function accepts a PhiQL
-          # string, a context and returns the compiled OpenSearch query.
+  @type search_syntax_test :: %{
+          # The so-called "system under test". This function accepts a Philomena
+          # Search Syntax string, a context and returns the compiled OpenSearch
+          # query.
           compile: (String.t(), keyword([any()]) -> Parser.result()),
 
           # Defines the combinations of contexts to test with.
@@ -33,13 +33,13 @@ defmodule Philomena.QueryCase do
           # Path to the file where to store the snapshot of the test results.
           snapshot: String.t(),
 
-          # The test cases with input PhiQL strings arbitrarily grouped for
+          # The test cases with input Philomena Search Syntax strings arbitrarily grouped for
           # readability.
           test_cases: keyword([String.t()])
         }
 
-  @spec assert_phiql(phiql_test()) :: :ok
-  def assert_phiql(test) do
+  @spec assert_search_syntax(search_syntax_test()) :: :ok
+  def assert_search_syntax(test) do
     actual =
       test.test_cases
       |> map_values(fn inputs ->
@@ -53,7 +53,7 @@ defmodule Philomena.QueryCase do
     assert_value(actual == File.read!(test.snapshot))
   end
 
-  @spec compile_input(phiql_test(), String.t()) :: [map()]
+  @spec compile_input(search_syntax_test(), String.t()) :: [map()]
   defp compile_input(test, input) do
     test.contexts
     |> multimap_cartesian_product()

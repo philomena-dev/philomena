@@ -1,12 +1,12 @@
-defmodule Philomena.Images.UsersTest do
+defmodule Philomena.Images.QueryTest do
   alias Philomena.Labeled
 
-  use Philomena.QueryCase
+  use Philomena.SearchSyntaxCase
 
-  test "phiql" do
-    QueryCase.assert_phiql(%{
+  test "search syntax" do
+    assert_search_syntax(%{
       compile: &Philomena.Images.Query.compile/2,
-      snapshot: "#{__DIR__}/queries.json",
+      snapshot: "#{__DIR__}/search-syntax.json",
       contexts: %{
         user: [
           Labeled.new(:anon, nil),
