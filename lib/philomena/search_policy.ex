@@ -5,6 +5,7 @@ defmodule Philomena.SearchPolicy do
   alias Philomena.Posts.Post
   alias Philomena.Reports.Report
   alias Philomena.Tags.Tag
+  alias Philomena.TagChanges.TagChange
   alias Philomena.Filters.Filter
 
   alias Philomena.Comments.SearchIndex, as: CommentIndex
@@ -13,9 +14,10 @@ defmodule Philomena.SearchPolicy do
   alias Philomena.Posts.SearchIndex, as: PostIndex
   alias Philomena.Reports.SearchIndex, as: ReportIndex
   alias Philomena.Tags.SearchIndex, as: TagIndex
+  alias Philomena.TagChanges.SearchIndex, as: TagChangesIndex
   alias Philomena.Filters.SearchIndex, as: FilterIndex
 
-  @type schema_module :: Comment | Gallery | Image | Post | Report | Tag | Filter
+  @type schema_module :: Comment | Gallery | Image | Post | Report | Tag | TagChange | Filter
 
   @doc """
   For a given schema module (e.g. `m:Philomena.Images.Image`), return the associated module
@@ -37,6 +39,7 @@ defmodule Philomena.SearchPolicy do
   def index_for(Post), do: PostIndex
   def index_for(Report), do: ReportIndex
   def index_for(Tag), do: TagIndex
+  def index_for(TagChange), do: TagChangesIndex
   def index_for(Filter), do: FilterIndex
 
   @doc """

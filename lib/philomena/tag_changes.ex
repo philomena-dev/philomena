@@ -6,9 +6,11 @@ defmodule Philomena.TagChanges do
   import Ecto.Query, warn: false
   alias Philomena.Repo
 
+  alias PhilomenaQuery.Search
   alias Philomena.TagChangeRevertWorker
   alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
+  alias Philomena.TagChanges.SearchIndex, as: TagChangesIndex
   alias Philomena.Images
   alias Philomena.Images.Image
   alias Philomena.Tags.Tag
@@ -68,6 +70,21 @@ defmodule Philomena.TagChanges do
 
   def full_revert(%{fingerprint: _fingerprint, attributes: _attributes} = params),
     do: Exq.enqueue(Exq, "indexing", TagChangeRevertWorker, [params])
+
+  @doc """
+  Updates tag change search indices when a user's name changes.
+
+  ## Examples
+
+      iex> user_name_reindex("old_username", "new_username")
+      :ok
+
+  """
+  def user_name_reindex(old_name, new_name) do
+    data = TagChangesIndex.user_name_update_by_query(old_name, new_name)
+
+    Search.update_by_query(TagChange, data.query, data.set_replacements, data.replacements)
+  end
 
   defp tags_to_tag_change(_, nil, _), do: []
 
