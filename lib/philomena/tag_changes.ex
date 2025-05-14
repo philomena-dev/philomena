@@ -13,6 +13,7 @@ defmodule Philomena.TagChanges do
   alias Philomena.Images.Image
   alias Philomena.Tags.Tag
 
+  # Accepts a list of TagChanges.TagChange IDs.
   def mass_revert(ids, attributes) do
     tag_changes =
       Repo.all(
@@ -23,12 +24,22 @@ defmodule Philomena.TagChanges do
           preload: [tags: [:tag, :tag_change]]
       )
 
+    case mass_revert_tags(Enum.flat_map(tag_changes, & &1.tags), attributes) do
+      {:ok, _result} ->
+        {:ok, tag_changes}
+
+      error ->
+        error
+    end
+  end
+
+  # Accepts a list of TagChanges.Tag objects with tag_change and tag relations preloaded.
+  def mass_revert_tags(tags, attributes) do
     # Sort tags by tag change creation date, then uniq them by tag ID
     # to keep the first, aka the latest, record. Then prepare the struct
     # for the batch updater.
     changes_per_image =
-      tag_changes
-      |> Enum.flat_map(& &1.tags)
+      tags
       |> Enum.group_by(& &1.tag_change.image_id)
       |> Enum.map(fn {image_id, instances} ->
         changed_tags =
@@ -46,13 +57,7 @@ defmodule Philomena.TagChanges do
         }
       end)
 
-    case Images.batch_update(changes_per_image, attributes) do
-      {:ok, _result} ->
-        {:ok, tag_changes}
-
-      error ->
-        error
-    end
+    Images.batch_update(changes_per_image, attributes)
   end
 
   def full_revert(%{user_id: _user_id, attributes: _attributes} = params),
