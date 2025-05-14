@@ -16,15 +16,19 @@ step mix format --check-formatted
 
 # Sleep to allow OpenSearch to finish initializing
 # if it's not done doing whatever it does yet
-step echo -n "Waiting for OpenSearch"
+info "Waiting for OpenSearch"
 
 until step wget -qO - http://opensearch:9200; do
   sleep 2
 done
 
-# Create the database
-step mix ecto.create
-step mix ecto.load
+# Create the database, or migrate if one already exists from a previous run
+if step createdb -h postgres -U postgres philomena_test; then
+  step mix ecto.create
+  step mix ecto.load
+elif [[ "$(mix ecto.migrations)" == *" down "* ]]; then
+  step mix ecto.migrate --all
+fi
 
 # Test the application
 step mix test "$@"
