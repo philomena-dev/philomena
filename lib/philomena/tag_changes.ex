@@ -121,24 +121,6 @@ defmodule Philomena.TagChanges do
   end
 
   @doc """
-  Updates a tag_change.
-
-  ## Examples
-
-      iex> update_tag_change(tag_change, %{field: new_value})
-      {:ok, %TagChange{}}
-
-      iex> update_tag_change(tag_change, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_tag_change(%TagChange{} = tag_change, attrs) do
-    tag_change
-    |> TagChange.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
   Deletes a TagChange.
 
   ## Examples
@@ -152,19 +134,6 @@ defmodule Philomena.TagChanges do
   """
   def delete_tag_change(%TagChange{} = tag_change) do
     Repo.delete(tag_change)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking tag_change changes.
-
-  ## Examples
-
-      iex> change_tag_change(tag_change)
-      %Ecto.Changeset{source: %TagChange{}}
-
-  """
-  def change_tag_change(%TagChange{} = tag_change) do
-    TagChange.changeset(tag_change, %{})
   end
 
   def count_tag_changes(field_name, value) do

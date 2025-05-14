@@ -12,11 +12,4 @@ defmodule Philomena.TagChanges.TagChange do
 
     timestamps(inserted_at: :created_at, updated_at: false, type: :utc_datetime)
   end
-
-  @doc false
-  def changeset(tag_change, attrs) do
-    tag_change
-    |> cast(attrs, [])
-    |> validate_required([])
-  end
 end

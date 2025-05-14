@@ -9,11 +9,4 @@ defmodule Philomena.TagChanges.Tag do
 
     field :added, :boolean
   end
-
-  @doc false
-  def changeset(tag_change, attrs) do
-    tag_change
-    |> cast(attrs, [])
-    |> validate_required([])
-  end
 end
