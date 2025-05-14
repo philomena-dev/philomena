@@ -97,13 +97,52 @@
     {
       "contexts": [
         {
-          "user": ["user", "moderator", "admin", "assistant"]
+          "user": ["user"]
         }
       ],
       "philomena": "my:faves",
       "opensearch": {
         "term": {
-          "favourited_by_user_ids": "{user_id}"
+          "favourited_by_user_ids": 504
+        }
+      }
+    },
+    {
+      "contexts": [
+        {
+          "user": ["assistant"]
+        }
+      ],
+      "philomena": "my:faves",
+      "opensearch": {
+        "term": {
+          "favourited_by_user_ids": 505
+        }
+      }
+    },
+    {
+      "contexts": [
+        {
+          "user": ["moderator"]
+        }
+      ],
+      "philomena": "my:faves",
+      "opensearch": {
+        "term": {
+          "favourited_by_user_ids": 506
+        }
+      }
+    },
+    {
+      "contexts": [
+        {
+          "user": ["admin"]
+        }
+      ],
+      "philomena": "my:faves",
+      "opensearch": {
+        "term": {
+          "favourited_by_user_ids": 507
         }
       }
     },
@@ -119,6 +158,141 @@
           "namespaced_tags.name": "my:faves"
         }
       }
+    },
+    {
+      "contexts": [
+        {
+          "user": ["user", "moderator", "admin", "assistant"],
+          "watch": [false]
+        }
+      ],
+      "philomena": "my:watched",
+      "opensearch": {
+        "bool": {
+          "should": [
+            {
+              "terms": {
+                "tag_ids": []
+              }
+            },
+            {
+              "match_none": {}
+            }
+          ],
+          "must_not": [
+            {
+              "match_none": {}
+            }
+          ]
+        }
+      }
+    },
+    {
+      "contexts": [
+        {
+          "user": ["anon"]
+        }
+      ],
+      "philomena": "my:watched",
+      "opensearch": {
+        "term": {
+          "namespaced_tags.name": "my:watched"
+        }
+      }
+    },
+    {
+      "contexts": [
+        {
+          "user": ["user", "moderator", "admin", "assistant"],
+          "watch": [true]
+        }
+      ],
+      "philomena": "my:watched",
+      "opensearch": "Error: Recursive watchlists are not allowed."
+    }
+  ],
+  "system_filter": [
+    {
+      "contexts": [
+        {
+          "filter": [false]
+        }
+      ],
+      "philomena": "filter_id:100",
+      "opensearch": {
+        "bool": {
+          "must_not": [
+            {
+              "terms": {
+                "tag_ids": [12, 13]
+              }
+            },
+            {
+              "bool": {
+                "must": [
+                  {
+                    "term": {
+                      "namespaced_tags.name": "truly"
+                    }
+                  },
+                  {
+                    "term": {
+                      "namespaced_tags.name": "complex"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "contexts": [
+        {
+          "filter": [true]
+        }
+      ],
+      "philomena": "filter_id:100",
+      "opensearch": "Error: Filter queries inside filters are not allowed."
+    }
+  ],
+  "invalid_filters": [
+    {
+      "contexts": [
+        {
+          "filter": [true]
+        }
+      ],
+      "philomena": "filter_id:invalid_id",
+      "opensearch": "Error: Filter queries inside filters are not allowed."
+    },
+    {
+      "contexts": [
+        {
+          "filter": [false]
+        }
+      ],
+      "philomena": "filter_id:invalid_id",
+      "opensearch": "Error: Invalid filter `invalid_id`."
+    },
+    {
+      "contexts": [
+        {
+          "filter": [true]
+        }
+      ],
+      "philomena": "filter_id:9999",
+      "opensearch": "Error: Filter queries inside filters are not allowed."
+    },
+    {
+      "contexts": [
+        {
+          "filter": [false]
+        }
+      ],
+      "philomena": "filter_id:9999",
+      "opensearch": "Error: Invalid filter `9999`."
     }
   ]
 }

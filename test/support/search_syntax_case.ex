@@ -16,6 +16,12 @@ defmodule Philomena.SearchSyntaxCase do
     end
   end
 
+  setup tags do
+    pid = Ecto.Adapters.SQL.Sandbox.start_owner!(Philomena.Repo, shared: not tags[:async])
+    on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
+    :ok
+  end
+
   # Context combinations multimap. The number of keys in this map should be kept
   # small, because the test calculates a multi-cartesian product of values
   # between the keys of this map.
