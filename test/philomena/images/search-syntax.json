@@ -97,7 +97,7 @@
     {
       "contexts": [
         {
-          "user": ["user", "moderator", "admin", "assistant"]
+          "user": ["admin", "assistant", "moderator", "user"]
         }
       ],
       "philomena": "my:faves",
@@ -123,7 +123,7 @@
     {
       "contexts": [
         {
-          "user": ["user", "moderator", "admin", "assistant"],
+          "user": ["admin", "assistant", "moderator", "user"],
           "watch": [false]
         }
       ],
@@ -164,7 +164,7 @@
     {
       "contexts": [
         {
-          "user": ["user", "moderator", "admin", "assistant"],
+          "user": ["admin", "assistant", "moderator", "user"],
           "watch": [true]
         }
       ],

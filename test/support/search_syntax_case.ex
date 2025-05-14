@@ -132,7 +132,7 @@ defmodule Philomena.SearchSyntaxCase do
         normalize_contexts(schema, other)
 
       [other] ->
-        values = Map.keys(groups)
+        values = Map.keys(groups) |> Enum.sort()
 
         normalize_contexts(schema, other)
         |> Enum.map(&Map.merge(&1, %{key => values}))
