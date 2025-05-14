@@ -1064,18 +1064,13 @@ defmodule Philomena.Images do
   end
 
   def batch_update(changes, attributes) do
+    changes = merge_change_batches(changes)
+
     image_ids =
       Image
       |> where([i], i.id in ^Enum.map(changes, & &1.image_id) and i.hidden_from_users == false)
       |> select([i], i.id)
       |> Repo.all()
-
-    tag_names =
-      Enum.flat_map(changes, fn change ->
-        Enum.map(change.added_tags, &{&1.id, &1.name}) ++
-          Enum.map(change.removed_tags, &{&1.id, &1.name})
-      end)
-      |> Map.new()
 
     to_insert =
       Enum.flat_map(changes, fn change ->
@@ -1106,11 +1101,9 @@ defmodule Philomena.Images do
 
       inserted = Enum.map(inserted, &[&1.image_id, &1.tag_id])
 
-      all_changed = inserted ++ deleted
-
       # Create tag change batches for every image ID.
       new_tag_changes =
-        all_changed
+        (inserted ++ deleted)
         |> Enum.uniq_by(fn [image_id, _] -> image_id end)
         |> Enum.map(fn [image_id, _] ->
           {:ok, tc} =
@@ -1128,61 +1121,23 @@ defmodule Philomena.Images do
         |> Map.new()
 
       # Create tags belonging to tag changes.
-      added_changes =
-        Enum.map(inserted, fn [image_id, tag_id] ->
-          %{id: id} = Map.get(new_tag_changes, image_id)
-
-          %{
-            tag_change_id: id,
-            tag_id: tag_id,
-            added: true
-          }
-        end)
-
-      removed_changes =
-        Enum.map(deleted, fn [image_id, tag_id] ->
-          %{id: id} = Map.get(new_tag_changes, image_id)
-
-          %{
-            tag_change_id: id,
-            tag_id: tag_id,
-            added: false
-          }
-        end)
+      added_changes = tag_change_data(inserted, new_tag_changes, true)
+      removed_changes = tag_change_data(deleted, new_tag_changes, false)
 
       Repo.insert_all(TagChanges.Tag, added_changes ++ removed_changes)
 
       # In order to merge into the existing tables here in one go, insert_all
       # is used with a query that is guaranteed to conflict on every row by
-      # using the primary key.
+      # using the primary key. This will update the image counts via the
+      # ON CONFLICT DO UPDATE clause.
 
-      added_upserts =
-        inserted
-        |> Enum.group_by(fn [_image_id, tag_id] -> tag_id end)
-        |> Enum.map(fn {tag_id, instances} ->
-          Map.merge(tag_attributes, %{
-            name: Map.get(tag_names, tag_id, ""),
-            id: tag_id,
-            images_count: length(instances)
-          })
-        end)
+      added_upserts = tag_upsert_data(inserted, tag_attributes, true)
+      removed_upserts = tag_upsert_data(deleted, tag_attributes, false)
 
-      removed_upserts =
-        deleted
-        |> Enum.group_by(fn [_image_id, tag_id] -> tag_id end)
-        |> Enum.map(fn {tag_id, instances} ->
-          Map.merge(tag_attributes, %{
-            name: Map.get(tag_names, tag_id, ""),
-            id: tag_id,
-            images_count: -length(instances)
-          })
-        end)
-
-      update_query = update(Tag, inc: [images_count: fragment("EXCLUDED.images_count")])
-
-      upserts = added_upserts ++ removed_upserts
-
-      Repo.insert_all(Tag, upserts, on_conflict: update_query, conflict_target: [:id])
+      Repo.insert_all(Tag, added_upserts ++ removed_upserts,
+        on_conflict: update(Tag, inc: [images_count: fragment("EXCLUDED.images_count")]),
+        conflict_target: [:id]
+      )
     end)
     |> case do
       {:ok, _} = result ->
@@ -1200,6 +1155,61 @@ defmodule Philomena.Images do
       result ->
         result
     end
+  end
+
+  # Merge any change batches belonging to the same image ID into
+  # one single batch, then deduplicate added_tags by removing any
+  # which are slated for removal, which is the behavior of the
+  # mass tagger anyway (it inserts anything that needs to be inserted
+  # into image_taggings, and then deletes anything that needs to be deleted,
+  # so by not inserting what would be deleted anyway, we're just mimicking
+  # this behavior here, and ensuring that there are no duplicate tag changes
+  # per batch)
+  defp merge_change_batches(changes) do
+    changes
+    |> Enum.group_by(& &1.image_id)
+    |> Enum.map(fn {image_id, instances} ->
+      added =
+        instances
+        |> Enum.reduce([], fn i, acc -> acc ++ i.added_tags end)
+        |> Enum.uniq_by(fn i -> i.id end)
+
+      removed =
+        instances
+        |> Enum.reduce([], fn i, acc -> acc ++ i.removed_tags end)
+        |> Enum.uniq_by(fn i -> i.id end)
+
+      %{
+        image_id: image_id,
+        added_tags: Enum.reject(added, fn a -> Enum.any?(removed, fn r -> r.id == a.id end) end),
+        removed_tags: removed
+      }
+    end)
+  end
+
+  # Generate data for TagChanges.Tag struct.
+  defp tag_change_data(changes, tag_changes, added) do
+    Enum.map(changes, fn [image_id, tag_id] ->
+      %{id: id} = Map.get(tag_changes, image_id)
+
+      %{
+        tag_change_id: id,
+        tag_id: tag_id,
+        added: added
+      }
+    end)
+  end
+
+  # Generate data for inserts/updates (hence, upserts) of the Tags.Tag struct.
+  defp tag_upsert_data(changes, tag_attributes, added) do
+    changes
+    |> Enum.group_by(fn [_image_id, tag_id] -> tag_id end)
+    |> Enum.map(fn {tag_id, instances} ->
+      Map.merge(tag_attributes, %{
+        id: tag_id,
+        images_count: if(added, do: length(instances), else: -length(instances))
+      })
+    end)
   end
 
   @doc """

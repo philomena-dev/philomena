@@ -10,6 +10,7 @@ defmodule Philomena.TagChanges do
   alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
   alias Philomena.Images
+  alias Philomena.Images.Image
   alias Philomena.Tags.Tag
 
   def mass_revert(ids, attributes) do
@@ -22,35 +23,21 @@ defmodule Philomena.TagChanges do
           preload: [tags: [:tag, :tag_change]]
       )
 
-    tags =
-      tag_changes
-      |> Enum.flat_map(& &1.tags)
-      |> Enum.reject(&is_nil(&1.tag_id))
-      |> Enum.uniq_by(&{&1.tag_id, &1.tag_change.image_id})
-
-    {added, removed} = Enum.split_with(tags, & &1.added)
+    tags = Enum.flat_map(tag_changes, & &1.tags)
 
     image_ids =
       tags
       |> Enum.map(& &1.tag_change.image_id)
       |> Enum.uniq()
 
+    {added, removed} = Enum.split_with(tags, & &1.added)
+
     Images.batch_update(
       Enum.map(image_ids, fn id ->
         %{
           image_id: id,
-          added_tags:
-            removed
-            |> Enum.filter(&(&1.tag_change.image_id == id))
-            |> Enum.map(fn tct ->
-              tct.tag
-            end),
-          removed_tags:
-            added
-            |> Enum.filter(&(&1.tag_change.image_id == id))
-            |> Enum.map(fn tct ->
-              tct.tag
-            end)
+          added_tags: tag_list_for_image(removed, id),
+          removed_tags: tag_list_for_image(added, id)
         }
       end),
       attributes
@@ -62,6 +49,14 @@ defmodule Philomena.TagChanges do
       error ->
         error
     end
+  end
+
+  defp tag_list_for_image(tags, image_id) do
+    tags
+    |> Enum.filter(&(&1.tag_change.image_id == image_id))
+    |> Enum.map(fn tct ->
+      tct.tag
+    end)
   end
 
   def full_revert(%{user_id: _user_id, attributes: _attributes} = params),
@@ -189,6 +184,7 @@ defmodule Philomena.TagChanges do
       attrs
       |> base_query()
       |> added_or_tag_field(attrs)
+      |> filter_anon(attrs)
 
     item_count =
       if count_field do
@@ -215,6 +211,15 @@ defmodule Philomena.TagChanges do
   defp base_query(_) do
     from(tc in TagChange)
   end
+
+  defp filter_anon(query, %{field: :user_id, value: id, filter_anon: true}) do
+    from t in query,
+      inner_join: i in Image,
+      on: i.id == t.image_id,
+      where: t.user_id == ^id and not (i.user_id == ^id and i.anonymous == true)
+  end
+
+  defp filter_anon(query, _), do: query
 
   defp added_or_tag_field(query, %{added: nil, tag: nil}), do: query
 

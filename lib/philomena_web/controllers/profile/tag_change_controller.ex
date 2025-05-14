@@ -16,7 +16,8 @@ defmodule PhilomenaWeb.Profile.TagChangeController do
           field: :user_id,
           value: user.id,
           added: params["added"],
-          tag: params["only_tag"]
+          tag: params["only_tag"],
+          filter_anon: true
         },
         :image_id,
         conn.assigns.scrivener
