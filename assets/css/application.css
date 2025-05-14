@@ -34,6 +34,7 @@
 @import "elements/layout";
 @import "elements/media";
 @import "elements/text";
+@import "elements/toggle";
 
 /* Style elements specific to certain pages. */
 @import "views/adverts";
