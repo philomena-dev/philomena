@@ -119,7 +119,7 @@ function update_search_syntax_tests {
   if command -v code &>/dev/null; then
     step git difftool \
       --no-prompt \
-      --extcmd "code --wait --diff" \
+      --extcmd "code --diff" \
       -- test/philomena/images/search-syntax.json
   fi
 }
