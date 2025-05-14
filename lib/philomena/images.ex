@@ -1143,12 +1143,7 @@ defmodule Philomena.Images do
       {:ok, _} = result ->
         reindex_images(image_ids)
         Comments.reindex_comments_on_images(image_ids)
-
-        Tags.reindex_tags(
-          Enum.flat_map(changes, fn change ->
-            change.added_tags ++ change.removed_tags
-          end)
-        )
+        Tags.reindex_tags(Enum.flat_map(changes, &(&1.added_tags ++ &1.removed_tags)))
 
         result
 
@@ -1172,16 +1167,16 @@ defmodule Philomena.Images do
       added =
         instances
         |> Enum.reduce([], fn i, acc -> acc ++ i.added_tags end)
-        |> Enum.uniq_by(fn i -> i.id end)
+        |> Enum.uniq_by(& &1.id)
 
       removed =
         instances
         |> Enum.reduce([], fn i, acc -> acc ++ i.removed_tags end)
-        |> Enum.uniq_by(fn i -> i.id end)
+        |> Enum.uniq_by(& &1.id)
 
       %{
         image_id: image_id,
-        added_tags: Enum.reject(added, fn a -> Enum.any?(removed, fn r -> r.id == a.id end) end),
+        added_tags: Enum.reject(added, fn a -> Enum.any?(removed, &(&1.id == a.id)) end),
         removed_tags: removed
       }
     end)
