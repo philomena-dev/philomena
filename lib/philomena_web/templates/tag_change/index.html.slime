@@ -15,8 +15,7 @@
         strong Do not undo staff member tag changes!
       p Ask them if you believe their changes are wrong. Staff members usually have a good reason to change tags. There might also be additional context, which you either can't see, or simply are unaware of.
     = for tag_change <- @tag_changes do
-      - added_tags = Enum.filter(tag_change.tags, & &1.added == true)
-      - removed_tags = Enum.filter(tag_change.tags, & &1.added == false)
+      - {added_tags, removed_tags} = Enum.split_with(tag_change.tags, & &1.added)
       - added_tags_count = Enum.count(added_tags)
       - removed_tags_count = Enum.count(removed_tags)
       - non_retained = non_retained_tags(tag_change)

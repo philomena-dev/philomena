@@ -1166,12 +1166,12 @@ defmodule Philomena.Images do
     |> Enum.map(fn {image_id, instances} ->
       added =
         instances
-        |> Enum.reduce([], fn i, acc -> acc ++ i.added_tags end)
+        |> Enum.flat_map(& &1.added_tags)
         |> Enum.uniq_by(& &1.id)
 
       removed =
         instances
-        |> Enum.reduce([], fn i, acc -> acc ++ i.removed_tags end)
+        |> Enum.flat_map(& &1.removed_tags)
         |> Enum.uniq_by(& &1.id)
 
       %{

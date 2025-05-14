@@ -54,9 +54,7 @@ defmodule Philomena.TagChanges do
   defp tag_list_for_image(tags, image_id) do
     tags
     |> Enum.filter(&(&1.tag_change.image_id == image_id))
-    |> Enum.map(fn tct ->
-      tct.tag
-    end)
+    |> Enum.map(& &1.tag)
   end
 
   def full_revert(%{user_id: _user_id, attributes: _attributes} = params),
