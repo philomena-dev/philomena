@@ -1,15 +1,24 @@
 defmodule Philomena.Images.QueryTest do
   alias Philomena.Labeled
-  import Philomena.UsersFixtures
+  alias Philomena.Users.User
+  alias Philomena.Filters.Filter
   import Philomena.FiltersFixtures
   import Philomena.TagsFixtures
 
   use Philomena.SearchSyntaxCase
 
   defp make_user(attrs) do
-    # Pretend that all users have the same ID. This doesn't influence the parser
-    # logic because it doesn't load the users from the DB.
-    attrs |> user_fixture() |> Map.put(:id, 1)
+    %User{
+      # Pretend that all users have the same ID. This doesn't influence the parser
+      # logic because it doesn't load the users from the DB.
+      id: 1,
+      watched_tag_ids: [],
+      watched_images_query_str: "",
+      watched_images_exclude_str: "",
+      no_spoilered_in_watched: false,
+      current_filter: %Filter{spoilered_tag_ids: [], spoilered_complex_str: ""}
+    }
+    |> Map.merge(attrs)
   end
 
   test "search syntax" do
