@@ -69,22 +69,6 @@ defmodule Philomena.TagChanges do
   def full_revert(%{fingerprint: _fingerprint, attributes: _attributes} = params),
     do: Exq.enqueue(Exq, "indexing", TagChangeRevertWorker, [params])
 
-  @doc """
-  Gets a single tag_change.
-
-  Raises `Ecto.NoResultsError` if the Tag change does not exist.
-
-  ## Examples
-
-      iex> get_tag_change!(123)
-      %TagChange{}
-
-      iex> get_tag_change!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_tag_change!(id), do: Repo.get!(TagChange, id)
-
   defp tags_to_tag_change(_, nil, _), do: []
 
   defp tags_to_tag_change(tag_change, tags, added) do
