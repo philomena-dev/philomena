@@ -23,38 +23,36 @@ defmodule Philomena.TagChanges do
           preload: [tags: [:tag, :tag_change]]
       )
 
-    tags = Enum.flat_map(tag_changes, & &1.tags)
+    # Sort tags by tag change creation date, then uniq them by tag ID
+    # to keep the first, aka the latest, record. Then prepare the struct
+    # for the batch updater.
+    changes_per_image =
+      tag_changes
+      |> Enum.flat_map(& &1.tags)
+      |> Enum.group_by(& &1.tag_change.image_id)
+      |> Enum.map(fn {image_id, instances} ->
+        changed_tags =
+          instances
+          |> Enum.sort_by(& &1.tag_change.created_at, :desc)
+          |> Enum.uniq_by(& &1.tag_id)
 
-    image_ids =
-      tags
-      |> Enum.map(& &1.tag_change.image_id)
-      |> Enum.uniq()
+        {added_tags, removed_tags} = Enum.split_with(changed_tags, & &1.added)
 
-    {added, removed} = Enum.split_with(tags, & &1.added)
-
-    Images.batch_update(
-      Enum.map(image_ids, fn id ->
+        # We send removed tags to be added, and added to be removed. That's how reverting works!
         %{
-          image_id: id,
-          added_tags: tag_list_for_image(removed, id),
-          removed_tags: tag_list_for_image(added, id)
+          image_id: image_id,
+          added_tags: Enum.map(removed_tags, & &1.tag),
+          removed_tags: Enum.map(added_tags, & &1.tag)
         }
-      end),
-      attributes
-    )
-    |> case do
+      end)
+
+    case Images.batch_update(changes_per_image, attributes) do
       {:ok, _result} ->
         {:ok, tag_changes}
 
       error ->
         error
     end
-  end
-
-  defp tag_list_for_image(tags, image_id) do
-    tags
-    |> Enum.filter(&(&1.tag_change.image_id == image_id))
-    |> Enum.map(& &1.tag)
   end
 
   def full_revert(%{user_id: _user_id, attributes: _attributes} = params),
