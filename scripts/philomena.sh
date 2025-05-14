@@ -103,13 +103,36 @@ function init {
 
 # Update the `queries.json` test snapshots after the implementation changes.
 function update_search_syntax_tests {
+  # shellcheck disable=SC2016
+  test='
+    set -euo pipefail
+
+    . scripts/lib.sh
+
+    export MIX_ENV=test
+
+    if step createdb -h postgres -U postgres philomena_test; then
+      step mix ecto.create
+      step mix ecto.load
+    elif [[ "$(mix ecto.migrations)" == *" down "* ]]; then
+      step mix ecto.migrate --all
+    fi
+
+    step mix test test/philomena/images/query_test.exs
+    step npx prettier --write test/philomena/images/search-syntax.json
+  '
+
   ASSERT_VALUE_ACCEPT_DIFFS=y step docker compose run \
     --remove-orphans \
-    app run-test 'test/philomena/images/query_test.exs'
+    app bash -c "$test"
 
-  step docker compose down
-
-  step npx prettier --write test/philomena/images/search-syntax.json
+  # See the git diff for the updated snapshot in vscode if it's available.
+  if command -v code &>/dev/null; then
+    step git difftool \
+      --no-prompt \
+      --extcmd "code --wait --diff" \
+      -- test/philomena/images/search-syntax.json
+  fi
 }
 
 subcommand="${1:-}"
