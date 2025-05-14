@@ -1,6 +1,5 @@
 defmodule Philomena.TagChanges.TagChange do
   use Ecto.Schema
-  import Ecto.Changeset
 
   schema "tag_changes" do
     belongs_to :user, Philomena.Users.User
