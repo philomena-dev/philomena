@@ -92,6 +92,8 @@ function init {
 
 # Update the `queries.json` test snapshots after the implementation changes.
 function update_search_syntax_tests {
+  # TODO: refactor this after the devcontainer PR is merged:
+  # https://github.com/philomena-dev/philomena/pull/528
   # shellcheck disable=SC2016
   test='
     set -euo pipefail
@@ -99,6 +101,8 @@ function update_search_syntax_tests {
     . scripts/lib.sh
 
     export MIX_ENV=test
+
+    step mix deps.get
 
     if step createdb -h postgres -U postgres philomena_test; then
       step mix ecto.create
@@ -108,7 +112,7 @@ function update_search_syntax_tests {
     fi
 
     step mix test test/philomena/images/query_test.exs
-    step npx prettier --write test/philomena/images/search-syntax.json
+    step npx prettier --write test/philomena/images/search-syntax.yml
   '
 
   ASSERT_VALUE_ACCEPT_DIFFS=y step docker compose run \
