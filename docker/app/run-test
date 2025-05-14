@@ -6,9 +6,9 @@ set -euo pipefail
 
 export MIX_ENV=test
 
-# Always install mix dependencies
 cd /srv/philomena
 
+# Always install mix dependencies
 step mix deps.get
 
 # Run formatting check

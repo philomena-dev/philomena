@@ -198,18 +198,7 @@ defmodule Philomena.Images.Query do
   end
 
   @type context :: [
-          user: %{
-            role: String.t(),
-            id: integer(),
-            watched_tag_ids: [integer()],
-            watched_images_query_str: String.t(),
-            watched_images_exclude_str: String.t(),
-            no_spoilered_in_watched: boolean(),
-            current_filter: %{
-              spoilered_tag_ids: [integer()],
-              spoilered_complex_str: String.t()
-            }
-          },
+          user: map(),
           watch: boolean(),
           filter: boolean()
         ]
