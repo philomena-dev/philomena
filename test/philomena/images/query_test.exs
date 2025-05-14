@@ -33,7 +33,6 @@ defmodule Philomena.Images.QueryTest do
     for id <- 10..14 do
       tag_fixture(%{id: id, name: "tag#{id}"})
     end
-    |> Enum.to_list()
 
     system_filter =
       system_filter_fixture(%{

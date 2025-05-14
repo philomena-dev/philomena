@@ -103,7 +103,9 @@ defmodule PhilomenaQuery.Parse.Parser do
           transforms: %{String.t() => transform()},
           aliases: %{String.t() => String.t()},
           no_downcase_fields: [String.t()],
-          normalizations: %{String.t() => normalizer()}
+          normalizations: %{String.t() => normalizer()},
+          __fields__: map(),
+          __data__: context()
         }
 
   defstruct [
