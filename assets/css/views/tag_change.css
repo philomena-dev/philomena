@@ -21,11 +21,20 @@
 
 .tag__change-info {
   display: flex;
+  flex: 1 0 auto;
+  flex-wrap: wrap;
+  max-width: 100%;
   gap: var(--padding-small);
   align-items: center;
 }
 
-.tag__change-info > .label--small {
+.tag_change-tag-count {
+  display: flex;
+  gap: var(--padding-small);
+}
+
+.tag__change-info > .label--small,
+.tag_change-tag-count > .label--small {
   display: flex;
   gap: 6px;
   align-items: center;
@@ -68,7 +77,7 @@
 }
 
 .tag__change-tags .tag-list {
-  padding: var(--padding-small) 0;
+  padding: var(--padding-tiny) 0;
 }
 
 .tag__change-tools {
@@ -88,4 +97,13 @@
 
 .tag__change--not-retained .tag__count {
   display: none;
+}
+
+.tag__change-block {
+  display: flex;
+  flex: 1 0 auto;
+  padding: var(--padding-small);
+  gap: var(--padding-small);
+  background: var(--background-color);
+  border: var(--border);
 }

@@ -44,13 +44,13 @@ defmodule PhilomenaWeb.Image.TagChangeController do
       details: &log_details/2,
       data: %{image: image, details: tag_change_details(tag_change)}
     )
-    |> redirect(to: ~p"/images/#{image}")
+    |> redirect(to: ~p"/images/#{image}/tag_changes")
   end
 
   defp log_details(_action, %{image: image, details: details}) do
     %{
       body: "Deleted tag change batch #{details} on image #{image.id} from history",
-      subject_path: ~p"/images/#{image}"
+      subject_path: ~p"/images/#{image}/tag_changes"
     }
   end
 

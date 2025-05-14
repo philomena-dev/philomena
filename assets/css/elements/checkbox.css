@@ -1,0 +1,46 @@
+input[type="checkbox"].fancy-checkbox {
+  appearance: none;
+}
+
+.fancy-checkbox {
+  display: inline-block;
+  align-self: center;
+  width: var(--checkbox-width);
+  height: var(--checkbox-height);
+  background: var(--danger-light-color);
+  border: var(--checkbox-border-width) solid var(--danger-color);
+  border-radius: var(--border-radius-checkbox);
+  transition:
+    background var(--transition-animation-duration) ease,
+    border-color var(--transition-animation-duration) ease;
+}
+
+.fancy-checkbox:after {
+  content: "";
+  font-family: var(--fa-style-family, "Font Awesome 6 Free");
+  font-weight: var(--fa-style, 900);
+  text-align: center;
+  line-height: calc(var(--checkbox-height) - var(--checkbox-border-width) * 2);
+  display: block;
+  position: relative;
+  background: var(--foreground-color);
+  width: calc(var(--checkbox-height) - var(--checkbox-border-width) * 2);
+  height: calc(var(--checkbox-height) - var(--checkbox-border-width) * 2);
+  border-radius: 100%;
+  left: 0;
+  transition: left var(--transition-animation-duration) ease;
+}
+
+.fancy-checkbox:checked {
+  background: var(--success-light-color);
+  border-color: var(--success-color);
+  transition:
+    background var(--transition-animation-duration) ease,
+    border-color var(--transition-animation-duration) ease;
+}
+
+.fancy-checkbox:checked:after {
+  content: "";
+  left: calc(var(--checkbox-width) - var(--checkbox-height));
+  transition: left var(--transition-animation-duration) ease;
+}

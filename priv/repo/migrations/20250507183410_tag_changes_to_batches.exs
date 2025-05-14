@@ -36,10 +36,9 @@ defmodule Philomena.Repo.Migrations.TagChangesToBatches do
     create index(:tag_change_tags, [:tag_id])
 
     # In production, this should be triggered manually.
+    # Wrap between BEGIN and COMMIT, for safety.
     if System.get_env("MIX_ENV") != "prod" do
       execute("""
-        BEGIN;
-
         WITH grouped AS (
           SELECT
             MIN(id) AS first_id,
@@ -92,8 +91,6 @@ defmodule Philomena.Repo.Migrations.TagChangesToBatches do
         SELECT
           (SELECT COUNT(*) FROM insert_tag_changes),
           (SELECT COUNT(*) FROM insert_tag_change_tags);
-
-        COMMIT;
       """)
     end
   end
