@@ -123,7 +123,6 @@ function update_search_syntax_tests {
     fi
 
     step mix test test/philomena/images/query_test.exs
-    step npx prettier --write test/philomena/images/search-syntax.json
   '
 
   ASSERT_VALUE_ACCEPT_DIFFS=y step docker compose run \
