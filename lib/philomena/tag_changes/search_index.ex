@@ -43,18 +43,27 @@ defmodule Philomena.TagChanges.SearchIndex do
 
   @impl true
   def as_json(tag_change) do
+    has_user = !!tag_change.user_id
+
+    anonymous =
+      !has_user or
+        (!!tag_change.image.user_id and
+           tag_change.image.user_id == tag_change.user_id and
+           tag_change.image.anonymous)
+
     {added_tags, removed_tags} = Enum.split_with(tag_change.tags, & &1.added)
 
     %{
       id: tag_change.id,
       image_id: tag_change.image_id,
       user:
-        if(!!tag_change.user and !tag_change.image.anonymous,
+        if(has_user and !anonymous,
           do: String.downcase(tag_change.user.name)
         ),
-      user_id: if(!!tag_change.user_id and !tag_change.image.anonymous, do: tag_change.user_id),
-      true_user: if(!!tag_change.user, do: String.downcase(tag_change.user.name)),
+      user_id: if(!anonymous, do: tag_change.user_id),
+      true_user: if(has_user, do: String.downcase(tag_change.user.name)),
       true_user_id: tag_change.user_id,
+      anonymous: anonymous,
       ip: to_string(tag_change.ip),
       fingerprint: tag_change.fingerprint,
       created_at: tag_change.created_at,
