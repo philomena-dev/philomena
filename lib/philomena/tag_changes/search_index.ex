@@ -21,9 +21,9 @@ defmodule Philomena.TagChanges.SearchIndex do
           id: %{type: "integer"},
           image_id: %{type: "keyword"},
           created_at: %{type: "date"},
-          tags: %{analyzer: "keyword"},
-          added_tags: %{analyzer: "keyword"},
-          removed_tags: %{analyzer: "keyword"},
+          tags: %{type: "keyword"},
+          added_tags: %{type: "keyword"},
+          removed_tags: %{type: "keyword"},
           tag_ids: %{type: "keyword"},
           added_tag_ids: %{type: "keyword"},
           removed_tag_ids: %{type: "keyword"},
@@ -92,7 +92,7 @@ defmodule Philomena.TagChanges.SearchIndex do
     new_name = String.downcase(new_name)
 
     %{
-      query: %{term: %{user: old_name}},
+      query: %{term: %{true_user: old_name}},
       replacements: [
         %{path: ["user"], old: old_name, new: new_name},
         %{path: ["true_user"], old: old_name, new: new_name}
