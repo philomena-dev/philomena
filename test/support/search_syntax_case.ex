@@ -71,6 +71,7 @@ defmodule Philomena.SearchSyntaxCase do
       )
 
     assert_value(actual == File.read!(test.snapshot))
+    :ok
   end
 
   @spec compile_input(search_syntax_test(), String.t()) :: [map()]
@@ -119,7 +120,7 @@ defmodule Philomena.SearchSyntaxCase do
     end
   end
 
-  @spec normalize_contexts([contexts_schema()], [map()]) :: [map()]
+  @spec normalize_contexts(contexts_schema(), [map()]) :: [map()]
   defp normalize_contexts(schema, contexts)
 
   defp normalize_contexts(schema, contexts) when map_size(schema) == 0 do
