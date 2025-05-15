@@ -174,7 +174,7 @@ defmodule Philomena.TagChanges do
 
     image_query =
       Image
-      |> select([i], struct(i, [:anonymous]))
+      |> select([i], struct(i, [:anonymous, :user_id]))
 
     [
       image: image_query,
@@ -200,7 +200,7 @@ defmodule Philomena.TagChanges do
   def perform_reindex(column, condition) do
     TagChange
     |> preload(^indexing_preloads())
-    |> where([g], field(g, ^column) in ^condition)
+    |> where([tc], field(tc, ^column) in ^condition)
     |> Search.reindex(TagChange)
   end
 
