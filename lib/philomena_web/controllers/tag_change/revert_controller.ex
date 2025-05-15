@@ -33,6 +33,13 @@ defmodule PhilomenaWeb.TagChange.RevertController do
     end
   end
 
+  # Handles the case where no tag changes were selected for submission at all.
+  def create(conn, _payload) do
+    conn
+    |> put_flash(:error, "No tag changes selected.")
+    |> redirect(external: conn.assigns.referrer)
+  end
+
   defp verify_authorized(conn, _params) do
     if Canada.Can.can?(conn.assigns.current_user, :revert, TagChange) do
       conn
