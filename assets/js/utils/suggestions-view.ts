@@ -1,7 +1,13 @@
 import { makeEl } from './dom.ts';
 import { MatchPart, TagSuggestion } from './suggestions-model.ts';
 
-export class TagSuggestionComponent {
+export interface SuggestionComponent {
+  value(): string;
+
+  render(): HTMLElement[];
+}
+
+export class TagSuggestionComponent implements SuggestionComponent {
   data: TagSuggestion;
 
   constructor(data: TagSuggestion) {
@@ -69,7 +75,7 @@ export class TagSuggestionComponent {
   }
 }
 
-export class HistorySuggestionComponent {
+export class HistorySuggestionComponent implements SuggestionComponent {
   /**
    * Full query string that was previously searched and retrieved from the history.
    */
@@ -108,11 +114,35 @@ export class HistorySuggestionComponent {
   }
 }
 
-export type Suggestion = TagSuggestionComponent | HistorySuggestionComponent;
+export class PropertySuggestionComponent implements SuggestionComponent {
+  content: string;
+
+  constructor(content: string) {
+    this.content = content;
+  }
+
+  value(): string {
+    return this.content;
+  }
+
+  render(): HTMLElement[] {
+    return [
+      makeEl('div', { className: 'autocomplete__item__content' }, [
+        makeEl('i', { className: 'fa-solid fa-circle-info' }),
+        makeEl('span', {
+          textContent: ` ${this.content}`,
+        }),
+      ]),
+    ];
+  }
+}
+
+export type Suggestion = TagSuggestionComponent | HistorySuggestionComponent | PropertySuggestionComponent;
 
 export interface Suggestions {
   history: HistorySuggestionComponent[];
   tags: TagSuggestionComponent[];
+  properties: PropertySuggestionComponent[];
 }
 
 export interface ItemSelectedEvent {
@@ -209,6 +239,14 @@ export class SuggestionsPopupComponent {
     }
 
     for (const suggestion of params.tags) {
+      this.appendSuggestion(suggestion);
+    }
+
+    if ((params.tags.length || params.history.length) && params.properties.length) {
+      this.container.appendChild(makeEl('hr', { className: 'autocomplete__separator' }));
+    }
+
+    for (const suggestion of params.properties) {
       this.appendSuggestion(suggestion);
     }
 

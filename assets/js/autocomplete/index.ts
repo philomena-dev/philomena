@@ -4,6 +4,7 @@ import { AutocompletableInput, TextInputElement } from './input';
 import {
   HistorySuggestionComponent,
   ItemSelectedEvent,
+  PropertySuggestionComponent,
   Suggestion,
   Suggestions,
   SuggestionsPopupComponent,
@@ -14,7 +15,8 @@ import { $$ } from '../utils/dom';
 import { AutocompleteClient, GetTagSuggestionsRequest } from './client';
 import { DebouncedCache } from '../utils/debounced-cache';
 import store from '../utils/store';
-import { normalizedKeyboardKey, keys } from '../utils/keyboard';
+import { keys, normalizedKeyboardKey } from '../utils/keyboard';
+import { matchProperties } from './properties';
 
 // This lint is dumb, especially in this case because this type alias depends on
 // the `Autocomplete` symbol, and methods on the `Autocomplete` class depend on
@@ -87,6 +89,7 @@ class Autocomplete {
       this.showSuggestions({
         history: history.listSuggestions(input),
         tags: [],
+        properties: [],
       });
       return;
     }
@@ -96,6 +99,7 @@ class Autocomplete {
     const suggestions: Suggestions = {
       history: historyConfig ? history.listSuggestions(input, historyConfig.maxSuggestionsWhenTyping) : [],
       tags: [],
+      properties: [],
     };
 
     // There are several scenarios where we don't try to fetch server-side suggestions,
@@ -124,6 +128,10 @@ class Autocomplete {
       .matchPrefix(activeTerm, input.maxSuggestions - suggestions.history.length)
       .map(suggestion => new TagSuggestionComponent(suggestion));
 
+    suggestions.properties = matchProperties(input, activeTerm).map(
+      suggestion => new PropertySuggestionComponent(suggestion),
+    );
+
     // Used for debugging server-side completions, to ensure local autocomplete
     // doesn't prevent sever-side completions from being shown. Use these console
     // commands to enable/disable server-side completions:
@@ -145,13 +153,13 @@ class Autocomplete {
       return;
     }
 
-    this.scheduleServerSideSuggestions(activeTerm, suggestions.history);
+    this.scheduleServerSideSuggestions(activeTerm, suggestions);
   }
 
   scheduleServerSideSuggestions(
     this: ActiveAutocomplete,
     term: string,
-    historySuggestions: HistorySuggestionComponent[],
+    localSuggestions: Suggestions,
   ) {
     const request: GetTagSuggestionsRequest = {
       term,
@@ -169,7 +177,7 @@ class Autocomplete {
       }
 
       // Truncate the suggestions to the leftover space shared with history suggestions.
-      const maxTags = this.input.maxSuggestions - historySuggestions.length;
+      const maxTags = this.input.maxSuggestions - localSuggestions.history.length;
 
       const tags = response.suggestions.slice(0, maxTags).map(suggestion => {
         // Convert the server-side suggestions into the UI components.
@@ -192,8 +200,9 @@ class Autocomplete {
       });
 
       this.showSuggestions({
-        history: historySuggestions,
+        history: localSuggestions.history,
         tags,
+        properties: localSuggestions.properties,
       });
     });
   }
