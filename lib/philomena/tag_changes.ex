@@ -186,7 +186,7 @@ defmodule Philomena.TagChanges do
   end
 
   @doc """
-  Reindexes tag cahnges based on a column condition.
+  Reindexes tag changes based on a column condition.
 
   Updates the search index for all tag changes matching the given column condition.
   Used for batch reindexing of tag changes.
