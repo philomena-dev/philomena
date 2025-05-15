@@ -37,6 +37,19 @@ defmodule Philomena.UsersFixtures do
     |> Repo.update!()
   end
 
+  @doc """
+  Fixture for a deactivated user.
+
+  If `deactivated_by_user` is `nil` the user will be deactivated by themselves.
+  """
+  def deactivated_user_fixture(deactivated_by_user \\ nil, attrs \\ %{}) do
+    user = user_fixture(attrs)
+
+    user
+    |> Users.User.deactivate_changeset(deactivated_by_user || user)
+    |> Repo.update!()
+  end
+
   def extract_user_token(fun) do
     {:ok, captured} = fun.(&"[TOKEN]#{&1}[TOKEN]")
     [_, token, _] = String.split(captured.text_body, "[TOKEN]")
