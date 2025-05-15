@@ -46,7 +46,9 @@ defmodule Philomena.TagChanges do
         }
       end)
 
-    Images.batch_update(reverts_per_image, attributes)
+    with {:ok, _} <- Images.batch_update(reverts_per_image, attributes) do
+      {:ok, tag_changes}
+    end
   end
 
   def full_revert(%{user_id: _user_id, attributes: _attributes} = params),

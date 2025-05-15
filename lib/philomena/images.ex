@@ -1146,8 +1146,6 @@ defmodule Philomena.Images do
         |> Enum.flat_map(&(&1.added_tag_ids ++ &1.removed_tag_ids))
         |> Tags.reindex_tags_by_ids()
 
-        IO.inspect(result, label: "Batch update result")
-
         result
 
       result ->
