@@ -24,8 +24,10 @@ defmodule Philomena.Comments.SearchIndex do
           ip: %{type: "ip"},
           fingerprint: %{type: "keyword"},
           image_id: %{type: "keyword"},
-          user_id: %{type: "keyword"},
+          author_id: %{type: "keyword"},
           author: %{type: "keyword"},
+          true_author_id: %{type: "keyword"},
+          true_author: %{type: "keyword"},
           image_tag_ids: %{type: "keyword"},
           anonymous: %{type: "boolean"},
           hidden_from_users: %{type: "boolean"},
@@ -49,8 +51,10 @@ defmodule Philomena.Comments.SearchIndex do
       ip: to_string(comment.ip),
       fingerprint: comment.fingerprint,
       image_id: comment.image_id,
-      user_id: comment.user_id,
-      author: if(!!comment.user, do: String.downcase(comment.user.name)),
+      author_id: if(!comment.anonymous, do: comment.user_id),
+      author: if(!!comment.user and !comment.anonymous, do: String.downcase(comment.user.name)),
+      true_author_id: comment.user_id,
+      true_author: if(!!comment.user, do: String.downcase(comment.user.name)),
       image_tag_ids: comment.image.tags |> Enum.map(& &1.id),
       anonymous: comment.anonymous,
       hidden_from_users: comment.image.hidden_from_users || comment.hidden_from_users,
@@ -72,12 +76,14 @@ defmodule Philomena.Comments.SearchIndex do
         bool: %{
           should: [
             %{term: %{author: old_name}},
+            %{term: %{true_author: old_name}},
             %{term: %{deleted_by_user: old_name}}
           ]
         }
       },
       replacements: [
         %{path: ["author"], old: old_name, new: new_name},
+        %{path: ["true_author"], old: old_name, new: new_name},
         %{path: ["deleted_by_user"], old: old_name, new: new_name}
       ],
       set_replacements: []

@@ -23,12 +23,14 @@ defmodule Philomena.Posts.SearchIndex do
           ip: %{type: "ip"},
           fingerprint: %{type: "keyword"},
           subject: %{type: "text", analyzer: "snowball"},
+          author_id: %{type: "keyword"},
           author: %{type: "keyword"},
+          true_author_id: %{type: "keyword"},
+          true_author: %{type: "keyword"},
           topic_position: %{type: "integer"},
           forum: %{type: "keyword"},
           forum_id: %{type: "keyword"},
           topic_id: %{type: "keyword"},
-          user_id: %{type: "keyword"},
           anonymous: %{type: "boolean"},
           updated_at: %{type: "date"},
           created_at: %{type: "date"},
@@ -50,14 +52,16 @@ defmodule Philomena.Posts.SearchIndex do
       id: post.id,
       topic_id: post.topic_id,
       body: post.body,
-      author: if(!!post.user, do: String.downcase(post.user.name)),
+      author_id: if(!post.anonymous, do: post.user_id),
+      author: if(!!post.user and !post.anonymous, do: String.downcase(post.user.name)),
+      true_author_id: post.user_id,
+      true_author: if(!!post.user, do: String.downcase(post.user.name)),
       subject: post.topic.title,
       ip: to_string(post.ip),
       fingerprint: post.fingerprint,
       topic_position: post.topic_position,
       forum: post.topic.forum.short_name,
       forum_id: post.topic.forum_id,
-      user_id: post.user_id,
       anonymous: post.anonymous,
       created_at: post.created_at,
       updated_at: post.updated_at,
@@ -80,12 +84,14 @@ defmodule Philomena.Posts.SearchIndex do
         bool: %{
           should: [
             %{term: %{author: old_name}},
+            %{term: %{true_author: old_name}},
             %{term: %{deleted_by_user: old_name}}
           ]
         }
       },
       replacements: [
         %{path: ["author"], old: old_name, new: new_name},
+        %{path: ["true_author"], old: old_name, new: new_name},
         %{path: ["deleted_by_user"], old: old_name, new: new_name}
       ],
       set_replacements: []
