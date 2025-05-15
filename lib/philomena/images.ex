@@ -1138,7 +1138,7 @@ defmodule Philomena.Images do
       )
     end)
     |> case do
-      {:ok, {total_tags_affected, _}} ->
+      {:ok, _} = result ->
         reindex_images(image_ids)
         Comments.reindex_comments_on_images(image_ids)
 
@@ -1146,7 +1146,7 @@ defmodule Philomena.Images do
         |> Enum.flat_map(&(&1.added_tag_ids ++ &1.removed_tag_ids))
         |> Tags.reindex_tags_by_ids()
 
-        {:ok, total_tags_affected}
+        result
 
       result ->
         result
