@@ -107,6 +107,38 @@ defmodule Philomena.TagChanges do
   end
 
   @doc """
+  Queues all listed tag change IDs for search index updates.
+  Returns the list unchanged, for use in a pipeline.
+
+  ## Examples
+
+      iex> reindex_tag_changes([1, 2, 3])
+      [1, 2, 3]
+
+  """
+  def reindex_tag_changes(tag_change_ids) do
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["TagChanges", "id", tag_change_ids])
+
+    tag_change_ids
+  end
+
+  @doc """
+  Queues all tag changes associated with a list of image IDs for search index updates.
+  Returns the list unchanged, for use in a pipeline.
+
+  ## Examples
+
+      iex> reindex_tag_changes_on_images([1, 2, 3])
+      [1, 2, 3]
+
+  """
+  def reindex_tag_changes_on_images(image_ids) do
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["TagChanges", "image_id", image_ids])
+
+    image_ids
+  end
+
+  @doc """
   Removes a tag change from the search index.
 
   Deletes the tag change's document from the search index.
