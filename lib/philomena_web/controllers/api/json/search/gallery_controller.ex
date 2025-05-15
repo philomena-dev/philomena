@@ -1,6 +1,7 @@
 defmodule PhilomenaWeb.Api.Json.Search.GalleryController do
   use PhilomenaWeb, :controller
 
+  alias PhilomenaQuery.Cursor
   alias PhilomenaQuery.Search
   alias Philomena.Galleries.Gallery
   alias Philomena.Galleries.Query
@@ -9,20 +10,24 @@ defmodule PhilomenaWeb.Api.Json.Search.GalleryController do
   def index(conn, params) do
     case Query.compile(params["q"]) do
       {:ok, query} ->
-        galleries =
+        {galleries, cursors} =
           Gallery
           |> Search.search_definition(
             %{
               query: query,
-              sort: %{created_at: :desc}
+              sort: [%{created_at: :desc}, %{id: :desc}]
             },
             conn.assigns.pagination
           )
-          |> Search.search_records(preload(Gallery, [:creator]))
+          |> Cursor.search_records(preload(Gallery, [:creator]), params["search_after"])
 
         conn
         |> put_view(PhilomenaWeb.Api.Json.GalleryView)
-        |> render("index.json", galleries: galleries, total: galleries.total_entries)
+        |> render("index.json",
+          cursors: cursors,
+          galleries: galleries,
+          total: galleries.total_entries
+        )
 
       {:error, msg} ->
         conn
