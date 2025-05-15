@@ -21,30 +21,20 @@ defmodule Philomena.TagChanges do
           inner_join: i in assoc(tc, :image),
           where: tc.id in ^ids and i.hidden_from_users == false,
           order_by: [desc: :created_at],
-          preload: [tags: [:tag, :tag_change]]
+          preload: [tags: [:tag]]
       )
 
-    case mass_revert_tags(Enum.flat_map(tag_changes, & &1.tags), attributes) do
-      {:ok, _result} ->
-        {:ok, tag_changes}
-
-      error ->
-        error
-    end
-  end
-
-  # Accepts a list of TagChanges.Tag objects with tag_change and tag relations preloaded.
-  def mass_revert_tags(tags, attributes) do
     # Sort tags by tag change creation date, then uniq them by tag ID
     # to keep the first, aka the latest, record. Then prepare the struct
     # for the batch updater.
     changes_per_image =
-      tags
-      |> Enum.group_by(& &1.tag_change.image_id)
-      |> Enum.map(fn {image_id, instances} ->
+      tag_changes
+      |> Enum.group_by(& &1.image_id)
+      |> Enum.map(fn {image_id, tag_changes} ->
         changed_tags =
-          instances
-          |> Enum.sort_by(& &1.tag_change.created_at, :desc)
+          tag_changes
+          |> Enum.sort_by(& &1.created_at, :desc)
+          |> Enum.flat_map(& &1.tags)
           |> Enum.uniq_by(& &1.tag_id)
 
         {added_tags, removed_tags} = Enum.split_with(changed_tags, & &1.added)
