@@ -120,6 +120,22 @@ defmodule Philomena.SearchSyntaxCase do
     end
   end
 
+  # Reduces all the combinations of contexts that produce the same output. For
+  # example the sequence like this:
+  # ```ex
+  # [%{ a: "a1", b: "bar1" }, %{ a: "a2", b: "bar2" }]
+  # ```
+  # will be reduced to:
+  # ```ex
+  # [%{ a: ["a1", "a2"] }]
+  # ```
+  # only if `bar1` and `bar2` cover the set of all possible values for `b`, and
+  # `a1` and `a2` don't cover the set of all possible values for `a`.
+  #
+  # In other words the value of `b` doesn't influence the output at all, and
+  # thus can be omitted in the normalized contexts list, and the values of `a`
+  # are just collected into a list in a single map instead of being several maps
+  # with a single value in each of them.
   @spec normalize_contexts(contexts_schema(), [map()]) :: [map()]
   defp normalize_contexts(schema, contexts)
 
