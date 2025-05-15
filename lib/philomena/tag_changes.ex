@@ -46,7 +46,7 @@ defmodule Philomena.TagChanges do
         }
       end)
 
-    with {:ok, total_tags_affected} <- Images.batch_update(reverts_per_image, attributes) do
+    with {:ok, {total_tags_affected, _}} <- Images.batch_update(reverts_per_image, attributes) do
       {:ok, tag_changes, total_tags_affected}
     end
   end

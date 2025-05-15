@@ -21,8 +21,8 @@ defmodule PhilomenaWeb.TagChange.RevertController do
         conn
         |> put_flash(
           :info,
-          "Successfully reverted #{length(tag_changes)} tag changes: " <>
-            "#{total_tags_affected} tags were actually updated."
+          "Successfully reverted #{length(tag_changes)} tag changes with " <>
+            "#{total_tags_affected} tags actually updated."
         )
         |> moderation_log(
           details: &log_details/2,
