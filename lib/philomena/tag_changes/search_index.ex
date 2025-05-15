@@ -58,6 +58,9 @@ defmodule Philomena.TagChanges.SearchIndex do
       ip: to_string(tag_change.ip),
       fingerprint: tag_change.fingerprint,
       created_at: tag_change.created_at,
+      tags: tags_to_name_list(tag_change.tags),
+      added_tags: tags_to_name_list(added_tags),
+      removed_tags: tags_to_name_list(removed_tags),
       tag_ids: tags_to_id_list(tag_change.tags),
       added_tag_ids: tags_to_id_list(added_tags),
       removed_tag_ids: tags_to_id_list(removed_tags),
@@ -68,6 +71,12 @@ defmodule Philomena.TagChanges.SearchIndex do
   end
 
   defp tags_to_id_list(tags), do: Enum.map(tags, & &1.tag_id)
+
+  defp tags_to_name_list(tags) do
+    tags
+    |> Enum.flat_map(&([&1.tag] ++ &1.tag.aliases))
+    |> Enum.map(& &1.name)
+  end
 
   def user_name_update_by_query(old_name, new_name) do
     old_name = String.downcase(old_name)
