@@ -18,6 +18,8 @@ defmodule Philomena.SearchIndexer do
   alias Philomena.Tags.Tag
   alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
+  alias Philomena.Users
+  alias Philomena.Users.User
 
   alias Philomena.Maintenance
   alias Philomena.Polymorphic
@@ -32,7 +34,8 @@ defmodule Philomena.SearchIndexer do
     Post,
     Report,
     Tag,
-    TagChange
+    TagChange,
+    User
   ]
 
   @contexts %{
@@ -43,7 +46,8 @@ defmodule Philomena.SearchIndexer do
     Post => Posts,
     Report => Reports,
     Tag => Tags,
-    TagChange => TagChanges
+    TagChange => TagChanges,
+    User => Users
   }
 
   @batch_sizes %{
@@ -54,7 +58,8 @@ defmodule Philomena.SearchIndexer do
     Post => 2048,
     Report => 128,
     Tag => 2048,
-    TagChange => 2048
+    TagChange => 2048,
+    User => 2048
   }
 
   @doc """
