@@ -11,7 +11,7 @@ defmodule Philomena.TagChanges do
   alias Philomena.TagChangeRevertWorker
   alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
-  alias Philomena.TagChanges.SearchIndex, as: TagChangesIndex
+  alias Philomena.TagChanges.SearchIndex, as: TagChangeIndex
   alias Philomena.IndexWorker
   alias Philomena.Images
   alias Philomena.Images.Image
@@ -84,7 +84,7 @@ defmodule Philomena.TagChanges do
 
   """
   def user_name_reindex(old_name, new_name) do
-    data = TagChangesIndex.user_name_update_by_query(old_name, new_name)
+    data = TagChangeIndex.user_name_update_by_query(old_name, new_name)
 
     Search.update_by_query(TagChange, data.query, data.set_replacements, data.replacements)
   end
