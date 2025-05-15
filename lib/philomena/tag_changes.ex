@@ -21,33 +21,32 @@ defmodule Philomena.TagChanges do
           inner_join: i in assoc(tc, :image),
           where: tc.id in ^ids and i.hidden_from_users == false,
           order_by: [desc: :created_at],
-          preload: [tags: [:tag]]
+          preload: [:tags]
       )
 
-    # Sort tags by tag change creation date, then uniq them by tag ID
-    # to keep the first, aka the latest, record. Then prepare the struct
-    # for the batch updater.
-    changes_per_image =
+    # Calculate the revert operations for each image.
+    reverts_per_image =
       tag_changes
       |> Enum.group_by(& &1.image_id)
       |> Enum.map(fn {image_id, tag_changes} ->
-        changed_tags =
+        # The tag changes are already sorted by created_at in descending order
+        # so if we run a `uniq_by` for their tags, we'll leave only the most
+        # recent change per each tag.
+        {added_tags, removed_tags} =
           tag_changes
-          |> Enum.sort_by(& &1.created_at, :desc)
           |> Enum.flat_map(& &1.tags)
           |> Enum.uniq_by(& &1.tag_id)
-
-        {added_tags, removed_tags} = Enum.split_with(changed_tags, & &1.added)
+          |> Enum.split_with(& &1.added)
 
         # We send removed tags to be added, and added to be removed. That's how reverting works!
         %{
           image_id: image_id,
-          added_tags: Enum.map(removed_tags, & &1.tag),
-          removed_tags: Enum.map(added_tags, & &1.tag)
+          added_tag_ids: Enum.map(removed_tags, & &1.tag_id),
+          removed_tag_ids: Enum.map(added_tags, & &1.tag_id)
         }
       end)
 
-    Images.batch_update(changes_per_image, attributes)
+    Images.batch_update(reverts_per_image, attributes)
   end
 
   def full_revert(%{user_id: _user_id, attributes: _attributes} = params),
