@@ -1,0 +1,259 @@
+{
+  "wildcard": [
+    {
+      "philomena": "*",
+      "opensearch": {
+        "match_all": {}
+      }
+    },
+    {
+      "philomena": "artist:*",
+      "opensearch": {
+        "wildcard": {
+          "namespaced_tags.name": "artist:*"
+        }
+      }
+    },
+    {
+      "philomena": "artist:artist1",
+      "opensearch": {
+        "term": {
+          "namespaced_tags.name": "artist:artist1"
+        }
+      }
+    }
+  ],
+  "operators": [
+    {
+      "philomena": "tag1 OR tag2",
+      "opensearch": {
+        "bool": {
+          "should": [
+            {
+              "term": {
+                "namespaced_tags.name": "tag1"
+              }
+            },
+            {
+              "term": {
+                "namespaced_tags.name": "tag2"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "philomena": "tag1 AND tag2",
+      "opensearch": {
+        "bool": {
+          "must": [
+            {
+              "term": {
+                "namespaced_tags.name": "tag1"
+              }
+            },
+            {
+              "term": {
+                "namespaced_tags.name": "tag2"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "philomena": "tag1 AND (tag2 OR tag3)",
+      "opensearch": {
+        "bool": {
+          "must": [
+            {
+              "term": {
+                "namespaced_tags.name": "tag1"
+              }
+            },
+            {
+              "bool": {
+                "should": [
+                  {
+                    "term": {
+                      "namespaced_tags.name": "tag2"
+                    }
+                  },
+                  {
+                    "term": {
+                      "namespaced_tags.name": "tag3"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "authenticated_user": [
+    {
+      "contexts": [
+        {
+          "user": ["admin", "assistant", "moderator", "user"]
+        }
+      ],
+      "philomena": "my:faves",
+      "opensearch": {
+        "term": {
+          "favourited_by_user_ids": 1
+        }
+      }
+    },
+    {
+      "contexts": [
+        {
+          "user": ["anon"]
+        }
+      ],
+      "philomena": "my:faves",
+      "opensearch": {
+        "term": {
+          "namespaced_tags.name": "my:faves"
+        }
+      }
+    },
+    {
+      "contexts": [
+        {
+          "user": ["admin", "assistant", "moderator", "user"],
+          "watch": [false]
+        }
+      ],
+      "philomena": "my:watched",
+      "opensearch": {
+        "bool": {
+          "should": [
+            {
+              "terms": {
+                "tag_ids": []
+              }
+            },
+            {
+              "match_none": {}
+            }
+          ],
+          "must_not": [
+            {
+              "match_none": {}
+            }
+          ]
+        }
+      }
+    },
+    {
+      "contexts": [
+        {
+          "user": ["anon"]
+        }
+      ],
+      "philomena": "my:watched",
+      "opensearch": {
+        "term": {
+          "namespaced_tags.name": "my:watched"
+        }
+      }
+    },
+    {
+      "contexts": [
+        {
+          "user": ["admin", "assistant", "moderator", "user"],
+          "watch": [true]
+        }
+      ],
+      "philomena": "my:watched",
+      "opensearch": "Error: Recursive watchlists are not allowed."
+    }
+  ],
+  "system_filter": [
+    {
+      "contexts": [
+        {
+          "filter": [false]
+        }
+      ],
+      "philomena": "filter_id:100",
+      "opensearch": {
+        "bool": {
+          "must_not": [
+            {
+              "terms": {
+                "tag_ids": [12, 13]
+              }
+            },
+            {
+              "bool": {
+                "must": [
+                  {
+                    "term": {
+                      "namespaced_tags.name": "truly"
+                    }
+                  },
+                  {
+                    "term": {
+                      "namespaced_tags.name": "complex"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "contexts": [
+        {
+          "filter": [true]
+        }
+      ],
+      "philomena": "filter_id:100",
+      "opensearch": "Error: Filter queries inside filters are not allowed."
+    }
+  ],
+  "invalid_filters": [
+    {
+      "contexts": [
+        {
+          "filter": [true]
+        }
+      ],
+      "philomena": "filter_id:invalid_id",
+      "opensearch": "Error: Filter queries inside filters are not allowed."
+    },
+    {
+      "contexts": [
+        {
+          "filter": [false]
+        }
+      ],
+      "philomena": "filter_id:invalid_id",
+      "opensearch": "Error: Invalid filter `invalid_id`."
+    },
+    {
+      "contexts": [
+        {
+          "filter": [true]
+        }
+      ],
+      "philomena": "filter_id:9999",
+      "opensearch": "Error: Filter queries inside filters are not allowed."
+    },
+    {
+      "contexts": [
+        {
+          "filter": [false]
+        }
+      ],
+      "philomena": "filter_id:9999",
+      "opensearch": "Error: Invalid filter `9999`."
+    }
+  ]
+}
