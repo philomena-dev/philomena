@@ -67,7 +67,7 @@
           i.fas.fa-edit>
           ' Edit
         = if @tag_change_count > 0 do
-          a.button.button--link.button--inline href=~p"/images/#{@image}/tag_changes" title="Tag history"
+          a.button.button--link.button--inline href=~p"/tag_changes?#{[q: "image_id:#{@image.id}", thing: "image", value: @image.id]}" title="Tag history"
             i.fa.fa-history>
             span.hide-mobile> History
             | (
