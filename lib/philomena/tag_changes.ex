@@ -15,15 +15,22 @@ defmodule Philomena.TagChanges do
 
   # Accepts a list of TagChanges.TagChange IDs.
   def mass_revert(ids, attributes) do
-    tag_changes =
-      Repo.all(
-        from tc in TagChange,
-          inner_join: i in assoc(tc, :image),
-          where: tc.id in ^ids and i.hidden_from_users == false,
-          order_by: [desc: :created_at],
-          preload: [:tags]
-      )
+    Repo.all(
+      from tc in TagChange,
+        inner_join: i in assoc(tc, :image),
+        where: tc.id in ^ids and i.hidden_from_users == false,
+        order_by: [desc: :created_at],
+        preload: [:tags]
+    )
+    |> mass_revert_tags(attributes)
+  end
 
+  # Accepts a list of `TagChange` structs with the `tags` pre-filled. If you
+  # don't want to revert all tags from a tag change, then filter out some tags
+  # from the tag changes `tags` fields.
+  @spec mass_revert_tags([TagChange.t()], map()) ::
+          {:ok, [TagChange.t()], integer()} | {:error, any()}
+  def mass_revert_tags(tag_changes, attributes) do
     # Calculate the revert operations for each image.
     reverts_per_image =
       tag_changes
