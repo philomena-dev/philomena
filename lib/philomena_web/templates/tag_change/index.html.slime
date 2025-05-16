@@ -1,5 +1,8 @@
+- route = fn p -> ~p"/tag_changes?#{p}" end
+- pagination = render PhilomenaWeb.PaginationView, "_pagination.html", page: @tag_changes, route: route, conn: @conn
+
 .block__header
-  .page__pagination = @pagination
+  .page__pagination = pagination
 
 = if reverts_tag_changes?(@conn) do
   .block__header.block__header--light.block__header--sub
@@ -69,7 +72,7 @@
 
               = if reverts_tag_changes?(@conn) do
                 .flex.flex__grow
-                a.button.button--state-danger href=~p"/images/#{tag_change.image}/tag_changes/#{tag_change}" data-method="delete" data-confirm="Are you really, really sure?"
+                a.button.button--state-danger href=~p"/tag_changes/#{tag_change}" data-method="delete" data-confirm="Are you really, really sure?"
                   i.fa.fa-trash>
                   span.hide-mobile Delete from history
                   span.hide-desktop Delete
@@ -80,7 +83,7 @@
   p * Crossed out tags were reverted and thus are not retained
 
   .block__header.block__header--light
-    .page__pagination = @pagination
+    .page__pagination = pagination
 
   = if reverts_tag_changes?(@conn) do
     = submit "Revert selected", class: "button", data: [confirm: "Are you really, really sure?"]

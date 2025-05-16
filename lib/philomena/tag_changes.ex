@@ -5,13 +5,18 @@ defmodule Philomena.TagChanges do
 
   import Ecto.Query, warn: false
   alias Philomena.Repo
+  alias Ecto.Multi
 
+  alias PhilomenaQuery.Search
   alias Philomena.TagChangeRevertWorker
   alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
+  alias Philomena.TagChanges.SearchIndex, as: TagChangeIndex
+  alias Philomena.IndexWorker
   alias Philomena.Images
   alias Philomena.Images.Image
   alias Philomena.Tags.Tag
+  alias Philomena.Users.User
 
   # Accepts a list of TagChanges.TagChange IDs.
   def mass_revert(ids, attributes) do
@@ -69,6 +74,136 @@ defmodule Philomena.TagChanges do
   def full_revert(%{fingerprint: _fingerprint, attributes: _attributes} = params),
     do: Exq.enqueue(Exq, "indexing", TagChangeRevertWorker, [params])
 
+  @doc """
+  Updates tag change search indices when a user's name changes.
+
+  ## Examples
+
+      iex> user_name_reindex("old_username", "new_username")
+      :ok
+
+  """
+  def user_name_reindex(old_name, new_name) do
+    data = TagChangeIndex.user_name_update_by_query(old_name, new_name)
+
+    Search.update_by_query(TagChange, data.query, data.set_replacements, data.replacements)
+  end
+
+  @doc """
+  Queues a tag change for reindexing.
+
+  Adds the tag change to the indexing queue to update its search index.
+
+  ## Examples
+
+      iex> reindex_tag_change(tag_change)
+      %TagChange{}
+
+  """
+  def reindex_tag_change(%TagChange{} = tag_change) do
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["TagChanges", "id", [tag_change.id]])
+
+    tag_change
+  end
+
+  @doc """
+  Queues all listed tag change IDs for search index updates.
+  Returns the list unchanged, for use in a pipeline.
+
+  ## Examples
+
+      iex> reindex_tag_changes([1, 2, 3])
+      [1, 2, 3]
+
+  """
+  def reindex_tag_changes(tag_change_ids) do
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["TagChanges", "id", tag_change_ids])
+
+    tag_change_ids
+  end
+
+  @doc """
+  Queues all tag changes associated with a list of image IDs for search index updates.
+  Returns the list unchanged, for use in a pipeline.
+
+  ## Examples
+
+      iex> reindex_tag_changes_on_images([1, 2, 3])
+      [1, 2, 3]
+
+  """
+  def reindex_tag_changes_on_images(image_ids) do
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["TagChanges", "image_id", image_ids])
+
+    image_ids
+  end
+
+  @doc """
+  Removes a tag change from the search index.
+
+  Deletes the tag change's document from the search index.
+
+  ## Examples
+
+      iex> unindex_tag_change(tag_change)
+      %TagChange{}
+
+  """
+  def unindex_tag_change(%TagChange{} = tag_change) do
+    Search.delete_document(tag_change.id, TagChange)
+
+    tag_change
+  end
+
+  @doc """
+  Returns a list of associations to preload when indexing tag changes.
+
+  ## Examples
+
+      iex> indexing_preloads()
+      [:image, :tags, :user]
+
+  """
+  def indexing_preloads do
+    alias_tags_query = select(Tag, [t], map(t, [:aliased_tag_id, :name]))
+
+    base_tags_query =
+      Tag
+      |> select([t], [:category, :id, :name])
+      |> preload(aliases: ^alias_tags_query)
+
+    image_query =
+      Image
+      |> select([i], struct(i, [:anonymous, :user_id]))
+
+    [
+      image: image_query,
+      tags: [
+        tag: base_tags_query
+      ],
+      user: select(User, [u], map(u, [:id, :name]))
+    ]
+  end
+
+  @doc """
+  Reindexes tag changes based on a column condition.
+
+  Updates the search index for all tag changes matching the given column condition.
+  Used for batch reindexing of tag changes.
+
+  ## Examples
+
+      iex> perform_reindex(:id, [1, 2, 3])
+      {:ok, [%TagChange{}, ...]}
+
+  """
+  def perform_reindex(column, condition) do
+    TagChange
+    |> preload(^indexing_preloads())
+    |> where([tc], field(tc, ^column) in ^condition)
+    |> Search.reindex(TagChange)
+  end
+
   defp tags_to_tag_change(_, nil, _), do: []
 
   defp tags_to_tag_change(tag_change, tags, added) do
@@ -104,6 +239,8 @@ defmodule Philomena.TagChanges do
     {removed_count, nil} =
       Repo.insert_all(TagChanges.Tag, tags_to_tag_change(tc, removed_tags, false))
 
+    reindex_tag_change(tc)
+
     {:ok, {added_count, removed_count}}
   end
 
@@ -120,7 +257,18 @@ defmodule Philomena.TagChanges do
 
   """
   def delete_tag_change(%TagChange{} = tag_change) do
-    Repo.delete(tag_change)
+    Multi.new()
+    |> Multi.delete(:tag_change, tag_change)
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{tag_change: tag_change}} ->
+        unindex_tag_change(tag_change)
+
+        {:ok, tag_change}
+
+      error ->
+        error
+    end
   end
 
   def count_tag_changes(field_name, value) do
