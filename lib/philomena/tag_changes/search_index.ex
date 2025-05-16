@@ -35,7 +35,8 @@ defmodule Philomena.TagChanges.SearchIndex do
           user: %{type: "keyword"},
           true_user: %{type: "keyword"},
           user_id: %{type: "keyword"},
-          true_user_id: %{type: "keyword"}
+          true_user_id: %{type: "keyword"},
+          anonymous: %{type: "boolean"}
         }
       }
     }
