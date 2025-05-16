@@ -17,9 +17,13 @@ defmodule PhilomenaWeb.TagChange.RevertController do
     }
 
     case TagChanges.mass_revert(ids, attributes) do
-      {:ok, tag_changes} ->
+      {:ok, tag_changes, total_tags_affected} ->
         conn
-        |> put_flash(:info, "Successfully reverted #{length(tag_changes)} tag changes.")
+        |> put_flash(
+          :info,
+          "Successfully reverted #{length(tag_changes)} tag changes with " <>
+            "#{total_tags_affected} tags actually updated."
+        )
         |> moderation_log(
           details: &log_details/2,
           data: %{user: conn.assigns.current_user, count: length(tag_changes)}
@@ -31,6 +35,13 @@ defmodule PhilomenaWeb.TagChange.RevertController do
         |> put_flash(:error, "Couldn't revert those tag changes!")
         |> redirect(external: conn.assigns.referrer)
     end
+  end
+
+  # Handles the case where no tag changes were selected for submission at all.
+  def create(conn, _payload) do
+    conn
+    |> put_flash(:error, "No tag changes selected.")
+    |> redirect(external: conn.assigns.referrer)
   end
 
   defp verify_authorized(conn, _params) do

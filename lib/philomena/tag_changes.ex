@@ -15,49 +15,47 @@ defmodule Philomena.TagChanges do
 
   # Accepts a list of TagChanges.TagChange IDs.
   def mass_revert(ids, attributes) do
-    tag_changes =
-      Repo.all(
-        from tc in TagChange,
-          inner_join: i in assoc(tc, :image),
-          where: tc.id in ^ids and i.hidden_from_users == false,
-          order_by: [desc: :created_at],
-          preload: [tags: [:tag, :tag_change]]
-      )
-
-    case mass_revert_tags(Enum.flat_map(tag_changes, & &1.tags), attributes) do
-      {:ok, _result} ->
-        {:ok, tag_changes}
-
-      error ->
-        error
-    end
+    Repo.all(
+      from tc in TagChange,
+        inner_join: i in assoc(tc, :image),
+        where: tc.id in ^ids and i.hidden_from_users == false,
+        order_by: [desc: :created_at],
+        preload: [:tags]
+    )
+    |> mass_revert_tags(attributes)
   end
 
-  # Accepts a list of TagChanges.Tag objects with tag_change and tag relations preloaded.
-  def mass_revert_tags(tags, attributes) do
-    # Sort tags by tag change creation date, then uniq them by tag ID
-    # to keep the first, aka the latest, record. Then prepare the struct
-    # for the batch updater.
-    changes_per_image =
-      tags
-      |> Enum.group_by(& &1.tag_change.image_id)
-      |> Enum.map(fn {image_id, instances} ->
-        changed_tags =
-          instances
-          |> Enum.sort_by(& &1.tag_change.created_at, :desc)
+  # Accepts a list of `TagChange` structs with the `tags` pre-filled. If you
+  # don't want to revert all tags from a tag change, then filter out some tags
+  # from the tag changes `tags` fields.
+  @spec mass_revert_tags([TagChange.t()], map()) ::
+          {:ok, [TagChange.t()], integer()} | {:error, any()}
+  def mass_revert_tags(tag_changes, attributes) do
+    # Calculate the revert operations for each image.
+    reverts_per_image =
+      tag_changes
+      |> Enum.group_by(& &1.image_id)
+      |> Enum.map(fn {image_id, tag_changes} ->
+        # The tag changes are already sorted by created_at in descending order
+        # so if we run a `uniq_by` for their tags, we'll leave only the most
+        # recent change per each tag.
+        {added_tags, removed_tags} =
+          tag_changes
+          |> Enum.flat_map(& &1.tags)
           |> Enum.uniq_by(& &1.tag_id)
-
-        {added_tags, removed_tags} = Enum.split_with(changed_tags, & &1.added)
+          |> Enum.split_with(& &1.added)
 
         # We send removed tags to be added, and added to be removed. That's how reverting works!
         %{
           image_id: image_id,
-          added_tags: Enum.map(removed_tags, & &1.tag),
-          removed_tags: Enum.map(added_tags, & &1.tag)
+          added_tag_ids: Enum.map(removed_tags, & &1.tag_id),
+          removed_tag_ids: Enum.map(added_tags, & &1.tag_id)
         }
       end)
 
-    Images.batch_update(changes_per_image, attributes)
+    with {:ok, {total_tags_affected, _}} <- Images.batch_update(reverts_per_image, attributes) do
+      {:ok, tag_changes, total_tags_affected}
+    end
   end
 
   def full_revert(%{user_id: _user_id, attributes: _attributes} = params),
