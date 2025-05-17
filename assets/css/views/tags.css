@@ -81,6 +81,10 @@
   color: var(--autocomplete-history-color);
 }
 
+.autocomplete__item__property {
+  color: var(--autocomplete-tag-color);
+}
+
 .autocomplete__item__history__icon {
   /*
     Makes the history icon aligned in width with the autocomplete__item__tag's icon.
@@ -94,7 +98,8 @@
   color: var(--autocomplete-history-match-color);
 }
 
-.autocomplete__item__tag__match {
+.autocomplete__item__tag__match,
+.autocomplete__item__property_match {
   color: var(--autocomplete-tag-match-color);
 }
 

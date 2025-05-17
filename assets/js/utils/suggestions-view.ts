@@ -2,12 +2,15 @@ import { makeEl } from './dom.ts';
 import { MatchPart, TagSuggestion } from './suggestions-model.ts';
 
 export interface SuggestionComponent {
+  readonly type: string;
+
   value(): string;
 
   render(): HTMLElement[];
 }
 
 export class TagSuggestionComponent implements SuggestionComponent {
+  readonly type = "tag";
   data: TagSuggestion;
 
   constructor(data: TagSuggestion) {
@@ -76,6 +79,8 @@ export class TagSuggestionComponent implements SuggestionComponent {
 }
 
 export class HistorySuggestionComponent implements SuggestionComponent {
+  readonly type = 'history';
+
   /**
    * Full query string that was previously searched and retrieved from the history.
    */
@@ -115,6 +120,7 @@ export class HistorySuggestionComponent implements SuggestionComponent {
 }
 
 export class PropertySuggestionComponent implements SuggestionComponent {
+  readonly type = 'property';
   content: string;
 
   constructor(content: string) {
@@ -130,6 +136,7 @@ export class PropertySuggestionComponent implements SuggestionComponent {
       makeEl('div', { className: 'autocomplete__item__content' }, [
         makeEl('i', { className: 'fa-solid fa-circle-info' }),
         makeEl('span', {
+          className: 'autocomplete__item__property__match',
           textContent: ` ${this.content}`,
         }),
       ]),
@@ -254,7 +261,7 @@ export class SuggestionsPopupComponent {
   }
 
   appendSuggestion(suggestion: Suggestion) {
-    const type = suggestion instanceof TagSuggestionComponent ? 'tag' : 'history';
+    const type = suggestion.type;
 
     const element = makeEl(
       'div',
@@ -358,7 +365,7 @@ export class SuggestionsPopupComponent {
    * Returns the item's prototype that can be viewed as the item's type identifier.
    */
   private itemType(index: number) {
-    return this.items[index].suggestion instanceof TagSuggestionComponent ? 'tag' : 'history';
+    return this.items[index].suggestion.type;
   }
 
   showForElement(targetElement: HTMLElement) {
