@@ -201,7 +201,7 @@ defmodule Philomena.TagChanges do
       query
       |> preload([:user, image: [:user, :sources, tags: :aliases], tags: [:tag]])
       |> group_by([tc], tc.id)
-      |> order_by(desc: :created_at)
+      |> order_by(desc: :created_at, desc: :id)
 
     {Repo.paginate(query, pagination), item_count}
   end
