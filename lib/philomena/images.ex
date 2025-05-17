@@ -37,6 +37,7 @@ defmodule Philomena.Images do
   alias Philomena.Galleries.Gallery
   alias Philomena.Galleries.Interaction
   alias Philomena.Users.User
+  alias Philomena.Users
 
   use Philomena.Subscriptions,
     on_delete: :clear_image_notification,
@@ -79,12 +80,6 @@ defmodule Philomena.Images do
           upload_pid: pid
         }
 
-  @type performer :: [
-          ip: EctoNetwork.INET.t(),
-          fingerprint: String.t(),
-          user: User.t() | nil
-        ]
-
   @doc """
   Creates a image.
 
@@ -97,7 +92,8 @@ defmodule Philomena.Images do
       {:error, %Ecto.Changeset{}}
 
   """
-  @spec create_image(performer, %{String.t() => any()}) :: {:ok, image_upload()} | {:error, any()}
+  @spec create_image(Users.principal(), %{String.t() => any()}) ::
+          {:ok, image_upload()} | {:error, any()}
   def create_image(attribution, attrs \\ %{}) do
     tags = Tags.get_or_create_tags(attrs["tag_input"])
     sources = attrs["sources"]

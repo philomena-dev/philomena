@@ -21,14 +21,17 @@ defmodule PhilomenaWeb.UserAttributionPlug do
     conn = Conn.fetch_cookies(conn)
     user = conn.assigns.current_user
 
-    attributes = [
+    # Unfortunately, Elixir has no support for annotating a type of variable, so
+    # just make sure the shape of this keyword list satisfies the type
+    # `Philomena.Users.principal`
+    principal = [
       ip: remote_ip,
       fingerprint: fingerprint(conn, conn.path_info),
       user: user
     ]
 
     conn
-    |> Conn.assign(:attributes, attributes)
+    |> Conn.assign(:attributes, principal)
   end
 
   defp user_agent(conn) do
