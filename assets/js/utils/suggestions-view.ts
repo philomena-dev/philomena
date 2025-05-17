@@ -1,7 +1,7 @@
 import { makeEl } from './dom.ts';
 import { MatchPart, TagSuggestion } from './suggestions-model.ts';
 
-export interface SuggestionComponent {
+interface SuggestionComponent {
   readonly type: string;
 
   value(): string;
