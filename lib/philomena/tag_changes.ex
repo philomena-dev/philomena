@@ -12,25 +12,87 @@ defmodule Philomena.TagChanges do
   alias Philomena.Images
   alias Philomena.Images.Image
   alias Philomena.Tags.Tag
+  alias Philomena.Users
 
-  # Accepts a list of TagChanges.TagChange IDs.
-  def mass_revert(ids, attributes) do
+  @typedoc """
+  In the successful case returns the `TagChange`s that were loaded and affected
+  plus a non-negative integer with the number of tags affected by the revert.
+  """
+  @type mass_revert_result ::
+          {:ok, [TagChange.t()], non_neg_integer()}
+          | {:error, any()}
+
+  @typedoc """
+  A tuple with a composite identifier for a `TagChange.Tag`.
+  """
+  @type tag_change_tag_id :: {tag_change_id :: integer(), tag_id :: integer()}
+
+  # Accepts a list of `TagChanges.TagChange` IDs.
+  @spec mass_revert([integer()], Users.principal()) :: mass_revert_result()
+  def mass_revert(ids, principal) do
     Repo.all(
       from tc in TagChange,
         inner_join: i in assoc(tc, :image),
         where: tc.id in ^ids and i.hidden_from_users == false,
-        order_by: [desc: :created_at],
+        order_by: [desc: :created_at, desc: tc.id],
         preload: [:tags]
     )
-    |> mass_revert_tags(attributes)
+    |> mass_revert_impl(principal)
   end
 
-  # Accepts a list of `TagChange` structs with the `tags` pre-filled. If you
-  # don't want to revert all tags from a tag change, then filter out some tags
-  # from the tag changes `tags` fields.
-  @spec mass_revert_tags([TagChange.t()], map()) ::
-          {:ok, [TagChange.t()], integer()} | {:error, any()}
-  def mass_revert_tags(tag_changes, attributes) do
+  # Accepts a list of `TagChanges.Tag` IDs.
+  @spec mass_revert_tags([tag_change_tag_id()], Users.principal()) :: mass_revert_result()
+  def mass_revert_tags(tag_change_tag_ids, principal) do
+    {tag_change_ids, tag_ids} = Enum.unzip(tag_change_tag_ids)
+
+    Repo.query!(
+      """
+      WITH
+        input AS (
+          SELECT
+            unnest($1::integer[]) AS tag_change_id,
+            unnest($2::integer[]) AS tag_id
+        )
+      SELECT
+        tag_changes.id,
+        tag_changes.image_id,
+        array_agg(row(tag_change_tags.tag_id, tag_change_tags.added)) AS tags
+      FROM
+        tag_changes
+      INNER JOIN
+        input
+      ON
+        tag_changes.id = input.tag_change_id
+      INNER JOIN
+        tag_change_tags
+      ON
+        tag_changes.id = tag_change_tags.tag_change_id
+      AND
+        tag_change_tags.tag_id = input.tag_id
+      GROUP BY
+        tag_changes.id
+      ORDER BY
+        tag_changes.created_at DESC,
+        tag_changes.id DESC
+      """,
+      [tag_change_ids, tag_ids]
+    )
+    |> Map.get(:rows)
+    |> Enum.map(fn [tag_change_id, image_id, tags] ->
+      %TagChange{
+        id: tag_change_id,
+        image_id: image_id,
+        tags:
+          Enum.map(tags, fn {tag_id, added} -> %TagChanges.Tag{tag_id: tag_id, added: added} end)
+      }
+    end)
+    |> mass_revert_impl(principal)
+  end
+
+  # Expects that the `tag_changes` are already sorted by created_at in
+  # descending order.
+  @spec mass_revert_impl([TagChange.t()], Users.principal()) :: mass_revert_result()
+  defp mass_revert_impl(tag_changes, principal) do
     # Calculate the revert operations for each image.
     reverts_per_image =
       tag_changes
@@ -53,7 +115,7 @@ defmodule Philomena.TagChanges do
         }
       end)
 
-    with {:ok, {total_tags_affected, _}} <- Images.batch_update(reverts_per_image, attributes) do
+    with {:ok, {total_tags_affected, _}} <- Images.batch_update(reverts_per_image, principal) do
       {:ok, tag_changes, total_tags_affected}
     end
   end
