@@ -45,46 +45,38 @@ defmodule Philomena.TagChanges do
   def mass_revert_tags(tag_change_tag_ids, principal) do
     {tag_change_ids, tag_ids} = Enum.unzip(tag_change_tag_ids)
 
-    Repo.query!(
-      """
-      WITH
-        input AS (
-          SELECT
-            unnest($1::integer[]) AS tag_change_id,
-            unnest($2::integer[]) AS tag_id
-        )
-      SELECT
-        tag_changes.id,
-        tag_changes.image_id,
-        array_agg(row(tag_change_tags.tag_id, tag_change_tags.added)) AS tags
-      FROM
-        tag_changes
-      INNER JOIN
-        input
-      ON
-        tag_changes.id = input.tag_change_id
-      INNER JOIN
-        tag_change_tags
-      ON
-        tag_changes.id = tag_change_tags.tag_change_id
-      AND
-        tag_change_tags.tag_id = input.tag_id
-      GROUP BY
-        tag_changes.id
-      ORDER BY
-        tag_changes.created_at DESC,
-        tag_changes.id DESC
-      """,
-      [tag_change_ids, tag_ids]
+    Repo.all(
+      from tag_change in TagChange,
+        inner_join:
+          input in fragment(
+            """
+            SELECT
+              unnest(?::integer[]) AS tag_change_id,
+              unnest(?::integer[]) AS tag_id
+            """,
+            ^tag_change_ids,
+            ^tag_ids
+          ),
+        on: tag_change.id == input.tag_change_id,
+        inner_join: tag_change_tag in TagChanges.Tag,
+        as: :tag_change_tag,
+        on:
+          tag_change_tag.tag_change_id == tag_change.id and
+            tag_change_tag.tag_id == input.tag_id,
+        group_by: tag_change.id,
+        order_by: [desc: tag_change.created_at, desc: tag_change.id],
+        select: %TagChange{
+          id: tag_change.id,
+          image_id: tag_change.image_id,
+          tags: fragment("array_agg(row(?, ?))", tag_change_tag.tag_id, tag_change_tag.added)
+        }
     )
-    |> Map.get(:rows)
-    |> Enum.map(fn [tag_change_id, image_id, tags] ->
-      %TagChange{
-        id: tag_change_id,
-        image_id: image_id,
-        tags:
-          Enum.map(tags, fn {tag_id, added} -> %TagChanges.Tag{tag_id: tag_id, added: added} end)
-      }
+    |> Enum.map(fn tag_change ->
+      tags =
+        tag_change.tags
+        |> Enum.map(fn {tag_id, added} -> %TagChanges.Tag{tag_id: tag_id, added: added} end)
+
+      put_in(tag_change.tags, tags)
     end)
     |> mass_revert_impl(principal)
   end
