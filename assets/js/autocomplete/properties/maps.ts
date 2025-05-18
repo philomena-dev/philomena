@@ -1,6 +1,7 @@
-const numericProperty = Symbol('numeric');
-const literalProperty = Symbol('literal');
-const dateProperty = Symbol('date');
+export const numericProperty = Symbol('numeric');
+export const literalProperty = Symbol('literal');
+export const dateProperty = Symbol('date');
+export const tagProperty = Symbol('tag');
 
 const booleanPropertyValues = ['true', 'false'];
 
@@ -69,16 +70,16 @@ const imageSearchProperties = new Map<string, PropertyTypeOrValues>([
 ]);
 
 const tagSearchProperties = new Map<string, PropertyTypeOrValues>([
-  ['alias_of', literalProperty],
+  ['alias_of', tagProperty],
   ['aliased', literalProperty],
-  ['aliases', literalProperty],
+  ['aliases', tagProperty],
   ['analyzed_name', literalProperty],
   ['category', literalProperty],
   ['description', literalProperty],
   ['id', numericProperty],
   ['images', numericProperty],
-  ['implied_by', literalProperty],
-  ['implies', literalProperty],
+  ['implied_by', tagProperty],
+  ['implies', tagProperty],
   ['name', literalProperty],
   ['name_in_namespace', literalProperty],
   ['namespace', literalProperty],

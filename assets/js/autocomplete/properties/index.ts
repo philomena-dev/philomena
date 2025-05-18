@@ -1,5 +1,7 @@
 import { AutocompletableInput } from '../input';
-import { propertyTypeOperators, searchTypeToPropertiesMap } from './maps';
+import { propertyTypeOperators, searchTypeToPropertiesMap, tagProperty } from './maps';
+import { type LocalAutocompleter } from '../../utils/local-autocompleter';
+import { type TagSuggestion } from '../../utils/suggestions-model';
 
 const propertiesSyntaxRegExp =
   /^(?<property_name>[a-z\d_]+)(?<operator_syntax>\.(?<operator>[a-z]*))?(?<value_syntax>:(?<value>.*))?$/;
@@ -67,7 +69,30 @@ export class SuggestedProperty {
   }
 }
 
-export function matchProperties(input: AutocompletableInput, activeTerm: string): SuggestedProperty[] {
+function resolveCanonicalTagNameFromSuggestion(suggestion: TagSuggestion): string {
+  if (typeof suggestion.canonical === 'string') {
+    return suggestion.canonical;
+  }
+
+  return suggestion.canonical
+    .map(matchPart => (typeof matchPart === 'string' ? matchPart : matchPart.matched))
+    .join('');
+}
+
+/**
+ * Create the list of suggested properties from an active term.
+ * @param input Input matching was called from. Input is required to determine which list of properties should be
+ * suggested. It's also used for suggesting tags inside tag-properties.
+ * @param activeTerm Actual term parsed from the search query. This is the string which will be used to find relevant
+ * properties.
+ * @param autocomplete Instance of {@link LocalAutocompleter} used for several properties related to tags.
+ * @return List of suggested properties for displaying to the user.
+ */
+export function matchProperties(
+  input: AutocompletableInput,
+  activeTerm: string,
+  autocomplete: LocalAutocompleter,
+): SuggestedProperty[] {
   const propertiesMap = searchTypeToPropertiesMap.get(input.element.name);
   const parsedTermParts = propertiesMap && parsePropertyParts(activeTerm);
 
@@ -104,6 +129,27 @@ export function matchProperties(input: AutocompletableInput, activeTerm: string)
     return targetPropertyTypeOrValues
       .filter(suggestedValue => !value || suggestedValue.startsWith(value))
       .map(suggestedValue => new SuggestedProperty(propertyName, null, suggestedValue));
+  }
+
+  // For the properties which accept tags as values, make additional autocomplete call.
+  if (targetPropertyTypeOrValues === tagProperty && value) {
+    const matchedTagsResult = autocomplete
+      .matchPrefix(value, input.maxSuggestions)
+      .map(
+        tagSuggestion =>
+          new SuggestedProperty(
+            propertyName,
+            targetPropertyTypeOrValues,
+            null,
+            resolveCanonicalTagNameFromSuggestion(tagSuggestion),
+          ),
+      );
+
+    if (!matchedTagsResult.length) {
+      matchedTagsResult.push(new SuggestedProperty(propertyName, targetPropertyTypeOrValues, null, value));
+    }
+
+    return matchedTagsResult;
   }
 
   // When user already started typing value of the property, then stop suggesting anything.

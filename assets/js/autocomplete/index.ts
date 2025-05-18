@@ -128,7 +128,7 @@ class Autocomplete {
       .matchPrefix(activeTerm, input.maxSuggestions - suggestions.history.length)
       .map(suggestion => new TagSuggestionComponent(suggestion));
 
-    suggestions.properties = matchProperties(input, activeTerm).map(
+    suggestions.properties = matchProperties(input, activeTerm, this.index).map(
       suggestion => new PropertySuggestionComponent(suggestion),
     );
 
@@ -156,11 +156,7 @@ class Autocomplete {
     this.scheduleServerSideSuggestions(activeTerm, suggestions);
   }
 
-  scheduleServerSideSuggestions(
-    this: ActiveAutocomplete,
-    term: string,
-    localSuggestions: Suggestions,
-  ) {
+  scheduleServerSideSuggestions(this: ActiveAutocomplete, term: string, localSuggestions: Suggestions) {
     const request: GetTagSuggestionsRequest = {
       term,
 
