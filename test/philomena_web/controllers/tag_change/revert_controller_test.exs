@@ -93,17 +93,16 @@ defmodule PhilomenaWeb.TagChange.RevertControllerTest do
 
       assert_value(
         ctx.conn.assigns.flash == %{
-          "info" => "Successfully reverted 1 tag changes with 1 tags actually updated."
+          "info" => "Successfully reverted 1 tag changes with 0 tags actually updated."
         }
       )
 
       assert_value(
         snap(ctx) == [
-          "Image(1): [a 1] [b 1] [c 1] [safe 1]",
-          "TagChange(4): -[d 0]",
-          "TagChange(3): +[d 0]",
-          "TagChange(2): -[d 0]",
-          "TagChange(1): +[d 0]"
+          "Image(1): [a 1] [b 1] [c 1] [safe 1] [d 1]",
+          "TagChange(3): +[d 1]",
+          "TagChange(2): -[d 1]",
+          "TagChange(1): +[d 1]"
         ]
       )
     end

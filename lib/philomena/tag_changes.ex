@@ -22,69 +22,83 @@ defmodule Philomena.TagChanges do
           {:ok, [TagChange.t()], non_neg_integer()}
           | {:error, any()}
 
+  @type tag_change_id :: integer()
+  @type tag_id :: integer()
+
   @typedoc """
   A tuple with a composite identifier for a `TagChange.Tag`.
   """
-  @type tag_change_tag_id :: {tag_change_id :: integer(), tag_id :: integer()}
+  @type tag_change_tag_id :: {tag_change_id(), tag_id()}
 
   # Accepts a list of `TagChanges.TagChange` IDs.
-  @spec mass_revert([integer()], Users.principal()) :: mass_revert_result()
-  def mass_revert(ids, principal) do
-    Repo.all(
-      from tc in TagChange,
-        inner_join: i in assoc(tc, :image),
-        where: tc.id in ^ids and i.hidden_from_users == false,
-        order_by: [desc: :created_at, desc: tc.id],
-        preload: [:tags]
-    )
+  @spec mass_revert([tag_change_id()], Users.principal()) :: mass_revert_result()
+  def mass_revert(tag_change_ids, principal) do
+    tag_change_ids
+    |> Map.new(&{&1, nil})
     |> mass_revert_impl(principal)
   end
 
   # Accepts a list of `TagChanges.Tag` IDs.
   @spec mass_revert_tags([tag_change_tag_id()], Users.principal()) :: mass_revert_result()
   def mass_revert_tags(tag_change_tag_ids, principal) do
-    {tag_change_ids, tag_ids} = Enum.unzip(tag_change_tag_ids)
-
-    Repo.all(
-      from tag_change in TagChange,
-        inner_join:
-          input in fragment(
-            """
-            SELECT
-              unnest(?::integer[]) AS tag_change_id,
-              unnest(?::integer[]) AS tag_id
-            """,
-            ^tag_change_ids,
-            ^tag_ids
-          ),
-        on: tag_change.id == input.tag_change_id,
-        inner_join: tag_change_tag in TagChanges.Tag,
-        as: :tag_change_tag,
-        on:
-          tag_change_tag.tag_change_id == tag_change.id and
-            tag_change_tag.tag_id == input.tag_id,
-        group_by: tag_change.id,
-        order_by: [desc: tag_change.created_at, desc: tag_change.id],
-        select: %TagChange{
-          id: tag_change.id,
-          image_id: tag_change.image_id,
-          tags: fragment("array_agg(row(?, ?))", tag_change_tag.tag_id, tag_change_tag.added)
-        }
-    )
-    |> Enum.map(fn tag_change ->
-      tags =
-        tag_change.tags
-        |> Enum.map(fn {tag_id, added} -> %TagChanges.Tag{tag_id: tag_id, added: added} end)
-
-      put_in(tag_change.tags, tags)
-    end)
+    tag_change_tag_ids
+    |> Enum.group_by(&elem(&1, 0), &elem(&1, 1))
     |> mass_revert_impl(principal)
   end
 
-  # Expects that the `tag_changes` are already sorted by created_at in
-  # descending order.
-  @spec mass_revert_impl([TagChange.t()], Users.principal()) :: mass_revert_result()
-  defp mass_revert_impl(tag_changes, principal) do
+  @spec mass_revert_impl(%{tag_change_id() => [tag_id()] | nil}, Users.principal()) ::
+          mass_revert_result()
+  defp mass_revert_impl(input, principal) do
+    input =
+      input
+      |> Enum.map(fn {tag_change_id, tag_ids} -> %{tc_id: tag_change_id, tag_ids: tag_ids} end)
+
+    tag_changes =
+      Repo.all(
+        from tc in TagChange,
+          as: :tc,
+          inner_join:
+            input in fragment(
+              """
+              SELECT * FROM json_to_recordset(?) as (tc_id int, tag_ids int[])
+              """,
+              ^input
+            ),
+          on: tc.id == input.tc_id,
+          inner_join: tct in TagChanges.Tag,
+          as: :tct,
+          on:
+            tct.tag_change_id == tc.id and (is_nil(input.tag_ids) or tct.tag_id in input.tag_ids),
+          where:
+            not exists(
+              from newer_tct in TagChanges.Tag,
+                where: parent_as(:tct).tag_id == newer_tct.tag_id,
+                join: newer_tc in TagChange,
+                on:
+                  newer_tc.id ==
+                    newer_tct.tag_change_id and newer_tc.image_id == parent_as(:tc).image_id,
+                where:
+                  newer_tc.created_at > parent_as(:tc).created_at or
+                    newer_tc.id > parent_as(:tc).id
+            ),
+          group_by: tc.id,
+          order_by: [desc: tc.created_at, desc: tc.id],
+          select: %TagChange{
+            id: tc.id,
+            image_id: tc.image_id,
+            tags: fragment("array_agg(row(?, ?))", tct.tag_id, tct.added)
+          }
+      )
+      |> Enum.map(fn tag_change ->
+        tags =
+          tag_change.tags
+          |> Enum.map(fn {tag_id, added} ->
+            %TagChanges.Tag{tag_id: tag_id, added: added}
+          end)
+
+        put_in(tag_change.tags, tags)
+      end)
+
     # Calculate the revert operations for each image.
     reverts_per_image =
       tag_changes

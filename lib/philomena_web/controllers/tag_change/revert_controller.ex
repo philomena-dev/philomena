@@ -17,16 +17,16 @@ defmodule PhilomenaWeb.TagChange.RevertController do
     }
 
     case TagChanges.mass_revert(ids, attributes) do
-      {:ok, tag_changes, total_tags_affected} ->
+      {:ok, _affected_tag_changes, total_tags_affected} ->
         conn
         |> put_flash(
           :info,
-          "Successfully reverted #{length(tag_changes)} tag changes with " <>
+          "Successfully reverted #{length(ids)} tag changes with " <>
             "#{total_tags_affected} tags actually updated."
         )
         |> moderation_log(
           details: &log_details/2,
-          data: %{user: conn.assigns.current_user, count: length(tag_changes)}
+          data: %{user: conn.assigns.current_user, count: length(ids)}
         )
         |> redirect(external: conn.assigns.referrer)
 
