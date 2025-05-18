@@ -1,23 +1,19 @@
 defmodule PhilomenaWeb.Image.TagControllerTest do
-  use PhilomenaWeb.ConnCase, async: true
+  use PhilomenaWeb.ConnCase
   alias Philomena.Test
-  alias Philomena.UsersFixtures
   import PhilomenaWeb.Test.TagChanges
 
+  # We need a verified user, because it bypasses the rate limits check
   setup ctx do
-    # We need a verified user, because it bypasses the rate limits check
-    user = UsersFixtures.user_fixture(%{confirmed: true, verified: true})
-    %{conn: log_in_user(ctx.conn, user), user: user}
+    register_and_log_in_user(ctx, %{verified: true})
   end
 
-  test "POST /image/{N}/tags", %{conn: conn, user: user} do
-    ctx = %{
-      conn: conn,
-      image:
-        Test.Images.create_image(user, %{
-          "tag_input" => "safe,a,b"
-        })
-    }
+  test "POST /image/{N}/tags", ctx do
+    ctx =
+      ctx
+      |> Test.Images.create_image(%{
+        "tag_input" => "safe,a,b"
+      })
 
     ctx = update_image_tags(ctx, add: ["c", "d", "e"])
 

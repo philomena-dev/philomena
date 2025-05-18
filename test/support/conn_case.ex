@@ -59,8 +59,8 @@ defmodule PhilomenaWeb.ConnCase do
   It stores an updated connection and a registered user in the
   test context.
   """
-  def register_and_log_in_user(%{conn: conn}) do
-    user = Philomena.UsersFixtures.confirmed_user_fixture()
+  def register_and_log_in_user(%{conn: conn}, attrs \\ %{}) do
+    user = Philomena.UsersFixtures.confirmed_user_fixture(attrs)
     %{conn: log_in_user(conn, user), user: user}
   end
 
