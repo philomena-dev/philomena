@@ -32,8 +32,10 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
 
       ctx = update_image_tags(ctx, add: ["f", "g"], remove: ["a", "d"])
 
+      snap = snap(ctx)
+
       assert_value(
-        snap(ctx) == [
+        snap == [
           "Image #1: [b 1] [safe 1] [c 1] [e 1] [f 1] [g 1]",
           "TagChange #2: +[f 1] +[g 1] -[a 0] -[d 0]",
           "TagChange #1: +[c 1] +[d 0] +[e 1]"
@@ -41,15 +43,7 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
       )
 
       # Noop should not create a new tag change
-      ctx = update_image_tags(ctx, add: [])
-
-      assert_value(
-        snap(ctx) == [
-          "Image #1: [b 1] [safe 1] [c 1] [e 1] [f 1] [g 1]",
-          "TagChange #2: +[f 1] +[g 1] -[a 0] -[d 0]",
-          "TagChange #1: +[c 1] +[d 0] +[e 1]"
-        ]
-      )
+      assert snap(update_image_tags(ctx, add: [])) == snap
     end
 
     defp update_image_tags(ctx, diff) do
