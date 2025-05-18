@@ -21,22 +21,22 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
           })
       }
 
-      ctx = update_image_tags(ctx, add: ["c", "d", "e", "f"])
+      ctx = update_image_tags(ctx, add: ["c", "d", "e"])
 
       assert_value(
         snap(ctx) == [
-          "Image #1: [a 1] [b 1] [safe 1] [c 1] [d 1] [e 1] [f 1]",
-          "TagChange #1: +[c 1] +[d 1] +[e 1] +[f 1]"
+          "Image #1: [a 1] [b 1] [safe 1] [c 1] [d 1] [e 1]",
+          "TagChange #1: +[c 1] +[d 1] +[e 1]"
         ]
       )
 
-      ctx = update_image_tags(ctx, add: ["g", "h"], remove: ["a", "e"])
+      ctx = update_image_tags(ctx, add: ["f", "g"], remove: ["a", "d"])
 
       assert_value(
         snap(ctx) == [
-          "Image #1: [b 1] [safe 1] [c 1] [d 1] [f 1] [g 1] [h 1]",
-          "TagChange #2: +[g 1] +[h 1] -[a 0] -[e 0]",
-          "TagChange #1: +[c 1] +[d 1] +[e 0] +[f 1]"
+          "Image #1: [b 1] [safe 1] [c 1] [e 1] [f 1] [g 1]",
+          "TagChange #2: +[f 1] +[g 1] -[a 0] -[d 0]",
+          "TagChange #1: +[c 1] +[d 0] +[e 1]"
         ]
       )
 
@@ -45,9 +45,9 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
 
       assert_value(
         snap(ctx) == [
-          "Image #1: [b 1] [safe 1] [c 1] [d 1] [f 1] [g 1] [h 1]",
-          "TagChange #2: +[g 1] +[h 1] -[a 0] -[e 0]",
-          "TagChange #1: +[c 1] +[d 1] +[e 0] +[f 1]"
+          "Image #1: [b 1] [safe 1] [c 1] [e 1] [f 1] [g 1]",
+          "TagChange #2: +[f 1] +[g 1] -[a 0] -[d 0]",
+          "TagChange #1: +[c 1] +[d 0] +[e 1]"
         ]
       )
     end
