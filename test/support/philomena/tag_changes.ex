@@ -16,14 +16,14 @@ defmodule Philomena.Test.TagChanges do
     |> Test.Pagination.load_all()
   end
 
-  def to_snap(%TagChanges.TagChange{} = tag_change) do
+  def snap(%TagChanges.TagChange{} = tag_change) do
     suffix =
       tag_change.tags
       |> Enum.map(fn %{tag: tag, added: added} ->
-        "#{if(added, do: "+", else: "-")}[#{tag.name} #{tag.images_count}]"
+        "#{if(added, do: "+", else: "-")}#{Test.Tags.snap(tag)}"
       end)
       |> Enum.join(" ")
 
-    "TagChange ##{tag_change.id}: #{suffix}"
+    "TagChange(#{tag_change.id}): #{suffix}"
   end
 end

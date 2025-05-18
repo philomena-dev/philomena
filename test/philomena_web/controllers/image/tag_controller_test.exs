@@ -24,8 +24,8 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
 
     assert_value(
       snap(ctx) == [
-        "Image #1: [a 1] [b 1] [safe 1] [c 1] [d 1] [e 1]",
-        "TagChange #1: +[c 1] +[d 1] +[e 1]"
+        "Image(1): [a 1] [b 1] [safe 1] [c 1] [d 1] [e 1]",
+        "TagChange(1): +[c 1] +[d 1] +[e 1]"
       ]
     )
 
@@ -35,9 +35,9 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
 
     assert_value(
       snap == [
-        "Image #1: [b 1] [safe 1] [c 1] [e 1] [f 1] [g 1]",
-        "TagChange #2: +[f 1] +[g 1] -[a 0] -[d 0]",
-        "TagChange #1: +[c 1] +[d 0] +[e 1]"
+        "Image(1): [b 1] [safe 1] [c 1] [e 1] [f 1] [g 1]",
+        "TagChange(2): +[f 1] +[g 1] -[a 0] -[d 0]",
+        "TagChange(1): +[c 1] +[d 0] +[e 1]"
       ]
     )
 
@@ -58,16 +58,11 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
   end
 
   defp snap(ctx) do
-    image_tags =
-      ctx.image.tags
-      |> Enum.map(fn tag -> "[#{tag.name} #{tag.images_count}]" end)
-      |> Enum.join(" ")
-
     tag_changes =
       ctx.image.id
       |> Test.TagChanges.load_tag_changes_by_image_id()
-      |> Enum.map(&Test.TagChanges.to_snap/1)
+      |> Enum.map(&Test.TagChanges.snap/1)
 
-    ["Image ##{ctx.image.id}: #{image_tags}"] ++ tag_changes
+    [Test.Images.snap(ctx.image)] ++ tag_changes
   end
 end

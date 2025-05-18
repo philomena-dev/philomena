@@ -2,6 +2,7 @@ defmodule Philomena.Test.Images do
   alias Philomena.Repo
   alias Philomena.Images.Image
   alias Philomena.Images
+  alias Philomena.Test
 
   import Ecto.Query
 
@@ -38,5 +39,14 @@ defmodule Philomena.Test.Images do
     {:ok, %{image: image}} = Images.create_image(principal, attrs)
 
     image
+  end
+
+  def snap(%Image{} = image) do
+    image_tags =
+      image.tags
+      |> Enum.map(&Test.Tags.snap/1)
+      |> Enum.join(" ")
+
+    "Image(#{image.id}): #{image_tags}"
   end
 end
