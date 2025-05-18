@@ -57,6 +57,10 @@ defmodule Philomena.TagChanges do
       Repo.all(
         from tc in TagChange,
           as: :tc,
+          # Filter the tag changes table by the input tag change ids. Note that
+          # we use `json_to_recordset` to convert the input into a table that
+          # contains an array column. This is the simplest way to do this in
+          # postgres.
           inner_join:
             input in fragment(
               """
@@ -65,10 +69,18 @@ defmodule Philomena.TagChanges do
               ^input
             ),
           on: tc.id == input.tc_id,
+
+          # Join and filter only tags that we are interested in reverting unless
+          # the `tag_ids` is nil, which means all tags in the change are a
+          # subject of the revert.
           inner_join: tct in TagChanges.Tag,
           as: :tct,
           on:
             tct.tag_change_id == tc.id and (is_nil(input.tag_ids) or tct.tag_id in input.tag_ids),
+
+          # Make sure the tag changes that we want to revert are the most recent
+          # ones. The revert only makes sense for tag changes that influenced the
+          # current state of the image.
           where:
             not exists(
               from newer_tct in TagChanges.Tag,
@@ -81,8 +93,9 @@ defmodule Philomena.TagChanges do
                   newer_tc.created_at > parent_as(:tc).created_at or
                     newer_tc.id > parent_as(:tc).id
             ),
+
+          # Group all tag changes by ID accumulating all tags into an array.
           group_by: tc.id,
-          order_by: [desc: tc.created_at, desc: tc.id],
           select: %TagChange{
             id: tc.id,
             image_id: tc.image_id,
