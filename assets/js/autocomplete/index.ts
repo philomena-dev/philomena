@@ -147,13 +147,27 @@ class Autocomplete {
     // server-side suggestions request.
     this.showSuggestions(suggestions);
 
-    // Only if the index had its chance to provide suggestions
-    // and produced nothing, do we try to fetch server-side suggestions.
-    if (suggestions.tags.length > 0 || activeTerm.length < 3) {
+    if (this.shouldSkipServerSideSuggestion(activeTerm, suggestions)) {
       return;
     }
 
     this.scheduleServerSideSuggestions(activeTerm, suggestions);
+  }
+
+  shouldSkipServerSideSuggestion(activeTerm: string, suggestions: Suggestions): boolean {
+    // Only if the index had its chance to provide suggestions
+    // and produced nothing, do we try to fetch server-side suggestions.
+    if (suggestions.tags.length > 0 || activeTerm.length < 3) {
+      return true;
+    }
+
+    // Make sure to NOT request server-side suggestions when user have typed valid property and started typing the
+    // value. For example, once user typed `tag_count:10`, then there is no point to request anything from the server.
+    if (suggestions.properties.length > 0) {
+      return suggestions.properties.some(component => component.suggestion.containsColon())
+    }
+
+    return false;
   }
 
   scheduleServerSideSuggestions(this: ActiveAutocomplete, term: string, localSuggestions: Suggestions) {

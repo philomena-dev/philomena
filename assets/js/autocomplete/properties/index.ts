@@ -48,6 +48,14 @@ export class SuggestedProperty {
     this.value = value;
   }
 
+  /**
+   * Check if this suggested property contains colon (`:`) character. This usually means that user started typing value
+   * or typed the colon itself.
+   */
+  containsColon(): boolean {
+    return this.operator !== null || this.value !== null;
+  }
+
   toString(): string {
     let resultValue = this.name;
 
@@ -57,7 +65,7 @@ export class SuggestedProperty {
 
     // Making sure to include the colon when operator or value is provided. When empty operator is passed, then it
     // indicates that colon should be included.
-    if (this.operator !== null || this.value !== null) {
+    if (this.containsColon()) {
       resultValue += ':';
     }
 
