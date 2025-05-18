@@ -63,17 +63,20 @@ defmodule PhilomenaWeb.Test.TagChanges do
       assert response =~ tag |> String.replace_leading("-", "")
     end
 
-    %{
-      conn: conn,
-      image: Test.Images.load_image!(ctx.image.id, preload: [:tags])
-    }
+    ctx = put_in(ctx.conn, conn)
+    put_in(ctx.image, Test.Images.load_image!(ctx.image.id, preload: [:tags]))
   end
 
-  @spec snap(ctx()) :: any()
+  @spec snap(ctx()) :: map()
   def snap(ctx) do
+    snap(ctx, ctx.image.id |> Test.TagChanges.load_tag_changes_by_image_id())
+  end
+
+  @doc "Create a snapshot with the preloaded tag changes"
+  @spec snap(ctx(), [TagChange.t()]) :: term()
+  def snap(ctx, tag_changes) do
     tag_changes =
-      ctx.image.id
-      |> Test.TagChanges.load_tag_changes_by_image_id()
+      tag_changes
       |> Enum.map(&Test.TagChanges.snap/1)
 
     [Test.Images.snap(ctx.image) | tag_changes]

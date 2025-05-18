@@ -31,11 +31,22 @@ defmodule PhilomenaWeb.ConnCase do
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Philomena.Repo)
+    pid = Ecto.Adapters.SQL.Sandbox.start_owner!(Philomena.Repo, shared: not tags[:async])
+    on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
 
-    unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Philomena.Repo, {:shared, self()})
-    end
+    # Postgres doesn't revert the auto-increment counters if a transaction
+    # that modified it was rolled back. This is understandable for performance
+    # reasons, but unfortunately, it introduces side effects visible between
+    # tests that test against the generated IDs.
+    #
+    # This is the downside of Ecto using transactions mechanism to isolate
+    # tests, while some other DB libraries create separate databases per each
+    # test to ensure full isolation and allow for testing of concurrent
+    # transactions. Ideally `Ecto` should do that or at least provide an
+    # option to do that. While that's not the case we have to do some manual
+    # cleanup between tests to reset the auto-increment counters.
+    Philomena.Repo.query!("ALTER SEQUENCE images_id_seq RESTART WITH 1")
+    Philomena.Repo.query!("ALTER SEQUENCE tag_changes_id_seq1 RESTART WITH 1")
 
     # Insert default filter
     %Philomena.Filters.Filter{name: "Default", system: true}
