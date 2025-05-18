@@ -117,13 +117,9 @@ defmodule Philomena.TagChanges do
       tag_changes
       |> Enum.group_by(& &1.image_id)
       |> Enum.map(fn {image_id, tag_changes} ->
-        # The tag changes are already sorted by created_at in descending order
-        # so if we run a `uniq_by` for their tags, we'll leave only the most
-        # recent change per each tag.
         {added_tags, removed_tags} =
           tag_changes
           |> Enum.flat_map(& &1.tags)
-          |> Enum.uniq_by(& &1.tag_id)
           |> Enum.split_with(& &1.added)
 
         # We send removed tags to be added, and added to be removed. That's how reverting works!
