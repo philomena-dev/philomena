@@ -70,7 +70,7 @@ defmodule Philomena.TagChanges do
             ),
           on: tc.id == input.tc_id,
 
-          # Join and filter only tags that we are interested in reverting unless
+          # Join and filter only specific tags that we want to revert, unless
           # the `tag_ids` is nil, which means all tags in the change are a
           # subject of the revert.
           inner_join: tct in TagChanges.Tag,
