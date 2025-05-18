@@ -1,5 +1,6 @@
 import { makeEl } from './dom.ts';
 import { MatchPart, TagSuggestion } from './suggestions-model.ts';
+import { SuggestedProperty } from '../autocomplete/properties';
 
 interface SuggestionComponent {
   readonly type: string;
@@ -121,14 +122,14 @@ export class HistorySuggestionComponent implements SuggestionComponent {
 
 export class PropertySuggestionComponent implements SuggestionComponent {
   readonly type = 'property';
-  content: string;
+  suggestion: SuggestedProperty;
 
-  constructor(content: string) {
-    this.content = content;
+  constructor(content: SuggestedProperty) {
+    this.suggestion = content;
   }
 
   value(): string {
-    return this.content;
+    return this.suggestion.toString();
   }
 
   render(): HTMLElement[] {
@@ -137,7 +138,7 @@ export class PropertySuggestionComponent implements SuggestionComponent {
         makeEl('i', { className: 'fa-solid fa-circle-info' }),
         makeEl('span', {
           className: 'autocomplete__item__property__match',
-          textContent: ` ${this.content}`,
+          textContent: ` ${this.value()}`,
         }),
       ]),
     ];
