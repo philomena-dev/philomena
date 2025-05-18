@@ -65,6 +65,7 @@ services:
       - postgres
       - opensearch
       - valkey
+      - files
     ports:
       - '5173:5173'
 
