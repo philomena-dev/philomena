@@ -6,6 +6,10 @@ defmodule Philomena.Test.Pagination do
 
   @type load_page_fn(t) :: (page_params() -> Scrivener.Page.t(t))
 
+  @doc """
+  Load all pages into a single flat list. Accepts a function that loads a
+  page of data with the given `page_params()`.
+  """
   @spec load_all(load_page_fn(t), page_params()) :: [t]
         when t: var
   def load_all(load_page, page_params \\ []) do
