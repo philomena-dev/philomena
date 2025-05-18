@@ -152,21 +152,19 @@ export function matchProperties(
     return matchedTagsResult;
   }
 
-  // When user already started typing value of the property, then stop suggesting anything.
-  if (value) {
-    return [];
-  }
-
   const availableOperators = propertyTypeOperators.get(targetPropertyTypeOrValues) || [];
 
   // In case we have operators to suggest, try to find and show them first.
   const suggestionsWithOperators = availableOperators
     .filter(suggestedOperator => !operator || suggestedOperator.startsWith(operator))
-    .map(suggestedOperator => new SuggestedProperty(propertyName, targetPropertyTypeOrValues, suggestedOperator));
+    .map(
+      suggestedOperator =>
+        new SuggestedProperty(propertyName, targetPropertyTypeOrValues, suggestedOperator, value || ''),
+    );
 
   // If user haven't started typing operator yet, then also suggest the variant without any operators.
   if (!hasOperatorSyntax) {
-    suggestionsWithOperators.unshift(new SuggestedProperty(propertyName, targetPropertyTypeOrValues, ''));
+    suggestionsWithOperators.unshift(new SuggestedProperty(propertyName, targetPropertyTypeOrValues, '', value || ''));
   }
 
   return suggestionsWithOperators;
