@@ -1,9 +1,8 @@
 defmodule PhilomenaWeb.Image.TagControllerTest do
   use PhilomenaWeb.ConnCase, async: true
-
-  alias PhilomenaWeb.Test, as: WebTest
   alias Philomena.Test
   alias Philomena.UsersFixtures
+  import PhilomenaWeb.Test.TagChanges
 
   setup ctx do
     # We need a verified user, because it bypasses the rate limits check
@@ -43,26 +42,5 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
 
     # Noop should not create a new tag change
     assert snap(update_image_tags(ctx, add: [])) == snap
-  end
-
-  defp update_image_tags(ctx, diff) do
-    conn =
-      WebTest.Images.update_image_tags(ctx.conn, ctx.image, diff)
-
-    image = Test.Images.load_image!(ctx.image.id, preload: [:tags])
-
-    %{
-      conn: conn,
-      image: image
-    }
-  end
-
-  defp snap(ctx) do
-    tag_changes =
-      ctx.image.id
-      |> Test.TagChanges.load_tag_changes_by_image_id()
-      |> Enum.map(&Test.TagChanges.snap/1)
-
-    [Test.Images.snap(ctx.image)] ++ tag_changes
   end
 end

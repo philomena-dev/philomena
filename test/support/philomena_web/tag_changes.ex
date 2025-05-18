@@ -1,5 +1,6 @@
-defmodule PhilomenaWeb.Test.Images do
+defmodule PhilomenaWeb.Test.TagChanges do
   alias Philomena.Images.Image
+  alias Philomena.Test
 
   import Phoenix.ConnTest
 
@@ -9,17 +10,22 @@ defmodule PhilomenaWeb.Test.Images do
 
   use PhilomenaWeb, :verified_routes
 
+  @doc "Context of the test"
+  @type ctx :: %{
+          conn: Plug.Conn.t(),
+          image: Image.t()
+        }
+
   @type tags_diff :: [
           add: [String.t()],
           remove: [String.t()]
         ]
 
-  @spec update_image_tags(Plug.Conn.t(), Image.t(), tags_diff()) ::
-          Plug.Conn.t()
-  def update_image_tags(conn, image, diff) do
+  @spec update_image_tags(ctx(), tags_diff()) :: ctx()
+  def update_image_tags(ctx, diff) do
     added_tags = Keyword.get(diff, :add, [])
     removed_tags = Keyword.get(diff, :remove, [])
-    current_tags = image.tags |> Enum.map(& &1.name)
+    current_tags = ctx.image.tags |> Enum.map(& &1.name)
 
     for tag <- added_tags do
       assert tag not in current_tags
@@ -31,8 +37,8 @@ defmodule PhilomenaWeb.Test.Images do
       |> Enum.concat(added_tags)
 
     conn =
-      conn
-      |> post(~p"/images/#{image.id}/tags", %{
+      ctx.conn
+      |> post(~p"/images/#{ctx.image.id}/tags", %{
         "_method" => "put",
         "image" => %{
           "old_tag_input" => current_tags |> Enum.join(", "),
@@ -57,6 +63,19 @@ defmodule PhilomenaWeb.Test.Images do
       assert response =~ tag |> String.replace_leading("-", "")
     end
 
-    conn
+    %{
+      conn: conn,
+      image: Test.Images.load_image!(ctx.image.id, preload: [:tags])
+    }
+  end
+
+  @spec snap(ctx()) :: any()
+  def snap(ctx) do
+    tag_changes =
+      ctx.image.id
+      |> Test.TagChanges.load_tag_changes_by_image_id()
+      |> Enum.map(&Test.TagChanges.snap/1)
+
+    [Test.Images.snap(ctx.image) | tag_changes]
   end
 end
