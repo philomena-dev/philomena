@@ -11,9 +11,9 @@ defmodule PhilomenaWeb.TagChange.RevertControllerTest do
   end
 
   test "unauthorized", ctx do
-    {ctx, tag_change} = create_image_with_tag_change(ctx)
+    {ctx, first_tag_change} = create_image_with_tag_change(ctx)
 
-    ctx = try_revert_tag_changes(ctx, [tag_change.id])
+    ctx = try_revert_tag_changes(ctx, [first_tag_change.id])
 
     # The default test user is a regular user, so it's not authorized to
     # revert tag changes
@@ -33,9 +33,9 @@ defmodule PhilomenaWeb.TagChange.RevertControllerTest do
     end
 
     test "noop reverts", ctx do
-      {ctx, tag_change} = create_image_with_tag_change(ctx)
+      {ctx, first_tag_change} = create_image_with_tag_change(ctx)
 
-      ctx = revert_tag_changes(ctx, [tag_change.id])
+      ctx = revert_tag_changes(ctx, [first_tag_change.id])
 
       assert_value(
         ctx.conn.assigns.flash == %{
@@ -54,7 +54,7 @@ defmodule PhilomenaWeb.TagChange.RevertControllerTest do
       )
 
       # Reverting again should be a no-op
-      ctx = revert_tag_changes(ctx, [tag_change.id])
+      ctx = revert_tag_changes(ctx, [first_tag_change.id])
 
       assert_value(
         ctx.conn.assigns.flash == %{
@@ -75,14 +75,36 @@ defmodule PhilomenaWeb.TagChange.RevertControllerTest do
         }
       )
 
+      tag_changes = Test.TagChanges.load_tag_changes_by_image_id(ctx.image.id)
+
       assert_value(
-        snap(ctx) ==
+        snap(ctx, tag_changes) ==
           [
             "Image(1): [a 1] [b 1] [c 1] [safe 1] [d 1]",
             "TagChange(3): +[d 1]",
             "TagChange(2): -[d 1]",
             "TagChange(1): +[d 1]"
           ]
+      )
+
+      # Try to revert the change that was the first. It should be no-op
+      # since the tag is already present on the image
+      ctx = revert_tag_changes(ctx, [first_tag_change.id])
+
+      assert_value(
+        ctx.conn.assigns.flash == %{
+          "info" => "Successfully reverted 1 tag changes with 1 tags actually updated."
+        }
+      )
+
+      assert_value(
+        snap(ctx) == [
+          "Image(1): [a 1] [b 1] [c 1] [safe 1]",
+          "TagChange(4): -[d 0]",
+          "TagChange(3): +[d 0]",
+          "TagChange(2): -[d 0]",
+          "TagChange(1): +[d 0]"
+        ]
       )
     end
   end
