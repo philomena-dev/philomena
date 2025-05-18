@@ -128,7 +128,7 @@ export function matchProperties(
 
     return targetPropertyTypeOrValues
       .filter(suggestedValue => !value || suggestedValue.startsWith(value))
-      .map(suggestedValue => new SuggestedProperty(propertyName, null, suggestedValue));
+      .map(suggestedValue => new SuggestedProperty(propertyName, null, null, suggestedValue));
   }
 
   // For the properties which accept tags as values, make additional autocomplete call.
