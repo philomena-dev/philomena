@@ -74,6 +74,12 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+    # Expose DB port for connecting from a DB viewer client. `POSTGRES_PORT`
+    # variable can be used to prevent conflicts with other postgres instances
+    # potentially already running on the host.
+    ports: ['${POSTGRES_PORT:-5432}:5432']
+
     attach: false
 
   opensearch:
