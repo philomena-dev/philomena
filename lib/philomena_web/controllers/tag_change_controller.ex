@@ -7,11 +7,12 @@ defmodule PhilomenaWeb.TagChangeController do
   plug PhilomenaWeb.RequireUserPlug when action not in [:index]
 
   def index(conn, params) do
-    # user = conn.assigns.current_user
-
-    # TEMPORARY TEMPORARY TEMPORARY
-    # TODO: load via search
-    tag_changes = TagChanges.load(%{}, conn.assigns.scrivener)
+    tag_changes =
+      TagChanges.load(
+        conn.assigns.current_user,
+        params,
+        conn.assigns.scrivener
+      )
 
     render(conn, "index.html",
       title: "Tag Changes",
