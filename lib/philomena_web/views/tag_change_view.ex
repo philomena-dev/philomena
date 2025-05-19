@@ -1,9 +1,26 @@
 defmodule PhilomenaWeb.TagChangeView do
   alias Philomena.Slug
+  alias Philomena.Tags.Tag
 
   use PhilomenaWeb, :view
 
-  alias Philomena.Tags.Tag
+  def scope(conn) do
+    []
+    |> scope(conn, "tcq", :tcq)
+    |> scope(conn, "sf", :sf)
+    |> scope(conn, "sd", :sd)
+    |> scope(conn, "tag_changes", :tag_changes)
+    |> scope(conn, "thing", :thing)
+    |> scope(conn, "value", :value)
+  end
+
+  defp scope(list, conn, key, key_atom) do
+    case conn.params[key] do
+      nil -> list
+      "" -> list
+      val -> [{key_atom, val} | list]
+    end
+  end
 
   def staff?(tag_change),
     do:
