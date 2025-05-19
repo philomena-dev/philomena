@@ -2,8 +2,13 @@ defmodule PhilomenaWeb.TagChangeController do
   use PhilomenaWeb, :controller
 
   alias Philomena.TagChanges
+  alias Philomena.TagChanges.TagChange
 
-  plug :load_and_authorize_resource, model: TagChange, except: [:index], preload: :user
+  plug :load_and_authorize_resource,
+    model: TagChange,
+    only: [:delete],
+    preload: [:user, :image, tags: [:tag]]
+
   plug PhilomenaWeb.RequireUserPlug when action not in [:index]
 
   def index(conn, params) do
@@ -11,7 +16,7 @@ defmodule PhilomenaWeb.TagChangeController do
       TagChanges.load(
         conn.assigns.current_user,
         params,
-        conn.assigns.scrivener
+        conn.assigns.pagination
       )
 
     render(conn, "index.html",
@@ -33,7 +38,7 @@ defmodule PhilomenaWeb.TagChangeController do
       details: &log_details/2,
       data: tag_change
     )
-    |> redirect(to: ~p"/#{params["redirect"]}")
+    |> redirect(to: params["redirect"])
   end
 
   defp log_details(_action, %{user: %{name: name}, image: image, tags: tags}) do
