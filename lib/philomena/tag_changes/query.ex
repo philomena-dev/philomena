@@ -9,22 +9,12 @@ defmodule Philomena.TagChanges.Query do
 
   defp anonymous_fields do
     [
-      int_fields: ~W(id tags_count added_tags_count removed_tags_count),
-      numeric_fields: ~W(user_id image_id tag_ids added_tag_ids removed_tag_ids),
+      int_fields: ~W(id tag_count added_tag_count removed_tag_count),
+      numeric_fields: ~W(user_id image_id tag_id added_tag_id removed_tag_id),
       date_fields: ~W(created_at),
-      literal_fields: ~W(user tags added_tags removed_tags),
+      literal_fields: ~W(user tag added_tag removed_tag),
       bool_fields: ~W(anonymous),
-      default_field: {"tags", :term},
-      aliases: %{
-        "added" => "added_tags",
-        "removed" => "removed_tags",
-        "added_count" => "added_tags_count",
-        "removed_count" => "removed_tags_count",
-        "added_id" => "added_tag_ids",
-        "removed_id" => "removed_tag_ids",
-        "tag_id" => "tag_ids",
-        "tag" => "tags"
-      }
+      default_field: {"tag", :term}
     ]
   end
 
