@@ -10,9 +10,9 @@
 
 = form_for :tag_changes, ~p"/tag_changes", [method: "get", class: "hform hform__text", enforce_utf8: false], fn f ->
   .field
-    = text_input f, :tcq, name: :tcq, value: @conn.params["tcq"] || "*",
+    = text_input f, :tcq, name: :tcq, value: @conn.params["tcq"],
       class: "input hform__text",
-      placeholder: "Search tags",
+      placeholder: "Search tag changes",
       autocapitalize: "none",
       autocomplete: if(@conn.cookies["enable_search_ac"], do: "on", else: "off"),
       inputmode: "search",
@@ -23,7 +23,7 @@
 
     = submit "Search", class: "hform__button button button--state-primary"
 
-    => select f, :sf, ["Sort by creation date": "created_at", "Sort by tag count": "tag_count", "Sort by added tag count": "added_tag_count", "Sort by removed tag count": "removed_tag_count"], name: :sf, class: "input input--separate-left", selected: @conn.params["sf"]
+    => select f, :sf, ["Sort by date": "created_at", "Sort by tag count": "tag_count", "Sort by added tag count": "added_tag_count", "Sort by removed tag count": "removed_tag_count"], name: :sf, class: "input input--separate-left", selected: @conn.params["sf"]
     => select f, :sd, ["Descending": "desc", "Ascending": "asc"], name: :sd, class: "input input--separate-left", selected: @conn.params["sd"]
 
   .fieldlabel
