@@ -154,6 +154,16 @@ defmodule Philomena.TagChanges do
     tag_change
   end
 
+  def unindex_tag_change({:ok, %TagChange{} = tag_change} = result) do
+    Search.delete_document(tag_change.id, TagChange)
+
+    result
+  end
+
+  # Allows propagation of the error further in the chain if
+  # an unsuccessful result is given to this function.
+  def unindex_tag_change(res), do: res
+
   @doc """
   Returns a list of associations to preload when indexing tag changes.
 
@@ -257,8 +267,8 @@ defmodule Philomena.TagChanges do
   """
   def delete_tag_change(%TagChange{} = tag_change) do
     tag_change
-    |> unindex_tag_change()
     |> Repo.delete()
+    |> unindex_tag_change()
   end
 
   def count_tag_changes(field_name, value) do
@@ -292,11 +302,11 @@ defmodule Philomena.TagChanges do
   defp parse_sort(%{"sf" => sf, "sd" => sd})
        when sf in ["created_at", "tag_count", "added_tag_count", "removed_tag_count"] and
               sd in ["desc", "asc"] do
-    %{sf => sd}
+    [%{sf => sd}, %{"id" => sd}]
   end
 
   defp parse_sort(_params) do
-    %{created_at: :desc}
+    [%{created_at: :desc}, %{id: :desc}]
   end
 
   defp get_query(%{"tcq" => ""}), do: "*"

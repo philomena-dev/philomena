@@ -9,8 +9,6 @@ defmodule PhilomenaWeb.TagChangeController do
     only: [:delete],
     preload: [:user, :image, tags: [:tag]]
 
-  plug PhilomenaWeb.RequireUserPlug when action not in [:index]
-
   def index(conn, params) do
     tag_changes =
       TagChanges.load(
@@ -28,17 +26,21 @@ defmodule PhilomenaWeb.TagChangeController do
   end
 
   def delete(conn, params) do
-    tag_change = conn.assigns.tag_change
+    case TagChanges.delete_tag_change(conn.assigns.tag_change) do
+      {:ok, tag_change} ->
+        conn
+        |> put_flash(:info, "Successfully deleted tag change from history.")
+        |> moderation_log(
+          details: &log_details/2,
+          data: tag_change
+        )
+        |> redirect(to: params["redirect"])
 
-    TagChanges.delete_tag_change(tag_change)
-
-    conn
-    |> put_flash(:info, "Successfully deleted tag change from history.")
-    |> moderation_log(
-      details: &log_details/2,
-      data: tag_change
-    )
-    |> redirect(to: params["redirect"])
+      _ ->
+        conn
+        |> put_flash(:error, "Failed to delete tag change from history.")
+        |> redirect(to: params["redirect"])
+    end
   end
 
   defp log_details(_action, %{user: %{name: name}, image: image, tags: tags}) do
