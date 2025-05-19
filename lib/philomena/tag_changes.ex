@@ -5,8 +5,6 @@ defmodule Philomena.TagChanges do
 
   import Ecto.Query, warn: false
   alias Philomena.Repo
-  alias Ecto.Multi
-
   alias PhilomenaQuery.Search
   alias Philomena.TagChangeRevertWorker
   alias Philomena.TagChanges
@@ -166,23 +164,23 @@ defmodule Philomena.TagChanges do
 
   """
   def indexing_preloads do
-    alias_tags_query = select(Tag, [t], map(t, [:aliased_tag_id, :name]))
+    alias_tags_query = select(Tag, [:aliased_tag_id, :name])
 
     base_tags_query =
       Tag
-      |> select([t], [:category, :id, :name])
+      |> select([:id, :name])
       |> preload(aliases: ^alias_tags_query)
 
     image_query =
       Image
-      |> select([i], struct(i, [:anonymous, :user_id]))
+      |> select([:anonymous, :user_id])
 
     [
       image: image_query,
       tags: [
         tag: base_tags_query
       ],
-      user: select(User, [u], map(u, [:id, :name]))
+      user: select(User, [:name])
     ]
   end
 
@@ -258,18 +256,9 @@ defmodule Philomena.TagChanges do
 
   """
   def delete_tag_change(%TagChange{} = tag_change) do
-    Multi.new()
-    |> Multi.delete(:tag_change, tag_change)
-    |> Repo.transaction()
-    |> case do
-      {:ok, %{tag_change: tag_change}} ->
-        unindex_tag_change(tag_change)
-
-        {:ok, tag_change}
-
-      error ->
-        error
-    end
+    tag_change
+    |> unindex_tag_change()
+    |> Repo.delete()
   end
 
   def count_tag_changes(field_name, value) do
