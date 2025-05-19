@@ -9,7 +9,6 @@ defmodule PhilomenaWeb.TagChangeView do
     |> scope(conn, "tcq", :tcq)
     |> scope(conn, "sf", :sf)
     |> scope(conn, "sd", :sd)
-    |> scope(conn, "tag_changes", :tag_changes)
     |> scope(conn, "thing", :thing)
     |> scope(conn, "value", :value)
   end

@@ -289,7 +289,7 @@ defmodule Philomena.TagChanges do
     )
   end
 
-  defp parse_sort(%{"tag_changes" => %{"sf" => sf, "sd" => sd}})
+  defp parse_sort(%{"sf" => sf, "sd" => sd})
        when sf in ["created_at", "tag_count", "added_tag_count", "removed_tag_count"] and
               sd in ["desc", "asc"] do
     %{sf => sd}
