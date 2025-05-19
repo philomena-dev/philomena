@@ -38,9 +38,9 @@
       ul.profile-top__options__column
         li = link("Favorites", to: ~p"/search?#{[q: "faved_by_id:#{@user.id}"]}")
         = if @conn.assigns.current_user && @conn.assigns.current_user.role in ~W(moderator admin) do
-          li = link("Tag changes", to: ~p"/tag_changes?#{[q: "true_user_id:#{@user.id}"]}")
+          li = link("Tag changes", to: ~p"/tag_changes?#{[tcq: "true_user_id:#{@user.id}", thing: "user", value: @user.name]}")
         - else
-          li = link("Tag changes", to: ~p"/tag_changes?#{[q: "user_id:#{@user.id}"]}")
+          li = link("Tag changes", to: ~p"/tag_changes?#{[tcq: "user_id:#{@user.id}", thing: "user", value: @user.name]}")
         li = link("Source changes", to: ~p"/profiles/#{@user}/source_changes")
 
 = if can_index_user?(@conn) do

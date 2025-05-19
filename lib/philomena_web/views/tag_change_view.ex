@@ -1,4 +1,6 @@
 defmodule PhilomenaWeb.TagChangeView do
+  alias Philomena.Slug
+
   use PhilomenaWeb, :view
 
   alias Philomena.Tags.Tag
@@ -46,4 +48,11 @@ defmodule PhilomenaWeb.TagChangeView do
       removed_tags |> Enum.map(& &1.tag) |> Tag.display_order()
     }
   end
+
+  def link_to_thing("image", id), do: link("image ##{id}", to: ~p"/images/#{id}")
+  def link_to_thing("ip", ip), do: link(ip, to: ~p"/ip_profiles/#{ip}")
+  def link_to_thing("fingerprint", fp), do: link(fp, to: ~p"/fingerprint_profiles/#{fp}")
+  def link_to_thing("user", name), do: link(name, to: ~p"/profiles/#{Slug.slug(name)}")
+  def link_to_thing("tag", name), do: link("tag '#{name}'", to: ~p"/tags/#{Slug.slug(name)}")
+  def link_to_thing(_, _), do: ""
 end

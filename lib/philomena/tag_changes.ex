@@ -11,6 +11,7 @@ defmodule Philomena.TagChanges do
   alias Philomena.TagChangeRevertWorker
   alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
+  alias Philomena.TagChanges.Query
   alias Philomena.TagChanges.SearchIndex, as: TagChangeIndex
   alias Philomena.IndexWorker
   alias Philomena.Images
@@ -279,91 +280,39 @@ defmodule Philomena.TagChanges do
     |> Repo.one()
   end
 
-  def load(attrs, pagination) do
-    {tag_changes, _} = load(attrs, nil, pagination)
+  def load(user, params, pagination) do
+    {:ok, query} = Query.compile(get_query(params), user: user)
 
-    tag_changes
+    TagChange
+    |> Search.search_definition(
+      %{
+        query: %{
+          bool: %{
+            must: [query]
+          }
+        },
+        sort: parse_sort(params)
+      },
+      pagination
+    )
+    |> Search.search_records(
+      preload(TagChange, [:user, image: [:user, :sources, tags: :aliases], tags: [:tag]])
+    )
   end
 
-  def load(attrs, count_field, pagination) do
-    query =
-      attrs
-      |> base_query()
-      |> added_or_tag_field(attrs)
-      |> filter_anon(attrs)
-
-    item_count =
-      if count_field do
-        Repo.one(from tc in query, select: count(field(tc, ^count_field), :distinct))
-      end
-
-    query =
-      query
-      |> preload([:user, image: [:user, :sources, tags: :aliases], tags: [:tag]])
-      |> group_by([tc], tc.id)
-      |> order_by(desc: :created_at)
-
-    {Repo.paginate(query, pagination), item_count}
+  defp parse_sort(%{"tag_change" => %{"sf" => sf, "sd" => sd}})
+       when sf in ["created_at", "tag_count", "added_tag_count", "removed_tag_count"] and
+              sd in ["desc", "asc"] do
+    %{sf => sd}
   end
 
-  defp base_query(%{ip: ip}) do
-    from tc in TagChange, where: fragment("? >>= ip", ^ip)
+  defp parse_sort(_params) do
+    %{created_at: :desc}
   end
 
-  defp base_query(%{field: field_name, value: value}) do
-    from tc in TagChange, where: field(tc, ^field_name) == ^value
-  end
+  defp get_query(%{"tcq" => ""}), do: "*"
 
-  defp base_query(_) do
-    from(tc in TagChange)
-  end
+  defp get_query(%{"tcq" => q}), do: q
 
-  defp filter_anon(query, %{field: :user_id, value: id, filter_anon: true}) do
-    from t in query,
-      inner_join: i in Image,
-      on: i.id == t.image_id,
-      where: t.user_id == ^id and not (i.user_id == ^id and i.anonymous == true)
-  end
-
-  defp filter_anon(query, _), do: query
-
-  defp added_or_tag_field(query, %{added: nil, tag: nil}), do: query
-
-  defp added_or_tag_field(query, attrs) do
-    query =
-      from tc in query,
-        inner_join: tct in TagChanges.Tag,
-        on: tc.id == tct.tag_change_id
-
-    query
-    |> added_field(attrs)
-    |> tag_field(attrs)
-    |> tag_id_field(attrs)
-  end
-
-  defp added_field(query, %{added: nil}), do: query
-
-  defp added_field(query, %{added: added}),
-    do: from([_tc, tct] in query, where: tct.added == ^added)
-
-  defp added_field(query, _), do: query
-
-  defp tag_field(query, %{tag: nil}), do: query
-
-  defp tag_field(query, %{tag: tag}),
-    do:
-      from([_tc, tct] in query,
-        inner_join: t in Tag,
-        on: t.id == tct.tag_id,
-        where: t.name == ^tag
-      )
-
-  defp tag_field(query, _), do: query
-
-  defp tag_id_field(query, %{tag_id: nil}), do: query
-
-  defp tag_id_field(query, %{tag_id: id}),
-    do: from([_tc, tct] in query, where: tct.tag_id == ^id)
-
-  defp tag_id_field(query, _), do: query
+  defp get_query(_), do: "*"
 end

@@ -11,7 +11,7 @@ ul
 
 h2 Administration Options
 ul
-  li = link "View tag changes", to: ~p"/tag_changes?#{[q: "fingerprint:#{@fingerprint}", thing: "fingerprint", value: @fingerprint]}"
+  li = link "View tag changes", to: ~p"/tag_changes?#{[tcq: "fingerprint:#{@fingerprint}", thing: "fingerprint", value: @fingerprint]}"
   li = link "View source URL history", to: ~p"/fingerprint_profiles/#{@fingerprint}/source_changes"
   li = link "View reports this fingerprint has made", to: ~p"/admin/reports?#{[rq: "fingerprint:#{@fingerprint}"]}"
   li = link "View fingerprint ban history", to: ~p"/admin/fingerprint_bans?#{[fingerprint: @fingerprint]}"
