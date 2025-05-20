@@ -125,6 +125,23 @@ const filterSearchProperties = new Map<string, PropertyTypeOrValues>([
   ['user_id', numericProperty],
 ]);
 
+const reportSearchProperties = new Map<string, PropertyTypeOrValues>([
+  ['admin', literalProperty],
+  ['admin_id', numericProperty],
+  ['created_at', dateProperty],
+  ['fingerprint', literalProperty],
+  ['id', literalProperty],
+  ['image_id', numericProperty],
+  ['ip', literalProperty],
+  ['open', booleanPropertyValues],
+  ['reason', literalProperty],
+  ['reportable_id', numericProperty],
+  ['reportable_type', ['Comment', 'Conversation', 'Gallery', 'Image', 'Post']],
+  ['state', ['open', 'in_progress', 'closed']],
+  ['user', literalProperty],
+  ['user_id', numericProperty],
+]);
+
 const rangeOperators = ['gt', 'gte', 'lt', 'lte'];
 
 export const propertyTypeOperators = new Map<symbol, string[]>([
@@ -136,6 +153,7 @@ export const searchTypeToPropertiesMap = new Map<string, Map<string, PropertyTyp
   ['cq', commentSearchProperties],
   ['fq', filterSearchProperties],
   ['pq', forumSearchProperties],
+  ['rq', reportSearchProperties],
   ['tq', tagSearchProperties],
   ['q', imageSearchProperties],
 ]);
