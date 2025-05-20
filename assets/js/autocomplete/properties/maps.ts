@@ -111,6 +111,20 @@ const forumSearchProperties = new Map<string, PropertyTypeOrValues>([
   ['forum', literalProperty],
 ]);
 
+const filterSearchProperties = new Map<string, PropertyTypeOrValues>([
+  ['creator', literalProperty],
+  ['created_at', dateProperty],
+  ['description', literalProperty],
+  ['hidden_count', numericProperty],
+  ['id', numericProperty],
+  ['my', ['filters']],
+  ['name', literalProperty],
+  ['public', booleanPropertyValues],
+  ['spoilered_count', numericProperty],
+  ['system', booleanPropertyValues],
+  ['user_id', numericProperty],
+]);
+
 const rangeOperators = ['gt', 'gte', 'lt', 'lte'];
 
 export const propertyTypeOperators = new Map<symbol, string[]>([
@@ -120,6 +134,7 @@ export const propertyTypeOperators = new Map<symbol, string[]>([
 
 export const searchTypeToPropertiesMap = new Map<string, Map<string, PropertyTypeOrValues>>([
   ['cq', commentSearchProperties],
+  ['fq', filterSearchProperties],
   ['pq', forumSearchProperties],
   ['tq', tagSearchProperties],
   ['q', imageSearchProperties],
