@@ -175,6 +175,27 @@ defmodule PhilomenaMedia.Objects do
     replicate_request(&S3.delete_multiple_objects/2, &[&1[:bucket], keys])
   end
 
+  # Run the S3 operation with the given list of arguments. The `opts` parameter
+  # is used to select the specific S3 backend to run the operation against. See
+  # the functions `primary_opts/0` and `replica_opts/0` responsible for reading
+  # the config for the primary and replica S3-compatible storages.
+  #
+  # This function serves as a thin wrapper over this call:
+  # ```ex
+  # operation_fn(...args) |> ExAws.request(opts[:config_overrides])
+  # ```
+  #
+  # Everything else in this function is just logging the request and the
+  # potential error.
+  #
+  # # Huge Payloads Logging
+  #
+  # There is a special case of the `s3:PutObject` request that accepts a binary
+  # payload to upload with the maximum size of 5GB (according to AWS limits).
+  # For this use case, this function specially handles arguments in the `args`
+  # list of shape `{:log_byte_size, binary}`. This is used to log the size of the
+  # binary payload in MB instead of logging the entire payload itself, which
+  # would be wasteful and useless.
   @spec request(operation_fn(), [term()], keyword()) :: term()
   defp request(operation, args, opts) do
     {:name, operation_name} = Function.info(operation, :name)
@@ -205,16 +226,33 @@ defmodule PhilomenaMedia.Objects do
       {:ok, output} ->
         {:ok, output}
 
+      # Specially handle the `:http_error` case. This is the most frequent error
+      # that can happen when the S3 backend responds with an error like
+      # `BucketNotFound` or `InvalidRequest`. In this case are most interested
+      # in the response status and body which fully describe the error.
+      # We do it this way to provide nicer formatting for such errors.
       {:error, {:http_error, status_code, %{body: body}} = err} ->
-        Logger.warning("S3.#{operation_name} failed (#{inspect(status_code)})\nError: #{body}")
+        Logger.warning(
+          "S3.#{operation_name} failed (HTTP #{inspect(status_code)})\nError: #{body}"
+        )
+
         {:error, err}
 
+      # This is a less likely generic case of an error like connection timeout
       {:error, err} ->
         Logger.warning("S3.#{operation_name} failed\nError: #{inspect(err, pretty: true)}")
         {:error, err}
     end
   end
 
+  # Run the S3 request across the primary and replica backends. This is only
+  # useful for mutating operations that need to write the new changes to both
+  # destinations. Any errors will be just logged and **not** propagated to the
+  # caller.
+  #
+  # Ideally, a pro-active alert could be triggered to notify the ops about the
+  # issue immediately so they fix the problem and retry the upload. We'll leave
+  # this improvement for another day.
   @spec replicate_request(operation_fn(), (keyword() -> [term()])) :: :ok
   defp replicate_request(operation, args) do
     {:name, operation_name} = Function.info(operation, :name)
