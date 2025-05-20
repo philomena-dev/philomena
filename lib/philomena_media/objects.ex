@@ -228,9 +228,9 @@ defmodule PhilomenaMedia.Objects do
 
       # Specially handle the `:http_error` case. This is the most frequent error
       # that can happen when the S3 backend responds with an error like
-      # `BucketNotFound` or `InvalidRequest`. In this case are most interested
-      # in the response status and body which fully describe the error.
-      # We do it this way to provide nicer formatting for such errors.
+      # `BucketNotFound` or `InvalidRequest`. In this case we are most
+      # interested in the response status and body which fully describe the
+      # error. We do it this way to provide nicer formatting for such errors.
       {:error, {:http_error, status_code, %{body: body}} = err} ->
         Logger.warning(
           "S3.#{operation_name} failed (HTTP #{inspect(status_code)})\nError: #{body}"
@@ -266,7 +266,7 @@ defmodule PhilomenaMedia.Objects do
 
     cond do
       total_err > 0 and total_err == length(backends) ->
-        Logger.error("S3.#{operation_name} failed for all backends")
+        Logger.error("S3.#{operation_name} failed for all (#{total_err}) backends")
 
       total_err > 0 ->
         Logger.warning("S3.#{operation_name} failed for #{total_err} backends")
