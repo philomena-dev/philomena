@@ -128,9 +128,11 @@ class Autocomplete {
 
     const activeTerm = input.snapshot.activeTerm.term;
 
-    suggestions.tags = this.index
-      .matchPrefix(activeTerm, input.maxSuggestions - suggestions.history.length)
-      .map(suggestion => new TagSuggestionComponent(suggestion));
+    if (input?.hasTagSuggestions()) {
+      suggestions.tags = this.index
+        .matchPrefix(activeTerm, input.maxSuggestions - suggestions.history.length)
+        .map(suggestion => new TagSuggestionComponent(suggestion));
+    }
 
     if (shouldSuggestProperties()) {
       suggestions.properties = matchProperties(input, activeTerm, this.index).map(
@@ -163,7 +165,7 @@ class Autocomplete {
   shouldSkipServerSideSuggestion(activeTerm: string, suggestions: Suggestions): boolean {
     // Only if the index had its chance to provide suggestions
     // and produced nothing, do we try to fetch server-side suggestions.
-    if (suggestions.tags.length > 0 || activeTerm.length < 3) {
+    if (!this.input?.hasTagSuggestions() || suggestions.tags.length > 0 || activeTerm.length < 3) {
       return true;
     }
 
