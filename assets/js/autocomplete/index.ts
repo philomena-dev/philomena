@@ -34,6 +34,10 @@ function readHistoryConfig() {
   };
 }
 
+function shouldSuggestProperties() {
+  return !store.get<boolean>('autocomplete_properties_hidden');
+}
+
 class Autocomplete {
   index: null | 'fetching' | 'unavailable' | LocalAutocompleter = null;
   input: AutocompletableInput | null = null;
@@ -128,9 +132,11 @@ class Autocomplete {
       .matchPrefix(activeTerm, input.maxSuggestions - suggestions.history.length)
       .map(suggestion => new TagSuggestionComponent(suggestion));
 
-    suggestions.properties = matchProperties(input, activeTerm, this.index).map(
-      suggestion => new PropertySuggestionComponent(suggestion),
-    );
+    if (shouldSuggestProperties()) {
+      suggestions.properties = matchProperties(input, activeTerm, this.index).map(
+        suggestion => new PropertySuggestionComponent(suggestion),
+      );
+    }
 
     // Used for debugging server-side completions, to ensure local autocomplete
     // doesn't prevent sever-side completions from being shown. Use these console
@@ -164,7 +170,7 @@ class Autocomplete {
     // Make sure to NOT request server-side suggestions when user have typed valid property and started typing the
     // value. For example, once user typed `tag_count:10`, then there is no point to request anything from the server.
     if (suggestions.properties.length > 0) {
-      return suggestions.properties.some(component => component.suggestion.containsColon())
+      return suggestions.properties.some(component => component.suggestion.containsColon());
     }
 
     return false;

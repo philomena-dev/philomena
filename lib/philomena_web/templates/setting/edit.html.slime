@@ -327,6 +327,15 @@ h1 Content Settings
                 :autocomplete_search_history_max_suggestions_when_typing,
                 "Maximum number of search history suggestions in auto-completion when typing"
 
+        .field
+          => checkbox f,
+              :autocomplete_properties_hidden,
+              checked: @conn.cookies["autocomplete_properties_hidden"] == "true",
+              class: "checkbox"
+          => label f,
+              :autocomplete_properties_hidden,
+              "Hide properties in auto-completion"
+
       = if staff?(@conn.assigns.current_user) do
         = field_with_help( \
           "Hide most of the staff tools (e.g. IPs, anon names) making your site " <> \
