@@ -18,7 +18,8 @@ defmodule Philomena.SearchPolicy do
   alias Philomena.Users.User
   alias Philomena.Users
 
-  @type schema_module :: Comment | Gallery | Image | Post | Report | Tag | TagChange | Filter | User
+  @type schema_module ::
+          Comment | Gallery | Image | Post | Report | Tag | TagChange | Filter | User
 
   @doc """
   For a given schema module (e.g. `m:Philomena.Images.Image`), return the associated module

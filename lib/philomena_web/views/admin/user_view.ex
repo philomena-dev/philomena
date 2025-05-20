@@ -4,8 +4,8 @@ defmodule PhilomenaWeb.Admin.UserView do
   def scope(conn) do
     []
     |> scope(conn, "uq", :uq)
-    |> scope(conn, "usf", :usf)
-    |> scope(conn, "usd", :usd)
+    |> scope(conn, "sf", :sf)
+    |> scope(conn, "sd", :sd)
   end
 
   defp scope(list, conn, key, key_atom) do
