@@ -27,8 +27,8 @@ h1 Users
         "Ascending": :asc
       ]
 
-    = select f, :usf, sort_fields, class: "input", name: "usf", autocomplete: "off", selected: @conn.params["usf"]
-    = select f, :usd, sort_directions, class: "input input--separate-left", name: "usd", autocomplete: "off", selected: @conn.params["usd"]
+    = select f, :sf, sort_fields, class: "input", name: :sf, autocomplete: "off", selected: @conn.params["sf"]
+    = select f, :sd, sort_directions, class: "input input--separate-left", name: :sd, autocomplete: "off", selected: @conn.params["sd"]
 
 => link "Site staff", to: ~p"/admin/users?#{[uq: "NOT role:user"]}"
 ' &bull;

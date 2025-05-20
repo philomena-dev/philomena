@@ -34,10 +34,10 @@ defmodule PhilomenaWeb.UserLoader do
   defp parse_sort(params),
     do: parse_sf(params, parse_sd(params))
 
-  defp parse_sd(%{"usd" => sd}) when sd in ~W(asc desc), do: sd
+  defp parse_sd(%{"sd" => sd}) when sd in ~W(asc desc), do: sd
   defp parse_sd(_params), do: "desc"
 
-  defp parse_sf(%{"usf" => sf}, sd) when sf in @sortable_fields,
+  defp parse_sf(%{"sf" => sf}, sd) when sf in @sortable_fields,
     do: [%{sf => sd}, %{"id" => sd}]
 
   defp parse_sf(_params, sd),
