@@ -120,7 +120,7 @@ export const propertyTypeOperators = new Map<symbol, string[]>([
 
 export const searchTypeToPropertiesMap = new Map<string, Map<string, PropertyTypeOrValues>>([
   ['cq', commentSearchProperties],
-  ['fq', forumSearchProperties],
+  ['pq', forumSearchProperties],
   ['tq', tagSearchProperties],
   ['q', imageSearchProperties],
 ]);
