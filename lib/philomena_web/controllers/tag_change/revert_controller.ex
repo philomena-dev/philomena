@@ -17,12 +17,16 @@ defmodule PhilomenaWeb.TagChange.RevertController do
     }
 
     case TagChanges.mass_revert(ids, attributes) do
-      {:ok, _affected_tag_changes, total_tags_affected} ->
+      {:ok, total_tags_affected} ->
         conn
         |> put_flash(
           :info,
-          "Successfully reverted #{length(ids)} tag changes with " <>
-            "#{total_tags_affected} tags actually updated."
+          if total_tags_affected == 0 do
+            "The revert of #{length(ids)} changes resulted in no effective tag updates."
+          else
+            "Successfully reverted #{length(ids)} tag changes with " <>
+              "#{total_tags_affected} tags effectively updated."
+          end
         )
         |> moderation_log(
           details: &log_details/2,

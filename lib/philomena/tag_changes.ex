@@ -14,6 +14,8 @@ defmodule Philomena.TagChanges do
   alias Philomena.Tags.Tag
   alias Philomena.Users
 
+  require Logger
+
   @typedoc """
   In the successful case returns the `TagChange`s that were loaded and affected
   plus a non-negative integer with the number of tags affected by the revert.
@@ -49,78 +51,87 @@ defmodule Philomena.TagChanges do
   @spec mass_revert_impl(%{tag_change_id() => [tag_id()] | nil}, Users.principal()) ::
           mass_revert_result()
   defp mass_revert_impl(input, principal) do
+    # Load the requested tag changes from the DB. `nil` in the position of the
+    # tag IDs list means we want to revert all tags for that tag change.
     input =
       input
-      |> Enum.map(fn {tag_change_id, tag_ids} -> %{tc_id: tag_change_id, tag_ids: tag_ids} end)
+      |> Enum.map(fn {tc_id, tag_ids} ->
+        %{
+          tc_id: tc_id,
+          tag_ids: if(not is_nil(tag_ids), do: tag_ids |> Enum.uniq())
+        }
+      end)
 
-    tag_changes =
+    tags_by_image =
       Repo.all(
         from tc in TagChange,
-          as: :tc,
-          # Filter the tag changes table by the input tag change ids. Note that
-          # we use `json_to_recordset` to convert the input into a table that
-          # contains an array column. This is the simplest way to do this in
-          # postgres.
           inner_join:
             input in fragment(
-              """
-              SELECT * FROM json_to_recordset(?) as (tc_id int, tag_ids int[])
-              """,
+              "SELECT * FROM jsonb_to_recordset(?) AS (tc_id int, tag_ids int[])",
               ^input
             ),
           on: tc.id == input.tc_id,
-
-          # Join and filter only specific tags that we want to revert, unless
-          # the `tag_ids` is nil, which means all tags in the change are a
-          # subject of the revert.
           inner_join: tct in TagChanges.Tag,
-          as: :tct,
-          on:
-            tct.tag_change_id == tc.id and (is_nil(input.tag_ids) or tct.tag_id in input.tag_ids),
-
-          # Make sure the tag changes that we want to revert are the most recent
-          # ones. The revert only makes sense for tag changes that influenced the
-          # current state of the image.
-          where:
-            not exists(
-              from newer_tct in TagChanges.Tag,
-                where: parent_as(:tct).tag_id == newer_tct.tag_id,
-                join: newer_tc in TagChange,
-                on:
-                  newer_tc.id ==
-                    newer_tct.tag_change_id and newer_tc.image_id == parent_as(:tc).image_id,
-                where:
-                  newer_tc.created_at > parent_as(:tc).created_at or
-                    newer_tc.id > parent_as(:tc).id
-            ),
-
-          # Group all tag changes by ID accumulating all tags into an array.
-          group_by: tc.id,
-          select: %TagChange{
-            id: tc.id,
+          on: tc.id == tct.tag_change_id,
+          where: is_nil(input.tag_ids) or tct.tag_id in input.tag_ids,
+          group_by: [tc.image_id, tct.tag_id],
+          # Get min/max rows without subqueries (don't repeat this at home).
+          # Retain only changes that dont cancel themselves out already i.e. we
+          # want to ignore change sequences where the first change adds the tag
+          # and the last change removes it or vice versa, because they are
+          # already self-cancelling.
+          having:
+            fragment("(array_agg(? ORDER BY ? ASC))[1]", tct.added, tc.id) ==
+              fragment("(array_agg(? ORDER BY ? DESC))[1]", tct.added, tc.id),
+          select: %{
             image_id: tc.image_id,
-            tags: fragment("array_agg(row(?, ?))", tct.tag_id, tct.added)
+            tag_id: tct.tag_id,
+            last_change:
+              fragment("(array_agg(row (?, ?) ORDER BY ? DESC))[1]", tc.id, tct.added, tc.id)
           }
       )
-      |> Enum.map(fn tag_change ->
-        tags =
-          tag_change.tags
-          |> Enum.map(fn {tag_id, added} ->
-            %TagChanges.Tag{tag_id: tag_id, added: added}
-          end)
+      |> Enum.group_by(& &1.image_id)
 
-        put_in(tag_change.tags, tags)
+    # Load latest tag change IDs for each {image, tags} we are interested in.
+    # We'll use this to filter out tag changes that are non-current, meaning
+    # reverting them would not be useful as they were already overwritten by
+    # some other change not in the list of reverted changes.
+    input =
+      tags_by_image
+      |> Enum.map(fn {image_id, tags} ->
+        %{
+          image_id: image_id,
+          tag_ids: tags |> Enum.map(& &1.tag_id)
+        }
       end)
+
+    latest_tc_ids =
+      Repo.all(
+        from tc in TagChange,
+          inner_join:
+            input in fragment(
+              "SELECT * FROM jsonb_to_recordset(?) AS (image_id int, tag_ids int[])",
+              ^input
+            ),
+          on: tc.image_id == input.image_id,
+          inner_join: tct in TagChanges.Tag,
+          on: tc.id == tct.tag_change_id and tct.tag_id in input.tag_ids,
+          group_by: [tc.image_id, tct.tag_id],
+          select: max(tc.id),
+          # It's possible for the same tag change to cover the latest versions
+          # of several tags, so deduplicate the results.
+          distinct: true
+      )
+      |> MapSet.new()
 
     # Calculate the revert operations for each image.
     reverts_per_image =
-      tag_changes
-      |> Enum.group_by(& &1.image_id)
-      |> Enum.map(fn {image_id, tag_changes} ->
+      tags_by_image
+      |> Enum.map(fn {image_id, tags} ->
         {added_tags, removed_tags} =
-          tag_changes
-          |> Enum.flat_map(& &1.tags)
-          |> Enum.split_with(& &1.added)
+          tags
+          |> Enum.filter(fn %{last_change: {tc_id, _}} -> tc_id in latest_tc_ids end)
+          |> Enum.split_with(fn %{last_change: {_, added}} -> added end)
 
         # We send removed tags to be added, and added to be removed. That's how reverting works!
         %{
@@ -129,9 +140,10 @@ defmodule Philomena.TagChanges do
           removed_tag_ids: Enum.map(added_tags, & &1.tag_id)
         }
       end)
+      |> Enum.reject(&(&1.added_tag_ids == [] and &1.removed_tag_ids == []))
 
     with {:ok, {total_tags_affected, _}} <- Images.batch_update(reverts_per_image, principal) do
-      {:ok, tag_changes, total_tags_affected}
+      {:ok, total_tags_affected}
     end
   end
 

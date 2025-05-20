@@ -31,6 +31,10 @@ defmodule PhilomenaWeb.Test.TagChanges do
       assert tag not in current_tags
     end
 
+    for tag <- removed_tags do
+      assert tag in current_tags
+    end
+
     new_tags =
       current_tags
       |> Enum.reject(&(&1 in removed_tags))
