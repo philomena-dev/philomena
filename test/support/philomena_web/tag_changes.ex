@@ -27,13 +27,13 @@ defmodule PhilomenaWeb.Test.TagChanges do
     removed_tags = Keyword.get(diff, :remove, [])
     current_tags = ctx.image.tags |> Enum.map(& &1.name)
 
-    for tag <- added_tags do
+    Enum.each(added_tags, fn tag ->
       assert tag not in current_tags
-    end
+    end)
 
-    for tag <- removed_tags do
+    Enum.each(removed_tags, fn tag ->
       assert tag in current_tags
-    end
+    end)
 
     new_tags =
       current_tags
