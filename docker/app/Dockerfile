@@ -116,11 +116,14 @@ RUN sudo apk add \
     zsh
 
 RUN sudo apk add --repository https://dl-cdn.alpinelinux.org/alpine/edge/community \
-    # This version of `docker-compose` contains a fix for the following annoying
-    # terminal flickering bug: https://github.com/docker/compose/issues/12435
-    docker-cli-compose=2.35.1-r0 \
+    # This version of `docker-compose` in the `edge` repo contains a fix for the
+    # following annoying terminal flickering bug:
+    # https://github.com/docker/compose/issues/12370
+    #
+    # Switch to the main repo once v2.35.1+ of docker-compose is there.
+    docker-cli-compose \
     # Use the bleeding edge of `typos`. Its dictionary is often updated
-    typos=1.31.1-r0
+    typos
 
 ARG OMZ=./.devcontainer/shell/oh-my-zsh.sh
 RUN --mount=source=./scripts,target=./scripts --mount=source=$OMZ,target=$OMZ $OMZ
