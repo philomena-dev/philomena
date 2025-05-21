@@ -101,6 +101,43 @@ function init {
   "$(dirname "${BASH_SOURCE[0]}")/init.sh"
 }
 
+# Update the `queries.json` test snapshots after the implementation changes.
+function update_search_syntax_tests {
+  # TODO: refactor this after the devcontainer PR is merged:
+  # https://github.com/philomena-dev/philomena/pull/528
+  # shellcheck disable=SC2016
+  test='
+    set -euo pipefail
+
+    . scripts/lib.sh
+
+    export MIX_ENV=test
+
+    step mix deps.get
+
+    if step createdb -h postgres -U postgres philomena_test; then
+      step mix ecto.create
+      step mix ecto.load
+    elif [[ "$(mix ecto.migrations)" == *" down "* ]]; then
+      step mix ecto.migrate --all
+    fi
+
+    step mix test test/philomena/images/query_test.exs
+  '
+
+  ASSERT_VALUE_ACCEPT_DIFFS=y step docker compose run \
+    --remove-orphans \
+    app bash -c "$test"
+
+  # See the git diff for the updated snapshot in vscode if it's available.
+  if command -v code &>/dev/null; then
+    step git difftool \
+      --no-prompt \
+      --extcmd "code --wait --diff" \
+      -- test/philomena/images/search-syntax.json
+  fi
+}
+
 subcommand="${1:-}"
 shift || true
 
@@ -118,6 +155,7 @@ case "$subcommand" in
   # Shortcut for `philomena exec docker compose`
   compose) docker compose "$@" ;;
 
+  update-search-syntax-tests) update_search_syntax_tests "$@" ;;
   *)
     die "See the available sub-commands in ${BASH_SOURCE[0]}"
     ;;
