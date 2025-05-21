@@ -77,7 +77,7 @@ services:
     # Using a different unique port by default just in case there are some
     # other Postgres instances running on the host that are using the ubiquitous
     # port 5432.
-    ports: ['${POSTGRES_PORT:5400}:5432']
+    ports: ['${POSTGRES_PORT:-5400}:5432']
 
     attach: false
 
