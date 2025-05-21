@@ -60,7 +60,7 @@ defmodule Philomena.SearchSyntaxCase do
     # for a command. As a simple workaround we use a bash wrapper that translates
     # a CLI parameter into the stdin for `prettier`. An alternative way to do
     # that could be with the Port API, but bash solution is a bit simpler:
-    # hexdocs.pm/elixir/1.18.3/Port.html#module-example
+    # https://hexdocs.pm/elixir/1.18.3/Port.html#module-example
     {actual, 0} =
       System.cmd(
         "bash",
