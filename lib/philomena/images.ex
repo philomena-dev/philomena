@@ -1177,7 +1177,7 @@ defmodule Philomena.Images do
 
       %{
         image_id: image_id,
-        added_tag_ids: Enum.reject(added, fn a -> Enum.member?(removed, a) end),
+        added_tag_ids: added -- removed,
         removed_tag_ids: removed
       }
     end)
