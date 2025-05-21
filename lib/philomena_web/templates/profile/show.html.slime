@@ -152,7 +152,6 @@
               tr
                 td = body
                 td = pretty_time(mod_note.created_at)
-    = if can_index_user?(@conn) do
       .block
         a.block__header--single-item href=~p"/profiles/#{@user}/scratchpad/edit" Moderation Scratchpad
         .block__content.profile-about
