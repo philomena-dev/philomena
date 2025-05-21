@@ -17,12 +17,9 @@ defmodule Philomena.TagChanges do
   require Logger
 
   @typedoc """
-  In the successful case returns the `TagChange`s that were loaded and affected
-  plus a non-negative integer with the number of tags affected by the revert.
+  In the successful case returns the number of tags affected by the revert.
   """
-  @type mass_revert_result ::
-          {:ok, [TagChange.t()], non_neg_integer()}
-          | {:error, any()}
+  @type mass_revert_result :: {:ok, non_neg_integer()} | {:error, any()}
 
   @type tag_change_id :: integer()
   @type tag_id :: integer()
