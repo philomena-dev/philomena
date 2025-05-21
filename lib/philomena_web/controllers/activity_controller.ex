@@ -40,7 +40,7 @@ defmodule PhilomenaWeb.ActivityController do
           query: %{
             bool: %{
               must: %{
-                range: %{posted_at: %{gt: "now-1w"}}
+                range: %{created_at: %{gt: "now-1w"}}
               },
               must_not: [
                 %{terms: %{image_tag_ids: conn.assigns.current_filter.hidden_tag_ids}},
@@ -48,7 +48,7 @@ defmodule PhilomenaWeb.ActivityController do
               ]
             }
           },
-          sort: %{posted_at: :desc}
+          sort: %{created_at: :desc}
         },
         %{page_number: 1, page_size: 6}
       )
