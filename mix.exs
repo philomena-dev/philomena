@@ -96,19 +96,7 @@ defmodule Philomena.MixProject do
        github: "marcinkoziej/canary", ref: "704debde7a2c0600f78c687807884bf37c45bd79"},
 
       # Automated testing
-      {
-        :assert_value,
-        "~> 0.10.4",
-        # This is really stupid but Elixir just doesn't have any mechanism to
-        # suppress warnings at all, even from code from third-party libraries.
-        # So we are using the version from
-        # https://github.com/assert-value/assert_value_elixir/pull/18 which
-        # fixes the compiler warning "the following clause will never match"
-        # when using `assert_value`.
-        only: [:dev, :test],
-        github: "assert-value/assert_value_elixir",
-        ref: "4f4e86f0c340d3c29756e68f385ebec85113ba0f"
-      }
+      {:assert_value, "~> 0.10.5", only: [:dev, :test]}
     ]
   end
 
