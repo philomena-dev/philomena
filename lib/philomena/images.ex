@@ -76,7 +76,7 @@ defmodule Philomena.Images do
   given in the `upload_pid` field.
   """
   @type image_upload :: %{
-          image: Image,
+          image: %Image{},
           upload_pid: pid
         }
 
@@ -93,7 +93,7 @@ defmodule Philomena.Images do
 
   """
   @spec create_image(Users.principal(), %{String.t() => any()}) ::
-          {:ok, image_upload()} | {:error, any()}
+          {:ok, image_upload()} | Ecto.Multi.failure()
   def create_image(attribution, attrs \\ %{}) do
     tags = Tags.get_or_create_tags(attrs["tag_input"])
     sources = attrs["sources"]

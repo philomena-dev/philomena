@@ -21,11 +21,6 @@ defmodule Philomena.Users.User do
   alias Philomena.Bans.User, as: UserBan
   alias Philomena.Donations.Donation
 
-  @typedoc """
-  Represents the User struct type.
-  """
-  @type t :: %User{}
-
   @derive {Phoenix.Param, key: :slug}
   @derive {Inspect, except: [:password]}
   schema "users" do

@@ -28,7 +28,7 @@ defmodule Philomena.Users do
   @type principal :: [
           ip: EctoNetwork.INET.t(),
           fingerprint: String.t(),
-          user: User.t() | nil
+          user: %User{} | nil
         ]
 
   ## Database getters
