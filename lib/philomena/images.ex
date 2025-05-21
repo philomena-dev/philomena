@@ -71,9 +71,9 @@ defmodule Philomena.Images do
   end
 
   @typedoc """
-  Result of the `create_image/3` function. The image was created in a DB but
-  an upload process is probably still running in the background with its PID
-  given in the `upload_pid` field.
+  Result of the `create_image/3` function. The image was created in a DB but an
+  upload process could still running in the background with its PID given in the
+  `upload_pid` field.
   """
   @type image_upload :: %{
           image: %Image{},
