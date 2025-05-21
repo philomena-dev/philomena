@@ -37,6 +37,7 @@ defmodule Philomena.Images do
   alias Philomena.Galleries.Gallery
   alias Philomena.Galleries.Interaction
   alias Philomena.Users.User
+  alias Philomena.Users
 
   use Philomena.Subscriptions,
     on_delete: :clear_image_notification,
@@ -69,6 +70,16 @@ defmodule Philomena.Images do
     |> Enum.map_join(", ", & &1.name)
   end
 
+  @typedoc """
+  Result of the `create_image/3` function. The image was created in a DB but
+  an upload process is probably still running in the background with its PID
+  given in the `upload_pid` field.
+  """
+  @type image_upload :: %{
+          image: Image,
+          upload_pid: pid
+        }
+
   @doc """
   Creates a image.
 
@@ -81,6 +92,8 @@ defmodule Philomena.Images do
       {:error, %Ecto.Changeset{}}
 
   """
+  @spec create_image(Users.principal(), %{String.t() => any()}) ::
+          {:ok, image_upload()} | {:error, any()}
   def create_image(attribution, attrs \\ %{}) do
     tags = Tags.get_or_create_tags(attrs["tag_input"])
     sources = attrs["sources"]
