@@ -56,8 +56,11 @@ defmodule Philomena.SearchSyntaxCase do
       |> Jason.OrderedObject.new()
       |> Jason.encode!(pretty: true)
 
-    # This is really dumb, but Elixir's subprocess API doesn't support
-    # passing custom payload via stdin for a command.
+    # Elixir's `System.cmd` API doesn't support passing custom payload via stdin
+    # for a command. As a simple workaround we use a bash wrapper that translates
+    # a CLI parameter into the stdin for `prettier`. An alternative way to do
+    # that could be with the Port API, but bash solution is a bit simpler:
+    # hexdocs.pm/elixir/1.18.3/Port.html#module-example
     {actual, 0} =
       System.cmd(
         "bash",
