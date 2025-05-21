@@ -58,11 +58,15 @@ defmodule Philomena.UsersFixtures do
   end
 
   def confirmed_user_fixture(attrs \\ %{}) do
-    user_fixture(Map.put(attrs, :confirmed, true))
+    attrs
+    |> Map.put(:confirmed, true)
+    |> user_fixture()
   end
 
   def locked_user_fixture(attrs \\ %{}) do
-    user_fixture(Map.put(attrs, :locked, true))
+    attrs
+    |> Map.put(:locked, true)
+    |> user_fixture()
   end
 
   def extract_user_token(fun) do
