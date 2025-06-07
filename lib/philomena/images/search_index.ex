@@ -164,7 +164,7 @@ defmodule Philomena.Images.SearchIndex do
       hidden_by_users: image.hiders |> Enum.map(&String.downcase(&1.name)),
       upvoters: image.upvoters |> Enum.map(&String.downcase(&1.name)),
       downvoters: image.downvoters |> Enum.map(&String.downcase(&1.name)),
-      deleted_by_user: if(!!image.deleter, do: image.deleter.name),
+      deleted_by_user: if(!!image.deleter, do: String.downcase(image.deleter.name)),
       approved: image.approved,
       error_tag_count: Enum.count(image.tags, &(&1.category == "error")),
       rating_tag_count: Enum.count(image.tags, &(&1.category == "rating")),
