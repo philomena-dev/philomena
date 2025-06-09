@@ -77,7 +77,7 @@ function clean {
   step docker container prune --force
   step docker volume prune --all --force
   step docker image prune --all --force
-  step docker builx prune --all --force
+  step docker buildx prune --all --force
   step sudo chown --recursive "$(id -u):$(id -g)" .
 
   if [[ "$git" == "true" ]]; then
