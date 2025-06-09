@@ -20,6 +20,8 @@ services:
       # be a bare `level` which will be used as a catch-all for all other log
       # events that do not match any of the previous filters.
       - PHILOMENA_LOG=${PHILOMENA_LOG-Ecto=debug,Exq=none,PhilomenaMedia.Objects=info,debug}
+      # Set this env var to `y` to regenerate the test snapshots
+      - ASSERT_VALUE_ACCEPT_DIFFS
       - MIX_ENV=dev
       - PGPASSWORD=postgres
       - ANONYMOUS_NAME_SALT=2fmJRo0OgMFe65kyAJBxPT0QtkVes/jnKDdtP21fexsRqiw8TlSY7yO+uFyMZycp
@@ -63,6 +65,7 @@ services:
       - postgres
       - opensearch
       - valkey
+      - files
     ports:
       - '5173:5173'
 
@@ -72,6 +75,12 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+    # Expose DB port for connecting from a DB viewer client. `POSTGRES_PORT`
+    # variable can be used to prevent conflicts with other postgres instances
+    # potentially already running on the host.
+    ports: ['${POSTGRES_PORT:-5432}:5432']
+
     attach: false
 
   opensearch:

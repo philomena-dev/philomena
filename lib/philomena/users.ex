@@ -21,6 +21,16 @@ defmodule Philomena.Users do
   alias Philomena.UserEraseWorker
   alias Philomena.UserRenameWorker
 
+  @typedoc """
+  Describes the entity performing the action.
+  The term `principal` was borrowed from AWS IAM terminology.
+  """
+  @type principal :: [
+          ip: EctoNetwork.INET.t(),
+          fingerprint: String.t(),
+          user: User.t() | nil
+        ]
+
   ## Database getters
 
   @doc """
