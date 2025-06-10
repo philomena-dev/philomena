@@ -146,6 +146,15 @@ export class TestContext {
     await vi.runAllTimersAsync();
   }
 
+  /**
+   * Sets the `name` attribute for the input. Used to test different sets of properties which are matched by it.
+   * @param fieldName Name to set.
+   */
+  async setName(fieldName: string) {
+    this.input.name = fieldName;
+    await vi.runAllTimersAsync();
+  }
+
   async keyDown(code: string, params?: { ctrlKey?: boolean; key?: string }) {
     fireEvent.keyDown(this.input, { code, ...(params ?? {}) });
     await vi.runAllTimersAsync();
