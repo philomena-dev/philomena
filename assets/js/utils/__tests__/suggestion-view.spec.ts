@@ -85,7 +85,7 @@ describe('Suggestions', () => {
       [popup, input] = mockBaseSuggestionsPopup(true);
 
       expect(document.querySelectorAll('.autocomplete__item').length).toBe(
-        mockedSuggestions.history.length + mockedSuggestions.tags.length,
+        mockedSuggestions.history.length + mockedSuggestions.tags.length + mockedSuggestions.properties.length,
       );
     });
 
@@ -115,8 +115,13 @@ describe('Suggestions', () => {
 
       popup.selectCtrlDown();
 
-      expect(popup.selectedSuggestion).toBe(mockedSuggestions.tags.at(-1));
-      expect(document.querySelector('.autocomplete__item__tag:last-child')).toHaveClass(selectedItemClassName);
+      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties.at(0));
+      expect(document.querySelector('.autocomplete__item__property')).toHaveClass(selectedItemClassName);
+
+      popup.selectCtrlDown();
+
+      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties.at(-1));
+      expect(document.querySelector('.autocomplete__item__property:last-child')).toHaveClass(selectedItemClassName);
 
       // Should loop around
       popup.selectCtrlDown();
@@ -129,8 +134,17 @@ describe('Suggestions', () => {
 
       popup.selectCtrlUp();
 
+      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties.at(-1));
+      expect(document.querySelector('.autocomplete__item__property:last-child')).toHaveClass(selectedItemClassName);
+
+      popup.selectCtrlUp();
+
+      const expectedNthOfTypeIndex = mockedSuggestions.history.length + mockedSuggestions.tags.length;
+
       expect(popup.selectedSuggestion).toBe(mockedSuggestions.tags.at(-1));
-      expect(document.querySelector('.autocomplete__item__tag:last-child')).toHaveClass(selectedItemClassName);
+      expect(document.querySelector(`.autocomplete__item__tag:nth-of-type(${expectedNthOfTypeIndex})`)).toHaveClass(
+        selectedItemClassName,
+      );
 
       popup.selectCtrlUp();
 
@@ -147,8 +161,8 @@ describe('Suggestions', () => {
       // Should loop around
       popup.selectCtrlUp();
 
-      expect(popup.selectedSuggestion).toBe(mockedSuggestions.tags.at(-1));
-      expect(document.querySelector('.autocomplete__item__tag:last-child')).toHaveClass(selectedItemClassName);
+      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties.at(-1));
+      expect(document.querySelector('.autocomplete__item__property:last-child')).toHaveClass(selectedItemClassName);
     });
 
     it('should do nothing on selection changes when empty', () => {
