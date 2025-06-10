@@ -1,14 +1,17 @@
 import {
-  SuggestionsPopupComponent,
-  TagSuggestionComponent,
-  Suggestions,
   HistorySuggestionComponent,
   ItemSelectedEvent,
+  PropertySuggestionComponent,
+  Suggestions,
+  SuggestionsPopupComponent,
+  TagSuggestionComponent,
 } from '../suggestions-view.ts';
 import { TagSuggestion } from 'utils/suggestions-model.ts';
 import { afterEach } from 'vitest';
 import { fireEvent } from '@testing-library/dom';
 import { assertNotNull } from '../assert.ts';
+import { literalProperty, numericProperty } from '../../autocomplete/properties/maps';
+import { SuggestedProperty } from '../../autocomplete/properties';
 
 const mockedSuggestions: Suggestions = {
   history: ['foo bar', 'bar baz', 'baz qux'].map(content => new HistorySuggestionComponent(content, 0)),
@@ -19,6 +22,13 @@ const mockedSuggestions: Suggestions = {
     { images: 10, canonical: ['artist:devinian'] },
     { images: 10, canonical: ['artist:moe'] },
   ].map(suggestion => new TagSuggestionComponent(suggestion)),
+  properties: [
+    new SuggestedProperty('score', numericProperty, null, null),
+    new SuggestedProperty('sha512_hash', literalProperty, null, null),
+    new SuggestedProperty('size', numericProperty, null, null),
+    new SuggestedProperty('source_count', numericProperty, null, null),
+    new SuggestedProperty('source_url', literalProperty, null, null),
+  ].map(property => new PropertySuggestionComponent(property)),
 };
 
 function mockBaseSuggestionsPopup(includeMockedSuggestions = false): [SuggestionsPopupComponent, HTMLInputElement] {
@@ -49,7 +59,7 @@ describe('Suggestions', () => {
 
     if (popup) {
       popup.hide();
-      popup.setSuggestions({ history: [], tags: [] });
+      popup.setSuggestions({ history: [], tags: [], properties: [] });
       popup = undefined;
     }
   });
@@ -65,7 +75,7 @@ describe('Suggestions', () => {
     it('should hide the popup when there are no suggestions to show', () => {
       [popup, input] = mockBaseSuggestionsPopup();
 
-      popup.setSuggestions({ history: [], tags: [] });
+      popup.setSuggestions({ history: [], tags: [], properties: [] });
       popup.showForElement(input);
 
       assert(popup.isHidden);
