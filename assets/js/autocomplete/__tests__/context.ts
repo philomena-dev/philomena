@@ -220,6 +220,10 @@ export class TestContext {
         content = `(history) ${content}`;
       }
 
+      if (el.classList.contains('autocomplete__item__property')) {
+        content = `(property) ${content}`;
+      }
+
       if (el.classList.contains('autocomplete__item--selected')) {
         return `👉 ${content}`;
       }
