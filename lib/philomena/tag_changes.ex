@@ -9,6 +9,7 @@ defmodule Philomena.TagChanges do
   alias Philomena.TagChangeRevertWorker
   alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
+  alias Philomena.TagChanges.Tag, as: TagChangeTag
   alias Philomena.Images
   alias Philomena.Images.Image
   alias Philomena.Tags.Tag
@@ -152,6 +153,22 @@ defmodule Philomena.TagChanges do
       |> order_by(desc: :created_at)
 
     {Repo.paginate(query, pagination), item_count}
+  end
+
+  @doc """
+  Deletes tag changes that have no associated tags.
+
+  ## Examples
+
+      iex> delete_empty_tag_changes()
+      {number_of_deleted_records, nil}
+
+  """
+  def delete_empty_tag_changes do
+    TagChange
+    |> from(as: :tag_change)
+    |> where(not exists(where(TagChangeTag, [t], t.tag_change_id == parent_as(:tag_change).id)))
+    |> Repo.delete_all()
   end
 
   defp base_query(%{ip: ip}) do
