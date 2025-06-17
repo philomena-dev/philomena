@@ -63,7 +63,7 @@ defmodule PhilomenaWeb.ReportView do
       )
 
   def link_to_reported_thing(%Gallery{} = r),
-    do: link("Gallery '#{r.title}' by #{r.creator.name}", to: ~p"/galleries/#{r}")
+    do: link("Gallery '#{r.title}'", to: ~p"/galleries/#{r}")
 
   def link_to_reported_thing(%Post{} = r),
     do:
