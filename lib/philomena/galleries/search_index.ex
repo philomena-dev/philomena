@@ -24,6 +24,8 @@ defmodule Philomena.Galleries.SearchIndex do
           updated_at: %{type: "date"},
           created_at: %{type: "date"},
           title: %{type: "keyword"},
+          true_creator_id: %{type: "keyword"},
+          true_creator: %{type: "keyword"},
           creator_id: %{type: "keyword"},
           creator: %{type: "keyword"},
           image_ids: %{type: "keyword"},
@@ -44,8 +46,10 @@ defmodule Philomena.Galleries.SearchIndex do
       updated_at: gallery.updated_at,
       created_at: gallery.created_at,
       title: String.downcase(gallery.title),
-      creator_id: gallery.creator_id,
-      creator: String.downcase(gallery.creator.name),
+      true_creator_id: gallery.user_id,
+      true_creator: if(!!gallery.user, do: String.downcase(gallery.user.name)),
+      creator_id: if(!gallery.anonymous, do: gallery.user_id),
+      creator: if(!!gallery.user and !gallery.anonymous, do: String.downcase(gallery.user.name)),
       image_ids: Enum.map(gallery.interactions, & &1.image_id),
       description: gallery.description,
       thumbnail_id: gallery.thumbnail_id,
@@ -58,8 +62,11 @@ defmodule Philomena.Galleries.SearchIndex do
     new_name = String.downcase(new_name)
 
     %{
-      query: %{term: %{creator: old_name}},
-      replacements: [%{path: ["creator"], old: old_name, new: new_name}],
+      query: %{term: %{true_creator: old_name}},
+      replacements: [
+        %{path: ["true_creator"], old: old_name, new: new_name},
+        %{path: ["creator"], old: old_name, new: new_name}
+      ],
       set_replacements: []
     }
   end

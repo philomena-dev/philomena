@@ -142,7 +142,7 @@ defmodule Philomena.Notifications.Category do
           from(n in ChannelLiveNotification, preload: :channel)
 
         :gallery_image ->
-          from(n in GalleryImageNotification, preload: [gallery: :creator])
+          from(n in GalleryImageNotification, preload: [gallery: :user])
 
         :image_comment ->
           from(n in ImageCommentNotification,

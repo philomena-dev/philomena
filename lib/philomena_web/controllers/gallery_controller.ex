@@ -16,7 +16,7 @@ defmodule PhilomenaWeb.GalleryController do
   plug :load_and_authorize_resource,
     model: Gallery,
     except: [:index],
-    preload: [:creator, thumbnail: [:sources, tags: :aliases]]
+    preload: [:user, thumbnail: [:sources, tags: :aliases]]
 
   def index(conn, params) do
     galleries =
@@ -32,9 +32,7 @@ defmodule PhilomenaWeb.GalleryController do
         },
         conn.assigns.pagination
       )
-      |> Search.search_records(
-        preload(Gallery, [:creator, thumbnail: [:sources, tags: :aliases]])
-      )
+      |> Search.search_records(preload(Gallery, [:user, thumbnail: [:sources, tags: :aliases]]))
 
     render(conn, "index.html",
       title: "Galleries",

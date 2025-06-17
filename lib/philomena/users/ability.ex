@@ -540,7 +540,7 @@ defimpl Canada.Can, for: Philomena.Users.User do
   def can?(%User{}, :show, %Gallery{}), do: true
   def can?(%User{}, action, Gallery) when action in [:new, :create], do: true
 
-  def can?(%User{id: id}, action, %Gallery{creator_id: id})
+  def can?(%User{id: id}, action, %Gallery{user_id: id})
       when action in [:edit, :update, :delete],
       do: true
 

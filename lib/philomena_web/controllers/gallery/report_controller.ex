@@ -16,8 +16,7 @@ defmodule PhilomenaWeb.Gallery.ReportController do
   plug :load_and_authorize_resource,
     model: Gallery,
     id_name: "gallery_id",
-    persisted: true,
-    preload: [:creator]
+    persisted: true
 
   def new(conn, _params) do
     gallery = conn.assigns.gallery
