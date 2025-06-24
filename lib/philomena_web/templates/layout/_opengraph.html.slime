@@ -5,18 +5,21 @@ meta name="format-detection" content="telephone=no"
 = if opengraph?(@conn) do
   - image = @conn.assigns.image
   - filtered = not image.thumbnails_generated
-  - description = "##{image.id} - #{Philomena.Images.tag_list(image)} - Derpibooru"
+  - title = "##{image.id} - #{Philomena.Images.tag_list(image)} - Derpibooru"
+  - description = "⭐ #{image.faves_count} ↕️ #{image.score} 💬 #{image.comments_count} • #{image.image_width}x#{image.image_height} #{String.upcase(to_string(image.image_format))}"
   - {thumb_large, {large_width, large_height}} = ImageView.thumb_url_size(image, false, :large)
   - thumb_rendered = ImageView.thumb_url(image, false, :rendered)
   - rendered_type = "image/png"
 
   meta name="keywords" content=tag_list(image)
-  meta name="description" content=description
+  meta name="description" content=title
   meta property="og:site_name" content="Derpibooru"
-  meta property="og:title" content=description
+  meta property="og:title" content=title
+  meta property="og:description" content=description
   meta property="og:url" content=url(~p"/images/#{image}")
   meta property="twitter:card" content="summary_large_image"
-  meta property="twitter:title" content=description
+  meta property="twitter:title" content=title
+  meta property="twitter:description" content=description
 
   = for tag <- artist_tags(image.tags) do
     meta property="dc:creator" content=tag.name_in_namespace
