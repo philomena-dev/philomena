@@ -23,7 +23,7 @@ function distance(time: Date) {
 }
 
 function substitute(key: string, amount: number) {
-  return strings[key].replace('%d', Math.round(amount).toString());
+  return strings[key].replace('%d', Math.floor(amount).toString());
 }
 
 function setTimeAgo(el: HTMLTimeElement) {
