@@ -29,7 +29,7 @@ philomena-*.tar
 npm-debug.log
 
 # The directory NPM downloads your dependencies sources to.
-/assets/node_modules/
+node_modules/
 
 # Since we are building assets from assets/,
 # we ignore priv/static. You may want to comment
@@ -60,7 +60,15 @@ npm-debug.log
 
 # Rust binaries
 /native/**/target
+/native/**/.cargo
 /.cargo
 
 # Vitest coverage
 /assets/coverage
+
+# Logs from various scripts can be stored in a directory or with a `.log` extension
+log/
+*.log
+
+# Can be used for dirty scripts that you don't want to commit
+*dbg*
