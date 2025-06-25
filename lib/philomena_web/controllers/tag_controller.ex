@@ -55,7 +55,7 @@ defmodule PhilomenaWeb.TagController do
     user = conn.assigns.current_user
     tag = conn.assigns.tag
 
-    {images, _tags} = ImageLoader.query(conn, %{term: %{"namespaced_tags.name" => tag.name}})
+    {images, _tags} = ImageLoader.query(conn, %{term: %{"tags" => tag.name}})
 
     images = Search.search_records(images, preload(Image, [:sources, tags: :aliases]))
 
@@ -122,7 +122,7 @@ defmodule PhilomenaWeb.TagController do
       |> String.downcase()
 
     case Images.Query.compile(name) do
-      {:ok, %{term: %{"namespaced_tags.name" => ^name}}} ->
+      {:ok, %{term: %{"tags" => ^name}}} ->
         name
 
       _error ->

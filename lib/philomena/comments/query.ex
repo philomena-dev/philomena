@@ -1,49 +1,8 @@
 defmodule Philomena.Comments.Query do
   alias PhilomenaQuery.Parse.Parser
 
-  defp user_id_transform(_ctx, data) do
-    case Integer.parse(data) do
-      {int, _rest} ->
-        {
-          :ok,
-          %{
-            bool: %{
-              must: [
-                %{term: %{anonymous: false}},
-                %{term: %{user_id: int}}
-              ]
-            }
-          }
-        }
-
-      _err ->
-        {:error, "Unknown `user_id' value."}
-    end
-  end
-
-  defp author_transform(_ctx, data) do
-    {
-      :ok,
-      %{
-        bool: %{
-          must: [
-            %{term: %{anonymous: false}},
-            %{
-              bool: %{
-                should: [
-                  %{term: %{author: data}},
-                  %{wildcard: %{author: data}}
-                ]
-              }
-            }
-          ]
-        }
-      }
-    }
-  end
-
   defp user_my_transform(%{user: %{id: id}}, "comments"),
-    do: {:ok, %{term: %{user_id: id}}}
+    do: {:ok, %{term: %{true_author_id: id}}}
 
   defp user_my_transform(_ctx, _value),
     do: {:error, "Unknown `my' value."}
@@ -51,16 +10,11 @@ defmodule Philomena.Comments.Query do
   defp anonymous_fields do
     [
       int_fields: ~W(id),
-      numeric_fields: ~W(image_id),
-      date_fields: ~W(created_at),
+      numeric_fields: ~W(author_id image_id),
+      date_fields: ~W(created_at updated_at),
+      literal_fields: ~W(author),
       ngram_fields: ~W(body),
-      custom_fields: ~W(author user_id),
-      default_field: {"body", :ngram},
-      transforms: %{
-        "user_id" => &user_id_transform/2,
-        "author" => &author_transform/2
-      },
-      aliases: %{"created_at" => "posted_at"}
+      default_field: {"body", :ngram}
     ]
   end
 
@@ -68,8 +22,8 @@ defmodule Philomena.Comments.Query do
     fields = anonymous_fields()
 
     Keyword.merge(fields,
-      custom_fields: fields[:custom_fields] ++ ~W(my),
-      transforms: Map.merge(fields[:transforms], %{"my" => &user_my_transform/2})
+      custom_fields: ~W(my),
+      transforms: %{"my" => &user_my_transform/2}
     )
   end
 
@@ -77,13 +31,12 @@ defmodule Philomena.Comments.Query do
     fields = user_fields()
 
     Keyword.merge(fields,
-      numeric_fields: fields[:numeric_fields] ++ ~W(user_id),
-      literal_fields: ~W(author fingerprint),
+      numeric_fields: fields[:numeric_fields] ++ ~W(true_author_id deleted_by_user_id),
+      literal_fields: fields[:literal_fields] ++ ~W(true_author fingerprint deleted_by_user),
+      ngram_fields: fields[:ngram_fields] ++ ~W(deletion_reason),
       ip_fields: ~W(ip),
-      bool_fields: ~W(anonymous deleted),
-      custom_fields: fields[:custom_fields] -- ~W(author user_id),
-      aliases: Map.merge(fields[:aliases], %{"deleted" => "hidden_from_users"}),
-      transforms: Map.drop(fields[:transforms], ~W(author user_id))
+      bool_fields: ~W(anonymous deleted destroyed_content),
+      aliases: %{"deleted" => "hidden_from_users"}
     )
   end
 
