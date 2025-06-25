@@ -688,9 +688,15 @@ defmodule Philomena.Tags do
 
   """
   def reindex_tags(tags) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Tags", "id", Enum.map(tags, & &1.id)])
+    tags
+    |> Enum.map(& &1.id)
+    |> reindex_tags_by_ids()
 
     tags
+  end
+
+  def reindex_tags_by_ids(tag_ids) do
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["Tags", "id", tag_ids])
   end
 
   @doc """
