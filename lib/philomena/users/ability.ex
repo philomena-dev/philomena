@@ -25,6 +25,7 @@ defimpl Canada.Can, for: [Atom, Philomena.Users.User] do
   alias Philomena.Adverts.Advert
   alias Philomena.SiteNotices.SiteNotice
   alias Philomena.ModerationLogs.ModerationLog
+  alias Philomena.UserNameChanges.UserNameChange
 
   alias Philomena.Bans.User, as: UserBan
   alias Philomena.Bans.Subnet, as: SubnetBan
@@ -125,9 +126,6 @@ defimpl Canada.Can, for: [Atom, Philomena.Users.User] do
   def can?(%User{role: "moderator"}, _action, %Award{}), do: true
   def can?(%User{role: "moderator"}, _action, Award), do: true
 
-  # Create mod notes
-  def can?(%User{role: "moderator"}, :index, ModNote), do: true
-
   # Revert tag changes
   def can?(%User{role: "moderator"}, :revert, TagChange), do: true
   def can?(%User{role: "moderator"}, :delete, %TagChange{}), do: true
@@ -140,6 +138,9 @@ defimpl Canada.Can, for: [Atom, Philomena.Users.User] do
 
   # See moderation logs
   def can?(%User{role: "moderator"}, _action, ModerationLog), do: true
+
+  # View user name changes
+  def can?(%User{role: "moderator"}, :index, UserNameChange), do: true
 
   # And some privileged moderators can...
 
@@ -203,6 +204,20 @@ defimpl Canada.Can, for: [Atom, Philomena.Users.User] do
         _action,
         %StaticPage{}
       ),
+      do: true
+
+  #
+  # Both assistants and moderators can...
+  #
+
+  # Read and create mod notes
+  def can?(%User{role: role}, action, ModNote)
+      when role in ~W(assistant moderator) and action in [:index, :new, :create],
+      do: true
+
+  # Update and delete their own mod notes
+  def can?(%User{id: id, role: role}, action, %ModNote{moderator_id: id})
+      when role in ~W(assistant moderator) and action in [:edit, :update, :delete],
       do: true
 
   #
