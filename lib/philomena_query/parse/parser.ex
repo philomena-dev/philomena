@@ -188,15 +188,15 @@ defmodule PhilomenaQuery.Parse.Parser do
   ## Example
 
       iex> Parser.parse(parser, "safe")
-      {:ok, %{term: %{"namespaced_tags.name" => "safe"}}}
+      {:ok, %{term: %{"tags" => "safe"}}}
 
       iex> Parser.parse(nil, "safe OR solo")
       {:ok,
        %{
          bool: %{
            should: [
-             %{term: %{"namespaced_tags.name" => "safe"}},
-             %{term: %{"namespaced_tags.name" => "solo"}}
+             %{term: %{"tags" => "safe"}},
+             %{term: %{"tags" => "solo"}}
            ]
          }
        }}

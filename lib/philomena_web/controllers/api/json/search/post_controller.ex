@@ -19,7 +19,7 @@ defmodule PhilomenaWeb.Api.Json.Search.PostController do
                 bool: %{
                   must: [
                     query,
-                    %{term: %{deleted: false}},
+                    %{term: %{hidden_from_users: false}},
                     %{term: %{access_level: "normal"}}
                   ]
                 }
