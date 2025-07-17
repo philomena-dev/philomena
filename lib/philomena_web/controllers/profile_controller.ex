@@ -85,8 +85,7 @@ defmodule PhilomenaWeb.ProfileController do
           query: %{
             bool: %{
               must: [
-                %{term: %{user_id: user.id}},
-                %{term: %{anonymous: false}},
+                %{term: %{author_id: user.id}},
                 %{term: %{hidden_from_users: false}}
               ],
               must_not: [
@@ -106,8 +105,7 @@ defmodule PhilomenaWeb.ProfileController do
           query: %{
             bool: %{
               must: [
-                %{term: %{user_id: user.id}},
-                %{term: %{anonymous: false}},
+                %{term: %{author_id: user.id}},
                 %{term: %{hidden_from_users: false}},
                 %{term: %{access_level: "normal"}}
               ]
