@@ -93,7 +93,10 @@ defmodule Philomena.MixProject do
 
       # Fixes for Elixir v1.15+
       {:canary, "~> 1.1",
-       github: "marcinkoziej/canary", ref: "704debde7a2c0600f78c687807884bf37c45bd79"}
+       github: "marcinkoziej/canary", ref: "704debde7a2c0600f78c687807884bf37c45bd79"},
+
+      # Automated testing
+      {:assert_value, "~> 0.10.5", only: [:dev, :test]}
     ]
   end
 

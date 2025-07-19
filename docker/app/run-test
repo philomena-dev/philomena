@@ -1,35 +1,44 @@
-#!/usr/bin/env sh
-set -e
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+. "$(dirname "${BASH_SOURCE[0]}")/../../scripts/lib.sh"
 
 export MIX_ENV=test
 
+cd /srv/philomena
+
 # Always install mix dependencies
-(cd /srv/philomena && mix deps.get)
+step mix deps.get
+
+# Some tests depend on prettier
+step npm ci --no-scripts
 
 # Run formatting check
-mix format --check-formatted
+step mix format --check-formatted
 
 # Sleep to allow OpenSearch to finish initializing
 # if it's not done doing whatever it does yet
-echo -n "Waiting for OpenSearch"
+info "Waiting for OpenSearch"
 
-until wget -qO - opensearch:9200; do
-  echo -n "."
+until step wget -qO - http://opensearch:9200; do
   sleep 2
 done
 
-echo
-
-# Create the database
-mix ecto.create
-mix ecto.load
+# Create the database, or migrate if one already exists from a previous run
+if step createdb -h postgres -U postgres philomena_test; then
+  step mix ecto.create
+  step mix ecto.load
+elif [[ "$(mix ecto.migrations)" == *" down "* ]]; then
+  step mix ecto.migrate --all
+fi
 
 # Test the application
-mix test
+step mix test "$@"
 
 # Security lint
-mix sobelow --config
-mix deps.audit
+step mix sobelow --config
+step mix deps.audit
 
 # Static analysis
 exec mix dialyzer
