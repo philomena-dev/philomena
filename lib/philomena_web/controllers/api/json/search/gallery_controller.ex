@@ -7,7 +7,9 @@ defmodule PhilomenaWeb.Api.Json.Search.GalleryController do
   import Ecto.Query
 
   def index(conn, params) do
-    case Query.compile(params["q"]) do
+    user = conn.assigns.current_user
+
+    case Query.compile(params["q"], user: user) do
       {:ok, query} ->
         galleries =
           Gallery
@@ -18,7 +20,7 @@ defmodule PhilomenaWeb.Api.Json.Search.GalleryController do
             },
             conn.assigns.pagination
           )
-          |> Search.search_records(preload(Gallery, [:creator]))
+          |> Search.search_records(preload(Gallery, [:user]))
 
         conn
         |> put_view(PhilomenaWeb.Api.Json.GalleryView)

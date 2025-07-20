@@ -153,7 +153,7 @@ defmodule PhilomenaWeb.ImageController do
 
   defp user_galleries(image, user) do
     Gallery
-    |> where(creator_id: ^user.id)
+    |> where(user_id: ^user.id)
     |> join(
       :inner_lateral,
       [g],
