@@ -8,14 +8,14 @@ eval "exec $global_stdout>&1"
 
 # Log a message at the info level
 function info {
-  local message=$1
+  local message="$*"
 
   echo -e "\033[32;1m[INFO]\033[0m \033[0;32m$message\033[0m" >&2
 }
 
 # Log a message at the warn level
 function warn {
-  local message=$1
+  local message="$*"
 
   echo -e "\033[33;1m[WARN]\033[0m \033[0;33m$message\033[0m" >&2
 }
@@ -27,12 +27,12 @@ function error {
   echo -e "\033[31;1m[ERROR]\033[0m \033[0;31m$message\033[0m" >&2
 }
 
-# Log a message at the error level and exit with a non-zero status
+# Log a message at the error level and return a non-zero status
 function die {
   local message=$1
 
   error "$message"
-  exit 1
+  return 1
 }
 
 # Log the command and execute it
@@ -80,3 +80,73 @@ function colorize_command {
   # and we use bash >= v5. If this ever becomes a problem, you know the why.
   echo -e "\033[1;32m${program}\033[0m ${args[*]}"
 }
+
+_repo=""
+function repo {
+  if [[ -z $_repo ]]; then
+    _repo=$(git rev-parse --show-toplevel)
+  fi
+
+  echo "$_repo"
+}
+
+# `curl` wrapper with better defaults
+function fetch {
+  step curl \
+    --fail \
+    --silent \
+    --show-error \
+    --location \
+    --retry 5 \
+    --retry-all-errors \
+    "$@"
+}
+
+# While it's recommended to use the devcontainer setup, it's not required. Developers
+# who aren't using devcontainers can still benefit from our devcontainer image. We spin up
+# a "background" devcontainer for them called "philomena-devcontainer". Then, we use `docker exec`
+# where we run our scripts instead. This way the scripts can use any dependencies installed
+# in the devcontainer image.
+function devcontainer_up {
+  info "Creating the devcontainer..."
+
+  local file
+  file="$(repo)/.devcontainer/docker-compose.yml"
+
+  set +e
+  step docker compose --file "$file" up --detach --wait --build
+  local status=$?
+  set -e
+
+  # Ideally compose should stream the logs from the container while it's
+  # starting, unfortunately, this issue has been open for years:
+  # https://github.com/docker/compose/issues/9122
+  if [[ "$status" = "0" ]]; then
+    info "Dumping the devcontainer logs..."
+  else
+    error "Failed to create the devcontainer. Dumping its logs below..."
+  fi
+
+  step docker compose --file "$file" logs --no-log-prefix
+
+  return "$status"
+}
+
+function devcontainer_forward {
+  # Make sure the devcontainer is up and running.
+  if ! docker ps --filter "health=healthy" --format '{{.Names}}' | grep -wq philomena-devcontainer; then
+    devcontainer_up
+  fi
+
+  local script
+  script=$(realpath "$0")
+  script="${script#"$(repo)/"}"
+
+  docker exec --interactive philomena-devcontainer "$script" "$@"
+}
+
+# Re-run this script in a the devcontainer if we aren't already in one.
+if [[ ! -v CONTAINER ]] && [[ ! -v FORCE_HOST ]]; then
+  devcontainer_forward "$@"
+  exit $?
+fi
