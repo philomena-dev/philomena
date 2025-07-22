@@ -1,5 +1,24 @@
 defmodule PhilomenaWeb.TagChangeView do
+  alias Philomena.Slug
+
   use PhilomenaWeb, :view
+
+  def scope(conn) do
+    []
+    |> scope(conn, "tcq", :tcq)
+    |> scope(conn, "sf", :sf)
+    |> scope(conn, "sd", :sd)
+    |> scope(conn, "thing", :thing)
+    |> scope(conn, "value", :value)
+  end
+
+  defp scope(list, conn, key, key_atom) do
+    case conn.params[key] do
+      nil -> list
+      "" -> list
+      val -> [{key_atom, val} | list]
+    end
+  end
 
   def staff?(tag_change),
     do:
@@ -35,4 +54,11 @@ defmodule PhilomenaWeb.TagChangeView do
       ""
     end
   end
+
+  def link_to_thing("image", id), do: link("image ##{id}", to: ~p"/images/#{id}")
+  def link_to_thing("ip", ip), do: link(ip, to: ~p"/ip_profiles/#{ip}")
+  def link_to_thing("fingerprint", fp), do: link(fp, to: ~p"/fingerprint_profiles/#{fp}")
+  def link_to_thing("user", name), do: link(name, to: ~p"/profiles/#{Slug.slug(name)}")
+  def link_to_thing("tag", name), do: link("tag '#{name}'", to: ~p"/tags/#{Slug.slug(name)}")
+  def link_to_thing(_, _), do: ""
 end
