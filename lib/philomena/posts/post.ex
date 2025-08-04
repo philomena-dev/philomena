@@ -70,6 +70,7 @@ defmodule Philomena.Posts.Post do
   def unhide_changeset(post) do
     change(post)
     |> put_change(:hidden_from_users, false)
+    |> put_change(:deleted_by_id, nil)
     |> put_change(:deletion_reason, "")
   end
 
