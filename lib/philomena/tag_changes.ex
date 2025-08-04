@@ -12,52 +12,136 @@ defmodule Philomena.TagChanges do
   alias Philomena.Images
   alias Philomena.Images.Image
   alias Philomena.Tags.Tag
+  alias Philomena.Users
 
-  # Accepts a list of TagChanges.TagChange IDs.
-  def mass_revert(ids, attributes) do
-    tag_changes =
-      Repo.all(
-        from tc in TagChange,
-          inner_join: i in assoc(tc, :image),
-          where: tc.id in ^ids and i.hidden_from_users == false,
-          order_by: [desc: :created_at],
-          preload: [tags: [:tag, :tag_change]]
-      )
+  require Logger
 
-    case mass_revert_tags(Enum.flat_map(tag_changes, & &1.tags), attributes) do
-      {:ok, _result} ->
-        {:ok, tag_changes}
+  @typedoc """
+  In the successful case returns the number of tags affected by the revert.
+  """
+  @type mass_revert_result :: {:ok, non_neg_integer()} | {:error, any()}
 
-      error ->
-        error
-    end
+  @type tag_change_id :: integer()
+  @type tag_id :: integer()
+
+  @typedoc """
+  A tuple with a composite identifier for a `TagChange.Tag`.
+  """
+  @type tag_change_tag_id :: {tag_change_id(), tag_id()}
+
+  # Accepts a list of `TagChanges.TagChange` IDs.
+  @spec mass_revert([tag_change_id()], Users.principal()) :: mass_revert_result()
+  def mass_revert(tag_change_ids, principal) do
+    tag_change_ids
+    |> Map.new(&{&1, nil})
+    |> mass_revert_impl(principal)
   end
 
-  # Accepts a list of TagChanges.Tag objects with tag_change and tag relations preloaded.
-  def mass_revert_tags(tags, attributes) do
-    # Sort tags by tag change creation date, then uniq them by tag ID
-    # to keep the first, aka the latest, record. Then prepare the struct
-    # for the batch updater.
-    changes_per_image =
-      tags
-      |> Enum.group_by(& &1.tag_change.image_id)
-      |> Enum.map(fn {image_id, instances} ->
-        changed_tags =
-          instances
-          |> Enum.sort_by(& &1.tag_change.created_at, :desc)
-          |> Enum.uniq_by(& &1.tag_id)
+  # Accepts a list of `TagChanges.Tag` IDs.
+  @spec mass_revert_tags([tag_change_tag_id()], Users.principal()) :: mass_revert_result()
+  def mass_revert_tags(tag_change_tag_ids, principal) do
+    tag_change_tag_ids
+    |> Enum.group_by(&elem(&1, 0), &elem(&1, 1))
+    |> mass_revert_impl(principal)
+  end
 
-        {added_tags, removed_tags} = Enum.split_with(changed_tags, & &1.added)
+  @spec mass_revert_impl(%{tag_change_id() => [tag_id()] | nil}, Users.principal()) ::
+          mass_revert_result()
+  defp mass_revert_impl(input, principal) do
+    # Load the requested tag changes from the DB. `nil` in the position of the
+    # tag IDs list means we want to revert all tags for that tag change.
+    input =
+      input
+      |> Enum.map(fn {tc_id, tag_ids} ->
+        %{
+          tc_id: tc_id,
+          tag_ids: if(not is_nil(tag_ids), do: tag_ids |> Enum.uniq())
+        }
+      end)
+
+    tags_by_image =
+      Repo.all(
+        from tc in TagChange,
+          inner_join:
+            input in fragment(
+              "SELECT * FROM jsonb_to_recordset(?) AS (tc_id int, tag_ids int[])",
+              ^input
+            ),
+          on: tc.id == input.tc_id,
+          inner_join: tct in TagChanges.Tag,
+          on: tc.id == tct.tag_change_id,
+          where: is_nil(input.tag_ids) or tct.tag_id in input.tag_ids,
+          group_by: [tc.image_id, tct.tag_id],
+          # Get min/max rows without subqueries (don't repeat this at home).
+          # Retain only changes that dont cancel themselves out already i.e. we
+          # want to ignore change sequences where the first change adds the tag
+          # and the last change removes it or vice versa, because they are
+          # already self-cancelling.
+          having:
+            fragment("(array_agg(? ORDER BY ? ASC))[1]", tct.added, tc.id) ==
+              fragment("(array_agg(? ORDER BY ? DESC))[1]", tct.added, tc.id),
+          select: %{
+            image_id: tc.image_id,
+            tag_id: tct.tag_id,
+            last_change:
+              fragment("(array_agg(row (?, ?) ORDER BY ? DESC))[1]", tc.id, tct.added, tc.id)
+          }
+      )
+      |> Enum.group_by(& &1.image_id)
+
+    # Load latest tag change IDs for each {image, tags} we are interested in.
+    # We'll use this to filter out tag changes that are non-current, meaning
+    # reverting them would not be useful as they were already overwritten by
+    # some other change not in the list of reverted changes.
+    input =
+      tags_by_image
+      |> Enum.map(fn {image_id, tags} ->
+        %{
+          image_id: image_id,
+          tag_ids: tags |> Enum.map(& &1.tag_id)
+        }
+      end)
+
+    latest_tc_ids =
+      Repo.all(
+        from tc in TagChange,
+          inner_join:
+            input in fragment(
+              "SELECT * FROM jsonb_to_recordset(?) AS (image_id int, tag_ids int[])",
+              ^input
+            ),
+          on: tc.image_id == input.image_id,
+          inner_join: tct in TagChanges.Tag,
+          on: tc.id == tct.tag_change_id and tct.tag_id in input.tag_ids,
+          group_by: [tc.image_id, tct.tag_id],
+          select: max(tc.id),
+          # It's possible for the same tag change to cover the latest versions
+          # of several tags, so deduplicate the results.
+          distinct: true
+      )
+      |> MapSet.new()
+
+    # Calculate the revert operations for each image.
+    reverts_per_image =
+      tags_by_image
+      |> Enum.map(fn {image_id, tags} ->
+        {added_tags, removed_tags} =
+          tags
+          |> Enum.filter(fn %{last_change: {tc_id, _}} -> tc_id in latest_tc_ids end)
+          |> Enum.split_with(fn %{last_change: {_, added}} -> added end)
 
         # We send removed tags to be added, and added to be removed. That's how reverting works!
         %{
           image_id: image_id,
-          added_tags: Enum.map(removed_tags, & &1.tag),
-          removed_tags: Enum.map(added_tags, & &1.tag)
+          added_tag_ids: Enum.map(removed_tags, & &1.tag_id),
+          removed_tag_ids: Enum.map(added_tags, & &1.tag_id)
         }
       end)
+      |> Enum.reject(&(&1.added_tag_ids == [] and &1.removed_tag_ids == []))
 
-    Images.batch_update(changes_per_image, attributes)
+    with {:ok, {total_tags_affected, _}} <- Images.batch_update(reverts_per_image, principal) do
+      {:ok, total_tags_affected}
+    end
   end
 
   def full_revert(%{user_id: _user_id, attributes: _attributes} = params),
@@ -153,7 +237,7 @@ defmodule Philomena.TagChanges do
       query
       |> preload([:user, image: [:user, :sources, tags: :aliases], tags: [:tag]])
       |> group_by([tc], tc.id)
-      |> order_by(desc: :created_at)
+      |> order_by(desc: :created_at, desc: :id)
 
     {Repo.paginate(query, pagination), item_count}
   end
