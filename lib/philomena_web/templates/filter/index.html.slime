@@ -54,6 +54,7 @@
         class: "input hform__text",
         placeholder: "Search filters",
         autocapitalize: "none",
+        spellcheck: "false",
         autocomplete: if(@conn.cookies["enable_search_ac"], do: "on", else: "off"),
         inputmode: "search",
         data: [ \

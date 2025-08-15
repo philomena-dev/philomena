@@ -36,6 +36,7 @@ h1 Reports
       class: "input hform__text",
       placeholder: "Search reports",
       autocapitalize: "none",
+      spellcheck: "false",
       autocomplete: if(@conn.cookies["enable_search_ac"], do: "on", else: "off"),
       inputmode: "search",
       data: [ \

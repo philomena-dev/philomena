@@ -6,6 +6,7 @@ h1 Comments
       class: "input hform__text",
       placeholder: "Search comments",
       autocapitalize: "none",
+      spellcheck: "false",
       autocomplete: if(@conn.cookies["enable_search_ac"], do: "on", else: "off"),
       inputmode: "search",
       data: [ \
