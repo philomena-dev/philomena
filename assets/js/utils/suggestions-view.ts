@@ -142,11 +142,11 @@ export class PropertySuggestionComponent implements SuggestionComponent {
     ];
   }
 
-  #renderSuggestionWithHighlighting(): (HTMLElement|string)[] {
+  #renderSuggestionWithHighlighting(): (HTMLElement | string)[] {
     const renderedSuggestion = this.value();
     const matchedLength = this.suggestion.calculateMatchedLength();
 
-    const resultElements: (HTMLElement|string)[] = [
+    const resultElements: (HTMLElement | string)[] = [
       makeEl('b', {
         className: 'autocomplete__item__property__match',
         textContent: renderedSuggestion.slice(0, matchedLength),

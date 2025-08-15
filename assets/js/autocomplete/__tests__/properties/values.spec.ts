@@ -1,6 +1,6 @@
 import { autocompleteTest } from '../context.ts';
 
-autocompleteTest('should suggest values for some properties', async ({ctx, expect}) => {
+autocompleteTest('should suggest values for some properties', async ({ ctx, expect }) => {
   await ctx.setName('q');
 
   // Checking the boolean type of property

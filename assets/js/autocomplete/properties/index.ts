@@ -42,7 +42,13 @@ export class SuggestedProperty {
   operator: string | null;
   value: string | null;
 
-  constructor(matchedParts: MatchedPropertyParts, name: string, type: symbol | null = null, operator: string | null = null, value: string | null = null) {
+  constructor(
+    matchedParts: MatchedPropertyParts,
+    name: string,
+    type: symbol | null = null,
+    operator: string | null = null,
+    value: string | null = null,
+  ) {
     this.matchedParts = matchedParts;
     this.name = name;
     this.type = type;
@@ -181,7 +187,9 @@ export function matchProperties(
       );
 
     if (!matchedTagsResult.length) {
-      matchedTagsResult.push(new SuggestedProperty(parsedTermParts, propertyName, targetPropertyTypeOrValues, null, value));
+      matchedTagsResult.push(
+        new SuggestedProperty(parsedTermParts, propertyName, targetPropertyTypeOrValues, null, value),
+      );
     }
 
     return matchedTagsResult;
@@ -194,12 +202,20 @@ export function matchProperties(
     .filter(suggestedOperator => !operator || suggestedOperator.startsWith(operator))
     .map(
       suggestedOperator =>
-        new SuggestedProperty(parsedTermParts, propertyName, targetPropertyTypeOrValues, suggestedOperator, value || ''),
+        new SuggestedProperty(
+          parsedTermParts,
+          propertyName,
+          targetPropertyTypeOrValues,
+          suggestedOperator,
+          value || '',
+        ),
     );
 
   // If user haven't started typing operator yet, then also suggest the variant without any operators.
   if (!hasOperatorSyntax) {
-    suggestionsWithOperators.unshift(new SuggestedProperty(parsedTermParts, propertyName, targetPropertyTypeOrValues, '', value || ''));
+    suggestionsWithOperators.unshift(
+      new SuggestedProperty(parsedTermParts, propertyName, targetPropertyTypeOrValues, '', value || ''),
+    );
   }
 
   return suggestionsWithOperators;
