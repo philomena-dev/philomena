@@ -11,7 +11,7 @@ window.booru = {
   fancyTagUpload: true,
   hiddenTag: '/mock-tagblocked.svg',
   hiddenTagList: [],
-  hideStaffTools: 'true',
+  hideStaffTools: true,
   ignoredTagList: [],
   imagesWithDownvotingDisabled: [],
   spoilerType: 'off',
