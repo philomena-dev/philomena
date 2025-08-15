@@ -99,7 +99,7 @@
 }
 
 .autocomplete__item__tag__match,
-.autocomplete__item__property_match {
+.autocomplete__item__property__match {
   color: var(--autocomplete-tag-match-color);
 }
 
