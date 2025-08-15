@@ -45,3 +45,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+body[data-hide-staff-tools="true"] .js-staff-action {
+  display: none;
+}
