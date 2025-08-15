@@ -6,7 +6,7 @@ import { type TagSuggestion } from '../../utils/suggestions-model';
 const propertiesSyntaxRegExp =
   /^(?<property_name>[a-z\d_]+)(?<operator_syntax>\.(?<operator>[a-z]*))?(?<value_syntax>:(?<value>.*))?$/;
 
-interface MatchedPropertyParts {
+export interface MatchedPropertyParts {
   propertyName: string;
   hasOperatorSyntax: boolean;
   hasValueSyntax: boolean;

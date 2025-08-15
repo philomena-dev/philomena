@@ -11,7 +11,13 @@ import { afterEach } from 'vitest';
 import { fireEvent } from '@testing-library/dom';
 import { assertNotNull } from '../assert.ts';
 import { literalProperty, numericProperty } from '../../autocomplete/properties/maps';
-import { SuggestedProperty } from '../../autocomplete/properties';
+import { MatchedPropertyParts, SuggestedProperty } from '../../autocomplete/properties';
+
+const mockedMatchedPropertyParts: MatchedPropertyParts = {
+  propertyName: 's',
+  hasOperatorSyntax: false,
+  hasValueSyntax: false,
+};
 
 const mockedSuggestions: Suggestions = {
   history: ['foo bar', 'bar baz', 'baz qux'].map(content => new HistorySuggestionComponent(content, 0)),
@@ -23,11 +29,11 @@ const mockedSuggestions: Suggestions = {
     { images: 10, canonical: ['artist:moe'] },
   ].map(suggestion => new TagSuggestionComponent(suggestion)),
   properties: [
-    new SuggestedProperty('score', numericProperty, null, null),
-    new SuggestedProperty('sha512_hash', literalProperty, null, null),
-    new SuggestedProperty('size', numericProperty, null, null),
-    new SuggestedProperty('source_count', numericProperty, null, null),
-    new SuggestedProperty('source_url', literalProperty, null, null),
+    new SuggestedProperty(mockedMatchedPropertyParts, 'score', numericProperty, null, null),
+    new SuggestedProperty(mockedMatchedPropertyParts, 'sha512_hash', literalProperty, null, null),
+    new SuggestedProperty(mockedMatchedPropertyParts, 'size', numericProperty, null, null),
+    new SuggestedProperty(mockedMatchedPropertyParts, 'source_count', numericProperty, null, null),
+    new SuggestedProperty(mockedMatchedPropertyParts, 'source_url', literalProperty, null, null),
   ].map(property => new PropertySuggestionComponent(property)),
 };
 
