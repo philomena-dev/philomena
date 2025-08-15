@@ -33,6 +33,7 @@ function parsePropertyParts(term: string): MatchedPropertyParts | null {
 }
 
 export class SuggestedProperty {
+  readonly matchedParts: MatchedPropertyParts;
   /**
    * Name of the property.
    */
@@ -41,7 +42,8 @@ export class SuggestedProperty {
   operator: string | null;
   value: string | null;
 
-  constructor(name: string, type: symbol | null = null, operator: string | null = null, value: string | null = null) {
+  constructor(matchedParts: MatchedPropertyParts, name: string, type: symbol | null = null, operator: string | null = null, value: string | null = null) {
+    this.matchedParts = matchedParts;
     this.name = name;
     this.type = type;
     this.operator = operator;
@@ -54,6 +56,30 @@ export class SuggestedProperty {
    */
   containsColon(): boolean {
     return this.operator !== null || this.value !== null;
+  }
+
+  calculateMatchedLength(): number {
+    let matchedLength = this.matchedParts.propertyName.length;
+
+    if (this.matchedParts.hasOperatorSyntax && this.operator) {
+      // Include "." into matched highlighted part.
+      matchedLength += 1;
+
+      if (this.matchedParts.operator) {
+        matchedLength += this.matchedParts.operator.length;
+      }
+    }
+
+    if (this.matchedParts.hasValueSyntax && (this.containsColon() || this.value)) {
+      // Include ":" into matched highlighted part.
+      matchedLength += 1;
+
+      if (this.matchedParts.value) {
+        matchedLength += this.matchedParts.value.length;
+      }
+    }
+
+    return matchedLength;
   }
 
   toString(): string {
@@ -115,7 +141,7 @@ export function matchProperties(
   if (!hasOperatorSyntax && !hasValueSyntax) {
     return Array.from(propertiesMap.keys())
       .filter(suggestedPropertyName => suggestedPropertyName.startsWith(propertyName))
-      .map(suggestedPropertyName => new SuggestedProperty(suggestedPropertyName));
+      .map(suggestedPropertyName => new SuggestedProperty(parsedTermParts, suggestedPropertyName));
   }
 
   const targetPropertyTypeOrValues = propertiesMap.get(propertyName);
@@ -136,7 +162,7 @@ export function matchProperties(
 
     return targetPropertyTypeOrValues
       .filter(suggestedValue => !value || suggestedValue.startsWith(value))
-      .map(suggestedValue => new SuggestedProperty(propertyName, null, null, suggestedValue));
+      .map(suggestedValue => new SuggestedProperty(parsedTermParts, propertyName, null, null, suggestedValue));
   }
 
   // For the properties which accept tags as values, make additional autocomplete call.
@@ -146,6 +172,7 @@ export function matchProperties(
       .map(
         tagSuggestion =>
           new SuggestedProperty(
+            parsedTermParts,
             propertyName,
             targetPropertyTypeOrValues,
             null,
@@ -154,7 +181,7 @@ export function matchProperties(
       );
 
     if (!matchedTagsResult.length) {
-      matchedTagsResult.push(new SuggestedProperty(propertyName, targetPropertyTypeOrValues, null, value));
+      matchedTagsResult.push(new SuggestedProperty(parsedTermParts, propertyName, targetPropertyTypeOrValues, null, value));
     }
 
     return matchedTagsResult;
@@ -167,12 +194,12 @@ export function matchProperties(
     .filter(suggestedOperator => !operator || suggestedOperator.startsWith(operator))
     .map(
       suggestedOperator =>
-        new SuggestedProperty(propertyName, targetPropertyTypeOrValues, suggestedOperator, value || ''),
+        new SuggestedProperty(parsedTermParts, propertyName, targetPropertyTypeOrValues, suggestedOperator, value || ''),
     );
 
   // If user haven't started typing operator yet, then also suggest the variant without any operators.
   if (!hasOperatorSyntax) {
-    suggestionsWithOperators.unshift(new SuggestedProperty(propertyName, targetPropertyTypeOrValues, '', value || ''));
+    suggestionsWithOperators.unshift(new SuggestedProperty(parsedTermParts, propertyName, targetPropertyTypeOrValues, '', value || ''));
   }
 
   return suggestionsWithOperators;

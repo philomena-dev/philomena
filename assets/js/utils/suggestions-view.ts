@@ -11,7 +11,7 @@ interface SuggestionComponent {
 }
 
 export class TagSuggestionComponent implements SuggestionComponent {
-  readonly type = "tag";
+  readonly type = 'tag';
   data: TagSuggestion;
 
   constructor(data: TagSuggestion) {
@@ -136,12 +136,28 @@ export class PropertySuggestionComponent implements SuggestionComponent {
     return [
       makeEl('div', { className: 'autocomplete__item__content' }, [
         makeEl('i', { className: 'fa-solid fa-circle-info' }),
-        makeEl('span', {
-          className: 'autocomplete__item__property__match',
-          textContent: ` ${this.value()}`,
-        }),
+        ' ',
+        ...this.#renderSuggestionWithHighlighting(),
       ]),
     ];
+  }
+
+  #renderSuggestionWithHighlighting(): (HTMLElement|string)[] {
+    const renderedSuggestion = this.value();
+    const matchedLength = this.suggestion.calculateMatchedLength();
+
+    const resultElements: (HTMLElement|string)[] = [
+      makeEl('b', {
+        className: 'autocomplete__item__property__match',
+        textContent: renderedSuggestion.slice(0, matchedLength),
+      }),
+    ];
+
+    if (matchedLength !== renderedSuggestion.length) {
+      resultElements.push(renderedSuggestion.slice(matchedLength));
+    }
+
+    return resultElements;
   }
 }
 
