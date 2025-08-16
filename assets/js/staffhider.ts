@@ -4,7 +4,7 @@
  * Hide staff elements if enabled in the settings.
  */
 
-import store from './utils/store.ts';
+import store from './utils/store';
 
 /**
  * Preview the hiding of staff tools in the local settings.
