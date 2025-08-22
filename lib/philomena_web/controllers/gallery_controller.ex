@@ -32,7 +32,7 @@ defmodule PhilomenaWeb.GalleryController do
         },
         conn.assigns.pagination
       )
-      |> Search.search_records(preload(Gallery, [:user, thumbnail: [:sources, tags: :aliases]]))
+      |> Search.search_records(preload(Gallery, thumbnail: [:sources, tags: :aliases]))
 
     render(conn, "index.html",
       title: "Galleries",

@@ -151,7 +151,7 @@ defmodule PhilomenaWeb.ProfileController do
     recent_galleries =
       Gallery
       |> where(user_id: ^user.id, anonymous: false)
-      |> preload([:user, thumbnail: [:sources, tags: :aliases]])
+      |> preload(thumbnail: [:sources, tags: :aliases])
       |> limit(4)
       |> Repo.all()
 
