@@ -20,7 +20,7 @@ defmodule Philomena.Galleries.SearchIndex do
         properties: %{
           id: %{type: "integer"},
           image_count: %{type: "integer"},
-          watcher_count: %{type: "integer"},
+          subscriber_count: %{type: "integer"},
           updated_at: %{type: "date"},
           created_at: %{type: "date"},
           title: %{type: "keyword"},
@@ -41,7 +41,7 @@ defmodule Philomena.Galleries.SearchIndex do
     %{
       id: gallery.id,
       image_count: gallery.image_count,
-      watcher_count: length(gallery.subscribers),
+      subscriber_count: length(gallery.subscribers),
       updated_at: gallery.updated_at,
       created_at: gallery.created_at,
       title: String.downcase(gallery.title),
