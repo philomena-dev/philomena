@@ -211,14 +211,18 @@ defmodule PhilomenaWeb.GalleryController do
 
   defp parse_description(_params), do: []
 
+  defp parse_sort(%{"gallery" => %{"sf" => "created_at", "sd" => sd}}) when sd in ~w(desc asc) do
+    [%{created_at: sd}, %{id: sd}]
+  end
+
   defp parse_sort(%{"gallery" => %{"sf" => sf, "sd" => sd}})
-       when sf in ["created_at", "updated_at", "image_count", "_score"] and
-              sd in ["desc", "asc"] do
-    %{sf => sd}
+       when sf in ~w(updated_at image_count subscriber_count _score) and
+              sd in ~w(desc asc) do
+    [%{sf => sd}, %{created_at: sd}, %{id: sd}]
   end
 
   defp parse_sort(_params) do
-    %{created_at: :desc}
+    [%{created_at: :desc}, %{id: :desc}]
   end
 
   defp position_order(%{order_position_asc: true}), do: "asc"
