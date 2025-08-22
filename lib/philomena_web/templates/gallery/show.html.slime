@@ -53,7 +53,10 @@ elixir:
       = pluralize("image", "images", @gallery.image_count)
       span.hide-mobile-t
         ' , last updated
+        => pretty_time(@gallery.updated_at)
+        ' (created
         = pretty_time(@gallery.updated_at)
+        ' )
 
     .block__content.flex.js-imagelist-info
       .flex__fixed.thumb-tiny-container.spacing-right
