@@ -30,8 +30,7 @@ defmodule Philomena.Galleries.SearchIndex do
           creator: %{type: "keyword"},
           image_ids: %{type: "keyword"},
           description: %{type: "text", analyzer: "snowball"},
-          thumbnail_id: %{type: "keyword"},
-          spoiler_warning: %{type: "text", analyzer: "snowball"}
+          anonymous: %{type: "boolean"}
         }
       }
     }
@@ -52,8 +51,7 @@ defmodule Philomena.Galleries.SearchIndex do
       creator: if(!!gallery.user and !gallery.anonymous, do: String.downcase(gallery.user.name)),
       image_ids: Enum.map(gallery.interactions, & &1.image_id),
       description: gallery.description,
-      thumbnail_id: gallery.thumbnail_id,
-      spoiler_warning: gallery.spoiler_warning
+      anonymous: gallery.anonymous
     }
   end
 
