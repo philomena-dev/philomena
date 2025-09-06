@@ -1,5 +1,11 @@
 import { AutocompletableInput } from '../input';
-import { propertyTypeOperators, searchTypeToPropertiesMap, tagProperty } from './maps';
+import {
+  moderationPropertiesSet,
+  propertyTypeOperators,
+  PropertyTypeOrValues,
+  searchTypeToPropertiesMap,
+  tagProperty,
+} from './maps';
 import { type LocalAutocompleter } from '../../utils/local-autocompleter';
 import { type TagSuggestion } from '../../utils/suggestions-model';
 
@@ -119,13 +125,47 @@ function resolveCanonicalTagNameFromSuggestion(suggestion: TagSuggestion): strin
     .join('');
 }
 
+const moderationRoles = ['admin', 'moderator', 'assistant'];
+const filteredMaps = new Map<Map<string, PropertyTypeOrValues>, Map<string, PropertyTypeOrValues>>();
+
+/**
+ * Check the current user role and remove the moderation-related properties from suggestions if user has no access to
+ * them.
+ *
+ * @param originalPropertiesMap Map of properties resolved from the input field. Contains both usual and moderation-only
+ * properties.
+ */
+function filterPropertiesMapByCurrentRole(
+  originalPropertiesMap: Map<string, PropertyTypeOrValues>,
+): Map<string, PropertyTypeOrValues> {
+  if (window.booru.userRole && moderationRoles.includes(window.booru.userRole)) {
+    return originalPropertiesMap;
+  }
+
+  const storedPropertiesMap = filteredMaps.get(originalPropertiesMap);
+
+  if (storedPropertiesMap) {
+    return storedPropertiesMap;
+  }
+
+  const resultPropertiesMap = new Map(
+    Array.from(originalPropertiesMap.entries()).filter(([propertyName]) => !moderationPropertiesSet.has(propertyName)),
+  );
+
+  filteredMaps.set(originalPropertiesMap, resultPropertiesMap);
+
+  return resultPropertiesMap;
+}
+
 /**
  * Create the list of suggested properties from an active term.
+ *
  * @param input Input matching was called from. Input is required to determine which list of properties should be
  * suggested. It's also used for suggesting tags inside tag-properties.
  * @param activeTerm Actual term parsed from the search query. This is the string which will be used to find relevant
  * properties.
  * @param autocomplete Instance of {@link LocalAutocompleter} used for several properties related to tags.
+ *
  * @return List of suggested properties for displaying to the user.
  */
 export function matchProperties(
@@ -133,12 +173,14 @@ export function matchProperties(
   activeTerm: string,
   autocomplete: LocalAutocompleter,
 ): SuggestedProperty[] {
-  const propertiesMap = searchTypeToPropertiesMap.get(input.element.name);
+  let propertiesMap = searchTypeToPropertiesMap.get(input.element.name);
   const parsedTermParts = propertiesMap && parsePropertyParts(activeTerm);
 
   if (!propertiesMap || !parsedTermParts) {
     return [];
   }
+
+  propertiesMap = filterPropertiesMapByCurrentRole(propertiesMap);
 
   const { hasOperatorSyntax, hasValueSyntax, propertyName, operator, value } = parsedTermParts;
 
