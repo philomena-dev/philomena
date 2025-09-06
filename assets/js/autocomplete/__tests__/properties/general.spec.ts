@@ -27,6 +27,21 @@ autocompleteTest('should only work on known query fields', async ({ ctx, expect 
     {
       "input": "d<>",
       "suggestions": [
+        "(property) description",
+        "(property) downvotes",
+        "(property) duplicate_id",
+        "(property) duration",
+      ],
+    }
+  `);
+
+  // Admins, moderators and assistants should have extended list of properties suggested
+  window.booru.userRole = 'admin';
+  await ctx.setInput('d');
+  expect(ctx.snapUi()).toMatchInlineSnapshot(`
+    {
+      "input": "d<>",
+      "suggestions": [
         "(property) deleted",
         "(property) deleted_by_user",
         "(property) deleted_by_user_id",
@@ -39,7 +54,9 @@ autocompleteTest('should only work on known query fields', async ({ ctx, expect 
         "(property) duration",
       ],
     }
-  `);
+  `)
+
+  delete window.booru.userRole;
 
   // When property name is valid, but does not exist in our maps, then do not match anything.
   await ctx.setInput('nonexistentproperty');
