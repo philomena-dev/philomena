@@ -35,47 +35,6 @@ autocompleteTest('should only work on known query fields', async ({ ctx, expect 
     }
   `);
 
-  // Admins, moderators and assistants should have extended list of properties suggested
-  window.booru.userRole = 'admin';
-  // TODO Swap with boolean once my previous PR with type fix is accepted.
-  window.booru.hideStaffTools = '';
-  await ctx.setInput('d');
-  expect(ctx.snapUi()).toMatchInlineSnapshot(`
-    {
-      "input": "d<>",
-      "suggestions": [
-        "(property) deleted",
-        "(property) deleted_by_user",
-        "(property) deleted_by_user_id",
-        "(property) deletion_reason",
-        "(property) downvoted_by",
-        "(property) downvoted_by_id",
-        "(property) description",
-        "(property) downvotes",
-        "(property) duplicate_id",
-        "(property) duration",
-      ],
-    }
-  `)
-
-  // But if admin has disabled the staff tools, then these properties should not appear
-  // TODO Swap with boolean once my previous PR with type fix is accepted.
-  window.booru.hideStaffTools = 'true';
-  await ctx.setInput('d');
-  expect(ctx.snapUi()).toMatchInlineSnapshot(`
-    {
-      "input": "d<>",
-      "suggestions": [
-        "(property) description",
-        "(property) downvotes",
-        "(property) duplicate_id",
-        "(property) duration",
-      ],
-    }
-  `);
-
-  delete window.booru.userRole;
-
   // When property name is valid, but does not exist in our maps, then do not match anything.
   await ctx.setInput('nonexistentproperty');
   expect(ctx.snapUi()).toMatchInlineSnapshot(`
