@@ -71,7 +71,7 @@ const imageSearchProperties = new Map<string, PropertyTypeOrValues>([
 
 const tagSearchProperties = new Map<string, PropertyTypeOrValues>([
   ['alias_of', tagProperty],
-  ['aliased', literalProperty],
+  ['aliased', booleanPropertyValues],
   ['aliases', tagProperty],
   ['analyzed_name', literalProperty],
   ['category', literalProperty],
