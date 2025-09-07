@@ -37,7 +37,7 @@ autocompleteTest('should show additional properties to staff', async ({ ctx, exp
         "(property) duration",
       ],
     }
-  `)
+  `);
 
   // But if admin has disabled the staff tools, then these properties should not appear
   // TODO Swap with boolean once my previous PR with type fix is accepted.
