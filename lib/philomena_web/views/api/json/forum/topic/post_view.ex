@@ -2,8 +2,9 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostView do
   use PhilomenaWeb, :view
   alias PhilomenaWeb.UserAttributionView
 
-  def render("index.json", %{posts: posts, total: total} = assigns) do
+  def render("index.json", %{cursors: cursors, posts: posts, total: total} = assigns) do
     %{
+      cursors: cursors,
       posts: render_many(posts, PhilomenaWeb.Api.Json.Forum.Topic.PostView, "post.json", assigns),
       total: total
     }
