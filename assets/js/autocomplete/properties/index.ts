@@ -138,7 +138,7 @@ const filteredMaps = new Map<Map<string, PropertyTypeOrValues>, Map<string, Prop
 function filterPropertiesMapByCurrentRole(
   originalPropertiesMap: Map<string, PropertyTypeOrValues>,
 ): Map<string, PropertyTypeOrValues> {
-  if (window.booru.userRole && moderationRoles.includes(window.booru.userRole)) {
+  if (window.booru.userRole && moderationRoles.includes(window.booru.userRole) && !window.booru.hideStaffTools) {
     return originalPropertiesMap;
   }
 

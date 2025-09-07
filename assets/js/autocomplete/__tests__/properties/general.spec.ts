@@ -37,6 +37,8 @@ autocompleteTest('should only work on known query fields', async ({ ctx, expect 
 
   // Admins, moderators and assistants should have extended list of properties suggested
   window.booru.userRole = 'admin';
+  // TODO Swap with boolean once my previous PR with type fix is accepted.
+  window.booru.hideStaffTools = '';
   await ctx.setInput('d');
   expect(ctx.snapUi()).toMatchInlineSnapshot(`
     {
@@ -55,6 +57,22 @@ autocompleteTest('should only work on known query fields', async ({ ctx, expect 
       ],
     }
   `)
+
+  // But if admin has disabled the staff tools, then these properties should not appear
+  // TODO Swap with boolean once my previous PR with type fix is accepted.
+  window.booru.hideStaffTools = 'true';
+  await ctx.setInput('d');
+  expect(ctx.snapUi()).toMatchInlineSnapshot(`
+    {
+      "input": "d<>",
+      "suggestions": [
+        "(property) description",
+        "(property) downvotes",
+        "(property) duplicate_id",
+        "(property) duration",
+      ],
+    }
+  `);
 
   delete window.booru.userRole;
 
