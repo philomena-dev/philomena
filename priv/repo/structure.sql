@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.4
--- Dumped by pg_dump version 17.4
+-- Dumped from database version 17.5
+-- Dumped by pg_dump version 17.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -721,13 +721,14 @@ CREATE TABLE public.galleries (
     spoiler_warning character varying DEFAULT ''::character varying NOT NULL,
     description character varying DEFAULT ''::character varying NOT NULL,
     thumbnail_id integer NOT NULL,
-    creator_id integer NOT NULL,
+    user_id integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     watcher_ids integer[] DEFAULT '{}'::integer[] NOT NULL,
     watcher_count integer DEFAULT 0 NOT NULL,
     image_count integer DEFAULT 0 NOT NULL,
-    order_position_asc boolean DEFAULT false NOT NULL
+    order_position_asc boolean DEFAULT false NOT NULL,
+    anonymous boolean DEFAULT false NOT NULL
 );
 
 
@@ -3645,7 +3646,7 @@ CREATE UNIQUE INDEX index_forums_on_short_name ON public.forums USING btree (sho
 -- Name: index_galleries_on_creator_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_galleries_on_creator_id ON public.galleries USING btree (creator_id);
+CREATE INDEX index_galleries_on_creator_id ON public.galleries USING btree (user_id);
 
 
 --
@@ -4884,7 +4885,7 @@ ALTER TABLE ONLY public.gallery_interactions
 --
 
 ALTER TABLE ONLY public.galleries
-    ADD CONSTRAINT fk_rails_6c0cba6a45 FOREIGN KEY (creator_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT fk_rails_6c0cba6a45 FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -5590,3 +5591,5 @@ INSERT INTO public."schema_migrations" (version) VALUES (20250407021536);
 INSERT INTO public."schema_migrations" (version) VALUES (20250501174007);
 INSERT INTO public."schema_migrations" (version) VALUES (20250502110018);
 INSERT INTO public."schema_migrations" (version) VALUES (20250507183410);
+INSERT INTO public."schema_migrations" (version) VALUES (20250617121030);
+INSERT INTO public."schema_migrations" (version) VALUES (20250617122513);

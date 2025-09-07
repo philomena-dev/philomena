@@ -47,7 +47,7 @@ defmodule Philomena.Users.Eraser do
 
     # Delete all galleries
     Gallery
-    |> where(creator_id: ^user.id)
+    |> where(user_id: ^user.id)
     |> Repo.all()
     |> Enum.each(fn gallery ->
       {:ok, _gallery} = Galleries.delete_gallery(gallery)
