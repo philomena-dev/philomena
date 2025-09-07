@@ -429,10 +429,10 @@ defmodule Philomena.Users.User do
     change(user, deleted_at: nil, deleted_by_user_id: nil)
   end
 
-  def deactivate_changeset(user, moderator) do
+  def deactivate_changeset(user, deactivator) do
     now = DateTime.utc_now(:second)
 
-    change(user, deleted_at: now, deleted_by_user_id: moderator.id)
+    change(user, deleted_at: now, deleted_by_user_id: deactivator.id)
   end
 
   def api_key_changeset(user) do
