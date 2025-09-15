@@ -24,6 +24,7 @@ defmodule Philomena.Tags do
   alias Philomena.ArtistLinks.ArtistLink
   alias Philomena.DnpEntries.DnpEntry
   alias Philomena.Channels.Channel
+  alias Philomena.TagChanges
 
   # There is a really delicate nuance that must be known to avoid deadlocks in
   # vectorized mutation queries such as `INSERT ON CONFLICT UPDATE`, `UPDATE`,
@@ -340,7 +341,8 @@ defmodule Philomena.Tags do
   Performs the actual deletion of a tag.
 
   Removes the tag from the database, deletes its search index,
-  and reindexes all images that were tagged with it.
+  reindexes all images that were tagged with it, and cleans up
+  any empty tag changes.
 
   ## Examples
 
@@ -361,6 +363,8 @@ defmodule Philomena.Tags do
     {:ok, tag} = Repo.delete(tag)
 
     Search.delete_document(tag.id, Tag)
+
+    TagChanges.delete_empty_tag_changes()
 
     Image
     |> where([i], i.id in ^image_ids)
