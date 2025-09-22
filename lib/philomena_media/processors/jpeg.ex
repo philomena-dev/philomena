@@ -42,7 +42,7 @@ defmodule PhilomenaMedia.Processors.Jpeg do
 
   defp requires_lossy_transformation?(file) do
     with {output, 0} <-
-           System.cmd("identify", ["-format", "%[orientation]\t%[profile:icc]", file]),
+           System.cmd("magick", ["identify", "-format", "%[orientation]\t%[profile:icc]", file]),
          [orientation, profile] <- String.split(output, "\t") do
       orientation not in ["Undefined", "TopLeft"] or profile != ""
     else
