@@ -332,7 +332,7 @@ describe('preview.ts setupPreviews', () => {
 
     // First, large current height with small content -> stays at current height (no shrink)
     styleSpy.mockImplementationOnce(
-      () => ({ borderTopWidth: '0', borderBottomWidth: '0', height: '400' } as unknown as CSSStyleDeclaration),
+      () => ({ borderTopWidth: '0', borderBottomWidth: '0', height: '400' }) as unknown as CSSStyleDeclaration,
     );
     Object.defineProperty(textarea, 'scrollHeight', { value: 100, configurable: true });
     setupPreviews();
@@ -341,7 +341,7 @@ describe('preview.ts setupPreviews', () => {
 
     // Then, huge content -> capped at 1000
     styleSpy.mockImplementationOnce(
-      () => ({ borderTopWidth: '0', borderBottomWidth: '0', height: '50' } as unknown as CSSStyleDeclaration),
+      () => ({ borderTopWidth: '0', borderBottomWidth: '0', height: '50' }) as unknown as CSSStyleDeclaration,
     );
     Object.defineProperty(textarea, 'scrollHeight', { value: 5000 });
     fireEvent.keyUp(textarea);
