@@ -59,7 +59,7 @@ defmodule PhilomenaMedia.Processors.Jpeg do
     if requires_lossy_transformation?(file) do
       # Transcode: strip EXIF, embedded profile and reorient image
       {_output, 0} =
-        System.cmd("convert", [
+        System.cmd("magick", [
           file,
           "-profile",
           srgb_profile(),
