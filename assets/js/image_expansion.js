@@ -155,6 +155,10 @@ function bindImageForClick(target) {
   });
 }
 
+/**
+ * Bind image targets within a context.
+ * @param {{ querySelectorAll: Document['querySelectorAll'] }} [node=document]
+ */
 function bindImageTarget(node = document) {
   $$('.image-target', node).forEach(target => {
     pickAndResize(target);
