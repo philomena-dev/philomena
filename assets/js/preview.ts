@@ -48,8 +48,6 @@ function getPreview(
 ) {
   const path = '/posts/preview';
 
-  if (typeof body !== 'string') return;
-
   showEl(previewLoading);
   hideEl(previewIdle);
 

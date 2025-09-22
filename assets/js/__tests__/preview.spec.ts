@@ -207,4 +207,218 @@ describe('preview.ts setupPreviews', () => {
 
     styleSpy.mockRestore();
   });
+
+  it('does nothing when required elements are missing', () => {
+    document.body.innerHTML = `
+      <a href="#" data-click-tab="preview">Preview</a>
+      <textarea class="js-preview-input"></textarea>
+      <!-- no loading/idle/content elements present -->
+    `;
+
+    const previewBtn = $<HTMLAnchorElement>('a[data-click-tab="preview"]')!;
+
+    setupPreviews();
+
+    fireEvent.click(previewBtn);
+    expect(fetchJson).not.toHaveBeenCalled();
+  });
+
+  it('does not update preview when content is hidden and anon is toggled', async () => {
+    document.body.innerHTML = `
+      <a href="#" data-click-tab="preview">Preview</a>
+      <a href="#" data-click-tab="write" class="not-selected"></a>
+      <textarea class="js-preview-input"></textarea>
+      <div class="js-preview-loading hidden"></div>
+      <div class="js-preview-idle"></div>
+      <div class="js-preview-content hidden"></div>
+      <input type="checkbox" class="js-preview-anonymous" />
+    `;
+
+    const textarea = $<HTMLTextAreaElement>('.js-preview-input')!;
+    const anon = $<HTMLInputElement>('.js-preview-anonymous')!;
+    textarea.value = 'Hidden content test';
+
+    setupPreviews();
+
+    vi.mocked(fetchJson).mockReset();
+
+    // Toggling anon should be ignored due to hidden content
+    fireEvent.click(anon);
+
+    // Give time for any async handlers (there should be none)
+    await new Promise(r => setTimeout(r, 10));
+
+    expect(fetchJson).not.toHaveBeenCalled();
+  });
+
+  it('uses description textarea fallback when input is missing', async () => {
+    document.body.innerHTML = `
+      <a href="#" data-click-tab="preview">Preview</a>
+      <a href="#" data-click-tab="write" class="not-selected"></a>
+      <textarea class="js-preview-description"></textarea>
+      <div class="js-preview-loading hidden"></div>
+      <div class="js-preview-idle"></div>
+      <div class="js-preview-content"></div>
+    `;
+
+    const desc = $<HTMLTextAreaElement>('.js-preview-description')!;
+    const previewBtn = $<HTMLAnchorElement>('a[data-click-tab="preview"]')!;
+    desc.value = 'From description';
+
+    mockSuccessfulPreview('<p>desc</p>');
+
+    setupPreviews();
+
+    fireEvent.click(previewBtn);
+    await waitFor(() => expect(fetchJson).toHaveBeenCalledTimes(1));
+
+    // Ensure body came from description textarea
+    expect(vi.mocked(fetchJson).mock.calls[0][2]).toEqual({ body: 'From description', anonymous: false });
+  });
+
+  it('does not click write tab when it is already selected', () => {
+    const { textarea } = makeBaseDom();
+    textarea.value = '';
+
+    const writeTab = $<HTMLAnchorElement>('a[data-click-tab="write"]')!;
+    writeTab.classList.add('selected'); // make it selected so selector :not(.selected) won't match
+    const clickSpy = vi.spyOn(writeTab, 'click');
+
+    const container = document.createElement('div');
+    container.innerHTML = `
+      <a href="/u/test" class="post-reply" data-author="User" data-post="quote">
+        <span class="inner">reply</span>
+      </a>
+    `;
+    document.body.appendChild(container);
+
+    setupPreviews();
+
+    const inner = container.querySelector('.inner')!;
+    fireEvent.click(inner);
+
+    expect(clickSpy).not.toHaveBeenCalled();
+  });
+
+  it('adds separating newline when replying after trailing newline', () => {
+    const { textarea } = makeBaseDom();
+    textarea.value = 'existing line\n';
+
+    const container = document.createElement('div');
+    container.innerHTML = `
+      <a href="/u/test" class="post-reply" data-author="User" data-post="quote">
+        <span class="inner">reply</span>
+      </a>
+    `;
+    document.body.appendChild(container);
+
+    setupPreviews();
+
+    const inner = container.querySelector('.inner')!;
+    fireEvent.click(inner);
+
+    expect(textarea.value).toMatch(/existing line\n\n\[User\]\(\/u\/test\)\n> quote\n\n$/);
+  });
+
+  it('reply without quote does not add quote block', () => {
+    const { textarea } = makeBaseDom();
+    textarea.value = '';
+
+    const writeTab = $<HTMLAnchorElement>('a[data-click-tab="write"]')!;
+    writeTab.classList.remove('selected');
+
+    const container = document.createElement('div');
+    container.innerHTML = `
+      <a href="/u/test" class="post-reply" data-author="User">
+        <span class="inner">reply</span>
+      </a>
+    `;
+    document.body.appendChild(container);
+
+    setupPreviews();
+
+    const inner = container.querySelector('.inner')!;
+    fireEvent.click(inner);
+
+    // Only the user link line and trailing newline
+    expect(textarea.value).toMatch(/^\[User\]\(\/u\/test\)\n$/);
+  });
+
+  it('reply after non-newline text does not inject extra blank line', () => {
+    const { textarea } = makeBaseDom();
+    textarea.value = 'prefix';
+
+    const container = document.createElement('div');
+    container.innerHTML = `
+      <a href="/u/test" class="post-reply" data-author="User" data-post="q">
+        <span class="inner">reply</span>
+      </a>
+    `;
+    document.body.appendChild(container);
+
+    setupPreviews();
+
+    const inner = container.querySelector('.inner')!;
+    fireEvent.click(inner);
+
+    // Should be directly appended without an extra blank newline
+    expect(textarea.value).toMatch(/^prefix\[User\]\(\/u\/test\)\n> q\n\n$/);
+  });
+
+  it('resize does not shrink below current height and caps at 1000', () => {
+    const { textarea } = makeBaseDom();
+    textarea.value = 'text';
+
+    const styleSpy = vi.spyOn(window, 'getComputedStyle');
+
+    // First, large current height with small content -> stays at current height (no shrink)
+    styleSpy.mockImplementationOnce(
+      () => ({ borderTopWidth: '0', borderBottomWidth: '0', height: '400' }) as unknown as CSSStyleDeclaration,
+    );
+    Object.defineProperty(textarea, 'scrollHeight', { value: 100, configurable: true });
+    setupPreviews();
+    fireEvent.keyUp(textarea);
+    expect(textarea.style.height).toBe('400px');
+
+    // Then, huge content -> capped at 1000
+    styleSpy.mockImplementationOnce(
+      () => ({ borderTopWidth: '0', borderBottomWidth: '0', height: '50' }) as unknown as CSSStyleDeclaration,
+    );
+    Object.defineProperty(textarea, 'scrollHeight', { value: 5000 });
+    fireEvent.keyUp(textarea);
+    expect(textarea.style.height).toBe('1000px');
+
+    styleSpy.mockRestore();
+  });
+
+  it('ignores non-reply clicks in delegated handler', () => {
+    const { textarea } = makeBaseDom();
+    textarea.value = 'keep';
+
+    setupPreviews();
+
+    fireEvent.click(document.body);
+    expect(textarea.value).toBe('keep');
+  });
+
+  it('reply uses empty defaults when data attributes are missing', () => {
+    const { textarea } = makeBaseDom();
+    textarea.value = '';
+
+    const container = document.createElement('div');
+    container.innerHTML = `
+      <a class="post-reply">
+        <span class="inner">reply</span>
+      </a>
+    `;
+    document.body.appendChild(container);
+
+    setupPreviews();
+
+    const inner = container.querySelector('.inner')!;
+    fireEvent.click(inner);
+
+    // Falls back to empty author and href, and no quote
+    expect(textarea.value).toBe('[]()\n');
+  });
 });
