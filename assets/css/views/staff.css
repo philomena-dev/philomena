@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   grid-auto-rows: 1fr;
-  grid-gap: 0.5em;
+  gap: 0.5em;
 }
 
 .staff-block__user-card {
