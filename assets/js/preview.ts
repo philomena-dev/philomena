@@ -6,6 +6,8 @@ import { fetchJson } from './utils/requests';
 import { bindImageTarget } from './image_expansion';
 import { filterNode } from './imagesclientside';
 import { $, hideEl, showEl } from './utils/dom';
+import { assertType } from './utils/assert';
+import { delegate } from './utils/events';
 
 function handleError(response: Response): Promise<string> | string {
   const errorMessage = '<div>Preview failed to load!</div>';
@@ -69,7 +71,7 @@ function getPreview(
  * @param {E} e
  */
 function resizeTextarea(e: Event): void {
-  const target = e.target as HTMLTextAreaElement;
+  const target = assertType(e.target, HTMLTextAreaElement);
   const { borderTopWidth, borderBottomWidth, height } = window.getComputedStyle(target);
   // Add scrollHeight and borders (because border-box) to get the target size that avoids scrollbars
   const contentHeight = target.scrollHeight + parseFloat(borderTopWidth) + parseFloat(borderBottomWidth);
@@ -91,23 +93,23 @@ function setupPreviews(): void {
   const previewLoading = $<HTMLElement>('.js-preview-loading');
   const previewIdle = $<HTMLElement>('.js-preview-idle');
   const previewContent = $<HTMLElement>('.js-preview-content');
-  const previewAnonEl = $<HTMLInputElement>('.js-preview-anonymous');
+  const previewAnon = $<HTMLInputElement>('.js-preview-anonymous');
 
   if (!textarea || !previewContent || !previewButton || !previewLoading || !previewIdle) {
     return;
   }
 
   const getCacheKey = (): string => {
-    return (previewAnonEl?.checked ? 'anon;' : '') + textarea!.value;
+    return (previewAnon?.checked ? 'anon;' : '') + textarea!.value;
   };
 
   const previewedTextAttribute = 'data-previewed-text';
-  const updatePreview = (): void => {
+  const updatePreview = () => {
     const cachedValue = getCacheKey();
     if (previewContent.getAttribute(previewedTextAttribute) === cachedValue) return;
     previewContent.setAttribute(previewedTextAttribute, cachedValue);
 
-    getPreview(textarea!.value, Boolean(previewAnonEl?.checked), previewLoading, previewIdle, previewContent);
+    getPreview(textarea!.value, Boolean(previewAnon?.checked), previewLoading, previewIdle, previewContent);
   };
 
   previewButton.addEventListener('click', updatePreview);
@@ -117,21 +119,19 @@ function setupPreviews(): void {
   // Fire handler for automatic resizing if textarea contains text on page load (e.g. editing)
   if (textarea.value) textarea.dispatchEvent(new Event('change'));
 
-  if (previewAnonEl) {
-    previewAnonEl.addEventListener('click', () => {
+  if (previewAnon) {
+    previewAnon.addEventListener('click', () => {
       if (previewContent.classList.contains('hidden')) return;
 
       updatePreview();
     });
   }
 
-  document.addEventListener('click', event => {
-    const target = event.target as HTMLElement | null;
-    if (target && target.closest('.post-reply')) {
-      const link = target.closest('.post-reply') as HTMLElement;
+  delegate(document, 'click', {
+    '.post-reply': (event: Event, link: HTMLElement) => {
       commentReply(link.dataset.author || '', link.getAttribute('href') || '', textarea!, link.dataset.post);
       event.preventDefault();
-    }
+    },
   });
 }
 
