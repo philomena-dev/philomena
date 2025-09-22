@@ -16,10 +16,6 @@ import { DebouncedCache } from '../utils/debounced-cache';
 import store from '../utils/store';
 import { normalizedKeyboardKey, keys } from '../utils/keyboard';
 
-// This lint is dumb, especially in this case because this type alias depends on
-// the `Autocomplete` symbol, and methods on the `Autocomplete` class depend on
-// this type alias, so either way there is a circular dependency in type annotations
- 
 type ActiveAutocomplete = Autocomplete & { input: AutocompletableInput };
 
 function readHistoryConfig() {
