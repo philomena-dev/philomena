@@ -19,7 +19,7 @@ function handleError(response: Response): Promise<string> | string {
   return response.text();
 }
 
-function commentReply(user: string, url: string, textarea: HTMLTextAreaElement, quote?: string): void {
+function commentReply(user: string, url: string, textarea: HTMLTextAreaElement, quote?: string) {
   const text = `[${user}](${url})`;
   let newval = textarea.value;
 
@@ -45,7 +45,7 @@ function getPreview(
   previewLoading: HTMLElement,
   previewIdle: HTMLElement,
   previewContent: HTMLElement,
-): void {
+) {
   const path = '/posts/preview';
 
   if (typeof body !== 'string') return;
@@ -70,7 +70,7 @@ function getPreview(
  * @template {{ target: HTMLTextAreaElement }} E
  * @param {E} e
  */
-function resizeTextarea(e: Event): void {
+function resizeTextarea(e: Event) {
   const target = assertType(e.target, HTMLTextAreaElement);
   const { borderTopWidth, borderBottomWidth, height } = window.getComputedStyle(target);
   // Add scrollHeight and borders (because border-box) to get the target size that avoids scrollbars
@@ -82,7 +82,7 @@ function resizeTextarea(e: Event): void {
   target.style.height = `${newHeight}px`;
 }
 
-function setupPreviews(): void {
+function setupPreviews() {
   let textarea = $<HTMLTextAreaElement>('.js-preview-input');
 
   if (!textarea) {
