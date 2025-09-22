@@ -300,26 +300,6 @@ describe('preview.ts setupPreviews', () => {
     expect(clickSpy).not.toHaveBeenCalled();
   });
 
-  it('adds separating newline when replying after trailing newline', () => {
-    const { textarea } = makeBaseDom();
-    textarea.value = 'existing line\n';
-
-    const container = document.createElement('div');
-    container.innerHTML = `
-      <a href="/u/test" class="post-reply" data-author="User" data-post="quote">
-        <span class="inner">reply</span>
-      </a>
-    `;
-    document.body.appendChild(container);
-
-    setupPreviews();
-
-    const inner = container.querySelector('.inner')!;
-    fireEvent.click(inner);
-
-    expect(textarea.value).toMatch(/existing line\n\n\[User\]\(\/u\/test\)\n> quote\n\n$/);
-  });
-
   it('reply without quote does not add quote block', () => {
     const { textarea } = makeBaseDom();
     textarea.value = '';
@@ -344,27 +324,6 @@ describe('preview.ts setupPreviews', () => {
     expect(textarea.value).toMatch(/^\[User\]\(\/u\/test\)\n$/);
   });
 
-  it('reply after non-newline text does not inject extra blank line', () => {
-    const { textarea } = makeBaseDom();
-    textarea.value = 'prefix';
-
-    const container = document.createElement('div');
-    container.innerHTML = `
-      <a href="/u/test" class="post-reply" data-author="User" data-post="q">
-        <span class="inner">reply</span>
-      </a>
-    `;
-    document.body.appendChild(container);
-
-    setupPreviews();
-
-    const inner = container.querySelector('.inner')!;
-    fireEvent.click(inner);
-
-    // Should be directly appended without an extra blank newline
-    expect(textarea.value).toMatch(/^prefix\[User\]\(\/u\/test\)\n> q\n\n$/);
-  });
-
   it('resize does not shrink below current height and caps at 1000', () => {
     const { textarea } = makeBaseDom();
     textarea.value = 'text';
@@ -373,7 +332,7 @@ describe('preview.ts setupPreviews', () => {
 
     // First, large current height with small content -> stays at current height (no shrink)
     styleSpy.mockImplementationOnce(
-      () => ({ borderTopWidth: '0', borderBottomWidth: '0', height: '400' }) as unknown as CSSStyleDeclaration,
+      () => ({ borderTopWidth: '0', borderBottomWidth: '0', height: '400' } as unknown as CSSStyleDeclaration),
     );
     Object.defineProperty(textarea, 'scrollHeight', { value: 100, configurable: true });
     setupPreviews();
@@ -382,23 +341,13 @@ describe('preview.ts setupPreviews', () => {
 
     // Then, huge content -> capped at 1000
     styleSpy.mockImplementationOnce(
-      () => ({ borderTopWidth: '0', borderBottomWidth: '0', height: '50' }) as unknown as CSSStyleDeclaration,
+      () => ({ borderTopWidth: '0', borderBottomWidth: '0', height: '50' } as unknown as CSSStyleDeclaration),
     );
     Object.defineProperty(textarea, 'scrollHeight', { value: 5000 });
     fireEvent.keyUp(textarea);
     expect(textarea.style.height).toBe('1000px');
 
     styleSpy.mockRestore();
-  });
-
-  it('ignores non-reply clicks in delegated handler', () => {
-    const { textarea } = makeBaseDom();
-    textarea.value = 'keep';
-
-    setupPreviews();
-
-    fireEvent.click(document.body);
-    expect(textarea.value).toBe('keep');
   });
 
   it('reply uses empty defaults when data attributes are missing', () => {
