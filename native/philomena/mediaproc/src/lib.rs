@@ -34,13 +34,13 @@ pub enum ExecuteCommandError {
 /// Enumeration of permitted program names.
 pub static PERMITTED_PROGRAMS: Lazy<HashSet<&'static str>> = Lazy::new(|| {
     vec![
-        "magick",
         "ffprobe",
         "ffmpeg",
         "file",
         "gifsicle",
         "image-intensities",
         "jpegtran",
+        "magick",
         "mediastat",
         "mediathumb",
         "optipng",
