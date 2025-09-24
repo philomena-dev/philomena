@@ -247,16 +247,13 @@ function downvoteRestricted(imageId: string) {
 
 function bindInteractions() {
   onLeftClick((event: MouseEvent) => {
-    if (event.button === 0) {
-      // Is it a left-click?
-      for (const target in targets) {
-        /* Event delegation doesn't quite grab what we want here. */
-        const link = event.target && (event.target as HTMLElement).closest?.(target);
+    for (const target in targets) {
+      /* Event delegation doesn't quite grab what we want here. */
+      const link = event.target && (event.target as HTMLElement).closest?.(target);
 
-        if (link) {
-          event.preventDefault();
-          targets[target]((link as HTMLElement).dataset.imageId as string);
-        }
+      if (link) {
+        event.preventDefault();
+        targets[target]((link as HTMLElement).dataset.imageId as string);
       }
     }
   });
