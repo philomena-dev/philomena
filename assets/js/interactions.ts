@@ -2,8 +2,9 @@
  * Interactions.
  */
 
-import { fetchJson } from './utils/requests';
-import { $, $$ } from './utils/dom';
+import { Interaction, InteractionType, InteractionValue } from '../types/booru-object';
+import { fetchJson, HttpMethod } from './utils/requests';
+import { $, $$, onLeftClick } from './utils/dom';
 
 const endpoints = {
   vote(imageId: string) {
@@ -19,14 +20,6 @@ const endpoints = {
 
 type EndpointType = keyof typeof endpoints;
 
-type InteractionValue = 'up' | 'down' | '' | null;
-
-export interface InteractionRecord {
-  image_id: string | number;
-  interaction_type: 'voted' | 'faved' | 'hidden';
-  value?: InteractionValue;
-}
-
 interface ScorePayload {
   score: string | number;
   faves: string | number;
@@ -36,8 +29,8 @@ interface ScorePayload {
 
 interface CacheRecord {
   imageId: string;
-  interactionType: 'voted' | 'faved' | 'hidden';
-  value: '' | 'up' | 'down';
+  interactionType: InteractionType;
+  value: InteractionValue;
 }
 
 const spoilerDownvoteMsg = 'Neigh! - Remove spoilered tags from your filters to downvote from thumbnails';
@@ -46,17 +39,18 @@ const spoilerDownvoteMsg = 'Neigh! - Remove spoilered tags from your filters to 
  * Quick helper function to less verbosely iterate a QSA
  */
 function onImage(id: string, selector: string, cb: (node: HTMLElement) => unknown) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ([] as any[]).forEach.call($$(`${selector}[data-image-id="${id}"]`), cb);
+  for (const el of $$<HTMLElement>(`${selector}[data-image-id="${id}"]`)) {
+    cb(el);
+  }
 }
 
 /* Since JS modifications to webpages, except form inputs, are not stored
  * in the browser navigation history, we store a cache of the changes in a
  * form to allow interactions to persist on navigation. */
 
-function getCache() {
+function getCache(): CacheRecord[] {
   const cacheEl = $<HTMLInputElement>('.js-interaction-cache')!;
-  return Object.values(JSON.parse(cacheEl.value)) as CacheRecord[];
+  return Object.values(JSON.parse(cacheEl.value));
 }
 
 function modifyCache(callback: (cache: Record<string, CacheRecord>) => Record<string, CacheRecord>) {
@@ -64,14 +58,14 @@ function modifyCache(callback: (cache: Record<string, CacheRecord>) => Record<st
   cacheEl.value = JSON.stringify(callback(JSON.parse(cacheEl.value)));
 }
 
-function cacheStatus(imageId: string, interactionType: CacheRecord['interactionType'], value: CacheRecord['value']) {
+function cacheStatus(imageId: string, interactionType: InteractionType, value: InteractionValue) {
   modifyCache(cache => {
     cache[`${imageId}${interactionType}`] = { imageId, interactionType, value };
     return cache;
   });
 }
 
-function uncacheStatus(imageId: string, interactionType: CacheRecord['interactionType']) {
+function uncacheStatus(imageId: string, interactionType: InteractionType) {
   modifyCache(cache => {
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete cache[`${imageId}${interactionType}`];
@@ -133,18 +127,13 @@ function resetHidden(imageId: string) {
   onImage(imageId, '.interaction--hide', el => el.classList.remove('active'));
 }
 
-function interact(type: EndpointType, imageId: string, method: 'POST' | 'DELETE', data: Record<string, unknown> = {}) {
-  const callFetch = fetchJson as unknown as (
-    verb: string,
-    endpoint: string,
-    body?: Record<string, unknown>,
-  ) => Promise<Response>;
-  return callFetch(method, endpoints[type](imageId), data)
+function interact(type: EndpointType, imageId: string, method: HttpMethod, data: Record<string, unknown> = {}) {
+  return fetchJson(method, endpoints[type](imageId), data)
     .then(res => res.json())
     .then((res: ScorePayload) => setScore(imageId, res));
 }
 
-function displayInteractionSet(interactions: (InteractionRecord | CacheRecord)[]) {
+function displayInteractionSet(interactions: (Interaction | CacheRecord)[]) {
   interactions.forEach(i => {
     if ('image_id' in i) {
       const imageId = String(i.image_id);
@@ -178,7 +167,7 @@ function displayInteractionSet(interactions: (InteractionRecord | CacheRecord)[]
 
 function loadInteractions() {
   /* Set up the actual interactions */
-  displayInteractionSet(window.booru.interactions as unknown as InteractionRecord[]);
+  displayInteractionSet(window.booru.interactions);
   displayInteractionSet(getCache());
 
   /* Next part is only for image index pages
@@ -186,13 +175,13 @@ function loadInteractions() {
   if (!$('#imagelist-container')) return;
 
   /* Users will blind downvote without this */
-  window.booru.imagesWithDownvotingDisabled.forEach(i => {
-    onImage(i, '.interaction--downvote', a => {
+  window.booru.imagesWithDownvotingDisabled.forEach((i: string) => {
+    onImage(i, '.interaction--downvote', (node: HTMLElement) => {
       // TODO Use a 'js-' class to target these instead
-      const icon = $('i', a) || $('.oc-icon-small', a) || (a as unknown as HTMLElement);
+      const icon = $('i', node) || $('.oc-icon-small', node) || node;
 
       icon.setAttribute('title', spoilerDownvoteMsg);
-      a.classList.add('disabled');
+      node.classList.add('disabled');
     });
   });
 }
@@ -257,13 +246,12 @@ function downvoteRestricted(imageId: string) {
 }
 
 function bindInteractions() {
-  document.addEventListener('click', event => {
-    if ((event as MouseEvent).button === 0) {
+  onLeftClick((event: MouseEvent) => {
+    if (event.button === 0) {
       // Is it a left-click?
       for (const target in targets) {
         /* Event delegation doesn't quite grab what we want here. */
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const link = (event.target as any) && (event.target as Element).closest?.(target);
+        const link = event.target && (event.target as HTMLElement).closest?.(target);
 
         if (link) {
           event.preventDefault();
@@ -275,10 +263,9 @@ function bindInteractions() {
 }
 
 function loggedOutInteractions() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ([] as any[]).forEach.call($$('.interaction--fave,.interaction--upvote,.interaction--downvote'), (a: HTMLElement) =>
-    a.setAttribute('href', '/sessions/new'),
-  );
+  for (const el of $$<HTMLElement>('.interaction--fave,.interaction--upvote,.interaction--downvote')) {
+    el.setAttribute('href', '/sessions/new');
+  }
 }
 
 function setupInteractions() {

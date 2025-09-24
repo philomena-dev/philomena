@@ -206,7 +206,7 @@ describe('comment.ts setupComments', () => {
     expect(dispatched).toBe(false);
 
     await waitFor(() => {
-      expect(fetchHtml).toHaveBeenCalledWith('/comments?page=2');
+      expect(fetchHtml).toHaveBeenCalledWith('http://localhost:3000/comments?page=2');
       expect($<HTMLDivElement>('#comments')!).toContainHTML('page2');
     });
   });
@@ -329,7 +329,7 @@ describe('comment.ts setupComments', () => {
     setupComments();
 
     await waitFor(() => {
-      expect(fetchHtml).toHaveBeenCalledWith('/comments?comment_id=AbC123');
+      expect(fetchHtml).toHaveBeenCalledWith('http://localhost:3000/comments?comment_id=AbC123');
       expect($<HTMLDivElement>('#comments')!).toContainHTML('hash-load');
     });
   });

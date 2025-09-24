@@ -6,7 +6,7 @@ import { $ } from './utils/dom';
 import { filterNode } from './imagesclientside';
 import { fetchHtml } from './utils/requests';
 import { timeAgo } from './timeago';
-import { assertType } from './utils/assert';
+import { assertType, assertNotNull } from './utils/assert';
 import { delegate, leftClick } from './utils/events';
 
 function handleError(response: Response): Promise<string> | string {
@@ -45,7 +45,7 @@ function loadParentPost(event: Event, target: HTMLElement) {
   // Find the comment containing the link that was clicked
   const fullComment = assertType(target.closest('article.block'), HTMLElement);
   // Look for a potential image and comment ID
-  const href = target.getAttribute('href') as string;
+  const href = assertNotNull(target.getAttribute('href'));
   const commentMatches = /(\w+)#comment_(\w+)$/.exec(href);
 
   // If the clicked link is already active, just clear the parent comments
@@ -77,9 +77,7 @@ function insertParentPost(data: string, clickedLink: HTMLElement, fullComment: H
   // Parse the HTML into an element so we can decorate it before insertion
   const tpl = document.createElement('template');
   tpl.innerHTML = data.trim();
-  const newEl = tpl.content.firstElementChild as HTMLElement | null;
-
-  if (!newEl) return;
+  const newEl = assertType(tpl.content.firstElementChild, HTMLElement);
 
   // Mark the inserted parent comment
   newEl.classList.add('subthread');
@@ -100,17 +98,17 @@ function insertParentPost(data: string, clickedLink: HTMLElement, fullComment: H
 
 function clearParentPost(_clickedLink: HTMLElement, fullComment: HTMLElement) {
   // Remove any previous siblings with the class fetched-comment
-  let prevEl = fullComment.previousElementSibling as HTMLElement | null;
+  let prevEl = fullComment.previousElementSibling;
 
   while (prevEl && prevEl.classList.contains('fetched-comment')) {
     prevEl.parentNode?.removeChild(prevEl);
-    prevEl = fullComment.previousElementSibling as HTMLElement | null;
+    prevEl = fullComment.previousElementSibling;
   }
 
   // Remove class active_reply_link from all links in the comment
-  Array.prototype.slice.call(fullComment.getElementsByClassName('active_reply_link')).forEach((link: Element) => {
+  for (const link of fullComment.getElementsByClassName('active_reply_link')) {
     assertType(link, HTMLElement).classList.remove('active_reply_link');
-  });
+  }
 
   // If this full comment isn't a fetched comment, remove the subthread class.
   if (!fullComment.classList.contains('fetched-comment')) {
@@ -132,18 +130,15 @@ function loadComments(target?: Element) {
   const container = document.getElementById('comments')!;
   const href = target?.getAttribute('href');
   const hashMatch = window.location.hash && window.location.hash.match(/#comment_([a-f0-9]+)/i);
-
-  // Compute URL explicitly to improve readability and coverage mapping
-  let url = container.dataset.currentUrl as string;
+  const url = new URL(container.dataset.currentUrl as string, window.location.origin);
 
   if (href) {
-    url = href;
+    url.href = `${url.origin}${href}`;
   } else if (hashMatch) {
-    const id = window.location.hash.substring(9);
-    url = `${container.dataset.currentUrl}?comment_id=${id}`;
+    url.searchParams.set('comment_id', window.location.hash.substring(9));
   }
 
-  fetchHtml(url)
+  fetchHtml(url.toString())
     .then(handleError)
     .then(data => {
       displayComments(container, data);
@@ -163,7 +158,7 @@ function setupComments() {
   const hasHash = window.location.hash && window.location.hash.match(/^#comment_([a-f0-9]+)$/i);
   const targetOnPage = hasHash ? Boolean($(window.location.hash)) : true;
 
-  // Load comments over AJAX if we are on a page with element #comments
+  // Fetch comments if we are on a page with element #comments
   if (comments) {
     if (!comments.dataset.loaded || !targetOnPage) {
       // There is no event associated with the initial load, so just call without arguments.

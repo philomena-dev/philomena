@@ -135,14 +135,19 @@ describe('interactions', () => {
     displayInteractionSet(serverInteractions);
 
     // cached interactions (exercise code path; assertions separate below)
-    const cache = $('.js-interaction-cache') as HTMLInputElement;
-    cache.value = JSON.stringify({});
-    cache.value = JSON.stringify({
-      '42voted': { imageId: '42', interactionType: 'voted', value: 'down' },
-    });
+    const cache = $<HTMLInputElement>('.js-interaction-cache');
+
+    if (cache) {
+      cache.value = JSON.stringify({});
+      cache.value = JSON.stringify({
+        '42voted': { imageId: '42', interactionType: 'voted', value: 'down' },
+      });
+    }
+
     const cachedInteractions: InteractionLike[] = [
       { imageId: '42', interactionType: 'voted', value: 'down' } as unknown as InteractionLike,
     ];
+
     displayInteractionSet(cachedInteractions);
 
     expect($('.interaction--upvote')!.classList.contains('active')).toBe(true);
