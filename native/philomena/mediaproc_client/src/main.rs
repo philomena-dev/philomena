@@ -22,8 +22,8 @@ enum InvocationType {
     ExecuteCommand {
         /// Program name to execute.
         ///
-        /// One of convert, ffprobe, ffmpeg, file, gifsicle, identify,
-        /// image-intensities, jpegtran, mediastat, optipng, safe-rsvg-convert.
+        /// One of magick, ffprobe, ffmpeg, file, gifsicle, image-intensities,
+        /// jpegtran, mediastat, optipng, safe-rsvg-convert.
         program: String,
         /// Arguments to pass to program.
         args: Vec<String>,
