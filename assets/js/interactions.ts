@@ -2,56 +2,70 @@
  * Interactions.
  */
 
-import { fetchJson } from './utils/requests';
-import { $ } from './utils/dom';
+import { Interaction, InteractionType, InteractionValue } from '../types/booru-object';
+import { fetchJson, HttpMethod } from './utils/requests';
+import { $, $$, onLeftClick } from './utils/dom';
 
 const endpoints = {
-  vote(imageId) {
+  vote(imageId: string) {
     return `/images/${imageId}/vote`;
   },
-  fave(imageId) {
+  fave(imageId: string) {
     return `/images/${imageId}/fave`;
   },
-  hide(imageId) {
+  hide(imageId: string) {
     return `/images/${imageId}/hide`;
   },
-};
+} as const;
+
+type EndpointType = keyof typeof endpoints;
+
+interface ScorePayload {
+  score: string | number;
+  faves: string | number;
+  upvotes: string | number;
+  downvotes: string | number;
+}
+
+interface CacheRecord {
+  imageId: string;
+  interactionType: InteractionType;
+  value: InteractionValue;
+}
 
 const spoilerDownvoteMsg = 'Neigh! - Remove spoilered tags from your filters to downvote from thumbnails';
 
 /**
  * Quick helper function to less verbosely iterate a QSA
- *
- * @param {string} id
- * @param {string} selector
- * @param {(node: HTMLElement) => void} cb
  */
-function onImage(id, selector, cb) {
-  [].forEach.call(document.querySelectorAll(`${selector}[data-image-id="${id}"]`), cb);
+function onImage(id: string, selector: string, cb: (node: HTMLElement) => unknown) {
+  for (const el of $$<HTMLElement>(`${selector}[data-image-id="${id}"]`)) {
+    cb(el);
+  }
 }
 
 /* Since JS modifications to webpages, except form inputs, are not stored
  * in the browser navigation history, we store a cache of the changes in a
  * form to allow interactions to persist on navigation. */
 
-function getCache() {
-  const cacheEl = $('.js-interaction-cache');
+function getCache(): CacheRecord[] {
+  const cacheEl = $<HTMLInputElement>('.js-interaction-cache')!;
   return Object.values(JSON.parse(cacheEl.value));
 }
 
-function modifyCache(callback) {
-  const cacheEl = $('.js-interaction-cache');
+function modifyCache(callback: (cache: Record<string, CacheRecord>) => Record<string, CacheRecord>) {
+  const cacheEl = $<HTMLInputElement>('.js-interaction-cache')!;
   cacheEl.value = JSON.stringify(callback(JSON.parse(cacheEl.value)));
 }
 
-function cacheStatus(imageId, interactionType, value) {
+function cacheStatus(imageId: string, interactionType: InteractionType, value: InteractionValue) {
   modifyCache(cache => {
     cache[`${imageId}${interactionType}`] = { imageId, interactionType, value };
     return cache;
   });
 }
 
-function uncacheStatus(imageId, interactionType) {
+function uncacheStatus(imageId: string, interactionType: InteractionType) {
   modifyCache(cache => {
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete cache[`${imageId}${interactionType}`];
@@ -59,78 +73,86 @@ function uncacheStatus(imageId, interactionType) {
   });
 }
 
-function setScore(imageId, data) {
+function setScore(imageId: string, data: ScorePayload) {
   onImage(imageId, '.score', el => {
-    el.textContent = data.score;
+    el.textContent = String(data.score);
   });
   onImage(imageId, '.favorites', el => {
-    el.textContent = data.faves;
+    el.textContent = String(data.faves);
   });
   onImage(imageId, '.upvotes', el => {
-    el.textContent = data.upvotes;
+    el.textContent = String(data.upvotes);
   });
   onImage(imageId, '.downvotes', el => {
-    el.textContent = data.downvotes;
+    el.textContent = String(data.downvotes);
   });
 }
 
 /* These change the visual appearance of interaction links.
  * Their classes also effect their behavior due to event delegation. */
 
-function showUpvoted(imageId) {
+function showUpvoted(imageId: string) {
   cacheStatus(imageId, 'voted', 'up');
   onImage(imageId, '.interaction--upvote', el => el.classList.add('active'));
 }
 
-function showDownvoted(imageId) {
+function showDownvoted(imageId: string) {
   cacheStatus(imageId, 'voted', 'down');
   onImage(imageId, '.interaction--downvote', el => el.classList.add('active'));
 }
 
-function showFaved(imageId) {
+function showFaved(imageId: string) {
   cacheStatus(imageId, 'faved', '');
   onImage(imageId, '.interaction--fave', el => el.classList.add('active'));
 }
 
-function showHidden(imageId) {
+function showHidden(imageId: string) {
   cacheStatus(imageId, 'hidden', '');
   onImage(imageId, '.interaction--hide', el => el.classList.add('active'));
 }
 
-function resetVoted(imageId) {
+function resetVoted(imageId: string) {
   uncacheStatus(imageId, 'voted');
   onImage(imageId, '.interaction--upvote', el => el.classList.remove('active'));
   onImage(imageId, '.interaction--downvote', el => el.classList.remove('active'));
 }
 
-function resetFaved(imageId) {
+function resetFaved(imageId: string) {
   uncacheStatus(imageId, 'faved');
   onImage(imageId, '.interaction--fave', el => el.classList.remove('active'));
 }
 
-function resetHidden(imageId) {
+function resetHidden(imageId: string) {
   uncacheStatus(imageId, 'hidden');
   onImage(imageId, '.interaction--hide', el => el.classList.remove('active'));
 }
 
-function interact(type, imageId, method, data = {}) {
+function interact(type: EndpointType, imageId: string, method: HttpMethod, data: Record<string, unknown> = {}) {
   return fetchJson(method, endpoints[type](imageId), data)
     .then(res => res.json())
-    .then(res => setScore(imageId, res));
+    .then((res: ScorePayload) => setScore(imageId, res));
 }
 
-function displayInteractionSet(interactions) {
+function displayInteraction(imageId: string, interactionType: InteractionType, value: InteractionValue) {
+  switch (interactionType) {
+    case 'faved':
+      showFaved(imageId);
+      break;
+    case 'hidden':
+      showHidden(imageId);
+      break;
+    default:
+      if (value === 'up') showUpvoted(imageId);
+      if (value === 'down') showDownvoted(imageId);
+  }
+}
+
+function displayInteractionSet(interactions: (Interaction | CacheRecord)[]) {
   interactions.forEach(i => {
-    switch (i.interaction_type) {
-      case 'faved':
-        showFaved(i.image_id);
-        break;
-      case 'hidden':
-        showHidden(i.image_id);
-        break;
-      default:
-        if (i.value === 'up') showUpvoted(i.image_id);
-        if (i.value === 'down') showDownvoted(i.image_id);
+    if ('image_id' in i) {
+      displayInteraction(String(i.image_id), i.interaction_type, i.value);
+    } else {
+      displayInteraction(i.imageId, i.interactionType, i.value);
     }
   });
 }
@@ -145,44 +167,44 @@ function loadInteractions() {
   if (!$('#imagelist-container')) return;
 
   /* Users will blind downvote without this */
-  window.booru.imagesWithDownvotingDisabled.forEach(i => {
-    onImage(i, '.interaction--downvote', a => {
+  window.booru.imagesWithDownvotingDisabled.forEach((i: string) => {
+    onImage(i, '.interaction--downvote', (node: HTMLElement) => {
       // TODO Use a 'js-' class to target these instead
-      const icon = a.querySelector('i') || a.querySelector('.oc-icon-small');
+      const icon = $('i', node) || $('.oc-icon-small', node) || node;
 
       icon.setAttribute('title', spoilerDownvoteMsg);
-      a.classList.add('disabled');
+      node.classList.add('disabled');
     });
   });
 }
 
-const targets = {
+const targets: Record<string, (imageId: string) => unknown> = {
   /* Active-state targets first */
-  '.interaction--upvote.active'(imageId) {
+  '.interaction--upvote.active'(imageId: string) {
     interact('vote', imageId, 'DELETE').then(() => resetVoted(imageId));
   },
-  '.interaction--downvote.active'(imageId) {
+  '.interaction--downvote.active'(imageId: string) {
     if (downvoteRestricted(imageId)) {
       return;
     }
 
     interact('vote', imageId, 'DELETE').then(() => resetVoted(imageId));
   },
-  '.interaction--fave.active'(imageId) {
+  '.interaction--fave.active'(imageId: string) {
     interact('fave', imageId, 'DELETE').then(() => resetFaved(imageId));
   },
-  '.interaction--hide.active'(imageId) {
+  '.interaction--hide.active'(imageId: string) {
     interact('hide', imageId, 'DELETE').then(() => resetHidden(imageId));
   },
 
   /* Inactive targets */
-  '.interaction--upvote:not(.active)'(imageId) {
+  '.interaction--upvote:not(.active)'(imageId: string) {
     interact('vote', imageId, 'POST', { up: true }).then(() => {
       resetVoted(imageId);
       showUpvoted(imageId);
     });
   },
-  '.interaction--downvote:not(.active)'(imageId) {
+  '.interaction--downvote:not(.active)'(imageId: string) {
     if (downvoteRestricted(imageId)) {
       return;
     }
@@ -192,14 +214,14 @@ const targets = {
       showDownvoted(imageId);
     });
   },
-  '.interaction--fave:not(.active)'(imageId) {
+  '.interaction--fave:not(.active)'(imageId: string) {
     interact('fave', imageId, 'POST').then(() => {
       resetVoted(imageId);
       showFaved(imageId);
       showUpvoted(imageId);
     });
   },
-  '.interaction--hide:not(.active)'(imageId) {
+  '.interaction--hide:not(.active)'(imageId: string) {
     interact('hide', imageId, 'POST').then(() => {
       showHidden(imageId);
     });
@@ -209,35 +231,30 @@ const targets = {
 /**
  * Allow downvoting of the images only if the user is on the image page
  * or the image is not spoilered.
- *
- * @param {string} imageId
  */
-function downvoteRestricted(imageId) {
+function downvoteRestricted(imageId: string) {
   // The `imagelist-container` indicates that we are on the page with the list of images
   return Boolean($('#imagelist-container')) && window.booru.imagesWithDownvotingDisabled.includes(imageId);
 }
 
 function bindInteractions() {
-  document.addEventListener('click', event => {
-    if (event.button === 0) {
-      // Is it a left-click?
-      for (const target in targets) {
-        /* Event delegation doesn't quite grab what we want here. */
-        const link = event.target && event.target.closest(target);
+  onLeftClick((event: MouseEvent) => {
+    for (const target in targets) {
+      /* Event delegation doesn't quite grab what we want here. */
+      const link = event.target && (event.target as HTMLElement).closest?.(target);
 
-        if (link) {
-          event.preventDefault();
-          targets[target](link.dataset.imageId);
-        }
+      if (link) {
+        event.preventDefault();
+        targets[target]((link as HTMLElement).dataset.imageId as string);
       }
     }
   });
 }
 
 function loggedOutInteractions() {
-  [].forEach.call(document.querySelectorAll('.interaction--fave,.interaction--upvote,.interaction--downvote'), a =>
-    a.setAttribute('href', '/sessions/new'),
-  );
+  for (const el of $$<HTMLElement>('.interaction--fave,.interaction--upvote,.interaction--downvote')) {
+    el.setAttribute('href', '/sessions/new');
+  }
 }
 
 function setupInteractions() {
