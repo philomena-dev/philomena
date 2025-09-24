@@ -1,4 +1,4 @@
-FROM rust:1.83-slim
+FROM rust:1.87-slim
 
 RUN apt update \
     && apt install -y build-essential git libmagic-dev libturbojpeg0-dev libpng-dev \
