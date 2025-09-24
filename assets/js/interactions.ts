@@ -133,34 +133,26 @@ function interact(type: EndpointType, imageId: string, method: HttpMethod, data:
     .then((res: ScorePayload) => setScore(imageId, res));
 }
 
+function displayInteraction(imageId: string, interactionType: InteractionType, value: InteractionValue) {
+  switch (interactionType) {
+    case 'faved':
+      showFaved(imageId);
+      break;
+    case 'hidden':
+      showHidden(imageId);
+      break;
+    default:
+      if (value === 'up') showUpvoted(imageId);
+      if (value === 'down') showDownvoted(imageId);
+  }
+}
+
 function displayInteractionSet(interactions: (Interaction | CacheRecord)[]) {
   interactions.forEach(i => {
     if ('image_id' in i) {
-      const imageId = String(i.image_id);
-      switch (i.interaction_type) {
-        case 'faved':
-          showFaved(imageId);
-          break;
-        case 'hidden':
-          showHidden(imageId);
-          break;
-        default:
-          if (i.value === 'up') showUpvoted(imageId);
-          if (i.value === 'down') showDownvoted(imageId);
-      }
+      displayInteraction(String(i.image_id), i.interaction_type, i.value);
     } else {
-      const imageId = String(i.imageId);
-      switch (i.interactionType) {
-        case 'faved':
-          showFaved(imageId);
-          break;
-        case 'hidden':
-          showHidden(imageId);
-          break;
-        default:
-          if (i.value === 'up') showUpvoted(imageId);
-          if (i.value === 'down') showDownvoted(imageId);
-      }
+      displayInteraction(i.imageId, i.interactionType, i.value);
     }
   });
 }
