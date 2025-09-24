@@ -1,6 +1,6 @@
-use mediaproc::client::{connect_to_socket_server, execute_command};
 use mediaproc::CommandReply;
-use rustler::{atoms, Encoder, Env, NifStruct, OwnedBinary, Term};
+use mediaproc::client::{connect_to_socket_server, execute_command};
+use rustler::{Encoder, Env, NifStruct, OwnedBinary, Term, atoms};
 
 atoms! {
     nil,
@@ -37,7 +37,7 @@ pub async fn process_command(
                 stdout: vec![],
                 stderr: "failed to connect to server".into(),
                 status: 255,
-            }
+            };
         }
     };
 
