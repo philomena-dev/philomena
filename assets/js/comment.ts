@@ -77,7 +77,9 @@ function insertParentPost(data: string, clickedLink: HTMLElement, fullComment: H
   // Parse the HTML into an element so we can decorate it before insertion
   const tpl = document.createElement('template');
   tpl.innerHTML = data.trim();
-  const newEl = assertType(tpl.content.firstElementChild, HTMLElement);
+  const newEl = tpl.content.firstElementChild as HTMLElement | null;
+
+  if (!newEl) return;
 
   // Mark the inserted parent comment
   newEl.classList.add('subthread');
