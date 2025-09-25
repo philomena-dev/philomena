@@ -7,6 +7,7 @@ use crate::FeatureExtractionError;
 /// Each DINOv2 patch is 14x14
 pub const PATCH_DIM: i64 = 14;
 
+#[allow(dead_code)]
 pub struct ModelResult {
     pub patches: (i64, i64),
     pub image: Tensor,

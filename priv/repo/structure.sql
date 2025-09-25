@@ -2,8 +2,10 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.4
--- Dumped by pg_dump version 17.4
+\restrict 4uZg1pIPihuEFMBoApSVuOVuAffA9wwJgD4QS0iJ1tSBudUENHF38aA7i6AG38F
+
+-- Dumped from database version 17.6
+-- Dumped by pg_dump version 17.6
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -3310,7 +3312,7 @@ CREATE UNIQUE INDEX image_vectors_image_id_type_index ON public.image_vectors US
 
 
 --
--- Name: images_hidden_from_users_approved_index; Type: INDEX; Schema: public; Owner: -
+-- Name: images_approved_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX images_approved_index ON public.images USING btree (approved) WHERE (approved = false);
@@ -5623,6 +5625,8 @@ ALTER TABLE ONLY public.users
 --
 -- PostgreSQL database dump complete
 --
+
+\unrestrict 4uZg1pIPihuEFMBoApSVuOVuAffA9wwJgD4QS0iJ1tSBudUENHF38aA7i6AG38F
 
 INSERT INTO public."schema_migrations" (version) VALUES (20200503002523);
 INSERT INTO public."schema_migrations" (version) VALUES (20200607000511);

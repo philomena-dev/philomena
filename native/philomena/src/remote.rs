@@ -1,6 +1,6 @@
-use mediaproc::CommandReply;
 use mediaproc::client;
 use mediaproc::client::{connect_to_socket_server, execute_command};
+use mediaproc::{CommandReply, FeatureExtractionError};
 use rustler::{Encoder, Env, NifStruct, OwnedBinary, Term, atoms};
 
 atoms! {
