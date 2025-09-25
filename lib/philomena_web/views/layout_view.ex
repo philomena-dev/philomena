@@ -66,6 +66,7 @@ defmodule PhilomenaWeb.LayoutView do
       user_id: if(user, do: user.id, else: nil),
       user_name: if(user, do: user.name, else: nil),
       user_slug: if(user, do: user.slug, else: nil),
+      user_role: if(user, do: user.role, else: nil),
       user_is_signed_in: if(user, do: "true", else: "false"),
       user_can_edit_filter: if(user, do: filter.user_id == user.id, else: "false") |> to_string(),
       spoiler_type: if(user, do: user.spoiler_type, else: "static"),
