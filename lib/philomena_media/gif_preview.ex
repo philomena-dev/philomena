@@ -3,6 +3,8 @@ defmodule PhilomenaMedia.GifPreview do
   GIF preview generation for video files.
   """
 
+  alias PhilomenaMedia.Remote
+
   @type duration :: float()
   @type dimensions :: {pos_integer(), pos_integer()}
 
@@ -49,7 +51,7 @@ defmodule PhilomenaMedia.GifPreview do
       end)
 
     {_output, 0} =
-      System.cmd(
+      Remote.cmd(
         "ffmpeg",
         commands(decoder, video, gif, clamp(duration), dimensions, num_images, target_framerate)
       )
