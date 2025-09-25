@@ -56,6 +56,7 @@ defmodule Philomena.Comments.Comment do
   def unhide_changeset(comment) do
     change(comment)
     |> put_change(:hidden_from_users, false)
+    |> put_change(:deleted_by_id, nil)
     |> put_change(:deletion_reason, "")
   end
 
