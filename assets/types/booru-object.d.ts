@@ -68,7 +68,7 @@ interface BooruObject {
   /**
    * Indicates whether sensitive staff-only info should be hidden or not.
    */
-  hideStaffTools: string;
+  hideStaffTools: boolean;
   /**
    * List of image IDs in the current gallery.
    */
