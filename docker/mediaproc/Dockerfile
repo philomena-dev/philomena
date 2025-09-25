@@ -67,7 +67,8 @@ ADD https://github.com/liamwhite/philomena-ris-inference-toolkit/releases/downlo
 RUN cd /tmp/philomena \
     && cargo build --release -p mediaproc_server \
     && cp target/release/mediaproc_server /usr/bin/mediaproc_server \
-    && find target/release/build -regextype posix-extended -regex '^.*\.so(\.[0-9]+)*$' -exec cp '{}' /usr/lib/ ';'
+    && find target/release/build -regextype posix-extended -regex '^.*\.so(\.[0-9]+)*$' -exec cp '{}' /usr/lib/ ';' \
+    && chmod 0644 /usr/share/dinov2-with-registers-base.pt
 
 # Set up unprivileged user account
 RUN useradd -ms /bin/bash mediaproc

@@ -6,9 +6,15 @@ use crate::FeatureExtractionError;
 
 pub fn device_and_model(model_path: &str) -> Option<(Device, CModule)> {
     let device = Device::cuda_if_available();
-    let model = CModule::load_on_device(model_path, device).ok()?;
+    let model = CModule::load_on_device(model_path, device);
 
-    Some((device, model))
+    match model {
+        Err(err) => {
+            eprintln!("failed to load model from {model_path}: {err}");
+            None
+        }
+        Ok(model) => Some((device, model)),
+    }
 }
 
 fn into_tensor<P: Pixel<Subpixel = f32>>(
