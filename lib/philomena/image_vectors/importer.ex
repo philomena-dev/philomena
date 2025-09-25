@@ -29,6 +29,7 @@ defmodule Philomena.ImageVectors.Importer do
         }
 
   @spec import_from(Path.t()) :: :ok
+  # sobelow_skip ["Traversal.FileModule"]
   def import_from(batch_inference_file, type \\ "full", max_concurrency \\ 4) do
     {min, max} = get_min_and_max_id(batch_inference_file, type)
 
@@ -77,6 +78,7 @@ defmodule Philomena.ImageVectors.Importer do
   end
 
   @spec get_single_row(Path.t(), integer(), String.t()) :: row()
+  # sobelow_skip ["Traversal.FileModule"]
   defp get_single_row(path, offset, type) do
     path
     |> File.stream!(@row_size, read_offset: offset)
