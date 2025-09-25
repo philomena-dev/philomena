@@ -24,7 +24,7 @@ defmodule Philomena.Polymorphic do
     "Commission" => [:user],
     "Conversation" => [:from, :to],
     "DnpEntry" => [:requesting_user, :tag],
-    "Gallery" => [:creator],
+    "Gallery" => [:user],
     "Image" => [:user, :sources, tags: :aliases],
     "Post" => [:user, topic: :forum],
     "Topic" => [:forum, :user],
