@@ -1,6 +1,7 @@
 defmodule PhilomenaWeb.Api.Json.Search.FilterController do
   use PhilomenaWeb, :controller
 
+  alias PhilomenaQuery.Cursor
   alias PhilomenaQuery.Search
   alias Philomena.Filters.Filter
   alias Philomena.Filters.Query
@@ -11,7 +12,7 @@ defmodule PhilomenaWeb.Api.Json.Search.FilterController do
 
     case Query.compile(params["q"], user: user) do
       {:ok, query} ->
-        filters =
+        {filters, cursors} =
           Filter
           |> Search.search_definition(
             %{
@@ -36,11 +37,11 @@ defmodule PhilomenaWeb.Api.Json.Search.FilterController do
             },
             conn.assigns.pagination
           )
-          |> Search.search_records(preload(Filter, [:user]))
+          |> Cursor.search_records(preload(Filter, [:user]), params["search_after"])
 
         conn
         |> put_view(PhilomenaWeb.Api.Json.FilterView)
-        |> render("index.json", filters: filters, total: filters.total_entries)
+        |> render("index.json", cursors: cursors, filters: filters, total: filters.total_entries)
 
       {:error, msg} ->
         conn

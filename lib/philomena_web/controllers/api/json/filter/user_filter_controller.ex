@@ -2,10 +2,10 @@ defmodule PhilomenaWeb.Api.Json.Filter.UserFilterController do
   use PhilomenaWeb, :controller
 
   alias Philomena.Filters.Filter
-  alias Philomena.Repo
+  alias PhilomenaQuery.Cursor
   import Ecto.Query
 
-  def index(conn, _params) do
+  def index(conn, params) do
     user = conn.assigns.current_user
 
     case user do
@@ -15,15 +15,18 @@ defmodule PhilomenaWeb.Api.Json.Filter.UserFilterController do
         |> text("")
 
       _ ->
-        user_filters =
+        {user_filters, cursors} =
           Filter
           |> where(user_id: ^user.id)
-          |> order_by(asc: :id)
-          |> Repo.paginate(conn.assigns.scrivener)
+          |> Cursor.paginate(conn.assigns.scrivener, params["search_after"], asc: :id)
 
         conn
         |> put_view(PhilomenaWeb.Api.Json.FilterView)
-        |> render("index.json", filters: user_filters, total: user_filters.total_entries)
+        |> render("index.json",
+          cursors: cursors,
+          filters: user_filters,
+          total: user_filters.total_entries
+        )
     end
   end
 end

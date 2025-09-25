@@ -1,8 +1,9 @@
 defmodule PhilomenaWeb.Api.Json.GalleryView do
   use PhilomenaWeb, :view
 
-  def render("index.json", %{galleries: galleries, total: total} = assigns) do
+  def render("index.json", %{cursors: cursors, galleries: galleries, total: total} = assigns) do
     %{
+      cursors: cursors,
       galleries:
         render_many(galleries, PhilomenaWeb.Api.Json.GalleryView, "gallery.json", assigns),
       total: total

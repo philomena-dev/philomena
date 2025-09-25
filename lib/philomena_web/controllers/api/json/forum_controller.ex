@@ -1,18 +1,21 @@
 defmodule PhilomenaWeb.Api.Json.ForumController do
   use PhilomenaWeb, :controller
 
+  alias PhilomenaQuery.Cursor
   alias Philomena.Forums.Forum
   alias Philomena.Repo
   import Ecto.Query
 
-  def index(conn, _params) do
-    forums =
+  def index(conn, params) do
+    {forums, cursors} =
       Forum
       |> where(access_level: "normal")
-      |> order_by(asc: :name)
-      |> Repo.paginate(conn.assigns.scrivener)
+      |> Cursor.paginate(conn.assigns.scrivener, params["search_after"],
+        asc: :name,
+        asc: :short_name
+      )
 
-    render(conn, forums: forums, total: forums.total_entries)
+    render(conn, cursors: cursors, forums: forums, total: forums.total_entries)
   end
 
   def show(conn, %{"id" => id}) do

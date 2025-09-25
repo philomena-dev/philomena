@@ -2,8 +2,9 @@ defmodule PhilomenaWeb.Api.Json.CommentView do
   use PhilomenaWeb, :view
   alias PhilomenaWeb.UserAttributionView
 
-  def render("index.json", %{comments: comments, total: total} = assigns) do
+  def render("index.json", %{cursors: cursors, comments: comments, total: total} = assigns) do
     %{
+      cursors: cursors,
       comments: render_many(comments, PhilomenaWeb.Api.Json.CommentView, "comment.json", assigns),
       total: total
     }

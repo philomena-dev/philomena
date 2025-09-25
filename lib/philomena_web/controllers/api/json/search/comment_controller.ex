@@ -1,6 +1,7 @@
 defmodule PhilomenaWeb.Api.Json.Search.CommentController do
   use PhilomenaWeb, :controller
 
+  alias PhilomenaQuery.Cursor
   alias PhilomenaQuery.Search
   alias Philomena.Comments.Comment
   alias Philomena.Comments.Query
@@ -12,7 +13,7 @@ defmodule PhilomenaWeb.Api.Json.Search.CommentController do
 
     case Query.compile(params["q"], user: user) do
       {:ok, query} ->
-        comments =
+        {comments, cursors} =
           Comment
           |> Search.search_definition(
             %{
@@ -27,15 +28,19 @@ defmodule PhilomenaWeb.Api.Json.Search.CommentController do
                   }
                 }
               },
-              sort: %{posted_at: :desc}
+              sort: [%{posted_at: :desc}, %{id: :desc}]
             },
             conn.assigns.pagination
           )
-          |> Search.search_records(preload(Comment, [:image, :user]))
+          |> Cursor.search_records(preload(Comment, [:image, :user]), params["search_after"])
 
         conn
         |> put_view(PhilomenaWeb.Api.Json.CommentView)
-        |> render("index.json", comments: comments, total: comments.total_entries)
+        |> render("index.json",
+          comments: comments,
+          cursors: cursors,
+          total: comments.total_entries
+        )
 
       {:error, msg} ->
         conn
