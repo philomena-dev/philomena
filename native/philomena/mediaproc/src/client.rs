@@ -98,25 +98,29 @@ fn update_replacements(
     Ok(())
 }
 
-fn context_with_1_hour_deadline() -> Context {
+pub fn context_with_deadline(secs_from_now: u64) -> Context {
     let mut context = Context::current();
-    context.deadline = Instant::now() + Duration::from_secs(60 * 60);
+    context.deadline = Instant::now() + Duration::from_secs(secs_from_now);
     context
+}
+
+pub fn context_with_1_hour_deadline() -> Context {
+    context_with_deadline(60 * 60)
+}
+
+pub fn context_with_10_second_deadline() -> Context {
+    context_with_deadline(10)
 }
 
 pub async fn execute_command(
     client: &MediaProcessorClient,
     program: String,
     arguments: Vec<String>,
+    ctx: Context,
 ) -> Result<CommandReply, ExecuteCommandError> {
     let call_params = create_replacements(arguments.into_iter());
     let (reply, file_map) = client
-        .execute_command(
-            context_with_1_hour_deadline(),
-            program,
-            call_params.arguments,
-            call_params.file_map,
-        )
+        .execute_command(ctx, program, call_params.arguments, call_params.file_map)
         .await
         .map_err(|_| ExecuteCommandError::UnknownError)??;
 

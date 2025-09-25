@@ -12,11 +12,16 @@ pub trait MediaProcessor {
         arguments: Vec<String>,
         file_map: FileMap,
     ) -> Result<(CommandReply, FileMap), ExecuteCommandError>;
+
+    /// Runs feature extraction on an image file bytes (PNG or JPEG).
+    async fn get_features(image: Vec<u8>) -> Result<Vec<f32>, FeatureExtractionError>;
 }
 
 /// Errors which can occur during command execution.
 #[derive(Debug, Deserialize, Serialize)]
 pub enum ExecuteCommandError {
+    /// Failed to connect to server.
+    ConnectionError,
     /// Requested program was not allowed to be executed.
     UnpermittedProgram(String),
     /// Failed to launch program.
@@ -29,6 +34,19 @@ pub enum ExecuteCommandError {
     LocalFilesystemError,
     /// Unknown error.
     UnknownError,
+}
+
+/// Errors which can occur during image feature extraction.
+#[derive(Debug, Deserialize, Serialize)]
+pub enum FeatureExtractionError {
+    /// Failed to connect to server.
+    ConnectionError,
+    /// Generic filesystem error.
+    LocalFilesystemError,
+    /// Unrecognized image format.
+    UnknownImageFormat,
+    /// Failed to decode the image.
+    ImageDecodeError,
 }
 
 /// Enumeration of permitted program names.

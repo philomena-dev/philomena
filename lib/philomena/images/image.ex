@@ -8,6 +8,7 @@ defmodule Philomena.Images.Image do
   alias Philomena.ImageVotes.ImageVote
   alias Philomena.ImageFaves.ImageFave
   alias Philomena.ImageHides.ImageHide
+  alias Philomena.ImageVectors.ImageVector
   alias Philomena.Images.Source
   alias Philomena.Images.Subscription
   alias Philomena.Users.User
@@ -36,6 +37,7 @@ defmodule Philomena.Images.Image do
     has_many :subscriptions, Subscription
     has_many :source_changes, SourceChange, on_replace: :delete
     has_many :tag_changes, TagChange
+    has_many :vectors, ImageVector
     has_many :upvoters, through: [:upvotes, :user]
     has_many :downvoters, through: [:downvotes, :user]
     has_many :favers, through: [:faves, :user]

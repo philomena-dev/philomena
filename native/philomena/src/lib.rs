@@ -40,6 +40,12 @@ fn camo_image_url(input: &str) -> String {
 // Remote NIF wrappers.
 
 #[rustler::nif]
+fn async_get_features(env: Env, server_addr: String, path: String) -> Atom {
+    let fut = remote::get_features(server_addr, path);
+    asyncnif::call_async(env, fut, remote::get_features_reply_with_env)
+}
+
+#[rustler::nif]
 fn async_process_command(
     env: Env,
     server_addr: String,
@@ -47,7 +53,7 @@ fn async_process_command(
     arguments: Vec<String>,
 ) -> Atom {
     let fut = remote::process_command(server_addr, program, arguments);
-    asyncnif::call_async(env, fut, remote::with_env)
+    asyncnif::call_async(env, fut, remote::command_reply_with_env)
 }
 
 // Zip NIF wrappers.

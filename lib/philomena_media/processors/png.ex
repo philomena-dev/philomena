@@ -1,6 +1,7 @@
 defmodule PhilomenaMedia.Processors.Png do
   @moduledoc false
 
+  alias PhilomenaMedia.Features
   alias PhilomenaMedia.Intensities
   alias PhilomenaMedia.Analyzers.Result
   alias PhilomenaMedia.Remote
@@ -19,11 +20,13 @@ defmodule PhilomenaMedia.Processors.Png do
     animated? = analysis.animated?
 
     {:ok, intensities} = Intensities.file(file)
+    {:ok, features} = Features.file(file)
 
     scaled = Enum.flat_map(versions, &scale(file, animated?, &1))
 
     [
       intensities: intensities,
+      features: features,
       thumbnails: scaled
     ]
   end
@@ -36,6 +39,12 @@ defmodule PhilomenaMedia.Processors.Png do
     else
       [replace_original: optimize(file)]
     end
+  end
+
+  @spec features(Result.t(), Path.t()) :: Features.t()
+  def features(_analysis, file) do
+    {:ok, features} = Features.file(file)
+    features
   end
 
   @spec intensities(Result.t(), Path.t()) :: Intensities.t()

@@ -48,10 +48,6 @@ defmodule PhilomenaWeb.ImageLoader do
       |> load_tags()
       |> render_bodies(conn)
 
-    user = conn.assigns.current_user
-    filter = conn.assigns.compiled_filter
-    filters = create_filters(conn, user, filter)
-
     %{query: query, sorts: sort} = sorts.(body)
 
     definition =
@@ -61,7 +57,7 @@ defmodule PhilomenaWeb.ImageLoader do
           query: %{
             bool: %{
               must: query,
-              must_not: filters
+              must_not: filters(conn)
             }
           },
           sort: sort
@@ -70,6 +66,21 @@ defmodule PhilomenaWeb.ImageLoader do
       )
 
     {definition, tags}
+  end
+
+  def reverse_filter(conn) do
+    %{
+      bool: %{
+        must_not: filters(conn)
+      }
+    }
+  end
+
+  defp filters(conn) do
+    user = conn.assigns.current_user
+    filter = conn.assigns.compiled_filter
+
+    create_filters(conn, user, filter)
   end
 
   defp create_filters(conn, user, filter) do
