@@ -2,8 +2,8 @@ use std::io::Write;
 use std::process::ExitCode;
 
 use clap::{Parser, Subcommand};
-use mediaproc::client::{connect_to_socket_server, execute_command};
 use mediaproc::MediaProcessorClient;
+use mediaproc::client::{connect_to_socket_server, execute_command};
 
 #[derive(Parser, Debug)]
 #[command(version, about = "RPC Media Processor Client", long_about = None)]

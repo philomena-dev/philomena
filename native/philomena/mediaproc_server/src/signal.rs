@@ -1,4 +1,4 @@
-use tokio::signal::unix::{signal, SignalKind};
+use tokio::signal::unix::{SignalKind, signal};
 
 pub fn install_handlers() {
     let mut sigterm = signal(SignalKind::terminate()).unwrap();

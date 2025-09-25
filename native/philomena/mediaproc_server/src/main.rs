@@ -1,7 +1,7 @@
 use std::net::SocketAddr;
 
 use clap::Parser;
-use futures::{future, Future, StreamExt};
+use futures::{Future, StreamExt, future};
 use mediaproc::{CommandReply, ExecuteCommandError, FileMap, MediaProcessor};
 use tarpc::context;
 use tarpc::server::Channel;
