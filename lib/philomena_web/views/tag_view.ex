@@ -2,7 +2,6 @@ defmodule PhilomenaWeb.TagView do
   use PhilomenaWeb, :view
 
   # this is bad practice, don't copy this.
-  alias Philomena.Config
   alias PhilomenaQuery.Search
   alias Philomena.Tags.Tag
   alias Philomena.Repo
@@ -35,7 +34,7 @@ defmodule PhilomenaWeb.TagView do
     case Application.get_env(:philomena, :quick_tags) do
       nil ->
         quick_tags =
-          Config.get(:quick_tag_table)
+          [] # todo: debranding
           |> lookup_quick_tags()
           |> render_quick_tags(conn)
 

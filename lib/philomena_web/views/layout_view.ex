@@ -3,7 +3,6 @@ defmodule PhilomenaWeb.LayoutView do
 
   import PhilomenaWeb.Config
   alias PhilomenaWeb.ImageView
-  alias Philomena.Config
   alias Philomena.Users.User
   alias Plug.Conn
 
@@ -84,7 +83,7 @@ defmodule PhilomenaWeb.LayoutView do
   end
 
   def footer_data do
-    Config.get(:footer)
+    [] # todo: debranding
   end
 
   def stylesheet_path(conn, %{theme: theme})

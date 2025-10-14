@@ -1,5 +1,4 @@
 defmodule Philomena.Images.TagValidator do
-  alias Philomena.Config
   import Ecto.Changeset
 
   def validate_tags(changeset) do
@@ -57,7 +56,7 @@ defmodule Philomena.Images.TagValidator do
   end
 
   def validate_bad_words(changeset, tag_set) do
-    bad_words = MapSet.new(Config.get(:tag)["blacklist"])
+    bad_words = MapSet.new([]) # todo: debranding
     intersection = MapSet.intersection(tag_set, bad_words)
 
     if MapSet.size(intersection) > 0 do

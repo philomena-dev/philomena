@@ -3,7 +3,7 @@ p
   a.button href=~p"/profiles/#{@user}/artist_links/new"
     ' Request a link
 p
-  ' Artist links associate your account on Derpibooru with tags about content you create and with accounts on sites elsewhere. This allows users to easily identify artists and staff to act more rapidly on takedown requests.
+  ' Artist links associate your account on #{Philomena.Configs.get("site_name")} with tags about content you create and with accounts on sites elsewhere. This allows users to easily identify artists and staff to act more rapidly on takedown requests.
 
 table.table
   thead
