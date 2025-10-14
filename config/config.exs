@@ -57,6 +57,7 @@ config :logger, :console,
 
 # Use Elixir's built-in module for JSON parsing in Phoenix
 config :phoenix, :json_library, JSON
+config :postgrex, :json_library, JSON
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

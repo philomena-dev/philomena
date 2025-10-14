@@ -1,3 +1,4 @@
+- site_name = Philomena.Configs.get("site_name")
 doctype html
 html lang="en"
   head
@@ -7,9 +8,10 @@ html lang="en"
     title
       = if assigns[:title] do
         => assigns[:title]
-        ' - Derpibooru
+        ' -
+        => site_name
       - else
-        ' Derpibooru
+        => site_name
     link rel="preconnect" href="https://#{cdn_host()}"
     link rel="stylesheet" href=~p"/css/application.css"
     link#js-theme-stylesheet rel="stylesheet" href=stylesheet_path(@conn, @current_user)
@@ -18,7 +20,7 @@ html lang="en"
     = render PhilomenaWeb.LayoutView, "_options.html", assigns
     link rel="icon" href="/favicon.ico" type="image/x-icon"
     link rel="icon" href="/favicon.svg" type="image/svg+xml"
-    link rel="search" type="application/opensearchdescription+xml" title="Derpibooru" href="/opensearch.xml"
+    link rel="search" type="application/opensearchdescription+xml" title=site_name href="/opensearch.xml"
     = csrf_meta_tag()
 
     = vite_hmr? do
