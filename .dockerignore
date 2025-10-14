@@ -4,3 +4,4 @@ deps
 .elixir_ls
 priv/static
 native/philomena/target
+node_modules
