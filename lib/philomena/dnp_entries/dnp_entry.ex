@@ -63,6 +63,8 @@ defmodule Philomena.DnpEntries.DnpEntry do
   end
 
   def reasons do
+    site_name = Philomena.Configs.get("site_name")
+
     [
       {"No Edits",
        "I would like to prevent edited versions of my artwork from being uploaded in the future"},
@@ -71,11 +73,11 @@ defmodule Philomena.DnpEntries.DnpEntry do
       {"Uploader Credit Change",
        "I would like the uploader credit for already existing uploads of my art to be assigned to me"},
       {"Certain Type/Location Only",
-       "I only want to allow art of a certain type or from a certain location to be uploaded to Derpibooru"},
+       "I only want to allow art of a certain type or from a certain location to be uploaded to #{site_name}"},
       {"With Permission Only",
-       "I only want people with my permission to be allowed to upload my art to Derpibooru"},
+       "I only want people with my permission to be allowed to upload my art to #{site_name}"},
       {"Artist Upload Only",
-       "I want to be the only person allowed to upload my art to Derpibooru"},
+       "I want to be the only person allowed to upload my art to #{site_name}"},
       {"Other", "I would like a DNP entry under other conditions"}
     ]
   end

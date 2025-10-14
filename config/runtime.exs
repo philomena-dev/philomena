@@ -40,20 +40,10 @@ config :philomena,
 
 app_dir = System.get_env("APP_DIR", File.cwd!())
 
-json_config =
-  %{
-    aggregation: "aggregation.json",
-    avatar: "avatar.json",
-    footer: "footer.json",
-    quick_tag_table: "quick_tag_table.json",
-    tag: "tag.json"
-  }
-  |> Map.new(fn {name, file} ->
-    {name, JSON.decode!(File.read!("#{app_dir}/config/#{file}"))}
-  end)
-
 config :philomena,
-  config: json_config
+  config: %{
+    aggregation: JSON.decode!(File.read!("#{app_dir}/config/aggregation.json")),
+  }
 
 config :exq,
   host: System.get_env("REDIS_HOST", "localhost"),

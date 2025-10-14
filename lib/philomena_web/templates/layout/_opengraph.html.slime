@@ -1,3 +1,6 @@
+- site_name = Philomena.Configs.get("site_name")
+- site_description = Philomena.Configs.get("site_description")
+
 meta name="generator" content=generator_name()
 meta name="theme-color" content="#618fc3"
 meta name="format-detection" content="telephone=no"
@@ -5,7 +8,7 @@ meta name="format-detection" content="telephone=no"
 = if opengraph?(@conn) do
   - image = @conn.assigns.image
   - filtered = not image.thumbnails_generated
-  - title = "##{image.id} - #{Philomena.Images.tag_list(image)} - Derpibooru"
+  - title = "##{image.id} - #{Philomena.Images.tag_list(image)} - #{site_name}"
   - description = "⭐ #{image.faves_count} ↕️ #{image.score} 💬 #{image.comments_count} • #{image.image_width}x#{image.image_height} #{String.upcase(to_string(image.image_format))}"
   - {thumb_large, {large_width, large_height}} = ImageView.thumb_url_size(image, false, :large)
   - thumb_rendered = ImageView.thumb_url(image, false, :rendered)
@@ -13,7 +16,7 @@ meta name="format-detection" content="telephone=no"
 
   meta name="keywords" content=tag_list(image)
   meta name="description" content=title
-  meta property="og:site_name" content="Derpibooru"
+  meta property="og:site_name" content=site_name
   meta property="og:title" content=title
   meta property="og:description" content=description
   meta property="og:url" content=url(~p"/images/#{image}")
@@ -64,4 +67,4 @@ meta name="format-detection" content="telephone=no"
       meta property="og:type" content="website"
 
 - else
-  meta name="description" content="Derpibooru is a linear imagebooru which lets you share, find and discover new art and media surrounding the show My Little Pony: Friendship is Magic"
+  meta name="description" content=site_description

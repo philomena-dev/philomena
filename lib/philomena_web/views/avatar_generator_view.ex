@@ -2,8 +2,6 @@ defmodule PhilomenaWeb.AvatarGeneratorView do
   use PhilomenaWeb, :view
   import Bitwise
 
-  alias Philomena.Config
-
   def generated_avatar(displayed_name) do
     config = config()
 
@@ -99,5 +97,5 @@ defmodule PhilomenaWeb.AvatarGeneratorView do
   defp extra_shapes(%{"extra_shapes" => extra_shapes}), do: extra_shapes
   defp footer(%{"footer" => footer}), do: footer
 
-  defp config, do: Config.get(:avatar)
+  defp config, do: [] # todo: debranding
 end
