@@ -25,17 +25,17 @@ RUN cd /var/www/philomena/assets \
     && NODE_ENV=development npm install \
     && npm run deploy
 
-# Build the application
+# Build the application and create symlinks for easier access
 RUN cd /var/www/philomena \
     && mix deps.get \
-    && mix release --overwrite
-
-# Digest and copy static assets.
-RUN mix phx.digest -o /var/www/philomena/_build/prod/rel/philomena/lib/philomena-*/priv/static \
-    && mkdir -p /var/www/philomena/priv/static \
-    && cp -r /var/www/philomena/_build/prod/rel/philomena/lib/philomena-*/priv/static/* /var/www/philomena/priv/static \
+    && mix release --overwrite \
     && ln -sf /var/www/philomena/_build/prod/rel/philomena /usr/local/share/philomena \
     && ln -sf /var/www/philomena/_build/prod/rel/philomena/bin/philomena /usr/local/bin/philomena
+
+# Digest and copy static assets
+RUN mix phx.digest -o /var/www/philomena/_build/prod/rel/philomena/lib/philomena-*/priv/static \
+    && mkdir -p /var/www/philomena/priv/static \
+    && cp -r /var/www/philomena/_build/prod/rel/philomena/lib/philomena-*/priv/static/* /var/www/philomena/priv/static
 
 # Cleanup build tools and unnecessary files
 RUN apk del git build-base npm nodejs wget rust cargo \
