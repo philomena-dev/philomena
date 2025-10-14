@@ -1,4 +1,4 @@
-name: Create and publish production Docker images
+name: Production Images
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-and-push-philomena:
-    name: 'Build and publish Philomena Docker image'
+    name: 'Build and Publish Philomena'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -47,7 +47,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
   build-and-push-mediaproc:
-    name: 'Build and publish Mediaproc Docker image'
+    name: 'Build and Publish Mediaproc'
     runs-on: ubuntu-latest
     permissions:
       contents: read
