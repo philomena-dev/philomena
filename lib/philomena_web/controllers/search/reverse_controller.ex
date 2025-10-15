@@ -1,6 +1,7 @@
 defmodule PhilomenaWeb.Search.ReverseController do
   use PhilomenaWeb, :controller
 
+  alias PhilomenaWeb.ImageLoader
   alias Philomena.DuplicateReports.SearchQuery
   alias Philomena.DuplicateReports
   alias Philomena.Interactions
@@ -14,7 +15,10 @@ defmodule PhilomenaWeb.Search.ReverseController do
 
   def create(conn, %{"image" => image_params})
       when is_map(image_params) and image_params != %{} do
-    case DuplicateReports.execute_search_query(image_params) do
+    conn
+    |> ImageLoader.reverse_filter()
+    |> DuplicateReports.execute_search_query_by_features(image_params)
+    |> case do
       {:ok, images} ->
         changeset = DuplicateReports.change_search_query(%SearchQuery{})
         interactions = Interactions.user_interactions(images, conn.assigns.current_user)

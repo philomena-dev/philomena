@@ -11,6 +11,7 @@ defmodule Philomena.Images.SearchIndex do
     %{
       settings: %{
         index: %{
+          knn: true,
           number_of_shards: 5,
           max_result_window: 10_000_000
         }
@@ -89,6 +90,26 @@ defmodule Philomena.Images.SearchIndex do
               namespace: %{type: "keyword"}
             }
           },
+          vectors: %{
+            type: "nested",
+            properties: %{
+              f: %{
+                type: "knn_vector",
+                dimension: 768,
+                data_type: "float",
+                mode: "on_disk",
+                method: %{
+                  name: "hnsw",
+                  engine: "faiss",
+                  space_type: "l2",
+                  parameters: %{
+                    ef_construction: 128,
+                    m: 16
+                  }
+                }
+              }
+            }
+          },
           approved: %{type: "boolean"},
           error_tag_count: %{type: "integer"},
           rating_tag_count: %{type: "integer"},
@@ -160,6 +181,7 @@ defmodule Philomena.Images.SearchIndex do
       },
       gallery_id: Enum.map(image.gallery_interactions, & &1.gallery_id),
       gallery_position: Map.new(image.gallery_interactions, &{&1.gallery_id, &1.position}),
+      vectors: image.vectors |> Enum.map(&%{f: &1.features}),
       favourited_by_users: image.favers |> Enum.map(&String.downcase(&1.name)),
       hidden_by_users: image.hiders |> Enum.map(&String.downcase(&1.name)),
       upvoters: image.upvoters |> Enum.map(&String.downcase(&1.name)),

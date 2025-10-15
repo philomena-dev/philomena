@@ -2,6 +2,7 @@ defmodule PhilomenaMedia.Processors.Processor do
   @moduledoc false
 
   alias PhilomenaMedia.Analyzers.Result
+  alias PhilomenaMedia.Features
   alias PhilomenaMedia.Processors
   alias PhilomenaMedia.Intensities
 
@@ -21,6 +22,11 @@ defmodule PhilomenaMedia.Processors.Processor do
   and strip non-essential metadata.
   """
   @callback post_process(Result.t(), Path.t()) :: Processors.edit_script()
+
+  @doc """
+  Generate a feature vector for the given path.
+  """
+  @callback features(Result.t(), Path.t()) :: Features.t()
 
   @doc """
   Generate corner intensities for the given path.

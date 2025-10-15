@@ -58,6 +58,7 @@ defmodule PhilomenaMedia.Processors do
   """
 
   alias PhilomenaMedia.Analyzers.Result
+  alias PhilomenaMedia.Features
   alias PhilomenaMedia.Intensities
   alias PhilomenaMedia.Processors.{Gif, Jpeg, Png, Svg, Webm}
   alias PhilomenaMedia.Mime
@@ -186,6 +187,25 @@ defmodule PhilomenaMedia.Processors do
   end
 
   @doc """
+  Takes an analyzer result and file path and runs the appropriate processor's `features/2`,
+  returning the feature vector.
+
+  This allows for generating feature vectors for file types that are not directly supported by
+  `m:PhilomenaMedia.Features`, and should be the preferred function to call when feature vectors
+  are needed.
+
+  ## Example
+
+      iex> PhilomenaMedia.Processors.features(%Result{...}, "video.webm")
+      %Features{features: [0.03156396001577377, -0.04559657722711563, ...]}
+
+  """
+  @spec features(Result.t(), Path.t()) :: Features.t()
+  def features(analysis, file) do
+    processor(analysis.mime_type).features(analysis, file)
+  end
+
+  @doc """
   Takes an analyzer result and file path and runs the appropriate processor's `intensities/2`,
   returning the corner intensities.
 
@@ -195,8 +215,8 @@ defmodule PhilomenaMedia.Processors do
 
   ## Example
 
-    iex> PhilomenaMedia.Processors.intensities(%Result{...}, "video.webm")
-    %Intensities{nw: 111.689148, ne: 116.228048, sw: 93.268433, se: 104.630064}
+      iex> PhilomenaMedia.Processors.intensities(%Result{...}, "video.webm")
+      %Intensities{nw: 111.689148, ne: 116.228048, sw: 93.268433, se: 104.630064}
 
   """
   @spec intensities(Result.t(), Path.t()) :: Intensities.t()

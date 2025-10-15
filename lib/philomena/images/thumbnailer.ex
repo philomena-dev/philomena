@@ -12,6 +12,7 @@ defmodule Philomena.Images.Thumbnailer do
   alias Philomena.DuplicateReports
   alias Philomena.ImageIntensities
   alias Philomena.ImagePurgeWorker
+  alias Philomena.ImageVectors
   alias Philomena.Images.Image
   alias Philomena.Repo
 
@@ -110,6 +111,9 @@ defmodule Philomena.Images.Thumbnailer do
   defp apply_change(image, {:intensities, intensities}),
     do: ImageIntensities.create_image_intensity(image, intensities)
 
+  defp apply_change(image, {:features, features}),
+    do: ImageVectors.create_image_vector(image, features)
+
   defp apply_change(image, {:replace_original, new_file}) do
     full = "full.#{image.image_format}"
     upload_file(image, new_file, full)
@@ -145,7 +149,7 @@ defmodule Philomena.Images.Thumbnailer do
     |> Repo.update!()
   end
 
-  defp download_image_file(image) do
+  def download_image_file(image) do
     tempfile = Briefly.create!(extname: ".#{image.image_format}")
     path = Path.join(image_thumb_prefix(image), "full.#{image.image_format}")
 
