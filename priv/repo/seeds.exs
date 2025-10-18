@@ -41,7 +41,7 @@ for model <- [Image, Comment, Gallery, Tag, TagChange, Post, Report, Filter] do
 end
 
 resources =
-  "priv/repo/seeds.json"
+  "priv/repo/seeds/data/seeds.json"
   |> File.read!()
   |> JSON.decode!()
 
