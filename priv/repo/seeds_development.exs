@@ -20,13 +20,18 @@ alias Philomena.Tags
 {:ok, ip} = EctoNetwork.INET.cast({203, 0, 113, 0})
 {:ok, _} = Application.ensure_all_started(:plug)
 
-resources =
-  "priv/repo/seeds_development.json"
-  |> File.read!()
-  |> JSON.decode!()
+defmodule Philomena.DevSeedLoader do
+  def load_resource(res) do
+    "priv/repo/seeds/data/development/#{res}.json"
+    |> File.read!()
+    |> JSON.decode!()
+  end
+end
+
+alias Philomena.DevSeedLoader
 
 IO.puts "---- Generating users"
-for user_def <- resources["users"] do
+for user_def <- DevSeedLoader.load_resource("users") do
   {:ok, user} = Users.register_user(user_def)
 
   user
@@ -45,7 +50,7 @@ request_attributes = [
 ]
 
 IO.puts "---- Generating images"
-for image_def <- resources["remote_images"] do
+for image_def <- DevSeedLoader.load_resource("images") do
   file = Briefly.create!(extname: ".png")
   now = DateTime.utc_now() |> DateTime.to_unix(:microsecond)
 
@@ -80,7 +85,7 @@ for image_def <- resources["remote_images"] do
 end
 
 IO.puts "---- Generating comments for image #1"
-for comment_body <- resources["comments"] do
+for comment_body <- DevSeedLoader.load_resource("comments") do
   image = Images.get_image!(1)
 
   Comments.create_comment(
@@ -100,7 +105,7 @@ for comment_body <- resources["comments"] do
 end
 
 IO.puts "---- Generating forum posts"
-for %{"forum" => forum_name, "topics" => topics} <- resources["forum_posts"] do
+for %{"forum" => forum_name, "topics" => topics} <- DevSeedLoader.load_resource("forum_posts") do
   forum = Repo.get_by!(Forum, short_name: forum_name)
 
   for %{"title" => topic_name, "posts" => [first_post | posts]} <- topics do

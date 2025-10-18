@@ -31,20 +31,11 @@ defmodule PhilomenaWeb.TagView do
   end
 
   def quick_tags(conn) do
-    case Application.get_env(:philomena, :quick_tags) do
-      nil ->
-        quick_tags =
-          [] # todo: debranding
-          |> lookup_quick_tags()
-          |> render_quick_tags(conn)
-
-        Application.put_env(:philomena, :quick_tags, quick_tags)
-
-        quick_tags
-
-      quick_tags ->
-        quick_tags
-    end
+    env_cache(:quick_tags, fn ->
+      [] # todo: debranding
+      |> lookup_quick_tags()
+      |> render_quick_tags(conn)
+    end)
   end
 
   def tab_class(0), do: "selected"

@@ -18,5 +18,7 @@ defmodule Philomena.Repo.Migrations.CreateFooterLinks do
       add :bold, :boolean, null: false, default: false
       add :new_tab, :boolean, null: false, default: false
     end
+
+    create index(:footer_categories, [:position])
   end
 end
