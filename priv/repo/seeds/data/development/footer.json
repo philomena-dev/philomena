@@ -1,0 +1,85 @@
+{
+  "categories": ["Site Resources", "Help & Information", "Community"],
+  "links": [
+    {
+      "title": "Site Rules",
+      "url": "/pages/rules",
+      "bold": true
+    },
+    {
+      "title": "Privacy Policy",
+      "url": "/pages/privacy",
+      "bold": true
+    },
+    {
+      "title": "Tag Guidelines",
+      "url": "/pages/tags",
+      "bold": true
+    },
+    {
+      "title": "About Uploading",
+      "url": "/pages/uploading"
+    },
+    {
+      "title": "Spoiler Guidelines",
+      "url": "/pages/spoilers"
+    },
+    {
+      "title": "Takedown Requests",
+      "url": "/pages/takedowns"
+    },
+    {
+      "title": "Do-Not-Post List",
+      "url": "/dnp"
+    }
+  ],
+  "Help & Information": [
+    {
+      "title": "Changelog",
+      "url": "https://github.com/philomena-dev/philomena/commits/master",
+      "bold": true,
+      "new_tab": true
+    },
+    {
+      "title": "FAQs",
+      "url": "/pages/faq",
+      "bold": true
+    },
+    {
+      "title": "API Docs",
+      "url": "/pages/api"
+    },
+    {
+      "title": "Keyboard Shortcuts",
+      "url": "/pages/shortcuts"
+    },
+    {
+      "title": "Advertising",
+      "url": "/pages/advertising"
+    }
+  ],
+  "Community": [
+    {
+      "title": "Contact",
+      "url": "/pages/contact",
+      "bold": true
+    },
+    {
+      "title": "Donations",
+      "url": "/pages/donations",
+      "bold": true
+    },
+    {
+      "title": "Site Staff List",
+      "url": "/staff"
+    },
+    {
+      "title": "Statistics",
+      "url": "/pages/stats"
+    },
+    {
+      "title": "About",
+      "url": "/pages/about"
+    }
+  ]
+}

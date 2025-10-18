@@ -11,6 +11,22 @@ defmodule Philomena.Configs do
     |> cast_value(Map.get(config_types(), key, :string))
   end
 
+  def get_all() do
+    defaults()
+    |> Map.keys()
+    |> Enum.map(fn key -> {key, get(key)} end)
+    |> Map.new()
+  end
+
+  def set(key, value) do
+    %Config{}
+    |> Config.changeset(%{key: key, value: value})
+    |> Repo.insert(
+      on_conflict: :replace_all,
+      conflict_target: :key
+    )
+  end
+
   # Fetch config by its key.
   # This will try to fetch it from the environment variable first,
   # then from the database, and finally from the defaults.
@@ -42,6 +58,7 @@ defmodule Philomena.Configs do
       "site_name" => "Philomena",
       "site_slug" => "philomena",
       "site_description" => "The next-generation imageboard",
+      "site_url" => "http://philomena.local",
       "default_theme" => "dark-blue",
       "default_light_theme" => "light-blue",
       "ad_text" => "Interested in advertising on {site_name}? Click here to learn more.",
@@ -55,25 +72,32 @@ defmodule Philomena.Configs do
       "commissions_enabled" => "true",
       "livestreams_enabled" => "true",
       "dnp_enabled" => "true",
-      "getting_started_enabled" => "false"
+      "getting_started_enabled" => "false",
       "colored_logo" => "true",
+      "allow_system_uploads" => "true",
       "default_filter_id" => "1",
       "everything_filter_id" => "2",
-      "nsfw_filter_id" => "2"
+      "nsfw_filter_id" => "2",
+      "minimum_tags" => "3"
     }
   end
 
   defp config_types do
     %{
-      "site_name" => :envvar,
-      "site_slug" => :envvar,
+      "site_name" => :string,
+      "site_slug" => :string,
       "site_description" => :string,
+      "site_url" => :string,
       "default_theme" => :string,
       "default_light_theme" => :string,
       "ad_text" => :string,
       "donation_text" => :string,
       "linkvalidation_format" => :string,
       "anonymous_name" => :string,
+      "favicon_image" => :string,
+      "tagblocked_image" => :string,
+      "noavatar_image" => :string,
+      "favicon_ico" => :string,
       "borderless_tags" => :boolean,
       "rounded_tags" => :boolean,
       "compact_hidden_communications" => :boolean,
@@ -83,9 +107,11 @@ defmodule Philomena.Configs do
       "dnp_enabled" => :boolean,
       "getting_started_enabled" => :boolean,
       "colored_logo" => :boolean,
+      "allow_system_uploads" => :boolean,
       "default_filter_id" => :integer,
       "everything_filter_id" => :integer,
-      "nsfw_filter_id" => :integer
+      "nsfw_filter_id" => :integer,
+      "minimum_tags" => :integer
     }
   end
 end
