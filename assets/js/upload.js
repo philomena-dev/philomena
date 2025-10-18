@@ -226,8 +226,8 @@ function setupImageUpload() {
       errors.push('Tag input may not contain any other rating if safe');
     }
 
-    if (tagsArr.length < 3) {
-      errors.push('Tag input must contain at least 3 tags');
+    if (tagsArr.length < window.booru.minimumTags) {
+      errors.push(`Tag input must contain at least ${window.booru.minimumTags} tags`);
     }
 
     errors.forEach(msg => createTagError(msg));

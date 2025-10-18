@@ -3,8 +3,8 @@ defmodule PhilomenaWeb.LayoutView do
 
   import PhilomenaWeb.Config
   alias PhilomenaWeb.ImageView
-  alias Philomena.Config
   alias Philomena.Users.User
+  alias Philomena.Configs
   alias Plug.Conn
 
   @themes User.themes()
@@ -74,7 +74,8 @@ defmodule PhilomenaWeb.LayoutView do
       fancy_tag_upload: if(user, do: user.fancy_tag_field_on_upload, else: "true") |> to_string(),
       interactions: JSON.encode!(interactions),
       ignored_tag_list: JSON.encode!(ignored_tag_list(conn.assigns[:tags])),
-      hide_staff_tools: conn.cookies["hide_staff_tools"] |> to_string()
+      hide_staff_tools: conn.cookies["hide_staff_tools"] |> to_string(),
+      minimum_tags: Configs.get("minimum_tags")
     ]
 
     data = Keyword.merge(data, extra)
@@ -83,7 +84,7 @@ defmodule PhilomenaWeb.LayoutView do
   end
 
   def footer_data do
-    Config.get(:footer)
+    [] # todo: debranding
   end
 
   def stylesheet_path(conn, %{theme: theme})

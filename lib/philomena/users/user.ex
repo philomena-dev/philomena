@@ -517,16 +517,17 @@ defmodule Philomena.Users.User do
   end
 
   def totp_qrcode(user) do
+    site_name = Philomena.Configs.get("site_name")
     secret = totp_secret(user)
 
     provisioning_uri = %URI{
       scheme: "otpauth",
       host: "totp",
-      path: "/Derpibooru:" <> user.email,
+      path: "/#{site_name}:" <> user.email,
       query:
         URI.encode_query(%{
           secret: secret,
-          issuer: "Derpibooru"
+          issuer: site_name
         })
     }
 

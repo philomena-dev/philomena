@@ -1,4 +1,5 @@
 - display_mod_tools? = can?(@conn, :hide, @image)
+- site_name = Philomena.Configs.get("site_name")
 
 #image_options_area
   .block__header.block__header--js-tabbed
@@ -30,7 +31,7 @@
     #embed_options
       - source_link = if image_has_sources(@image), do: " - [url=#{image_first_source(@image)}]Original source[/url]", else: " (Original source unknown at time of posting)"
       - medium_url = thumb_url(@image, false, select_version(@image, :medium))
-      h5 Derpibooru
+      h5 = site_name
       p
         strong> Small thumbnail
         input.input#embed_small_thumbnail_tag type="text" value=">>#{@image.id}s" cols="10" readonly="readonly"
@@ -57,7 +58,7 @@
           | Copy
         br
         textarea.input.input--wide.input--separate-top#bbcode_embed_full_tag rows="2" cols="100" readonly="readonly"
-          = "[img]#{medium_url}[/img]\n[url=#{url(~p"/images/#{@image}")}]View on Derpibooru[/url]#{source_link}"
+          = "[img]#{medium_url}[/img]\n[url=#{url(~p"/images/#{@image}")}]View on #{site_name}[/url]#{source_link}"
       p
         strong> Thumbnailed BBcode
         a href="#" data-click-copy="#bbcode_embed_thumbnail_tag"
@@ -65,7 +66,7 @@
           | Copy
         br
         textarea.input.input--wide.input--separate-top#bbcode_embed_thumbnail_tag rows="2" cols="100" readonly="readonly"
-          = "[img]#{medium_url}[/img]\n[url=#{url(~p"/images/#{@image}")}]View on Derpibooru[/url]#{source_link}"
+          = "[img]#{medium_url}[/img]\n[url=#{url(~p"/images/#{@image}")}]View on #{site_name}[/url]#{source_link}"
 
   = if display_mod_tools? do
     .block__tab.hidden data-tab="replace"

@@ -26,6 +26,8 @@
 	@avatars path_regexp ^/avatars/(.+)$
 	@badges path_regexp ^/badge-img/(.+)$
 	@tags path_regexp ^/tag-img/(.+)$
+  @system path_regexp ^/system/(.+)$
+  @favicon path_regexp ^/favicon\.(ico|svg)$
 
 	import s3path @imgdownload /images/{re.imgdownload.1}/{re.imgdownload.2}/full.{re.imgdownload.3}
 	import s3path @imgview /images/{re.imgview.1}/{re.imgview.2}/full.{re.imgview.3}
@@ -34,6 +36,8 @@
 	import s3path @spns /adverts/{re.spns.1}
 	import s3path @badges /badges/{re.badges.1}
 	import s3path @tags /tags/{re.tags.1}
+  import s3path @system /system/{re.system.1}
+  import s3path @favicon /system/favicon.{re.favicon.1}
 
 	# This block and the next block after it (the header one) are required
 	# because it is possible for there to be files in the bucket which have
