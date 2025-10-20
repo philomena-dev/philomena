@@ -39,7 +39,7 @@ defmodule Philomena.MixProject do
       {:phoenix, "~> 1.8"},
       {:phoenix_pubsub, "~> 2.1"},
       {:phoenix_ecto, "~> 4.6"},
-      {:ecto_sql, "~> 3.9"},
+      {:ecto_sql, "~> 3.13"},
       {:postgrex, ">= 0.0.0"},
       # Must be kept at 3.x because of Slime
       {:phoenix_html, "~> 3.3"},
@@ -49,24 +49,24 @@ defmodule Philomena.MixProject do
       {:bandit, "~> 1.8"},
       {:slime, "~> 1.3.1"},
       {:phoenix_slime, "~> 0.13",
-       github: "slime-lang/phoenix_slime", ref: "8944de91654d6fcf6bdcc0aed6b8647fe3398241"},
+       github: "slime-lang/phoenix_slime", ref: "ae3b6db721e373f69eab131ad013edf3264b7d09"},
       {:phoenix_pubsub_redis, "~> 3.0"},
       {:ecto_network, "~> 1.6"},
       {:bcrypt_elixir, "~> 3.3"},
       {:pot, "~> 1.0"},
       {:secure_compare, "~> 0.1"},
-      {:nimble_parsec, "~> 1.2"},
+      {:nimble_parsec, "~> 1.4"},
       {:scrivener_ecto,
        github: "krns/scrivener_ecto", ref: "eaad1ddd86a9c8ffa422479417221265a0673777"},
       {:pbkdf2, ">= 0.0.0",
        github: "basho/erlang-pbkdf2", ref: "7e9bd5fcd3cc3062159e4c9214bb628aa6feb5ca"},
       {:qrcode, "~> 0.1"},
-      {:redix, "~> 1.4"},
+      {:redix, "~> 1.5"},
       {:remote_ip, "~> 1.2"},
       {:briefly, "~> 0.5"},
       {:req, "~> 0.5"},
       {:exq, "~> 0.21"},
-      {:ex_aws, "~> 2.5"},
+      {:ex_aws, "~> 2.6"},
       {:ex_aws_s3, "~> 2.5"},
       {:sweet_xml, "~> 0.7"},
       {:inet_cidr, "~> 1.0"},
@@ -76,7 +76,7 @@ defmodule Philomena.MixProject do
       {:mua, "~> 0.2"},
       {:mail, "~> 0.5"},
 
-      # Markdown
+      # Native modules (such as Markdown and Mediaproc)
       {:rustler, "~> 0.37"},
 
       # Linting
