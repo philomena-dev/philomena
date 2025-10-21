@@ -309,7 +309,7 @@ nav {
   flex: 0 0 auto;
   width: 326px;
   margin-right: var(--header-spacing);
-  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 @media (max-width: $min-desktop-width) {
@@ -321,7 +321,7 @@ nav {
 
 .column-layout__main {
   flex: 1 1 auto;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
   /* prevent really long words from overflowing things */
   min-width: 0;
 }

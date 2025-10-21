@@ -75,7 +75,7 @@ p,
 
 .communication__body__text .paragraph {
   margin-bottom: var(--padding-normal);
-  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 @media (max-width: $min-desktop-width) {
@@ -134,7 +134,7 @@ table,
   width: 100%;
   border-collapse: collapse;
   border: var(--border);
-  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .communication__body__text table,

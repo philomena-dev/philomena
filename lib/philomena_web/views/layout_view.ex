@@ -100,6 +100,9 @@ defmodule PhilomenaWeb.LayoutView do
   def theme_name(%{theme: theme}), do: theme
   def theme_name(_user), do: "dark-blue"
 
+  def hide_staff_tools_attribute(conn),
+    do: if(conn.cookies["hide_staff_tools"] == "true", do: "true", else: "false")
+
   def artist_tags(tags),
     do: Enum.filter(tags, &(&1.namespace == "artist"))
 

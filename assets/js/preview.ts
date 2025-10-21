@@ -5,9 +5,11 @@
 import { fetchJson } from './utils/requests';
 import { bindImageTarget } from './image_expansion';
 import { filterNode } from './imagesclientside';
-import { hideEl, showEl } from './utils/dom';
+import { $, hideEl, showEl } from './utils/dom';
+import { assertType } from './utils/assert';
+import { delegate } from './utils/events';
 
-function handleError(response) {
+function handleError(response: Response): Promise<string> | string {
   const errorMessage = '<div>Preview failed to load!</div>';
 
   if (!response.ok) {
@@ -17,7 +19,7 @@ function handleError(response) {
   return response.text();
 }
 
-function commentReply(user, url, textarea, quote) {
+function commentReply(user: string, url: string, textarea: HTMLTextAreaElement, quote?: string) {
   const text = `[${user}](${url})`;
   let newval = textarea.value;
 
@@ -31,23 +33,27 @@ function commentReply(user, url, textarea, quote) {
   textarea.value = newval;
   textarea.selectionStart = textarea.selectionEnd = newval.length;
 
-  const writeTabToggle = document.querySelector('a[data-click-tab="write"]:not(.selected)');
+  const writeTabToggle = $<HTMLAnchorElement>('a[data-click-tab="write"]:not(.selected)');
   if (writeTabToggle) writeTabToggle.click();
 
   textarea.focus();
 }
 
-function getPreview(body, anonymous, previewLoading, previewIdle, previewContent) {
+function getPreview(
+  body: string,
+  anonymous: boolean,
+  previewLoading: HTMLElement,
+  previewIdle: HTMLElement,
+  previewContent: HTMLElement,
+) {
   const path = '/posts/preview';
-
-  if (typeof body !== 'string') return;
 
   showEl(previewLoading);
   hideEl(previewIdle);
 
   fetchJson('POST', path, { body, anonymous })
     .then(handleError)
-    .then(data => {
+    .then((data: string) => {
       previewContent.innerHTML = data;
       filterNode(previewContent);
       bindImageTarget(previewContent);
@@ -62,36 +68,37 @@ function getPreview(body, anonymous, previewLoading, previewIdle, previewContent
  * @template {{ target: HTMLTextAreaElement }} E
  * @param {E} e
  */
-function resizeTextarea(e) {
-  const { borderTopWidth, borderBottomWidth, height } = window.getComputedStyle(e.target);
+function resizeTextarea(e: Event) {
+  const target = assertType(e.target, HTMLTextAreaElement);
+  const { borderTopWidth, borderBottomWidth, height } = window.getComputedStyle(target);
   // Add scrollHeight and borders (because border-box) to get the target size that avoids scrollbars
-  const contentHeight = e.target.scrollHeight + parseFloat(borderTopWidth) + parseFloat(borderBottomWidth);
+  const contentHeight = target.scrollHeight + parseFloat(borderTopWidth) + parseFloat(borderBottomWidth);
   // Get the original default height provided by page styles
   const currentHeight = parseFloat(height);
   // Limit textarea's size to between the original height and 1000px
   const newHeight = Math.max(currentHeight, Math.min(1000, contentHeight));
-  e.target.style.height = `${newHeight}px`;
+  target.style.height = `${newHeight}px`;
 }
 
 function setupPreviews() {
-  let textarea = document.querySelector('.js-preview-input');
+  let textarea = $<HTMLTextAreaElement>('.js-preview-input');
 
   if (!textarea) {
-    textarea = document.querySelector('.js-preview-description');
+    textarea = $<HTMLTextAreaElement>('.js-preview-description');
   }
 
-  const previewButton = document.querySelector('a[data-click-tab="preview"]');
-  const previewLoading = document.querySelector('.js-preview-loading');
-  const previewIdle = document.querySelector('.js-preview-idle');
-  const previewContent = document.querySelector('.js-preview-content');
-  const previewAnon = document.querySelector('.js-preview-anonymous') || false;
+  const previewButton = $<HTMLAnchorElement>('a[data-click-tab="preview"]');
+  const previewLoading = $<HTMLElement>('.js-preview-loading');
+  const previewIdle = $<HTMLElement>('.js-preview-idle');
+  const previewContent = $<HTMLElement>('.js-preview-content');
+  const previewAnon = $<HTMLInputElement>('.js-preview-anonymous');
 
-  if (!textarea || !previewContent) {
+  if (!textarea || !previewContent || !previewButton || !previewLoading || !previewIdle) {
     return;
   }
 
-  const getCacheKey = () => {
-    return (previewAnon && previewAnon.checked ? 'anon;' : '') + textarea.value;
+  const getCacheKey = (): string => {
+    return (previewAnon?.checked ? 'anon;' : '') + textarea!.value;
   };
 
   const previewedTextAttribute = 'data-previewed-text';
@@ -100,7 +107,7 @@ function setupPreviews() {
     if (previewContent.getAttribute(previewedTextAttribute) === cachedValue) return;
     previewContent.setAttribute(previewedTextAttribute, cachedValue);
 
-    getPreview(textarea.value, previewAnon && previewAnon.checked, previewLoading, previewIdle, previewContent);
+    getPreview(textarea!.value, Boolean(previewAnon?.checked), previewLoading, previewIdle, previewContent);
   };
 
   previewButton.addEventListener('click', updatePreview);
@@ -118,12 +125,11 @@ function setupPreviews() {
     });
   }
 
-  document.addEventListener('click', event => {
-    if (event.target && event.target.closest('.post-reply')) {
-      const link = event.target.closest('.post-reply');
-      commentReply(link.dataset.author, link.getAttribute('href'), textarea, link.dataset.post);
+  delegate(document, 'click', {
+    '.post-reply': (event: Event, link: HTMLElement) => {
+      commentReply(link.dataset.author || '', link.getAttribute('href') || '', textarea!, link.dataset.post);
       event.preventDefault();
-    }
+    },
   });
 }
 

@@ -3,13 +3,13 @@ import { AstMatcher } from 'query/types';
 type SpoilerType = 'click' | 'hover' | 'static' | 'off';
 
 type InteractionType = 'voted' | 'faved' | 'hidden';
-type InteractionValue = 'up' | 'down' | null;
+type InteractionValue = 'up' | 'down' | '' | null;
 
 interface Interaction {
   image_id: number;
   user_id: number;
   interaction_type: InteractionType;
-  value: 'up' | 'down' | null;
+  value: InteractionValue;
 }
 
 type UserRole = 'admin' | 'moderator' | 'assistant' | 'user';
@@ -74,7 +74,7 @@ interface BooruObject {
   /**
    * Indicates whether sensitive staff-only info should be hidden or not.
    */
-  hideStaffTools: string;
+  hideStaffTools: boolean;
   /**
    * List of image IDs in the current gallery.
    */
