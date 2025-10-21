@@ -18,8 +18,7 @@ autocompleteTest('should show additional properties to staff', async ({ ctx, exp
 
   // Admins, moderators and assistants should have extended list of properties suggested
   window.booru.userRole = 'admin';
-  // TODO Swap with boolean once my previous PR with type fix is accepted.
-  window.booru.hideStaffTools = '';
+  window.booru.hideStaffTools = false;
   await ctx.setInput('d');
   expect(ctx.snapUi()).toMatchInlineSnapshot(`
     {
@@ -40,8 +39,7 @@ autocompleteTest('should show additional properties to staff', async ({ ctx, exp
   `);
 
   // But if admin has disabled the staff tools, then these properties should not appear
-  // TODO Swap with boolean once my previous PR with type fix is accepted.
-  window.booru.hideStaffTools = 'true';
+  window.booru.hideStaffTools = true;
   await ctx.setInput('d');
   expect(ctx.snapUi()).toMatchInlineSnapshot(`
     {
