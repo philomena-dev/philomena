@@ -2,7 +2,17 @@ h1 Posts
 
 = form_for :posts, ~p"/posts", [method: "get", class: "hform", enforce_utf8: false], fn f ->
   .field
-    = text_input f, :pq, name: :pq, value: @conn.params["pq"], class: "input hform__text", placeholder: "Search posts", autocapitalize: "none", spellcheck: "false"
+    = text_input f, :pq, name: :pq, value: @conn.params["pq"],
+      class: "input hform__text",
+      placeholder: "Search posts",
+      autocapitalize: "none",
+      spellcheck: "false",
+      autocomplete: if(@conn.cookies["enable_search_ac"], do: "on", else: "off"),
+      inputmode: "search",
+      data: [ \
+        autocomplete: "properties",
+      ]
+
     = submit "Search", class: "hform__button button"
 
   .fieldlabel

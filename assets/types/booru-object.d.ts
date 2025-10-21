@@ -12,6 +12,8 @@ interface Interaction {
   value: InteractionValue;
 }
 
+type UserRole = 'admin' | 'moderator' | 'assistant' | 'user';
+
 interface BooruObject {
   /**
    * Automatic timestamp recalculation function for userscript use
@@ -49,6 +51,10 @@ interface BooruObject {
    * Stores the URL of the default "tag blocked" image
    */
   hiddenTag: string;
+  /**
+   * Stores the role assigned to the user.
+   */
+  userRole: UserRole | undefined;
   userIsSignedIn: boolean;
   /**
    * Indicates if the current user has edit rights to the currently selected filter
