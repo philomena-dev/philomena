@@ -20,7 +20,7 @@
     "postcss-mixins": "^12.1.2",
     "postcss-simple-vars": "^7.0.1",
     "typescript": "^5.9.2",
-    "vite": "^7.1.7"
+    "vite": "^7.1.11"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",
