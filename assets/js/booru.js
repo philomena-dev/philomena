@@ -136,6 +136,8 @@ function loadBooruData() {
     window.booru[prop] = unmarshal(booruData[prop]);
   }
 
+  // When first logging in, this option is actually an empty string. Treat it as false.
+  window.booru.hideStaffTools = Boolean(window.booru.hideStaffTools);
   window.booru.hiddenFilter = parseSearch(window.booru.hiddenFilter);
   window.booru.spoileredFilter = parseSearch(window.booru.spoileredFilter);
 
