@@ -1,4 +1,4 @@
-FROM elixir:1.18.4-alpine
+FROM elixir:1.19.0-alpine
 
 LABEL org.opencontainers.image.authors="liamwhite <liamwhite@users.noreply.github.com>, Nighty <luna@nighty.cloud>, and contributors"
 LABEL org.opencontainers.image.description="The official Philomena Docker image intended for production use."
