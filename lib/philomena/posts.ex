@@ -380,7 +380,8 @@ defmodule Philomena.Posts do
 
     [
       user: user_query,
-      topic: topic_query
+      topic: topic_query,
+      deleted_by: user_query
     ]
   end
 

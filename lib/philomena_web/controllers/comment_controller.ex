@@ -31,7 +31,7 @@ defmodule PhilomenaWeb.CommentController do
               }
             }
           },
-          sort: %{posted_at: :desc}
+          sort: %{created_at: :desc}
         },
         conn.assigns.pagination
       )

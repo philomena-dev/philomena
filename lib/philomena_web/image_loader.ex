@@ -119,7 +119,7 @@ defmodule PhilomenaWeb.ImageLoader do
     do: [%{term: %{approved: false}} | filters]
 
   # TODO: the search parser should try to optimize queries
-  defp search_tag_name(%{term: %{"namespaced_tags.name" => tag_name}}), do: [tag_name]
+  defp search_tag_name(%{term: %{"tags" => tag_name}}), do: [tag_name]
   defp search_tag_name(_other_query), do: []
 
   defp search_tag_names(%{bool: %{must: musts}}), do: Enum.flat_map(musts, &search_tag_name(&1))
@@ -127,7 +127,7 @@ defmodule PhilomenaWeb.ImageLoader do
   defp search_tag_names(%{bool: %{should: shoulds}}),
     do: Enum.flat_map(shoulds, &search_tag_name(&1))
 
-  defp search_tag_names(%{term: %{"namespaced_tags.name" => tag_name}}), do: [tag_name]
+  defp search_tag_names(%{term: %{"tags" => tag_name}}), do: [tag_name]
   defp search_tag_names(_other_query), do: []
 
   defp load_tags([]), do: []
