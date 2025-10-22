@@ -1,4 +1,4 @@
-FROM elixir:1.18.4-alpine
+FROM elixir:1.19.0-alpine
 
 RUN apk add bash inotify-tools build-base git npm nodejs postgresql17-client wget rust cargo \
     && mix local.hex --force \
