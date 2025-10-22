@@ -90,10 +90,10 @@ defmodule Philomena.Repo.Migrations.Cleanup do
       reports: [:system],
       source_changes: [:fingerprint],
       subnet_bans: [:note, :specification],
-      tag_changes: [:ip, :fingerprint],
       topics: [:anonymous],
       user_bans: [:note],
-      versions: [:created_at]
+      versions: [:created_at],
+      roles: [:name, :resource_type]
     ]
 
     for {table, columns} <- missing_not_null do
@@ -239,11 +239,6 @@ defmodule Philomena.Repo.Migrations.Cleanup do
 
     alter table(:tags) do
       remove :description_textile, :string, default: ""
-    end
-
-    alter table(:tag_changes) do
-      remove :user_agent, :string, default: ""
-      remove :referrer, :string, default: ""
     end
 
     alter table(:topics) do
