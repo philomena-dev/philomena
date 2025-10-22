@@ -19,7 +19,7 @@ defmodule Philomena.Reports.SearchIndex do
         dynamic: false,
         properties: %{
           id: %{type: "integer"},
-          image_id: %{type: "integer"},
+          image_id: %{type: "keyword"},
           created_at: %{type: "date"},
           ip: %{type: "ip"},
           fingerprint: %{type: "keyword"},
