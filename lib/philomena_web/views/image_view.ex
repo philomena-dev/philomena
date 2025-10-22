@@ -326,6 +326,15 @@ defmodule PhilomenaWeb.ImageView do
     uri = URI.parse(source)
 
     case uri.host do
+      "bsky.app" ->
+        "fab fa-bluesky"
+
+      "itaku.ee" ->
+        "fa fa-dove"
+
+      u when u in ["boosty.to", "www.boosty.to"] ->
+        "fa fa-bolt-lightning"
+
       u
       when u in [
              "twitter.com",
@@ -365,7 +374,7 @@ defmodule PhilomenaWeb.ImageView do
       u when u in ["pillowfort.social", "www.pillowfort.social"] ->
         "fa fa-bed"
 
-      u when u in ["vk.com", "vk.ru"] ->
+      u when u in ["vk.com", "vk.ru", "m.vk.com", "m.vk.ru"] ->
         "fab fa-vk"
 
       u
@@ -452,7 +461,9 @@ defmodule PhilomenaWeb.ImageView do
              "octodon.social",
              "filly.social",
              "pone.social",
-             "hooves.social"
+             "hooves.social",
+             "baraag.net",
+             "furries.club"
            ] ->
         "fab fa-mastodon"
 
