@@ -13,10 +13,10 @@ defmodule Philomena.Filters.Filter do
 
     field :name, :string
     field :description, :string, default: ""
-    field :system, :boolean
-    field :public, :boolean
-    field :hidden_complex_str, :string
-    field :spoilered_complex_str, :string
+    field :system, :boolean, default: false
+    field :public, :boolean, default: false
+    field :hidden_complex_str, :string, default: ""
+    field :spoilered_complex_str, :string, default: ""
     field :hidden_tag_ids, {:array, :integer}, default: []
     field :spoilered_tag_ids, {:array, :integer}, default: []
     field :user_count, :integer, default: 0

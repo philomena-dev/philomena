@@ -12,7 +12,7 @@ defmodule Philomena.Adverts.Advert do
     field :start_date, PhilomenaQuery.Ecto.RelativeDate
     field :finish_date, PhilomenaQuery.Ecto.RelativeDate
     field :restrictions, :string
-    field :notes, :string
+    field :notes, :string, default: ""
 
     field :image_mime_type, :string, virtual: true
     field :image_size, :integer, virtual: true
