@@ -7,6 +7,7 @@ defmodule Philomena.Users do
   alias Ecto.Multi
   alias Philomena.Repo
 
+  alias Philomena.Schema.Approval
   alias Philomena.Users.{User, UserToken, UserNotifier, Uploader}
   alias Philomena.{Forums, Forums.Forum}
   alias Philomena.Topics
@@ -479,6 +480,22 @@ defmodule Philomena.Users do
     UserNotifier.deliver_reset_password_instructions(user, reset_password_url_fun.(encoded_token))
   end
 
+  @doc ~S"""
+  Delivers the reactivate account email to the given user.
+
+  ## Examples
+
+      iex> deliver_user_reactivation_instructions(user, &url(~p"/reactivations/#{&1}"))
+      {:ok, %{to: ..., body: ...}}
+
+  """
+  def deliver_user_reactivation_instructions(%User{} = user, reactivation_url_fun)
+      when is_function(reactivation_url_fun, 1) do
+    {encoded_token, user_token} = UserToken.build_email_token(user, "reactivate")
+    Repo.insert!(user_token)
+    UserNotifier.deliver_reactivation_instructions(user, reactivation_url_fun.(encoded_token))
+  end
+
   @doc """
   Gets the user by reset password token.
 
@@ -625,6 +642,22 @@ defmodule Philomena.Users do
     user
     |> User.description_changeset(attrs)
     |> Repo.update()
+    |> case do
+      {:ok, user} ->
+        if not Approval.approved?(user, user.description, :external_links) or
+             not Approval.approved?(user, user.personal_title, :external_links) do
+          Reports.create_system_report(
+            {"User", user.id},
+            "Review",
+            "Profile contains external links"
+          )
+        end
+
+        {:ok, user}
+
+      error ->
+        error
+    end
   end
 
   @doc """
@@ -780,7 +813,7 @@ defmodule Philomena.Users do
   end
 
   @doc """
-  Reactivates a previously deactivated user account.
+  Reactivates a previously deactivated user account. Removes all "reactivate" user tokens for that user if they exist.
 
   ## Examples
 
@@ -789,6 +822,8 @@ defmodule Philomena.Users do
 
   """
   def reactivate_user(%User{} = user) do
+    UserToken.user_and_contexts_query(user, ["reactivate"]) |> Repo.delete_all()
+
     user
     |> User.reactivate_changeset()
     |> Repo.update()
@@ -809,6 +844,42 @@ defmodule Philomena.Users do
     user
     |> User.deactivate_changeset(moderator)
     |> Repo.update()
+  end
+
+  @doc """
+  Deactivates a user account with the user recorded performing the deactivation.
+
+  ## Examples
+
+      iex> deactivate_user(user)
+      {:ok, %User{}}
+
+  """
+  def deactivate_user(%User{} = user) do
+    user
+    |> User.deactivate_changeset(user)
+    |> Repo.update()
+  end
+
+  @doc """
+  Gets the user by reactivation token.
+
+  ## Examples
+
+      iex> get_user_by_reactivation_token("validtoken")
+      %User{}
+
+      iex> get_user_by_reactivation_token("invalidtoken")
+      nil
+
+  """
+  def get_user_by_reactivation_token(token) do
+    with {:ok, query} <- UserToken.verify_email_token_query(token, "reactivate"),
+         %User{} = user <- Repo.one(query) do
+      user
+    else
+      _ -> nil
+    end
   end
 
   @doc """

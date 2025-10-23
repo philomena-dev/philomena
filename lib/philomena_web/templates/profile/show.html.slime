@@ -28,13 +28,10 @@
         li = link("Report this user", to: ~p"/profiles/#{@user}/reports/new")
 
       ul.profile-top__options__column
-        = case @conn.assigns.current_user do
-          - %{role: role} when role in ~W(moderator admin) ->
-            li = link("Uploads", to: ~p"/search?#{[q: "true_uploader_id:#{@user.id}"]}")
-          - _ ->
-            li = link("Uploads", to: ~p"/search?#{[q: "uploader_id:#{@user.id}"]}")
-        li = link("Comments", to: ~p"/comments?#{[cq: "user_id:#{@user.id}"]}")
-        li = link("Posts", to: ~p"/posts?#{[pq: "user_id:#{@user.id}"]}")
+        - true_prefix = if can_reveal_anon?(@conn), do: "true_", else: ""
+        li = link("Uploads", to: ~p"/search?#{[q: "#{true_prefix}uploader_id:#{@user.id}"]}")
+        li = link("Comments", to: ~p"/comments?#{[cq: "#{true_prefix}author_id:#{@user.id}"]}")
+        li = link("Posts", to: ~p"/posts?#{[pq: "#{true_prefix}author_id:#{@user.id}"]}")
         = if current?(@user, @conn.assigns.current_user) do
           li = link "My reports", to: ~p"/reports"
 
@@ -98,7 +95,7 @@
               a href=~p"/profiles/#{@user}/artist_links/#{link}/edit"
                 ' Edit
               ' &bull;
-              a href=~p"/admin/artist_links/#{link}/reject" data-method="post"
+              a href=~p"/admin/artist_links/#{link}/reject" data-method="post" data-confirm="Are you really, really sure?"
                 ' Reject
             - else
               => unless link.public do

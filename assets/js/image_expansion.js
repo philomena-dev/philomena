@@ -44,7 +44,7 @@ function selectVersion(imageWidth, imageHeight, imageSize, imageMime) {
   // Sanity check to make sure we're not serving unintentionally huge assets
   // all at once (where "huge" > 25 MiB). Videos are loaded in chunks so it
   // doesn't matter too much there.
-  if (imageMime === 'video/webm' || imageSize <= 26214400) {
+  if (imageMime === 'video/webm' || imageSize <= 26_214_400) {
     return 'full';
   }
 
@@ -155,6 +155,10 @@ function bindImageForClick(target) {
   });
 }
 
+/**
+ * Bind image targets within a context.
+ * @param {{ querySelectorAll: Document['querySelectorAll'] }} [node=document]
+ */
 function bindImageTarget(node = document) {
   $$('.image-target', node).forEach(target => {
     pickAndResize(target);

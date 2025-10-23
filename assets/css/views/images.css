@@ -182,7 +182,7 @@ div.image-container video {
 }
 
 .js-source-link {
-  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 div.image-container img,
@@ -301,6 +301,7 @@ div.image-container video {
 .image_sources {
   display: grid;
   grid-template-columns: 2em auto;
+  grid-template-rows: 1fr;
 }
 
 .image_source__icon,

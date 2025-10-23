@@ -134,7 +134,7 @@ defmodule Philomena.Posts do
     Reports.create_system_report(
       {"Post", post.id},
       "Approval",
-      "Post contains externally-embedded images and has been flagged for review."
+      "Post contains external links"
     )
   end
 
@@ -380,7 +380,8 @@ defmodule Philomena.Posts do
 
     [
       user: user_query,
-      topic: topic_query
+      topic: topic_query,
+      deleted_by: user_query
     ]
   end
 

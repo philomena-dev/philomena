@@ -93,6 +93,26 @@ defmodule PhilomenaWeb.ImageView do
 
   defp append_gif_urls(urls, _image, _show_hidden), do: urls
 
+  def thumb_url_size(
+        %{image_aspect_ratio: ar, image_width: w, image_height: h} = image,
+        show_hidden,
+        name
+      ) do
+    {max_w, max_h} = Thumbnailer.thumbnail_versions()[name]
+
+    if w > max_w or h > max_h do
+      {thumb_url(image, show_hidden, name), thumb_dimensions(ar, max_w, max_h)}
+    else
+      {thumb_url(image, show_hidden, :full), {w, h}}
+    end
+  end
+
+  defp thumb_dimensions(ar, w, h) when ar > w / h,
+    do: {w, floor(w / ar)}
+
+  defp thumb_dimensions(ar, _w, h),
+    do: {floor(h * ar), h}
+
   def thumb_url(image, show_hidden, name) do
     %{year: year, month: month, day: day} = image.created_at
     deleted = image.hidden_from_users
@@ -152,7 +172,7 @@ defmodule PhilomenaWeb.ImageView do
   def image_container_data(conn, image, size) do
     [
       image_id: image.id,
-      image_tags: Jason.encode!(Enum.map(image.tags, & &1.id)),
+      image_tags: JSON.encode!(Enum.map(image.tags, & &1.id)),
       image_tag_aliases:
         image.tags |> Enum.flat_map(&([&1] ++ &1.aliases)) |> Enum.map_join(", ", & &1.name),
       tag_count: length(image.tags),
@@ -164,8 +184,8 @@ defmodule PhilomenaWeb.ImageView do
       created_at: DateTime.to_iso8601(image.created_at),
       source_url:
         if(Enum.count(image.sources) > 0, do: Enum.at(image.sources, 0).source, else: ""),
-      source_urls: Jason.encode!(Enum.map(image.sources, & &1.source)),
-      uris: Jason.encode!(thumb_urls(image, can?(conn, :show, image))),
+      source_urls: JSON.encode!(Enum.map(image.sources, & &1.source)),
+      uris: JSON.encode!(thumb_urls(image, can?(conn, :show, image))),
       width: image.image_width,
       height: image.image_height,
       aspect_ratio: image.image_aspect_ratio,
@@ -249,8 +269,7 @@ defmodule PhilomenaWeb.ImageView do
   def image_filter_data(image) do
     %{
       id: image.id,
-      "namespaced_tags.name":
-        image.tags |> Enum.flat_map(&([&1] ++ &1.aliases)) |> Enum.map_join(", ", & &1.name),
+      tags: image.tags |> Enum.flat_map(&([&1] ++ &1.aliases)) |> Enum.map_join(", ", & &1.name),
       tag_count: length(image.tags),
       score: image.score,
       faves: image.faves_count,
@@ -306,6 +325,15 @@ defmodule PhilomenaWeb.ImageView do
     uri = URI.parse(source)
 
     case uri.host do
+      "bsky.app" ->
+        "fab fa-bluesky"
+
+      "itaku.ee" ->
+        "fa fa-dove"
+
+      u when u in ["boosty.to", "www.boosty.to"] ->
+        "fa fa-bolt-lightning"
+
       u
       when u in [
              "twitter.com",
@@ -345,7 +373,7 @@ defmodule PhilomenaWeb.ImageView do
       u when u in ["pillowfort.social", "www.pillowfort.social"] ->
         "fa fa-bed"
 
-      u when u in ["vk.com", "vk.ru"] ->
+      u when u in ["vk.com", "vk.ru", "m.vk.com", "m.vk.ru"] ->
         "fab fa-vk"
 
       u
@@ -432,7 +460,9 @@ defmodule PhilomenaWeb.ImageView do
              "octodon.social",
              "filly.social",
              "pone.social",
-             "hooves.social"
+             "hooves.social",
+             "baraag.net",
+             "furries.club"
            ] ->
         "fab fa-mastodon"
 
