@@ -52,10 +52,6 @@ a.label.label--primary.label--block href="#" data-click-toggle=".js-admin__optio
 .profile-top__options.js-admin__options__toggle.hidden
   ul.profile-admin__options__column
     li
-      = link to: ~p"/profiles/#{@user}/details" do
-        i.fa.fa-fw.fa-eye
-        span.admin__button View Details
-    li
       = link to: ~p"/search?#{[q: "upvoted_by_id:#{@user.id}"]}" do
         i.fa.fa-fw.fa-arrow-up
         span.admin__button Upvotes

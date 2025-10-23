@@ -111,6 +111,13 @@ defmodule PhilomenaWeb.LayoutView do
       !is_nil(conn.assigns[:image]) and conn.assigns.image.__meta__.state == :loaded and
         is_list(conn.assigns.image.tags)
 
+  def staff?(conn) do
+    case conn.assigns.current_user do
+      %User{role: role} -> role != "user"
+      _ -> false
+    end
+  end
+
   def hides_images?(conn),
     do: can?(conn, :hide, %Philomena.Images.Image{})
 

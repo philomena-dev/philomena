@@ -288,7 +288,6 @@ defmodule PhilomenaWeb.Router do
       resources "/artist_links", Profile.ArtistLinkController
       resources "/awards", Profile.AwardController, except: [:index, :show]
 
-      resources "/details", Profile.DetailController, only: [:index]
       resources "/ip_history", Profile.IpHistoryController, only: [:index]
       resources "/fp_history", Profile.FpHistoryController, only: [:index]
       resources "/aliases", Profile.AliasController, only: [:index]
