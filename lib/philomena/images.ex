@@ -1090,13 +1090,11 @@ defmodule Philomena.Images do
 
     to_insert =
       Enum.flat_map(changes, fn change ->
-        Enum.map(change.added_tags, &%{tag_id: &1.id, image_id: change.image_id})
+        Enum.map(change.added_tag_ids, &%{tag_id: &1, image_id: change.image_id})
       end)
 
     to_delete_ids =
-      Enum.flat_map(changes, fn change ->
-        Enum.map(change.removed_tags, & &1.id)
-      end)
+      Enum.flat_map(changes, & &1.removed_tag_ids)
 
     to_delete =
       Tagging
@@ -1159,7 +1157,10 @@ defmodule Philomena.Images do
       {:ok, _} = result ->
         reindex_images(image_ids)
         Comments.reindex_comments_on_images(image_ids)
-        Tags.reindex_tags(Enum.flat_map(changes, &(&1.added_tags ++ &1.removed_tags)))
+
+        changes
+        |> Enum.flat_map(&(&1.added_tag_ids ++ &1.removed_tag_ids))
+        |> Tags.reindex_tags_by_ids()
 
         result
 
@@ -1169,7 +1170,7 @@ defmodule Philomena.Images do
   end
 
   # Merge any change batches belonging to the same image ID into
-  # one single batch, then deduplicate added_tags by removing any
+  # one single batch, then deduplicate added_tag_ids by removing any
   # which are slated for removal, which is the behavior of the
   # mass tagger anyway (it inserts anything that needs to be inserted
   # into image_taggings, and then deletes anything that needs to be deleted,
@@ -1182,21 +1183,21 @@ defmodule Philomena.Images do
     |> Enum.map(fn {image_id, instances} ->
       added =
         instances
-        |> Enum.flat_map(& &1.added_tags)
-        |> Enum.uniq_by(& &1.id)
+        |> Enum.flat_map(& &1.added_tag_ids)
+        |> Enum.uniq()
 
       removed =
         instances
-        |> Enum.flat_map(& &1.removed_tags)
-        |> Enum.uniq_by(& &1.id)
+        |> Enum.flat_map(& &1.removed_tag_ids)
+        |> Enum.uniq()
 
       %{
         image_id: image_id,
-        added_tags: Enum.reject(added, fn a -> Enum.any?(removed, &(&1.id == a.id)) end),
-        removed_tags: removed
+        added_tag_ids: added -- removed,
+        removed_tag_ids: removed
       }
     end)
-    |> Enum.reject(&(Enum.empty?(&1.added_tags) && Enum.empty?(&1.removed_tags)))
+    |> Enum.reject(&(Enum.empty?(&1.added_tag_ids) && Enum.empty?(&1.removed_tag_ids)))
   end
 
   # Generate data for TagChanges.Tag struct.
