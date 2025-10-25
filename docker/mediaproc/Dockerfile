@@ -4,13 +4,13 @@ RUN apt update \
     && apt install -y build-essential git libmagic-dev libturbojpeg0-dev libpng-dev \
        gifsicle optipng libjpeg-turbo-progs librsvg2-bin librsvg2-dev file imagemagick \
        libx264-dev libx265-dev libvpx-dev libdav1d-dev libaom-dev libopus-dev \
-       libmp3lame-dev libvorbis-dev libwebp-dev libjxl-dev yasm wget
+       libmp3lame-dev libvorbis-dev libwebp-dev libjxl-dev nasm wget
 
-ADD https://api.github.com/repos/philomena-dev/FFmpeg/git/refs/heads/release/7.1 /tmp/ffmpeg_version.json
+ADD https://api.github.com/repos/philomena-dev/FFmpeg/git/refs/heads/release/8.0 /tmp/ffmpeg_version.json
 ADD https://api.github.com/repos/philomena-dev/cli_intensities/git/refs/heads/master /tmp/cli_intensities_version.json
 ADD https://api.github.com/repos/philomena-dev/mediatools/git/refs/heads/master /tmp/mediatools_version.json
 
-RUN wget -qO /tmp/FFmpeg.tar.gz https://github.com/philomena-dev/FFmpeg/archive/refs/heads/release/7.1.tar.gz \
+RUN wget -qO /tmp/FFmpeg.tar.gz https://github.com/philomena-dev/FFmpeg/archive/refs/heads/release/8.0.tar.gz \
     && wget -qO /tmp/cli_intensities.tar.gz https://github.com/philomena-dev/cli_intensities/archive/refs/heads/master.tar.gz \
     && wget -qO /tmp/mediatools.tar.gz https://github.com/philomena-dev/mediatools/archive/refs/heads/master.tar.gz
 
@@ -18,7 +18,7 @@ RUN cd /tmp \
     && tar -xf FFmpeg.tar.gz \
     && tar -xf cli_intensities.tar.gz \
     && tar -xf mediatools.tar.gz \
-    && cd /tmp/FFmpeg-release-7.1 \
+    && cd /tmp/FFmpeg-release-8.0 \
     && ./configure \
         --prefix=/usr \
         --disable-everything \
