@@ -19,6 +19,7 @@ defmodule Philomena.Users do
   alias Philomena.Galleries
   alias Philomena.Reports
   alias Philomena.Filters
+  alias Philomena.TagChanges
   alias Philomena.UserEraseWorker
   alias Philomena.UserRenameWorker
 
@@ -820,6 +821,7 @@ defmodule Philomena.Users do
     Galleries.user_name_reindex(old_name, new_name)
     Reports.user_name_reindex(old_name, new_name)
     Filters.user_name_reindex(old_name, new_name)
+    TagChanges.user_name_reindex(old_name, new_name)
   end
 
   @doc """

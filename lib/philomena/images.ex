@@ -1160,6 +1160,7 @@ defmodule Philomena.Images do
         reindex_images(image_ids)
         Comments.reindex_comments_on_images(image_ids)
         Tags.reindex_tags(Enum.flat_map(changes, &(&1.added_tags ++ &1.removed_tags)))
+        TagChanges.reindex_tag_changes_on_images(image_ids)
 
         result
 
