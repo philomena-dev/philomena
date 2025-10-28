@@ -58,7 +58,7 @@ defmodule Philomena.TagChanges.SearchIndex do
       id: tag_change.id,
       image_id: tag_change.image_id,
       user:
-        if(has_user and !anonymous,
+        if(!anonymous,
           do: String.downcase(tag_change.user.name)
         ),
       user_id: if(!anonymous, do: tag_change.user_id),

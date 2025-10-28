@@ -10,7 +10,7 @@ defmodule Philomena.TagChanges do
   alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
   alias Philomena.TagChanges.Query
-  alias Philomena.TagChanges.SearchIndex, as: TagChangeIndex
+  alias Philomena.TagChanges.SearchIndex
   alias Philomena.IndexWorker
   alias Philomena.Images
   alias Philomena.Images.Image
@@ -83,7 +83,7 @@ defmodule Philomena.TagChanges do
 
   """
   def user_name_reindex(old_name, new_name) do
-    data = TagChangeIndex.user_name_update_by_query(old_name, new_name)
+    data = SearchIndex.user_name_update_by_query(old_name, new_name)
 
     Search.update_by_query(TagChange, data.query, data.set_replacements, data.replacements)
   end
@@ -136,33 +136,6 @@ defmodule Philomena.TagChanges do
 
     image_ids
   end
-
-  @doc """
-  Removes a tag change from the search index.
-
-  Deletes the tag change's document from the search index.
-
-  ## Examples
-
-      iex> unindex_tag_change(tag_change)
-      %TagChange{}
-
-  """
-  def unindex_tag_change(%TagChange{} = tag_change) do
-    Search.delete_document(tag_change.id, TagChange)
-
-    tag_change
-  end
-
-  def unindex_tag_change({:ok, %TagChange{} = tag_change} = result) do
-    Search.delete_document(tag_change.id, TagChange)
-
-    result
-  end
-
-  # Allows propagation of the error further in the chain if
-  # an unsuccessful result is given to this function.
-  def unindex_tag_change(res), do: res
 
   @doc """
   Returns a list of associations to preload when indexing tag changes.
@@ -266,9 +239,18 @@ defmodule Philomena.TagChanges do
 
   """
   def delete_tag_change(%TagChange{} = tag_change) do
-    tag_change
-    |> Repo.delete()
-    |> unindex_tag_change()
+    case Repo.delete(tag_change) do
+      %TagChange{} = tc ->
+        Search.delete_document(tc.id, TagChange)
+        tc
+
+      {:ok, %TagChange{} = tc} = result ->
+        Search.delete_document(tc.id, TagChange)
+        result
+
+      result ->
+        result
+    end
   end
 
   def count_tag_changes(field_name, value) do
