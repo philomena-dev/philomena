@@ -1,17 +1,16 @@
 defmodule PhilomenaWeb.Admin.SubnetBanController do
   use PhilomenaWeb, :controller
 
-  alias Philomena.Bans.Subnet, as: SubnetBan
   alias Philomena.Bans
   alias Philomena.Repo
   import Ecto.Query
 
   plug :verify_authorized
-  plug :load_resource, model: SubnetBan, only: [:edit, :update, :delete]
+  plug :load_resource, model: Bans.Subnet, only: [:edit, :update, :delete]
   plug :check_can_delete when action in [:delete]
 
   def index(conn, %{"bq" => q}) when is_binary(q) do
-    SubnetBan
+    Bans.Subnet
     |> where(
       [sb],
       sb.generated_ban_id == ^q or
@@ -24,23 +23,23 @@ defmodule PhilomenaWeb.Admin.SubnetBanController do
   def index(conn, %{"ip" => ip}) when is_binary(ip) do
     {:ok, ip} = EctoNetwork.INET.cast(ip)
 
-    SubnetBan
+    Bans.Subnet
     |> where([sb], fragment("? >>= ?", sb.specification, ^ip))
     |> load_bans(conn)
   end
 
   def index(conn, _params) do
-    load_bans(SubnetBan, conn)
+    load_bans(Bans.Subnet, conn)
   end
 
   def new(conn, %{"specification" => ip}) do
     {:ok, ip} = EctoNetwork.INET.cast(ip)
-    changeset = Bans.change_subnet(%SubnetBan{specification: ip})
+    changeset = Bans.change_subnet(%Bans.Subnet{specification: ip})
     render(conn, "new.html", title: "New Subnet Ban", changeset: changeset)
   end
 
   def new(conn, _params) do
-    changeset = Bans.change_subnet(%SubnetBan{})
+    changeset = Bans.change_subnet(%Bans.Subnet{})
     render(conn, "new.html", title: "New Subnet Ban", changeset: changeset)
   end
 
@@ -99,7 +98,7 @@ defmodule PhilomenaWeb.Admin.SubnetBanController do
   end
 
   defp verify_authorized(conn, _opts) do
-    if Canada.Can.can?(conn.assigns.current_user, :index, SubnetBan) do
+    if Canada.Can.can?(conn.assigns.current_user, :index, Bans.Subnet) do
       conn
     else
       PhilomenaWeb.NotAuthorizedPlug.call(conn)

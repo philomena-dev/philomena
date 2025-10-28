@@ -18,7 +18,7 @@ defmodule Philomena.Images do
   alias Philomena.Images.Tagging
   alias Philomena.Images.Thumbnailer
   alias Philomena.Images.Source
-  alias Philomena.Images.SearchIndex, as: ImageIndex
+  alias Philomena.Images
   alias Philomena.IndexWorker
   alias Philomena.ImageFeatures.ImageFeature
   alias Philomena.SourceChanges.SourceChange
@@ -1264,7 +1264,7 @@ defmodule Philomena.Images do
 
   """
   def user_name_reindex(old_name, new_name) do
-    data = ImageIndex.user_name_update_by_query(old_name, new_name)
+    data = Images.SearchIndex.user_name_update_by_query(old_name, new_name)
 
     Search.update_by_query(Image, data.query, data.set_replacements, data.replacements)
   end

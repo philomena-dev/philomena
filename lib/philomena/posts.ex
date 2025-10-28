@@ -13,7 +13,7 @@ defmodule Philomena.Posts do
   alias Philomena.UserStatistics
   alias Philomena.Users.User
   alias Philomena.Posts.Post
-  alias Philomena.Posts.SearchIndex, as: PostIndex
+  alias Philomena.Posts
   alias Philomena.IndexWorker
   alias Philomena.Forums.Forum
   alias Philomena.Notifications
@@ -330,7 +330,7 @@ defmodule Philomena.Posts do
 
   """
   def user_name_reindex(old_name, new_name) do
-    data = PostIndex.user_name_update_by_query(old_name, new_name)
+    data = Posts.SearchIndex.user_name_update_by_query(old_name, new_name)
 
     Search.update_by_query(Post, data.query, data.set_replacements, data.replacements)
   end

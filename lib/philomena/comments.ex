@@ -11,7 +11,7 @@ defmodule Philomena.Comments do
   alias Philomena.UserStatistics
   alias Philomena.Users.User
   alias Philomena.Comments.Comment
-  alias Philomena.Comments.SearchIndex, as: CommentIndex
+  alias Philomena.Comments
   alias Philomena.IndexWorker
   alias Philomena.Images.Image
   alias Philomena.Images
@@ -309,7 +309,7 @@ defmodule Philomena.Comments do
 
   """
   def user_name_reindex(old_name, new_name) do
-    data = CommentIndex.user_name_update_by_query(old_name, new_name)
+    data = Comments.SearchIndex.user_name_update_by_query(old_name, new_name)
 
     Search.update_by_query(Comment, data.query, data.set_replacements, data.replacements)
   end

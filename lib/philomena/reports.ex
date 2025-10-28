@@ -8,7 +8,7 @@ defmodule Philomena.Reports do
 
   alias PhilomenaQuery.Search
   alias Philomena.Reports.Report
-  alias Philomena.Reports.SearchIndex, as: ReportIndex
+  alias Philomena.Reports
   alias Philomena.IndexWorker
   alias Philomena.Polymorphic
 
@@ -273,7 +273,7 @@ defmodule Philomena.Reports do
 
   """
   def user_name_reindex(old_name, new_name) do
-    data = ReportIndex.user_name_update_by_query(old_name, new_name)
+    data = Reports.SearchIndex.user_name_update_by_query(old_name, new_name)
 
     Search.update_by_query(Report, data.query, data.set_replacements, data.replacements)
   end
