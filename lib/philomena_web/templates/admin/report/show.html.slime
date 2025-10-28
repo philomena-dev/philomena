@@ -1,6 +1,6 @@
 h1 Showing Report
 p
-  = link_to_reported_thing @report.reportable
+  = link_to_reportable @report.reportable
 
 article.block.communication
   .block__content.communication__content.flex.flex--no-wrap
