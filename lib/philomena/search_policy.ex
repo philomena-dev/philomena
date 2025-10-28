@@ -1,21 +1,20 @@
 defmodule Philomena.SearchPolicy do
   alias Philomena.Comments.Comment
+  alias Philomena.Comments
   alias Philomena.Galleries.Gallery
+  alias Philomena.Galleries
   alias Philomena.Images.Image
+  alias Philomena.Images
   alias Philomena.Posts.Post
+  alias Philomena.Posts
   alias Philomena.Reports.Report
+  alias Philomena.Reports
   alias Philomena.Tags.Tag
+  alias Philomena.Tags
   alias Philomena.TagChanges.TagChange
+  alias Philomena.TagChanges
   alias Philomena.Filters.Filter
-
-  alias Philomena.Comments.SearchIndex, as: CommentIndex
-  alias Philomena.Galleries.SearchIndex, as: GalleryIndex
-  alias Philomena.Images.SearchIndex, as: ImageIndex
-  alias Philomena.Posts.SearchIndex, as: PostIndex
-  alias Philomena.Reports.SearchIndex, as: ReportIndex
-  alias Philomena.Tags.SearchIndex, as: TagIndex
-  alias Philomena.TagChanges.SearchIndex, as: TagChangeIndex
-  alias Philomena.Filters.SearchIndex, as: FilterIndex
+  alias Philomena.Filters
 
   @type schema_module :: Comment | Gallery | Image | Post | Report | Tag | TagChange | Filter
 
@@ -33,14 +32,14 @@ defmodule Philomena.SearchPolicy do
 
   """
   @spec index_for(schema_module()) :: module()
-  def index_for(Comment), do: CommentIndex
-  def index_for(Gallery), do: GalleryIndex
-  def index_for(Image), do: ImageIndex
-  def index_for(Post), do: PostIndex
-  def index_for(Report), do: ReportIndex
-  def index_for(Tag), do: TagIndex
-  def index_for(TagChange), do: TagChangeIndex
-  def index_for(Filter), do: FilterIndex
+  def index_for(Comment), do: Comments.SearchIndex
+  def index_for(Gallery), do: Galleries.SearchIndex
+  def index_for(Image), do: Images.SearchIndex
+  def index_for(Post), do: Posts.SearchIndex
+  def index_for(Report), do: Reports.SearchIndex
+  def index_for(Tag), do: Tags.SearchIndex
+  def index_for(TagChange), do: TagChanges.SearchIndex
+  def index_for(Filter), do: Filters.SearchIndex
 
   @doc """
   Return the path used to interact with the search engine.

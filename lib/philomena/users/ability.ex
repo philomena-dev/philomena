@@ -2,6 +2,7 @@
 defimpl Canada.Can, for: Philomena.Users.User do
   alias Philomena.Users.User
   alias Philomena.Roles.Role
+  alias Philomena.Bans
   alias Philomena.Badges.Award
   alias Philomena.Badges.Badge
   alias Philomena.Channels.Channel
@@ -27,10 +28,6 @@ defimpl Canada.Can, for: Philomena.Users.User do
   alias Philomena.SiteNotices.SiteNotice
   alias Philomena.ModerationLogs.ModerationLog
   alias Philomena.UserNameChanges.UserNameChange
-
-  alias Philomena.Bans.User, as: UserBan
-  alias Philomena.Bans.Subnet, as: SubnetBan
-  alias Philomena.Bans.Fingerprint, as: FingerprintBan
 
   # Admins can do anything
   def can?(%User{role: "admin"}, _action, _model), do: true
@@ -112,9 +109,9 @@ defimpl Canada.Can, for: Philomena.Users.User do
   def can?(%User{role: "moderator"}, _action, %DnpEntry{}), do: true
 
   # Create bans
-  def can?(%User{role: "moderator"}, _action, UserBan), do: true
-  def can?(%User{role: "moderator"}, _action, SubnetBan), do: true
-  def can?(%User{role: "moderator"}, _action, FingerprintBan), do: true
+  def can?(%User{role: "moderator"}, _action, Bans.User), do: true
+  def can?(%User{role: "moderator"}, _action, Bans.Subnet), do: true
+  def can?(%User{role: "moderator"}, _action, Bans.Fingerprint), do: true
 
   # Hide topics
   def can?(%User{role: "moderator"}, :show, %Topic{}), do: true

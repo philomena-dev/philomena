@@ -2,19 +2,18 @@ defmodule PhilomenaWeb.Admin.UserBanController do
   use PhilomenaWeb, :controller
 
   alias Philomena.Users
-  alias Philomena.Bans.User, as: UserBan
   alias Philomena.Bans
   alias Philomena.Repo
   import Ecto.Query
 
   plug :verify_authorized
-  plug :load_resource, model: UserBan, only: [:edit, :update, :delete], preload: :user
+  plug :load_resource, model: Bans.User, only: [:edit, :update, :delete], preload: :user
   plug :check_can_delete when action in [:delete]
 
   def index(conn, %{"bq" => q}) when is_binary(q) do
     like_q = "%#{q}%"
 
-    UserBan
+    Bans.User
     |> join(:inner, [ub], _ in assoc(ub, :user))
     |> where(
       [ub, u],
@@ -27,13 +26,13 @@ defmodule PhilomenaWeb.Admin.UserBanController do
   end
 
   def index(conn, %{"user_id" => user_id}) when is_binary(user_id) do
-    UserBan
+    Bans.User
     |> where(user_id: ^user_id)
     |> load_bans(conn)
   end
 
   def index(conn, _params) do
-    load_bans(UserBan, conn)
+    load_bans(Bans.User, conn)
   end
 
   def new(conn, %{"user_id" => id}) do
@@ -108,7 +107,7 @@ defmodule PhilomenaWeb.Admin.UserBanController do
   end
 
   defp verify_authorized(conn, _opts) do
-    if Canada.Can.can?(conn.assigns.current_user, :index, UserBan) do
+    if Canada.Can.can?(conn.assigns.current_user, :index, Bans.User) do
       conn
     else
       PhilomenaWeb.NotAuthorizedPlug.call(conn)
