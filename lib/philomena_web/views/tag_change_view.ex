@@ -9,8 +9,8 @@ defmodule PhilomenaWeb.TagChangeView do
     |> scope(conn, "tcq", :tcq)
     |> scope(conn, "sf", :sf)
     |> scope(conn, "sd", :sd)
-    |> scope(conn, "thing", :thing)
-    |> scope(conn, "value", :value)
+    |> scope(conn, "resource_type", :resource_type)
+    |> scope(conn, "resource_id", :resource_id)
   end
 
   defp scope(list, conn, key, key_atom) do

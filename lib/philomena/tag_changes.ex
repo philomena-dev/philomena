@@ -240,10 +240,6 @@ defmodule Philomena.TagChanges do
   """
   def delete_tag_change(%TagChange{} = tag_change) do
     case Repo.delete(tag_change) do
-      %TagChange{} = tc ->
-        Search.delete_document(tc.id, TagChange)
-        tc
-
       {:ok, %TagChange{} = tc} = result ->
         Search.delete_document(tc.id, TagChange)
         result

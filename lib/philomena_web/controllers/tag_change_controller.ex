@@ -20,8 +20,8 @@ defmodule PhilomenaWeb.TagChangeController do
     render(conn, "index.html",
       title: "Tag Changes",
       tag_changes: tag_changes,
-      thing: params["thing"],
-      thing_value: params["value"]
+      resource_type: params["resource_type"],
+      resource_id: params["resource_id"]
     )
   end
 
