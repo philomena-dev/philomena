@@ -4,7 +4,7 @@
 = if @resource_type != nil and @resource_id != nil do
   h1
     ' Showing tag changes for
-    = link_to_thing(@resource_type, @resource_id)
+    = link_to_resource(@resource_type, @resource_id)
 - else
   h1 Tag Changes
 
