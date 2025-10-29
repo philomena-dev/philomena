@@ -134,8 +134,6 @@ describe('Image upload form', () => {
     expect(fetchButton.disabled).toBe(true);
   });
 
-
-
   it('should create a preview element when an image file is uploaded', () => {
     fireEvent.change(fileField, { target: { files: [mockPng] } });
     return waitFor(() => {
@@ -189,8 +187,6 @@ describe('Image upload form', () => {
     const succeededUnloadEvent = new Event('beforeunload', { cancelable: true });
     expect(fireEvent(window, succeededUnloadEvent)).toBe(true);
   });
-
-
 
   it('should not add author tag when author_name is missing', async () => {
     const response = {
@@ -357,10 +353,6 @@ describe('Image upload form', () => {
     expect(submitted).toBe(true);
   });
 
-
-
-
-
   it('should return early from disableUploadButton if submitButton not disabled on pagehide', async () => {
     // Set valid tags
     taginputEl.innerText = 'safe, two, three';
@@ -433,8 +425,6 @@ describe('Image upload form', () => {
     expect(submitted).toBe(true);
   });
 
-
-
   it('should not set source/description if elements are missing', async () => {
     fetchMock.mockResolvedValue(new Response(JSON.stringify(scrapeResponse), { status: 200 }));
 
@@ -452,10 +442,6 @@ describe('Image upload form', () => {
 
     // Should not crash even though elements are missing
   });
-
-
-
-
 
   it('should clear file field after successful scrape', async () => {
     fetchMock.mockResolvedValue(new Response(JSON.stringify(scrapeResponse), { status: 200 }));
