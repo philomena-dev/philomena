@@ -78,7 +78,7 @@ services:
     attach: false
 
   opensearch:
-    image: opensearchproject/opensearch:3.3.0
+    image: opensearchproject/opensearch:3.3.1
     volumes:
       - opensearch_data:/usr/share/opensearch/data
       - ./docker/opensearch/opensearch.yml:/usr/share/opensearch/config/opensearch.yml
@@ -89,7 +89,7 @@ services:
         hard: 65536
 
   valkey:
-    image: valkey/valkey:8.1.4-alpine
+    image: valkey/valkey:9.0.0-alpine
     attach: false
 
   files:
