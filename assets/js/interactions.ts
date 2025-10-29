@@ -2,7 +2,7 @@
  * Interactions.
  */
 
-import { Interaction, InteractionType, InteractionValue } from '../types/booru-object';
+import { Interaction, InteractionType, InteractionValue } from './booru';
 import { fetchJson, HttpMethod } from './utils/requests';
 import { $, $$, onLeftClick } from './utils/dom';
 

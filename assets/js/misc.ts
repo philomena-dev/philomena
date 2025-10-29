@@ -5,7 +5,6 @@
 import store from './utils/store';
 import { $, $$, hideEl, showEl } from './utils/dom';
 import { assertNotNull, assertType } from './utils/assert';
-import '../types/ujs';
 
 let touchMoved = false;
 

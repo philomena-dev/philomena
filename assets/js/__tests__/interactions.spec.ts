@@ -1,6 +1,6 @@
 import { fireEvent } from '@testing-library/dom';
 import { $ } from '../utils/dom';
-import type { BooruObject } from '../../types/booru-object';
+import type { BooruObject } from '../booru';
 import type { AstMatcher } from '../query/types';
 
 vi.mock('../utils/requests', () => ({
@@ -125,13 +125,12 @@ describe('interactions', () => {
     setupDom();
 
     // server interactions
-    /* eslint-disable camelcase */
+
     const serverInteractions: InteractionLike[] = [
       { image_id: 42, interaction_type: 'voted', value: 'up' } as unknown as InteractionLike,
       { image_id: '42', interaction_type: 'hidden' } as unknown as InteractionLike,
       { image_id: 42, interaction_type: 'faved' } as unknown as InteractionLike,
     ];
-    /* eslint-enable camelcase */
 
     displayInteractionSet(serverInteractions);
 
@@ -257,10 +256,7 @@ describe('interactions', () => {
     const downvote = $('a.interaction--downvote')!;
 
     // voted with empty value should not alter classes
-    displayInteractionSet([
-      // eslint-disable-next-line camelcase
-      { image_id: '42', interaction_type: 'voted', value: '' } as unknown as InteractionLike,
-    ]);
+    displayInteractionSet([{ image_id: '42', interaction_type: 'voted', value: '' } as unknown as InteractionLike]);
 
     expect(upvote.classList.contains('active')).toBe(false);
     expect(downvote.classList.contains('active')).toBe(false);
@@ -282,9 +278,9 @@ describe('interactions', () => {
   it('displayInteractionSet applies downvoted class from server interaction', () => {
     setWindowBooru({ signedIn: true });
     setupDom();
-    /* eslint-disable camelcase */
+
     displayInteractionSet([{ image_id: '42', interaction_type: 'voted', value: 'down' } as unknown as InteractionLike]);
-    /* eslint-enable camelcase */
+
     expect($('.interaction--downvote')!.classList.contains('active')).toBe(true);
   });
 
