@@ -171,7 +171,7 @@ describe('preview.ts setupPreviews', () => {
 
     setupPreviews();
 
-    const inner = container.querySelector('.inner')!;
+    const inner = $<HTMLSpanElement>('.inner', container)!;
     fireEvent.click(inner);
 
     expect(textarea.value).toMatch(/\[User\]\(\/u\/test\)\n> quote\n> more\n\n$/);
@@ -294,7 +294,7 @@ describe('preview.ts setupPreviews', () => {
 
     setupPreviews();
 
-    const inner = container.querySelector('.inner')!;
+    const inner = $<HTMLSpanElement>('.inner', container)!;
     fireEvent.click(inner);
 
     expect(clickSpy).not.toHaveBeenCalled();
@@ -317,7 +317,7 @@ describe('preview.ts setupPreviews', () => {
 
     setupPreviews();
 
-    const inner = container.querySelector('.inner')!;
+    const inner = $<HTMLSpanElement>('.inner', container)!;
     fireEvent.click(inner);
 
     // Only the user link line and trailing newline
@@ -364,7 +364,7 @@ describe('preview.ts setupPreviews', () => {
 
     setupPreviews();
 
-    const inner = container.querySelector('.inner')!;
+    const inner = $<HTMLSpanElement>('.inner', container)!;
     fireEvent.click(inner);
 
     // Falls back to empty author and href, and no quote

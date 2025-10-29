@@ -19,6 +19,7 @@ import { showBlock } from '../utils/image';
 import { fetchHtml } from '../utils/requests';
 import { addTag } from '../tagsinput';
 import { registerEvents } from '../boorujs';
+import { $, $$ } from '../utils/dom';
 
 describe('boorujs', () => {
   beforeEach(() => {
@@ -36,8 +37,8 @@ describe('boorujs', () => {
         <button data-click-hide=".target">Hide</button>
         <div class="target">Content</div>
       `;
-      const button = document.querySelector('button')!;
-      const target = document.querySelector('.target')!;
+      const button = $<HTMLButtonElement>('button')!;
+      const target = $<HTMLDivElement>('.target')!;
 
       // Right click (button 2)
       fireEvent.click(button, { button: 2 });
@@ -52,8 +53,8 @@ describe('boorujs', () => {
         <div class="target">Content</div>
       `;
 
-      const button = document.querySelector('button')!;
-      const target = document.querySelector('.target')!;
+      const button = $<HTMLButtonElement>('button')!;
+      const target = $<HTMLDivElement>('.target')!;
 
       fireEvent.click(button);
 
@@ -66,8 +67,8 @@ describe('boorujs', () => {
         <div class="target hidden">Content</div>
       `;
 
-      const button = document.querySelector('button')!;
-      const target = document.querySelector('.target')!;
+      const button = $<HTMLButtonElement>('button')!;
+      const target = $<HTMLDivElement>('.target')!;
 
       fireEvent.click(button);
 
@@ -80,8 +81,8 @@ describe('boorujs', () => {
         <div class="target">Content</div>
       `;
 
-      const button = document.querySelector('button')!;
-      const target = document.querySelector('.target')!;
+      const button = $<HTMLButtonElement>('button')!;
+      const target = $<HTMLDivElement>('.target')!;
 
       fireEvent.click(button);
       expect(target.classList.contains('hidden')).toBe(true);
@@ -96,8 +97,8 @@ describe('boorujs', () => {
         <form id="myform"></form>
       `;
 
-      const button = document.querySelector('button')!;
-      const form = document.querySelector('form')!;
+      const button = $<HTMLButtonElement>('button')!;
+      const form = $<HTMLFormElement>('form')!;
       let submitted = false;
       form.addEventListener('submit', () => {
         submitted = true;
@@ -114,7 +115,7 @@ describe('boorujs', () => {
         <div class="target"></div>
       `;
 
-      const button = document.querySelector('button')!;
+      const button = $<HTMLButtonElement>('button')!;
 
       // Should not throw error
       expect(() => fireEvent.click(button)).not.toThrow();
@@ -126,8 +127,8 @@ describe('boorujs', () => {
         <input class="target" type="text">
       `;
 
-      const button = document.querySelector('[data-click-disable]')!;
-      const target = document.querySelector<HTMLInputElement>('.target')!;
+      const button = $<HTMLButtonElement>('[data-click-disable]')!;
+      const target = $<HTMLInputElement>('.target')!;
 
       fireEvent.click(button);
 
@@ -140,7 +141,7 @@ describe('boorujs', () => {
         <div class="target">Cannot disable</div>
       `;
 
-      const button = document.querySelector('[data-click-disable]')!;
+      const button = $<HTMLButtonElement>('[data-click-disable]')!;
 
       // Should not throw error
       expect(() => fireEvent.click(button)).not.toThrow();
@@ -152,8 +153,8 @@ describe('boorujs', () => {
         <input id="target" type="text">
       `;
 
-      const button = document.querySelector('button')!;
-      const target = document.querySelector<HTMLInputElement>('#target')!;
+      const button = $<HTMLButtonElement>('button')!;
+      const target = $<HTMLInputElement>('#target')!;
 
       fireEvent.click(button);
 
@@ -165,7 +166,7 @@ describe('boorujs', () => {
         <button data-click-focus="#target">Focus</button>
       `;
 
-      const button = document.querySelector('button')!;
+      const button = $<HTMLButtonElement>('button')!;
 
       // Should not throw error
       expect(() => fireEvent.click(button)).not.toThrow();
@@ -180,8 +181,8 @@ describe('boorujs', () => {
         </div>
       `;
 
-      const button = document.querySelector('button')!;
-      const parent = document.querySelector('.parent')!;
+      const button = $<HTMLButtonElement>('button')!;
+      const parent = $<HTMLDivElement>('.parent')!;
 
       fireEvent.click(button);
 
@@ -195,8 +196,8 @@ describe('boorujs', () => {
         </div>
       `;
 
-      const button = document.querySelector('button')!;
-      const wrapper = document.querySelector('.wrapper')!;
+      const button = $<HTMLButtonElement>('button')!;
+      const wrapper = $<HTMLDivElement>('.wrapper')!;
 
       fireEvent.click(button);
 
@@ -210,7 +211,7 @@ describe('boorujs', () => {
         <a href="/test" data-click-preventdefault="true">Link</a>
       `;
 
-      const link = document.querySelector('a')!;
+      const link = $<HTMLAnchorElement>('a')!;
 
       const ev = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 });
       const prevented = link.dispatchEvent(ev);
@@ -225,8 +226,8 @@ describe('boorujs', () => {
         <input id="input" type="text" value="old value">
       `;
 
-      const button = document.querySelector('button')!;
-      const input = document.querySelector<HTMLInputElement>('#input')!;
+      const button = $<HTMLButtonElement>('button')!;
+      const input = $<HTMLInputElement>('#input')!;
 
       fireEvent.click(button);
 
@@ -239,8 +240,8 @@ describe('boorujs', () => {
         <input id="input" type="text" value="old value">
       `;
 
-      const button = document.querySelector('button')!;
-      const input = document.querySelector<HTMLInputElement>('#input')!;
+      const button = $<HTMLButtonElement>('button')!;
+      const input = $<HTMLInputElement>('#input')!;
 
       fireEvent.click(button);
 
@@ -259,8 +260,8 @@ describe('boorujs', () => {
         </select>
       `;
 
-      const container = document.querySelector('[data-click-selectvalue]')!;
-      const select = document.querySelector<HTMLSelectElement>('#select')!;
+      const container = $<HTMLDivElement>('[data-click-selectvalue]')!;
+      const select = $<HTMLSelectElement>('#select')!;
 
       fireEvent.click(container);
 
@@ -279,8 +280,8 @@ describe('boorujs', () => {
         </select>
       `;
 
-      const container = document.querySelector('[data-click-selectvalue]')!;
-      const select = document.querySelector<HTMLSelectElement>('#select')!;
+      const container = $<HTMLDivElement>('[data-click-selectvalue]')!;
+      const select = $<HTMLSelectElement>('#select')!;
 
       const originalValue = select.value;
       fireEvent.click(container);
@@ -298,8 +299,8 @@ describe('boorujs', () => {
         </div>
       `;
 
-      const button = document.querySelector('button')!;
-      const checkboxes = Array.from(document.querySelectorAll<HTMLInputElement>('.container input[type=checkbox]'));
+      const button = $<HTMLButtonElement>('button')!;
+      const checkboxes = $$<HTMLInputElement>('.container input[type=checkbox]');
 
       fireEvent.click(button);
 
@@ -315,8 +316,8 @@ describe('boorujs', () => {
         </div>
       `;
 
-      const button = document.querySelector('button')!;
-      const container = document.querySelector('.image-show-container')! as HTMLDivElement;
+      const button = $<HTMLButtonElement>('button')!;
+      const container = $<HTMLDivElement>('.image-show-container')!;
 
       fireEvent.click(button);
 
@@ -330,7 +331,7 @@ describe('boorujs', () => {
         <button data-click-unfilter>Show Image</button>
       `;
 
-      const button = document.querySelector('button')!;
+      const button = $<HTMLButtonElement>('button')!;
 
       // Should not throw error
       expect(() => fireEvent.click(button)).not.toThrow();
@@ -344,9 +345,9 @@ describe('boorujs', () => {
         <textarea id="tag-input"></textarea>
       `;
 
-      const button = document.querySelector('button')!;
+      const button = $<HTMLButtonElement>('button')!;
 
-      const target = document.querySelector<HTMLTextAreaElement>('#tag-input')!;
+      const target = $<HTMLTextAreaElement>('#tag-input')!;
 
       fireEvent.click(button);
 
@@ -362,8 +363,8 @@ describe('boorujs', () => {
         <input id="tag-input" type="text" value="">
       `;
 
-      const button = document.querySelector('button')!;
-      const input = document.querySelector<HTMLInputElement>('#tag-input')!;
+      const button = $<HTMLButtonElement>('button')!;
+      const input = $<HTMLInputElement>('#tag-input')!;
 
       fireEvent.click(button);
 
@@ -379,7 +380,7 @@ describe('boorujs', () => {
         </div>
       `;
 
-      const button = document.querySelector('button')!;
+      const button = $<HTMLButtonElement>('button')!;
       fireEvent.click(button);
 
       expect(addTag).not.toHaveBeenCalled();
@@ -397,10 +398,10 @@ describe('boorujs', () => {
         </div>
       `;
 
-      const tab1Link = document.querySelector('[data-click-tab="tab1"]')!;
-      const tab2Link = document.querySelector('[data-click-tab="tab2"]')!;
-      const tab1Content = document.querySelector('[data-tab="tab1"]')!;
-      const tab2Content = document.querySelector('[data-tab="tab2"]')!;
+      const tab1Link = $<HTMLAnchorElement>('[data-click-tab="tab1"]')!;
+      const tab2Link = $<HTMLAnchorElement>('[data-click-tab="tab2"]')!;
+      const tab1Content = $<HTMLDivElement>('[data-tab="tab1"]')!;
+      const tab2Content = $<HTMLDivElement>('[data-tab="tab2"]')!;
 
       fireEvent.click(tab2Link);
 
@@ -426,12 +427,12 @@ describe('boorujs', () => {
         </div>
       `;
 
-      const tab1Link = document.querySelector('[data-click-tab="tab1"]')!;
-      const tab2Content = document.querySelector('[data-tab="tab2"]')!;
-      const tab1Content = document.querySelector('[data-tab="tab1"]')!;
+      const tab1Link = $<HTMLAnchorElement>('[data-click-tab="tab1"]')!;
+      const tab2Content = $<HTMLDivElement>('[data-tab="tab2"]')!;
+      const tab1Content = $<HTMLDivElement>('[data-tab="tab1"]')!;
 
       // Ensure no tab is preselected
-      expect(document.querySelector('.selected')).toBeNull();
+      expect($('.selected')).toBeNull();
 
       fireEvent.click(tab1Link);
 
@@ -472,11 +473,11 @@ describe('boorujs', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (document as any).execCommand = vi.fn().mockReturnValue(true);
 
-      const input = document.querySelector<HTMLInputElement>('#copytext')!;
+      const input = $<HTMLInputElement>('#copytext')!;
       // Spy on select to ensure it's called
       input.select = vi.fn();
 
-      const button = document.querySelector('button')!;
+      const button = $<HTMLButtonElement>('button')!;
       fireEvent.click(button);
 
       expect(input.select).toHaveBeenCalledTimes(1);
@@ -494,7 +495,7 @@ describe('boorujs', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (document as any).execCommand = vi.fn().mockReturnValue(true);
 
-      const button = document.querySelector('button')!;
+      const button = $<HTMLButtonElement>('button')!;
       expect(() => fireEvent.click(button)).not.toThrow();
       expect((document as Document & { execCommand: (cmd: string) => boolean }).execCommand).not.toHaveBeenCalled();
     });
@@ -530,8 +531,8 @@ describe('boorujs', () => {
         </div>
       `;
 
-      const tab2Link = document.querySelector('[data-click-tab="tab2"]')!;
-      const tab2Content = document.querySelector<HTMLElement>('[data-tab="tab2"]')!;
+      const tab2Link = $<HTMLAnchorElement>('[data-click-tab="tab2"]')!;
+      const tab2Content = $<HTMLElement>('[data-tab="tab2"]')!;
 
       fireEvent.click(tab2Link);
 
@@ -569,8 +570,8 @@ describe('boorujs', () => {
         new Error('boom'),
       );
 
-      const tab2Link = document.querySelector('[data-click-tab="tab2"]')!;
-      const tab2Content = document.querySelector<HTMLElement>('[data-tab="tab2"]')!;
+      const tab2Link = $<HTMLAnchorElement>('[data-click-tab="tab2"]')!;
+      const tab2Content = $<HTMLElement>('[data-tab="tab2"]')!;
 
       fireEvent.click(tab2Link);
 
@@ -596,8 +597,8 @@ describe('boorujs', () => {
         <div class="target">Content</div>
       `;
 
-      const select = document.querySelector('select')!;
-      const target = document.querySelector('.target')!;
+      const select = $<HTMLSelectElement>('select')!;
+      const target = $<HTMLDivElement>('.target')!;
 
       fireEvent.change(select);
 
@@ -610,8 +611,8 @@ describe('boorujs', () => {
         <div class="target hidden">Content</div>
       `;
 
-      const checkbox = document.querySelector('input')!;
-      const target = document.querySelector('.target')!;
+      const checkbox = $<HTMLInputElement>('input')!;
+      const target = $<HTMLDivElement>('.target')!;
 
       fireEvent.change(checkbox);
 
@@ -631,8 +632,8 @@ describe('boorujs', () => {
         </div>
       `;
 
-      const container = document.querySelector('[data-fetchcomplete-hide]')!;
-      const target = document.querySelector('.target')!;
+      const container = $<HTMLDivElement>('[data-fetchcomplete-hide]')!;
+      const target = $<HTMLDivElement>('.target')!;
 
       const event = new CustomEvent('fetchcomplete', {
         bubbles: true,
@@ -653,8 +654,8 @@ describe('boorujs', () => {
         </div>
       `;
 
-      const container = document.querySelector('[data-fetchcomplete-show]')!;
-      const target = document.querySelector('.target')!;
+      const container = $<HTMLDivElement>('[data-fetchcomplete-show]')!;
+      const target = $<HTMLDivElement>('.target')!;
 
       const event = new CustomEvent('fetchcomplete', {
         bubbles: true,

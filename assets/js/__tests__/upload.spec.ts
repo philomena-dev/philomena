@@ -138,20 +138,20 @@ describe('Image upload form', () => {
     fireEvent.change(fileField, { target: { files: [mockPng] } });
     return waitFor(() => {
       assertFetchButtonIsDisabled();
-      expect(imgPreviews.querySelectorAll('img')).toHaveLength(1);
+      expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(1);
     });
   });
 
   it('should ignore file change when no files are provided', async () => {
     // Ensure previews are empty initially
-    expect(imgPreviews.querySelectorAll('img,video')).toHaveLength(0);
+    expect($$<HTMLElement>('img,video', imgPreviews)).toHaveLength(0);
 
     // Trigger change with empty files array
     fireEvent.change(fileField, { target: { files: [] } });
 
     // Nothing should be rendered
     await waitFor(() => {
-      expect(imgPreviews.querySelectorAll('img,video')).toHaveLength(0);
+      expect($$<HTMLElement>('img,video', imgPreviews)).toHaveLength(0);
     });
   });
 
@@ -159,7 +159,7 @@ describe('Image upload form', () => {
     fireEvent.change(fileField, { target: { files: [mockWebm] } });
     return waitFor(() => {
       assertFetchButtonIsDisabled();
-      expect(imgPreviews.querySelectorAll('video')).toHaveLength(1);
+      expect($$<HTMLVideoElement>('video', imgPreviews)).toHaveLength(1);
     });
   });
 
@@ -170,7 +170,7 @@ describe('Image upload form', () => {
     fireEvent.change(fileField, { target: { files: [mockPng] } });
     await waitFor(() => {
       assertFetchButtonIsDisabled();
-      expect(imgPreviews.querySelectorAll('img')).toHaveLength(1);
+      expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(1);
     });
 
     const failedUnloadEvent = new Event('beforeunload', { cancelable: true });
@@ -209,7 +209,7 @@ describe('Image upload form', () => {
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(1);
-      expect(imgPreviews.querySelectorAll('img')).toHaveLength(2);
+      expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(2);
     });
 
     expect(addTagListener).not.toHaveBeenCalled();
@@ -223,7 +223,7 @@ describe('Image upload form', () => {
 
     return waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(1);
-      expect(imgPreviews.querySelectorAll('img')).toHaveLength(0);
+      expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(0);
       expect(scraperError.innerText).toEqual('No image found at that address.');
     });
   });
@@ -236,7 +236,7 @@ describe('Image upload form', () => {
 
     return waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(1);
-      expect(imgPreviews.querySelectorAll('img')).toHaveLength(0);
+      expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(0);
       expect(scraperError.innerText).toEqual('Error 1 Error 2');
     });
   });
@@ -263,7 +263,7 @@ describe('Image upload form', () => {
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(1);
-      expect(imgPreviews.querySelectorAll('img')).toHaveLength(2);
+      expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(2);
       // Fallback branch should evaluate to '' for both assignments
       expect(sourceEl.value).toBe('');
       expect(descrEl.value).toBe('');
@@ -281,7 +281,7 @@ describe('Image upload form', () => {
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(1);
       // On error we clear previews and show error element, and re-enable fetch
-      expect(imgPreviews.querySelectorAll('img,video')).toHaveLength(0);
+      expect($$<HTMLElement>('img,video', imgPreviews)).toHaveLength(0);
       expect(fetchButton.disabled).toBe(false);
       // The error element should be visible (hidden class removed)
       expect(scraperError.classList.contains('hidden')).toBe(false);
@@ -320,7 +320,7 @@ describe('Image upload form', () => {
         const frm = form;
         await waitFor(() => {
           assertSubmitButtonIsEnabled();
-          expect(frm.querySelectorAll('.help-block')).toHaveLength(tagErrorCounts[i]);
+          expect($$<HTMLDivElement>('.help-block', frm)).toHaveLength(tagErrorCounts[i]);
         });
       }
     }
@@ -338,7 +338,7 @@ describe('Image upload form', () => {
     fireEvent.submit(form);
 
     // Should not crash and no errors should be created
-    expect(form.querySelectorAll('.help-block')).toHaveLength(0);
+    expect($$<HTMLDivElement>('.help-block', form)).toHaveLength(0);
   });
 
   it('should not disable upload button if button is not found', async () => {
@@ -437,7 +437,7 @@ describe('Image upload form', () => {
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(1);
-      expect(imgPreviews.querySelectorAll('img')).toHaveLength(2);
+      expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(2);
     });
 
     // Should not crash even though elements are missing
@@ -449,7 +449,7 @@ describe('Image upload form', () => {
     // First add a file
     fireEvent.change(fileField, { target: { files: [mockPng] } });
     await waitFor(() => {
-      expect(imgPreviews.querySelectorAll('img')).toHaveLength(1);
+      expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(1);
     });
 
     // Then scrape
@@ -458,7 +458,7 @@ describe('Image upload form', () => {
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(1);
-      expect(imgPreviews.querySelectorAll('img')).toHaveLength(2);
+      expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(2);
       expect(fileField.value).toBe('');
     });
   });
@@ -584,7 +584,7 @@ describe('Image upload form - additional branches', () => {
     // No network call and no previews created
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(0);
-      expect(imgPreviews.querySelectorAll('img,video')).toHaveLength(0);
+      expect($$<HTMLElement>('img,video', imgPreviews)).toHaveLength(0);
       expect(fetchButton.disabled).toBe(true);
     });
   });
@@ -617,7 +617,7 @@ describe('Image upload form - additional branches', () => {
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(0);
-      expect(imgPreviews.querySelectorAll('img,video')).toHaveLength(0);
+      expect($$<HTMLElement>('img,video', imgPreviews)).toHaveLength(0);
     });
   });
 
@@ -651,7 +651,7 @@ describe('Image upload form - additional branches', () => {
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(1);
-      expect(imgPreviews.querySelectorAll('img')).toHaveLength(2);
+      expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(2);
       // Values should remain untouched
       expect(sourceEl.value).toBe('already set');
       expect(descrEl.value).toBe('keep me');
@@ -728,7 +728,7 @@ describe('Image upload form - synthetic FileReader', () => {
 
     // No previews should be created because the fake reader provided no result
     await waitFor(() => {
-      expect(imgPreviews.querySelectorAll('img,video')).toHaveLength(0);
+      expect($$<HTMLElement>('img,video', imgPreviews)).toHaveLength(0);
       // Button remains disabled because remoteUrl is empty
       expect(fetchButton.disabled).toBe(true);
       expect(remoteUrl.value).toBe('');

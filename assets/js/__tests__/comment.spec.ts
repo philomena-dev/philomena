@@ -110,11 +110,11 @@ describe('comment.ts setupComments', () => {
 
     setupComments();
 
-    const link = document.querySelector('a.active_reply_link')!;
+    const link = $<HTMLAnchorElement>('a.active_reply_link')!;
     fireEvent.click(link);
 
     // fetched-comment should be removed (sibling before full comment)
-    expect(comments.querySelector('.fetched-comment')).toBeNull();
+    expect($('.fetched-comment', comments)).toBeNull();
   });
 
   it('handles comment post completion via fetchcomplete event', async () => {
@@ -200,7 +200,7 @@ describe('comment.ts setupComments', () => {
 
     setupComments();
 
-    const link = document.querySelector('.pagination a')!;
+    const link = $<HTMLAnchorElement>('.pagination a')!;
     const dispatched = fireEvent.click(link, { button: 0 });
     // default should be prevented by the delegated handler
     expect(dispatched).toBe(false);
@@ -264,7 +264,7 @@ describe('comment.ts setupComments', () => {
 
     await waitFor(() => {
       // inserted parent is marked as fetched and subthread
-      const fetched = comments.querySelector('article.block.fetched-comment') as HTMLElement | null;
+      const fetched = $<HTMLElement>('article.block.fetched-comment', comments);
       expect(fetched).toBeTruthy();
       expect(fetched!).toHaveClass('subthread');
       // clicked link becomes active
@@ -300,10 +300,11 @@ describe('comment.ts setupComments', () => {
     mockCommentsDom();
     const comments = $<HTMLDivElement>('#comments')!;
 
-    // Remove the write tab link to cover the optional chaining false branch
-    const writeLink = document.querySelector('a[data-click-tab="write"]');
-    writeLink?.parentElement?.removeChild(writeLink);
+    setupComments();
 
+    // Remove the write tab link to cover the optional chaining false branch
+    const writeLink = $<HTMLAnchorElement>('a[data-click-tab="write"]');
+    writeLink?.parentElement?.removeChild(writeLink);
     mockFetchHtml('<div>posted</div>');
 
     setupComments();
@@ -379,7 +380,7 @@ describe('comment.ts setupComments', () => {
 
     await waitFor(() => {
       expect(fetchHtml).toHaveBeenCalledWith('/images/123/comments/456');
-      expect(comments.querySelector('.fetched-comment')).toBeTruthy();
+      expect($('.fetched-comment', comments)).toBeTruthy();
     });
   });
 });

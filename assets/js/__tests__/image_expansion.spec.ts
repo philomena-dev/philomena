@@ -1,6 +1,7 @@
 import { bindImageTarget, selectVersion, pickAndResize, ImageTargetElement } from '../image_expansion';
 import store from '../utils/store';
 import { fireEvent } from '@testing-library/dom';
+import { $ } from '../utils/dom';
 
 describe('image_expansion', () => {
   let originalClientWidth: number;
@@ -294,7 +295,7 @@ describe('image_expansion', () => {
 
       pickAndResize(elem);
 
-      const video = elem.querySelector('video');
+      const video = $<HTMLVideoElement>('video', elem);
       expect(video).not.toBeNull();
       expect(video?.className).toBe('image-scaled');
     });
@@ -308,7 +309,7 @@ describe('image_expansion', () => {
 
       pickAndResize(elem);
 
-      const video = elem.querySelector('video');
+      const video = $<HTMLVideoElement>('video', elem);
       expect(video).not.toBeNull();
       expect(video?.className).toBe('image-partscaled');
     });
