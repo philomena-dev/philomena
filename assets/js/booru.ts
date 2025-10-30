@@ -59,10 +59,6 @@ export interface BooruObject {
    */
   hiddenTagList: number[];
   /**
-   * Stores the URL of the default "tag blocked" image
-   */
-  hiddenTag: string;
-  /**
    * Stores the role assigned to the user.
    */
   userRole: UserRole | undefined;
@@ -80,7 +76,6 @@ export interface BooruObject {
    * AST matcher instance for filter spoilered query
    */
   spoileredFilter: AstMatcher;
-  tagsVersion: number;
   interactions: Interaction[];
   /**
    * Indicates whether sensitive staff-only info should be hidden or not.

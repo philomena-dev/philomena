@@ -20,13 +20,11 @@ describe('booru', () => {
       spoileredTagList: [],
       ignoredTagList: [],
       hiddenTagList: [],
-      hiddenTag: '/images/tagblocked.svg',
       userRole: undefined,
       userIsSignedIn: false,
       userCanEditFilter: false,
       hiddenFilter: (() => false) as AstMatcher,
       spoileredFilter: (() => false) as AstMatcher,
-      tagsVersion: 6,
       interactions: [],
       hideStaffTools: false,
       fancyTagUpload: false,
@@ -158,7 +156,6 @@ describe('booru', () => {
       expect(window.booru.userRole).toBe('admin');
       expect(window.booru.userIsSignedIn).toBe(true);
       expect(window.booru.userCanEditFilter).toBe(true);
-      expect(window.booru.tagsVersion).toBe(7);
       expect(window.booru.interactions).toEqual([{ image_id: 1, user_id: 1, interaction_type: 'voted', value: 'up' }]);
       expect(window.booru.hideStaffTools).toBe(false);
       expect(window.booru.fancyTagUpload).toBe(true);
