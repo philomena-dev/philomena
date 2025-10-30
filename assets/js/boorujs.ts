@@ -4,6 +4,7 @@
  * Apply event-based actions through data-* attributes. The attributes are structured like so: [data-event-action]
  */
 
+import { assertType } from './utils/assert';
 import { $, $$ } from './utils/dom';
 import { fetchHtml, handleError } from './utils/requests';
 import { showBlock } from './utils/image';
@@ -34,7 +35,7 @@ type Action = (data: ActionData) => unknown;
 // Event types and any qualifying conditions - return true to not run action
 const types: Record<EventType, EventQualifier> = {
   click(event) {
-    return (event as MouseEvent).button !== 0; /* Left-click only */
+    return assertType(event, MouseEvent).button !== 0; /* Left-click only */
   },
   change() {
     /* No qualifier */

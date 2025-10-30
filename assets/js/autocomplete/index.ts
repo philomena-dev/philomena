@@ -3,7 +3,7 @@ import * as history from './history';
 import { AutocompletableInput, TextInputElement } from './input';
 import {
   HistorySuggestionComponent,
-  ItemSelectedEvent,
+  ItemSelection,
   PropertySuggestionComponent,
   Suggestion,
   Suggestions,
@@ -17,6 +17,16 @@ import { DebouncedCache } from '../utils/debounced-cache';
 import store from '../utils/store';
 import { keys, normalizedKeyboardKey } from '../utils/keyboard';
 import { matchProperties } from './properties';
+
+declare global {
+  interface AutocompleteEvent extends CustomEvent<string> {
+    target: HTMLElement;
+  }
+
+  interface GlobalEventHandlersEventMap {
+    autocomplete: AutocompleteEvent;
+  }
+}
 
 type ActiveAutocomplete = Autocomplete & { input: AutocompletableInput };
 
@@ -346,7 +356,7 @@ class Autocomplete {
     element.setSelectionRange(selection.start, selection.end, selection.direction ?? undefined);
   }
 
-  confirmSuggestion({ suggestion, shiftKey, ctrlKey }: ItemSelectedEvent) {
+  confirmSuggestion({ suggestion, shiftKey, ctrlKey }: ItemSelection) {
     this.assertActive();
 
     this.updateInputWithSelectedValue(suggestion);

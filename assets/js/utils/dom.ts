@@ -24,38 +24,43 @@ export function $$<E extends Element = Element>(
   return [...elements];
 }
 
+function concat<E>(elements: (E | ConcatArray<E>)[]): E[] {
+  const empty: E[] = [];
+  return empty.concat(...elements);
+}
+
 export function showEl<E extends HTMLElement>(...elements: E[] | ConcatArray<E>[]) {
-  ([] as E[]).concat(...elements).forEach(el => el.classList.remove('hidden'));
+  concat(elements).forEach(el => el.classList.remove('hidden'));
 }
 
 export function hideEl<E extends HTMLElement>(...elements: E[] | ConcatArray<E>[]) {
-  ([] as E[]).concat(...elements).forEach(el => el.classList.add('hidden'));
+  concat(elements).forEach(el => el.classList.add('hidden'));
 }
 
 export function toggleEl<E extends HTMLElement>(...elements: E[] | ConcatArray<E>[]) {
-  ([] as E[]).concat(...elements).forEach(el => el.classList.toggle('hidden'));
+  concat(elements).forEach(el => el.classList.toggle('hidden'));
 }
 
 export function clearEl<E extends HTMLElement>(...elements: E[] | ConcatArray<E>[]) {
-  ([] as E[]).concat(...elements).forEach(el => {
+  concat(elements).forEach(el => {
     while (el.firstChild) el.removeChild(el.firstChild);
   });
 }
 
 export function disableEl<E extends PhilomenaInputElements>(...elements: E[] | ConcatArray<E>[]) {
-  ([] as E[]).concat(...elements).forEach(el => {
+  concat(elements).forEach(el => {
     el.disabled = true;
   });
 }
 
 export function enableEl<E extends PhilomenaInputElements>(...elements: E[] | ConcatArray<E>[]) {
-  ([] as E[]).concat(...elements).forEach(el => {
+  concat(elements).forEach(el => {
     el.disabled = false;
   });
 }
 
 export function removeEl<E extends HTMLElement>(...elements: E[] | ConcatArray<E>[]) {
-  ([] as E[]).concat(...elements).forEach(el => el.parentNode?.removeChild(el));
+  concat(elements).forEach(el => el.parentNode?.removeChild(el));
 }
 
 export function makeEl<Tag extends keyof HTMLElementTagNameMap>(

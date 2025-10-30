@@ -3,6 +3,7 @@
  */
 
 import { Interaction, InteractionType, InteractionValue } from './booru';
+import { assertString, assertType } from './utils/assert';
 import { fetchJson, HttpMethod } from './utils/requests';
 import { $, $$, onLeftClick } from './utils/dom';
 
@@ -241,11 +242,11 @@ function bindInteractions() {
   onLeftClick((event: MouseEvent) => {
     for (const target in targets) {
       /* Event delegation doesn't quite grab what we want here. */
-      const link = event.target && (event.target as HTMLElement).closest?.(target);
+      const link = event.target && assertType(event.target, HTMLElement).closest?.(target);
 
       if (link) {
         event.preventDefault();
-        targets[target]((link as HTMLElement).dataset.imageId as string);
+        targets[target](assertString(assertType(link, HTMLElement).dataset.imageId));
       }
     }
   });

@@ -1,14 +1,10 @@
 import { $, $$, clearEl } from './utils/dom';
 import store from './utils/store';
 
-interface ImageVersionDimensions {
-  small: [number, number];
-  medium: [number, number];
-  large: [number, number];
-}
-
-type ImageVersion = keyof ImageVersionDimensions | 'tall' | 'full';
+type ImageVersion = 'small' | 'medium' | 'large' | 'tall' | 'full';
 type ScaledState = 'true' | 'false' | 'partscaled';
+
+type ImageVersionDimensions = [ImageVersion, [number, number]];
 
 export interface ImageTargetElement extends HTMLElement {
   dataset: DOMStringMap & {
@@ -31,12 +27,12 @@ interface ImageUris {
   mp4?: string;
 }
 
-const imageVersions: ImageVersionDimensions = {
+const imageVersions: ImageVersionDimensions[] = [
   // [width, height]
-  small: [320, 240],
-  medium: [800, 600],
-  large: [1280, 1024],
-};
+  ['small', [320, 240]],
+  ['medium', [800, 600]],
+  ['large', [1280, 1024]],
+];
 
 /**
  * Picks the appropriate image version for a given width and height
@@ -64,9 +60,11 @@ export function selectVersion(
 
   // Find a version that is larger than the view in one/both axes
   // .find() is not supported in older browsers, using a loop
-  for (const [version, [versionWidth, versionHeight]] of Object.entries(imageVersions)) {
-    if (versionWidth > viewWidth || versionHeight > viewHeight) {
-      return version as ImageVersion;
+  for (const [version, [versionWidth, versionHeight]] of imageVersions) {
+    const maxWidth = Math.min(imageWidth, versionWidth);
+    const maxHeight = Math.min(imageHeight, versionHeight);
+    if (maxWidth > viewWidth || maxHeight > viewHeight) {
+      return version;
     }
   }
 

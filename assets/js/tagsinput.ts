@@ -2,6 +2,9 @@
  * Fancy tag editor.
  */
 
+// for AutocompleteEvent
+import './autocomplete/index';
+
 import { normalizedKeyboardKey, keys } from './utils/keyboard';
 import { assertNotNull, assertType } from './utils/assert';
 import { $, $$, clearEl, removeEl, showEl, hideEl, escapeCss, escapeHtml } from './utils/dom';
@@ -52,7 +55,7 @@ export function setupTagsInput(tagBlock: HTMLDivElement) {
   inputField.addEventListener('keydown', handleKeyEvent);
 
   // Respond to autocomplete form clicks
-  inputField.addEventListener('autocomplete', handleAutocomplete as EventListener);
+  inputField.addEventListener('autocomplete', handleAutocomplete);
 
   // Respond to Ctrl+Enter shortcut
   tagBlock.addEventListener('keydown', handleCtrlEnter);
@@ -67,7 +70,7 @@ export function setupTagsInput(tagBlock: HTMLDivElement) {
     importTags();
   }
 
-  function handleAutocomplete(event: CustomEvent<string>) {
+  function handleAutocomplete(event: AutocompleteEvent) {
     insertTag(event.detail);
     inputField.focus();
   }
