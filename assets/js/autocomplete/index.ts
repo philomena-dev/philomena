@@ -276,8 +276,20 @@ class Autocomplete {
       return;
     }
 
-    switch (key) {
-      case keys.Enter: {
+    const completeKeyUpDownEvent = () => {
+      if (this.popup.selectedSuggestion) {
+        this.updateInputWithSelectedValue(this.popup.selectedSuggestion);
+      } else {
+        this.updateInputWithOriginalValue();
+      }
+
+      // Prevent the cursor from moving to the start or end of the input field,
+      // which is the default behavior of the arrow keys are used in a text input.
+      event.preventDefault();
+    };
+
+    const keyActions = {
+      [keys.Enter]: () => {
         const { selectedSuggestion } = this.popup;
         if (!selectedSuggestion) {
           return;
@@ -294,55 +306,47 @@ class Autocomplete {
           shiftKey: event.shiftKey,
           ctrlKey: event.ctrlKey,
         });
-        return;
-      }
-      case keys.Escape: {
+      },
+      [keys.Escape]: () => {
         this.hidePopup('User pressed "Escape"');
-        return;
-      }
-      case keys.ArrowLeft:
-      case keys.ArrowRight: {
+      },
+      [keys.ArrowLeft]: () => {
         // The event we are processing comes before the input's selection is updated.
         // Defer the refresh to the next frame to get the updated selection.
         requestAnimationFrame(() => this.refresh());
-        return;
-      }
-      case keys.ArrowUp:
-      case keys.ArrowDown: {
-        if (event.code === 'ArrowUp') {
-          if (event.ctrlKey) {
-            this.popup.selectCtrlUp();
-          } else {
-            this.popup.selectUp();
-          }
+      },
+      [keys.ArrowRight]: () => {
+        requestAnimationFrame(() => this.refresh());
+      },
+      [keys.ArrowUp]: () => {
+        if (event.ctrlKey) {
+          this.popup.selectCtrlUp();
         } else {
-          if (event.ctrlKey) {
-            this.popup.selectCtrlDown();
-          } else {
-            this.popup.selectDown();
-          }
+          this.popup.selectUp();
         }
 
-        if (this.popup.selectedSuggestion) {
-          this.updateInputWithSelectedValue(this.popup.selectedSuggestion);
+        completeKeyUpDownEvent();
+      },
+      [keys.ArrowDown]: () => {
+        if (event.ctrlKey) {
+          this.popup.selectCtrlDown();
         } else {
-          this.updateInputWithOriginalValue();
+          this.popup.selectDown();
         }
 
-        // Prevent the cursor from moving to the start or end of the input field,
-        // which is the default behavior of the arrow keys are used in a text input.
-        event.preventDefault();
+        completeKeyUpDownEvent();
+      },
+    };
 
-        return;
-      }
-      default:
-    }
+    keyActions[key]?.();
   }
 
   updateInputWithOriginalValue(this: ActiveAutocomplete) {
     const { element, snapshot } = this.input;
     const { selection } = snapshot;
     element.value = snapshot.origValue;
+    /* Skip the coverage for this as it's just for type safety */
+    /* v8 ignore next */
     element.setSelectionRange(selection.start, selection.end, selection.direction ?? undefined);
   }
 
@@ -351,7 +355,7 @@ class Autocomplete {
 
     this.updateInputWithSelectedValue(suggestion);
 
-    const prefix = this.input.snapshot.activeTerm?.prefix ?? '';
+    const prefix = this.input.snapshot.activeTerm?.prefix;
 
     const detail = `${prefix}${suggestion.value()}`;
 

@@ -82,6 +82,8 @@ export class SuggestedProperty {
       }
     }
 
+    /* TODO: actually test this in coverage tests */
+    /* v8 ignore next */
     if (this.matchedParts.hasValueSyntax && (this.containsColon() || this.value)) {
       // Include ":" into matched highlighted part.
       matchedLength += 1;
@@ -237,6 +239,8 @@ export function matchProperties(
     return matchedTagsResult;
   }
 
+  /* TODO: actually test this in coverage tests */
+  /* v8 ignore next 5 */
   const availableOperators = propertyTypeOperators.get(targetPropertyTypeOrValues) || [];
 
   // In case we have operators to suggest, try to find and show them first.

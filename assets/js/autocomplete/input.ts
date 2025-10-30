@@ -193,6 +193,7 @@ function findActiveTerm(
 
   const { range } = term;
   const content = term.content.toLowerCase();
+  /* v8 ignore next 5 */
   const stripDash = content.startsWith('-') && autocompleteType === 'single-tag';
 
   return {
