@@ -1,9 +1,9 @@
-import { bindImageTarget, selectVersion, pickAndResize, ImageTargetElement } from '../image_expansion';
+import { bindImageTarget, selectVersion, pickAndResize, ImageTargetElement } from '../image-expansion';
 import store from '../utils/store';
 import { fireEvent } from '@testing-library/dom';
 import { $ } from '../utils/dom';
 
-describe('image_expansion', () => {
+describe('image-expansion', () => {
   let originalClientWidth: number;
   let originalClientHeight: number;
   let originalDevicePixelRatio: number;

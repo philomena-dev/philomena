@@ -1,5 +1,5 @@
 import { filterNode, initImagesClientside } from '../imagesclientside';
-import { parseSearch } from '../match_query';
+import { parseSearch } from '../match-query';
 import { matchNone } from '../query/boolean';
 import { assertNotNull } from '../utils/assert';
 import { $ } from '../utils/dom';

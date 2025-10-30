@@ -1,5 +1,5 @@
 import { $ } from './utils/dom';
-import { parseSearch } from './match_query';
+import { parseSearch } from './match-query';
 import store from './utils/store';
 import { AstMatcher } from './query/types';
 

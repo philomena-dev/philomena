@@ -6,7 +6,7 @@ import { $ } from '../utils/dom';
 vi.mock('../utils/requests', () => ({
   fetchJson: vi.fn(),
 }));
-vi.mock('../image_expansion', () => ({
+vi.mock('../image-expansion', () => ({
   bindImageTarget: vi.fn(),
 }));
 vi.mock('../imagesclientside', () => ({
@@ -16,7 +16,7 @@ vi.mock('../imagesclientside', () => ({
 // Import after mocks so they receive mocked modules
 import { setupPreviews } from '../preview';
 import { fetchJson } from '../utils/requests';
-import { bindImageTarget } from '../image_expansion';
+import { bindImageTarget } from '../image-expansion';
 import { filterNode } from '../imagesclientside';
 
 fixEventListeners(document);

@@ -3,7 +3,7 @@
  */
 
 import { fetchJson } from './utils/requests';
-import { bindImageTarget } from './image_expansion';
+import { bindImageTarget } from './image-expansion';
 import { filterNode } from './imagesclientside';
 import { $, hideEl, showEl } from './utils/dom';
 import { assertType } from './utils/assert';

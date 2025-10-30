@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadBooruData, getTag, type TagData } from '../booru';
 import store from '../utils/store';
-import * as matchQuery from '../match_query';
+import * as matchQuery from '../match-query';
 import type { AstMatcher } from '../query/types';
 
 vi.mock('../utils/store');
-vi.mock('../match_query');
+vi.mock('../match-query');
 
 describe('booru', () => {
   beforeEach(() => {
