@@ -89,13 +89,27 @@ export function onLeftClick(
 }
 
 /**
- * Execute a function when the DOM is ready
+ * Execute one or more functions when the DOM is ready
  */
-export function whenReady(callback: VoidFunction): void {
+export function whenReady(...callbacks: VoidFunction[]): void {
+  const handler = () => {
+    for (const callback of callbacks) {
+      try {
+        callback();
+      } catch (err: unknown) {
+        console.log(`${callback.name} ran with errors.`);
+
+        if (err instanceof Error) {
+          console.log(`The error was:\n\n${err.message}`);
+        }
+      }
+    }
+  };
+
   if (document.readyState !== 'loading') {
-    callback();
+    handler();
   } else {
-    document.addEventListener('DOMContentLoaded', callback);
+    document.addEventListener('DOMContentLoaded', handler);
   }
 }
 

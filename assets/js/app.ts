@@ -36,7 +36,7 @@ import { pollOptionCreator } from './poll';
 import { warnAboutPMs } from './pmwarning';
 import { imageSourcesCreator } from './sources';
 
-const functions = [
+whenReady(
   loadBooruData,
   listenAutocomplete,
   registerEvents,
@@ -65,21 +65,7 @@ const functions = [
   pollOptionCreator,
   warnAboutPMs,
   imageSourcesCreator,
-];
-
-whenReady(() => {
-  functions.forEach(fn => {
-    try {
-      fn();
-    } catch (err: unknown) {
-      console.log(`${fn.name} ran with errors.`);
-
-      if (err instanceof Error) {
-        console.log(`The error was:\n\n${err.message}`);
-      }
-    }
-  });
-});
+);
 
 // When developing CSS, include the relevant CSS you're working on here
 // in order to enable HMR (live reload) on it.
