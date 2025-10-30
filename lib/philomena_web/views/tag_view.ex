@@ -2,9 +2,9 @@ defmodule PhilomenaWeb.TagView do
   use PhilomenaWeb, :view
 
   # this is bad practice, don't copy this.
-  alias Philomena.Config
   alias PhilomenaQuery.Search
   alias Philomena.Tags.Tag
+  alias Philomena.QuickTags
   alias Philomena.Repo
   alias PhilomenaWeb.ImageScope
   import Ecto.Query
@@ -32,20 +32,30 @@ defmodule PhilomenaWeb.TagView do
   end
 
   def quick_tags(conn) do
-    case Application.get_env(:philomena, :quick_tags) do
-      nil ->
-        quick_tags =
-          Config.get(:quick_tag_table)
-          |> lookup_quick_tags()
-          |> render_quick_tags(conn)
+    env_cache(:quick_tags, fn ->
+      {tabs_with_data, tag_names, shorthands} = QuickTags.build_quick_tag_structure()
 
-        Application.put_env(:philomena, :quick_tags, quick_tags)
+      # Look up tag objects
+      tags = tags_indexed_by_name(tag_names)
 
-        quick_tags
+      # Build shipping data with implied tags
+      tabs_with_shipping =
+        tabs_with_data
+        |> Enum.map(fn tab_data ->
+          if tab_data.mode == :shipping and tab_data.shippings != [] do
+            shipping_config = List.first(tab_data.shippings)
 
-      quick_tags ->
-        quick_tags
-    end
+            implied_tags =
+              implied_by_multitag(shipping_config.implying, shipping_config.not_implying)
+
+            Map.put(tab_data, :shipping_tags, implied_tags)
+          else
+            tab_data
+          end
+        end)
+
+      render_quick_tags({tabs_with_shipping, tags, shorthands}, conn)
+    end)
   end
 
   def tab_class(0), do: "selected"
@@ -85,31 +95,13 @@ defmodule PhilomenaWeb.TagView do
   defp title([]), do: nil
   defp title(descriptions), do: Enum.join(descriptions, "\n")
 
-  defp lookup_quick_tags(%{"tabs" => tabs, "tab_modes" => tab_modes} = data) do
-    tags =
-      tabs
-      |> Enum.flat_map(&names_in_tab(tab_modes[&1], data[&1]))
-      |> tags_indexed_by_name()
-
-    shipping =
-      tabs
-      |> Enum.filter(&(tab_modes[&1] == "shipping"))
-      |> Map.new(fn tab ->
-        sd = data[tab]
-
-        {tab, implied_by_multitag(sd["implying"], sd["not_implying"])}
-      end)
-
-    {tags, shipping, data}
-  end
-
   # This is a rendered template, so raw/1 has no effect on safety
   # sobelow_skip ["XSS.Raw"]
-  defp render_quick_tags({tags, shipping, data}, conn) do
+  defp render_quick_tags({tabs_with_data, tags, shorthands}, conn) do
     render(PhilomenaWeb.TagView, "_quick_tag_table.html",
+      tabs_with_data: tabs_with_data,
       tags: tags,
-      shipping: shipping,
-      data: data,
+      shorthands: shorthands,
       conn: conn
     )
     |> Phoenix.HTML.Safe.to_iodata()

@@ -1,5 +1,4 @@
 defmodule Philomena.Images.TagValidator do
-  alias Philomena.Config
   import Ecto.Changeset
 
   def validate_tags(changeset) do
@@ -26,8 +25,8 @@ defmodule Philomena.Images.TagValidator do
     rating_set = ratings(tag_set)
 
     changeset
-    |> validate_number_of_tags(tag_set, 3)
-    |> validate_bad_words(tag_set)
+    |> validate_number_of_tags(tag_set, Philomena.Configs.get("minimum_tags"))
+    |> validate_tag_validity(tags)
     |> validate_has_rating(rating_set)
     |> validate_safe(rating_set)
     |> validate_sexual_exclusion(rating_set)
@@ -56,15 +55,17 @@ defmodule Philomena.Images.TagValidator do
     end
   end
 
-  def validate_bad_words(changeset, tag_set) do
-    bad_words = MapSet.new(Config.get(:tag)["blacklist"])
-    intersection = MapSet.intersection(tag_set, bad_words)
+  def validate_tag_validity(changeset, tags) do
+    invalid_tags =
+      tags
+      |> Enum.filter(fn tag -> tag.invalid == true end)
+      |> Enum.map(& &1.name)
 
-    if MapSet.size(intersection) > 0 do
-      Enum.reduce(
-        intersection,
+    if Enum.any?(invalid_tags) do
+      add_error(
         changeset,
-        &add_error(&2, :tag_input, "contains forbidden tag `#{&1}'")
+        :tag_input,
+        "must not contain invalid tags (#{Enum.join(invalid_tags, ", ")})"
       )
     else
       changeset

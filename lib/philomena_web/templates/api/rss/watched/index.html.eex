@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <rss version="2.0">
   <channel>
-    <title>Derpibooru Watchlist</title>
-    <description>Your watched tags feed from Derpibooru</description>
+    <title><%= Philomena.Configs.get("site_name") %> Watchlist</title>
+    <description>Your watched tags feed from <%= Philomena.Configs.get("site_name") %></description>
     <link><%= url(~p"/api/v1/rss/watched") %></link>
     <lastBuildDate><%= last_build_date() %></lastBuildDate>
 

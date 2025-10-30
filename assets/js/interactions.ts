@@ -34,7 +34,7 @@ interface CacheRecord {
   value: InteractionValue;
 }
 
-const spoilerDownvoteMsg = 'Neigh! - Remove spoilered tags from your filters to downvote from thumbnails';
+const spoilerDownvoteMsg = 'Downvote - Remove spoilered tags from your filters to downvote from thumbnails';
 
 /**
  * Quick helper function to less verbosely iterate a QSA

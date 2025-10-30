@@ -243,7 +243,7 @@ describe('interactions', () => {
     setupInteractions();
 
     expect(downvote.classList.contains('disabled')).toBe(true);
-    expect(downvote.getAttribute('title')).toMatch('Neigh!');
+    expect(downvote.getAttribute('title')).toMatch('Downvote');
   });
 
   it('displayInteractionSet handles voted with no up/down value (no class changes)', () => {

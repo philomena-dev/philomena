@@ -87,6 +87,7 @@ defmodule Philomena.Tags.Tag do
     field :image_format, :string
     field :image_mime_type, :string
     field :mod_notes, :string
+    field :invalid, :boolean, default: false
 
     field :uploaded_image, :string, virtual: true
     field :removed_image, :string, virtual: true
