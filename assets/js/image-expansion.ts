@@ -1,7 +1,37 @@
-import { $$, clearEl } from './utils/dom';
+import { $, $$, clearEl } from './utils/dom';
 import store from './utils/store';
 
-const imageVersions = {
+interface ImageVersionDimensions {
+  small: [number, number];
+  medium: [number, number];
+  large: [number, number];
+}
+
+type ImageVersion = keyof ImageVersionDimensions | 'tall' | 'full';
+type ScaledState = 'true' | 'false' | 'partscaled';
+
+export interface ImageTargetElement extends HTMLElement {
+  dataset: DOMStringMap & {
+    width: string;
+    height: string;
+    imageSize: string;
+    mimeType: string;
+    scaled: ScaledState;
+    uris: string;
+  };
+}
+
+interface ImageUris {
+  small?: string;
+  medium?: string;
+  large?: string;
+  tall?: string;
+  full?: string;
+  webm?: string;
+  mp4?: string;
+}
+
+const imageVersions: ImageVersionDimensions = {
   // [width, height]
   small: [320, 240],
   medium: [800, 600],
@@ -12,12 +42,17 @@ const imageVersions = {
  * Picks the appropriate image version for a given width and height
  * of the viewport and the image dimensions.
  */
-function selectVersion(imageWidth, imageHeight, imageSize, imageMime) {
-  let viewWidth = document.documentElement.clientWidth,
-    viewHeight = document.documentElement.clientHeight;
+export function selectVersion(
+  imageWidth: number,
+  imageHeight: number,
+  imageSize: number,
+  imageMime: string,
+): ImageVersion {
+  let viewWidth = document.documentElement.clientWidth;
+  let viewHeight = document.documentElement.clientHeight;
 
   // load hires if that's what you asked for
-  if (store.get('serve_hidpi')) {
+  if (store.get<boolean>('serve_hidpi')) {
     viewWidth *= window.devicePixelRatio || 1;
     viewHeight *= window.devicePixelRatio || 1;
   }
@@ -29,13 +64,9 @@ function selectVersion(imageWidth, imageHeight, imageSize, imageMime) {
 
   // Find a version that is larger than the view in one/both axes
   // .find() is not supported in older browsers, using a loop
-  for (let i = 0, versions = Object.keys(imageVersions); i < versions.length; ++i) {
-    const version = versions[i],
-      dimensions = imageVersions[version],
-      versionWidth = Math.min(imageWidth, dimensions[0]),
-      versionHeight = Math.min(imageHeight, dimensions[1]);
+  for (const [version, [versionWidth, versionHeight]] of Object.entries(imageVersions)) {
     if (versionWidth > viewWidth || versionHeight > viewHeight) {
-      return version;
+      return version as ImageVersion;
     }
   }
 
@@ -55,38 +86,47 @@ function selectVersion(imageWidth, imageHeight, imageSize, imageMime) {
  * Given a target container element, chooses and scales an image
  * to an appropriate dimension.
  */
-function pickAndResize(elem) {
-  const imageWidth = parseInt(elem.dataset.width, 10),
-    imageHeight = parseInt(elem.dataset.height, 10),
-    imageSize = parseInt(elem.dataset.imageSize, 10),
-    imageMime = elem.dataset.mimeType,
-    scaled = elem.dataset.scaled,
-    uris = JSON.parse(elem.dataset.uris);
+export function pickAndResize(elem: ImageTargetElement) {
+  const imageWidth = parseInt(elem.dataset.width, 10);
+  const imageHeight = parseInt(elem.dataset.height, 10);
+  const imageSize = parseInt(elem.dataset.imageSize, 10);
+  const imageMime = elem.dataset.mimeType;
+  const scaled = elem.dataset.scaled;
+  const uris: ImageUris = JSON.parse(elem.dataset.uris);
 
-  let version = 'full';
+  let version: ImageVersion = 'full';
 
   if (scaled === 'true') {
     version = selectVersion(imageWidth, imageHeight, imageSize, imageMime);
   }
 
-  const uri = uris[version];
-  let imageFormat = /\.(\w+?)$/.exec(uri)[1];
+  let uri = uris[version];
 
-  if (version === 'full' && store.get('serve_webm') && Boolean(uris.mp4)) {
+  // For video/webm, if there's no full version, use webm key
+  if (!uri && imageMime === 'video/webm' && uris.webm) {
+    uri = uris.webm;
+  }
+
+  if (!uri) return;
+
+  let imageFormat = /\.(\w+?)$/.exec(uri)?.[1];
+  if (!imageFormat) return;
+
+  if (version === 'full' && store.get<boolean>('serve_webm') && Boolean(uris.mp4)) {
     imageFormat = 'mp4';
   }
 
   // Check if we need to change to avoid flickering
   if (imageFormat === 'mp4' || imageFormat === 'webm') {
-    for (const sourceEl of elem.querySelectorAll('video source')) {
-      if (sourceEl.src.endsWith(uri) || (imageFormat === 'mp4' && sourceEl.src.endsWith(uris.mp4))) return;
+    for (const sourceEl of $$<HTMLSourceElement>('video source', elem)) {
+      if (sourceEl.src.endsWith(uri) || (imageFormat === 'mp4' && uris.mp4 && sourceEl.src.endsWith(uris.mp4))) return;
     }
 
     // Scrub out the target element.
     clearEl(elem);
   }
 
-  const muted = store.get('unmute_videos') ? '' : 'muted';
+  const muted = store.get<boolean>('unmute_videos') ? '' : 'muted';
   const autoplay = elem.classList.contains('hidden') ? '' : 'autoplay'; // Fix for spoilered image pages
 
   if (imageFormat === 'mp4') {
@@ -115,11 +155,13 @@ function pickAndResize(elem) {
         </p>
        </video>`,
     );
-    const video = elem.querySelector('video');
-    if (scaled === 'true') {
-      video.className = 'image-scaled';
-    } else if (scaled === 'partscaled') {
-      video.className = 'image-partscaled';
+    const video = $<HTMLVideoElement>('video', elem);
+    if (video) {
+      if (scaled === 'true') {
+        video.className = 'image-scaled';
+      } else if (scaled === 'partscaled') {
+        video.className = 'image-partscaled';
+      }
     }
   } else {
     let image;
@@ -141,11 +183,12 @@ function pickAndResize(elem) {
  * Bind an event to an image container for updating an image on
  * click/tap.
  */
-function bindImageForClick(target) {
+function bindImageForClick(target: ImageTargetElement) {
   target.addEventListener('click', () => {
-    if (target.getAttribute('data-scaled') === 'true') {
+    const currentScaled = target.getAttribute('data-scaled');
+    if (currentScaled === 'true') {
       target.setAttribute('data-scaled', 'partscaled');
-    } else if (target.getAttribute('data-scaled') === 'partscaled') {
+    } else if (currentScaled === 'partscaled') {
       target.setAttribute('data-scaled', 'false');
     } else {
       target.setAttribute('data-scaled', 'true');
@@ -157,10 +200,9 @@ function bindImageForClick(target) {
 
 /**
  * Bind image targets within a context.
- * @param {{ querySelectorAll: Document['querySelectorAll'] }} [node=document]
  */
-function bindImageTarget(node = document) {
-  $$('.image-target', node).forEach(target => {
+export function bindImageTarget(node: Pick<Document, 'querySelectorAll'> = document) {
+  $$<ImageTargetElement>('.image-target', node).forEach(target => {
     pickAndResize(target);
 
     if (target.dataset.mimeType === 'video/webm') {
@@ -169,10 +211,9 @@ function bindImageTarget(node = document) {
     }
 
     bindImageForClick(target);
+
     window.addEventListener('resize', () => {
       pickAndResize(target);
     });
   });
 }
-
-export { bindImageTarget };

@@ -2,6 +2,7 @@ import { fireEvent, waitFor } from '@testing-library/dom';
 import { assertType } from '../utils/assert';
 import '../ujs';
 import { fetchMock } from '../../test/fetch-mock';
+import { $$ } from '../utils/dom';
 
 const mockEndpoint = 'http://localhost/endpoint';
 const mockVerb = 'POST';
@@ -100,7 +101,7 @@ describe('Remote utilities', () => {
           event.preventDefault();
 
           const target = assertType(event.target, HTMLFormElement);
-          const [csrf, method] = target.querySelectorAll('input');
+          const [csrf, method] = $$<HTMLInputElement>('input', target);
 
           expect(csrf.name).toBe('_csrf_token');
           expect(csrf.value).toBe(window.booru.csrfToken);

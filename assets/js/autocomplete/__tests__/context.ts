@@ -6,6 +6,7 @@ import { fireEvent } from '@testing-library/dom';
 import { assertNotNull } from '../../utils/assert';
 import { TextInputElement } from '../input';
 import store from '../../utils/store';
+import { $ } from '../../utils/dom';
 import { GetTagSuggestionsResponse, TagSuggestion } from 'autocomplete/client';
 
 /**
@@ -88,8 +89,8 @@ export class TestContext {
 
     listenAutocomplete();
 
-    this.input = assertNotNull(document.querySelector('.test-input'));
-    this.popup = assertNotNull(document.querySelector('.autocomplete'));
+    this.input = assertNotNull($<HTMLInputElement>('.test-input'));
+    this.popup = assertNotNull($<HTMLElement>('.autocomplete'));
 
     expect(fetch).not.toBeCalled();
   }

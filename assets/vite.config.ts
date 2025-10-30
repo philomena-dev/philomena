@@ -73,11 +73,18 @@ export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
       coverage: {
         reporter: ['text', 'html'],
         include: ['js/**/*.{js,ts}'],
+        exclude: ['js/app.ts', '**/__tests__/**'],
         thresholds: {
           statements: 0,
           branches: 0,
           functions: 0,
           lines: 0,
+          '**/query/**/*.ts': {
+            statements: 100,
+            branches: 100,
+            functions: 100,
+            lines: 100,
+          },
           '**/utils/**/*.ts': {
             statements: 100,
             branches: 100,

@@ -1,4 +1,6 @@
-export {};
+/**
+ * Global type augmentations and fixes for standard library types.
+ */
 
 /**
  * This is a place where we augment the core standard library types for any
@@ -67,3 +69,5 @@ declare global {
     fromEntries(entries: Iterable<readonly unknown[]>): unknown;
   }
 }
+
+export {};

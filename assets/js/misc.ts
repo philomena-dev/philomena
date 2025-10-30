@@ -5,7 +5,6 @@
 import store from './utils/store';
 import { $, $$, hideEl, showEl } from './utils/dom';
 import { assertNotNull, assertType } from './utils/assert';
-import '../types/ujs';
 
 let touchMoved = false;
 
@@ -49,7 +48,7 @@ function revealSpoiler(event: MouseEvent | TouchEvent) {
 
   if (spoiler) {
     if (showContainer) {
-      const imageShow = assertNotNull(showContainer.querySelector('.image-show'));
+      const imageShow = assertNotNull($<HTMLDivElement>('.image-show', showContainer));
 
       if (!imageShow.classList.contains('hidden') && imageShow.classList.contains('spoiler-pending')) {
         imageShow.classList.remove('spoiler-pending');
@@ -63,7 +62,7 @@ function revealSpoiler(event: MouseEvent | TouchEvent) {
     if (event.type === 'touchend') event.preventDefault();
 
     if (!imgspoiler) {
-      imgspoiler = spoiler.querySelector('.imgspoiler');
+      imgspoiler = $<HTMLElement>('.imgspoiler', spoiler);
     }
   }
 

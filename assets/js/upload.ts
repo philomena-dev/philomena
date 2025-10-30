@@ -2,7 +2,7 @@
  * Fetch and display preview images for various image upload forms.
  */
 
-import { assertNotNull } from './utils/assert';
+import { assertType, assertNotNull } from './utils/assert';
 import { normalizedKeyboardKey, keys } from './utils/keyboard';
 import { fetchJson, handleError } from './utils/requests';
 import { $, $$, clearEl, hideEl, makeEl, showEl } from './utils/dom';
@@ -11,13 +11,27 @@ import { oncePersistedPageShown } from './utils/events';
 
 const MATROSKA_MAGIC = 0x1a45dfa3;
 
-function scrapeUrl(url) {
+interface ScraperImage {
+  camo_url: string | ArrayBuffer;
+  type?: string;
+  url?: string;
+}
+
+interface ScraperResponse {
+  images: ScraperImage[];
+  source_url?: string;
+  description?: string;
+  author_name?: string;
+  errors?: string[];
+}
+
+function scrapeUrl(url: string): Promise<ScraperResponse | null> {
   return fetchJson('POST', '/images/scrape', { url })
     .then(handleError)
     .then(response => response.json());
 }
 
-function elementForEmbeddedImage({ camo_url, type }) {
+function elementForEmbeddedImage({ camo_url, type }: ScraperImage): HTMLImageElement | HTMLVideoElement {
   // The upload was fetched from the scraper and is a path name
   if (typeof camo_url === 'string') {
     return makeEl('img', { className: 'scraper-preview--image', src: camo_url });
@@ -26,22 +40,34 @@ function elementForEmbeddedImage({ camo_url, type }) {
   // The upload was fetched from a file input and is an ArrayBuffer
   const objectUrl = URL.createObjectURL(new Blob([camo_url], { type }));
   const tagName = new DataView(camo_url).getUint32(0) === MATROSKA_MAGIC ? 'video' : 'img';
+
   return makeEl(tagName, { className: 'scraper-preview--image', src: objectUrl });
 }
 
-function setupImageUpload() {
-  const imgPreviews = $('#js-image-upload-previews');
+export function setupImageUpload() {
+  const imgPreviews = $<HTMLDivElement>('#js-image-upload-previews');
+
   if (!imgPreviews) return;
 
   const form = imgPreviews.closest('form');
-  const [fileField, remoteUrl, scraperError] = $$('.js-scraper', form);
-  const descrEl = $('.js-image-descr-input', form);
-  const tagsEl = $('.js-image-tags-input', form);
-  const sourceEl = $$('.js-source-url', form).find(input => input.value === '');
-  const fetchButton = $('#js-scraper-preview');
+
+  if (!form) return;
+
+  const scraperElements = $$<HTMLInputElement>('.js-scraper', form);
+  const fileField = scraperElements[0];
+  const remoteUrl = scraperElements[1];
+  const scraperError = scraperElements[2];
+
+  if (!fileField || !remoteUrl || !scraperError) return;
+
+  const descrEl = $<HTMLTextAreaElement>('.js-image-descr-input', form);
+  const tagsEl = $<HTMLTextAreaElement>('.js-image-tags-input', form);
+  const sourceEl = $$<HTMLInputElement>('.js-source-url', form).find(input => input.value === '');
+  const fetchButton = $<HTMLButtonElement>('#js-scraper-preview');
+
   if (!fetchButton) return;
 
-  function showImages(images) {
+  const showImages = (images: ScraperImage[]) => {
     clearEl(imgPreviews);
 
     images.forEach((image, index) => {
@@ -54,43 +80,50 @@ function setupImageUpload() {
         type: 'radio',
         className: 'scraper-preview--input',
       });
+
       if (image.url) {
         radio.name = 'scraper_cache';
         radio.value = image.url;
       }
+
       if (index === 0) {
         radio.checked = true;
       }
+
       label.appendChild(radio);
       label.appendChild(imgWrap);
       imgPreviews.appendChild(label);
     });
-  }
+  };
 
-  function showError() {
+  const disableFetch = () => {
+    fetchButton.setAttribute('disabled', '');
+  };
+
+  const enableFetch = () => {
+    fetchButton.removeAttribute('disabled');
+  };
+
+  const showError = () => {
     clearEl(imgPreviews);
     showEl(scraperError);
     enableFetch();
-  }
+  };
 
-  function hideError() {
+  const hideError = () => {
     hideEl(scraperError);
-  }
-
-  function disableFetch() {
-    fetchButton.setAttribute('disabled', '');
-  }
-
-  function enableFetch() {
-    fetchButton.removeAttribute('disabled');
-  }
+  };
 
   const reader = new FileReader();
 
   reader.addEventListener('load', event => {
+    const result = event.target?.result;
+
+    if (!result || !fileField.files?.[0]) return;
+
     showImages([
       {
-        camo_url: event.target.result,
+        camo_url: assertType(result, ArrayBuffer),
         type: fileField.files[0].type,
       },
     ]);
@@ -104,7 +137,9 @@ function setupImageUpload() {
 
   // Watch for files added to the form
   fileField.addEventListener('change', () => {
-    if (fileField.files.length) reader.readAsArrayBuffer(fileField.files[0]);
+    if (fileField.files && fileField.files.length) {
+      reader.readAsArrayBuffer(fileField.files[0]);
+    }
   });
 
   // Watch for [Fetch] clicks
@@ -132,7 +167,9 @@ function setupImageUpload() {
         // Set description
         if (descrEl) descrEl.value = descrEl.value || data.description || '';
         // Add author
-        if (tagsEl && data.author_name) addTag(tagsEl, `artist:${data.author_name.toLowerCase()}`);
+        if (tagsEl && data.author_name) {
+          addTag(tagsEl, `artist:${data.author_name.toLowerCase()}`);
+        }
         // Clear selected file, if any
         fileField.value = '';
         showImages(data.images);
@@ -164,46 +201,48 @@ function setupImageUpload() {
 
   // Catch unintentional navigation away from the page
 
-  function beforeUnload(event) {
+  const beforeUnload = (event: BeforeUnloadEvent): string => {
     // Chrome requires returnValue to be set
     event.preventDefault();
     event.returnValue = '';
-  }
+    return '';
+  };
 
-  function registerBeforeUnload() {
+  const registerBeforeUnload = () => {
     window.addEventListener('beforeunload', beforeUnload);
-  }
+  };
 
-  function unregisterBeforeUnload() {
+  const unregisterBeforeUnload = () => {
     window.removeEventListener('beforeunload', beforeUnload);
-  }
+  };
 
-  function createTagError(message) {
-    const buttonAfter = $('#tagsinput-save');
+  const createTagError = (message: string) => {
+    const buttonAfter = $<HTMLButtonElement>('#tagsinput-save');
+
+    if (!buttonAfter) return;
+
     const errorElement = makeEl('span', { className: 'help-block tag-error', innerText: message });
-
     buttonAfter.insertAdjacentElement('beforebegin', errorElement);
-  }
+  };
 
-  function clearTagErrors() {
+  const clearTagErrors = () => {
     $$('.tag-error').forEach(el => el.remove());
-  }
+  };
 
   const ratingsTags = ['safe', 'suggestive', 'questionable', 'explicit', 'semi-grimdark', 'grimdark', 'grotesque'];
 
   // populate tag error helper bars as necessary
   // return true if all checks pass
   // return false if any check fails
-  function validateTags() {
-    const tagInput = $('textarea.js-taginput');
+  const validateTags = (): boolean => {
+    const tagInput = $<HTMLDivElement>('.js-taginput');
 
-    if (!tagInput) {
+    if (!tagInput || !tagInput.innerText) {
       return true;
     }
 
-    const tagsArr = tagInput.value.split(',').map(t => t.trim());
-
-    const errors = [];
+    const tagsArr = tagInput.innerText.split(',').map(t => t.trim());
+    const errors: string[] = [];
 
     let hasRating = false;
     let hasSafe = false;
@@ -233,10 +272,10 @@ function setupImageUpload() {
     errors.forEach(msg => createTagError(msg));
 
     return errors.length === 0; // true: valid if no errors
-  }
+  };
 
-  function disableUploadButton() {
-    const submitButton = $('.button.input--separate-top');
+  const disableUploadButton = () => {
+    const submitButton = $<HTMLButtonElement>('.button.input--separate-top');
 
     if (!submitButton) {
       return;
@@ -261,9 +300,9 @@ function setupImageUpload() {
 
       submitButton.removeAttribute('disabled');
     });
-  }
+  };
 
-  function submitHandler(event) {
+  const submitHandler = (event: Event) => {
     // Remove any existing tag error elements
     clearTagErrors();
 
@@ -282,11 +321,9 @@ function setupImageUpload() {
       // Prevent the form from being submitted
       event.preventDefault();
     }
-  }
+  };
 
   fileField.addEventListener('change', registerBeforeUnload);
   fetchButton.addEventListener('click', registerBeforeUnload);
   form.addEventListener('submit', submitHandler);
 }
-
-export { setupImageUpload };
