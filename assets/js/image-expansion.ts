@@ -61,7 +61,9 @@ export function selectVersion(
   // Find a version that is larger than the view in one/both axes
   // .find() is not supported in older browsers, using a loop
   for (const [version, [versionWidth, versionHeight]] of imageVersions) {
-    if (versionWidth > viewWidth || versionHeight > viewHeight) {
+    const maxWidth = Math.min(imageWidth, versionWidth);
+    const maxHeight = Math.min(imageHeight, versionHeight);
+    if (maxWidth > viewWidth || maxHeight > viewHeight) {
       return version;
     }
   }
