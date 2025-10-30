@@ -32,7 +32,8 @@ defmodule PhilomenaWeb.TagView do
 
   def quick_tags(conn) do
     env_cache(:quick_tags, fn ->
-      [] # todo: debranding
+      # todo: debranding
+      []
       |> lookup_quick_tags()
       |> render_quick_tags(conn)
     end)

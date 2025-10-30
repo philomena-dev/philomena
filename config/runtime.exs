@@ -31,7 +31,6 @@ config :philomena,
   mailer_address: System.fetch_env!("MAILER_ADDRESS"),
   mediaproc_addr: System.fetch_env!("MEDIAPROC_ADDR"),
   tag_file_root: System.fetch_env!("TAG_FILE_ROOT"),
-  hide_version: System.get_env("HIDE_VERSION", "false"),
   site_domains: System.fetch_env!("SITE_DOMAINS"),
   tag_url_root: System.fetch_env!("TAG_URL_ROOT"),
   redis_host: System.get_env("REDIS_HOST", "localhost"),
@@ -44,7 +43,7 @@ app_dir = System.get_env("APP_DIR", File.cwd!())
 
 config :philomena,
   config: %{
-    aggregation: JSON.decode!(File.read!("#{app_dir}/config/aggregation.json")),
+    aggregation: JSON.decode!(File.read!("#{app_dir}/config/aggregation.json"))
   }
 
 config :exq,
