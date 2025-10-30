@@ -43,8 +43,10 @@ defmodule PhilomenaWeb.AvatarGeneratorView do
     [
       "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"125\" height=\"125\" viewBox=\"0 0 125 125\" class=\"avatar-svg\">",
       background(config),
-      for_kind(tail_shapes(config), kind)["shape"] |> String.replace("SECONDARY_COLOR", color_secondary),
-      for_kind(body_shapes(config), kind)["shape"] |> String.replace("PRIMARY_COLOR", color_primary),
+      for_kind(tail_shapes(config), kind)["shape"]
+      |> String.replace("SECONDARY_COLOR", color_secondary),
+      for_kind(body_shapes(config), kind)["shape"]
+      |> String.replace("PRIMARY_COLOR", color_primary),
       style_hr["shape"] |> String.replace("SECONDARY_COLOR", color_secondary),
       all_kinds(extra_shapes(config), kind)
       |> Enum.map(&String.replace(&1["shape"], "PRIMARY_COLOR", color_primary)),

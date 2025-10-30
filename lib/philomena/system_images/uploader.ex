@@ -23,7 +23,17 @@ defmodule Philomena.SystemImages.Uploader do
   defp generate_favicon_ico(file) do
     outfile = Briefly.create!(extname: ".ico")
 
-    Remote.cmd("magick", ["-density", "256x256", "-background", "transparent", "-define", "icon:auto-resize=\"16,32,48,64,128\"", file, outfile])
+    Remote.cmd("magick", [
+      "-density",
+      "256x256",
+      "-background",
+      "transparent",
+      "-define",
+      "icon:auto-resize=\"16,32,48,64,128\"",
+      file,
+      outfile
+    ])
+
     upload_system_image(outfile, "favicon.ico")
   end
 

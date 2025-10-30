@@ -62,7 +62,11 @@ defmodule Philomena.Images.TagValidator do
       |> Enum.map(& &1.name)
 
     if Enum.any?(invalid_tags) do
-      add_error(changeset, :tag_input, "must not contain invalid tags (#{Enum.join(invalid_tags, ", ")})")
+      add_error(
+        changeset,
+        :tag_input,
+        "must not contain invalid tags (#{Enum.join(invalid_tags, ", ")})"
+      )
     else
       changeset
     end

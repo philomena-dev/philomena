@@ -62,13 +62,16 @@ defmodule Philomena.Configs do
       "default_theme" => "dark-blue",
       "default_light_theme" => "light-blue",
       "ad_text" => "Interested in advertising on {site_name}? Click here to learn more.",
-      "donation_text" => "This site is free to use, but costs money to run. If you enjoy using {site_name}, please consider supporting us financially.",
+      "donation_text" =>
+        "This site is free to use, but costs money to run. If you enjoy using {site_name}, please consider supporting us financially.",
       "linkvalidation_format" => "PHILOMENA-LINKVALIDATION-{code}",
       "anonymous_name" => "Anonymous",
       "borderless_tags" => "false",
       "rounded_tags" => "false",
       "compact_hidden_communications" => "false",
-      "read_only_mode" => "false", # todo
+      # todo
+      "read_only_mode" => "false",
+      "hide_version" => "false",
       "commissions_enabled" => "true",
       "livestreams_enabled" => "true",
       "dnp_enabled" => "true",
@@ -102,6 +105,7 @@ defmodule Philomena.Configs do
       "rounded_tags" => :boolean,
       "compact_hidden_communications" => :boolean,
       "read_only_mode" => :boolean,
+      "hide_version" => :boolean,
       "commissions_enabled" => :boolean,
       "livestreams_enabled" => :boolean,
       "dnp_enabled" => :boolean,

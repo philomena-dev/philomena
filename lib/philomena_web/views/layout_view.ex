@@ -5,6 +5,7 @@ defmodule PhilomenaWeb.LayoutView do
   alias PhilomenaWeb.ImageView
   alias Philomena.Users.User
   alias Philomena.Configs
+  alias Philomena.FooterLinks
   alias Plug.Conn
 
   @themes User.themes()
@@ -25,7 +26,7 @@ defmodule PhilomenaWeb.LayoutView do
   end
 
   def hide_version do
-    Application.get_env(:philomena, :hide_version) == "true"
+    Configs.get("hide_version")
   end
 
   def cdn_host do
@@ -85,7 +86,7 @@ defmodule PhilomenaWeb.LayoutView do
   end
 
   def footer_data do
-    [] # todo: debranding
+    env_cache(:footer_data, FooterLinks.get_footer_data/0)
   end
 
   def stylesheet_path(conn, %{theme: theme})

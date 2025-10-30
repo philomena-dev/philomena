@@ -267,6 +267,7 @@ defmodule PhilomenaWeb.AppView do
         value = generator.()
         Application.put_env(:philomena, key, value)
         value
+
       value ->
         value
     end

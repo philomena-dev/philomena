@@ -95,7 +95,8 @@ defmodule Philomena.SystemImages do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_system_image(%SystemImage{key: key} = system_image, _) when key in @protected_keys, do: {:error, system_image}
+  def update_system_image(%SystemImage{key: key} = system_image, _) when key in @protected_keys,
+    do: {:error, system_image}
 
   def update_system_image(%SystemImage{} = system_image, attrs) do
     system_image
@@ -123,7 +124,8 @@ defmodule Philomena.SystemImages do
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_system_image(%SystemImage{key: key} = system_image) when key in @protected_keys, do: {:error, system_image}
+  def delete_system_image(%SystemImage{key: key} = system_image) when key in @protected_keys,
+    do: {:error, system_image}
 
   def delete_system_image(%SystemImage{} = system_image) do
     Repo.delete(system_image)
