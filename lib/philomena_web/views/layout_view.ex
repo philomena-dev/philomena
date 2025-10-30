@@ -86,7 +86,7 @@ defmodule PhilomenaWeb.LayoutView do
   end
 
   def footer_data do
-    env_cache(:footer_data, FooterLinks.get_footer_data() / 0)
+    env_cache(:footer_data, &FooterLinks.get_footer_data/0)
   end
 
   def stylesheet_path(conn, %{theme: theme})

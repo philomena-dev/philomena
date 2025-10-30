@@ -7,7 +7,6 @@ defmodule Philomena.QuickTags.Season do
   schema "season_quick_tags" do
     belongs_to :quick_tag_tab, Tab
 
-    field :category, :string
     field :episode, :integer
     field :tag, :string
   end
