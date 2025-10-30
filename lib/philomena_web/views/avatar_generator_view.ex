@@ -17,7 +17,7 @@ defmodule PhilomenaWeb.AvatarGeneratorView do
       end)
 
     # Set kind (race, species, etc)
-    {kind, rand} = at(kind(config), rand)
+    {kind, rand} = at(kinds(config), rand)
 
     # Set the ranges for the colors we are going to make
     color_range = 128

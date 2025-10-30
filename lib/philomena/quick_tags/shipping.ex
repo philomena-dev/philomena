@@ -8,8 +8,8 @@ defmodule Philomena.QuickTags.Shipping do
     belongs_to :quick_tag_tab, Tab
 
     field :category, :string
-    field :implying, {:array, :string }, default: []
-    field :not_implying, {:array, :string }, default: []
+    field :implying, {:array, :string}, default: []
+    field :not_implying, {:array, :string}, default: []
   end
 
   @doc false

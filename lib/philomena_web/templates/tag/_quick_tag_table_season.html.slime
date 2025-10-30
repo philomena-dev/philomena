@@ -1,9 +1,9 @@
-= for slice <- Enum.chunk_every(@data, 10) do
+= for slice <- Enum.chunk_every(@tab_data.seasons, 10) do
   div
-    = for map <- slice do
-      - [header, tag_name] = Enum.to_list(map)
+    = for season <- slice do
+      - episode_label = if is_integer(season.episode), do: to_string(season.episode), else: season.episode
 
-      = header
+      = episode_label
       ' .
-      = tag_link @tags[tag_name], tag_name
+      = tag_link @tags[season.tag], season.tag
       br
