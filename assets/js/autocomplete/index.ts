@@ -3,7 +3,7 @@ import * as history from './history';
 import { AutocompletableInput, TextInputElement } from './input';
 import {
   HistorySuggestionComponent,
-  ItemSelectedEvent,
+  ItemSelection,
   PropertySuggestionComponent,
   Suggestion,
   Suggestions,
@@ -356,7 +356,7 @@ class Autocomplete {
     element.setSelectionRange(selection.start, selection.end, selection.direction ?? undefined);
   }
 
-  confirmSuggestion({ suggestion, shiftKey, ctrlKey }: ItemSelectedEvent) {
+  confirmSuggestion({ suggestion, shiftKey, ctrlKey }: ItemSelection) {
     this.assertActive();
 
     this.updateInputWithSelectedValue(suggestion);

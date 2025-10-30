@@ -169,7 +169,7 @@ export interface Suggestions {
   properties: PropertySuggestionComponent[];
 }
 
-export interface ItemSelectedEvent {
+export interface ItemSelection {
   suggestion: Suggestion;
   shiftKey: boolean;
   ctrlKey: boolean;
@@ -178,6 +178,16 @@ export interface ItemSelectedEvent {
 interface SuggestionItem {
   element: HTMLElement;
   suggestion: Suggestion;
+}
+
+declare global {
+  interface ItemSelectedEvent extends CustomEvent<ItemSelection> {
+    target: HTMLElement;
+  }
+
+  interface GlobalEventHandlersEventMap {
+    itemselected: ItemSelectedEvent;
+  }
 }
 
 /**
@@ -298,13 +308,13 @@ export class SuggestionsPopupComponent {
 
   private watchItem(item: SuggestionItem) {
     item.element.addEventListener('click', event => {
-      const detail: ItemSelectedEvent = {
+      const detail: ItemSelection = {
         suggestion: item.suggestion,
         shiftKey: event.shiftKey,
         ctrlKey: event.ctrlKey,
       };
 
-      this.container.dispatchEvent(new CustomEvent('item_selected', { detail }));
+      this.container.dispatchEvent(new CustomEvent('itemselected', { detail }));
     });
   }
 
@@ -406,9 +416,9 @@ export class SuggestionsPopupComponent {
     this.container.classList.remove('hidden');
   }
 
-  onItemSelected(callback: (event: ItemSelectedEvent) => void) {
-    this.container.addEventListener('item_selected', event => {
-      callback((event as CustomEvent<ItemSelectedEvent>).detail);
+  onItemSelected(callback: (event: ItemSelection) => void) {
+    this.container.addEventListener('itemselected', event => {
+      callback(event.detail);
     });
   }
 }
