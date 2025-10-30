@@ -18,6 +18,16 @@ import store from '../utils/store';
 import { keys, normalizedKeyboardKey } from '../utils/keyboard';
 import { matchProperties } from './properties';
 
+declare global {
+  interface AutocompleteEvent extends CustomEvent<string> {
+    target: HTMLElement;
+  }
+
+  interface GlobalEventHandlersEventMap {
+    autocomplete: AutocompleteEvent;
+  }
+}
+
 type ActiveAutocomplete = Autocomplete & { input: AutocompletableInput };
 
 function readHistoryConfig() {

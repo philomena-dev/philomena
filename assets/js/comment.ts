@@ -6,7 +6,7 @@ import { $ } from './utils/dom';
 import { filterNode } from './imagesclientside';
 import { fetchHtml } from './utils/requests';
 import { timeAgo } from './timeago';
-import { assertType, assertNotNull } from './utils/assert';
+import { assertString, assertType, assertNotNull, assertNullableType } from './utils/assert';
 import { delegate, leftClick } from './utils/events';
 
 function handleError(response: Response): Promise<string> | string {
@@ -77,7 +77,7 @@ function insertParentPost(data: string, clickedLink: HTMLElement, fullComment: H
   // Parse the HTML into an element so we can decorate it before insertion
   const tpl = document.createElement('template');
   tpl.innerHTML = data.trim();
-  const newEl = tpl.content.firstElementChild as HTMLElement | null;
+  const newEl = assertNullableType(tpl.content.firstElementChild, HTMLElement);
 
   if (!newEl) return;
 
@@ -132,7 +132,7 @@ function loadComments(target?: Element) {
   const container = document.getElementById('comments')!;
   const href = target?.getAttribute('href');
   const hashMatch = window.location.hash && window.location.hash.match(/#comment_([a-f0-9]+)/i);
-  const url = new URL(container.dataset.currentUrl as string, window.location.origin);
+  const url = new URL(assertString(container.dataset.currentUrl), window.location.origin);
 
   if (href) {
     url.href = `${url.origin}${href}`;
