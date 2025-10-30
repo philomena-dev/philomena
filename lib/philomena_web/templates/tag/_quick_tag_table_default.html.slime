@@ -1,8 +1,8 @@
-= for {heading, tag_names} <- @data do
+= for default <- @tab_data.defaults do
   div
-    strong = heading
+    strong = default.category
     br
 
-    = for tag_name <- tag_names do
+    = for tag_name <- default.tags do
       = tag_link @tags[tag_name], tag_name
       br

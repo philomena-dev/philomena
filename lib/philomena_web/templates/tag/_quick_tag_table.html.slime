@@ -1,14 +1,10 @@
 elixir:
-  tabs = Enum.with_index(@data["tabs"])
-  tab_modes = @data["tab_modes"]
+  tabs = Enum.with_index(@tabs_with_data)
 
 .block__header--sub.block__header--js-tabbed
-  = for {name, i} <- tabs do
-    = link name, to: "#", class: tab_class(i), data: [click_tab: name]
+  = for {tab_data, i} <- tabs do
+    = link tab_data.tab.title, to: "#", class: tab_class(i), data: [click_tab: tab_data.tab.title]
 
-= for {name, i} <- tabs do
-  - tab_data = @data[name]
-  - tab_mode = tab_modes[name]
-
-  .block__tab.quick-tag-table__tab class=tab_body_class(i) data-tab=name
-    = render PhilomenaWeb.TagView, "_quick_tag_table_#{tab_mode}.html", tab: name, data: tab_data, shipping: @shipping, tags: @tags, conn: @conn
+= for {tab_data, i} <- tabs do
+  .block__tab.quick-tag-table__tab class=tab_body_class(i) data-tab=tab_data.tab.title
+    = render PhilomenaWeb.TagView, "_quick_tag_table_#{tab_data.mode}.html", tab_data: tab_data, tags: @tags, shorthands: @shorthands, conn: @conn
