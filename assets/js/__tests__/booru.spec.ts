@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { loadBooruData, getTag, type TagData } from '../booru';
+import { tagsVersion, loadBooruData, getTag, type TagData } from '../booru';
 import store from '../utils/store';
 import * as matchQuery from '../match-query';
 import type { AstMatcher } from '../query/types';
@@ -235,9 +235,9 @@ describe('booru', () => {
       vi.mocked(store.set).mockReturnValue(true);
       vi.mocked(store.remove).mockReturnValue(true);
 
-      // Mock Object.keys to return tag keys
-      const originalKeys = Object.keys;
-      Object.keys = vi.fn().mockReturnValue(['bor_tags_1', 'bor_tags_2', 'other_key']);
+      // Mock localStorage keys
+      const mockKeys = ['bor_tags_1', 'bor_tags_2', 'other_key'];
+      vi.spyOn(Object, 'keys').mockReturnValueOnce(mockKeys);
 
       global.fetch = vi.fn().mockResolvedValue({
         json: () => Promise.resolve({ tags: [] }),
@@ -247,10 +247,7 @@ describe('booru', () => {
 
       expect(store.remove).toHaveBeenCalledWith('bor_tags_1');
       expect(store.remove).toHaveBeenCalledWith('bor_tags_2');
-      expect(store.set).toHaveBeenCalledWith('bor_tags_version', 8);
-
-      // Restore
-      Object.keys = originalKeys;
+      expect(store.set).toHaveBeenCalledWith('bor_tags_version', tagsVersion);
     });
 
     it('fetches new and stale tags', async () => {

@@ -42,7 +42,12 @@ const imageVersions: ImageVersionDimensions = {
  * Picks the appropriate image version for a given width and height
  * of the viewport and the image dimensions.
  */
-function selectVersion(imageWidth: number, imageHeight: number, imageSize: number, imageMime: string): ImageVersion {
+export function selectVersion(
+  imageWidth: number,
+  imageHeight: number,
+  imageSize: number,
+  imageMime: string,
+): ImageVersion {
   let viewWidth = document.documentElement.clientWidth;
   let viewHeight = document.documentElement.clientHeight;
 
@@ -59,13 +64,9 @@ function selectVersion(imageWidth: number, imageHeight: number, imageSize: numbe
 
   // Find a version that is larger than the view in one/both axes
   // .find() is not supported in older browsers, using a loop
-  for (let i = 0, versions = Object.keys(imageVersions) as (keyof ImageVersionDimensions)[]; i < versions.length; ++i) {
-    const version = versions[i];
-    const dimensions = imageVersions[version];
-    const versionWidth = Math.min(imageWidth, dimensions[0]);
-    const versionHeight = Math.min(imageHeight, dimensions[1]);
+  for (const [version, [versionWidth, versionHeight]] of Object.entries(imageVersions)) {
     if (versionWidth > viewWidth || versionHeight > viewHeight) {
-      return version;
+      return version as ImageVersion;
     }
   }
 
@@ -85,7 +86,7 @@ function selectVersion(imageWidth: number, imageHeight: number, imageSize: numbe
  * Given a target container element, chooses and scales an image
  * to an appropriate dimension.
  */
-function pickAndResize(elem: ImageTargetElement) {
+export function pickAndResize(elem: ImageTargetElement) {
   const imageWidth = parseInt(elem.dataset.width, 10);
   const imageHeight = parseInt(elem.dataset.height, 10);
   const imageSize = parseInt(elem.dataset.imageSize, 10);
@@ -200,7 +201,7 @@ function bindImageForClick(target: ImageTargetElement) {
 /**
  * Bind image targets within a context.
  */
-function bindImageTarget(node: Pick<Document, 'querySelectorAll'> = document) {
+export function bindImageTarget(node: Pick<Document, 'querySelectorAll'> = document) {
   $$<ImageTargetElement>('.image-target', node).forEach(target => {
     pickAndResize(target);
 
@@ -216,5 +217,3 @@ function bindImageTarget(node: Pick<Document, 'querySelectorAll'> = document) {
     });
   });
 }
-
-export { bindImageTarget, selectVersion, pickAndResize };

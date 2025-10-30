@@ -179,7 +179,7 @@ function selectorCb(base: ParentNode = document, selector: string, cb: (el: Elem
 function selectorCbChildren(base: ParentNode = document, selector: string, cb: (el: Element) => void) {
   const sel = $$(selector, base);
 
-  for (const el of Array.from(base.children)) {
+  for (const el of base.children) {
     if (!sel.includes(el)) continue;
 
     cb(el);
@@ -205,10 +205,8 @@ function matchAttributes(event: Event) {
   }
 }
 
-function registerEvents() {
+export function registerEvents() {
   for (const type in types) {
     document.addEventListener(type, matchAttributes);
   }
 }
-
-export { registerEvents };

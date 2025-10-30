@@ -106,6 +106,9 @@ declare global {
   }
 }
 
+export const hiddenTagPath = '/images/tagblocked.svg';
+export const tagsVersion = 6;
+
 /**
  * Store a tag locally, marking the retrieval time
  */
@@ -212,7 +215,7 @@ function verifyTagsVersion(latest: number) {
 function initializeFilters() {
   const tags = window.booru.spoileredTagList.concat(window.booru.hiddenTagList).filter((a, b, c) => c.indexOf(a) === b);
 
-  verifyTagsVersion(window.booru.tagsVersion);
+  verifyTagsVersion(tagsVersion);
   fetchNewOrStaleTags(tags);
 }
 
@@ -226,6 +229,7 @@ function unmarshal(data: string): unknown {
 
 export function loadBooruData() {
   const datastore = $<HTMLElement>('.js-datastore');
+
   if (!datastore) return;
 
   const booruData = datastore.dataset;
@@ -259,10 +263,7 @@ export function loadBooruData() {
   }
 }
 
-class BooruOnRails implements Partial<BooruObject> {
-  hiddenTag = '/images/tagblocked.svg';
-  tagsVersion = 6;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-window.booru = new BooruOnRails() as any;
+window.booru = {
+  hiddenTag: hiddenTagPath,
+  tagsVersion,
+} as BooruObject;

@@ -2,7 +2,7 @@
  * Fetch and display preview images for various image upload forms.
  */
 
-import { assertNotNull } from './utils/assert';
+import { assertType, assertNotNull } from './utils/assert';
 import { normalizedKeyboardKey, keys } from './utils/keyboard';
 import { fetchJson, handleError } from './utils/requests';
 import { $, $$, clearEl, hideEl, makeEl, showEl } from './utils/dom';
@@ -127,7 +127,7 @@ export function setupImageUpload() {
 
     showImages([
       {
-        camo_url: result as ArrayBuffer,
+        camo_url: assertType(result, ArrayBuffer),
         type: fileField.files[0].type,
       },
     ]);
