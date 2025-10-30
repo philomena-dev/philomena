@@ -67,12 +67,8 @@ export function setupImageUpload() {
 
   if (!fetchButton) return;
 
-  // These are safe to use in nested functions because of early returns above
-  const safeImgPreviews = imgPreviews;
-  const safeFetchButton = fetchButton;
-
-  function showImages(images: ScraperImage[]) {
-    clearEl(safeImgPreviews);
+  const showImages = (images: ScraperImage[]) => {
+    clearEl(imgPreviews);
 
     images.forEach((image, index) => {
       const img = elementForEmbeddedImage(image);
@@ -96,27 +92,27 @@ export function setupImageUpload() {
 
       label.appendChild(radio);
       label.appendChild(imgWrap);
-      safeImgPreviews.appendChild(label);
+      imgPreviews.appendChild(label);
     });
-  }
+  };
 
-  function showError() {
-    clearEl(safeImgPreviews);
+  const disableFetch = () => {
+    fetchButton.setAttribute('disabled', '');
+  };
+
+  const enableFetch = () => {
+    fetchButton.removeAttribute('disabled');
+  };
+
+  const showError = () => {
+    clearEl(imgPreviews);
     showEl(scraperError);
     enableFetch();
-  }
+  };
 
-  function hideError() {
+  const hideError = () => {
     hideEl(scraperError);
-  }
-
-  function disableFetch() {
-    safeFetchButton.setAttribute('disabled', '');
-  }
-
-  function enableFetch() {
-    safeFetchButton.removeAttribute('disabled');
-  }
+  };
 
   const reader = new FileReader();
 
@@ -147,7 +143,7 @@ export function setupImageUpload() {
   });
 
   // Watch for [Fetch] clicks
-  safeFetchButton.addEventListener('click', () => {
+  fetchButton.addEventListener('click', () => {
     if (!remoteUrl.value) return;
 
     disableFetch();
@@ -187,7 +183,7 @@ export function setupImageUpload() {
   remoteUrl.addEventListener('keydown', event => {
     if (normalizedKeyboardKey(event) === keys.Enter) {
       // Hit enter
-      safeFetchButton.click();
+      fetchButton.click();
     }
   });
 
@@ -205,40 +201,40 @@ export function setupImageUpload() {
 
   // Catch unintentional navigation away from the page
 
-  function beforeUnload(event: BeforeUnloadEvent): string {
+  const beforeUnload = (event: BeforeUnloadEvent): string => {
     // Chrome requires returnValue to be set
     event.preventDefault();
     event.returnValue = '';
     return '';
-  }
+  };
 
-  function registerBeforeUnload() {
+  const registerBeforeUnload = () => {
     window.addEventListener('beforeunload', beforeUnload);
-  }
+  };
 
-  function unregisterBeforeUnload() {
+  const unregisterBeforeUnload = () => {
     window.removeEventListener('beforeunload', beforeUnload);
-  }
+  };
 
-  function createTagError(message: string) {
+  const createTagError = (message: string) => {
     const buttonAfter = $<HTMLButtonElement>('#tagsinput-save');
 
     if (!buttonAfter) return;
 
     const errorElement = makeEl('span', { className: 'help-block tag-error', innerText: message });
     buttonAfter.insertAdjacentElement('beforebegin', errorElement);
-  }
+  };
 
-  function clearTagErrors() {
+  const clearTagErrors = () => {
     $$('.tag-error').forEach(el => el.remove());
-  }
+  };
 
   const ratingsTags = ['safe', 'suggestive', 'questionable', 'explicit', 'semi-grimdark', 'grimdark', 'grotesque'];
 
   // populate tag error helper bars as necessary
   // return true if all checks pass
   // return false if any check fails
-  function validateTags(): boolean {
+  const validateTags = (): boolean => {
     const tagInput = $<HTMLDivElement>('.js-taginput');
 
     if (!tagInput || !tagInput.innerText) {
@@ -276,9 +272,9 @@ export function setupImageUpload() {
     errors.forEach(msg => createTagError(msg));
 
     return errors.length === 0; // true: valid if no errors
-  }
+  };
 
-  function disableUploadButton() {
+  const disableUploadButton = () => {
     const submitButton = $<HTMLButtonElement>('.button.input--separate-top');
 
     if (!submitButton) {
@@ -304,9 +300,9 @@ export function setupImageUpload() {
 
       submitButton.removeAttribute('disabled');
     });
-  }
+  };
 
-  function submitHandler(event: Event) {
+  const submitHandler = (event: Event) => {
     // Remove any existing tag error elements
     clearTagErrors();
 
@@ -325,9 +321,9 @@ export function setupImageUpload() {
       // Prevent the form from being submitted
       event.preventDefault();
     }
-  }
+  };
 
   fileField.addEventListener('change', registerBeforeUnload);
-  safeFetchButton.addEventListener('click', registerBeforeUnload);
+  fetchButton.addEventListener('click', registerBeforeUnload);
   form.addEventListener('submit', submitHandler);
 }

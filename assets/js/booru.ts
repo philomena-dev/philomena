@@ -263,7 +263,4 @@ export function loadBooruData() {
   }
 }
 
-window.booru = {
-  hiddenTag: hiddenTagPath,
-  tagsVersion,
-} as BooruObject;
+window.booru = {} as BooruObject;
