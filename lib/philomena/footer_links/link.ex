@@ -5,7 +5,7 @@ defmodule Philomena.FooterLinks.Link do
   alias Philomena.FooterLinks.Category
 
   schema "footer_links" do
-    belongs_to :category, Category
+    belongs_to :footer_category, Category
 
     field :title, :string
     field :url, :string

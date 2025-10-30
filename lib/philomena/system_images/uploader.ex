@@ -6,6 +6,7 @@ defmodule Philomena.SystemImages.Uploader do
   alias Philomena.SystemImages.SystemImage
   alias Philomena.SystemImages.FaviconGenerator
   alias PhilomenaMedia.Uploader
+  alias PhilomenaMedia.Remote
 
   def upload_system_image(file, "favicon.svg") do
     path = Path.join(system_file_root(), "favicon.svg")

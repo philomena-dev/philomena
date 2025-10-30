@@ -26,7 +26,7 @@ defmodule Philomena.Repo.Migrations.CreateAvatarShapes do
           null: false
 
       add :avatar_kind_id,
-          references(:avatar_kind, on_update: :update_all, on_delete: :delete_all),
+          references(:avatar_kinds, on_update: :update_all, on_delete: :delete_all),
           null: false
     end
   end
