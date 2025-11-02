@@ -21,9 +21,10 @@ header.header
         name="q"
         title=title
         value=@conn.params["q"]
-        placeholder="Search"
+        placeholder="Search (ex: &quot;safe, folded wings&quot;)"
         autocapitalize="none"
         autocomplete=if(@conn.cookies["enable_search_ac"], do: "on", else: "off")
+        autocorrect="off"
         inputmode="search"
         data-autocomplete="multi-tags"
         data-autocomplete-condition="enable_search_ac"

@@ -1,3 +1,8 @@
+p
+  ' If this image breaks any of the
+  a href="/pages/rules"
+    | Site Rules
+  ' , or you have any special requests, please use this button to report it.
 a href=~p"/images/#{@image}/reports/new"
   button.button.button--link
     i.fa.fa-exclamation-triangle>
@@ -6,6 +11,7 @@ a href=~p"/images/#{@image}/reports/new"
 .report-duplicate
   - checked = Enum.any?(@dupe_reports, & &1.state == "open")
 
+  p Is this image already on the site? Did you upload an updated version of this image? Report it here to have this image merged and redirected to the newer/better image!
   input.toggle-box id="image-dedupe" type="checkbox" checked=checked
   label for="image-dedupe" Updating/merging
   .toggle-box-container

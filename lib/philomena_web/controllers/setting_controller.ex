@@ -1,6 +1,7 @@
 defmodule PhilomenaWeb.SettingController do
   use PhilomenaWeb, :controller
 
+  alias Philomena.Configs
   alias Philomena.Users
   alias Philomena.Users.User
   alias Philomena.Schema.TagList
@@ -81,13 +82,13 @@ defmodule PhilomenaWeb.SettingController do
     |> Map.put(:theme_color, theme_color)
   end
 
-  defp assign_theme(_), do: assign_theme(%{theme: "dark-blue"})
+  defp assign_theme(_), do: assign_theme(%{theme: Configs.get("default_theme")})
 
   defp determine_theme(%{"theme_name" => name, "theme_color" => color} = attrs)
        when name != nil and color != nil,
        do: Map.put(attrs, "theme", "#{name}-#{color}")
 
-  defp determine_theme(attrs), do: Map.put(attrs, "theme", "dark-blue")
+  defp determine_theme(attrs), do: Map.put(attrs, "theme", Configs.get("default_theme"))
 
   defp maybe_update_user(conn, nil, _user_params), do: {:ok, conn}
 

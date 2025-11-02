@@ -68,7 +68,7 @@ table.table
       td Literal
       td Matches the name of the target tag, if this tag is aliased.
       td
-        code = link "alias_of:twilight sparkle", to: ~p"/tags?#{[tq: "alias_of:twilight sparkle"]}"
+        code = link "alias_of:folded wings", to: ~p"/tags?#{[tq: "alias_of:folded wings"]}"
     tr
       td
         code aliased
@@ -82,7 +82,7 @@ table.table
       td Literal
       td Matches the name of any of this tag's aliases.
       td
-        code = link "aliases:ts", to: ~p"/tags?#{[tq: "aliases:ts"]}"
+        code = link "aliases:closed wings", to: ~p"/tags?#{[tq: "aliases:closed wings"]}"
     tr
       td
         code analyzed_name
@@ -110,7 +110,7 @@ table.table
       td Numeric Range
       td Matches the numeric surrogate key for this tag.
       td
-        code = link "id:40482", to: ~p"/tags?#{[tq: "id:40482"]}"
+        code = link "id:1", to: ~p"/tags?#{[tq: "id:1"]}"
     tr
       td
         code images
@@ -145,7 +145,7 @@ table.table
       td Literal
       td Matches the name of this tag with any namespace component removed.
       td
-        code = link "name_in_namespace:johnjoseco", to: ~p"/tags?#{[tq: "name_in_namespace:johnjoseco"]}"
+        code = link "name_in_namespace:nighty", to: ~p"/tags?#{[tq: "name_in_namespace:nighty"]}"
     tr
       td
         code namespace
@@ -166,4 +166,4 @@ table.table
       td Literal
       td Matches the slug of this tag.
       td
-        code = link "slug:-fwslash-mlp-fwslash-", to: ~p"/tags?#{[tq: "slug:-fwslash-mlp-fwslash-"]}"
+        code = link "slug:eyes+closed", to: ~p"/tags?#{[tq: "slug:eyes+closed"]}"

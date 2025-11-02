@@ -1,0 +1,24 @@
+- site_name = Philomena.Configs.get("site_name")
+
+.block.block--fixed.block--success
+  h3 Welcome to #{site_name}!
+  p
+    ' Check out our
+    strong
+      a href="/pages/start"
+        ' Getting Started Guide
+    ' to learn how to use the site, as it may explain some peculiarities of #{site_name} that you may not be used to. Also be sure to check out the
+    strong
+      a href="/pages/rules"
+        ' Site Rules
+    ' and
+    strong
+      a href="/pages/tags"
+        | Tagging Guidelines
+    | .
+  p
+    ' If you are of legal age and would like to view adult content, you can visit the
+    strong
+      a href="/filters"
+        ' Filters Page
+    ' to personalize your content settings. Have fun!
