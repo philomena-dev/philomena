@@ -265,7 +265,8 @@ defmodule Philomena.TagChanges do
         Enum.each(tag_changes, fn tc -> Search.delete_document(tc.id, TagChange) end)
         result
 
-      result -> result
+      result ->
+        result
     end
   end
 
