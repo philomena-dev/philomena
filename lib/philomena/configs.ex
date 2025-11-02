@@ -81,7 +81,8 @@ defmodule Philomena.Configs do
       "default_filter_id" => "1",
       "everything_filter_id" => "2",
       "nsfw_filter_id" => "2",
-      "minimum_tags" => "3"
+      "minimum_tags" => "3",
+      "hidden_trending_tags" => ""
     }
   end
 
@@ -115,7 +116,8 @@ defmodule Philomena.Configs do
       "default_filter_id" => :integer,
       "everything_filter_id" => :integer,
       "nsfw_filter_id" => :integer,
-      "minimum_tags" => :integer
+      "minimum_tags" => :integer,
+      "hidden_trending_tags" => :list
     }
   end
 end

@@ -20,10 +20,12 @@ defmodule Philomena.Tags.Tag do
     "commissioner",
     "editor",
     "fanfic",
+    "generator",
     "oc",
     "parent",
     "parents",
     "photographer",
+    "prompter",
     "series",
     "species",
     "spoiler",
@@ -37,8 +39,10 @@ defmodule Philomena.Tags.Tag do
     "comic" => "content-fanmade",
     "editor" => "origin",
     "fanfic" => "content-fanmade",
+    "generator" => "origin",
     "oc" => "oc",
     "photographer" => "origin",
+    "prompter" => "origin",
     "series" => "content-fanmade",
     "spoiler" => "spoiler",
     "video" => "content-fanmade"
@@ -50,7 +54,8 @@ defmodule Philomena.Tags.Tag do
     "commissioner:",
     "editor:",
     "oc:",
-    "photographer:"
+    "photographer:",
+    "prompter:"
   ]
 
   @derive {Phoenix.Param, key: :slug}

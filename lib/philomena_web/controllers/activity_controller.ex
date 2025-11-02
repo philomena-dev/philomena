@@ -3,6 +3,7 @@ defmodule PhilomenaWeb.ActivityController do
 
   alias PhilomenaWeb.ImageLoader
   alias PhilomenaQuery.Search
+  alias Philomena.Configs
 
   alias Philomena.{
     Images.Image,
@@ -20,6 +21,10 @@ defmodule PhilomenaWeb.ActivityController do
   def index(conn, _params) do
     user = conn.assigns.current_user
 
+    hidden_trending_tags =
+      Configs.get("hidden_trending_tags")
+      |> Enum.map(&String.to_integer/1)
+
     {images, _tags} =
       ImageLoader.default_query(conn,
         pagination: %{conn.assigns.image_pagination | page_number: 1}
@@ -28,7 +33,16 @@ defmodule PhilomenaWeb.ActivityController do
     {top_scoring, _tags} =
       ImageLoader.query(
         conn,
-        %{range: %{first_seen_at: %{gt: "now-3d"}}},
+        %{
+          bool: %{
+            must: %{
+              range: %{first_seen_at: %{gt: "now-3d"}}
+            },
+            must_not: [
+              %{terms: %{tag_ids: hidden_trending_tags}}
+            ]
+          }
+        },
         sorts: &%{query: &1, sorts: [%{wilson_score: :desc}, %{first_seen_at: :desc}]},
         pagination: %{page_number: :rand.uniform(6), page_size: 4}
       )

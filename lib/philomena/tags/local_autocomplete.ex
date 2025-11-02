@@ -96,6 +96,6 @@ defmodule Philomena.Tags.LocalAutocomplete do
         select: t.id,
         limit: ^amount
 
-    Repo.all(assoc_query, timeout: 120_000)
+    Repo.all(assoc_query, timeout: 300_000)
   end
 end
