@@ -1,7 +1,6 @@
 defmodule PhilomenaWeb.Admin.FingerprintBanController do
   use PhilomenaWeb, :controller
 
-  alias Philomena.Bans.Fingerprint, as: FingerprintBan
   alias Philomena.Bans
   alias Philomena.Repo
   import Ecto.Query
@@ -9,14 +8,14 @@ defmodule PhilomenaWeb.Admin.FingerprintBanController do
   plug :verify_authorized
 
   plug :load_resource,
-    model: FingerprintBan,
+    model: Bans.Fingerprint,
     as: :fingerprint_ban,
     only: [:edit, :update, :delete]
 
   plug :check_can_delete when action in [:delete]
 
   def index(conn, %{"bq" => q}) when is_binary(q) do
-    FingerprintBan
+    Bans.Fingerprint
     |> where(
       [fb],
       ilike(fb.fingerprint, ^"%#{q}%") or
@@ -28,22 +27,22 @@ defmodule PhilomenaWeb.Admin.FingerprintBanController do
   end
 
   def index(conn, %{"fingerprint" => fingerprint}) when is_binary(fingerprint) do
-    FingerprintBan
+    Bans.Fingerprint
     |> where(fingerprint: ^fingerprint)
     |> load_bans(conn)
   end
 
   def index(conn, _params) do
-    load_bans(FingerprintBan, conn)
+    load_bans(Bans.Fingerprint, conn)
   end
 
   def new(conn, %{"fingerprint" => fingerprint}) do
-    changeset = Bans.change_fingerprint(%FingerprintBan{fingerprint: fingerprint})
+    changeset = Bans.change_fingerprint(%Bans.Fingerprint{fingerprint: fingerprint})
     render(conn, "new.html", title: "New Fingerprint Ban", changeset: changeset)
   end
 
   def new(conn, _params) do
-    changeset = Bans.change_fingerprint(%FingerprintBan{})
+    changeset = Bans.change_fingerprint(%Bans.Fingerprint{})
     render(conn, "new.html", title: "New Fingerprint Ban", changeset: changeset)
   end
 
@@ -102,7 +101,7 @@ defmodule PhilomenaWeb.Admin.FingerprintBanController do
   end
 
   defp verify_authorized(conn, _opts) do
-    if Canada.Can.can?(conn.assigns.current_user, :index, FingerprintBan) do
+    if Canada.Can.can?(conn.assigns.current_user, :index, Bans.Fingerprint) do
       conn
     else
       PhilomenaWeb.NotAuthorizedPlug.call(conn)

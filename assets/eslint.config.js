@@ -22,7 +22,10 @@ export default tsEslint.config(
       'accessor-pairs': 2,
       'array-callback-return': 2,
       'block-scoped-var': 2,
-      camelcase: [2, { allow: ['camo_url', 'spoiler_image_uri', 'image_ids'] }],
+      camelcase: [
+        2,
+        { allow: ['camo_url', 'spoiler_image_uri', 'image_ids', 'image_id', 'user_id', 'interaction_type'] },
+      ],
       'class-methods-use-this': 0,
       complexity: 0,
       'consistent-return': 0,

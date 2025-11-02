@@ -1,13 +1,13 @@
-import { clearEl } from './dom';
+import { $, clearEl } from './dom';
 import store from './store';
 
 function showVideoThumb(img: HTMLDivElement, size: string, uris: Record<string, string>) {
   const thumbUri = uris[size];
 
-  const vidEl = img.querySelector('video');
+  const vidEl = $<HTMLVideoElement>('video', img);
   if (!vidEl) return false;
 
-  const imgEl = img.querySelector('img');
+  const imgEl = $<HTMLImageElement>('img', img);
   if (!imgEl || imgEl.classList.contains('hidden')) return false;
 
   imgEl.classList.add('hidden');
@@ -19,7 +19,7 @@ function showVideoThumb(img: HTMLDivElement, size: string, uris: Record<string, 
   vidEl.classList.remove('hidden');
   vidEl.play();
 
-  const overlay = img.querySelector('.js-spoiler-info-overlay');
+  const overlay = $<HTMLElement>('.js-spoiler-info-overlay', img);
   if (overlay) overlay.classList.add('hidden');
 
   return true;
@@ -33,10 +33,10 @@ export function showThumb(img: HTMLDivElement) {
   const uris: Record<string, string> = JSON.parse(urisString);
   const thumbUri = uris[size].replace(/webm$/, 'gif');
 
-  const picEl = img.querySelector('picture');
+  const picEl = $<HTMLPictureElement>('picture', img);
   if (!picEl) return showVideoThumb(img, size, uris);
 
-  const imgEl = picEl.querySelector('img');
+  const imgEl = $<HTMLImageElement>('img', picEl);
   if (!imgEl || imgEl.src.indexOf(thumbUri) !== -1) return false;
 
   if (store.get('serve_hidpi') && !thumbUri.endsWith('.gif')) {
@@ -47,7 +47,7 @@ export function showThumb(img: HTMLDivElement) {
   }
 
   imgEl.src = thumbUri;
-  const overlay = img.querySelector('.js-spoiler-info-overlay');
+  const overlay = $<HTMLElement>('.js-spoiler-info-overlay', img);
   if (!overlay) return false;
 
   if (uris[size].indexOf('.webm') !== -1) {
@@ -61,14 +61,14 @@ export function showThumb(img: HTMLDivElement) {
 }
 
 export function showBlock(img: HTMLDivElement) {
-  img.querySelector('.image-filtered')?.classList.add('hidden');
-  const imageShowClasses = img.querySelector('.image-show')?.classList;
+  $<HTMLElement>('.image-filtered', img)?.classList.add('hidden');
+  const imageShowClasses = $<HTMLElement>('.image-show', img)?.classList;
 
   if (imageShowClasses) {
     imageShowClasses.remove('hidden');
     imageShowClasses.add('spoiler-pending');
 
-    const vidEl = img.querySelector('video');
+    const vidEl = $<HTMLVideoElement>('video', img);
     if (vidEl) {
       vidEl.play();
     }
@@ -76,11 +76,11 @@ export function showBlock(img: HTMLDivElement) {
 }
 
 function hideVideoThumb(img: HTMLDivElement, spoilerUri: string, reason: string) {
-  const vidEl = img.querySelector('video');
+  const vidEl = $<HTMLVideoElement>('video', img);
   if (!vidEl) return;
 
-  const imgEl = img.querySelector('img');
-  const imgOverlay = img.querySelector('.js-spoiler-info-overlay');
+  const imgEl = $<HTMLImageElement>('img', img);
+  const imgOverlay = $<HTMLElement>('.js-spoiler-info-overlay', img);
   if (!imgEl) return;
 
   imgEl.classList.remove('hidden');
@@ -96,11 +96,11 @@ function hideVideoThumb(img: HTMLDivElement, spoilerUri: string, reason: string)
 }
 
 export function hideThumb(img: HTMLDivElement, spoilerUri: string, reason: string) {
-  const picEl = img.querySelector('picture');
+  const picEl = $<HTMLPictureElement>('picture', img);
   if (!picEl) return hideVideoThumb(img, spoilerUri, reason);
 
-  const imgEl = picEl.querySelector('img');
-  const imgOverlay = img.querySelector('.js-spoiler-info-overlay');
+  const imgEl = $<HTMLImageElement>('img', picEl);
+  const imgOverlay = $<HTMLElement>('.js-spoiler-info-overlay', img);
 
   if (!imgEl || imgEl.src.indexOf(spoilerUri) !== -1) return;
 
@@ -132,12 +132,12 @@ export function spoilerThumb(img: HTMLDivElement, spoilerUri: string, reason: st
 }
 
 export function spoilerBlock(img: HTMLDivElement, spoilerUri: string, reason: string) {
-  const imgFiltered = img.querySelector('.image-filtered');
-  const imgEl = imgFiltered?.querySelector<HTMLImageElement>('img');
+  const imgFiltered = $<HTMLElement>('.image-filtered', img);
+  const imgEl = imgFiltered ? $<HTMLImageElement>('img', imgFiltered) : null;
   if (!imgEl) return;
 
-  const imgReason = img.querySelector<HTMLElement>('.filter-explanation');
-  const imageShow = img.querySelector('.image-show');
+  const imgReason = $<HTMLElement>('.filter-explanation', img);
+  const imageShow = $<HTMLElement>('.image-show', img);
 
   imgEl.src = spoilerUri;
   if (imgReason) {

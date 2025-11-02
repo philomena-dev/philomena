@@ -6,11 +6,11 @@ defmodule Philomena.Notifications do
   import Ecto.Query, warn: false
   alias Philomena.Repo
 
-  alias Philomena.Channels.Subscription, as: ChannelSubscription
-  alias Philomena.Forums.Subscription, as: ForumSubscription
-  alias Philomena.Galleries.Subscription, as: GallerySubscription
-  alias Philomena.Images.Subscription, as: ImageSubscription
-  alias Philomena.Topics.Subscription, as: TopicSubscription
+  alias Philomena.Channels
+  alias Philomena.Forums
+  alias Philomena.Galleries
+  alias Philomena.Images
+  alias Philomena.Topics
 
   alias Philomena.Notifications.ChannelLiveNotification
   alias Philomena.Notifications.ForumPostNotification
@@ -80,7 +80,7 @@ defmodule Philomena.Notifications do
   """
   def create_channel_live_notification(channel) do
     Creator.broadcast_notification(
-      from: {ChannelSubscription, channel_id: channel.id},
+      from: {Channels.Subscription, channel_id: channel.id},
       into: ChannelLiveNotification,
       select: [channel_id: channel.id],
       unique_key: :channel_id
@@ -99,7 +99,7 @@ defmodule Philomena.Notifications do
   def create_forum_post_notification(user, topic, post) do
     Creator.broadcast_notification(
       notification_author: user,
-      from: {TopicSubscription, topic_id: topic.id},
+      from: {Topics.Subscription, topic_id: topic.id},
       into: ForumPostNotification,
       select: [topic_id: topic.id, post_id: post.id],
       unique_key: :topic_id
@@ -118,7 +118,7 @@ defmodule Philomena.Notifications do
   def create_forum_topic_notification(user, topic) do
     Creator.broadcast_notification(
       notification_author: user,
-      from: {ForumSubscription, forum_id: topic.forum_id},
+      from: {Forums.Subscription, forum_id: topic.forum_id},
       into: ForumTopicNotification,
       select: [topic_id: topic.id],
       unique_key: :topic_id
@@ -136,7 +136,7 @@ defmodule Philomena.Notifications do
   """
   def create_gallery_image_notification(gallery) do
     Creator.broadcast_notification(
-      from: {GallerySubscription, gallery_id: gallery.id},
+      from: {Galleries.Subscription, gallery_id: gallery.id},
       into: GalleryImageNotification,
       select: [gallery_id: gallery.id],
       unique_key: :gallery_id
@@ -155,7 +155,7 @@ defmodule Philomena.Notifications do
   def create_image_comment_notification(user, image, comment) do
     Creator.broadcast_notification(
       notification_author: user,
-      from: {ImageSubscription, image_id: image.id},
+      from: {Images.Subscription, image_id: image.id},
       into: ImageCommentNotification,
       select: [image_id: image.id, comment_id: comment.id],
       unique_key: :image_id
@@ -173,7 +173,7 @@ defmodule Philomena.Notifications do
   """
   def create_image_merge_notification(target, source) do
     Creator.broadcast_notification(
-      from: {ImageSubscription, image_id: target.id},
+      from: {Images.Subscription, image_id: target.id},
       into: ImageMergeNotification,
       select: [target_id: target.id, source_id: source.id],
       unique_key: :target_id

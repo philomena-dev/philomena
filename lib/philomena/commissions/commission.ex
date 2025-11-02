@@ -13,10 +13,10 @@ defmodule Philomena.Commissions.Commission do
 
     field :open, :boolean
     field :categories, {:array, :string}, default: []
-    field :information, :string
-    field :contact, :string
-    field :will_create, :string
-    field :will_not_create, :string
+    field :information, :string, default: ""
+    field :contact, :string, default: ""
+    field :will_create, :string, default: ""
+    field :will_not_create, :string, default: ""
     field :commission_items_count, :integer, default: 0
 
     timestamps(inserted_at: :created_at, type: :utc_datetime)

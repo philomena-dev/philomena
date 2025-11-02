@@ -12,7 +12,7 @@ defmodule Philomena.Adverts.Advert do
     field :start_date, PhilomenaQuery.Ecto.RelativeDate
     field :finish_date, PhilomenaQuery.Ecto.RelativeDate
     field :restrictions, :string
-    field :notes, :string
+    field :notes, :string, default: ""
 
     field :image_mime_type, :string, virtual: true
     field :image_size, :integer, virtual: true
@@ -49,6 +49,6 @@ defmodule Philomena.Adverts.Advert do
     |> validate_inclusion(:image_mime_type, ["image/png", "image/jpeg", "image/gif"])
     |> validate_inclusion(:image_width, 699..729)
     |> validate_inclusion(:image_height, 79..91)
-    |> validate_inclusion(:image_size, 0..750_000)
+    |> validate_inclusion(:image_size, 0..1_048_576)
   end
 end

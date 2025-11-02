@@ -1,14 +1,24 @@
 import {
-  SuggestionsPopupComponent,
-  TagSuggestionComponent,
-  Suggestions,
   HistorySuggestionComponent,
   ItemSelectedEvent,
+  PropertySuggestionComponent,
+  Suggestions,
+  SuggestionsPopupComponent,
+  TagSuggestionComponent,
 } from '../suggestions-view.ts';
 import { TagSuggestion } from 'utils/suggestions-model.ts';
 import { afterEach } from 'vitest';
 import { fireEvent } from '@testing-library/dom';
 import { assertNotNull } from '../assert.ts';
+import { $, $$ } from '../dom.ts';
+import { literalProperty, numericProperty } from '../../autocomplete/properties/maps';
+import { MatchedPropertyParts, SuggestedProperty } from '../../autocomplete/properties';
+
+const mockedMatchedPropertyParts: MatchedPropertyParts = {
+  propertyName: 's',
+  hasOperatorSyntax: false,
+  hasValueSyntax: false,
+};
 
 const mockedSuggestions: Suggestions = {
   history: ['foo bar', 'bar baz', 'baz qux'].map(content => new HistorySuggestionComponent(content, 0)),
@@ -19,6 +29,13 @@ const mockedSuggestions: Suggestions = {
     { images: 10, canonical: ['artist:devinian'] },
     { images: 10, canonical: ['artist:moe'] },
   ].map(suggestion => new TagSuggestionComponent(suggestion)),
+  properties: [
+    new SuggestedProperty(mockedMatchedPropertyParts, 'score', numericProperty, null, null),
+    new SuggestedProperty(mockedMatchedPropertyParts, 'sha512_hash', literalProperty, null, null),
+    new SuggestedProperty(mockedMatchedPropertyParts, 'size', numericProperty, null, null),
+    new SuggestedProperty(mockedMatchedPropertyParts, 'source_count', numericProperty, null, null),
+    new SuggestedProperty(mockedMatchedPropertyParts, 'source_url', literalProperty, null, null),
+  ].map(property => new PropertySuggestionComponent(property)),
 };
 
 function mockBaseSuggestionsPopup(includeMockedSuggestions = false): [SuggestionsPopupComponent, HTMLInputElement] {
@@ -49,7 +66,7 @@ describe('Suggestions', () => {
 
     if (popup) {
       popup.hide();
-      popup.setSuggestions({ history: [], tags: [] });
+      popup.setSuggestions({ history: [], tags: [], properties: [] });
       popup = undefined;
     }
   });
@@ -58,14 +75,14 @@ describe('Suggestions', () => {
     it('should create the popup container', () => {
       [popup, input] = mockBaseSuggestionsPopup();
 
-      expect(document.querySelector('.autocomplete')).toBeInstanceOf(HTMLElement);
+      expect($<HTMLElement>('.autocomplete')).toBeInstanceOf(HTMLElement);
       assert(popup.isHidden);
     });
 
     it('should hide the popup when there are no suggestions to show', () => {
       [popup, input] = mockBaseSuggestionsPopup();
 
-      popup.setSuggestions({ history: [], tags: [] });
+      popup.setSuggestions({ history: [], tags: [], properties: [] });
       popup.showForElement(input);
 
       assert(popup.isHidden);
@@ -74,8 +91,8 @@ describe('Suggestions', () => {
     it('should render suggestions', () => {
       [popup, input] = mockBaseSuggestionsPopup(true);
 
-      expect(document.querySelectorAll('.autocomplete__item').length).toBe(
-        mockedSuggestions.history.length + mockedSuggestions.tags.length,
+      expect($$<HTMLElement>('.autocomplete__item').length).toBe(
+        mockedSuggestions.history.length + mockedSuggestions.tags.length + mockedSuggestions.properties.length,
       );
     });
 
@@ -84,7 +101,7 @@ describe('Suggestions', () => {
 
       popup.selectDown();
 
-      expect(document.querySelector('.autocomplete__item:first-child')).toHaveClass(selectedItemClassName);
+      expect($<HTMLElement>('.autocomplete__item:first-child')).toHaveClass(selectedItemClassName);
     });
 
     it('should initially select last element when selectUp is called', () => {
@@ -92,7 +109,7 @@ describe('Suggestions', () => {
 
       popup.selectUp();
 
-      expect(document.querySelector('.autocomplete__item:last-child')).toHaveClass(selectedItemClassName);
+      expect($<HTMLElement>('.autocomplete__item:last-child')).toHaveClass(selectedItemClassName);
     });
 
     it('should jump to the next lower block when selectCtrlDown is called', () => {
@@ -101,17 +118,22 @@ describe('Suggestions', () => {
       popup.selectCtrlDown();
 
       expect(popup.selectedSuggestion).toBe(mockedSuggestions.tags[0]);
-      expect(document.querySelector('.autocomplete__item__tag')).toHaveClass(selectedItemClassName);
+      expect($<HTMLElement>('.autocomplete__item__tag')).toHaveClass(selectedItemClassName);
 
       popup.selectCtrlDown();
 
-      expect(popup.selectedSuggestion).toBe(mockedSuggestions.tags.at(-1));
-      expect(document.querySelector('.autocomplete__item__tag:last-child')).toHaveClass(selectedItemClassName);
+      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties.at(0));
+      expect($<HTMLElement>('.autocomplete__item__property')).toHaveClass(selectedItemClassName);
+
+      popup.selectCtrlDown();
+
+      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties.at(-1));
+      expect($<HTMLElement>('.autocomplete__item__property:last-child')).toHaveClass(selectedItemClassName);
 
       // Should loop around
       popup.selectCtrlDown();
       expect(popup.selectedSuggestion).toBe(mockedSuggestions.history[0]);
-      expect(document.querySelector('.autocomplete__item:first-child')).toHaveClass(selectedItemClassName);
+      expect($<HTMLElement>('.autocomplete__item:first-child')).toHaveClass(selectedItemClassName);
     });
 
     it('should jump to the next upper block when selectCtrlUp is called', () => {
@@ -119,26 +141,35 @@ describe('Suggestions', () => {
 
       popup.selectCtrlUp();
 
+      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties.at(-1));
+      expect($<HTMLElement>('.autocomplete__item__property:last-child')).toHaveClass(selectedItemClassName);
+
+      popup.selectCtrlUp();
+
+      const expectedNthOfTypeIndex = mockedSuggestions.history.length + mockedSuggestions.tags.length;
+
       expect(popup.selectedSuggestion).toBe(mockedSuggestions.tags.at(-1));
-      expect(document.querySelector('.autocomplete__item__tag:last-child')).toHaveClass(selectedItemClassName);
+      expect($<HTMLElement>(`.autocomplete__item__tag:nth-of-type(${expectedNthOfTypeIndex})`)).toHaveClass(
+        selectedItemClassName,
+      );
 
       popup.selectCtrlUp();
 
       expect(popup.selectedSuggestion).toBe(mockedSuggestions.history.at(-1));
-      expect(
-        document.querySelector(`.autocomplete__item__history:nth-child(${mockedSuggestions.history.length})`),
-      ).toHaveClass(selectedItemClassName);
+      expect($<HTMLElement>(`.autocomplete__item__history:nth-child(${mockedSuggestions.history.length})`)).toHaveClass(
+        selectedItemClassName,
+      );
 
       popup.selectCtrlUp();
 
       expect(popup.selectedSuggestion).toBe(mockedSuggestions.history[0]);
-      expect(document.querySelector('.autocomplete__item:first-child')).toHaveClass(selectedItemClassName);
+      expect($<HTMLElement>('.autocomplete__item:first-child')).toHaveClass(selectedItemClassName);
 
       // Should loop around
       popup.selectCtrlUp();
 
-      expect(popup.selectedSuggestion).toBe(mockedSuggestions.tags.at(-1));
-      expect(document.querySelector('.autocomplete__item__tag:last-child')).toHaveClass(selectedItemClassName);
+      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties.at(-1));
+      expect($<HTMLElement>('.autocomplete__item__property:last-child')).toHaveClass(selectedItemClassName);
     });
 
     it('should do nothing on selection changes when empty', () => {
@@ -149,14 +180,14 @@ describe('Suggestions', () => {
       popup.selectCtrlDown();
       popup.selectCtrlUp();
 
-      expect(document.querySelector(`.${selectedItemClassName}`)).toBeNull();
+      expect($<HTMLElement>(`.${selectedItemClassName}`)).toBeNull();
     });
 
     it('should loop around when selecting next on last and previous on first', () => {
       [popup, input] = mockBaseSuggestionsPopup(true);
 
-      const firstItem = assertNotNull(document.querySelector('.autocomplete__item:first-child'));
-      const lastItem = assertNotNull(document.querySelector('.autocomplete__item:last-child'));
+      const firstItem = assertNotNull($<HTMLElement>('.autocomplete__item:first-child'));
+      const lastItem = assertNotNull($<HTMLElement>('.autocomplete__item:last-child'));
 
       popup.selectUp();
 
@@ -164,7 +195,7 @@ describe('Suggestions', () => {
 
       popup.selectDown();
 
-      expect(document.querySelector(`.${selectedItemClassName}`)).toBeNull();
+      expect($<HTMLElement>(`.${selectedItemClassName}`)).toBeNull();
 
       popup.selectDown();
 
@@ -172,7 +203,7 @@ describe('Suggestions', () => {
 
       popup.selectUp();
 
-      expect(document.querySelector(`.${selectedItemClassName}`)).toBeNull();
+      expect($<HTMLElement>(`.${selectedItemClassName}`)).toBeNull();
 
       popup.selectUp();
 
@@ -196,7 +227,7 @@ describe('Suggestions', () => {
 
       popup.onItemSelected(itemSelectedHandler);
 
-      const firstItem = assertNotNull(document.querySelector('.autocomplete__item'));
+      const firstItem = assertNotNull($<HTMLElement>('.autocomplete__item'));
 
       fireEvent.click(firstItem);
 

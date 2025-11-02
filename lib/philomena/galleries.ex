@@ -10,7 +10,7 @@ defmodule Philomena.Galleries do
   alias PhilomenaQuery.Search
   alias Philomena.Galleries.Gallery
   alias Philomena.Galleries.Interaction
-  alias Philomena.Galleries.SearchIndex, as: GalleryIndex
+  alias Philomena.Galleries
   alias Philomena.IndexWorker
   alias Philomena.GalleryReorderWorker
   alias Philomena.Notifications
@@ -131,7 +131,7 @@ defmodule Philomena.Galleries do
 
   """
   def user_name_reindex(old_name, new_name) do
-    data = GalleryIndex.user_name_update_by_query(old_name, new_name)
+    data = Galleries.SearchIndex.user_name_update_by_query(old_name, new_name)
 
     Search.update_by_query(Gallery, data.query, data.set_replacements, data.replacements)
   end

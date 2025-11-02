@@ -16,6 +16,7 @@ defmodule PhilomenaWeb.ProfileController do
   alias Philomena.UserFingerprints.UserFingerprint
   alias Philomena.ModNotes.ModNote
   alias Philomena.ModNotes
+  alias Philomena.UserNameChanges.UserNameChange
   alias Philomena.Images.Image
   alias Philomena.Repo
   import Ecto.Query
@@ -36,6 +37,7 @@ defmodule PhilomenaWeb.ProfileController do
 
   plug :set_admin_metadata
   plug :set_mod_notes
+  plug :set_name_changes
 
   def show(conn, _params) do
     current_filter = conn.assigns.current_filter
@@ -85,8 +87,7 @@ defmodule PhilomenaWeb.ProfileController do
           query: %{
             bool: %{
               must: [
-                %{term: %{user_id: user.id}},
-                %{term: %{anonymous: false}},
+                %{term: %{author_id: user.id}},
                 %{term: %{hidden_from_users: false}}
               ],
               must_not: [
@@ -94,7 +95,7 @@ defmodule PhilomenaWeb.ProfileController do
               ]
             }
           },
-          sort: %{posted_at: :desc}
+          sort: %{created_at: :desc}
         },
         %{page_size: 3}
       )
@@ -106,9 +107,8 @@ defmodule PhilomenaWeb.ProfileController do
           query: %{
             bool: %{
               must: [
-                %{term: %{user_id: user.id}},
-                %{term: %{anonymous: false}},
-                %{term: %{deleted: false}},
+                %{term: %{author_id: user.id}},
+                %{term: %{hidden_from_users: false}},
                 %{term: %{access_level: "normal"}}
               ]
             }
@@ -281,6 +281,22 @@ defmodule PhilomenaWeb.ProfileController do
 
       mod_notes = ModNotes.list_all_mod_notes_by_type_and_id("User", user.id, renderer)
       assign(conn, :mod_notes, mod_notes)
+    else
+      conn
+    end
+  end
+
+  defp set_name_changes(conn, _opts) do
+    if Canada.Can.can?(conn.assigns.current_user, :index, UserNameChange) do
+      user = conn.assigns.user
+
+      name_changes =
+        UserNameChange
+        |> where(user_id: ^user.id)
+        |> order_by(desc: :id)
+        |> Repo.all()
+
+      assign(conn, :name_changes, name_changes)
     else
       conn
     end

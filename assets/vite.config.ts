@@ -39,7 +39,7 @@ export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
       },
     },
     build: {
-      target: ['es2019', 'chrome67', 'firefox62', 'edge18', 'safari12'],
+      target: ['es2019', 'chrome80', 'firefox69', 'edge80', 'safari13', 'ios13', 'opera63'],
       outDir: path.resolve(__dirname, '../priv/static'),
       emptyOutDir: false,
       sourcemap: isDev,
@@ -73,11 +73,18 @@ export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
       coverage: {
         reporter: ['text', 'html'],
         include: ['js/**/*.{js,ts}'],
+        exclude: ['js/app.ts', '**/__tests__/**'],
         thresholds: {
           statements: 0,
           branches: 0,
           functions: 0,
           lines: 0,
+          '**/query/**/*.ts': {
+            statements: 100,
+            branches: 100,
+            functions: 100,
+            lines: 100,
+          },
           '**/utils/**/*.ts': {
             statements: 100,
             branches: 100,

@@ -32,8 +32,7 @@ defmodule Philomena.Comments.Comment do
     |> validate_required([:body])
     |> validate_length(:body, min: 1, max: 300_000, count: :bytes)
     |> change(attribution)
-    |> Approval.maybe_put_approval(attribution[:user])
-    |> Approval.maybe_strip_images(attribution[:user])
+    |> Approval.maybe_put_approval(attribution[:user], :external_links)
   end
 
   def changeset(comment, attrs, edited_at \\ nil) do
@@ -43,7 +42,7 @@ defmodule Philomena.Comments.Comment do
     |> validate_required([:body])
     |> validate_length(:body, min: 1, max: 300_000, count: :bytes)
     |> validate_length(:edit_reason, max: 70, count: :bytes)
-    |> Approval.maybe_put_approval(comment.user)
+    |> Approval.maybe_put_approval(comment.user, :external_links)
   end
 
   def hide_changeset(comment, attrs, user) do
@@ -57,6 +56,7 @@ defmodule Philomena.Comments.Comment do
   def unhide_changeset(comment) do
     change(comment)
     |> put_change(:hidden_from_users, false)
+    |> put_change(:deleted_by_id, nil)
     |> put_change(:deletion_reason, "")
   end
 

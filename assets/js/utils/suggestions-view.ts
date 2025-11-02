@@ -1,7 +1,17 @@
 import { makeEl } from './dom.ts';
 import { MatchPart, TagSuggestion } from './suggestions-model.ts';
+import { SuggestedProperty } from '../autocomplete/properties';
 
-export class TagSuggestionComponent {
+interface SuggestionComponent {
+  readonly type: string;
+
+  value(): string;
+
+  render(): HTMLElement[];
+}
+
+export class TagSuggestionComponent implements SuggestionComponent {
+  readonly type = 'tag';
   data: TagSuggestion;
 
   constructor(data: TagSuggestion) {
@@ -69,7 +79,9 @@ export class TagSuggestionComponent {
   }
 }
 
-export class HistorySuggestionComponent {
+export class HistorySuggestionComponent implements SuggestionComponent {
+  readonly type = 'history';
+
   /**
    * Full query string that was previously searched and retrieved from the history.
    */
@@ -108,14 +120,56 @@ export class HistorySuggestionComponent {
   }
 }
 
-export type Suggestion = TagSuggestionComponent | HistorySuggestionComponent;
+export class PropertySuggestionComponent implements SuggestionComponent {
+  readonly type = 'property';
+  suggestion: SuggestedProperty;
+
+  constructor(content: SuggestedProperty) {
+    this.suggestion = content;
+  }
+
+  value(): string {
+    return this.suggestion.toString();
+  }
+
+  render(): HTMLElement[] {
+    return [
+      makeEl('div', { className: 'autocomplete__item__content' }, [
+        makeEl('i', { className: 'fa-solid fa-circle-info' }),
+        ' ',
+        ...this.#renderSuggestionWithHighlighting(),
+      ]),
+    ];
+  }
+
+  #renderSuggestionWithHighlighting(): (HTMLElement | string)[] {
+    const renderedSuggestion = this.value();
+    const matchedLength = this.suggestion.calculateMatchedLength();
+
+    const resultElements: (HTMLElement | string)[] = [
+      makeEl('b', {
+        className: 'autocomplete__item__property__match',
+        textContent: renderedSuggestion.slice(0, matchedLength),
+      }),
+    ];
+
+    if (matchedLength !== renderedSuggestion.length) {
+      resultElements.push(renderedSuggestion.slice(matchedLength));
+    }
+
+    return resultElements;
+  }
+}
+
+export type Suggestion = TagSuggestionComponent | HistorySuggestionComponent | PropertySuggestionComponent;
 
 export interface Suggestions {
   history: HistorySuggestionComponent[];
   tags: TagSuggestionComponent[];
+  properties: PropertySuggestionComponent[];
 }
 
-export interface ItemSelectedEvent {
+export interface ItemSelection {
   suggestion: Suggestion;
   shiftKey: boolean;
   ctrlKey: boolean;
@@ -124,6 +178,16 @@ export interface ItemSelectedEvent {
 interface SuggestionItem {
   element: HTMLElement;
   suggestion: Suggestion;
+}
+
+declare global {
+  interface ItemSelectedEvent extends CustomEvent<ItemSelection> {
+    target: HTMLElement;
+  }
+
+  interface GlobalEventHandlersEventMap {
+    itemselected: ItemSelectedEvent;
+  }
 }
 
 /**
@@ -212,11 +276,19 @@ export class SuggestionsPopupComponent {
       this.appendSuggestion(suggestion);
     }
 
+    if ((params.tags.length || params.history.length) && params.properties.length) {
+      this.container.appendChild(makeEl('hr', { className: 'autocomplete__separator' }));
+    }
+
+    for (const suggestion of params.properties) {
+      this.appendSuggestion(suggestion);
+    }
+
     return this;
   }
 
   appendSuggestion(suggestion: Suggestion) {
-    const type = suggestion instanceof TagSuggestionComponent ? 'tag' : 'history';
+    const type = suggestion.type;
 
     const element = makeEl(
       'div',
@@ -236,13 +308,13 @@ export class SuggestionsPopupComponent {
 
   private watchItem(item: SuggestionItem) {
     item.element.addEventListener('click', event => {
-      const detail: ItemSelectedEvent = {
+      const detail: ItemSelection = {
         suggestion: item.suggestion,
         shiftKey: event.shiftKey,
         ctrlKey: event.ctrlKey,
       };
 
-      this.container.dispatchEvent(new CustomEvent('item_selected', { detail }));
+      this.container.dispatchEvent(new CustomEvent('itemselected', { detail }));
     });
   }
 
@@ -320,7 +392,7 @@ export class SuggestionsPopupComponent {
    * Returns the item's prototype that can be viewed as the item's type identifier.
    */
   private itemType(index: number) {
-    return this.items[index].suggestion instanceof TagSuggestionComponent ? 'tag' : 'history';
+    return this.items[index].suggestion.type;
   }
 
   showForElement(targetElement: HTMLElement) {
@@ -344,9 +416,9 @@ export class SuggestionsPopupComponent {
     this.container.classList.remove('hidden');
   }
 
-  onItemSelected(callback: (event: ItemSelectedEvent) => void) {
-    this.container.addEventListener('item_selected', event => {
-      callback((event as CustomEvent<ItemSelectedEvent>).detail);
+  onItemSelected(callback: (event: ItemSelection) => void) {
+    this.container.addEventListener('itemselected', event => {
+      callback(event.detail);
     });
   }
 }

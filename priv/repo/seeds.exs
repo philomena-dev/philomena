@@ -22,6 +22,7 @@ alias Philomena.{
   Filters.Filter,
   Roles.Role,
   Tags.Tag,
+  TagChanges.TagChange,
   Users.User,
   StaticPages.StaticPage
 }
@@ -34,7 +35,7 @@ import Ecto.Query
 
 IO.puts("---- Creating search indices")
 
-for model <- [Image, Comment, Gallery, Tag, Post, Report, Filter] do
+for model <- [Image, Comment, Gallery, Tag, TagChange, Post, Report, Filter] do
   Search.delete_index!(model)
   Search.create_index!(model)
 end
@@ -42,7 +43,7 @@ end
 resources =
   "priv/repo/seeds.json"
   |> File.read!()
-  |> Jason.decode!()
+  |> JSON.decode!()
 
 IO.puts("---- Generating rating tags")
 

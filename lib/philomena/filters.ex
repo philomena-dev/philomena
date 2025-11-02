@@ -7,8 +7,8 @@ defmodule Philomena.Filters do
   alias Philomena.Repo
 
   alias Philomena.Filters.Filter
+  alias Philomena.Filters
   alias PhilomenaQuery.Search
-  alias Philomena.Filters.SearchIndex, as: FilterIndex
   alias Philomena.IndexWorker
 
   @doc """
@@ -298,7 +298,7 @@ defmodule Philomena.Filters do
 
   """
   def user_name_reindex(old_name, new_name) do
-    data = FilterIndex.user_name_update_by_query(old_name, new_name)
+    data = Filters.SearchIndex.user_name_update_by_query(old_name, new_name)
 
     Search.update_by_query(Filter, data.query, data.set_replacements, data.replacements)
   end

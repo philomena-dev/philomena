@@ -50,7 +50,16 @@
     ' Some users maintain custom filters which are publicly shared; you can search these filters with the box below.
   = form_for :filters, ~p"/filters", [method: "get", class: "hform", enforce_utf8: false], fn f ->
     .field
-      = text_input f, :fq, name: :fq, value: @conn.params["fq"], class: "input hform__text", placeholder: "Search filters", autocapitalize: "none"
+      = text_input f, :fq, name: :fq, value: @conn.params["fq"],
+        class: "input hform__text",
+        placeholder: "Search filters",
+        autocapitalize: "none",
+        spellcheck: "false",
+        autocomplete: if(@conn.cookies["enable_search_ac"], do: "on", else: "off"),
+        inputmode: "search",
+        data: [ \
+          autocomplete: "properties",
+        ]
       = submit "Search", class: "hform__button button"
 
   .fieldlabel

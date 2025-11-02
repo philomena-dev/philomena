@@ -18,7 +18,7 @@ defmodule Philomena.Images do
   alias Philomena.Images.Tagging
   alias Philomena.Images.Thumbnailer
   alias Philomena.Images.Source
-  alias Philomena.Images.SearchIndex, as: ImageIndex
+  alias Philomena.Images
   alias Philomena.IndexWorker
   alias Philomena.ImageFeatures.ImageFeature
   alias Philomena.SourceChanges.SourceChange
@@ -37,6 +37,7 @@ defmodule Philomena.Images do
   alias Philomena.Galleries.Gallery
   alias Philomena.Galleries.Interaction
   alias Philomena.Users.User
+  alias Philomena.Users
 
   use Philomena.Subscriptions,
     on_delete: :clear_image_notification,
@@ -69,6 +70,16 @@ defmodule Philomena.Images do
     |> Enum.map_join(", ", & &1.name)
   end
 
+  @typedoc """
+  Result of the `create_image/3` function. The image was created in a DB but an
+  upload process could still running in the background with its PID given in the
+  `upload_pid` field.
+  """
+  @type image_upload :: %{
+          image: %Image{},
+          upload_pid: pid
+        }
+
   @doc """
   Creates a image.
 
@@ -81,6 +92,8 @@ defmodule Philomena.Images do
       {:error, %Ecto.Changeset{}}
 
   """
+  @spec create_image(Users.principal(), %{String.t() => any()}) ::
+          {:ok, image_upload()} | Ecto.Multi.failure()
   def create_image(attribution, attrs \\ %{}) do
     tags = Tags.get_or_create_tags(attrs["tag_input"])
     sources = attrs["sources"]
@@ -1147,6 +1160,7 @@ defmodule Philomena.Images do
         reindex_images(image_ids)
         Comments.reindex_comments_on_images(image_ids)
         Tags.reindex_tags(Enum.flat_map(changes, &(&1.added_tags ++ &1.removed_tags)))
+        TagChanges.reindex_tag_changes_on_images(image_ids)
 
         result
 
@@ -1250,7 +1264,7 @@ defmodule Philomena.Images do
 
   """
   def user_name_reindex(old_name, new_name) do
-    data = ImageIndex.user_name_update_by_query(old_name, new_name)
+    data = Images.SearchIndex.user_name_update_by_query(old_name, new_name)
 
     Search.update_by_query(Image, data.query, data.set_replacements, data.replacements)
   end
@@ -1377,7 +1391,7 @@ defmodule Philomena.Images do
 
   """
   def perform_purge(files) do
-    {_out, 0} = System.cmd("purge-cache", [Jason.encode!(%{files: files})])
+    {_out, 0} = System.cmd("purge-cache", [JSON.encode!(%{files: files})])
 
     :ok
   end

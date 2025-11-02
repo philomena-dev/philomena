@@ -78,6 +78,7 @@ defmodule PhilomenaWeb.Router do
       :redirect_if_user_is_authenticated
     ]
 
+    resources "/reactivations", ReactivationController, only: [:show, :create]
     resources "/registrations", RegistrationController, only: [:new, :create], singleton: true
   end
 
@@ -103,6 +104,7 @@ defmodule PhilomenaWeb.Router do
 
     resources "/registrations", RegistrationController, only: [:edit, :update], singleton: true
     resources "/sessions", SessionController, only: [:delete], singleton: true
+    resources "/deactivations", DeactivationController, only: [:show, :delete], singleton: true
 
     scope "/registrations", Registration, as: :registration do
       resources "/totp", TotpController, only: [:edit, :update], singleton: true
@@ -286,7 +288,6 @@ defmodule PhilomenaWeb.Router do
       resources "/artist_links", Profile.ArtistLinkController
       resources "/awards", Profile.AwardController, except: [:index, :show]
 
-      resources "/details", Profile.DetailController, only: [:index]
       resources "/ip_history", Profile.IpHistoryController, only: [:index]
       resources "/fp_history", Profile.FpHistoryController, only: [:index]
       resources "/aliases", Profile.AliasController, only: [:index]
@@ -328,12 +329,10 @@ defmodule PhilomenaWeb.Router do
     resources "/dnp", DnpEntryController, only: [:new, :create, :edit, :update]
 
     resources "/ip_profiles", IpProfileController, only: [:show] do
-      resources "/tag_changes", IpProfile.TagChangeController, only: [:index]
       resources "/source_changes", IpProfile.SourceChangeController, only: [:index]
     end
 
     resources "/fingerprint_profiles", FingerprintProfileController, only: [:show] do
-      resources "/tag_changes", FingerprintProfile.TagChangeController, only: [:index]
       resources "/source_changes", FingerprintProfile.SourceChangeController, only: [:index]
     end
 
@@ -472,7 +471,6 @@ defmodule PhilomenaWeb.Router do
 
       resources "/tags", Image.TagController, only: [:update], singleton: true
       resources "/sources", Image.SourceController, only: [:update], singleton: true
-      resources "/tag_changes", Image.TagChangeController, only: [:index, :delete]
       resources "/source_changes", Image.SourceChangeController, only: [:index]
       resources "/description", Image.DescriptionController, only: [:update], singleton: true
       resources "/navigate", Image.NavigateController, only: [:index]
@@ -492,9 +490,9 @@ defmodule PhilomenaWeb.Router do
 
     resources "/themes", ThemeController, only: [:index]
 
-    resources "/tags", TagController, only: [:index, :show] do
-      resources "/tag_changes", Tag.TagChangeController, only: [:index]
-    end
+    resources "/tags", TagController, only: [:index, :show]
+
+    resources "/tag_changes", TagChangeController, only: [:index, :delete]
 
     scope "/search", Search, as: :search do
       resources "/reverse", ReverseController, only: [:index, :create]
@@ -525,7 +523,6 @@ defmodule PhilomenaWeb.Router do
     resources "/profiles", ProfileController, only: [:show] do
       resources "/reports", Profile.ReportController, only: [:new, :create]
       resources "/commission", Profile.CommissionController, only: [:show], singleton: true
-      resources "/tag_changes", Profile.TagChangeController, only: [:index]
       resources "/source_changes", Profile.SourceChangeController, only: [:index]
     end
 

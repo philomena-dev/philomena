@@ -1,12 +1,15 @@
-defimpl Canada.Can, for: [Atom, Philomena.Users.User] do
+# Permissions for logged-in users.
+defimpl Canada.Can, for: Philomena.Users.User do
   alias Philomena.Users.User
   alias Philomena.Roles.Role
+  alias Philomena.Bans
   alias Philomena.Badges.Award
   alias Philomena.Badges.Badge
   alias Philomena.Channels.Channel
   alias Philomena.Comments.Comment
   alias Philomena.Commissions.Commission
   alias Philomena.Conversations.Conversation
+  alias Philomena.Conversations.Message
   alias Philomena.DuplicateReports.DuplicateReport
   alias Philomena.DnpEntries.DnpEntry
   alias Philomena.Images.Image
@@ -16,7 +19,6 @@ defimpl Canada.Can, for: [Atom, Philomena.Users.User] do
   alias Philomena.Posts.Post
   alias Philomena.Filters.Filter
   alias Philomena.Galleries.Gallery
-  alias Philomena.DnpEntries.DnpEntry
   alias Philomena.ArtistLinks.ArtistLink
   alias Philomena.Tags.Tag
   alias Philomena.TagChanges.TagChange
@@ -25,10 +27,7 @@ defimpl Canada.Can, for: [Atom, Philomena.Users.User] do
   alias Philomena.Adverts.Advert
   alias Philomena.SiteNotices.SiteNotice
   alias Philomena.ModerationLogs.ModerationLog
-
-  alias Philomena.Bans.User, as: UserBan
-  alias Philomena.Bans.Subnet, as: SubnetBan
-  alias Philomena.Bans.Fingerprint, as: FingerprintBan
+  alias Philomena.UserNameChanges.UserNameChange
 
   # Admins can do anything
   def can?(%User{role: "admin"}, _action, _model), do: true
@@ -68,9 +67,11 @@ defimpl Canada.Can, for: [Atom, Philomena.Users.User] do
 
   def can?(%User{role: "moderator"}, :show, %Topic{hidden_from_users: true}), do: true
 
+  def can?(%User{role: "moderator"}, :show, %Post{}), do: true
+
   # View and approve conversations
   def can?(%User{role: "moderator"}, :show, %Conversation{}), do: true
-  def can?(%User{role: "moderator"}, :approve, %Conversation{}), do: true
+  def can?(%User{role: "moderator"}, :approve, %Message{}), do: true
 
   # View IP addresses and fingerprints
   def can?(%User{role: "moderator"}, :show, :ip_address), do: true
@@ -108,9 +109,9 @@ defimpl Canada.Can, for: [Atom, Philomena.Users.User] do
   def can?(%User{role: "moderator"}, _action, %DnpEntry{}), do: true
 
   # Create bans
-  def can?(%User{role: "moderator"}, _action, UserBan), do: true
-  def can?(%User{role: "moderator"}, _action, SubnetBan), do: true
-  def can?(%User{role: "moderator"}, _action, FingerprintBan), do: true
+  def can?(%User{role: "moderator"}, _action, Bans.User), do: true
+  def can?(%User{role: "moderator"}, _action, Bans.Subnet), do: true
+  def can?(%User{role: "moderator"}, _action, Bans.Fingerprint), do: true
 
   # Hide topics
   def can?(%User{role: "moderator"}, :show, %Topic{}), do: true
@@ -125,9 +126,6 @@ defimpl Canada.Can, for: [Atom, Philomena.Users.User] do
   def can?(%User{role: "moderator"}, _action, %Award{}), do: true
   def can?(%User{role: "moderator"}, _action, Award), do: true
 
-  # Create mod notes
-  def can?(%User{role: "moderator"}, :index, ModNote), do: true
-
   # Revert tag changes
   def can?(%User{role: "moderator"}, :revert, TagChange), do: true
   def can?(%User{role: "moderator"}, :delete, %TagChange{}), do: true
@@ -140,6 +138,9 @@ defimpl Canada.Can, for: [Atom, Philomena.Users.User] do
 
   # See moderation logs
   def can?(%User{role: "moderator"}, _action, ModerationLog), do: true
+
+  # View user name changes
+  def can?(%User{role: "moderator"}, :index, UserNameChange), do: true
 
   # And some privileged moderators can...
 
@@ -180,15 +181,23 @@ defimpl Canada.Can, for: [Atom, Philomena.Users.User] do
   def can?(%User{role: "moderator", role_map: %{"User" => %{"moderator" => _}}}, _action, User),
     do: true
 
-  def can?(%User{role: "moderator", role_map: %{"User" => %{"moderator" => _}}}, _action, %User{}),
-    do: true
+  def can?(
+        %User{role: "moderator", role_map: %{"User" => %{"moderator" => _}}},
+        _action,
+        %User{}
+      ),
+      do: true
 
   # Manage advertisements
   def can?(%User{role: "moderator", role_map: %{"Advert" => %{"admin" => _}}}, _action, Advert),
     do: true
 
-  def can?(%User{role: "moderator", role_map: %{"Advert" => %{"admin" => _}}}, _action, %Advert{}),
-    do: true
+  def can?(
+        %User{role: "moderator", role_map: %{"Advert" => %{"admin" => _}}},
+        _action,
+        %Advert{}
+      ),
+      do: true
 
   # Manage static pages
   def can?(
@@ -206,18 +215,44 @@ defimpl Canada.Can, for: [Atom, Philomena.Users.User] do
       do: true
 
   #
+  # Both assistants and moderators can...
+  #
+
+  # Read and create mod notes
+  def can?(%User{role: role}, action, ModNote)
+      when role in ~W(assistant moderator) and action in [:index, :new, :create],
+      do: true
+
+  # Update and delete their own mod notes
+  def can?(%User{id: id, role: role}, action, %ModNote{moderator_id: id})
+      when role in ~W(assistant moderator) and action in [:edit, :update, :delete],
+      do: true
+
+  #
   # Assistants can...
   #
 
   # Image assistant actions
-  def can?(%User{role: "assistant", role_map: %{"Image" => %{"moderator" => _}}}, :show, %Image{}),
-    do: true
+  def can?(
+        %User{role: "assistant", role_map: %{"Image" => %{"moderator" => _}}},
+        :show,
+        %Image{}
+      ),
+      do: true
 
-  def can?(%User{role: "assistant", role_map: %{"Image" => %{"moderator" => _}}}, :hide, %Image{}),
-    do: true
+  def can?(
+        %User{role: "assistant", role_map: %{"Image" => %{"moderator" => _}}},
+        :hide,
+        %Image{}
+      ),
+      do: true
 
-  def can?(%User{role: "assistant", role_map: %{"Image" => %{"moderator" => _}}}, :edit, %Image{}),
-    do: true
+  def can?(
+        %User{role: "assistant", role_map: %{"Image" => %{"moderator" => _}}},
+        :edit,
+        %Image{}
+      ),
+      do: true
 
   def can?(
         %User{role: "assistant", role_map: %{"Image" => %{"moderator" => _}}},
@@ -306,14 +341,26 @@ defimpl Canada.Can, for: [Atom, Philomena.Users.User] do
       do: true
 
   # Topic assistant actions
-  def can?(%User{role: "assistant", role_map: %{"Topic" => %{"moderator" => _}}}, :show, %Topic{}),
-    do: true
+  def can?(
+        %User{role: "assistant", role_map: %{"Topic" => %{"moderator" => _}}},
+        :show,
+        %Topic{}
+      ),
+      do: true
 
-  def can?(%User{role: "assistant", role_map: %{"Topic" => %{"moderator" => _}}}, :edit, %Topic{}),
-    do: true
+  def can?(
+        %User{role: "assistant", role_map: %{"Topic" => %{"moderator" => _}}},
+        :edit,
+        %Topic{}
+      ),
+      do: true
 
-  def can?(%User{role: "assistant", role_map: %{"Topic" => %{"moderator" => _}}}, :hide, %Topic{}),
-    do: true
+  def can?(
+        %User{role: "assistant", role_map: %{"Topic" => %{"moderator" => _}}},
+        :hide,
+        %Topic{}
+      ),
+      do: true
 
   def can?(%User{role: "assistant", role_map: %{"Topic" => %{"moderator" => _}}}, :show, %Post{}),
     do: true
@@ -386,7 +433,7 @@ defimpl Canada.Can, for: [Atom, Philomena.Users.User] do
   def can?(%User{role: "assistant"}, :show, %Topic{hidden_from_users: true}), do: true
 
   #
-  # Users and anonymous users can...
+  # Regular users can...
   #
 
   # Batch tag
@@ -407,8 +454,8 @@ defimpl Canada.Can, for: [Atom, Philomena.Users.User] do
   def can?(%User{id: id}, :show, %Conversation{from_id: id}), do: true
 
   # View filters they own and public/system filters
-  def can?(_user, :show, %Filter{system: true}), do: true
-  def can?(_user, :show, %Filter{public: true}), do: true
+  def can?(%User{}, :show, %Filter{system: true}), do: true
+  def can?(%User{}, :show, %Filter{public: true}), do: true
   def can?(%User{}, action, Filter) when action in [:index, :new, :create], do: true
 
   def can?(%User{id: id}, action, %Filter{user_id: id}) when action in [:show, :edit, :update],
@@ -428,6 +475,108 @@ defimpl Canada.Can, for: [Atom, Philomena.Users.User] do
       do: true
 
   # View non-deleted images
+  def can?(%User{}, action, Image)
+      when action in [:new, :create, :index],
+      do: true
+
+  def can?(%User{}, action, %Image{hidden_from_users: false})
+      when action in [:show, :index],
+      do: true
+
+  def can?(%User{}, :show, %Tag{}), do: true
+
+  # Comment on images where that is allowed
+  def can?(%User{}, :create_comment, %Image{hidden_from_users: false, commenting_allowed: true}),
+    do: true
+
+  # Edit comments on images
+  def can?(%User{id: id}, action, %Comment{hidden_from_users: false, user_id: id})
+      when action in [:edit, :update],
+      do: true
+
+  # Edit metadata on images where that is allowed
+  def can?(%User{}, :edit_metadata, %Image{hidden_from_users: false, tag_editing_allowed: true}),
+    do: true
+
+  def can?(%User{id: id}, :edit_description, %Image{
+        user_id: id,
+        hidden_from_users: false,
+        description_editing_allowed: true
+      }),
+      do: true
+
+  # Vote on images they can see
+  def can?(%User{} = user, :vote, image), do: can?(user, :show, image)
+
+  # View non-deleted comments
+  def can?(%User{}, :show, %Comment{hidden_from_users: false}), do: true
+
+  # View forums
+  def can?(%User{}, :index, Forum), do: true
+  def can?(%User{}, :show, %Forum{access_level: "normal"}), do: true
+  def can?(%User{}, :show, %Topic{hidden_from_users: false}), do: true
+  def can?(%User{}, :show, %Post{hidden_from_users: false}), do: true
+
+  # Create and edit posts
+  def can?(%User{}, :create_post, %Topic{locked_at: nil, hidden_from_users: false}), do: true
+
+  def can?(%User{id: id}, action, %Post{hidden_from_users: false, user_id: id})
+      when action in [:edit, :update],
+      do: true
+
+  # View profile pages
+  def can?(%User{}, :show, %User{}), do: true
+
+  # View and create DNP entries
+  def can?(%User{}, action, DnpEntry) when action in [:new, :create], do: true
+  def can?(%User{id: id}, :show, %DnpEntry{requesting_user_id: id}), do: true
+  def can?(%User{id: id}, :show_reason, %DnpEntry{requesting_user_id: id}), do: true
+  def can?(%User{id: id}, :show_feedback, %DnpEntry{requesting_user_id: id}), do: true
+
+  def can?(%User{}, :show, %DnpEntry{aasm_state: "listed"}), do: true
+  def can?(%User{}, :show_reason, %DnpEntry{aasm_state: "listed", hide_reason: false}), do: true
+
+  # Create and edit galleries
+  def can?(%User{}, :show, %Gallery{}), do: true
+  def can?(%User{}, action, Gallery) when action in [:new, :create], do: true
+
+  def can?(%User{id: id}, action, %Gallery{creator_id: id})
+      when action in [:edit, :update, :delete],
+      do: true
+
+  # Show static pages
+  def can?(%User{}, :show, %StaticPage{}), do: true
+
+  # Show channels
+  def can?(%User{}, :show, %Channel{}), do: true
+
+  # Otherwise...
+  def can?(%User{}, _action, _model), do: false
+end
+
+# Permissions for non-logged-in users.
+defimpl Canada.Can, for: Atom do
+  alias Philomena.Channels.Channel
+  alias Philomena.Comments.Comment
+  alias Philomena.DnpEntries.DnpEntry
+  alias Philomena.Images.Image
+  alias Philomena.Forums.Forum
+  alias Philomena.Topics.Topic
+  alias Philomena.Posts.Post
+  alias Philomena.Filters.Filter
+  alias Philomena.Galleries.Gallery
+  alias Philomena.Tags.Tag
+  alias Philomena.StaticPages.StaticPage
+
+  #
+  # Anonymous / non-logged-in users can...
+  #
+
+  # View filters they own and public/system filters
+  def can?(_user, :show, %Filter{system: true}), do: true
+  def can?(_user, :show, %Filter{public: true}), do: true
+
+  # View non-deleted images
   def can?(_user, action, Image)
       when action in [:new, :create, :index],
       do: true
@@ -442,24 +591,9 @@ defimpl Canada.Can, for: [Atom, Philomena.Users.User] do
   def can?(_user, :create_comment, %Image{hidden_from_users: false, commenting_allowed: true}),
     do: true
 
-  # Edit comments on images
-  def can?(%User{id: id}, action, %Comment{hidden_from_users: false, user_id: id})
-      when action in [:edit, :update],
-      do: true
-
   # Edit metadata on images where that is allowed
   def can?(_user, :edit_metadata, %Image{hidden_from_users: false, tag_editing_allowed: true}),
     do: true
-
-  def can?(%User{id: id}, :edit_description, %Image{
-        user_id: id,
-        hidden_from_users: false,
-        description_editing_allowed: true
-      }),
-      do: true
-
-  # Vote on images they can see
-  def can?(user, :vote, image), do: can?(user, :show, image)
 
   # View non-deleted comments
   def can?(_user, :show, %Comment{hidden_from_users: false}), do: true
@@ -473,29 +607,11 @@ defimpl Canada.Can, for: [Atom, Philomena.Users.User] do
   # Create and edit posts
   def can?(_user, :create_post, %Topic{locked_at: nil, hidden_from_users: false}), do: true
 
-  def can?(%User{id: id}, action, %Post{hidden_from_users: false, user_id: id})
-      when action in [:edit, :update],
-      do: true
-
-  # View profile pages
-  def can?(_user, :show, %User{}), do: true
-
-  # View and create DNP entries
-  def can?(%User{}, action, DnpEntry) when action in [:new, :create], do: true
-  def can?(%User{id: id}, :show, %DnpEntry{requesting_user_id: id}), do: true
-  def can?(%User{id: id}, :show_reason, %DnpEntry{requesting_user_id: id}), do: true
-  def can?(%User{id: id}, :show_feedback, %DnpEntry{requesting_user_id: id}), do: true
-
   def can?(_user, :show, %DnpEntry{aasm_state: "listed"}), do: true
   def can?(_user, :show_reason, %DnpEntry{aasm_state: "listed", hide_reason: false}), do: true
 
   # Create and edit galleries
   def can?(_user, :show, %Gallery{}), do: true
-  def can?(%User{}, action, Gallery) when action in [:new, :create], do: true
-
-  def can?(%User{id: id}, action, %Gallery{creator_id: id})
-      when action in [:edit, :update, :delete],
-      do: true
 
   # Show static pages
   def can?(_user, :show, %StaticPage{}), do: true

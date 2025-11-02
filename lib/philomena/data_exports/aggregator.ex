@@ -31,7 +31,7 @@ defmodule Philomena.DataExports.Aggregator do
   alias Philomena.SourceChanges.SourceChange
   alias Philomena.TagChanges.TagChange
   alias Philomena.Topics.Topic
-  alias Philomena.Bans.User, as: UserBan
+  alias Philomena.Bans
 
   # Direct UGC from form submission
   @user_columns [
@@ -116,7 +116,7 @@ defmodule Philomena.DataExports.Aggregator do
     {SourceChange, [:ip, :fingerprint, :user_agent, :referrer, :image_id, :added, :value]},
     {TagChange, [:ip, :fingerprint, :image_id]},
     {Topic, [:title, :anonymous, :forum_id]},
-    {UserBan, [:reason, :generated_ban_id]}
+    {Bans.User, [:reason, :generated_ban_id]}
   ]
 
   @doc """
@@ -165,7 +165,7 @@ defmodule Philomena.DataExports.Aggregator do
     Stream.map(list_of_maps, fn map ->
       map
       |> Map.new(fn {k, v} -> {k, to_string(v)} end)
-      |> Jason.encode!()
+      |> JSON.encode!()
       |> Kernel.<>("\n")
     end)
   end

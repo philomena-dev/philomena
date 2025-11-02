@@ -13,7 +13,7 @@ defmodule Philomena.Posts do
   alias Philomena.UserStatistics
   alias Philomena.Users.User
   alias Philomena.Posts.Post
-  alias Philomena.Posts.SearchIndex, as: PostIndex
+  alias Philomena.Posts
   alias Philomena.IndexWorker
   alias Philomena.Forums.Forum
   alias Philomena.Notifications
@@ -134,7 +134,7 @@ defmodule Philomena.Posts do
     Reports.create_system_report(
       {"Post", post.id},
       "Approval",
-      "Post contains externally-embedded images and has been flagged for review."
+      "Post contains external links"
     )
   end
 
@@ -330,7 +330,7 @@ defmodule Philomena.Posts do
 
   """
   def user_name_reindex(old_name, new_name) do
-    data = PostIndex.user_name_update_by_query(old_name, new_name)
+    data = Posts.SearchIndex.user_name_update_by_query(old_name, new_name)
 
     Search.update_by_query(Post, data.query, data.set_replacements, data.replacements)
   end
@@ -380,7 +380,8 @@ defmodule Philomena.Posts do
 
     [
       user: user_query,
-      topic: topic_query
+      topic: topic_query,
+      deleted_by: user_query
     ]
   end
 

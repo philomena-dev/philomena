@@ -18,7 +18,7 @@ defmodule Philomena.Users.User do
   alias Philomena.Roles.Role
   alias Philomena.UserFingerprints.UserFingerprint
   alias Philomena.UserIps.UserIp
-  alias Philomena.Bans.User, as: UserBan
+  alias Philomena.Bans
   alias Philomena.Donations.Donation
 
   @derive {Phoenix.Param, key: :slug}
@@ -32,7 +32,7 @@ defmodule Philomena.Users.User do
     has_many :linked_tags, through: [:verified_links, :tag]
     has_many :user_ips, UserIp
     has_many :user_fingerprints, UserFingerprint
-    has_many :bans, UserBan
+    has_many :bans, Bans.User
     has_many :donations, Donation
     has_one :commission, Commission
     many_to_many :roles, Role, join_through: "users_roles", on_replace: :delete
@@ -409,7 +409,7 @@ defmodule Philomena.Users.User do
       :avatar_mime_type,
       :uploaded_avatar
     ])
-    |> validate_number(:avatar_size, greater_than: 0, less_than_or_equal_to: 300_000)
+    |> validate_number(:avatar_size, greater_than: 0, less_than_or_equal_to: 512_000)
     |> validate_number(:avatar_width, greater_than: 0, less_than_or_equal_to: 1000)
     |> validate_number(:avatar_height, greater_than: 0, less_than_or_equal_to: 1000)
     |> validate_inclusion(:avatar_mime_type, ~W(image/gif image/jpeg image/png))
@@ -429,10 +429,10 @@ defmodule Philomena.Users.User do
     change(user, deleted_at: nil, deleted_by_user_id: nil)
   end
 
-  def deactivate_changeset(user, moderator) do
+  def deactivate_changeset(user, deactivator) do
     now = DateTime.utc_now(:second)
 
-    change(user, deleted_at: now, deleted_by_user_id: moderator.id)
+    change(user, deleted_at: now, deleted_by_user_id: deactivator.id)
   end
 
   def api_key_changeset(user) do

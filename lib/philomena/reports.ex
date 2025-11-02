@@ -8,7 +8,7 @@ defmodule Philomena.Reports do
 
   alias PhilomenaQuery.Search
   alias Philomena.Reports.Report
-  alias Philomena.Reports.SearchIndex, as: ReportIndex
+  alias Philomena.Reports
   alias Philomena.IndexWorker
   alias Philomena.Polymorphic
 
@@ -107,6 +107,8 @@ defmodule Philomena.Reports do
           error
       end
 
+  Use `close_reports/2` to close and reindex reports in one step outside an `m:Ecto.Multi`.
+
   ## Examples
 
       iex> close_report_query({"Image", 1}, %User{})
@@ -120,6 +122,20 @@ defmodule Philomena.Reports do
           r.open == true,
       select: r.id,
       update: [set: [open: false, state: "closed", admin_id: ^closing_user.id]]
+  end
+
+  @doc """
+  Closes all open reports for the given reportable type and ID, marking them as closed by the specified user.
+  Also reindexes the affected reports.
+
+  Returns `{:ok, {count, reports}}`.
+  """
+  def close_reports(type_and_id, closing_user) do
+    {_count, reports} =
+      result = Repo.update_all(close_report_query(type_and_id, closing_user), [])
+
+    reindex_reports(reports)
+    {:ok, result}
   end
 
   @doc """
@@ -257,7 +273,7 @@ defmodule Philomena.Reports do
 
   """
   def user_name_reindex(old_name, new_name) do
-    data = ReportIndex.user_name_update_by_query(old_name, new_name)
+    data = Reports.SearchIndex.user_name_update_by_query(old_name, new_name)
 
     Search.update_by_query(Report, data.query, data.set_replacements, data.replacements)
   end

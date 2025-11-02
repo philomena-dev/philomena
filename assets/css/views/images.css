@@ -182,7 +182,7 @@ div.image-container video {
 }
 
 .js-source-link {
-  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 div.image-container img,

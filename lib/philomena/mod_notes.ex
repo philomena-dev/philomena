@@ -54,6 +54,23 @@ defmodule Philomena.ModNotes do
 
   @doc """
   Returns a `m:Scrivener.Page` of 2-tuples of mod notes and rendered output
+  for the notable type and id and current pagination.
+
+  See `list_mod_notes/3` for more information.
+  """
+  def list_mod_notes_by_notable_type_and_id(
+        notable_type,
+        notable_id,
+        collection_renderer,
+        pagination
+      ) do
+    ModNote
+    |> where(notable_type: ^notable_type, notable_id: ^notable_id)
+    |> list_mod_notes(collection_renderer, pagination)
+  end
+
+  @doc """
+  Returns a `m:Scrivener.Page` of 2-tuples of mod notes and rendered output
   for the current pagination.
 
   When coerced to a list and rendered as Markdown, the result may look like:

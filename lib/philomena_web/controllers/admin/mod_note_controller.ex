@@ -3,12 +3,9 @@ defmodule PhilomenaWeb.Admin.ModNoteController do
 
   alias PhilomenaWeb.MarkdownRenderer
   alias Philomena.ModNotes.ModNote
-  alias Philomena.Polymorphic
   alias Philomena.ModNotes
 
-  plug :verify_authorized
-  plug :load_resource, model: ModNote, only: [:edit, :update, :delete]
-  plug :preload_association when action in [:edit, :update, :delete]
+  plug :load_and_authorize_resource, model: ModNote
 
   def index(conn, params) do
     pagination = conn.assigns.scrivener
@@ -16,8 +13,8 @@ defmodule PhilomenaWeb.Admin.ModNoteController do
 
     mod_notes =
       case params do
-        %{"q" => q} ->
-          ModNotes.list_mod_notes_by_query_string(q, renderer, pagination)
+        %{"notable_type" => type, "notable_id" => id} ->
+          ModNotes.list_mod_notes_by_notable_type_and_id(type, id, renderer, pagination)
 
         _ ->
           ModNotes.list_mod_notes(renderer, pagination)
@@ -66,19 +63,5 @@ defmodule PhilomenaWeb.Admin.ModNoteController do
     conn
     |> put_flash(:info, "Successfully deleted mod note.")
     |> redirect(to: ~p"/admin/mod_notes")
-  end
-
-  defp verify_authorized(conn, _opts) do
-    if Canada.Can.can?(conn.assigns.current_user, :index, ModNote) do
-      conn
-    else
-      PhilomenaWeb.NotAuthorizedPlug.call(conn)
-    end
-  end
-
-  def preload_association(%{assigns: %{mod_note: mod_note}} = conn, _opts) do
-    [mod_note] = Polymorphic.load_polymorphic([mod_note], notable: [notable_id: :notable_type])
-
-    assign(conn, :mod_note, mod_note)
   end
 end

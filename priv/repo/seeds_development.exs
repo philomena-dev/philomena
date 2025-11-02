@@ -23,7 +23,7 @@ alias Philomena.Tags
 resources =
   "priv/repo/seeds_development.json"
   |> File.read!()
-  |> Jason.decode!()
+  |> JSON.decode!()
 
 IO.puts "---- Generating users"
 for user_def <- resources["users"] do
@@ -46,7 +46,7 @@ request_attributes = [
 
 IO.puts "---- Generating images"
 for image_def <- resources["remote_images"] do
-  file = Briefly.create!()
+  file = Briefly.create!(extname: ".png")
   now = DateTime.utc_now() |> DateTime.to_unix(:microsecond)
 
   IO.puts "Fetching #{image_def["url"]} ..."

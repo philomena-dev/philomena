@@ -67,10 +67,15 @@
           i.fas.fa-edit>
           ' Edit
         = if @tag_change_count > 0 do
-          a.button.button--link.button--inline href=~p"/images/#{@image}/tag_changes" title="Tag history"
+          a.button.button--link.button--inline href=~p"/tag_changes?#{[tcq: "image_id:#{@image.id}", resource_type: "image", resource_id: @image.id]}" title="Tag history"
             i.fa.fa-history>
-            | History (
-            = @tag_change_count
+            span.hide-mobile> History
+            | (
+            => @tag_change_count
+            = pluralize("change", "changes", @tag_change_count)
+            ' ,
+            => @tag_change_tag_count
+            = pluralize("tag", "tags", @tag_change_tag_count)
             | )
     .block__content
       = render PhilomenaWeb.TagView, "_tag_list.html", tags: tags, conn: @conn

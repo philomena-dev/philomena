@@ -7,7 +7,7 @@
 
   .flex__grow
     => render PhilomenaWeb.TagView, "_tag.html", tag: @tag, conn: @conn
-    = link "Tag changes", to: ~p"/tags/#{@tag}/tag_changes", class: "detail-link"
+    = link "Tag changes", to: ~p"/tag_changes?#{[tcq: "tag_id:#{@tag.id}", resource_type: "tag", resource_id: @tag.name]}", class: "detail-link"
     = if manages_tags?(@conn) do
       = link "Edit details", to: ~p"/tags/#{@tag}/edit", class: "detail-link"
       = link "Usage", to: ~p"/tags/#{@tag}/details", class: "detail-link"
@@ -92,7 +92,7 @@
 
           .toggle-box-container
             .toggle-box-container__content
-              = map_join @tag.implied_by_tags, ", ", fn tag ->
+              = map_join Tag.display_order(@tag.implied_by_tags), ", ", fn tag ->
                 = link tag.name, to: ~p"/tags/#{tag}"
 
           br

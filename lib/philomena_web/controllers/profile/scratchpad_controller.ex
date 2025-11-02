@@ -3,11 +3,13 @@ defmodule PhilomenaWeb.Profile.ScratchpadController do
 
   alias Philomena.Users.User
   alias Philomena.Users
+  alias Philomena.ModNotes.ModNote
 
   plug PhilomenaWeb.FilterBannedUsersPlug
-  plug PhilomenaWeb.CanaryMapPlug, edit: :index, update: :index
 
-  plug :load_and_authorize_resource,
+  plug :verify_authorized
+
+  plug :load_resource,
     model: User,
     id_name: "profile_id",
     id_field: "slug",
@@ -34,6 +36,14 @@ defmodule PhilomenaWeb.Profile.ScratchpadController do
 
       {:error, changeset} ->
         render(conn, "edit.html", changeset: changeset)
+    end
+  end
+
+  defp verify_authorized(conn, _opts) do
+    if Canada.Can.can?(conn.assigns.current_user, :index, ModNote) do
+      conn
+    else
+      PhilomenaWeb.NotAuthorizedPlug.call(conn)
     end
   end
 end

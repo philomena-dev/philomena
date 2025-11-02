@@ -10,10 +10,10 @@ defmodule Philomena.Badges.Award do
     belongs_to :awarded_by, User
     belongs_to :badge, Badge
 
-    field :label, :string
     field :awarded_on, :utc_datetime
-    field :reason, :string
-    field :badge_name, :string
+    field :label, :string, default: ""
+    field :reason, :string, default: ""
+    field :badge_name, :string, default: ""
 
     timestamps(inserted_at: :created_at, type: :utc_datetime)
   end
