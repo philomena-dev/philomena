@@ -2,7 +2,8 @@ defmodule PhilomenaWeb.CommissionView do
   use PhilomenaWeb, :view
 
   alias Philomena.Commissions.Commission
+  alias Philomena.Commissions.Item
 
-  def categories, do: [[key: "-", value: ""] | Commission.categories()]
-  def types, do: Commission.types()
+  def suggested_tags, do: [[key: "-", value: ""] | Commission.suggested_tags()]
+  def types, do: Item.types()
 end

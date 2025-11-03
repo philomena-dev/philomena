@@ -517,16 +517,17 @@ defmodule Philomena.Users.User do
   end
 
   def totp_qrcode(user) do
+    site_name = Philomena.Configs.get("site_name")
     secret = totp_secret(user)
 
     provisioning_uri = %URI{
       scheme: "otpauth",
       host: "totp",
-      path: "/Derpibooru:" <> user.email,
+      path: "/#{site_name}:" <> user.email,
       query:
         URI.encode_query(%{
           secret: secret,
-          issuer: "Derpibooru"
+          issuer: site_name
         })
     }
 
@@ -615,7 +616,7 @@ defmodule Philomena.Users.User do
     do: user.otp_backup_codes |> Enum.reject(&Password.verify_pass(token, &1))
 
   def theme_colors do
-    ~W(red orange yellow blue green purple teal pink gray)
+    ~W(red orange yellow green blue purple teal pink gray)
   end
 
   def theme_names do

@@ -3,13 +3,14 @@
     span.block__header__title Search
   .block__content
     = form_for @changeset, ~p"/commissions", [as: :commission, method: "get", class: "hform"], fn f ->
-      .field = label f, :categories, "Art Categories:"
+      / TODO: debranding (commission_taggings)
+      / .field = label f, :categories, "Art Categories:"
 
-      = for {name, _value} <- categories() do
-        - checked = @conn.params["commission"]["category"] && Atom.to_string(name) in @conn.params["commission"]["category"]
-        .field
-          => checkbox f, name, checked_value: name, checked: checked, name: "commission[category][]", class: "checkbox spacing-right", hidden_input: false
-          => label f, name, name
+      / = for {name, _value} <- categories() do
+      /   - checked = @conn.params["commission"]["category"] && Atom.to_string(name) in @conn.params["commission"]["category"]
+      /   .field
+      /     => checkbox f, name, checked_value: name, checked: checked, name: "commission[category][]", class: "checkbox spacing-right", hidden_input: false
+      /     => label f, name, name
 
       br
 

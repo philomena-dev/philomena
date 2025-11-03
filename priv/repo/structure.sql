@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict HaHFW4uoQTYEW2yFV8zxsi1boGlZaAq7wPC4PqUZeQq9dkvLFwHwwFxqqPeF0LZ
+\restrict 9uxDdny3Bpcuj1Rkc9wlUPdpby5cuWuksIxgFIdKdkceoDa1fmrKWPlCr9UaBJ8
 
 -- Dumped from database version 18.0
 -- Dumped by pg_dump version 18.0
@@ -125,6 +125,126 @@ CREATE TABLE public.autocomplete (
     content bytea NOT NULL,
     created_at timestamp without time zone NOT NULL
 );
+
+
+--
+-- Name: avatar_kinds; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.avatar_kinds (
+    id bigint NOT NULL,
+    name character varying(255) NOT NULL
+);
+
+
+--
+-- Name: avatar_kinds_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.avatar_kinds_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: avatar_kinds_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.avatar_kinds_id_seq OWNED BY public.avatar_kinds.id;
+
+
+--
+-- Name: avatar_parts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.avatar_parts (
+    id bigint NOT NULL,
+    name character varying(255) NOT NULL,
+    priority integer DEFAULT 1 NOT NULL
+);
+
+
+--
+-- Name: avatar_parts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.avatar_parts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: avatar_parts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.avatar_parts_id_seq OWNED BY public.avatar_parts.id;
+
+
+--
+-- Name: avatar_shape_kinds; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.avatar_shape_kinds (
+    id bigint NOT NULL,
+    avatar_shape_id bigint NOT NULL,
+    avatar_kind_id bigint NOT NULL
+);
+
+
+--
+-- Name: avatar_shape_kinds_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.avatar_shape_kinds_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: avatar_shape_kinds_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.avatar_shape_kinds_id_seq OWNED BY public.avatar_shape_kinds.id;
+
+
+--
+-- Name: avatar_shapes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.avatar_shapes (
+    id bigint NOT NULL,
+    avatar_part_id bigint NOT NULL,
+    shape character varying(255) NOT NULL,
+    any_kind boolean DEFAULT false NOT NULL
+);
+
+
+--
+-- Name: avatar_shapes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.avatar_shapes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: avatar_shapes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.avatar_shapes_id_seq OWNED BY public.avatar_shapes.id;
 
 
 --
@@ -380,6 +500,36 @@ ALTER SEQUENCE public.commissions_id_seq OWNED BY public.commissions.id;
 
 
 --
+-- Name: configs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.configs (
+    id bigint NOT NULL,
+    key character varying(255) NOT NULL,
+    value character varying(255) NOT NULL
+);
+
+
+--
+-- Name: configs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.configs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: configs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.configs_id_seq OWNED BY public.configs.id;
+
+
+--
 -- Name: conversations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -416,6 +566,37 @@ CREATE SEQUENCE public.conversations_id_seq
 --
 
 ALTER SEQUENCE public.conversations_id_seq OWNED BY public.conversations.id;
+
+
+--
+-- Name: default_quick_tags; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.default_quick_tags (
+    id bigint NOT NULL,
+    quick_tag_tab_id bigint NOT NULL,
+    category character varying(255) NOT NULL,
+    tags character varying(255)[] NOT NULL
+);
+
+
+--
+-- Name: default_quick_tags_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.default_quick_tags_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: default_quick_tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.default_quick_tags_id_seq OWNED BY public.default_quick_tags.id;
 
 
 --
@@ -607,6 +788,70 @@ CREATE SEQUENCE public.fingerprint_bans_id_seq
 --
 
 ALTER SEQUENCE public.fingerprint_bans_id_seq OWNED BY public.fingerprint_bans.id;
+
+
+--
+-- Name: footer_categories; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.footer_categories (
+    id bigint NOT NULL,
+    title character varying(255) NOT NULL,
+    "position" integer NOT NULL
+);
+
+
+--
+-- Name: footer_categories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.footer_categories_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: footer_categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.footer_categories_id_seq OWNED BY public.footer_categories.id;
+
+
+--
+-- Name: footer_links; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.footer_links (
+    id bigint NOT NULL,
+    footer_category_id bigint NOT NULL,
+    title character varying(255) NOT NULL,
+    url character varying(255) NOT NULL,
+    "position" integer NOT NULL,
+    bold boolean DEFAULT false NOT NULL,
+    new_tab boolean DEFAULT false NOT NULL
+);
+
+
+--
+-- Name: footer_links_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.footer_links_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: footer_links_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.footer_links_id_seq OWNED BY public.footer_links.id;
 
 
 --
@@ -1332,6 +1577,36 @@ ALTER SEQUENCE public.posts_id_seq OWNED BY public.posts.id;
 
 
 --
+-- Name: quick_tag_tabs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.quick_tag_tabs (
+    id bigint NOT NULL,
+    title character varying(255) NOT NULL,
+    "position" integer NOT NULL
+);
+
+
+--
+-- Name: quick_tag_tabs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.quick_tag_tabs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: quick_tag_tabs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.quick_tag_tabs_id_seq OWNED BY public.quick_tag_tabs.id;
+
+
+--
 -- Name: reports; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1410,6 +1685,130 @@ CREATE TABLE public.schema_migrations (
     version bigint NOT NULL,
     inserted_at timestamp(0) without time zone
 );
+
+
+--
+-- Name: season_quick_tags; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.season_quick_tags (
+    id bigint NOT NULL,
+    quick_tag_tab_id bigint NOT NULL,
+    episode integer NOT NULL,
+    tag character varying(255) NOT NULL
+);
+
+
+--
+-- Name: season_quick_tags_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.season_quick_tags_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: season_quick_tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.season_quick_tags_id_seq OWNED BY public.season_quick_tags.id;
+
+
+--
+-- Name: shipping_quick_tags; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.shipping_quick_tags (
+    id bigint NOT NULL,
+    quick_tag_tab_id bigint NOT NULL,
+    category character varying(255) NOT NULL,
+    implying character varying(255)[] DEFAULT ARRAY[]::character varying[],
+    not_implying character varying(255)[] DEFAULT ARRAY[]::character varying[]
+);
+
+
+--
+-- Name: shipping_quick_tags_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.shipping_quick_tags_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: shipping_quick_tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.shipping_quick_tags_id_seq OWNED BY public.shipping_quick_tags.id;
+
+
+--
+-- Name: shorthand_quick_tag_categories; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.shorthand_quick_tag_categories (
+    id bigint NOT NULL,
+    quick_tag_tab_id bigint NOT NULL,
+    category character varying(255) NOT NULL
+);
+
+
+--
+-- Name: shorthand_quick_tag_categories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.shorthand_quick_tag_categories_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: shorthand_quick_tag_categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.shorthand_quick_tag_categories_id_seq OWNED BY public.shorthand_quick_tag_categories.id;
+
+
+--
+-- Name: shorthand_quick_tags; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.shorthand_quick_tags (
+    id bigint NOT NULL,
+    shorthand_quick_tag_category_id bigint NOT NULL,
+    shorthand character varying(255) NOT NULL,
+    tag character varying(255) NOT NULL
+);
+
+
+--
+-- Name: shorthand_quick_tags_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.shorthand_quick_tags_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: shorthand_quick_tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.shorthand_quick_tags_id_seq OWNED BY public.shorthand_quick_tags.id;
 
 
 --
@@ -1593,6 +1992,35 @@ ALTER SEQUENCE public.subnet_bans_id_seq OWNED BY public.subnet_bans.id;
 
 
 --
+-- Name: system_images; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.system_images (
+    id bigint NOT NULL,
+    key character varying(255) NOT NULL
+);
+
+
+--
+-- Name: system_images_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.system_images_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: system_images_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.system_images_id_seq OWNED BY public.system_images.id;
+
+
+--
 -- Name: tag_change_tags; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1695,7 +2123,8 @@ CREATE TABLE public.tags (
     updated_at timestamp without time zone NOT NULL,
     category character varying,
     mod_notes character varying,
-    description character varying DEFAULT ''::character varying NOT NULL
+    description character varying DEFAULT ''::character varying NOT NULL,
+    invalid boolean DEFAULT false NOT NULL
 );
 
 
@@ -2222,6 +2651,34 @@ ALTER TABLE ONLY public.artist_links ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
+-- Name: avatar_kinds id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avatar_kinds ALTER COLUMN id SET DEFAULT nextval('public.avatar_kinds_id_seq'::regclass);
+
+
+--
+-- Name: avatar_parts id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avatar_parts ALTER COLUMN id SET DEFAULT nextval('public.avatar_parts_id_seq'::regclass);
+
+
+--
+-- Name: avatar_shape_kinds id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avatar_shape_kinds ALTER COLUMN id SET DEFAULT nextval('public.avatar_shape_kinds_id_seq'::regclass);
+
+
+--
+-- Name: avatar_shapes id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avatar_shapes ALTER COLUMN id SET DEFAULT nextval('public.avatar_shapes_id_seq'::regclass);
+
+
+--
 -- Name: badge_awards id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2264,10 +2721,24 @@ ALTER TABLE ONLY public.commissions ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
+-- Name: configs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.configs ALTER COLUMN id SET DEFAULT nextval('public.configs_id_seq'::regclass);
+
+
+--
 -- Name: conversations id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.conversations ALTER COLUMN id SET DEFAULT nextval('public.conversations_id_seq'::regclass);
+
+
+--
+-- Name: default_quick_tags id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.default_quick_tags ALTER COLUMN id SET DEFAULT nextval('public.default_quick_tags_id_seq'::regclass);
 
 
 --
@@ -2303,6 +2774,20 @@ ALTER TABLE ONLY public.filters ALTER COLUMN id SET DEFAULT nextval('public.filt
 --
 
 ALTER TABLE ONLY public.fingerprint_bans ALTER COLUMN id SET DEFAULT nextval('public.fingerprint_bans_id_seq'::regclass);
+
+
+--
+-- Name: footer_categories id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.footer_categories ALTER COLUMN id SET DEFAULT nextval('public.footer_categories_id_seq'::regclass);
+
+
+--
+-- Name: footer_links id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.footer_links ALTER COLUMN id SET DEFAULT nextval('public.footer_links_id_seq'::regclass);
 
 
 --
@@ -2411,6 +2896,13 @@ ALTER TABLE ONLY public.posts ALTER COLUMN id SET DEFAULT nextval('public.posts_
 
 
 --
+-- Name: quick_tag_tabs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.quick_tag_tabs ALTER COLUMN id SET DEFAULT nextval('public.quick_tag_tabs_id_seq'::regclass);
+
+
+--
 -- Name: reports id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2422,6 +2914,34 @@ ALTER TABLE ONLY public.reports ALTER COLUMN id SET DEFAULT nextval('public.repo
 --
 
 ALTER TABLE ONLY public.roles ALTER COLUMN id SET DEFAULT nextval('public.roles_id_seq'::regclass);
+
+
+--
+-- Name: season_quick_tags id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.season_quick_tags ALTER COLUMN id SET DEFAULT nextval('public.season_quick_tags_id_seq'::regclass);
+
+
+--
+-- Name: shipping_quick_tags id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.shipping_quick_tags ALTER COLUMN id SET DEFAULT nextval('public.shipping_quick_tags_id_seq'::regclass);
+
+
+--
+-- Name: shorthand_quick_tag_categories id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.shorthand_quick_tag_categories ALTER COLUMN id SET DEFAULT nextval('public.shorthand_quick_tag_categories_id_seq'::regclass);
+
+
+--
+-- Name: shorthand_quick_tags id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.shorthand_quick_tags ALTER COLUMN id SET DEFAULT nextval('public.shorthand_quick_tags_id_seq'::regclass);
 
 
 --
@@ -2457,6 +2977,13 @@ ALTER TABLE ONLY public.static_pages ALTER COLUMN id SET DEFAULT nextval('public
 --
 
 ALTER TABLE ONLY public.subnet_bans ALTER COLUMN id SET DEFAULT nextval('public.subnet_bans_id_seq'::regclass);
+
+
+--
+-- Name: system_images id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.system_images ALTER COLUMN id SET DEFAULT nextval('public.system_images_id_seq'::regclass);
 
 
 --
@@ -2574,6 +3101,38 @@ ALTER TABLE ONLY public.artist_links
 
 
 --
+-- Name: avatar_kinds avatar_kinds_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avatar_kinds
+    ADD CONSTRAINT avatar_kinds_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: avatar_parts avatar_parts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avatar_parts
+    ADD CONSTRAINT avatar_parts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: avatar_shape_kinds avatar_shape_kinds_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avatar_shape_kinds
+    ADD CONSTRAINT avatar_shape_kinds_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: avatar_shapes avatar_shapes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avatar_shapes
+    ADD CONSTRAINT avatar_shapes_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: badge_awards badge_awards_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2622,11 +3181,27 @@ ALTER TABLE ONLY public.commissions
 
 
 --
+-- Name: configs configs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.configs
+    ADD CONSTRAINT configs_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: conversations conversations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.conversations
     ADD CONSTRAINT conversations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: default_quick_tags default_quick_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.default_quick_tags
+    ADD CONSTRAINT default_quick_tags_pkey PRIMARY KEY (id);
 
 
 --
@@ -2667,6 +3242,22 @@ ALTER TABLE ONLY public.filters
 
 ALTER TABLE ONLY public.fingerprint_bans
     ADD CONSTRAINT fingerprint_bans_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: footer_categories footer_categories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.footer_categories
+    ADD CONSTRAINT footer_categories_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: footer_links footer_links_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.footer_links
+    ADD CONSTRAINT footer_links_pkey PRIMARY KEY (id);
 
 
 --
@@ -2790,6 +3381,14 @@ ALTER TABLE ONLY public.posts
 
 
 --
+-- Name: quick_tag_tabs quick_tag_tabs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.quick_tag_tabs
+    ADD CONSTRAINT quick_tag_tabs_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: reports reports_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2811,6 +3410,38 @@ ALTER TABLE ONLY public.roles
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: season_quick_tags season_quick_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.season_quick_tags
+    ADD CONSTRAINT season_quick_tags_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: shipping_quick_tags shipping_quick_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.shipping_quick_tags
+    ADD CONSTRAINT shipping_quick_tags_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: shorthand_quick_tag_categories shorthand_quick_tag_categories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.shorthand_quick_tag_categories
+    ADD CONSTRAINT shorthand_quick_tag_categories_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: shorthand_quick_tags shorthand_quick_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.shorthand_quick_tags
+    ADD CONSTRAINT shorthand_quick_tags_pkey PRIMARY KEY (id);
 
 
 --
@@ -2851,6 +3482,14 @@ ALTER TABLE ONLY public.static_pages
 
 ALTER TABLE ONLY public.subnet_bans
     ADD CONSTRAINT subnet_bans_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: system_images system_images_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.system_images
+    ADD CONSTRAINT system_images_pkey PRIMARY KEY (id);
 
 
 --
@@ -2991,6 +3630,20 @@ CREATE INDEX channel_live_notifications_user_id_read_index ON public.channel_liv
 --
 
 CREATE INDEX channel_live_notifications_user_id_updated_at_desc_index ON public.channel_live_notifications USING btree (user_id, updated_at DESC);
+
+
+--
+-- Name: configs_key_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX configs_key_index ON public.configs USING btree (key);
+
+
+--
+-- Name: footer_categories_position_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX footer_categories_position_index ON public.footer_categories USING btree ("position");
 
 
 --
@@ -4387,6 +5040,13 @@ CREATE INDEX reports_system_index ON public.reports USING btree (system) WHERE (
 
 
 --
+-- Name: system_images_key_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX system_images_key_index ON public.system_images USING btree (key);
+
+
+--
 -- Name: tag_change_tags_tag_change_id_tag_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4443,6 +5103,30 @@ CREATE INDEX user_tokens_user_id_index ON public.user_tokens USING btree (user_i
 
 
 --
+-- Name: avatar_shape_kinds avatar_shape_kinds_avatar_kind_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avatar_shape_kinds
+    ADD CONSTRAINT avatar_shape_kinds_avatar_kind_id_fkey FOREIGN KEY (avatar_kind_id) REFERENCES public.avatar_kinds(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: avatar_shape_kinds avatar_shape_kinds_avatar_shape_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avatar_shape_kinds
+    ADD CONSTRAINT avatar_shape_kinds_avatar_shape_id_fkey FOREIGN KEY (avatar_shape_id) REFERENCES public.avatar_shapes(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: avatar_shapes avatar_shapes_avatar_part_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.avatar_shapes
+    ADD CONSTRAINT avatar_shapes_avatar_part_id_fkey FOREIGN KEY (avatar_part_id) REFERENCES public.avatar_parts(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: channel_live_notifications channel_live_notifications_channel_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -4456,6 +5140,14 @@ ALTER TABLE ONLY public.channel_live_notifications
 
 ALTER TABLE ONLY public.channel_live_notifications
     ADD CONSTRAINT channel_live_notifications_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: default_quick_tags default_quick_tags_quick_tag_tab_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.default_quick_tags
+    ADD CONSTRAINT default_quick_tags_quick_tag_tab_id_fkey FOREIGN KEY (quick_tag_tab_id) REFERENCES public.quick_tag_tabs(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -5243,6 +5935,14 @@ ALTER TABLE ONLY public.gallery_subscriptions
 
 
 --
+-- Name: footer_links footer_links_footer_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.footer_links
+    ADD CONSTRAINT footer_links_footer_category_id_fkey FOREIGN KEY (footer_category_id) REFERENCES public.footer_categories(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: forum_post_notifications forum_post_notifications_post_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5379,6 +6079,38 @@ ALTER TABLE ONLY public.moderation_logs
 
 
 --
+-- Name: season_quick_tags season_quick_tags_quick_tag_tab_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.season_quick_tags
+    ADD CONSTRAINT season_quick_tags_quick_tag_tab_id_fkey FOREIGN KEY (quick_tag_tab_id) REFERENCES public.quick_tag_tabs(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: shipping_quick_tags shipping_quick_tags_quick_tag_tab_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.shipping_quick_tags
+    ADD CONSTRAINT shipping_quick_tags_quick_tag_tab_id_fkey FOREIGN KEY (quick_tag_tab_id) REFERENCES public.quick_tag_tabs(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: shorthand_quick_tag_categories shorthand_quick_tag_categories_quick_tag_tab_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.shorthand_quick_tag_categories
+    ADD CONSTRAINT shorthand_quick_tag_categories_quick_tag_tab_id_fkey FOREIGN KEY (quick_tag_tab_id) REFERENCES public.quick_tag_tabs(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: shorthand_quick_tags shorthand_quick_tags_shorthand_quick_tag_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.shorthand_quick_tags
+    ADD CONSTRAINT shorthand_quick_tags_shorthand_quick_tag_category_id_fkey FOREIGN KEY (shorthand_quick_tag_category_id) REFERENCES public.shorthand_quick_tag_categories(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: source_changes source_changes_image_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5446,7 +6178,7 @@ ALTER TABLE ONLY public.users
 -- PostgreSQL database dump complete
 --
 
-\unrestrict HaHFW4uoQTYEW2yFV8zxsi1boGlZaAq7wPC4PqUZeQq9dkvLFwHwwFxqqPeF0LZ
+\unrestrict 9uxDdny3Bpcuj1Rkc9wlUPdpby5cuWuksIxgFIdKdkceoDa1fmrKWPlCr9UaBJ8
 
 INSERT INTO public."schema_migrations" (version) VALUES (20200503002523);
 INSERT INTO public."schema_migrations" (version) VALUES (20200607000511);
@@ -5476,3 +6208,8 @@ INSERT INTO public."schema_migrations" (version) VALUES (20250407021536);
 INSERT INTO public."schema_migrations" (version) VALUES (20250501174007);
 INSERT INTO public."schema_migrations" (version) VALUES (20250502110018);
 INSERT INTO public."schema_migrations" (version) VALUES (20250507183410);
+INSERT INTO public."schema_migrations" (version) VALUES (20251014181016);
+INSERT INTO public."schema_migrations" (version) VALUES (20251014181033);
+INSERT INTO public."schema_migrations" (version) VALUES (20251014181203);
+INSERT INTO public."schema_migrations" (version) VALUES (20251014191009);
+INSERT INTO public."schema_migrations" (version) VALUES (20251018172400);

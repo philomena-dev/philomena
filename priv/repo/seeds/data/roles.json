@@ -1,0 +1,17 @@
+[
+  { "name": "moderator", "resource_type": "Image" },
+  { "name": "moderator", "resource_type": "DuplicateReport" },
+  { "name": "moderator", "resource_type": "Comment" },
+  { "name": "moderator", "resource_type": "Tag" },
+  { "name": "moderator", "resource_type": "ArtistLink" },
+  { "name": "admin", "resource_type": "Tag" },
+  { "name": "moderator", "resource_type": "User" },
+  { "name": "admin", "resource_type": "SiteNotice" },
+  { "name": "admin", "resource_type": "Badge" },
+  { "name": "admin", "resource_type": "Role" },
+  { "name": "batch_update", "resource_type": "Tag" },
+  { "name": "moderator", "resource_type": "Topic" },
+  { "name": "admin", "resource_type": "Advert" },
+  { "name": "admin", "resource_type": "StaticPage" },
+  { "name": "admin", "resource_type": "Image" }
+]

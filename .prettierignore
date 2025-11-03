@@ -1,0 +1,2 @@
+# Prettier doesn't know about the ||syntax|| and produces garbage output.
+priv/repo/seeds/data/pages/markdown.md

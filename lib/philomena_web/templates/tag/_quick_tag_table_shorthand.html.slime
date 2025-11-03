@@ -1,10 +1,10 @@
-= for [heading, maps] <- @data do
+= for category <- @tab_data.categories do
   div
-    strong = heading
+    strong = category.category
     br
 
-    = for [name, alias_name] <- maps do
-      => name
+    = for shorthand <- Enum.filter(@shorthands, &(&1.shorthand_quick_tag_category_id == category.id)) do
+      => shorthand.shorthand
       ' -
-      = tag_link @tags[alias_name], alias_name
+      = tag_link @tags[shorthand.tag], shorthand.tag
       br

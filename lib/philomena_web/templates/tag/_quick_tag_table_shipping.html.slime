@@ -1,5 +1,6 @@
-= for slice <- Enum.chunk_every(@shipping[@tab], 10) do
-  div
-    = for tag <- slice do
-      = tag_link tag, tag.name
-      br
+= if Map.has_key?(@tab_data, :shipping_tags) do
+  = for slice <- Enum.chunk_every(@tab_data.shipping_tags, 10) do
+    div
+      = for tag <- slice do
+        = tag_link tag, tag.name
+        br

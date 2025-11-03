@@ -12,12 +12,12 @@ defmodule Philomena.Commissions.Commission do
     has_many :items, Item
 
     field :open, :boolean
-    field :categories, {:array, :string}, default: []
     field :information, :string, default: ""
     field :contact, :string, default: ""
     field :will_create, :string, default: ""
     field :will_not_create, :string, default: ""
     field :commission_items_count, :integer, default: 0
+    field :accepting_requests, :boolean, default: false
 
     timestamps(inserted_at: :created_at, type: :utc_datetime)
   end
@@ -31,61 +31,34 @@ defmodule Philomena.Commissions.Commission do
       :will_create,
       :will_not_create,
       :open,
-      :sheet_image_id,
-      :categories
+      :sheet_image_id
     ])
-    |> drop_blank_categories()
     |> validate_required([:user_id, :information, :contact, :open])
     |> validate_length(:information, max: 1000, count: :bytes)
     |> validate_length(:contact, max: 1000, count: :bytes)
     |> validate_length(:will_create, max: 1000, count: :bytes)
     |> validate_length(:will_not_create, max: 1000, count: :bytes)
-    |> validate_subset(:categories, Keyword.values(categories()))
   end
 
-  defp drop_blank_categories(changeset) do
-    categories =
-      changeset
-      |> get_field(:categories)
-      |> Enum.filter(&(&1 not in [nil, ""]))
-
-    change(changeset, categories: categories)
-  end
-
-  def categories do
+  def suggested_tags do
     [
-      Anthro: "Anthro",
-      "Canon Characters": "Canon Characters",
-      Comics: "Comics",
-      "Fetish Art": "Fetish Art",
-      "Human and EqG": "Human and EqG",
-      NSFW: "NSFW",
-      "Original Characters": "Original Characters",
-      "Original Species": "Original Species",
-      Pony: "Pony",
-      Requests: "Requests",
-      Safe: "Safe",
-      Shipping: "Shipping",
-      "Violence and Gore": "Violence and Gore"
-    ]
-  end
-
-  def types do
-    [
-      "Sketch",
-      "Colored Sketch",
-      "Inked",
-      "Flat Color",
-      "Vector",
-      "Cel Shaded",
-      "Fully Shaded",
-      "Traditional",
-      "Pixel Art",
-      "Animation",
-      "Crafted Item",
-      "Sculpture",
-      "Plushie",
-      "Other"
+      "safe",
+      "suggestive",
+      "questionable",
+      "explicit",
+      "anthro",
+      "feral",
+      "human",
+      "humanoid",
+      "oc",
+      "original species",
+      "shipping",
+      "comic",
+      "gore",
+      "violence",
+      "fetish",
+      "my little pony",
+      "fanart"
     ]
   end
 end

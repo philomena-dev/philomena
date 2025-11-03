@@ -76,8 +76,8 @@ defmodule Philomena.Tags do
 
   ## Examples
 
-      iex> get_or_create_tags("safe, cute, pony")
-      [%Tag{name: "safe"}, %Tag{name: "cute"}, %Tag{name: "pony"}]
+      iex> get_or_create_tags("safe, cute, alice")
+      [%Tag{name: "safe"}, %Tag{name: "cute"}, %Tag{name: "alice"}]
 
   """
   @spec get_or_create_tags(String.t()) :: list()

@@ -93,6 +93,10 @@ export interface BooruObject {
    * Fancy tag setting for editing images.
    */
   fancyTagEdit: boolean;
+  /**
+   * Minimum number of tags required on upload
+   */
+  minimumTags: number;
 }
 
 declare global {

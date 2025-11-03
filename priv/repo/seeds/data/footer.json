@@ -1,5 +1,5 @@
 {
-  "cols": ["Site Resources", "Help & Information", "Community"],
+  "categories": ["Site Resources", "Help & Information", "Community"],
   "Site Resources": [
     {
       "title": "Site Rules",
@@ -36,9 +36,9 @@
   "Help & Information": [
     {
       "title": "Changelog",
-      "url": "https://github.com/derpibooru/philomena/commits/master",
+      "url": "https://github.com/philomena-dev/philomena/commits/master",
       "bold": true,
-      "target": "_blank"
+      "new_tab": true
     },
     {
       "title": "FAQs",
@@ -56,10 +56,6 @@
     {
       "title": "Advertising",
       "url": "/pages/advertising"
-    },
-    {
-      "title": "Onion Service",
-      "url": "/pages/onion"
     }
   ],
   "Community": [
@@ -84,11 +80,6 @@
     {
       "title": "About",
       "url": "/pages/about"
-    },
-    {
-      "title": "Twitter",
-      "url": "https://twitter.com/Derpibooru",
-      "target": "_blank"
     }
   ]
 }

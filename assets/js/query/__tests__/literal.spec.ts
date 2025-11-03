@@ -15,22 +15,22 @@ describe('Literal field parsing', () => {
   });
 
   it('should handle fuzzy matching based on normalized edit distance', () => {
-    const matcher = makeLiteralMatcher('fluttersho', 0.8, false);
-    expect(matcher('fluttershy', 'tags', 0)).toBe(true);
-    expect(matcher('rarity', 'tags', 0)).toBe(false);
+    const matcher = makeLiteralMatcher('materialization', 0.8, false);
+    expect(matcher('materialisation', 'tags', 0)).toBe(true);
+    expect(matcher('quantum entanglement', 'tags', 0)).toBe(false);
   });
 
   it('should handle fuzzy matching based on raw edit distance', () => {
-    const matcher = makeLiteralMatcher('fluttersho', 1, false);
-    expect(matcher('fluttershy', 'tags', 0)).toBe(true);
-    expect(matcher('rarity', 'tags', 0)).toBe(false);
+    const matcher = makeLiteralMatcher('materialization', 1, false);
+    expect(matcher('materialisation', 'tags', 0)).toBe(true);
+    expect(matcher('quantum entanglement', 'tags', 0)).toBe(false);
   });
 
   it('should handle wildcard matching', () => {
-    const matcher = makeLiteralMatcher('fl?tter*', 0, true);
-    expect(matcher('fluttershy', 'tags', 0)).toBe(true);
-    expect(matcher('flitter', 'tags', 0)).toBe(true);
-    expect(matcher('rainbow dash', 'tags', 0)).toBe(false);
-    expect(matcher('gentle flutter', 'tags', 0)).toBe(false);
+    const matcher = makeLiteralMatcher('ma?e*', 0, true);
+    expect(matcher('mane', 'tags', 0)).toBe(true);
+    expect(matcher('materialization', 'tags', 0)).toBe(true);
+    expect(matcher('alice', 'tags', 0)).toBe(false);
+    expect(matcher('nightmare', 'tags', 0)).toBe(false);
   });
 });

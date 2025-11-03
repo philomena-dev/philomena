@@ -25,7 +25,26 @@ defmodule Philomena.Commissions.Item do
     |> validate_length(:description, max: 300, count: :bytes)
     |> validate_length(:add_ons, max: 500, count: :bytes)
     |> validate_number(:base_price, greater_than_or_equal_to: 0, less_than_or_equal_to: 99_999)
-    |> validate_inclusion(:item_type, Commission.types())
+    |> validate_inclusion(:item_type, types())
     |> foreign_key_constraint(:example_image_id, name: :fk_rails_56d368749a)
+  end
+
+  def types do
+    [
+      "Sketch",
+      "Colored Sketch",
+      "Inked",
+      "Flat Color",
+      "Vector",
+      "Cel Shaded",
+      "Fully Shaded",
+      "Traditional",
+      "Pixel Art",
+      "Animation",
+      "Crafted Item",
+      "Sculpture",
+      "Plushie",
+      "Other"
+    ]
   end
 end

@@ -17,11 +17,13 @@ defmodule Philomena.UserDownvoteWipe do
     |> where(user_id: ^user.id, up: false)
     |> Batch.query_batches(id_field: :image_id)
     |> Enum.each(fn queryable ->
-      {_, image_ids} = Repo.delete_all(select(queryable, [i_v], i_v.image_id))
+      {_, image_ids} = Repo.delete_all(select(queryable, [i_v], i_v.image_id), timeout: 120_000)
 
       {count, nil} =
-        Repo.update_all(where(Image, [i], i.id in ^image_ids),
-          inc: [downvotes_count: -1, score: 1]
+        Repo.update_all(
+          where(Image, [i], i.id in ^image_ids),
+          [inc: [downvotes_count: -1, score: 1]],
+          timeout: 120_000
         )
 
       Repo.update_all(where(User, id: ^user.id), inc: [votes_cast_count: -count])
@@ -34,14 +36,19 @@ defmodule Philomena.UserDownvoteWipe do
       |> where(user_id: ^user.id, up: true)
       |> Batch.query_batches(id_field: :image_id)
       |> Enum.each(fn queryable ->
-        {_, image_ids} = Repo.delete_all(select(queryable, [i_v], i_v.image_id))
+        {_, image_ids} = Repo.delete_all(select(queryable, [i_v], i_v.image_id), timeout: 120_000)
 
         {count, nil} =
-          Repo.update_all(where(Image, [i], i.id in ^image_ids),
-            inc: [upvotes_count: -1, score: -1]
+          Repo.update_all(
+            where(Image, [i], i.id in ^image_ids),
+            [inc: [upvotes_count: -1, score: -1]],
+            timeout: 120_000
           )
 
-        Repo.update_all(where(User, id: ^user.id), inc: [votes_cast_count: -count])
+        Repo.update_all(where(User, id: ^user.id),
+          inc: [votes_cast_count: -count],
+          timeout: 120_000
+        )
 
         reindex(image_ids)
       end)
@@ -50,12 +57,16 @@ defmodule Philomena.UserDownvoteWipe do
       |> where(user_id: ^user.id)
       |> Batch.query_batches(id_field: :image_id)
       |> Enum.each(fn queryable ->
-        {_, image_ids} = Repo.delete_all(select(queryable, [i_f], i_f.image_id))
+        {_, image_ids} = Repo.delete_all(select(queryable, [i_f], i_f.image_id), timeout: 120_000)
 
         {count, nil} =
-          Repo.update_all(where(Image, [i], i.id in ^image_ids), inc: [faves_count: -1])
+          Repo.update_all(where(Image, [i], i.id in ^image_ids), [inc: [faves_count: -1]],
+            timeout: 120_000
+          )
 
-        Repo.update_all(where(User, id: ^user.id), inc: [images_favourited_count: -count])
+        Repo.update_all(where(User, id: ^user.id), [inc: [images_favourited_count: -count]],
+          timeout: 120_000
+        )
 
         reindex(image_ids)
       end)

@@ -1,5 +1,4 @@
 defmodule PhilomenaWeb.StatsUpdater do
-  alias Philomena.Config
   alias PhilomenaQuery.Search
   alias Philomena.Images.Image
   alias Philomena.Comments.Comment
@@ -65,7 +64,7 @@ defmodule PhilomenaWeb.StatsUpdater do
   end
 
   defp aggregations do
-    data = Config.get(:aggregation)
+    data = Application.get_env(:philomena, :config)[:aggregation]
 
     {
       Search.search(Image, data["images"]),

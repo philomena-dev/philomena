@@ -40,9 +40,10 @@ elixir:
                     => Decimal.round(max.base_price, 2) |> Decimal.to_string()
                     ' USD
 
-                  p
-                    strong> Categories:
-                    = Enum.join(c.categories, ", ")
+                  / TODO: debranding (commission_taggings)
+                  / p
+                  /   strong> Categories:
+                  /   = Enum.join(c.categories, ", ")
 
                   p
                     strong> Offers:

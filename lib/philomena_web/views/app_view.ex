@@ -259,4 +259,17 @@ defmodule PhilomenaWeb.AppView do
   def get_flash(%{assigns: %{flash: nil}}, _key), do: %{}
   def get_flash(%{assigns: %{flash: flash}}, key), do: Phoenix.Flash.get(flash, key)
   def get_flash(_, _key), do: %{}
+
+  @spec env_cache(key :: atom(), generator :: (-> any())) :: any()
+  def env_cache(key, generator) do
+    case Application.get_env(:philomena, key) do
+      nil ->
+        value = generator.()
+        Application.put_env(:philomena, key, value)
+        value
+
+      value ->
+        value
+    end
+  end
 end

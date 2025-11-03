@@ -33,14 +33,14 @@
   .block__content.commission__block_body
     = @rendered.contact
 
-/ Categories block
-.block
-  .block__header
-    span.block__header__title Art Categories
-  .block__content
-    = for cat <- @commission.categories do
-      span.commission__category
-        = cat
+/ TODO: debranding (commission_taggings)
+/ .block
+/   .block__header
+/     span.block__header__title Art Categories
+/   .block__content
+/     = for cat <- @commission.categories do
+/       span.commission__category
+/         = cat
 
 / Will create block
 = if @commission.will_create not in [nil, ""] do

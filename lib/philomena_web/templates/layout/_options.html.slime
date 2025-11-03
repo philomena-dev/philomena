@@ -4,3 +4,6 @@
 
   = if @current_user.rounded_tags do
     link rel="stylesheet" href=~p"/css/options/tag-rounded-border.css"
+
+= if Philomena.Configs.get("colored_logo") do
+  link rel="stylesheet" href=~p"/css/options/colored-logo.css"

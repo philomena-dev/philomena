@@ -17,11 +17,13 @@ config :philomena,
   opensearch_url: System.get_env("OPENSEARCH_URL", "https://admin:admin@localhost:9200"),
   advert_file_root: System.fetch_env!("ADVERT_FILE_ROOT"),
   avatar_file_root: System.fetch_env!("AVATAR_FILE_ROOT"),
+  system_file_root: System.fetch_env!("SYSTEM_FILE_ROOT"),
   badge_file_root: System.fetch_env!("BADGE_FILE_ROOT"),
   password_pepper: System.fetch_env!("PASSWORD_PEPPER"),
   avatar_url_root: System.fetch_env!("AVATAR_URL_ROOT"),
   advert_url_root: System.fetch_env!("ADVERT_URL_ROOT"),
   image_file_root: System.fetch_env!("IMAGE_FILE_ROOT"),
+  system_url_root: System.fetch_env!("SYSTEM_URL_ROOT"),
   tumblr_api_key: System.fetch_env!("TUMBLR_API_KEY"),
   otp_secret_key: System.fetch_env!("OTP_SECRET_KEY"),
   image_url_root: System.fetch_env!("IMAGE_URL_ROOT"),
@@ -29,7 +31,6 @@ config :philomena,
   mailer_address: System.fetch_env!("MAILER_ADDRESS"),
   mediaproc_addr: System.fetch_env!("MEDIAPROC_ADDR"),
   tag_file_root: System.fetch_env!("TAG_FILE_ROOT"),
-  hide_version: System.get_env("HIDE_VERSION", "false"),
   site_domains: System.fetch_env!("SITE_DOMAINS"),
   tag_url_root: System.fetch_env!("TAG_URL_ROOT"),
   redis_host: System.get_env("REDIS_HOST", "localhost"),
@@ -40,20 +41,10 @@ config :philomena,
 
 app_dir = System.get_env("APP_DIR", File.cwd!())
 
-json_config =
-  %{
-    aggregation: "aggregation.json",
-    avatar: "avatar.json",
-    footer: "footer.json",
-    quick_tag_table: "quick_tag_table.json",
-    tag: "tag.json"
-  }
-  |> Map.new(fn {name, file} ->
-    {name, JSON.decode!(File.read!("#{app_dir}/config/#{file}"))}
-  end)
-
 config :philomena,
-  config: json_config
+  config: %{
+    aggregation: JSON.decode!(File.read!("#{app_dir}/config/aggregation.json"))
+  }
 
 config :exq,
   host: System.get_env("REDIS_HOST", "localhost"),

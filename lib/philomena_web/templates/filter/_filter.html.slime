@@ -21,8 +21,10 @@
 
       li
         = link "View this filter", to: ~p"/filters/#{@filter}", class: "button"
-      li
-        = link "Copy and Customize", to: ~p"/filters/new?#{[based_on: @filter]}", class: "button"
+
+      = if not is_nil(@conn.assigns.current_user) do
+        li
+          = link "Copy and Customize", to: ~p"/filters/new?#{[based_on: @filter]}", class: "button"
 
       = if can?(@conn, :edit, @filter) do
         li

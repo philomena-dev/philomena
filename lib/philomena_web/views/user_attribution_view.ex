@@ -2,6 +2,7 @@ defmodule PhilomenaWeb.UserAttributionView do
   use PhilomenaWeb, :view
 
   alias Philomena.Attribution
+  alias Philomena.Configs
   alias PhilomenaWeb.AvatarGeneratorView
 
   def anonymous?(object) do
@@ -42,7 +43,7 @@ defmodule PhilomenaWeb.UserAttributionView do
     if not is_nil(object.user) and reveal_anon? do
       "#{object.user.name} (##{hash}, hidden)"
     else
-      "Background Pony ##{hash}"
+      "#{Configs.get("anonymous_name")} ##{hash}"
     end
   end
 

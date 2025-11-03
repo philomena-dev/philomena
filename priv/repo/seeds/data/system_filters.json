@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Default",
+    "description": "The site's default filter.",
+    "hidden": ["explicit", "grotesque"],
+    "spoilered": ["questionable"]
+  },
+  {
+    "name": "Everything",
+    "description": "This filter won't filter out anything at all.",
+    "hidden": [],
+    "spoilered": []
+  }
+]

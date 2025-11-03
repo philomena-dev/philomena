@@ -11,14 +11,15 @@ defmodule PhilomenaWeb.ReportView do
 
   import Ecto.Changeset
 
+  # Todo: debranding: move to config or db
   def report_categories do
     [
-      "Rule #0: Namecalling, trolling, discrimination": "Rule #0",
+      "Rule #0: Malicious behavior or discrimination": "Rule #0",
       "Rule #1: DNP, content theft, pay content, trace/bad edit": "Rule #1",
       "Rule #2: Bad tagging/sourcing": "Rule #2",
-      "Rule #3: Image not MLP-related/obligatory pony": "Rule #3",
-      "Rule #4: Whining about filterable content": "Rule #4",
-      "Rule #5: Underage+human/anthro-looking porn": "Rule #5",
+      "Rule #3: Unrelated image": "Rule #3",
+      "Rule #4: Complaining about filterable content": "Rule #4",
+      "Rule #5: Illegal or forbidden content": "Rule #5",
       "Rule #6: Spam, off-topic, or general site abuse": "Rule #6",
       "Rule #7: Above topic rating (NOT swear words)": "Rule #7",
       "Rule #8: Privacy violation": "Rule #8",

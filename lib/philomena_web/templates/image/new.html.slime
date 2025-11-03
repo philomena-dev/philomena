@@ -59,10 +59,26 @@
       ' Add source
 
   .field
-    label for="image[tag_input]"
-      ' Describe with
-      strong> 3+
-      ' tags, including ratings and applicable artist tags
+    .block.block--fixed.block--warning
+      h3 Important info about our tagging
+      p
+        label for="image[tag_input]"
+          ' Describe with
+          strong
+            => Philomena.Configs.get("minimum_tags")
+            ' or more
+          ' tags, including ratings and applicable creator tags
+      p
+        label for="image[tag_input]"
+          ' Tags are separated by commas, and may have spaces in them (for example: use "solo female", not "solo_female").
+      p
+        label for="image[tag_input]"
+          strong> Please make sure you understand how to tag sexual ratings correctly!
+          ' Check out
+          strong
+            a href="/pages/tags"
+              ' our tagging guidelines
+          ' before posting, and pick an appropriate rating tag.
 
     = render PhilomenaWeb.TagView, "_tag_editor.html", f: f, name: :tag_input, type: :upload
     = error_tag f, :tag_input

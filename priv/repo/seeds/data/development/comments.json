@@ -1,0 +1,6 @@
+[
+  "bold is **bold**, italic is _italic_, spoiler is ||spoiler||, code is `code`, underline is __underline__, strike is ~~strike~~, sup is ^sup^, sub is %sub%.",
+  "inline embedded thumbnails (tsp): >>1t >>1s >>1p",
+  "embedded image inside a spoiler: ||who needs it anyway >>1s||",
+  "spoilers inside of a table\n\nHello | World\n--- | ---:\n`||cool beans!||` | ||cool beans!||"
+]
