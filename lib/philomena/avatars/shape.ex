@@ -5,7 +5,7 @@ defmodule Philomena.Avatars.Shape do
   alias Philomena.Avatars.Part
 
   schema "avatar_shapes" do
-    belongs_to :part, Part
+    belongs_to :avatar_part, Part
 
     field :shape, :string
     field :any_kind, :boolean, default: false

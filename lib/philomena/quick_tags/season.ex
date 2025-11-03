@@ -14,6 +14,6 @@ defmodule Philomena.QuickTags.Season do
   @doc false
   def changeset(tags, attrs) do
     tags
-    |> cast(attrs, [:category, :episode, :tag])
+    |> cast(attrs, [:episode, :tag])
   end
 end

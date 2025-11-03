@@ -6,8 +6,8 @@ defmodule Philomena.Avatars.ShapeKind do
   alias Philomena.Avatars.Shape
 
   schema "avatar_shape_kinds" do
-    belongs_to :kind, Kind
-    belongs_to :shape, Shape
+    belongs_to :avatar_kind, Kind
+    belongs_to :avatar_shape, Shape
   end
 
   @doc false

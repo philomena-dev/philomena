@@ -17,6 +17,6 @@ defmodule Philomena.FooterLinks.Link do
   @doc false
   def changeset(link, attrs) do
     link
-    |> cast(attrs, [:title, :url, :category_id, :position, :bold, :new_tab])
+    |> cast(attrs, [:title, :url, :footer_category_id, :position, :bold, :new_tab])
   end
 end

@@ -1,0 +1,66 @@
+[
+  {
+    "slug": "rules",
+    "title": "Site Rules"
+  },
+  {
+    "slug": "privacy",
+    "title": "Privacy Policy"
+  },
+  {
+    "slug": "tags",
+    "title": "Tag Guidelines"
+  },
+  {
+    "slug": "uploading",
+    "title": "About Uploading"
+  },
+  {
+    "slug": "spoilers",
+    "title": "Spoiler Guidelines"
+  },
+  {
+    "slug": "takedowns",
+    "title": "Takedown Requests"
+  },
+  {
+    "slug": "faq",
+    "title": "FAQs"
+  },
+  {
+    "slug": "api",
+    "title": "API Docs"
+  },
+  {
+    "slug": "shortcuts",
+    "title": "Keyboard Shortcuts"
+  },
+  {
+    "slug": "advertising",
+    "title": "Advertising"
+  },
+  {
+    "slug": "about",
+    "title": "About"
+  },
+  {
+    "slug": "contact",
+    "title": "Contact"
+  },
+  {
+    "slug": "donations",
+    "title": "Donations"
+  },
+  {
+    "slug": "approval",
+    "title": "Approval Queue"
+  },
+  {
+    "slug": "markdown",
+    "title": "Markdown Guide"
+  },
+  {
+    "slug": "start",
+    "title": "Getting Started"
+  }
+]

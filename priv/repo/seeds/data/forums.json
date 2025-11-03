@@ -1,0 +1,44 @@
+[
+  {
+    "name": "General Discussion",
+    "short_name": "dis",
+    "description": "This is a discussion forum for everything unrelated to the show or other forums",
+    "access_level": "normal"
+  },
+  {
+    "name": "Shows and Movies",
+    "short_name": "movies",
+    "description": "Discuss TV shows and movies, as well as their characters and theories.",
+    "access_level": "normal"
+  },
+  {
+    "name": "Site and Policy",
+    "short_name": "meta",
+    "description": "For site discussion and policy discussion",
+    "access_level": "normal"
+  },
+  {
+    "name": "Art Chat",
+    "short_name": "art",
+    "description": "Discuss art of any form, and share techniques and tips",
+    "access_level": "normal"
+  },
+  {
+    "name": "Roleplaying",
+    "short_name": "rp",
+    "description": "Roleplaying forum, in which people play roles",
+    "access_level": "normal"
+  },
+  {
+    "name": "Site Assistant Discussion",
+    "short_name": "helper",
+    "description": "Restricted - Assistants and Staff",
+    "access_level": "assistant"
+  },
+  {
+    "name": "Moderation Discussion",
+    "short_name": "mod",
+    "description": "Restricted - Staff only",
+    "access_level": "staff"
+  }
+]
