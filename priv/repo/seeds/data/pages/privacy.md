@@ -19,7 +19,7 @@ We collect the following information in webserver logs from every visitor:
 - The page that was requested
 - The browser user agent string
 
-These items are collected to ensure the security of the service (see "legimitate interests" in the GDPR), and are deleted after 14 days to balance it with user privacy.
+These items are collected to ensure the security of the service (see "legitimate interests" in the GDPR), and are deleted after 14 days to balance it with user privacy.
 
 **Browser fingerprints**
 
@@ -63,7 +63,7 @@ Because these are required for authentication, user security, or customization, 
 
 **Information in user-submitted content**
 
-User-submitted content is considered by us to collectively refer to any content that you may submit to the site, which includes, but is not limited to, comments, images, messsages, posts, reports, source changes, tag changes, and votes.
+User-submitted content is considered by us to collectively refer to any content that you may submit to the site, which includes, but is not limited to, comments, images, messages, posts, reports, source changes, tag changes, and votes.
 
 User-submitted content by users (authenticated or not) may have any or all of the following information collected at the time of submission attached, visible only to site staff:
 
