@@ -108,7 +108,7 @@ defmodule Philomena.SystemImages do
   Updates the uploaded file for a system image.
 
   """
-  def update_system_image_file(%SystemImage{key: key}, %{image: image} = attrs) do
+  def update_system_image_file(%SystemImage{key: key}, %{image: image}) do
     Uploader.upload_system_image(image, key)
   end
 

@@ -12,7 +12,7 @@ defmodule PhilomenaWeb.ReactivationControllerTest do
 
   describe "GET /reactivations/:id" do
     test "renders the reactivate account page", %{conn: conn} do
-      conn = get(conn, ~p"/reactivations/pinkie-pie-is-best-pony")
+      conn = get(conn, ~p"/reactivations/new")
       response = html_response(conn, 200)
       assert response =~ "<h1>Reactivate Your Account</h1>"
     end

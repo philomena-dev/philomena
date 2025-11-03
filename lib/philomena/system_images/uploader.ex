@@ -3,8 +3,6 @@ defmodule Philomena.SystemImages.Uploader do
   Upload and processing callback logic for system images.
   """
 
-  alias Philomena.SystemImages.SystemImage
-  alias Philomena.SystemImages.FaviconGenerator
   alias PhilomenaMedia.Uploader
   alias PhilomenaMedia.Remote
 
@@ -40,7 +38,4 @@ defmodule Philomena.SystemImages.Uploader do
 
   defp system_file_root,
     do: Application.fetch_env!(:philomena, :system_file_root)
-
-  defp system_url_root,
-    do: Application.fetch_env!(:philomena, :system_url_root)
 end

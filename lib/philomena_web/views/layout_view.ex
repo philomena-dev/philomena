@@ -94,10 +94,10 @@ defmodule PhilomenaWeb.LayoutView do
       do: static_path(conn, "/css/#{theme}.css")
 
   def stylesheet_path(_conn, _user),
-    do: ~p"/css/#{Configs.get("default_theme")}.css"
+    do: ~p"/css/#{Configs.get("default_theme") <> ".css"}"
 
   def light_stylesheet_path(_conn),
-    do: ~p"/css/#{Configs.get("default_light_theme")}.css"
+    do: ~p"/css/#{Configs.get("default_light_theme") <> ".css"}"
 
   def theme_name(%{theme: theme}), do: theme
   def theme_name(_user), do: Configs.get("default_theme")

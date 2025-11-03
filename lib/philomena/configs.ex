@@ -1,6 +1,5 @@
 defmodule Philomena.Configs do
   import Ecto.Query, warn: false
-  alias Ecto.Multi
   alias Philomena.Repo
 
   alias Philomena.Configs.Config

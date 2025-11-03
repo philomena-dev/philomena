@@ -2,6 +2,8 @@ defmodule PhilomenaWeb.AvatarGeneratorView do
   use PhilomenaWeb, :view
   import Bitwise
 
+  alias Philomena.Avatars
+
   # todo: debranding
 
   def generated_avatar(displayed_name) do

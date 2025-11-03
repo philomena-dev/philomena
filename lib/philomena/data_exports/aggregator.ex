@@ -90,7 +90,7 @@ defmodule Philomena.DataExports.Aggregator do
        :body
      ]},
     {Commission,
-     [:open, :sheet_image_id, :categories, :information, :contact, :will_create, :will_not_create]},
+     [:open, :sheet_image_id, :information, :contact, :will_create, :will_not_create]},
     {DnpEntry, [:tag_id, :aasm_state, :dnp_type, :hide_reason, :feedback, :reason, :instructions],
      :requesting_user_id},
     {DuplicateReport, [:reason, :image_id, :duplicate_of_image_id]},

@@ -1,6 +1,5 @@
 defmodule Philomena.Avatars do
   import Ecto.Query, warn: false
-  alias Ecto.Multi
   alias Philomena.Repo
   alias Philomena.Avatars.Kind
   alias Philomena.Avatars.Part
