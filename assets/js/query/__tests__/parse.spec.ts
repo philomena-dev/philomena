@@ -14,21 +14,21 @@ describe('Semantic analysis', () => {
   beforeAll(() => {
     const e0 = document.createElement('div');
     e0.setAttribute(termSpaceToImageField.id, '0');
-    e0.setAttribute(termSpaceToImageField.tags, 'safe, solo, fluttershy');
+    e0.setAttribute(termSpaceToImageField.tags, 'safe, solo, alice');
 
     const e1 = document.createElement('div');
     e1.setAttribute(termSpaceToImageField.id, '1');
-    e1.setAttribute(termSpaceToImageField.tags, 'suggestive, solo, fluttershy');
+    e1.setAttribute(termSpaceToImageField.tags, 'suggestive, solo, alice');
 
     const e2 = document.createElement('div');
     e2.setAttribute(termSpaceToImageField.id, '2');
-    e2.setAttribute(termSpaceToImageField.tags, 'suggestive, fluttershy, twilight sparkle');
+    e2.setAttribute(termSpaceToImageField.tags, 'suggestive, alice, robin hood');
 
     documents = [e0, e1, e2];
   });
 
   it('should match single term expressions', () => {
-    const tokens = generateLexArray('fluttershy', parseWithDefaultMatcher);
+    const tokens = generateLexArray('alice', parseWithDefaultMatcher);
     const matcher = parseTokens(tokens);
 
     expect(matcher(documents[0])).toBe(true);
@@ -37,7 +37,7 @@ describe('Semantic analysis', () => {
   });
 
   it('should match AND expressions', () => {
-    const tokens = generateLexArray('fluttershy,solo', parseWithDefaultMatcher);
+    const tokens = generateLexArray('alice,solo', parseWithDefaultMatcher);
     const matcher = parseTokens(tokens);
 
     expect(matcher(documents[0])).toBe(true);
@@ -46,7 +46,7 @@ describe('Semantic analysis', () => {
   });
 
   it('should match OR expressions', () => {
-    const tokens = generateLexArray('suggestive || twilight sparkle', parseWithDefaultMatcher);
+    const tokens = generateLexArray('suggestive || robin hood', parseWithDefaultMatcher);
     const matcher = parseTokens(tokens);
 
     expect(matcher(documents[0])).toBe(false);
@@ -55,7 +55,7 @@ describe('Semantic analysis', () => {
   });
 
   it('should match NOT expressions', () => {
-    const tokens = generateLexArray('NOT twilight sparkle', parseWithDefaultMatcher);
+    const tokens = generateLexArray('NOT robin hood', parseWithDefaultMatcher);
     const matcher = parseTokens(tokens);
 
     expect(matcher(documents[0])).toBe(true);

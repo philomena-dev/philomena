@@ -73,14 +73,14 @@ describe('Lexical analysis', () => {
   });
 
   it('should prioritize AND over OR', () => {
-    const array = generateLexArray('safe OR solo AND fluttershy', parseTerm);
-    expect(terms).toEqual(['safe', 'solo', 'fluttershy']);
+    const array = generateLexArray('safe OR solo AND alice', parseTerm);
+    expect(terms).toEqual(['safe', 'solo', 'alice']);
     expect(array).toEqual([noMatch, noMatch, noMatch, 'and_op', 'or_op']);
   });
 
   it('should override ordering when using parenthetical expressions', () => {
-    const array = generateLexArray('(safe OR solo) AND fluttershy', parseTerm);
-    expect(terms).toEqual(['safe', 'solo', 'fluttershy']);
+    const array = generateLexArray('(safe OR solo) AND alice', parseTerm);
+    expect(terms).toEqual(['safe', 'solo', 'alice']);
     expect(fuzzes).toEqual([0, 0, 0]);
     expect(boosts).toEqual([1, 1, 1]);
     expect(array).toEqual([noMatch, noMatch, 'or_op', noMatch, 'and_op']);
@@ -153,25 +153,25 @@ describe('Lexical analysis', () => {
   });
 
   it('should allow extra spaces in terms', () => {
-    const array = generateLexArray('twilight  sparkle', parseTerm);
-    expect(terms).toEqual(['twilight  sparkle']);
+    const array = generateLexArray('robin  hood', parseTerm);
+    expect(terms).toEqual(['robin  hood']);
     expect(array).toEqual([noMatch]);
   });
 
   it('should collapse consecutive AND expressions', () => {
-    const array = generateLexArray('safe AND solo AND fluttershy AND applejack', parseTerm);
-    expect(terms).toEqual(['safe', 'solo', 'fluttershy', 'applejack']);
+    const array = generateLexArray('safe AND solo AND alice AND sofia', parseTerm);
+    expect(terms).toEqual(['safe', 'solo', 'alice', 'sofia']);
     expect(array).toEqual([noMatch, noMatch, 'and_op', noMatch, 'and_op', noMatch, 'and_op']);
   });
 
   it('should collapse consecutive OR expressions', () => {
-    const array = generateLexArray('safe OR solo OR fluttershy OR applejack', parseTerm);
-    expect(terms).toEqual(['safe', 'solo', 'fluttershy', 'applejack']);
+    const array = generateLexArray('safe OR solo OR alice OR sofia', parseTerm);
+    expect(terms).toEqual(['safe', 'solo', 'alice', 'sofia']);
     expect(array).toEqual([noMatch, noMatch, 'or_op', noMatch, 'or_op', noMatch, 'or_op']);
   });
 
   it('should mark error on mismatched parentheses', () => {
-    expect(() => generateLexArray('(safe OR solo AND fluttershy', parseTerm)).toThrow('Mismatched parentheses.');
+    expect(() => generateLexArray('(safe OR solo AND alice', parseTerm)).toThrow('Mismatched parentheses.');
     // expect(() => generateLexArray(')bad', parseTerm).error).toThrow('Mismatched parentheses.');
   });
 });
