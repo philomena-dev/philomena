@@ -1,0 +1,30 @@
+<Layouts.app flash={@flash}>
+  <.header>
+    Listing Rules
+    <:actions>
+      <.button href={~p"/rules/new"}>
+        <.icon name="hero-plus" /> New Rule
+      </.button>
+    </:actions>
+  </.header>
+
+  <.table id="rules" rows={@rules} row_click={&JS.navigate(~p"/rules/#{&1}")}>
+    <:col :let={rule} label="Name">{rule.name}</:col>
+    <:col :let={rule} label="Description">{rule.description}</:col>
+    <:col :let={rule} label="Short description">{rule.short_description}</:col>
+    <:col :let={rule} label="Example">{rule.example}</:col>
+    <:col :let={rule} label="Position">{rule.position}</:col>
+    <:col :let={rule} label="Highlight">{rule.highlight}</:col>
+    <:action :let={rule}>
+      <div class="sr-only">
+        <.link navigate={~p"/rules/#{rule}"}>Show</.link>
+      </div>
+      <.link navigate={~p"/rules/#{rule}/edit"}>Edit</.link>
+    </:action>
+    <:action :let={rule}>
+      <.link href={~p"/rules/#{rule}"} method="delete" data-confirm="Are you sure?">
+        Delete
+      </.link>
+    </:action>
+  </.table>
+</Layouts.app>

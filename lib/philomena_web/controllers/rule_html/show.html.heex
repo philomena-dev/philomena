@@ -1,0 +1,23 @@
+<Layouts.app flash={@flash}>
+  <.header>
+    Rule {@rule.id}
+    <:subtitle>This is a rule record from your database.</:subtitle>
+    <:actions>
+      <.button navigate={~p"/rules"}>
+        <.icon name="hero-arrow-left" />
+      </.button>
+      <.button variant="primary" navigate={~p"/rules/#{@rule}/edit?return_to=show"}>
+        <.icon name="hero-pencil-square" /> Edit rule
+      </.button>
+    </:actions>
+  </.header>
+
+  <.list>
+    <:item title="Name">{@rule.name}</:item>
+    <:item title="Description">{@rule.description}</:item>
+    <:item title="Short description">{@rule.short_description}</:item>
+    <:item title="Example">{@rule.example}</:item>
+    <:item title="Position">{@rule.position}</:item>
+    <:item title="Highlight">{@rule.highlight}</:item>
+  </.list>
+</Layouts.app>

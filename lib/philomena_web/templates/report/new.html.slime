@@ -43,7 +43,7 @@ p
 
   = form_for @changeset, @action, fn f ->
     .field
-      = select f, :category, report_categories(), class: "input"
+      = select f, :rule_id, report_categories(), class: "input"
     .block
       = render PhilomenaWeb.MarkdownView, "_input.html", conn: @conn, f: f, placeholder: "Provide anything else we should know here.", name: :reason, required: false
 

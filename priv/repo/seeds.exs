@@ -24,7 +24,8 @@ alias Philomena.{
   Tags.Tag,
   TagChanges.TagChange,
   Users.User,
-  StaticPages.StaticPage
+  StaticPages.StaticPage,
+  Rules.Rule
 }
 
 alias PhilomenaQuery.Search
@@ -109,6 +110,24 @@ IO.puts("---- Generating static pages")
 for page_def <- resources["pages"] do
   %StaticPage{title: page_def["title"], slug: page_def["slug"], body: page_def["body"]}
   |> StaticPage.changeset(%{})
+  |> Repo.insert(on_conflict: :nothing)
+end
+
+IO.puts("---- Generating rules")
+
+for page_def <- resources["rules"] do
+  %Rule{}
+  |> Rule.changeset(%{
+    name: page_def["name"],
+    title: page_def["title"],
+    description: page_def["description"],
+    short_description: page_def["short_description"],
+    example: page_def["example"],
+    position: Map.get(page_def, "position", 1),
+    highlight: Map.get(page_def, "highlight", false),
+    hidden: Map.get(page_def, "hidden", false),
+    internal: Map.get(page_def, "internal", false)
+  })
   |> Repo.insert(on_conflict: :nothing)
 end
 

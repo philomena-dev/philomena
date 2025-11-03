@@ -11,6 +11,10 @@ defmodule Philomena.Reports do
   alias Philomena.Reports
   alias Philomena.IndexWorker
   alias Philomena.Polymorphic
+  alias Philomena.Rules
+  alias Philomena.Rules.Rule
+
+  @reason_regex ~r/^(Rule|Other|Takedown|Verification|Approval|Review|System)([^:]*): (.*)$/
 
   @doc """
   Returns the current number of open reports.
@@ -139,20 +143,22 @@ defmodule Philomena.Reports do
   end
 
   @doc """
-  Automatically create a report with the given category and reason on the given
+  Automatically create a report with the given rule and reason on the given
   `reportable_id` and `reportable_type`.
 
   ## Examples
 
-      iex> create_system_report({"Comment", 1}, "Other", "Custom report reason")
+      iex> create_system_report({"Comment", 1}, "Rule #0", "Custom report reason")
       {:ok, %Report{}}
 
   """
-  def create_system_report({reportable_type, reportable_id} = _type_and_id, category, reason) do
+  def create_system_report({reportable_type, reportable_id} = _type_and_id, rule_name, reason) do
+    %Rule{id: rule_id} = Rules.get_by_name!(rule_name)
+
     attrs = %{
       reason: reason,
-      category: category,
-      user_agent: "system"
+      user_agent: "system",
+      rule_id: rule_id
     }
 
     attribution = %{
@@ -315,4 +321,35 @@ defmodule Philomena.Reports do
     |> Polymorphic.load_polymorphic(reportable: [reportable_id: :reportable_type])
     |> Enum.map(&Search.index_document(&1, Report))
   end
+
+  def convert_reports!() do
+    rules = Rules.list_report_categories()
+
+    Report
+    |> preload([:rule])
+    |> Batch.records(batch_size: 128)
+    |> Enum.each(&convert_report(&1, rules, legacy_rule))
+  end
+
+  defp convert_report(%Report{rule_id: 1, reason: report_reason} = report, rules, legacy_rule) do
+    match = Regex.run(@reason_regex, report_reason)
+
+    case match do
+      [_, prefix, suffix, reason] ->
+        rule =
+          case Keyword.get(rules, String.to_atom("#{prefix}#{suffix}")) do
+            nil -> 1
+            rule -> rule
+          end
+
+        report
+        |> Report.changeset(%{rule_id: rule.id, reason: String.trim(reason)})
+        |> Repo.update!()
+
+      _ ->
+        {:error, report}
+    end
+  end
+
+  defp convert_report(report, _rules, _legacy_rule), do: {:ok, report}
 end

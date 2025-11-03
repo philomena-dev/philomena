@@ -44,6 +44,11 @@ defmodule Philomena.Release do
     Philomena.Tags.cleanup!()
   end
 
+  def convert_reports do
+    start_app()
+    Philomena.Reports.convert_reports!()
+  end
+
   defp repos do
     Application.fetch_env!(@app, :ecto_repos)
   end
