@@ -445,6 +445,10 @@ pre code {
   border: 1px solid var(--primary-color);
 }
 
+a.label {
+  color: var(--foreground-color);
+}
+
 .large-text {
   font-size: 15px;
 }

@@ -7,6 +7,8 @@ defmodule Philomena.Rules do
   alias Philomena.Repo
 
   alias Philomena.Rules.Rule
+  alias Philomena.Rules.RuleVersion
+  alias Philomena.Users.User
 
   @doc """
   Returns the list of rules.
@@ -18,7 +20,7 @@ defmodule Philomena.Rules do
 
   """
   def list_rules do
-    Repo.all(Rule)
+    Repo.all(from r in Rule, order_by: [asc: r.position])
   end
 
   @doc """
@@ -71,6 +73,22 @@ defmodule Philomena.Rules do
   def get_rule!(id), do: Repo.get!(Rule, id)
 
   @doc """
+  Gets a single rule by its position.
+
+  Raises `Ecto.NoResultsError` if the Rule does not exist.
+
+  ## Examples
+
+      iex> get_by_position!(0)
+      %Rule{name: "Rule #0", position: 0, ...}
+
+      iex> get_by_position!(99999)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_by_position!(position), do: Repo.get_by!(Rule, position: position)
+
+  @doc """
   Gets a single rule by its name.
 
   Raises `Ecto.NoResultsError` if the Rule does not exist.
@@ -101,6 +119,36 @@ defmodule Philomena.Rules do
   def find_by_name(name), do: Repo.get_by(Rule, name: name)
 
   @doc """
+  Creates a rule version attributed to a user.
+
+  ## Examples
+
+      iex> create_rule_version(rule, user)
+      {:ok, %RuleVersion{}}
+
+      iex> create_rule_version(bad_rule, bad_user)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_rule_version(%Rule{} = rule, %User{} = user) do
+    %RuleVersion{}
+    |> RuleVersion.changeset(%{
+      name: rule.name,
+      title: rule.title,
+      description: rule.description,
+      short_description: rule.short_description,
+      example: rule.example,
+      rule_id: rule.id,
+      user_id: user.id
+    })
+    |> Repo.insert()
+  end
+
+  def create_rule_version(%Rule{} = rule, nil) do
+    create_rule_version(rule, %User{id: nil})
+  end
+
+  @doc """
   Creates a rule.
 
   ## Examples
@@ -119,6 +167,29 @@ defmodule Philomena.Rules do
   end
 
   @doc """
+  Creates a rule and stores the initial version attributed to a user.
+
+  If the user is nil, then it is assumed to be a system action.
+
+  ## Examples
+
+      iex> create_rule_with_version(%{name: "Rule #0", ...}, user)
+      {:ok, [%Rule{}, %RuleVersion{}]}
+
+      iex> create_rule_with_version(%{bad_field: bad_value, ...}, user)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_rule_with_version(attrs, user) do
+    Repo.transact(fn ->
+      with {:ok, rule} <- create_rule(attrs),
+           {:ok, rule_version} <- create_rule_version(rule, user) do
+        {:ok, [rule, rule_version]}
+      end
+    end)
+  end
+
+  @doc """
   Updates a rule.
 
   ## Examples
@@ -134,6 +205,29 @@ defmodule Philomena.Rules do
     rule
     |> Rule.changeset(attrs)
     |> Repo.update()
+  end
+
+  @doc """
+  Updates a rule and stores the new version attributed to a user.
+
+  If the user is nil, then it is assumed to be a system edit.
+
+  ## Examples
+
+      iex> update_rule_with_version(rule, user, %{field: new_value})
+      {:ok, [%Rule{}, %RuleVersion{}]}
+
+      iex> update_rule_with_version(rule, user, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_rule_with_version(%Rule{} = rule, user, attrs) do
+    Repo.transact(fn ->
+      with {:ok, rule_version} <- create_rule_version(rule, user),
+           {:ok, updated_rule} <- update_rule(rule, attrs) do
+        {:ok, [updated_rule, rule_version]}
+      end
+    end)
   end
 
   @doc """

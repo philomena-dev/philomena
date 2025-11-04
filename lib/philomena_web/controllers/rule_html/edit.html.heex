@@ -1,8 +1,0 @@
-<Layouts.app flash={@flash}>
-  <.header>
-    Edit Rule {@rule.id}
-    <:subtitle>Use this form to manage rule records in your database.</:subtitle>
-  </.header>
-
-  <.rule_form changeset={@changeset} action={~p"/rules/#{@rule}"} return_to={~p"/rules"} />
-</Layouts.app>

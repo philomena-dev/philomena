@@ -1,0 +1,12 @@
+h1
+  ' Viewing details of
+  = @rule.name
+
+.block
+  a href=~p"/rules"
+    i.fa.fa-chevron-left>
+    ' Back to Rules List
+
+br
+
+= render PhilomenaWeb.RuleView, "_rule.html", conn: @conn, rule: @rule, show_timestamp: true

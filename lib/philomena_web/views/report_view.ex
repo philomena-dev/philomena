@@ -13,7 +13,8 @@ defmodule PhilomenaWeb.ReportView do
   import Ecto.Changeset
 
   def report_categories do
-    Rules.list_report_categories()
+    Rules.list_reportable_rules()
+    |> Enum.map(&{"#{&1.name}: #{&1.short_description}", &1.id})
   end
 
   def image?(changeset), do: get_field(changeset, :reportable_type) == "Image"

@@ -5,6 +5,7 @@ defmodule PhilomenaWeb.Admin.ReportController do
   alias PhilomenaWeb.MarkdownRenderer
   alias Philomena.Reports.Report
   alias Philomena.Reports.Query
+  alias Philomena.Rules
   alias Philomena.Polymorphic
   alias Philomena.ModNotes.ModNote
   alias Philomena.ModNotes
@@ -59,7 +60,7 @@ defmodule PhilomenaWeb.Admin.ReportController do
     my_reports =
       Report
       |> where(open: true, admin_id: ^user.id)
-      |> preload([:admin, user: :linked_tags])
+      |> preload([:admin, :rule, user: :linked_tags])
       |> order_by(desc: :created_at)
       |> Repo.all()
       |> Polymorphic.load_polymorphic(reportable: [reportable_id: :reportable_type])
@@ -67,7 +68,7 @@ defmodule PhilomenaWeb.Admin.ReportController do
     system_reports =
       Report
       |> where(open: true, system: true)
-      |> preload([:admin, user: :linked_tags])
+      |> preload([:admin, :rule, user: :linked_tags])
       |> order_by(desc: :created_at)
       |> Repo.all()
       |> Polymorphic.load_polymorphic(reportable: [reportable_id: :reportable_type])
@@ -88,8 +89,9 @@ defmodule PhilomenaWeb.Admin.ReportController do
       )
 
     body = MarkdownRenderer.render_one(%{body: report.reason}, conn)
+    rule = Rules.get_rule!(report.rule_id)
 
-    render(conn, "show.html", title: "Showing Report", report: report, body: body)
+    render(conn, "show.html", title: "Showing Report", report: report, body: body, rule: rule)
   end
 
   defp load_reports(conn, query) do
@@ -102,7 +104,7 @@ defmodule PhilomenaWeb.Admin.ReportController do
         },
         conn.assigns.pagination
       )
-      |> Search.search_records(preload(Report, [:admin, user: :linked_tags]))
+      |> Search.search_records(preload(Report, [:admin, :rule, user: :linked_tags]))
 
     entries = Polymorphic.load_polymorphic(reports, reportable: [reportable_id: :reportable_type])
 

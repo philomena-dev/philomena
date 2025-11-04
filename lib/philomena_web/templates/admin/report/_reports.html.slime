@@ -2,6 +2,7 @@ table.table
   thead
     tr
       th Resource
+      th Rule
       th Reason
       th User
       th.hide-mobile Opened
@@ -13,6 +14,11 @@ table.table
         td
           => reported_image @conn, report.reportable
           = link_to_reportable report.reportable
+        td
+          => report.rule.name
+          | (
+          = report.rule.title
+          | )
         td
           span title=report.reason
             = truncate(report.reason)

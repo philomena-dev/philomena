@@ -1,20 +1,21 @@
-defmodule Philomena.Rules.Rule do
+defmodule Philomena.Rules.RuleVersion do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @derive {Phoenix.Param, key: :position}
-  schema "rules" do
+  alias Philomena.Rules.Rule
+  alias Philomena.Users.User
+
+  schema "rule_versions" do
+    belongs_to :rule, Rule
+    belongs_to :user, User
+
     field :name, :string, default: ""
     field :title, :string, default: ""
     field :description, :string, default: ""
     field :short_description, :string, default: ""
     field :example, :string, default: ""
-    field :position, :integer, default: 1
-    field :highlight, :boolean, default: false
-    field :hidden, :boolean, default: false
-    field :internal, :boolean, default: false
 
-    timestamps(inserted_at: :created_at, type: :utc_datetime)
+    timestamps(inserted_at: :created_at, updated_at: false, type: :utc_datetime)
   end
 
   @doc false
@@ -26,14 +27,16 @@ defmodule Philomena.Rules.Rule do
       :description,
       :short_description,
       :example,
-      :position,
-      :highlight,
-      :hidden,
-      :internal
+      :rule_id,
+      :user_id
     ])
     |> validate_required([
       :name,
-      :position
+      :title,
+      :description,
+      :short_description,
+      :example,
+      :rule_id
     ])
   end
 end

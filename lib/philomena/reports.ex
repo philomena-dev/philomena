@@ -6,6 +6,7 @@ defmodule Philomena.Reports do
   import Ecto.Query, warn: false
   alias Philomena.Repo
 
+  alias PhilomenaQuery.Batch
   alias PhilomenaQuery.Search
   alias Philomena.Reports.Report
   alias Philomena.Reports
@@ -323,22 +324,25 @@ defmodule Philomena.Reports do
   end
 
   def convert_reports!() do
-    rules = Rules.list_report_categories()
+    rules =
+      Rules.list_reportable_rules()
+      |> Enum.map(&{&1.name, &1})
+      |> Map.new()
 
     Report
     |> preload([:rule])
     |> Batch.records(batch_size: 128)
-    |> Enum.each(&convert_report(&1, rules, legacy_rule))
+    |> Enum.each(&convert_report(&1, rules))
   end
 
-  defp convert_report(%Report{rule_id: 1, reason: report_reason} = report, rules, legacy_rule) do
+  defp convert_report(%Report{rule_id: 1, reason: report_reason} = report, rules) do
     match = Regex.run(@reason_regex, report_reason)
 
     case match do
       [_, prefix, suffix, reason] ->
         rule =
-          case Keyword.get(rules, String.to_atom("#{prefix}#{suffix}")) do
-            nil -> 1
+          case Map.get(rules, "#{prefix}#{suffix}") do
+            nil -> %{id: 1}
             rule -> rule
           end
 
@@ -351,5 +355,5 @@ defmodule Philomena.Reports do
     end
   end
 
-  defp convert_report(report, _rules, _legacy_rule), do: {:ok, report}
+  defp convert_report(report, _rules), do: {:ok, report}
 end

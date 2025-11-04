@@ -9,7 +9,7 @@ p
     ul
       li
         ' Make sure to report for the correct
-        = link "rule", to: "/pages/rules"
+        = link "rule", to: "/rules"
         ' .
       li One report per problem. If it involves multiple things (images, comments, etc), list all of their IDs in the description of a single report.
       li

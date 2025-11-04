@@ -14,6 +14,7 @@ defmodule PhilomenaWeb.ReportController do
       Report
       |> where(user_id: ^user.id)
       |> order_by(desc: :created_at)
+      |> preload(:rule)
       |> Repo.paginate(conn.assigns.scrivener)
 
     polymorphic =
