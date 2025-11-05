@@ -186,11 +186,11 @@ defmodule Philomena.Galleries do
   ## Examples
 
       iex> indexing_preloads()
-      [:subscribers, :creator, :interactions]
+      [:subscribers, :user, :interactions]
 
   """
   def indexing_preloads do
-    [:subscribers, :creator, :interactions]
+    [:subscribers, :user, :interactions]
   end
 
   @doc """

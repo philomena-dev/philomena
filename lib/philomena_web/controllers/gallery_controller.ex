@@ -16,7 +16,7 @@ defmodule PhilomenaWeb.GalleryController do
   plug :load_and_authorize_resource,
     model: Gallery,
     except: [:index],
-    preload: [:creator, thumbnail: [:sources, tags: :aliases]]
+    preload: [:user, thumbnail: [:sources, tags: :aliases]]
 
   def index(conn, params) do
     galleries =
@@ -32,9 +32,7 @@ defmodule PhilomenaWeb.GalleryController do
         },
         conn.assigns.pagination
       )
-      |> Search.search_records(
-        preload(Gallery, [:creator, thumbnail: [:sources, tags: :aliases]])
-      )
+      |> Search.search_records(preload(Gallery, thumbnail: [:sources, tags: :aliases]))
 
     render(conn, "index.html",
       title: "Galleries",
@@ -213,14 +211,18 @@ defmodule PhilomenaWeb.GalleryController do
 
   defp parse_description(_params), do: []
 
+  defp parse_sort(%{"gallery" => %{"sf" => "created_at", "sd" => sd}}) when sd in ~w(desc asc) do
+    [%{created_at: sd}, %{id: sd}]
+  end
+
   defp parse_sort(%{"gallery" => %{"sf" => sf, "sd" => sd}})
-       when sf in ["created_at", "updated_at", "image_count", "_score"] and
-              sd in ["desc", "asc"] do
-    %{sf => sd}
+       when sf in ~w(updated_at image_count subscriber_count _score) and
+              sd in ~w(desc asc) do
+    [%{sf => sd}, %{created_at: sd}, %{id: sd}]
   end
 
   defp parse_sort(_params) do
-    %{created_at: :desc}
+    [%{created_at: :desc}, %{id: :desc}]
   end
 
   defp position_order(%{order_position_asc: true}), do: "asc"

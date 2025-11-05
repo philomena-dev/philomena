@@ -111,7 +111,7 @@ defmodule PhilomenaWeb.StatsUpdater do
 
     distinct_creators =
       Gallery
-      |> distinct(:creator_id)
+      |> distinct(:user_id)
       |> Repo.aggregate(:count, :id)
 
     first_gi = Repo.one(first(Interaction))

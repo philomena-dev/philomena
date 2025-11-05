@@ -23,7 +23,7 @@ elixir:
 
           .field = label f, :sf, "Sort by"
           .field
-            => select f, :sf, ["Creation Date": "created_at", "Update Date": "updated_at", "Image Count": "image_count", "Relevance": "_score"], class: "input"
+            => select f, :sf, ["Creation date": "created_at", "Modification date": "updated_at", "Image count": "image_count", "Subscriber count": "subscriber_count", "Relevance": "_score"], class: "input"
             => select f, :sd, ["Descending": "desc", "Ascending": "asc"], class: "input"
 
           .field
