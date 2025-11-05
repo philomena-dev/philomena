@@ -191,7 +191,7 @@ defmodule Philomena.Comments do
     |> Repo.transaction()
     |> case do
       {:ok, %{comment: comment}} ->
-        UserStatistics.inc_stat(comment.user, :comments_posted, -1)
+        UserStatistics.inc_stat(comment.user_id, :comments_count, -1)
         reindex_comment(comment)
 
         {:ok, comment}
@@ -237,7 +237,7 @@ defmodule Philomena.Comments do
     |> Repo.transaction()
     |> case do
       {:ok, %{comment: comment, reports: {_count, reports}}} ->
-        UserStatistics.inc_stat(comment.user_id, :comments_posted)
+        UserStatistics.inc_stat(comment.user_id, :comments_count)
         Reports.reindex_reports(reports)
         reindex_comment(comment)
 
