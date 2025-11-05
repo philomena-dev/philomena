@@ -213,10 +213,10 @@ defmodule Philomena.Images do
   defp increment_user_stats(nil), do: false
 
   defp increment_user_stats(%User{} = user) do
-    UserStatistics.inc_stat(user, :uploads)
+    UserStatistics.inc_stat(user, :images_count)
   end
 
-  defp maybe_suggest_user_verification(%User{id: id, uploads_count: 5, verified: false}) do
+  defp maybe_suggest_user_verification(%User{id: id, images_count: 5, verified: false}) do
     Reports.create_system_report(
       {"User", id},
       "Verification",

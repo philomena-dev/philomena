@@ -2035,13 +2035,13 @@ ALTER SEQUENCE public.user_name_changes_id_seq OWNED BY public.user_name_changes
 CREATE TABLE public.user_statistics (
     user_id integer NOT NULL,
     day integer DEFAULT 0 NOT NULL,
-    uploads integer DEFAULT 0 NOT NULL,
-    votes_cast integer DEFAULT 0 NOT NULL,
-    comments_posted integer DEFAULT 0 NOT NULL,
-    metadata_updates integer DEFAULT 0 NOT NULL,
-    images_favourited integer DEFAULT 0 NOT NULL,
-    forum_posts integer DEFAULT 0 NOT NULL,
-    topics integer DEFAULT 0
+    images_count integer DEFAULT 0 NOT NULL,
+    image_votes_count integer DEFAULT 0 NOT NULL,
+    comments_count integer DEFAULT 0 NOT NULL,
+    metadata_updates_count integer DEFAULT 0 NOT NULL,
+    image_faves_count integer DEFAULT 0 NOT NULL,
+    posts_count integer DEFAULT 0 NOT NULL,
+    topics_count integer DEFAULT 0 NOT NULL
 );
 
 
@@ -2150,7 +2150,7 @@ CREATE TABLE public.users (
     no_spoilered_in_watched boolean DEFAULT false NOT NULL,
     watched_images_query_str character varying DEFAULT ''::character varying NOT NULL,
     watched_images_exclude_str character varying DEFAULT ''::character varying NOT NULL,
-    forum_posts_count integer DEFAULT 0 NOT NULL,
+    posts_count integer DEFAULT 0 NOT NULL,
     topics_count integer DEFAULT 0 NOT NULL,
     recent_filter_ids integer[] DEFAULT '{}'::integer[] NOT NULL,
     watched_tag_ids integer[] DEFAULT '{}'::integer[] NOT NULL,
@@ -2159,11 +2159,11 @@ CREATE TABLE public.users (
     failed_attempts integer,
     unlock_token character varying,
     locked_at timestamp without time zone,
-    uploads_count integer DEFAULT 0 NOT NULL,
-    votes_cast_count integer DEFAULT 0 NOT NULL,
-    comments_posted_count integer DEFAULT 0 NOT NULL,
+    images_count integer DEFAULT 0 NOT NULL,
+    image_votes_count integer DEFAULT 0 NOT NULL,
+    comments_count integer DEFAULT 0 NOT NULL,
     metadata_updates_count integer DEFAULT 0 NOT NULL,
-    images_favourited_count integer DEFAULT 0 NOT NULL,
+    image_faves_count integer DEFAULT 0 NOT NULL,
     use_centered_layout boolean DEFAULT true NOT NULL,
     secondary_role character varying,
     hide_default_role boolean DEFAULT false NOT NULL,

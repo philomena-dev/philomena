@@ -24,7 +24,7 @@ defmodule Philomena.UserDownvoteWipe do
           inc: [downvotes_count: -1, score: 1]
         )
 
-      Repo.update_all(where(User, id: ^user.id), inc: [votes_cast_count: -count])
+      Repo.update_all(where(User, id: ^user.id), inc: [image_votes_count: -count])
 
       reindex(image_ids)
     end)
@@ -41,7 +41,7 @@ defmodule Philomena.UserDownvoteWipe do
             inc: [upvotes_count: -1, score: -1]
           )
 
-        Repo.update_all(where(User, id: ^user.id), inc: [votes_cast_count: -count])
+        Repo.update_all(where(User, id: ^user.id), inc: [image_votes_count: -count])
 
         reindex(image_ids)
       end)
@@ -55,7 +55,7 @@ defmodule Philomena.UserDownvoteWipe do
         {count, nil} =
           Repo.update_all(where(Image, [i], i.id in ^image_ids), inc: [faves_count: -1])
 
-        Repo.update_all(where(User, id: ^user.id), inc: [images_favourited_count: -count])
+        Repo.update_all(where(User, id: ^user.id), inc: [image_faves_count: -count])
 
         reindex(image_ids)
       end)

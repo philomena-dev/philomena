@@ -79,7 +79,7 @@ defmodule Philomena.Topics do
     |> Repo.transaction()
     |> case do
       {:ok, %{topic: topic}} = result ->
-        UserStatistics.inc_stat(topic.user, :topics)
+        UserStatistics.inc_stat(topic.user_id, :topics_count)
         Posts.reindex_post(hd(topic.posts))
         Posts.report_non_approved(hd(topic.posts))
 
@@ -246,7 +246,7 @@ defmodule Philomena.Topics do
     |> Repo.transaction()
     |> case do
       {:ok, %{topic: topic}} ->
-        UserStatistics.inc_stat(topic.user, :topics, -1)
+        UserStatistics.inc_stat(topic.user_id, :topics_count, -1)
 
         {:ok, topic}
 
@@ -277,7 +277,7 @@ defmodule Philomena.Topics do
     |> Repo.transaction()
     |> case do
       {:ok, %{topic: topic}} ->
-        UserStatistics.inc_stat(topic.user, :topics)
+        UserStatistics.inc_stat(topic.user_id, :topics_count)
 
         {:ok, topic}
 
