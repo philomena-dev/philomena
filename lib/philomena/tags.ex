@@ -13,6 +13,7 @@ defmodule Philomena.Tags do
   alias Philomena.TagUnaliasWorker
   alias Philomena.TagReindexWorker
   alias Philomena.TagDeleteWorker
+  alias Philomena.Tags.Implication
   alias Philomena.Tags.Tag
   alias Philomena.Tags.Uploader
   alias Philomena.Images
@@ -826,5 +827,60 @@ defmodule Philomena.Tags do
   """
   def change_implication(%Implication{} = implication) do
     Implication.changeset(implication, %{})
+  end
+
+  @doc """
+  Deletes all tags that meet all of the following conditions:
+  - Not present on any images
+  - No description
+  - No short description
+  - No category
+  - No mod notes
+  - No spoiler image set
+  - Not aliased to another tag
+  - Has no aliases pointing to it
+  - Does not imply any other tags
+  - Is not implied by any other tags
+  - Has no artist links
+  - Has no DNP entries
+
+  Also removes the deleted tags from the search index.
+
+  ## Examples
+
+      iex> cleanup!()
+      {3, [1, 2, 3]}
+
+  """
+  def cleanup! do
+    tag_ids =
+      from(t in Tag,
+        as: :tag,
+        where: t.description == "",
+        where: is_nil(t.short_description) or t.short_description == "",
+        where: is_nil(t.category) or t.category == "",
+        where: is_nil(t.mod_notes) or t.mod_notes == "",
+        where: is_nil(t.image),
+        where: is_nil(t.aliased_tag_id),
+        where: not exists(where(Images.Tagging, tag_id: parent_as(:tag).id)),
+        where: not exists(where(Tag, aliased_tag_id: parent_as(:tag).id)),
+        where: not exists(where(Implication, tag_id: parent_as(:tag).id)),
+        where: not exists(where(Implication, implied_tag_id: parent_as(:tag).id)),
+        where: not exists(where(ArtistLink, tag_id: parent_as(:tag).id)),
+        where: not exists(where(DnpEntry, tag_id: parent_as(:tag).id)),
+        select: t.id
+      )
+      |> Repo.all()
+
+    {count, _} =
+      Tag
+      |> where([t], t.id in ^tag_ids)
+      |> Repo.delete_all()
+
+    if count > 0 do
+      PhilomenaQuery.Search.delete_documents(tag_ids, Tag)
+    end
+
+    {count, tag_ids}
   end
 end

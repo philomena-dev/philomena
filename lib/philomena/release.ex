@@ -39,6 +39,11 @@ defmodule Philomena.Release do
     Philomena.Autocomplete.generate_autocomplete!()
   end
 
+  def clean_tags do
+    start_app()
+    Philomena.Tags.cleanup!()
+  end
+
   defp repos do
     Application.fetch_env!(@app, :ecto_repos)
   end
