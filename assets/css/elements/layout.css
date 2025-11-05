@@ -270,6 +270,11 @@ nav {
   display: grid;
 }
 
+.grid--two-columns {
+  grid-template-columns: auto auto;
+  gap: var(--padding-normal);
+}
+
 @media (max-width: $min-desktop-width) {
   .stretched-mobile-links {
     display: flex;

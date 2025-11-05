@@ -2,6 +2,7 @@ defmodule Philomena.RulesTest do
   use Philomena.DataCase
 
   alias Philomena.Rules
+  alias Philomena.Users.User
 
   describe "rules" do
     alias Philomena.Rules.Rule
@@ -22,12 +23,12 @@ defmodule Philomena.RulesTest do
       assert Rules.list_rules() == [rule]
     end
 
-    test "get_rule!/1 returns the rule with given id" do
+    test "find_rule/1 returns the rule with given id" do
       rule = rule_fixture()
-      assert Rules.get_rule!(rule.id) == rule
+      assert Rules.find_rule(rule.id) == rule
     end
 
-    test "create_rule/1 with valid data creates a rule" do
+    test "create_rule_with_version/1 with valid data creates a rule" do
       valid_attrs = %{
         name: "some name",
         position: 42,
@@ -37,7 +38,7 @@ defmodule Philomena.RulesTest do
         highlight: true
       }
 
-      assert {:ok, %Rule{} = rule} = Rules.create_rule(valid_attrs)
+      assert {:ok, %Rule{} = rule} = Rules.create_rule_with_version(valid_attrs, %User{id: 1})
       assert rule.name == "some name"
       assert rule.position == 42
       assert rule.description == "some description"
@@ -46,11 +47,12 @@ defmodule Philomena.RulesTest do
       assert rule.highlight == true
     end
 
-    test "create_rule/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Rules.create_rule(@invalid_attrs)
+    test "create_rule_with_version/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} =
+               Rules.create_rule_with_version(@invalid_attrs, %User{id: 1})
     end
 
-    test "update_rule/2 with valid data updates the rule" do
+    test "update_rule_with_version/2 with valid data updates the rule" do
       rule = rule_fixture()
 
       update_attrs = %{
@@ -62,7 +64,9 @@ defmodule Philomena.RulesTest do
         highlight: false
       }
 
-      assert {:ok, %Rule{} = rule} = Rules.update_rule(rule, update_attrs)
+      assert {:ok, %Rule{} = rule} =
+               Rules.update_rule_with_version(rule, update_attrs, %User{id: 1})
+
       assert rule.name == "some updated name"
       assert rule.position == 43
       assert rule.description == "some updated description"
@@ -71,16 +75,13 @@ defmodule Philomena.RulesTest do
       assert rule.highlight == false
     end
 
-    test "update_rule/2 with invalid data returns error changeset" do
+    test "update_rule_with_version/2 with invalid data returns error changeset" do
       rule = rule_fixture()
-      assert {:error, %Ecto.Changeset{}} = Rules.update_rule(rule, @invalid_attrs)
-      assert rule == Rules.get_rule!(rule.id)
-    end
 
-    test "delete_rule/1 deletes the rule" do
-      rule = rule_fixture()
-      assert {:ok, %Rule{}} = Rules.delete_rule(rule)
-      assert_raise Ecto.NoResultsError, fn -> Rules.get_rule!(rule.id) end
+      assert {:error, %Ecto.Changeset{}} =
+               Rules.update_rule_with_version(rule, @invalid_attrs, %User{id: 1})
+
+      assert rule == Rules.find_rule(rule.id)
     end
 
     test "change_rule/1 returns a rule changeset" do

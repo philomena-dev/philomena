@@ -1,49 +1,66 @@
+- admin_only_rule = @rule.hidden or @rule.internal
+- block_class = if @rule.hidden or @rule.internal, do: "block block--fixed block--danger", else: ""
 - highlight_class = if @rule.highlight, do: "block block--fixed block--warning", else: ""
 - important_class = if @rule.highlight, do: "important", else: ""
-.rule class=highlight_class id="#{@rule.position}"
-  h2 class=important_class
-    = @rule.name
-    ' :
-    = @rule.title
-  = if @rule.highlight do
-    .flex.flex__shrink
-      .label.label--danger
-        i.fa.fa-exclamation-triangle>
-        ' Important Rule
-  .walloftext
-    = @rule.description
+div class=block_class
+  .rule class=highlight_class id="#{@rule.position}"
+    .flex.flex--gap-normal
+      = if @rule.highlight do
+        .label.label--danger
+          i.fa.fa-exclamation-triangle>
+          ' Important Rule
+      = if @rule.hidden do
+        .label.label--warning
+          i.fa.fa-eye-slash>
+          ' Hidden Rule
+      = if @rule.internal do
+        .label.label--warning
+          i.fa.fa-gear>
+          ' Internal Rule
 
-.block.flex.flex__shrink.flex--gap-small
-  = unless @show_timestamp do
-    a.button.button--state-primary href="##{@rule.position}"
-      span.small-text
-        i.fa.fa-fw.fa-link
+    = if admin_only_rule do
+      .block
+        h3 = @rule.name
+        strong = @rule.short_description
+    - else
+      h2 class=important_class
+        = @rule.name
+        ' :
+        = @rule.title
+    .walloftext
+      = @rule.description
 
-  = if @rule.example != "" do
-    a.button.button--state-primary href="#" data-click-toggle=".js-rule-example-toggle-#{@rule.id}" title="View Examples"
-      span.small-text
-        i.fa.fa-eye>
-        span View Examples
+  .block.flex.flex__shrink.flex--gap-small
+    = unless @show_timestamp do
+      a.button.button--state-primary href="##{@rule.position}"
+        span.small-text
+          i.fa.fa-fw.fa-link
 
-  = unless @show_timestamp do
-    = link to: ~p"/rules/#{@rule}", class: "button button--state-primary" do
-      span.small-text
-        i.fa.fa-circle-info>
-        ' More Details
+    = if @rule.example != "" do
+      a.button.button--state-primary href="#" data-click-toggle=".js-rule-example-toggle-#{@rule.id}" title="View Examples"
+        span.small-text
+          i.fa.fa-eye>
+          span View Examples
 
-  = if can?(@conn, :edit, @rule) do
-    a.button.button--state-warning href="#"
-      span.small-text
-        i.fa.fa-edit>
-        ' Edit
+    = unless @show_timestamp do
+      = link to: ~p"/rules/#{@rule}", class: "button button--state-primary" do
+        span.small-text
+          i.fa.fa-circle-info>
+          ' More Details
 
-.block.block__content.block--danger.hidden class="js-rule-example-toggle-#{@rule.id}"
-  h4 Examples
-  .walloftext = @rule.example
+    = if can?(@conn, :edit, @rule) do
+      a.button.button--state-warning href=~p"/rules/#{@rule}/edit" title="Edit Rule"
+        span.small-text
+          i.fa.fa-edit>
+          ' Edit
 
-= if @show_timestamp do
-  .label.small-text.label--primary.label--narrow
-    p
-      i.fa.fa-clock>
-      ' Last edited
-      = pretty_time @rule.updated_at
+  .block.block__content.block--danger.hidden class="js-rule-example-toggle-#{@rule.id}"
+    h4 Examples
+    .walloftext = @rule.example
+
+  = if @show_timestamp do
+    .label.small-text.label--primary.label--narrow
+      p
+        i.fa.fa-clock>
+        ' Last updated
+        = pretty_time @rule.updated_at

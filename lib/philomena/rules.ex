@@ -57,20 +57,18 @@ defmodule Philomena.Rules do
   end
 
   @doc """
-  Gets a single rule.
-
-  Raises `Ecto.NoResultsError` if the Rule does not exist.
+  Gets a single rule. Returns nil if the rule does not exist.
 
   ## Examples
 
-      iex> get_rule!(123)
+      iex> find_rule(123)
       %Rule{}
 
-      iex> get_rule!(456)
-      ** (Ecto.NoResultsError)
+      iex> find_rule(456)
+      nil
 
   """
-  def get_rule!(id), do: Repo.get!(Rule, id)
+  def find_rule(id), do: Repo.get(Rule, id)
 
   @doc """
   Gets a single rule by its position.
@@ -105,18 +103,22 @@ defmodule Philomena.Rules do
   def get_by_name!(name), do: Repo.get_by!(Rule, name: name)
 
   @doc """
-  Gets a single rule by its name.
+  Returns a list of all rule versions for a given rule.
 
   ## Examples
 
-      iex> find_by_name("Rule #0")
-      %Rule{name: "Rule #0", ...}
-
-      iex> find_by_name("Nonexistent Rule")
-      nil
+      iex> list_rule_versions(rule)
+      [%RuleVersion{...}, ...]
 
   """
-  def find_by_name(name), do: Repo.get_by(Rule, name: name)
+  def list_rule_versions(%Rule{} = rule) do
+    Repo.all(
+      from rv in RuleVersion,
+        where: rv.rule_id == ^rule.id,
+        order_by: [desc: rv.created_at],
+        preload: [:user]
+    )
+  end
 
   @doc """
   Creates a rule version attributed to a user.
@@ -130,7 +132,7 @@ defmodule Philomena.Rules do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_rule_version(%Rule{} = rule, %User{} = user) do
+  defp create_rule_version(%Rule{} = rule, %User{} = user) do
     %RuleVersion{}
     |> RuleVersion.changeset(%{
       name: rule.name,
@@ -144,7 +146,7 @@ defmodule Philomena.Rules do
     |> Repo.insert()
   end
 
-  def create_rule_version(%Rule{} = rule, nil) do
+  defp create_rule_version(%Rule{} = rule, nil) do
     create_rule_version(rule, %User{id: nil})
   end
 
@@ -160,7 +162,7 @@ defmodule Philomena.Rules do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_rule(attrs) do
+  defp create_rule(attrs) do
     %Rule{}
     |> Rule.changeset(attrs)
     |> Repo.insert()
@@ -201,7 +203,7 @@ defmodule Philomena.Rules do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_rule(%Rule{} = rule, attrs) do
+  defp update_rule(%Rule{} = rule, attrs) do
     rule
     |> Rule.changeset(attrs)
     |> Repo.update()
@@ -223,27 +225,11 @@ defmodule Philomena.Rules do
   """
   def update_rule_with_version(%Rule{} = rule, user, attrs) do
     Repo.transact(fn ->
-      with {:ok, rule_version} <- create_rule_version(rule, user),
-           {:ok, updated_rule} <- update_rule(rule, attrs) do
+      with {:ok, updated_rule} <- update_rule(rule, attrs),
+           {:ok, rule_version} <- create_rule_version(updated_rule, user) do
         {:ok, [updated_rule, rule_version]}
       end
     end)
-  end
-
-  @doc """
-  Deletes a rule.
-
-  ## Examples
-
-      iex> delete_rule(rule)
-      {:ok, %Rule{}}
-
-      iex> delete_rule(rule)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_rule(%Rule{} = rule) do
-    Repo.delete(rule)
   end
 
   @doc """

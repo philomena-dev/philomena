@@ -1,0 +1,18 @@
+= for diff <- @difference do
+  = case diff do
+    - {:eq, lines} ->
+      = for line <- lines do
+        = line
+        = "\n"
+
+    - {:ins, lines} ->
+      ins.differ
+        = for line <- lines do
+          = line
+          = "\n"
+
+    - {:del, lines} ->
+      del.differ
+        = for line <- lines do
+          = line
+          = "\n"

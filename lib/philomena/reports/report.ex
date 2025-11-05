@@ -4,6 +4,7 @@ defmodule Philomena.Reports.Report do
 
   alias Philomena.Users.User
   alias Philomena.Rules.Rule
+  alias Philomena.Rules
 
   schema "reports" do
     belongs_to :user, User
@@ -74,5 +75,21 @@ defmodule Philomena.Reports.Report do
       :fingerprint,
       :user_agent
     ])
+  end
+
+  def user_creation_changeset(report, attrs, attribution) do
+    report
+    |> creation_changeset(attrs, attribution)
+    |> validate_rule()
+  end
+
+  defp validate_rule(changeset) do
+    rule_id = get_field(changeset, :rule_id)
+
+    case Rules.find_rule(rule_id) do
+      nil -> add_error(changeset, :rule_id, "is invalid")
+      %Rule{internal: true} -> add_error(changeset, :rule_id, "is internal")
+      _ -> changeset
+    end
   end
 end

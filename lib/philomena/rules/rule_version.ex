@@ -15,6 +15,9 @@ defmodule Philomena.Rules.RuleVersion do
     field :short_description, :string, default: ""
     field :example, :string, default: ""
 
+    field :previous, :any, virtual: true
+    field :differences, :any, virtual: true
+
     timestamps(inserted_at: :created_at, updated_at: false, type: :utc_datetime)
   end
 
@@ -32,10 +35,6 @@ defmodule Philomena.Rules.RuleVersion do
     ])
     |> validate_required([
       :name,
-      :title,
-      :description,
-      :short_description,
-      :example,
       :rule_id
     ])
   end

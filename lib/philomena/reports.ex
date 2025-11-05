@@ -85,7 +85,7 @@ defmodule Philomena.Reports do
   """
   def create_report({reportable_type, reportable_id} = _type_and_id, attribution, attrs \\ %{}) do
     %Report{reportable_type: reportable_type, reportable_id: reportable_id}
-    |> Report.creation_changeset(attrs, attribution)
+    |> Report.user_creation_changeset(attrs, attribution)
     |> Repo.insert()
     |> reindex_after_update()
   end

@@ -17,7 +17,7 @@ defmodule PhilomenaWeb.Admin.ReportController do
   plug :load_and_authorize_resource,
     model: Report,
     only: [:show],
-    preload: [:admin, user: [:linked_tags, awards: :badge]]
+    preload: [:admin, :rule, user: [:linked_tags, awards: :badge]]
 
   plug :set_mod_notes when action in [:show]
 
@@ -89,9 +89,8 @@ defmodule PhilomenaWeb.Admin.ReportController do
       )
 
     body = MarkdownRenderer.render_one(%{body: report.reason}, conn)
-    rule = Rules.get_rule!(report.rule_id)
 
-    render(conn, "show.html", title: "Showing Report", report: report, body: body, rule: rule)
+    render(conn, "show.html", title: "Showing Report", report: report, body: body)
   end
 
   defp load_reports(conn, query) do

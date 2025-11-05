@@ -14,9 +14,9 @@ article.block.communication
         br
         = render PhilomenaWeb.UserAttributionView, "_anon_user_title.html", object: @report, conn: @conn
       p
-        = @rule.name
+        = @report.rule.name
         |  (
-        = @rule.title
+        = @report.rule.title
         | )
       .communication__body__text
         =<> @body

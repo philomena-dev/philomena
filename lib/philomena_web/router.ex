@@ -447,7 +447,7 @@ defmodule PhilomenaWeb.Router do
 
     resources "/pages", PageController, only: [:index, :new, :create, :edit, :update]
     resources "/channels", ChannelController, only: [:new, :create, :edit, :update, :delete]
-    resources "/rules", RuleController, only: [:new, :create, :edit, :update, :delete]
+    resources "/rules", RuleController, only: [:new, :create, :edit, :update]
   end
 
   scope "/", PhilomenaWeb do
