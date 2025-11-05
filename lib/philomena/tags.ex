@@ -13,6 +13,7 @@ defmodule Philomena.Tags do
   alias Philomena.TagUnaliasWorker
   alias Philomena.TagReindexWorker
   alias Philomena.TagDeleteWorker
+  alias Philomena.Tags.Implication
   alias Philomena.Tags.Tag
   alias Philomena.Tags.Uploader
   alias Philomena.Images
@@ -833,6 +834,7 @@ defmodule Philomena.Tags do
   - Not present on any images
   - No description
   - No short description
+  - No category
   - No mod notes
   - No spoiler image set
   - Not aliased to another tag
@@ -853,24 +855,19 @@ defmodule Philomena.Tags do
   def cleanup! do
     tag_ids =
       from(t in Tag,
+        as: :tag,
         where: t.description == "",
         where: is_nil(t.short_description) or t.short_description == "",
+        where: is_nil(t.category) or t.category == "",
         where: is_nil(t.mod_notes) or t.mod_notes == "",
         where: is_nil(t.image),
         where: is_nil(t.aliased_tag_id),
-        left_join: tg in "image_taggings",
-        on: tg.tag_id == t.id,
-        where: is_nil(tg),
-        left_join: a in assoc(t, :aliases),
-        where: is_nil(a),
-        left_join: it in assoc(t, :implied_tags),
-        where: is_nil(it),
-        left_join: ibt in assoc(t, :implied_by_tags),
-        where: is_nil(ibt),
-        left_join: al in "artist_links",
-        where: is_nil(al),
-        left_join: dnp in "dnp_entries",
-        where: is_nil(dnp),
+        where: not exists(where(Images.Tagging, tag_id: parent_as(:tag).id)),
+        where: not exists(where(Tag, aliased_tag_id: parent_as(:tag).id)),
+        where: not exists(where(Implication, tag_id: parent_as(:tag).id)),
+        where: not exists(where(Implication, implied_tag_id: parent_as(:tag).id)),
+        where: not exists(where(ArtistLink, tag_id: parent_as(:tag).id)),
+        where: not exists(where(DnpEntry, tag_id: parent_as(:tag).id)),
         select: t.id
       )
       |> Repo.all()
