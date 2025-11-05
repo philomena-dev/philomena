@@ -110,7 +110,7 @@ defmodule Philomena.Images.Query do
   defp anonymous_fields do
     [
       int_fields:
-        ~W(id width height score upvotes downvotes faves pixels size orig_size comment_count source_count tag_count) ++
+        ~W(id width height score upvotes downvotes hides faves pixels size orig_size comment_count source_count tag_count) ++
           tag_count_fields(),
       numeric_fields: ~W(uploader_id faved_by_id duplicate_id),
       float_fields: ~W(aspect_ratio wilson_score duration),
