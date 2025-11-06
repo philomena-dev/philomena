@@ -4,12 +4,11 @@ defmodule Philomena.Reports.Report do
 
   alias Philomena.Users.User
   alias Philomena.Rules.Rule
-  alias Philomena.Rules
 
   schema "reports" do
     belongs_to :user, User
     belongs_to :admin, User
-    belongs_to :rule, Rule
+    belongs_to :rule, Rule, on_replace: :nilify
 
     field :ip, EctoNetwork.INET
     field :fingerprint, :string
@@ -33,6 +32,13 @@ defmodule Philomena.Reports.Report do
     report
     |> cast(attrs, [])
     |> validate_required([])
+  end
+
+  def conversion_changeset(report, attrs, rule) do
+    report
+    |> cast(attrs, [:reason])
+    |> put_assoc(:rule, rule)
+    |> validate_required([:reason])
   end
 
   # Ensure that the report is not currently claimed before
@@ -60,9 +66,10 @@ defmodule Philomena.Reports.Report do
   end
 
   @doc false
-  def creation_changeset(report, attrs, attribution) do
+  def creation_changeset(report, attrs, attribution, rule) do
     report
-    |> cast(attrs, [:rule_id, :reason, :user_agent])
+    |> cast(attrs, [:reason, :user_agent])
+    |> put_assoc(:rule, rule)
     |> validate_length(:reason, max: 10_000, count: :bytes)
     |> validate_length(:user_agent, max: 1000, count: :bytes)
     |> change(attribution)
@@ -70,23 +77,20 @@ defmodule Philomena.Reports.Report do
       :reportable_id,
       :reportable_type,
       :reason,
-      :rule_id,
       :ip,
       :fingerprint,
       :user_agent
     ])
   end
 
-  def user_creation_changeset(report, attrs, attribution) do
+  def user_creation_changeset(report, attrs, attribution, rule) do
     report
-    |> creation_changeset(attrs, attribution)
+    |> creation_changeset(attrs, attribution, rule)
     |> validate_rule()
   end
 
   defp validate_rule(changeset) do
-    rule_id = get_field(changeset, :rule_id)
-
-    case Rules.find_rule(rule_id) do
+    case get_assoc(changeset, :rule, :struct) do
       nil -> add_error(changeset, :rule_id, "is invalid")
       %Rule{internal: true} -> add_error(changeset, :rule_id, "is internal")
       _ -> changeset

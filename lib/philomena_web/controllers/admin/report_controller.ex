@@ -5,7 +5,6 @@ defmodule PhilomenaWeb.Admin.ReportController do
   alias PhilomenaWeb.MarkdownRenderer
   alias Philomena.Reports.Report
   alias Philomena.Reports.Query
-  alias Philomena.Rules
   alias Philomena.Polymorphic
   alias Philomena.ModNotes.ModNote
   alias Philomena.ModNotes

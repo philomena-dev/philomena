@@ -120,18 +120,6 @@ defmodule Philomena.Rules do
     )
   end
 
-  @doc """
-  Creates a rule version attributed to a user.
-
-  ## Examples
-
-      iex> create_rule_version(rule, user)
-      {:ok, %RuleVersion{}}
-
-      iex> create_rule_version(bad_rule, bad_user)
-      {:error, %Ecto.Changeset{}}
-
-  """
   defp create_rule_version(%Rule{} = rule, %User{} = user) do
     %RuleVersion{}
     |> RuleVersion.changeset(%{
@@ -150,18 +138,6 @@ defmodule Philomena.Rules do
     create_rule_version(rule, %User{id: nil})
   end
 
-  @doc """
-  Creates a rule.
-
-  ## Examples
-
-      iex> create_rule(%{field: value})
-      {:ok, %Rule{}}
-
-      iex> create_rule(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   defp create_rule(attrs) do
     %Rule{}
     |> Rule.changeset(attrs)
@@ -191,18 +167,6 @@ defmodule Philomena.Rules do
     end)
   end
 
-  @doc """
-  Updates a rule.
-
-  ## Examples
-
-      iex> update_rule(rule, %{field: new_value})
-      {:ok, %Rule{}}
-
-      iex> update_rule(rule, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   defp update_rule(%Rule{} = rule, attrs) do
     rule
     |> Rule.changeset(attrs)

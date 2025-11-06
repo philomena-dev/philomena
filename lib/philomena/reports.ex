@@ -13,7 +13,6 @@ defmodule Philomena.Reports do
   alias Philomena.IndexWorker
   alias Philomena.Polymorphic
   alias Philomena.Rules
-  alias Philomena.Rules.Rule
 
   @reason_regex ~r/^(Rule|Other|Takedown|Verification|Approval|Review|System)([^:]*): (.*)$/
 
@@ -84,8 +83,10 @@ defmodule Philomena.Reports do
 
   """
   def create_report({reportable_type, reportable_id} = _type_and_id, attribution, attrs \\ %{}) do
+    rule = Rules.find_rule(attrs["rule_id"])
+
     %Report{reportable_type: reportable_type, reportable_id: reportable_id}
-    |> Report.user_creation_changeset(attrs, attribution)
+    |> Report.user_creation_changeset(attrs, attribution, rule)
     |> Repo.insert()
     |> reindex_after_update()
   end
@@ -154,12 +155,11 @@ defmodule Philomena.Reports do
 
   """
   def create_system_report({reportable_type, reportable_id} = _type_and_id, rule_name, reason) do
-    %Rule{id: rule_id} = Rules.get_by_name!(rule_name)
+    rule = Rules.get_by_name!(rule_name)
 
     attrs = %{
       reason: reason,
-      user_agent: "system",
-      rule_id: rule_id
+      user_agent: "system"
     }
 
     attribution = %{
@@ -169,7 +169,7 @@ defmodule Philomena.Reports do
     }
 
     %Report{reportable_type: reportable_type, reportable_id: reportable_id}
-    |> Report.creation_changeset(attrs, attribution)
+    |> Report.creation_changeset(attrs, attribution, rule)
     |> Repo.insert()
     |> reindex_after_update()
   end
@@ -347,7 +347,7 @@ defmodule Philomena.Reports do
           end
 
         report
-        |> Report.changeset(%{rule_id: rule.id, reason: String.trim(reason)})
+        |> Report.conversion_changeset(%{reason: String.trim(reason)}, rule)
         |> Repo.update!()
 
       _ ->
