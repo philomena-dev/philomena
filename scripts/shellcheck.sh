@@ -2,7 +2,7 @@
 #
 # This script runs shellcheck on all shell scripts in the repository.
 # It exists because shellcheck doesn't attempt to automatically discover
-# shell scripts and requires specifying the files paths explicitly.
+# shell scripts and requires specifying the file paths explicitly.
 #
 # This is somewhat understandable, because not all shell scripts use
 # obvious file extensions like `.sh`. So, we discover such files by
