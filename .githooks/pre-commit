@@ -30,7 +30,7 @@ if [[ -n "$rust_files" ]]; then
   echo "$rust_files" | step xargs cargo fmt --manifest-path native/Cargo.toml --
 fi
 
-echo "$files" | step xargs mix format &
+echo "$files" | step xargs mix format
 
 # Add the modified/prettified files to staging
 echo "$files" | step xargs git add
