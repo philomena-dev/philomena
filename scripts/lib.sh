@@ -80,3 +80,15 @@ function colorize_command {
   # and we use bash >= v5. If this ever becomes a problem, you know the why.
   echo -e "\033[1;32m${program}\033[0m ${args[*]}"
 }
+
+# `curl` wrapper with better defaults for non-interactive scripts
+function fetch {
+  step curl \
+    --fail \
+    --silent \
+    --show-error \
+    --location \
+    --retry 5 \
+    --retry-all-errors \
+    "$@"
+}
