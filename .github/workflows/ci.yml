@@ -41,6 +41,14 @@ jobs:
       - uses: actions/checkout@v5
       - uses: crate-ci/typos@master
 
+  shellcheck:
+    name: Shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: ./scripts/install/shellcheck.sh
+      - run: ./scripts/shellcheck.sh
+
   cargo:
     name: Rust Linting and Unit Tests
     runs-on: ubuntu-latest
