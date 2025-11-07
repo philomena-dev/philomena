@@ -18,22 +18,19 @@ if [[ -z "$files" ]]; then
   exit 0
 fi
 
-{
-  echo "$files" | step xargs typos &
-  ./scripts/shellcheck.sh &
-  echo "$files" | step xargs npx prettier --ignore-unknown --write &
+echo "$files" | step xargs typos
 
-  # `rustfmt` doesn't ignore non-rust files automatically
-  rust_files=$(echo "$files" | { grep -E '\.rs$' || true; })
-  if [[ -n "$rust_files" ]]; then
-    echo "$rust_files" | step xargs cargo fmt --manifest-path native/Cargo.toml -- &
-  fi
+./scripts/shellcheck.sh
 
-  echo "$files" | step xargs mix format &
+echo "$files" | step xargs npx prettier --ignore-unknown --write
 
-  # Wait for all background processes to complete
-  wait
-}
+# `rustfmt` doesn't ignore non-rust files automatically
+rust_files=$(echo "$files" | { grep -E '\.rs$' || true; })
+if [[ -n "$rust_files" ]]; then
+  echo "$rust_files" | step xargs cargo fmt --manifest-path native/Cargo.toml --
+fi
+
+echo "$files" | step xargs mix format &
 
 # Add the modified/prettified files to staging
 echo "$files" | step xargs git add
