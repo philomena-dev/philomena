@@ -99,13 +99,13 @@ defmodule Philomena.Users.User do
     field :rounded_tags, :boolean, default: false
 
     # Counters
-    field :forum_posts_count, :integer, default: 0
-    field :topic_count, :integer, default: 0
-    field :uploads_count, :integer, default: 0
-    field :votes_cast_count, :integer, default: 0
-    field :comments_posted_count, :integer, default: 0
+    field :posts_count, :integer, default: 0
+    field :topics_count, :integer, default: 0
+    field :images_count, :integer, default: 0
+    field :image_votes_count, :integer, default: 0
+    field :comments_count, :integer, default: 0
     field :metadata_updates_count, :integer, default: 0
-    field :images_favourited_count, :integer, default: 0
+    field :image_faves_count, :integer, default: 0
 
     # Poorly denormalized associations
     field :recent_filter_ids, {:array, :integer}, default: []
