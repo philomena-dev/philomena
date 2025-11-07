@@ -20,7 +20,7 @@ fi
 
 {
   echo "$files" | step xargs typos &
-  "$(repo)/scripts/shellcheck.sh" &
+  ./scripts/shellcheck.sh &
   echo "$files" | step xargs npx prettier --ignore-unknown --write &
 
   # `rustfmt` doesn't ignore non-rust files automatically
