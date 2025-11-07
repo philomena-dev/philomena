@@ -42,6 +42,7 @@ jobs:
       - uses: crate-ci/typos@master
 
   shellcheck:
+    name: Shellcheck
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
