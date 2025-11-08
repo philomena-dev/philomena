@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: ./scripts/install/typos.sh
+      - run: ./scripts/install/typos.sh
       - run: typos
 
   shellcheck:
@@ -56,10 +56,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@1.87.0
-        with:
-          components: clippy, rustfmt
+      # Uses the `rust-toolchain.toml` file
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
 
       - name: cargo fmt
         run: (cd native/philomena && cargo fmt --check)
@@ -105,15 +103,3 @@ jobs:
 
       - run: npm run build
         working-directory: ./assets
-
-  repo-init-script:
-    name: 'Repo Init Script'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-
-      - run: ./scripts/init.sh
-      - run: typos --version
-      - run: npx prettier --version
