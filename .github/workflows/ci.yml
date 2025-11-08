@@ -58,6 +58,8 @@ jobs:
 
       # Uses the `rust-toolchain.toml` file
       - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: rustfmt, clippy
 
       - name: cargo fmt
         run: (cd native/philomena && cargo fmt --check)
