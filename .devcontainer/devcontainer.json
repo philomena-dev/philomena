@@ -119,10 +119,7 @@
         "tekumara.typos-vscode",
 
         // `.toMatchInlineSnapshot()` syntax highlighting
-        "tlent.jest-snapshot-language-support",
-
-        // Inline git blame annotations
-        "eamodio.gitlens"
+        "tlent.jest-snapshot-language-support"
       ]
     }
   }
