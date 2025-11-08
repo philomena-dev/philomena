@@ -6,13 +6,13 @@
 
 Make sure you have [Docker](https://docs.docker.com/engine/install/) and [Docker Compose plugin](https://docs.docker.com/compose/install/#scenario-two-install-the-docker-compose-plugin) installed.
 
-Add the directory `scripts/path` to your `PATH` to get the `philomena` dev CLI globally available in your terminal. For example you can add the following to your shell's `.*rc` file, but adjust the path to philomena repo accordingly.
+You can open this repo via a [devcontainer](https://containers.dev/) in VSCode, JetBrains, GitHub Codespaces or any other [supported IDE](https://containers.dev/supporting). This setup is the recommended way to develop and this way it's guaranteed everyone uses the same dev configs and dependencies.
 
-```bash
-export PATH="$PATH:$HOME/dev/philomena/scripts/path"
-```
+If you can't/don't want to use devcontainers, then go through the [`.devcontainer/Dockerfile`](.devcontainer/Dockerfile) to see what dependencies/configurations you need to set up on your host machine.
 
-Use the following commands to bring up or shut down a dev server.
+## Dev Stack
+
+Use the following commands to bring up or shut down a dev stack.
 
 ```bash
 philomena up
@@ -28,18 +28,6 @@ Once the application has started, navigate to http://localhost:8080 and login wi
 
 > [!TIP]
 > See the source code of `scripts/philomena.sh` for details on the additional parameters and other subcommands.
-
-## Pre-commit hook
-
-Run the following command to configure the git pre-commit hook that will auto-format the code and run lightweight checks on each commit.
-
-```bash
-philomena init
-```
-
-## IDE Setup
-
-If you are using VSCode, you are encouraged to install the recommended extensions that VSCode should automatically suggest to you based on `.vscode/extensions.json` file in this repo.
 
 ## Troubleshooting
 

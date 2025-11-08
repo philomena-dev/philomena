@@ -1,0 +1,129 @@
+{
+  "name": "philomena-devcontainer",
+
+  // See the docs at https://containers.dev/implementors/json_reference/
+  "build": {
+    "dockerfile": "./Dockerfile",
+    "context": "..",
+    "args": {
+      "CONTAINER_WORKSPACE": "${containerWorkspaceFolder}"
+    }
+  },
+
+  // Run on the host network to access ports exposed by adjacent containers
+  "runArgs": ["--network=host"],
+
+  // Make sure our custom `init-container.sh` script is run at startup
+  "overrideCommand": false,
+
+  "containerEnv": {
+    "HOST_WORKSPACE": "${localWorkspaceFolder}"
+  },
+
+  "forwardPorts": [8080, 5173],
+  "portsAttributes": {
+    "5173": {
+      "label": "Frontend HMR"
+    },
+    "8080": {
+      "label": "Frontend Main"
+    }
+  },
+  "otherPortsAttributes": {
+    // Don't rely on auto-inference for forwarded ports, make it reliable.
+    "onAutoForward": "ignore"
+  },
+
+  "mounts": [
+    // Reuse the host's docker daemon
+    {
+      "source": "/var/run/docker.sock",
+      "target": "/var/run/docker.sock",
+      "type": "bind"
+    },
+
+    // Persist shell history across container restarts
+    {
+      "source": "shell-history",
+      "target": "/shell-history",
+      "type": "volume"
+    },
+
+    // Persiste cargo registry/git caches across container restarts
+    {
+      "source": "cargo-registry",
+      "target": "/root/.cargo/registry",
+      "type": "volume"
+    },
+    {
+      "source": "cargo-git",
+      "target": "/root/.cargo/git",
+      "type": "volume"
+    }
+  ],
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        // Listen on `0.0.0.0` on the host machine to allow accessing the site
+        // via the local network, e.g. with a phone connected to the same WiFi.
+        "remote.localPortHost": "allInterfaces",
+
+        // Rust Analyzer struggles to discover the cargo workspace unless there
+        // is a `Cargo.toml` in the repo root. So, we give it a small hint.
+        "rust-analyzer.linkedProjects": ["./native/philomena/Cargo.toml"],
+
+        "[dockercompose]": {
+          // Use `prettier` for docker-compose.yml instead of docker extension's own formatter.
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        }
+      },
+      "extensions": [
+        // Elixir LSP
+        "jakebecker.elixir-ls",
+
+        // Rust LSP
+        "rust-lang.rust-analyzer",
+
+        // TOML LSP
+        "tamasfe.even-better-toml",
+
+        // Container management extension by Microsoft
+        "ms-azuretools.vscode-docker",
+
+        // Dockerfile LSP by Docker Inc.
+        "docker.docker",
+
+        // Github Actions LSP
+        "github.vscode-github-actions",
+
+        // Bash LSP
+        "mads-hartmann.bash-ide-vscode",
+
+        // Caddyfile LSP
+        "matthewpi.caddyfile-support",
+
+        // `.slime` syntax highlighting
+        "xolan.slime",
+
+        // `.js`, `.ts` linter
+        "dbaeumer.vscode-eslint",
+
+        // `.css` linter
+        "stylelint.vscode-stylelint",
+
+        // `.js`, `.ts`. `.css`, `.json`, `.yaml`, `.md` formatter
+        "esbenp.prettier-vscode",
+
+        // Spell checker enforced on CI
+        "tekumara.typos-vscode",
+
+        // `.toMatchInlineSnapshot()` syntax highlighting
+        "tlent.jest-snapshot-language-support",
+
+        // Inline git blame annotations
+        "eamodio.gitlens"
+      ]
+    }
+  }
+}
