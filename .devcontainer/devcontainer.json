@@ -20,20 +20,6 @@
     "HOST_WORKSPACE": "${localWorkspaceFolder}"
   },
 
-  "forwardPorts": [8080, 5173],
-  "portsAttributes": {
-    "5173": {
-      "label": "Frontend HMR"
-    },
-    "8080": {
-      "label": "Frontend Main"
-    }
-  },
-  "otherPortsAttributes": {
-    // Don't rely on auto-inference for forwarded ports, make it reliable.
-    "onAutoForward": "ignore"
-  },
-
   "mounts": [
     // Reuse the host's docker daemon
     {
