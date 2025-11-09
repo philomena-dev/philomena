@@ -55,6 +55,10 @@
         // via the local network, e.g. with a phone connected to the same WiFi.
         "remote.localPortHost": "allInterfaces",
 
+        // Disable the false positive until this is fixed:
+        // https://github.com/elixir-lang/elixir/issues/14837
+        "elixirLS.dialyzerWarnOpts": ["no_opaque"],
+
         // Rust Analyzer struggles to discover the cargo workspace unless there
         // is a `Cargo.toml` in the repo root. So, we give it a small hint.
         "rust-analyzer.linkedProjects": ["./native/philomena/Cargo.toml"],
