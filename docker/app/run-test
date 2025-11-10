@@ -1,7 +1,11 @@
 #!/usr/bin/env sh
-set -e
+set -ex
 
 export MIX_ENV=test
+
+echo "$PATH"
+
+ls -lah /root/.cargo/bin || true
 
 echo !!!which cargo
 which cargo
