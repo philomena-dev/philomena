@@ -3,6 +3,11 @@ set -e
 
 export MIX_ENV=test
 
+echo !!!which cargo
+which cargo
+
+ls -lah
+
 # Always install mix dependencies
 (cd /srv/philomena && mix deps.get)
 
