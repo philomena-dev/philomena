@@ -5,10 +5,6 @@ volumes:
   postgres_data: {}
   opensearch_data: {}
   caddy_data: {}
-  app_cargo_data: {}
-  app_build_data: {}
-  app_deps_data: {}
-  app_native_data: {}
   s3_data: {}
   shell_history: {}
   cargo_registry: {}
@@ -64,10 +60,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - .:/srv/philomena
-      - app_cargo_data:/srv/philomena/.cargo
-      - app_build_data:/srv/philomena/_build
-      - app_deps_data:/srv/philomena/deps
-      - app_native_data:/srv/philomena/priv/native
       - shell_history:/shell-history
       - cargo_registry:/root/.cargo/registry
       - cargo_git:/root/.cargo/git

@@ -18,21 +18,9 @@ jobs:
             deps
           key: ${{ runner.os }}-deps-3-${{ hashFiles('mix.lock') }}
 
-      - name: Enable caching
-        run: |
-          # Disable volumes so caching can take effect
-          sed -i -Ee 's/- app_[a-z]+_data:.*$//g' docker-compose.yml
-
-          # Make ourselves the owner
-          echo "RUN addgroup -g $(id -g) -S appgroup && adduser -u $(id -u) -S appuser -G appgroup" >> docker/app/Dockerfile
-          echo "USER appuser" >> docker/app/Dockerfile
-          echo "RUN mix local.hex --force && mix local.rebar --force" >> docker/app/Dockerfile
-
       - run: docker compose pull
       - run: docker compose build
-
-      - name: Build and test
-        run: docker compose run app run-test
+      - run: docker compose run app run-test
 
   typos:
     name: 'Check for spelling errors'
