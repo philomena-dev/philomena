@@ -31,9 +31,6 @@ RUN apk add \
     caddy \
     # Required by Github Pull Requests VSCode extension to fetch via git SSH URLs
     openssh
-    # TODO: are these really needed?
-    # && mix local.hex --force \
-    # && mix local.rebar --force
 
 # The default `cargo` and `rust` packages in Alpine repo don't include important
 # rust dev components like `rust-src` (std lib sources), `rustfmt`, `clippy`, etc.
