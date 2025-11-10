@@ -13,6 +13,11 @@ article.block.communication
         span.communication__body__sender-name = render PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @report, awards: true, conn: @conn
         br
         = render PhilomenaWeb.UserAttributionView, "_anon_user_title.html", object: @report, conn: @conn
+      p
+        = @report.rule.name
+        |  (
+        = @report.rule.title
+        | )
       .communication__body__text
         =<> @body
 

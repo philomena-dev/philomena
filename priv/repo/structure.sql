@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict HaHFW4uoQTYEW2yFV8zxsi1boGlZaAq7wPC4PqUZeQq9dkvLFwHwwFxqqPeF0LZ
+\restrict hgf9CfMeD1rU4CvxcBOzalhPAIJmwKqP0y1eMNujQOmt5EMX2Gnh4Z2aHUUnVGK
 
 -- Dumped from database version 18.0
 -- Dumped by pg_dump version 18.0
@@ -1350,7 +1350,8 @@ CREATE TABLE public.reports (
     reportable_id integer NOT NULL,
     reportable_type character varying NOT NULL,
     reason character varying NOT NULL,
-    system boolean DEFAULT false NOT NULL
+    system boolean DEFAULT false NOT NULL,
+    rule_id bigint
 );
 
 
@@ -1401,6 +1402,81 @@ CREATE SEQUENCE public.roles_id_seq
 --
 
 ALTER SEQUENCE public.roles_id_seq OWNED BY public.roles.id;
+
+
+--
+-- Name: rule_versions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.rule_versions (
+    id bigint NOT NULL,
+    rule_id bigint NOT NULL,
+    user_id bigint,
+    name character varying(255) DEFAULT ''::character varying NOT NULL,
+    title character varying(255) DEFAULT ''::character varying NOT NULL,
+    description text DEFAULT ''::text NOT NULL,
+    short_description character varying(255) DEFAULT ''::character varying NOT NULL,
+    example text DEFAULT ''::text NOT NULL,
+    created_at timestamp(0) without time zone NOT NULL
+);
+
+
+--
+-- Name: rule_versions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.rule_versions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: rule_versions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.rule_versions_id_seq OWNED BY public.rule_versions.id;
+
+
+--
+-- Name: rules; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.rules (
+    id bigint NOT NULL,
+    name character varying(255) NOT NULL,
+    title character varying(255) DEFAULT ''::character varying NOT NULL,
+    description text DEFAULT ''::text NOT NULL,
+    short_description character varying(255) DEFAULT ''::character varying NOT NULL,
+    example text DEFAULT ''::text NOT NULL,
+    "position" integer NOT NULL,
+    highlight boolean DEFAULT false NOT NULL,
+    hidden boolean DEFAULT false NOT NULL,
+    internal boolean DEFAULT false NOT NULL,
+    created_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
+);
+
+
+--
+-- Name: rules_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.rules_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: rules_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.rules_id_seq OWNED BY public.rules.id;
 
 
 --
@@ -2426,6 +2502,20 @@ ALTER TABLE ONLY public.roles ALTER COLUMN id SET DEFAULT nextval('public.roles_
 
 
 --
+-- Name: rule_versions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rule_versions ALTER COLUMN id SET DEFAULT nextval('public.rule_versions_id_seq'::regclass);
+
+
+--
+-- Name: rules id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rules ALTER COLUMN id SET DEFAULT nextval('public.rules_id_seq'::regclass);
+
+
+--
 -- Name: site_notices id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2804,6 +2894,22 @@ ALTER TABLE ONLY public.reports
 
 ALTER TABLE ONLY public.roles
     ADD CONSTRAINT roles_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: rule_versions rule_versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rule_versions
+    ADD CONSTRAINT rule_versions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: rules rules_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rules
+    ADD CONSTRAINT rules_pkey PRIMARY KEY (id);
 
 
 --
@@ -4388,6 +4494,20 @@ CREATE INDEX reports_system_index ON public.reports USING btree (system) WHERE (
 
 
 --
+-- Name: rules_name_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX rules_name_index ON public.rules USING btree (name);
+
+
+--
+-- Name: rules_position_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX rules_position_index ON public.rules USING btree ("position");
+
+
+--
 -- Name: tag_change_tags_tag_change_id_tag_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5380,6 +5500,30 @@ ALTER TABLE ONLY public.moderation_logs
 
 
 --
+-- Name: reports reports_rule_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reports
+    ADD CONSTRAINT reports_rule_id_fkey FOREIGN KEY (rule_id) REFERENCES public.rules(id) ON DELETE RESTRICT;
+
+
+--
+-- Name: rule_versions rule_versions_rule_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rule_versions
+    ADD CONSTRAINT rule_versions_rule_id_fkey FOREIGN KEY (rule_id) REFERENCES public.rules(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: rule_versions rule_versions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rule_versions
+    ADD CONSTRAINT rule_versions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
 -- Name: source_changes source_changes_image_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5447,7 +5591,7 @@ ALTER TABLE ONLY public.users
 -- PostgreSQL database dump complete
 --
 
-\unrestrict HaHFW4uoQTYEW2yFV8zxsi1boGlZaAq7wPC4PqUZeQq9dkvLFwHwwFxqqPeF0LZ
+\unrestrict hgf9CfMeD1rU4CvxcBOzalhPAIJmwKqP0y1eMNujQOmt5EMX2Gnh4Z2aHUUnVGK
 
 INSERT INTO public."schema_migrations" (version) VALUES (20200503002523);
 INSERT INTO public."schema_migrations" (version) VALUES (20200607000511);
@@ -5479,3 +5623,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20250502110018);
 INSERT INTO public."schema_migrations" (version) VALUES (20250507183410);
 INSERT INTO public."schema_migrations" (version) VALUES (20250617121030);
 INSERT INTO public."schema_migrations" (version) VALUES (20250617122513);
+INSERT INTO public."schema_migrations" (version) VALUES (20251103173014);

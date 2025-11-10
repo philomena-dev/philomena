@@ -1,0 +1,66 @@
+- admin_only_rule = @rule.hidden or @rule.internal
+- block_class = if @rule.hidden or @rule.internal, do: "block block--fixed block--danger", else: ""
+- highlight_class = if @rule.highlight, do: "block block--fixed block--warning", else: ""
+- important_class = if @rule.highlight, do: "important", else: ""
+div class=block_class
+  .rule class=highlight_class id="#{@rule.position}"
+    .flex.flex--gap-normal
+      = if @rule.highlight do
+        .label.label--danger
+          i.fa.fa-exclamation-triangle>
+          ' Important Rule
+      = if @rule.hidden do
+        .label.label--warning
+          i.fa.fa-eye-slash>
+          ' Hidden Rule
+      = if @rule.internal do
+        .label.label--warning
+          i.fa.fa-gear>
+          ' Internal Rule
+
+    = if admin_only_rule do
+      .block
+        h3 = @rule.name
+        strong = @rule.short_description
+    - else
+      h2 class=important_class
+        = @rule.name
+        ' :
+        = @rule.title
+    .walloftext
+      = @rule.description
+
+  .block.flex.flex__shrink.flex--gap-small
+    = unless @show_timestamp do
+      a.button.button--state-primary href="##{@rule.position}"
+        span.small-text
+          i.fa.fa-fw.fa-link
+
+    = if @rule.example != "" do
+      a.button.button--state-primary href="#" data-click-toggle=".js-rule-example-toggle-#{@rule.id}" title="View Examples"
+        span.small-text
+          i.fa.fa-eye>
+          span View Examples
+
+    = unless @show_timestamp do
+      = link to: ~p"/rules/#{@rule}", class: "button button--state-primary" do
+        span.small-text
+          i.fa.fa-circle-info>
+          ' More Details
+
+    = if can?(@conn, :edit, @rule) do
+      a.button.button--state-warning href=~p"/rules/#{@rule}/edit" title="Edit Rule"
+        span.small-text
+          i.fa.fa-edit>
+          ' Edit
+
+  .block.block__content.block--danger.hidden class="js-rule-example-toggle-#{@rule.id}"
+    h4 Examples
+    .walloftext = @rule.example
+
+  = if @show_timestamp do
+    .label.small-text.label--primary.label--narrow
+      p
+        i.fa.fa-clock>
+        ' Last updated
+        = pretty_time @rule.updated_at

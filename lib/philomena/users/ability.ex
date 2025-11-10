@@ -24,6 +24,7 @@ defimpl Canada.Can, for: Philomena.Users.User do
   alias Philomena.TagChanges.TagChange
   alias Philomena.Reports.Report
   alias Philomena.StaticPages.StaticPage
+  alias Philomena.Rules.Rule
   alias Philomena.Adverts.Advert
   alias Philomena.SiteNotices.SiteNotice
   alias Philomena.ModerationLogs.ModerationLog
@@ -544,6 +545,9 @@ defimpl Canada.Can, for: Philomena.Users.User do
       when action in [:edit, :update, :delete],
       do: true
 
+  # Index and show rules
+  def can?(%User{}, action, %Rule{}) when action in [:index, :show], do: true
+
   # Show static pages
   def can?(%User{}, :show, %StaticPage{}), do: true
 
@@ -566,6 +570,7 @@ defimpl Canada.Can, for: Atom do
   alias Philomena.Filters.Filter
   alias Philomena.Galleries.Gallery
   alias Philomena.Tags.Tag
+  alias Philomena.Rules.Rule
   alias Philomena.StaticPages.StaticPage
 
   #
@@ -612,6 +617,9 @@ defimpl Canada.Can, for: Atom do
 
   # Create and edit galleries
   def can?(_user, :show, %Gallery{}), do: true
+
+  # Index and show rules
+  def can?(_user, action, %Rule{}) when action in [:index, :show], do: true
 
   # Show static pages
   def can?(_user, :show, %StaticPage{}), do: true

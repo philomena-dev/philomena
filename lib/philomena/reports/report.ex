@@ -3,10 +3,12 @@ defmodule Philomena.Reports.Report do
   import Ecto.Changeset
 
   alias Philomena.Users.User
+  alias Philomena.Rules.Rule
 
   schema "reports" do
     belongs_to :user, User
     belongs_to :admin, User
+    belongs_to :rule, Rule, on_replace: :nilify
 
     field :ip, EctoNetwork.INET
     field :fingerprint, :string
@@ -21,7 +23,6 @@ defmodule Philomena.Reports.Report do
     field :reportable_type, :string
 
     field :reportable, :any, virtual: true
-    field :category, :string, virtual: true
 
     timestamps(inserted_at: :created_at, type: :utc_datetime)
   end
@@ -31,6 +32,13 @@ defmodule Philomena.Reports.Report do
     report
     |> cast(attrs, [])
     |> validate_required([])
+  end
+
+  def conversion_changeset(report, attrs, rule) do
+    report
+    |> cast(attrs, [:reason])
+    |> put_assoc(:rule, rule)
+    |> validate_required([:reason])
   end
 
   # Ensure that the report is not currently claimed before
@@ -58,17 +66,16 @@ defmodule Philomena.Reports.Report do
   end
 
   @doc false
-  def creation_changeset(report, attrs, attribution) do
+  def creation_changeset(report, attrs, attribution, rule) do
     report
-    |> cast(attrs, [:category, :reason, :user_agent])
+    |> cast(attrs, [:reason, :user_agent])
+    |> put_assoc(:rule, rule)
     |> validate_length(:reason, max: 10_000, count: :bytes)
     |> validate_length(:user_agent, max: 1000, count: :bytes)
-    |> merge_category()
     |> change(attribution)
     |> validate_required([
       :reportable_id,
       :reportable_type,
-      :category,
       :reason,
       :ip,
       :fingerprint,
@@ -76,15 +83,17 @@ defmodule Philomena.Reports.Report do
     ])
   end
 
-  defp merge_category(changeset) do
-    reason = get_field(changeset, :reason)
-    category = get_field(changeset, :category)
-
-    changeset
-    |> change(reason: joiner(category, reason))
+  def user_creation_changeset(report, attrs, attribution, rule) do
+    report
+    |> creation_changeset(attrs, attribution, rule)
+    |> validate_rule()
   end
 
-  defp joiner(category, ""), do: category
-  defp joiner(category, nil), do: category
-  defp joiner(category, reason), do: category <> ": " <> reason
+  defp validate_rule(changeset) do
+    case get_assoc(changeset, :rule, :struct) do
+      nil -> add_error(changeset, :rule_id, "is invalid")
+      %Rule{internal: true} -> add_error(changeset, :rule_id, "is internal")
+      _ -> changeset
+    end
+  end
 end

@@ -6,11 +6,15 @@ defmodule Philomena.Reports do
   import Ecto.Query, warn: false
   alias Philomena.Repo
 
+  alias PhilomenaQuery.Batch
   alias PhilomenaQuery.Search
   alias Philomena.Reports.Report
   alias Philomena.Reports
   alias Philomena.IndexWorker
   alias Philomena.Polymorphic
+  alias Philomena.Rules
+
+  @reason_regex ~r/^(Rule|Other|Takedown|Verification|Approval|Review|System)([^:]*): (.*)$/
 
   @doc """
   Returns the current number of open reports.
@@ -79,8 +83,10 @@ defmodule Philomena.Reports do
 
   """
   def create_report({reportable_type, reportable_id} = _type_and_id, attribution, attrs \\ %{}) do
+    rule = Rules.find_rule(attrs["rule_id"])
+
     %Report{reportable_type: reportable_type, reportable_id: reportable_id}
-    |> Report.creation_changeset(attrs, attribution)
+    |> Report.user_creation_changeset(attrs, attribution, rule)
     |> Repo.insert()
     |> reindex_after_update()
   end
@@ -139,19 +145,20 @@ defmodule Philomena.Reports do
   end
 
   @doc """
-  Automatically create a report with the given category and reason on the given
+  Automatically create a report with the given rule and reason on the given
   `reportable_id` and `reportable_type`.
 
   ## Examples
 
-      iex> create_system_report({"Comment", 1}, "Other", "Custom report reason")
+      iex> create_system_report({"Comment", 1}, "Rule #0", "Custom report reason")
       {:ok, %Report{}}
 
   """
-  def create_system_report({reportable_type, reportable_id} = _type_and_id, category, reason) do
+  def create_system_report({reportable_type, reportable_id} = _type_and_id, rule_name, reason) do
+    rule = Rules.get_by_name!(rule_name)
+
     attrs = %{
       reason: reason,
-      category: category,
       user_agent: "system"
     }
 
@@ -162,7 +169,7 @@ defmodule Philomena.Reports do
     }
 
     %Report{reportable_type: reportable_type, reportable_id: reportable_id}
-    |> Report.creation_changeset(attrs, attribution)
+    |> Report.creation_changeset(attrs, attribution, rule)
     |> Repo.insert()
     |> reindex_after_update()
   end
@@ -315,4 +322,38 @@ defmodule Philomena.Reports do
     |> Polymorphic.load_polymorphic(reportable: [reportable_id: :reportable_type])
     |> Enum.map(&Search.index_document(&1, Report))
   end
+
+  def convert_reports!() do
+    rules =
+      Rules.list_reportable_rules()
+      |> Enum.map(&{&1.name, &1})
+      |> Map.new()
+
+    Report
+    |> preload([:rule])
+    |> Batch.records(batch_size: 128)
+    |> Enum.each(&convert_report(&1, rules))
+  end
+
+  defp convert_report(%Report{rule_id: 1, reason: report_reason} = report, rules) do
+    match = Regex.run(@reason_regex, report_reason)
+
+    case match do
+      [_, prefix, suffix, reason] ->
+        rule =
+          case Map.get(rules, "#{prefix}#{suffix}") do
+            nil -> %{id: 1}
+            rule -> rule
+          end
+
+        report
+        |> Report.conversion_changeset(%{reason: String.trim(reason)}, rule)
+        |> Repo.update!()
+
+      _ ->
+        {:error, report}
+    end
+  end
+
+  defp convert_report(report, _rules), do: {:ok, report}
 end

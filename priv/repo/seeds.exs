@@ -24,7 +24,9 @@ alias Philomena.{
   Tags.Tag,
   TagChanges.TagChange,
   Users.User,
-  StaticPages.StaticPage
+  StaticPages.StaticPage,
+  Rules.Rule,
+  Rules.RuleVersion
 }
 
 alias PhilomenaQuery.Search
@@ -110,6 +112,37 @@ for page_def <- resources["pages"] do
   %StaticPage{title: page_def["title"], slug: page_def["slug"], body: page_def["body"]}
   |> StaticPage.changeset(%{})
   |> Repo.insert(on_conflict: :nothing)
+end
+
+IO.puts("---- Generating rules and initial versions")
+
+for rule_def <- resources["rules"] do
+  {:ok, rule} =
+    %Rule{}
+    |> Rule.changeset(%{
+      name: rule_def["name"],
+      title: Map.get(rule_def, "title", ""),
+      description: Map.get(rule_def, "description", ""),
+      short_description: Map.get(rule_def, "short_description", ""),
+      example: Map.get(rule_def, "example", ""),
+      position: Map.get(rule_def, "position", 1),
+      highlight: Map.get(rule_def, "highlight", false),
+      hidden: Map.get(rule_def, "hidden", false),
+      internal: Map.get(rule_def, "internal", false)
+    })
+    |> Repo.insert(on_conflict: :nothing)
+
+  %RuleVersion{}
+  |> RuleVersion.changeset(%{
+    name: rule_def["name"],
+    title: Map.get(rule_def, "title", ""),
+    description: Map.get(rule_def, "description", ""),
+    short_description: Map.get(rule_def, "short_description", ""),
+    example: Map.get(rule_def, "example", ""),
+    rule_id: rule.id,
+    user_id: nil
+  })
+  |> Repo.insert()
 end
 
 IO.puts("---- Indexing content")

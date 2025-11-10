@@ -11,6 +11,7 @@ h1 Your Reports
         tr
           th State
           th Reported Resource
+          th Rule
           th Reason
           th Opened
       tbody
@@ -19,5 +20,10 @@ h1 Your Reports
             td class=report_row_class(r)
               = pretty_state(r)
             td = link_to_reportable(r.reportable)
+            td
+              => r.rule.name
+              | (
+              = r.rule.title
+              | )
             td = r.reason
             td = pretty_time(r.created_at)
