@@ -3,15 +3,58 @@ FROM postgres:18.0-alpine as pg
 
 FROM elixir:1.19.1-alpine
 
-RUN apk add bash inotify-tools build-base git npm nodejs postgresql17-client wget rust cargo \
-    && mix local.hex --force \
-    && mix local.rebar --force
-
 # TODO: remove this once alpine has the postgresql18-client package
 # Alternatively: consider if we want to keep using this workaround long-term
 COPY --from=pg /usr/local/bin/pg_dump /usr/local/bin/pg_dump
 
-# docker-compose configures a bind-mount of the repo root dir to /srv/philomena
-ENV PATH=$PATH:/root/.cargo/bin:/srv/philomena/docker/app
-EXPOSE 5173
-CMD run-development
+ARG CONTAINER_WORKSPACE=/srv/philomena
+
+ENV PATH=$CONTAINER_WORKSPACE/node_modules/.bin:$PATH
+ENV PATH=$CONTAINER_WORKSPACE/scripts/path:$PATH
+ENV PATH=$CONTAINER_WORKSPACE/docker/app:$PATH
+ENV PATH=/root/.cargo/bin:$PATH
+
+WORKDIR $CONTAINER_WORKSPACE
+
+RUN apk add \
+    bash \
+    inotify-tools \
+    build-base \
+    git \
+    npm \
+    nodejs \
+    postgresql17-client \
+    curl \
+    wget \
+    docker-cli-compose \
+    # Required by Caddyfile LSP for autoformatting
+    caddy \
+    # Required by Github Pull Requests VSCode extension to fetch via git SSH URLs
+    openssh
+    # TODO: are these really needed?
+    # && mix local.hex --force \
+    # && mix local.rebar --force
+
+# The default `cargo` and `rust` packages in Alpine repo don't include important
+# rust dev components like `rust-src` (std lib sources), `rustfmt`, `clippy`, etc.
+# In any case, it's much better to use rustup for rust toolchain management.
+# Also, this lives in a separate RUN statement to cache this step separately, as
+# it's quite slow to install.
+RUN --mount=source=./scripts/lib.sh,target=./scripts/lib.sh \
+    --mount=source=./scripts/install/rust.sh,target=./scripts/install/rust.sh \
+    --mount=source=./rust-toolchain.toml,target=./rust-toolchain.toml \
+    ./scripts/install/rust.sh
+
+RUN --mount=source=./scripts,target=./scripts \
+    ./scripts/install/shellcheck.sh \
+    && ./scripts/install/typos.sh
+
+# `/shell-history` dir is persisted across container rebuilds/restarts
+ENV HISTFILE=/shell-history/history
+
+# Some routines need to be run every time the container starts, because they
+# need to modify the bind-mounted volume.
+ENTRYPOINT ["./.devcontainer/init-container.sh"]
+
+# Make sure the process doesn't exit to keep the container alive
+CMD ["sleep", "infinity"]

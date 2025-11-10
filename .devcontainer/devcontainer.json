@@ -2,51 +2,13 @@
   "name": "philomena-devcontainer",
 
   // See the docs at https://containers.dev/implementors/json_reference/
-  "build": {
-    "dockerfile": "./Dockerfile",
-    "context": "..",
-    "args": {
-      "CONTAINER_WORKSPACE": "${containerWorkspaceFolder}"
-    }
-  },
-
-  // Run on the host network to access ports exposed by adjacent containers
-  "runArgs": ["--network=host"],
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "app",
 
   // Make sure our custom `init-container.sh` script is run at startup
   "overrideCommand": false,
 
-  "containerEnv": {
-    "HOST_WORKSPACE": "${localWorkspaceFolder}"
-  },
-
-  "mounts": [
-    // Reuse the host's docker daemon
-    {
-      "source": "/var/run/docker.sock",
-      "target": "/var/run/docker.sock",
-      "type": "bind"
-    },
-
-    // Persist shell history across container restarts
-    {
-      "source": "shell-history",
-      "target": "/shell-history",
-      "type": "volume"
-    },
-
-    // Persist cargo registry/git caches across container restarts
-    {
-      "source": "cargo-registry",
-      "target": "/root/.cargo/registry",
-      "type": "volume"
-    },
-    {
-      "source": "cargo-git",
-      "target": "/root/.cargo/git",
-      "type": "volume"
-    }
-  ],
+  "workspaceFolder": "/srv/philomena",
 
   "customizations": {
     "vscode": {

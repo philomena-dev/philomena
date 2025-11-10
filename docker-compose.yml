@@ -10,6 +10,9 @@ volumes:
   app_deps_data: {}
   app_native_data: {}
   s3_data: {}
+  shell_history: {}
+  cargo_registry: {}
+  cargo_git: {}
 
 services:
   app:
@@ -59,11 +62,16 @@ services:
     working_dir: /srv/philomena
     tty: true
     volumes:
-      - ${HOST_WORKSPACE:-.}:/srv/philomena
+      - /var/run/docker.sock:/var/run/docker.sock
+      - .:/srv/philomena
       - app_cargo_data:/srv/philomena/.cargo
       - app_build_data:/srv/philomena/_build
       - app_deps_data:/srv/philomena/deps
       - app_native_data:/srv/philomena/priv/native
+      - shell_history:/shell-history
+      - cargo_registry:/root/.cargo/registry
+      - cargo_git:/root/.cargo/git
+
     depends_on:
       - mediaproc
       - postgres
@@ -84,7 +92,7 @@ services:
     image: opensearchproject/opensearch:3.3.1
     volumes:
       - opensearch_data:/usr/share/opensearch/data
-      - ${HOST_WORKSPACE:-.}/docker/opensearch/opensearch.yml:/usr/share/opensearch/config/opensearch.yml
+      - ./docker/opensearch/opensearch.yml:/usr/share/opensearch/config/opensearch.yml
     attach: false
     ulimits:
       nofile:
@@ -121,8 +129,8 @@ services:
       context: .
       dockerfile: ./docker/web/Dockerfile
     volumes:
-      - ${HOST_WORKSPACE:-.}:/srv/philomena
-      - ${HOST_WORKSPACE:-.}/docker/web/config:/etc/caddy
+      - .:/srv/philomena
+      - ./docker/web/config:/etc/caddy
       - caddy_data:/data
     environment:
       - APP_DIR=/srv/philomena
