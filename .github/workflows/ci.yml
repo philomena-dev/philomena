@@ -16,7 +16,7 @@ jobs:
             _build
             .cargo
             deps
-          key: ${{ runner.os }}-deps-3-${{ hashFiles('mix.lock') }}
+          key: ${{ runner.os }}-deps-3-${{ hashFiles('mix.lock') }}-${{ hashFiles('native/philomena/Cargo.lock') }}
 
       - run: docker compose pull
       - run: docker compose build
