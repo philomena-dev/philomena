@@ -51,3 +51,4 @@ RUN --mount=source=./scripts,target=./scripts \
 ENV HISTFILE=/shell-history/history
 
 ENTRYPOINT ["run"]
+CMD ["run-development"]
