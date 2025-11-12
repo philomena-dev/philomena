@@ -6,6 +6,12 @@ set -euo pipefail
 
 . "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
+# Devcontainer runs in the `app` service. We must make sure this service stays
+# intact during development, so all docker compose operations that might recreate
+# or remove the containers/volumes should exclude it and its volumes.
+mapfile -t services < <(docker compose config --services | grep -v app)
+mapfile -t volumes < <(docker compose config --volumes | grep -v -e shell_history -e cargo_registry -e cargo_git)
+
 function up {
   local down_args=()
 
@@ -21,7 +27,9 @@ function up {
     down "${down_args[@]}"
   fi
 
-  step docker compose up --build --no-log-prefix "$@"
+  step docker compose build "${services[@]}"
+  step docker compose up --wait --no-log-prefix "${services[@]}"
+  step run-development
 }
 
 function down {
@@ -41,15 +49,10 @@ function down {
     shift
   done
 
-  step docker compose down
+  step docker compose down "${services[@]}"
 
   if [[ "$drop_cache" == "true" ]]; then
-    info "Dropping build caches..."
-    step docker volume rm --force \
-      philomena_app_build_data \
-      philomena_app_cargo_data \
-      philomena_app_deps_data \
-      philomena_app_native_data
+    drop_cache
   fi
 
   # If `--drop-db` is enabled it's important to stop all containers to make sure
@@ -84,16 +87,22 @@ function clean {
     shift
   done
 
-  step docker compose down --volumes
+  drop_cache
+  step docker compose down "${services[@]}"
+  step docker volume rm -f "${volumes[@]//#/philomena_}"
   step docker container prune --force
   step docker volume prune --all --force
   step docker image prune --all --force
   step docker buildx prune --all --force
-  step sudo chown --recursive "$(id -u):$(id -g)" .
 
   if [[ "$git" == "true" ]]; then
     step git clean -xfdf
   fi
+}
+
+function drop_cache {
+  info "Dropping build caches..."
+  step rm -rf _build .cargo deps priv/native
 }
 
 subcommand="${1:-}"

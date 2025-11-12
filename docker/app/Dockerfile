@@ -27,6 +27,7 @@ RUN apk add \
     curl \
     wget \
     docker-cli-compose \
+    docker-cli-buildx \
     # Required by Caddyfile LSP for autoformatting
     caddy \
     # Required by Github Pull Requests VSCode extension to fetch via git SSH URLs

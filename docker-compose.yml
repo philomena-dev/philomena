@@ -55,6 +55,7 @@ services:
       - S3_BUCKET=philomena
       - AWS_ACCESS_KEY_ID=local-identity
       - AWS_SECRET_ACCESS_KEY=local-credential
+      - HOST_WORKSPACE=${PWD}
     working_dir: /srv/philomena
     tty: true
     volumes:
@@ -64,11 +65,6 @@ services:
       - cargo_registry:/root/.cargo/registry
       - cargo_git:/root/.cargo/git
 
-    depends_on:
-      - mediaproc
-      - postgres
-      - opensearch
-      - valkey
     ports:
       - '5173:5173'
 
@@ -84,7 +80,7 @@ services:
     image: opensearchproject/opensearch:3.3.1
     volumes:
       - opensearch_data:/usr/share/opensearch/data
-      - ./docker/opensearch/opensearch.yml:/usr/share/opensearch/config/opensearch.yml
+      - ${HOST_WORKSPACE:-.}/docker/opensearch/opensearch.yml:/usr/share/opensearch/config/opensearch.yml
     attach: false
     ulimits:
       nofile:
@@ -121,8 +117,8 @@ services:
       context: .
       dockerfile: ./docker/web/Dockerfile
     volumes:
-      - .:/srv/philomena
-      - ./docker/web/config:/etc/caddy
+      - ${HOST_WORKSPACE:-.}:/srv/philomena
+      - ${HOST_WORKSPACE:-.}/docker/web/config:/etc/caddy
       - caddy_data:/data
     environment:
       - APP_DIR=/srv/philomena
@@ -131,7 +127,5 @@ services:
       - AWS_ACCESS_KEY_ID=local-identity
       - AWS_SECRET_ACCESS_KEY=local-credential
     attach: false
-    depends_on:
-      - app
     ports:
       - '8080:80'
