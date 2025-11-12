@@ -12,14 +12,14 @@ If you can't/don't want to use devcontainers, then go through the [`.devcontaine
 
 ## Dev Stack
 
-Use the following commands to bring up or shut down a dev stack.
+Use the following commands to bring up or shut down the dev stack.
 
 ```bash
 philomena up
 philomena down
 ```
 
-Once the application has started, navigate to http://localhost:8080 and login with
+Once the application has started, navigate to http://localhost:8080 and log in with
 
 | Credential | Value               |
 | ---------- | ------------------- |
@@ -28,6 +28,12 @@ Once the application has started, navigate to http://localhost:8080 and login wi
 
 > [!TIP]
 > See the source code of `scripts/philomena.sh` for details on the additional parameters and other subcommands.
+
+## Devcontainer Specifics
+
+The devcontainer is configured with the `docker-compose.yml`. The IDE attaches to the `app` service of the stack. You can use `docker compose` to manage the stack but be careful not to shutdown the `app` service. Use `philomena` commands instead that make sure the `app` service is always running.
+
+If you are developing on a remote SSH host, then make sure to configure port forwarding for `web:80` (yes, use the `host:port` notation) to be able to access the application in your browser.
 
 ## Troubleshooting
 

@@ -55,7 +55,6 @@ services:
       - S3_BUCKET=philomena
       - AWS_ACCESS_KEY_ID=local-identity
       - AWS_SECRET_ACCESS_KEY=local-credential
-      - HOST_WORKSPACE=${PWD}
     working_dir: /srv/philomena
     tty: true
     volumes:

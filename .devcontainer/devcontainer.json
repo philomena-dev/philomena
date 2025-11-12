@@ -10,6 +10,11 @@
 
   "workspaceFolder": "/srv/philomena",
 
+  "containerEnv": {
+    "DEVCONTAINER": "1",
+    "HOST_WORKSPACE": "${localWorkspaceFolder}"
+  },
+
   "customizations": {
     "vscode": {
       "settings": {

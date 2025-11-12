@@ -6,11 +6,16 @@ set -euo pipefail
 
 . "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-# Devcontainer runs in the `app` service. We must make sure this service stays
-# intact during development, so all docker compose operations that might recreate
-# or remove the containers/volumes should exclude it and its volumes.
-mapfile -t services < <(docker compose config --services | grep -v app)
-mapfile -t volumes < <(docker compose config --volumes | grep -v -e shell_history -e cargo_registry -e cargo_git)
+services=()
+volumes=()
+
+if [[ "${DEVCONTAINER:-0}" == "1" ]]; then
+  # Devcontainer runs in the `app` service. We must make sure this service stays
+  # intact during development, so all docker compose operations that might recreate
+  # or remove the containers/volumes should exclude it and its volumes.
+  mapfile -t services < <(docker compose config --services | grep -v app)
+  mapfile -t volumes < <(docker compose config --volumes | grep -v -e shell_history -e cargo_registry -e cargo_git)
+fi
 
 function up {
   local down_args=()
@@ -27,9 +32,13 @@ function up {
     down "${down_args[@]}"
   fi
 
-  step docker compose build "${services[@]}"
-  step docker compose up --wait --no-log-prefix "${services[@]}"
-  step run-development
+  if [[ "${DEVCONTAINER:-0}" == "1" ]]; then
+    step docker compose build "${services[@]}"
+    step docker compose up --wait --no-log-prefix "${services[@]}"
+    step run-development
+  else
+    step docker compose up --build --no-log-prefix
+  fi
 }
 
 function down {

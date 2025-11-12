@@ -50,9 +50,4 @@ RUN --mount=source=./scripts,target=./scripts \
 # `/shell-history` dir is persisted across container rebuilds/restarts
 ENV HISTFILE=/shell-history/history
 
-# Some routines need to be run every time the container starts, because they
-# need to modify the bind-mounted volume.
-ENTRYPOINT ["./.devcontainer/init-container.sh"]
-
-# Make sure the process doesn't exit to keep the container alive
-CMD ["sleep", "infinity"]
+ENTRYPOINT ["run"]
