@@ -43,22 +43,22 @@ RUN apk update \
 RUN addgroup -g 1000 -S philomena \
     && adduser -u 1000 -S philomena -G philomena
 
-# Copy the finished release from the builder stage...
+# Copy the finished release and the config (because of .json files) from the builder stage...
 COPY --from=builder --chown=1000:1000 /tmp/philomena/_build/prod/rel/philomena /srv/philomena
 COPY --from=builder --chown=1000:1000 /tmp/philomena/config /srv/philomena/config
 
-# ...and the production scripts from the repository.
+# ...and the production scripts from the repository
 COPY --chown=1000:1000 docker/production/run-cron /usr/local/bin/run-cron
 COPY --chown=1000:1000 docker/production/run-cron-daily /usr/local/bin/run-cron-daily
 COPY --chown=1000:1000 docker/production/run-production /usr/local/bin/run-production
 COPY --chown=1000:1000 docker/production/purge-cache /usr/local/bin/purge-cache
 
-# A "philomena" symlink for easier access.
+# A "philomena" symlink for easier access
 RUN ln -sf /srv/philomena/bin/philomena /usr/local/bin/philomena
 
 USER philomena
 
-# Create the static assets symlink as the philomena user.
+# Create the static assets symlink as the philomena user
 RUN ln -sf /srv/philomena/lib/philomena-*/priv/static /srv/philomena/static
 
 WORKDIR /srv/philomena
