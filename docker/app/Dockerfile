@@ -1,7 +1,7 @@
 # Workaround for alpine packages not having PostgreSQL 18 client yet.
 FROM postgres:18.0-alpine as pg
 
-FROM elixir:1.19.1-alpine
+FROM elixir:1.19.2-alpine
 
 RUN apk add bash inotify-tools build-base git npm nodejs postgresql17-client wget rust cargo \
     && mix local.hex --force \
