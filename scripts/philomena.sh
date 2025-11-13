@@ -6,14 +6,17 @@ set -euo pipefail
 
 . "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
+
+# Devcontainer runs in the `app` service. We must make sure this service stays
+# intact during development, so all docker compose operations that might recreate
+# or remove the containers/volumes should exclude it and its volumes.
+mapfile -t services_except_app < <(docker compose config --services | grep -v app)
+
 services=()
 volumes=()
 
 if [[ "${DEVCONTAINER:-0}" == "1" ]]; then
-  # Devcontainer runs in the `app` service. We must make sure this service stays
-  # intact during development, so all docker compose operations that might recreate
-  # or remove the containers/volumes should exclude it and its volumes.
-  mapfile -t services < <(docker compose config --services | grep -v app)
+  services=("${services_except_app[@]}")
   mapfile -t volumes < <(docker compose config --volumes | grep -v -e shell_history -e cargo_registry -e cargo_git)
 fi
 
@@ -34,7 +37,7 @@ function up {
 
   if [[ "${DEVCONTAINER:-0}" == "1" ]]; then
     step docker compose build "${services[@]}"
-    step docker compose up --wait --no-log-prefix "${services[@]}"
+    step docker compose up --wait "${services[@]}"
     step run-development
   else
     step docker compose up --build --no-log-prefix
@@ -80,6 +83,17 @@ function down {
   fi
 }
 
+function test {
+  step docker compose build "${services[@]}"
+  step docker compose up --wait "${services_except_app[@]}"
+
+  if [[ "${DEVCONTAINER:-0}" == "1" ]]; then
+    step run-test
+  else
+    step docker compose run --rm app run-test
+  fi
+}
+
 # Clean up everything: DBs, build caches, etc.
 function clean {
   # We don't run a `git clean` by default because some developers store dirty scripts
@@ -120,6 +134,7 @@ shift || true
 case "$subcommand" in
   up) up "$@" ;;
   down) down "$@" ;;
+  test) test "$@" ;;
   clean) clean "$@" ;;
 
   *)

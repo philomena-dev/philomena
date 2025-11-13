@@ -1,20 +1,7 @@
 #!/usr/bin/env sh
-set -ex
+set -e
 
 export MIX_ENV=test
-
-echo "PATH=$PATH"
-echo "USER=$USER"
-
-id
-
-ls -lah /root || true
-ls -lah /root/.cargo || true
-ls -lah /root/.cargo/bin || true
-ls -lah || true
-
-echo !!!which cargo
-which cargo
 
 # Always install mix dependencies
 (cd /srv/philomena && mix deps.get)
