@@ -35,19 +35,33 @@ LABEL org.opencontainers.image.description="The official Philomena Docker image 
 LABEL org.opencontainers.image.source="https://github.com/philomena-dev/philomena"
 LABEL org.opencontainers.image.licenses="AGPL-3.0-only"
 
+# Install runtime dependencies
+RUN apk update \
+    && apk add --no-cache libncursesw libstdc++ libgcc
+
+# Set up a non-root user to run the application
+RUN addgroup -g 1000 -S philomena \
+    && adduser -u 1000 -S philomena -G philomena
+
+# Copy the finished release from the builder stage...
+COPY --from=builder --chown=1000:1000 /tmp/philomena/_build/prod/rel/philomena /srv/philomena
+COPY --from=builder --chown=1000:1000 /tmp/philomena/config /srv/philomena/config
+
+# ...and the production scripts from the repository.
+COPY --chown=1000:1000 docker/production/run-cron /usr/local/bin/run-cron
+COPY --chown=1000:1000 docker/production/run-cron-daily /usr/local/bin/run-cron-daily
+COPY --chown=1000:1000 docker/production/run-production /usr/local/bin/run-production
+COPY --chown=1000:1000 docker/production/purge-cache /usr/local/bin/purge-cache
+
+# A "philomena" symlink for easier access.
+RUN ln -sf /srv/philomena/bin/philomena /usr/local/bin/philomena
+
+USER philomena
+
+# Create the static assets symlink as the philomena user.
+RUN ln -sf /srv/philomena/lib/philomena-*/priv/static /srv/philomena/static
+
 WORKDIR /srv/philomena
-
-# Copy the finished release from the builder stage.
-COPY --from=builder /tmp/philomena/_build/prod/rel/philomena /srv/philomena
-
-# Create symlinks for easier access.
-RUN ln -sf /srv/philomena/lib/philomena-*/priv/static /srv/philomena/static \
-    && ln -sf /srv/philomena/bin/philomena /usr/local/bin/philomena
-
-COPY docker/production/run-cron /usr/local/bin/run-cron
-COPY docker/production/run-cron-daily /usr/local/bin/run-cron-daily
-COPY docker/production/run-production /usr/local/bin/run-production
-COPY docker/production/purge-cache /usr/local/bin/purge-cache
 
 EXPOSE 4000-4002
 
