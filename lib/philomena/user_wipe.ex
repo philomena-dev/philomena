@@ -39,5 +39,7 @@ defmodule Philomena.UserWipe do
     User
     |> where(id: ^user.id)
     |> Repo.update_all(set: [email: "deactivated#{random_hex}@example.com"])
+
+    Users.reindex_user(user)
   end
 end

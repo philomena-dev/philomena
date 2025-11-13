@@ -1,11 +1,12 @@
 defmodule PhilomenaWeb.Admin.UserController do
   use PhilomenaWeb, :controller
 
+  alias PhilomenaWeb.UserLoader
+  alias PhilomenaQuery.Search
   alias Philomena.Roles.Role
   alias Philomena.Users.User
   alias Philomena.Users
   alias Philomena.Repo
-  import Ecto.Query
 
   plug :verify_authorized
 
@@ -17,39 +18,32 @@ defmodule PhilomenaWeb.Admin.UserController do
 
   plug :load_roles when action in [:edit, :update]
 
-  def index(conn, %{"uq" => q}) do
-    User
-    |> where([u], u.email == ^q or ilike(u.name, ^"%#{q}%"))
-    |> load_users(conn)
-  end
+  def index(conn, params) do
+    query_string =
+      case params["uq"] do
+        nil -> "*"
+        "" -> "*"
+        query_string -> query_string
+      end
 
-  def index(conn, %{"twofactor" => _twofactor}) do
-    User
-    |> where([u], u.otp_required_for_login == true)
-    |> load_users(conn)
-  end
+    case Users.Query.compile(query_string) do
+      {:ok, query} ->
+        users = UserLoader.query(conn, query) |> Search.search_records(User)
 
-  def index(conn, %{"staff" => _staff}) do
-    User
-    |> where([u], u.role != "user")
-    |> load_users(conn)
-  end
+        render(conn, "index.html",
+          title: "Admin - Users",
+          layout_class: "layout--medium",
+          users: users
+        )
 
-  def index(conn, _params) do
-    load_users(User, conn)
-  end
-
-  defp load_users(queryable, conn) do
-    users =
-      queryable
-      |> order_by(desc: :id)
-      |> Repo.paginate(conn.assigns.scrivener)
-
-    render(conn, "index.html",
-      title: "Admin - Users",
-      layout_class: "layout--medium",
-      users: users
-    )
+      {:error, msg} ->
+        render(conn, "index.html",
+          title: "Admin - Users",
+          layout_class: "layout--medium",
+          users: [],
+          error: msg
+        )
+    end
   end
 
   def edit(conn, _params) do
