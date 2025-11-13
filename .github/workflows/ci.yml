@@ -8,38 +8,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-
-      - name: Cache mix deps
-        uses: actions/cache@v4
+      - uses: actions/cache@v4
         with:
           path: |
             _build
             .cargo
             deps
-          key: ${{ runner.os }}-deps-3-${{ hashFiles('mix.lock') }}
-
-      - name: Enable caching
-        run: |
-          # Disable volumes so caching can take effect
-          sed -i -Ee 's/- app_[a-z]+_data:.*$//g' docker-compose.yml
-
-          # Make ourselves the owner
-          echo "RUN addgroup -g $(id -g) -S appgroup && adduser -u $(id -u) -S appuser -G appgroup" >> docker/app/Dockerfile
-          echo "USER appuser" >> docker/app/Dockerfile
-          echo "RUN mix local.hex --force && mix local.rebar --force" >> docker/app/Dockerfile
+          key: ${{ runner.os }}-deps-3-${{ hashFiles('mix.lock') }}-${{ hashFiles('native/philomena/Cargo.lock') }}
 
       - run: docker compose pull
       - run: docker compose build
-
-      - name: Build and test
-        run: docker compose run app run-test
+      - run: ./scripts/philomena.sh test
 
   typos:
     name: 'Check for spelling errors'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: crate-ci/typos@master
+      - run: ./scripts/install/typos.sh
+      - run: typos
 
   shellcheck:
     name: Shellcheck
@@ -55,10 +42,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@1.87.0
+      # Uses the `rust-toolchain.toml` file
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          components: clippy, rustfmt
+          components: rustfmt, clippy
 
       - name: cargo fmt
         run: (cd native/philomena && cargo fmt --check)
@@ -104,15 +91,3 @@ jobs:
 
       - run: npm run build
         working-directory: ./assets
-
-  repo-init-script:
-    name: 'Repo Init Script'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-
-      - run: ./scripts/init.sh
-      - run: typos --version
-      - run: npx prettier --version
