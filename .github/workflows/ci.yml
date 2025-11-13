@@ -18,7 +18,7 @@ jobs:
 
       - run: docker compose pull
       - run: docker compose build
-      - run: philomena test
+      - run: ./scripts/philomena.sh test
 
   typos:
     name: 'Check for spelling errors'
