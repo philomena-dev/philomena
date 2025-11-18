@@ -493,7 +493,7 @@ describe('DOM Utilities', () => {
         whenReady(throwingCallback);
 
         expect(throwingCallback).toHaveBeenCalledTimes(1);
-        expect(consoleLogSpy).toHaveBeenCalledWith('namedCallback ran with errors.');
+        expect(consoleLogSpy).toHaveBeenCalledWith('Mock ran with errors.');
       } finally {
         readyStateSpy.mockRestore();
         consoleLogSpy.mockRestore();

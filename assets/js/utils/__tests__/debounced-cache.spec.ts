@@ -101,7 +101,7 @@ describe('DebouncedCache', () => {
       expect(consoleSpy.error.mock.calls).toMatchInlineSnapshot(`
         [
           [
-            "An error occurred while calling 'spy'.",
+            "An error occurred while calling 'Mock'.",
             [Error: producer error],
           ],
         ]
@@ -124,7 +124,7 @@ describe('DebouncedCache', () => {
       expect(consoleSpy.error.mock.calls).toMatchInlineSnapshot(`
           [
             [
-              "An error occurred while processing the result of 'producerImpl'.",
+              "An error occurred while processing the result of 'Mock'.",
               [Error: consumer error],
             ],
           ]

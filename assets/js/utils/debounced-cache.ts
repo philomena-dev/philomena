@@ -58,11 +58,10 @@ export class DebouncedCache<Params, R> {
     const afterTimeout = () => {
       // This can't be triggered via the public API of this class, because we cancel
       // the setTimeout call when abort is triggered, but it's here just in case
-      /* v8 ignore start */
+      /* v8 ignore if -- @preserve */
       if (this.shouldAbort(abortSignal)) {
         return;
       }
-      /* v8 ignore end */
 
       // In theory, we could pass the abort signal to the function, but we don't
       // do that and let the function run even if it was aborted, and then cache
@@ -94,6 +93,8 @@ export class DebouncedCache<Params, R> {
   }
 
   private async subscribe(promise: Promise<R>, abortSignal: AbortSignal, onResult: (result: R) => void): Promise<void> {
+    // TODO: fix coverage regression caused by vitest 4 update
+    /* v8 ignore if -- @preserve */
     if (this.shouldAbort(abortSignal)) {
       return;
     }
