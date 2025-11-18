@@ -389,9 +389,11 @@ export class SuggestionsPopupComponent {
   }
 
   showForElement(targetElement: HTMLElement) {
-    if (this.items.length === 0) {
+    if (!targetElement.isConnected || this.items.length === 0) {
       // Hide the popup because there are no suggestions to show. We have to do it
       // explicitly, because a border is still rendered even for an empty popup.
+      // Also don't attempt to show the popup for disconnected node. Otherwise, it
+      // will be shown out of place.
       this.hide();
       return;
     }

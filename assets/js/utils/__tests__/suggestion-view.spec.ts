@@ -120,6 +120,17 @@ describe('Suggestions', () => {
       expect(popupContainer.style.top).toBe(`${input.offsetTop}px`);
     });
 
+    it('should not be displayed when input is detached from document', () => {
+      [popup, input] = mockBaseSuggestionsPopup(true);
+
+      assert(!popup.isHidden);
+
+      input.remove();
+      popup.showForElement(input);
+
+      assert(popup.isHidden);
+    });
+
     it('should initially select first element when selectDown is called', () => {
       [popup, input] = mockBaseSuggestionsPopup(true);
 
