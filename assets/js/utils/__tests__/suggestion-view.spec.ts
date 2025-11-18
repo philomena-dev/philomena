@@ -69,6 +69,11 @@ describe('Suggestions', () => {
       popup.hide();
       popup.setSuggestions({ history: [], tags: [], properties: [] });
       popup = undefined;
+
+      // Make sure we clean up leftover popups, just so we only have one instance at a time.
+      for (const popupElement of $$<HTMLElement>('.autocomplete')) {
+        popupElement.remove();
+      }
     }
   });
 
