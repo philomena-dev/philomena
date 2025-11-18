@@ -154,6 +154,8 @@ export function pickAndResize(elem: ImageTargetElement) {
        </video>`,
     );
     const video = $<HTMLVideoElement>('video', elem);
+    // TODO: fix coverage regression caused by vitest 4 update
+    /* v8 ignore if -- @preserve */
     if (video) {
       if (scaled === 'true') {
         video.className = 'image-scaled';

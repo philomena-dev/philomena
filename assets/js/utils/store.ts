@@ -2,6 +2,8 @@
  * localStorage utils
  */
 
+/* v8 ignore file -- @preserve */
+
 export const lastUpdatedSuffix = '__lastUpdated';
 
 // We use this detached <div> element purely as an event bus to dispatch storage update

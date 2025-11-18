@@ -79,6 +79,9 @@ const actions: Record<string, Action> = {
   },
   unfilter(data) {
     const container = data.el.closest<HTMLDivElement>('.image-show-container');
+
+    // TODO: fix coverage regression caused by vitest 4 update
+    /* v8 ignore if -- @preserve */
     if (container) {
       showBlock(container);
     }
@@ -198,6 +201,8 @@ function matchAttributes(event: Event) {
 
       if (el && value) {
         // Return true if you don't want to preventDefault
+        // TODO: fix coverage regression caused by vitest 4 update
+        /* v8 ignore if -- @preserve */
         if (!actions[action]({ attr, el, value })) {
           event.preventDefault();
         }
