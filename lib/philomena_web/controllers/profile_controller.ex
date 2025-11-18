@@ -197,12 +197,12 @@ defmodule PhilomenaWeb.ProfileController do
       |> Map.new(&{now - &1.day, &1})
 
     %{
-      uploads: individual_stat(last_90, :uploads),
-      images_favourited: individual_stat(last_90, :images_favourited),
-      comments_posted: individual_stat(last_90, :comments_posted),
-      votes_cast: individual_stat(last_90, :votes_cast),
-      metadata_updates: individual_stat(last_90, :metadata_updates),
-      forum_posts: individual_stat(last_90, :forum_posts)
+      images_count: individual_stat(last_90, :images_count),
+      image_faves_count: individual_stat(last_90, :image_faves_count),
+      comments_count: individual_stat(last_90, :comments_count),
+      image_votes_count: individual_stat(last_90, :image_votes_count),
+      metadata_updates_count: individual_stat(last_90, :metadata_updates_count),
+      posts_count: individual_stat(last_90, :posts_count)
     }
   end
 
