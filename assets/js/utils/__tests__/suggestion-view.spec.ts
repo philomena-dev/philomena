@@ -13,6 +13,7 @@ import { assertNotNull } from '../assert.ts';
 import { $, $$ } from '../dom.ts';
 import { literalProperty, numericProperty } from '../../autocomplete/properties/maps';
 import { MatchedPropertyParts, SuggestedProperty } from '../../autocomplete/properties';
+import { getRandomIntBetween } from '../../../test/randomness.ts';
 
 const mockedMatchedPropertyParts: MatchedPropertyParts = {
   propertyName: 's',
@@ -42,12 +43,12 @@ function mockBaseSuggestionsPopup(includeMockedSuggestions = false): [Suggestion
   const input = document.createElement('input');
   const popup = new SuggestionsPopupComponent();
 
-  document.body.append(input);
-  popup.showForElement(input);
-
   if (includeMockedSuggestions) {
     popup.setSuggestions(mockedSuggestions);
   }
+
+  document.body.append(input);
+  popup.showForElement(input);
 
   return [popup, input];
 }
@@ -94,6 +95,24 @@ describe('Suggestions', () => {
       expect($$<HTMLElement>('.autocomplete__item').length).toBe(
         mockedSuggestions.history.length + mockedSuggestions.tags.length + mockedSuggestions.properties.length,
       );
+    });
+
+    it('should compensate for scroll position of the parent element', () => {
+      [popup, input] = mockBaseSuggestionsPopup(true);
+
+      const popupContainer = $<HTMLElement>('.autocomplete');
+
+      assert(input.parentElement);
+      assert(popupContainer);
+
+      input.parentElement.scrollTop = getRandomIntBetween(100, 200);
+      popup.showForElement(input);
+
+      expect(popupContainer.style.top).toBe(`${input.offsetTop - input.parentElement.scrollTop}px`);
+
+      popup.showForElement(document.documentElement);
+
+      expect(popupContainer.style.top).toBe(`${input.offsetTop}px`);
     });
 
     it('should initially select first element when selectDown is called', () => {
@@ -291,6 +310,17 @@ describe('Suggestions', () => {
         {
           "label": " rating:safe → safe  10",
           "value": "safe",
+        }
+      `,
+      );
+    });
+
+    it('should display alias -> canonical for aliased tags with match parts', () => {
+      expectTagRender({ images: 10, canonical: 'rating:safe', alias: [{ matched: 'safe' }] }).toMatchInlineSnapshot(
+        `
+        {
+          "label": " safe → rating:safe  10",
+          "value": "rating:safe",
         }
       `,
       );
