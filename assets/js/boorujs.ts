@@ -30,7 +30,7 @@ interface ActionData {
 }
 
 type EventQualifier = (event: Event) => boolean;
-type Action = (data: ActionData) => unknown;
+type Action = (data: ActionData) => void;
 
 // Event types and any qualifying conditions - return true to not run action
 const types: Record<EventType, EventQualifier> = {
@@ -79,9 +79,6 @@ const actions: Record<string, Action> = {
   },
   unfilter(data) {
     const container = data.el.closest<HTMLDivElement>('.image-show-container');
-
-    // TODO: fix coverage regression caused by vitest 4 update
-    /* v8 ignore if -- @preserve */
     if (container) {
       showBlock(container);
     }
@@ -200,12 +197,8 @@ function matchAttributes(event: Event) {
       const value = el?.getAttribute(attr) || '';
 
       if (el && value) {
-        // Return true if you don't want to preventDefault
-        // TODO: fix coverage regression caused by vitest 4 update
-        /* v8 ignore if -- @preserve */
-        if (!actions[action]({ attr, el, value })) {
-          event.preventDefault();
-        }
+        actions[action]({ attr, el, value });
+        event.preventDefault();
       }
     }
   }
