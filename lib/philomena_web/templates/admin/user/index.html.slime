@@ -13,12 +13,12 @@ h1 Users
         "Sort by last update date": :updated_at,
         "Sort by deactivation date": :deleted_at,
         "Sort by uploads": :uploads_count,
-        "Sort by favorites": :images_favourited_count,
-        "Sort by comments": :comments_posted_count,
-        "Sort by votes": :votes_cast_count,
+        "Sort by favorites": :image_faves_count,
+        "Sort by comments": :comments_count,
+        "Sort by votes": :image_votes_count,
         "Sort by metadata updates": :metadata_updates_count,
-        "Sort by forum posts": :forum_posts_count,
-        "Sort by topics": :topic_count,
+        "Sort by forum posts": :posts_count,
+        "Sort by topics": :topics_count,
         "Sort by relevance": :_score
       ]
 

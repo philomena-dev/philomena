@@ -7,13 +7,13 @@ defmodule PhilomenaWeb.UserLoader do
     confirmed_at
     updated_at
     deleted_at
-    uploads_count
-    images_favourited_count
-    comments_posted_count
-    votes_cast_count
+    images_count
+    image_faves_count
+    comments_count
+    image_votes_count
     metadata_updates_count
-    forum_posts_count
-    topic_count
+    posts_count
+    topics_count
     _score
   )
 
