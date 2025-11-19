@@ -113,8 +113,6 @@ function clearParentPost(_clickedLink: HTMLElement, fullComment: HTMLElement) {
   }
 
   // If this full comment isn't a fetched comment, remove the subthread class.
-  // TODO: fix coverage regression caused by vitest 4 update
-  /* v8 ignore if -- @preserve */
   if (!fullComment.classList.contains('fetched-comment')) {
     fullComment.classList.remove('subthread');
   }
@@ -163,8 +161,6 @@ function setupComments() {
   const targetOnPage = hasHash ? Boolean($(window.location.hash)) : true;
 
   // Fetch comments if we are on a page with element #comments
-  // TODO: fix coverage regression caused by vitest 4 update
-  /* v8 ignore if -- @preserve */
   if (comments) {
     if (!comments.dataset.loaded || !targetOnPage) {
       // There is no event associated with the initial load, so just call without arguments.

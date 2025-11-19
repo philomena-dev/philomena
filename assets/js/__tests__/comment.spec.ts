@@ -71,6 +71,10 @@ describe('comment.ts setupComments', () => {
     window.location.hash = '';
   });
 
+  it('does nothing if comments not on page', () => {
+    expect(() => setupComments()).not.toThrow();
+  });
+
   it('initially loads comments if not loaded', async () => {
     mockCommentsDom({ loaded: 'false' });
     mockFetchHtml('<div>loaded</div>');
@@ -115,6 +119,29 @@ describe('comment.ts setupComments', () => {
 
     // fetched-comment should be removed (sibling before full comment)
     expect($('.fetched-comment', comments)).toBeNull();
+  });
+
+  it('handles nested comment subthreads', async () => {
+    mockCommentsDom();
+    const comments = $<HTMLDivElement>('#comments')!;
+    comments.dataset.loaded = 'true';
+    comments.innerHTML = `
+      <article class="block fetched-comment subthread" id="comment_1"></article>
+      <article class="block fetched-comment subthread" id="comment_2">
+        <div class="communication__body__text">
+          <a class="active_reply_link" href="/123#comment_456">parent</a>
+        </div>
+      </article>
+      <article class="block subthread" id="comment_3"></article>
+    `;
+
+    setupComments();
+
+    const link = $<HTMLAnchorElement>('a.active_reply_link')!;
+    fireEvent.click(link);
+
+    // fetched-comment should be removed (siblings before latest comment)
+    expect($('.fetched-comment', comments)!.id).toEqual('comment_2');
   });
 
   it('handles comment post completion via fetchcomplete event', async () => {
