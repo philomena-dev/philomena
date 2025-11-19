@@ -20,6 +20,7 @@ defmodule Philomena.Users.User do
   alias Philomena.UserIps.UserIp
   alias Philomena.Bans
   alias Philomena.Donations.Donation
+  alias Philomena.UserNameChanges.UserNameChange
 
   @derive {Phoenix.Param, key: :slug}
   @derive {Inspect, except: [:password]}
@@ -36,6 +37,7 @@ defmodule Philomena.Users.User do
     has_many :donations, Donation
     has_one :commission, Commission
     many_to_many :roles, Role, join_through: "users_roles", on_replace: :delete
+    has_many :name_changes, UserNameChange
 
     belongs_to :current_filter, Filter
     belongs_to :forced_filter, Filter

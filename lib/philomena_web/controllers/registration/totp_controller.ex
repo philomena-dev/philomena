@@ -50,6 +50,8 @@ defmodule PhilomenaWeb.Registration.TotpController do
         |> put_flash(:totp_backup_codes, backup_codes)
         |> put_session(:user_return_to, ~p"/registrations/totp/edit")
         |> UserAuth.totp_auth_user(user, %{})
+
+        Users.reindex_user(user)
     end
   end
 end
