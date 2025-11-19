@@ -2,7 +2,8 @@
  * Fetch and display preview images for various image upload forms.
  */
 
-import { assertType, assertNotNull } from './utils/assert';
+import { findOr } from './utils/array';
+import { assertType, assertNotNull, assertString } from './utils/assert';
 import { normalizedKeyboardKey, keys } from './utils/keyboard';
 import { fetchJson, handleError } from './utils/requests';
 import { $, $$, clearEl, hideEl, makeEl, showEl } from './utils/dom';
@@ -42,6 +43,10 @@ function elementForEmbeddedImage({ camo_url, type }: ScraperImage): HTMLImageEle
   const tagName = new DataView(camo_url).getUint32(0) === MATROSKA_MAGIC ? 'video' : 'img';
 
   return makeEl(tagName, { className: 'scraper-preview--image', src: objectUrl });
+}
+
+function getStringOrDefault(elements: (string | null | undefined)[], defaultValue: string): string {
+  return assertString(findOr(elements, e => Boolean(e), defaultValue));
 }
 
 export function setupImageUpload() {
@@ -163,12 +168,9 @@ export function setupImageUpload() {
         hideError();
 
         // Set source
-        // TODO: fix coverage regression caused by vitest 4 update
-        /* v8 ignore if -- @preserve */
-        if (sourceEl) sourceEl.value = sourceEl.value || data.source_url || '';
+        if (sourceEl) sourceEl.value = getStringOrDefault([sourceEl.value, data.source_url], '');
         // Set description
-        /* v8 ignore if -- @preserve */
-        if (descrEl) descrEl.value = descrEl.value || data.description || '';
+        if (descrEl) descrEl.value = getStringOrDefault([descrEl.value, data.description], '');
         // Add author
         if (tagsEl && data.author_name) {
           addTag(tagsEl, `artist:${data.author_name.toLowerCase()}`);
