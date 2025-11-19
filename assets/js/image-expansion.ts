@@ -1,4 +1,5 @@
 import { $, $$, clearEl } from './utils/dom';
+import { assertNotNull } from './utils/assert';
 import store from './utils/store';
 
 type ImageVersion = 'small' | 'medium' | 'large' | 'tall' | 'full';
@@ -153,15 +154,11 @@ export function pickAndResize(elem: ImageTargetElement) {
         </p>
        </video>`,
     );
-    const video = $<HTMLVideoElement>('video', elem);
-    // TODO: fix coverage regression caused by vitest 4 update
-    /* v8 ignore if -- @preserve */
-    if (video) {
-      if (scaled === 'true') {
-        video.className = 'image-scaled';
-      } else if (scaled === 'partscaled') {
-        video.className = 'image-partscaled';
-      }
+    const video = assertNotNull($<HTMLVideoElement>('video', elem));
+    if (scaled === 'true') {
+      video.className = 'image-scaled';
+    } else if (scaled === 'partscaled') {
+      video.className = 'image-partscaled';
     }
   } else {
     let image;
