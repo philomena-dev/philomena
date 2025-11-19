@@ -328,7 +328,7 @@ describe('boorujs', () => {
 
     it('does not unfilter when not in image-show-container', () => {
       document.body.innerHTML = `
-        <button data-click-unfilter>Show Image</button>
+        <button data-click-unfilter="true">Show Image</button>
       `;
 
       const button = $<HTMLButtonElement>('button')!;

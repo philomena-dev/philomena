@@ -2,23 +2,11 @@ import { clearDragSource, initDraggables } from '../draggable';
 import { fireEvent } from '@testing-library/dom';
 import { getRandomArrayItem } from '../../../test/randomness';
 import { MockInstance } from 'vitest';
+import '../../../test/mock-drag-event';
 
 describe('Draggable Utilities', () => {
-  // jsdom lacks proper support for window.DragEvent so this is an attempt at a minimal recreation
   const createDragEvent = (name: string, init?: DragEventInit): DragEvent => {
-    const mockEvent = new Event(name, { bubbles: true, cancelable: true }) as unknown as DragEvent;
-    let dataTransfer = init?.dataTransfer;
-    if (!dataTransfer) {
-      const items: Pick<DataTransferItem, 'type' | 'getAsString'>[] = [];
-      dataTransfer = {
-        items: items as unknown as DataTransferItemList,
-        setData(format: string, data: string) {
-          items.push({ type: format, getAsString: (callback: FunctionStringCallback) => callback(data) });
-        },
-      } as unknown as DataTransfer;
-    }
-    Object.assign(mockEvent, { dataTransfer });
-    return mockEvent;
+    return new DragEvent(name, { bubbles: true, cancelable: true, ...init });
   };
 
   const createDraggableElement = (): HTMLDivElement => {
@@ -137,6 +125,16 @@ describe('Draggable Utilities', () => {
 
         expect(mockEvent.defaultPrevented).toBe(true);
         expect(mockEvent.dataTransfer?.dropEffect).toEqual('move');
+      });
+
+      it('should cancel event when no data transfer is available', () => {
+        initDraggables();
+
+        const mockEvent = createDragEvent('dragover', { dataTransfer: null });
+
+        fireEvent(mockDraggable, mockEvent);
+
+        expect(mockEvent.defaultPrevented).toBe(true);
       });
     });
 

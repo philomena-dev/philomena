@@ -157,6 +157,33 @@ describe('Store utilities', () => {
     });
   });
 
+  describe('watchAll', () => {
+    it('should attach a storage event listener and fire when any key changes', () => {
+      const mockKey = `mock-watch-key-${getRandomIntBetween(1, 10)}`;
+      const mockValue = Math.random();
+      const mockCallback = vi.fn();
+      setStorageValue({
+        [mockKey]: JSON.stringify(mockValue),
+      });
+
+      store.watchAll(mockCallback);
+
+      // Should not get the item just yet, only register the event handler
+      expect(getItemSpy).not.toHaveBeenCalled();
+
+      // Should call callback for different key
+      let storageEvent = new StorageEvent('storage', { key: 'unknown-key' });
+      fireEvent(window, storageEvent);
+      expect(mockCallback).toHaveBeenNthCalledWith(1, 'unknown-key');
+
+      // Should call callback with the key from the store
+      storageEvent = new StorageEvent('storage', { key: mockKey });
+      fireEvent(window, storageEvent);
+      expect(mockCallback).toHaveBeenCalledTimes(2);
+      expect(mockCallback).toHaveBeenNthCalledWith(2, mockKey);
+    });
+  });
+
   describe('setWithExpireTime', () => {
     mockDateNow(initialDateNow);
 

@@ -41,8 +41,6 @@ function activate(event: Event) {
 
   store.set(currentTagStorage, window.prompt('A comma-delimited list of tags you want to add:'));
 
-  // TODO: fix coverage regression caused by vitest 4 update
-  /* v8 ignore if -- @preserve */
   if (currentTags()) {
     toggleActiveState();
   }
@@ -121,8 +119,6 @@ delegate(document, 'click', {
 export function setupQuickTag() {
   const tagButton = $<HTMLAnchorElement>('.js-quick-tag');
 
-  // TODO: fix coverage regression caused by vitest 4 update
-  /* v8 ignore if -- @preserve */
   if (tagButton && currentTags()) {
     toggleActiveState();
   }

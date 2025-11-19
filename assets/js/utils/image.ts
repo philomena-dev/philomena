@@ -1,5 +1,16 @@
+import { assertNotNull } from './assert';
 import { $, clearEl } from './dom';
 import store from './store';
+
+function getSpoilerOverlay(img: HTMLDivElement): HTMLElement {
+  // This always exists in markup, regardless of the image type and state
+  return assertNotNull($<HTMLElement>('.js-spoiler-info-overlay', img));
+}
+
+function getFilterExplanation(img: HTMLDivElement): HTMLElement {
+  // This always exists in markup, regardless of the image type and state
+  return assertNotNull($<HTMLElement>('.filter-explanation', img));
+}
 
 function showVideoThumb(img: HTMLDivElement, size: string, uris: Record<string, string>) {
   const thumbUri = uris[size];
@@ -19,11 +30,7 @@ function showVideoThumb(img: HTMLDivElement, size: string, uris: Record<string, 
   vidEl.classList.remove('hidden');
   vidEl.play();
 
-  const overlay = $<HTMLElement>('.js-spoiler-info-overlay', img);
-
-  // TODO: fix coverage regression caused by vitest 4 update
-  /* v8 ignore if -- @preserve */
-  if (overlay) overlay.classList.add('hidden');
+  getSpoilerOverlay(img).classList.add('hidden');
 
   return true;
 }
@@ -50,8 +57,7 @@ export function showThumb(img: HTMLDivElement) {
   }
 
   imgEl.src = thumbUri;
-  const overlay = $<HTMLElement>('.js-spoiler-info-overlay', img);
-  if (!overlay) return false;
+  const overlay = getSpoilerOverlay(img);
 
   if (uris[size].indexOf('.webm') !== -1) {
     overlay.classList.remove('hidden');
@@ -83,18 +89,14 @@ function hideVideoThumb(img: HTMLDivElement, spoilerUri: string, reason: string)
   if (!vidEl) return;
 
   const imgEl = $<HTMLImageElement>('img', img);
-  const imgOverlay = $<HTMLElement>('.js-spoiler-info-overlay', img);
+  const imgOverlay = getSpoilerOverlay(img);
   if (!imgEl) return;
 
   imgEl.classList.remove('hidden');
   imgEl.src = spoilerUri;
 
-  // TODO: fix coverage regression caused by vitest 4 update
-  /* v8 ignore if -- @preserve */
-  if (imgOverlay) {
-    imgOverlay.innerHTML = reason;
-    imgOverlay.classList.remove('hidden');
-  }
+  imgOverlay.innerHTML = reason;
+  imgOverlay.classList.remove('hidden');
 
   clearEl(vidEl);
   vidEl.classList.add('hidden');
@@ -106,19 +108,15 @@ export function hideThumb(img: HTMLDivElement, spoilerUri: string, reason: strin
   if (!picEl) return hideVideoThumb(img, spoilerUri, reason);
 
   const imgEl = $<HTMLImageElement>('img', picEl);
-  const imgOverlay = $<HTMLElement>('.js-spoiler-info-overlay', img);
+  const imgOverlay = getSpoilerOverlay(img);
 
   if (!imgEl || imgEl.src.indexOf(spoilerUri) !== -1) return;
 
   imgEl.srcset = '';
   imgEl.src = spoilerUri;
 
-  // TODO: fix coverage regression caused by vitest 4 update
-  /* v8 ignore if -- @preserve */
-  if (imgOverlay) {
-    imgOverlay.innerHTML = reason;
-    imgOverlay.classList.remove('hidden');
-  }
+  imgOverlay.innerHTML = reason;
+  imgOverlay.classList.remove('hidden');
 }
 
 export function spoilerThumb(img: HTMLDivElement, spoilerUri: string, reason: string) {
@@ -145,16 +143,11 @@ export function spoilerBlock(img: HTMLDivElement, spoilerUri: string, reason: st
   const imgEl = imgFiltered ? $<HTMLImageElement>('img', imgFiltered) : null;
   if (!imgEl) return;
 
-  const imgReason = $<HTMLElement>('.filter-explanation', img);
+  const imgReason = getFilterExplanation(img);
   const imageShow = $<HTMLElement>('.image-show', img);
 
   imgEl.src = spoilerUri;
-
-  // TODO: fix coverage regression caused by vitest 4 update
-  /* v8 ignore if -- @preserve */
-  if (imgReason) {
-    imgReason.innerHTML = reason;
-  }
+  imgReason.innerHTML = reason;
 
   imageShow?.classList.add('hidden');
   if (imgFiltered) imgFiltered.classList.remove('hidden');

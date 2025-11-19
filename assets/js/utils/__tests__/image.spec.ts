@@ -314,13 +314,6 @@ describe('Image utils', () => {
       const result = showThumb(mockElement);
       expect(result).toBe(false);
     });
-
-    it('should return false if overlay is missing', () => {
-      const { mockElement, mockSpoilerOverlay } = createMockElementWithPicture('jpg');
-      mockSpoilerOverlay.parentNode?.removeChild(mockSpoilerOverlay);
-      const result = showThumb(mockElement);
-      expect(result).toBe(false);
-    });
   });
 
   describe('showBlock', () => {
@@ -382,6 +375,8 @@ describe('Image utils', () => {
       });
       it('should return early if picture and img elements are missing BUT video element is present', () => {
         const mockElement = document.createElement('div');
+        const mockSpoilerOverlay = createMockSpoilerOverlay();
+        mockElement.appendChild(mockSpoilerOverlay);
         const mockVideo = document.createElement('video');
         mockElement.appendChild(mockVideo);
         const pauseSpy = vi.spyOn(mockVideo, 'pause').mockReturnValue(undefined);
@@ -432,6 +427,8 @@ describe('Image utils', () => {
 
     it('should return early if picture element is present AND img element is missing', () => {
       const mockElement = document.createElement('div');
+      const mockSpoilerOverlay = createMockSpoilerOverlay();
+      mockElement.appendChild(mockSpoilerOverlay);
       const mockPicture = document.createElement('picture');
       mockElement.appendChild(mockPicture);
 

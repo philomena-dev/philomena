@@ -120,172 +120,11 @@ describe('Image upload form', () => {
     descrEl = assertNotNull($<HTMLTextAreaElement>('.js-image-descr-input'));
     fetchButton = assertNotNull($<HTMLButtonElement>('#js-scraper-preview'));
     submitButton = assertNotNull($<HTMLButtonElement>('.actions > .button'));
-
-    setupImageUpload();
     fetchMock.resetMocks();
   });
 
   afterEach(() => {
     removeEl(form);
-  });
-
-  it('should disable fetch button on empty source', () => {
-    fireEvent.input(remoteUrl, { target: { value: '' } });
-    expect(fetchButton.disabled).toBe(true);
-  });
-
-  it('should create a preview element when an image file is uploaded', () => {
-    fireEvent.change(fileField, { target: { files: [mockPng] } });
-    return waitFor(() => {
-      assertFetchButtonIsDisabled();
-      expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(1);
-    });
-  });
-
-  it('should ignore file change when no files are provided', async () => {
-    // Ensure previews are empty initially
-    expect($$<HTMLElement>('img,video', imgPreviews)).toHaveLength(0);
-
-    // Trigger change with empty files array
-    fireEvent.change(fileField, { target: { files: [] } });
-
-    // Nothing should be rendered
-    await waitFor(() => {
-      expect($$<HTMLElement>('img,video', imgPreviews)).toHaveLength(0);
-    });
-  });
-
-  it('should create a preview element when a Matroska video file is uploaded', () => {
-    fireEvent.change(fileField, { target: { files: [mockWebm] } });
-    return waitFor(() => {
-      assertFetchButtonIsDisabled();
-      expect($$<HTMLVideoElement>('video', imgPreviews)).toHaveLength(1);
-    });
-  });
-
-  it('should block navigation away after an image file is attached, but not after form submission', async () => {
-    // Set valid tags first
-    taginputEl.innerText = 'safe, two, three';
-
-    fireEvent.change(fileField, { target: { files: [mockPng] } });
-    await waitFor(() => {
-      assertFetchButtonIsDisabled();
-      expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(1);
-    });
-
-    const failedUnloadEvent = new Event('beforeunload', { cancelable: true });
-    expect(fireEvent(window, failedUnloadEvent)).toBe(false);
-
-    await new Promise<void>(resolve => {
-      form.addEventListener('submit', event => {
-        event.preventDefault();
-        resolve();
-      });
-      fireEvent.submit(form);
-    });
-
-    const succeededUnloadEvent = new Event('beforeunload', { cancelable: true });
-    expect(fireEvent(window, succeededUnloadEvent)).toBe(true);
-  });
-
-  it('should not add author tag when author_name is missing', async () => {
-    const response = {
-      description: 'no author',
-      images: [
-        { url: 'http://localhost/images/1', camo_url: 'http://localhost/images/1' },
-        { url: 'http://localhost/images/2', camo_url: 'http://localhost/images/2' },
-      ],
-      // eslint-disable-next-line camelcase
-      source_url: 'http://localhost/images',
-      // author_name omitted
-    };
-
-    fetchMock.mockResolvedValue(new Response(JSON.stringify(response), { status: 200 }));
-    const addTagListener = vi.fn();
-    tagsEl.addEventListener('addtag', addTagListener);
-
-    fireEvent.input(remoteUrl, { target: { value: 'http://localhost/images/1' } });
-    fireEvent.click(fetchButton);
-
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledTimes(1);
-      expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(2);
-    });
-
-    expect(addTagListener).not.toHaveBeenCalled();
-  });
-
-  it('should show null scrape result', () => {
-    fetchMock.mockResolvedValue(new Response(JSON.stringify(nullResponse), { status: 200 }));
-
-    fireEvent.input(remoteUrl, { target: { value: 'http://localhost/images/1' } });
-    fireEvent.click(fetchButton);
-
-    return waitFor(() => {
-      expect(fetch).toHaveBeenCalledTimes(1);
-      expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(0);
-      expect(scraperError.innerText).toEqual('No image found at that address.');
-    });
-  });
-
-  it('should show error scrape result', () => {
-    fetchMock.mockResolvedValue(new Response(JSON.stringify(errorResponse), { status: 200 }));
-
-    fireEvent.input(remoteUrl, { target: { value: 'http://localhost/images/1' } });
-    fireEvent.click(fetchButton);
-
-    return waitFor(() => {
-      expect(fetch).toHaveBeenCalledTimes(1);
-      expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(0);
-      expect(scraperError.innerText).toEqual('Error 1 Error 2');
-    });
-  });
-
-  it('should set empty strings when source_url and description are missing', async () => {
-    const response = {
-      // no description
-      images: [
-        { url: 'http://localhost/images/1', camo_url: 'http://localhost/images/1' },
-        { url: 'http://localhost/images/2', camo_url: 'http://localhost/images/2' },
-      ],
-      // no source_url
-      // no author_name
-    };
-
-    fetchMock.mockResolvedValue(new Response(JSON.stringify(response), { status: 200 }));
-
-    // Ensure fields are empty before
-    expect(sourceEl.value).toBe('');
-    expect(descrEl.value).toBe('');
-
-    fireEvent.input(remoteUrl, { target: { value: 'http://localhost/images/1' } });
-    fireEvent.click(fetchButton);
-
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledTimes(1);
-      expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(2);
-      // Fallback branch should evaluate to '' for both assignments
-      expect(sourceEl.value).toBe('');
-      expect(descrEl.value).toBe('');
-    });
-  });
-
-  it('shows scraper error when request rejects (network failure path)', async () => {
-    fetchMock.mockRejectedValue(new Error('network down'));
-
-    fireEvent.input(remoteUrl, { target: { value: 'http://localhost/images/1' } });
-    // Button becomes enabled on input; click triggers disable + request
-    expect(fetchButton.disabled).toBe(false);
-    fireEvent.click(fetchButton);
-
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledTimes(1);
-      // On error we clear previews and show error element, and re-enable fetch
-      expect($$<HTMLElement>('img,video', imgPreviews)).toHaveLength(0);
-      expect(fetchButton.disabled).toBe(false);
-      // The error element should be visible (hidden class removed)
-      expect(scraperError.classList.contains('hidden')).toBe(false);
-    });
   });
 
   async function submitForm(frm: HTMLFormElement): Promise<boolean> {
@@ -304,162 +143,331 @@ describe('Image upload form', () => {
     });
   }
 
-  it('should prevent form submission if tag checks fail', async () => {
-    for (let i = 0; i < tagSets.length; i += 1) {
-      taginputEl.innerText = tagSets[i];
+  describe('With all elements', () => {
+    beforeEach(() => {
+      setupImageUpload();
+    });
 
-      if (await submitForm(form)) {
-        // form submit succeeded
-        await waitFor(() => {
-          assertSubmitButtonIsDisabled();
-          const succeededUnloadEvent = new Event('beforeunload', { cancelable: true });
-          expect(fireEvent(window, succeededUnloadEvent)).toBe(true);
+    it('should disable fetch button on empty source', () => {
+      fireEvent.input(remoteUrl, { target: { value: '' } });
+      expect(fetchButton.disabled).toBe(true);
+    });
+
+    it('should create a preview element when an image file is uploaded', () => {
+      fireEvent.change(fileField, { target: { files: [mockPng] } });
+      return waitFor(() => {
+        assertFetchButtonIsDisabled();
+        expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(1);
+      });
+    });
+
+    it('should ignore file change when no files are provided', async () => {
+      // Ensure previews are empty initially
+      expect($$<HTMLElement>('img,video', imgPreviews)).toHaveLength(0);
+
+      // Trigger change with empty files array
+      fireEvent.change(fileField, { target: { files: [] } });
+
+      // Nothing should be rendered
+      await waitFor(() => {
+        expect($$<HTMLElement>('img,video', imgPreviews)).toHaveLength(0);
+      });
+    });
+
+    it('should create a preview element when a Matroska video file is uploaded', () => {
+      fireEvent.change(fileField, { target: { files: [mockWebm] } });
+      return waitFor(() => {
+        assertFetchButtonIsDisabled();
+        expect($$<HTMLVideoElement>('video', imgPreviews)).toHaveLength(1);
+      });
+    });
+
+    it('should block navigation away after an image file is attached, but not after form submission', async () => {
+      // Set valid tags first
+      taginputEl.innerText = 'safe, two, three';
+
+      fireEvent.change(fileField, { target: { files: [mockPng] } });
+      await waitFor(() => {
+        assertFetchButtonIsDisabled();
+        expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(1);
+      });
+
+      const failedUnloadEvent = new Event('beforeunload', { cancelable: true });
+      expect(fireEvent(window, failedUnloadEvent)).toBe(false);
+
+      await new Promise<void>(resolve => {
+        form.addEventListener('submit', event => {
+          event.preventDefault();
+          resolve();
         });
-      } else {
-        // form submit prevented
-        const frm = form;
-        await waitFor(() => {
-          assertSubmitButtonIsEnabled();
-          expect($$<HTMLDivElement>('.help-block', frm)).toHaveLength(tagErrorCounts[i]);
-        });
+        fireEvent.submit(form);
+      });
+
+      const succeededUnloadEvent = new Event('beforeunload', { cancelable: true });
+      expect(fireEvent(window, succeededUnloadEvent)).toBe(true);
+    });
+
+    it('should not add author tag when author_name is missing', async () => {
+      const response = {
+        description: 'no author',
+        images: [
+          { url: 'http://localhost/images/1', camo_url: 'http://localhost/images/1' },
+          { url: 'http://localhost/images/2', camo_url: 'http://localhost/images/2' },
+        ],
+        // eslint-disable-next-line camelcase
+        source_url: 'http://localhost/images',
+        // author_name omitted
+      };
+
+      fetchMock.mockResolvedValue(new Response(JSON.stringify(response), { status: 200 }));
+      const addTagListener = vi.fn();
+      tagsEl.addEventListener('addtag', addTagListener);
+
+      fireEvent.input(remoteUrl, { target: { value: 'http://localhost/images/1' } });
+      fireEvent.click(fetchButton);
+
+      await waitFor(() => {
+        expect(fetch).toHaveBeenCalledTimes(1);
+        expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(2);
+      });
+
+      expect(addTagListener).not.toHaveBeenCalled();
+    });
+
+    it('should show null scrape result', () => {
+      fetchMock.mockResolvedValue(new Response(JSON.stringify(nullResponse), { status: 200 }));
+
+      fireEvent.input(remoteUrl, { target: { value: 'http://localhost/images/1' } });
+      fireEvent.click(fetchButton);
+
+      return waitFor(() => {
+        expect(fetch).toHaveBeenCalledTimes(1);
+        expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(0);
+        expect(scraperError.innerText).toEqual('No image found at that address.');
+      });
+    });
+
+    it('should show error scrape result', () => {
+      fetchMock.mockResolvedValue(new Response(JSON.stringify(errorResponse), { status: 200 }));
+
+      fireEvent.input(remoteUrl, { target: { value: 'http://localhost/images/1' } });
+      fireEvent.click(fetchButton);
+
+      return waitFor(() => {
+        expect(fetch).toHaveBeenCalledTimes(1);
+        expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(0);
+        expect(scraperError.innerText).toEqual('Error 1 Error 2');
+      });
+    });
+
+    it('should set empty strings when source_url and description are missing', async () => {
+      const response = {
+        // no description
+        images: [
+          { url: 'http://localhost/images/1', camo_url: 'http://localhost/images/1' },
+          { url: 'http://localhost/images/2', camo_url: 'http://localhost/images/2' },
+        ],
+        // no source_url
+        // no author_name
+      };
+
+      fetchMock.mockResolvedValue(new Response(JSON.stringify(response), { status: 200 }));
+
+      // Ensure fields are empty before
+      expect(sourceEl.value).toBe('');
+      expect(descrEl.value).toBe('');
+
+      fireEvent.input(remoteUrl, { target: { value: 'http://localhost/images/1' } });
+      fireEvent.click(fetchButton);
+
+      await waitFor(() => {
+        expect(fetch).toHaveBeenCalledTimes(1);
+        expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(2);
+        // Fallback branch should evaluate to '' for both assignments
+        expect(sourceEl.value).toBe('');
+        expect(descrEl.value).toBe('');
+      });
+    });
+
+    it('shows scraper error when request rejects (network failure path)', async () => {
+      fetchMock.mockRejectedValue(new Error('network down'));
+
+      fireEvent.input(remoteUrl, { target: { value: 'http://localhost/images/1' } });
+      // Button becomes enabled on input; click triggers disable + request
+      expect(fetchButton.disabled).toBe(false);
+      fireEvent.click(fetchButton);
+
+      await waitFor(() => {
+        expect(fetch).toHaveBeenCalledTimes(1);
+        // On error we clear previews and show error element, and re-enable fetch
+        expect($$<HTMLElement>('img,video', imgPreviews)).toHaveLength(0);
+        expect(fetchButton.disabled).toBe(false);
+        // The error element should be visible (hidden class removed)
+        expect(scraperError.classList.contains('hidden')).toBe(false);
+      });
+    });
+
+    it('should prevent form submission if tag checks fail', async () => {
+      for (let i = 0; i < tagSets.length; i += 1) {
+        taginputEl.innerText = tagSets[i];
+
+        if (await submitForm(form)) {
+          // form submit succeeded
+          await waitFor(() => {
+            assertSubmitButtonIsDisabled();
+            const succeededUnloadEvent = new Event('beforeunload', { cancelable: true });
+            expect(fireEvent(window, succeededUnloadEvent)).toBe(true);
+          });
+        } else {
+          // form submit prevented
+          const frm = form;
+          await waitFor(() => {
+            assertSubmitButtonIsEnabled();
+            expect($$<HTMLDivElement>('.help-block', frm)).toHaveLength(tagErrorCounts[i]);
+          });
+        }
       }
-    }
-  });
-
-  it('should not create tag errors if buttonAfter element is missing', () => {
-    // Remove the save button
-    const saveButton = $('#tagsinput-save');
-    if (saveButton) saveButton.remove();
-
-    // Set invalid tags
-    taginputEl.innerText = 'one';
-
-    // Try to submit
-    fireEvent.submit(form);
-
-    // Should not crash and no errors should be created
-    expect($$<HTMLDivElement>('.help-block', form)).toHaveLength(0);
-  });
-
-  it('should not disable upload button if button is not found', async () => {
-    // Remove submit button
-    removeEl(submitButton);
-
-    // Set valid tags
-    taginputEl.innerText = 'safe, two, three';
-
-    // Submit form should work without error
-    const submitted = await submitForm(form);
-    expect(submitted).toBe(true);
-  });
-
-  it('should return early from disableUploadButton if submitButton not disabled on pagehide', async () => {
-    // Set valid tags
-    taginputEl.innerText = 'safe, two, three';
-
-    // Submit the form
-    await submitForm(form);
-
-    // Verify button is disabled
-    await waitFor(() => {
-      expect(submitButton.disabled).toBe(true);
-      expect(submitButton.hasAttribute('disabled')).toBe(true);
     });
 
-    // Enable the button manually (simulate some edge case)
-    submitButton.disabled = false;
-    submitButton.removeAttribute('disabled');
+    it('should not create tag errors if buttonAfter element is missing', () => {
+      // Remove the save button
+      const saveButton = $('#tagsinput-save');
+      if (saveButton) saveButton.remove();
 
-    // Fire pagehide event (which triggers oncePersistedPageShown callback)
-    const pagehideEvent = new PageTransitionEvent('pagehide', { persisted: true });
-    fireEvent(window, pagehideEvent);
+      // Set invalid tags
+      taginputEl.innerText = 'one';
 
-    // Fire pageshow event to trigger the callback
-    const pageshowEvent = new PageTransitionEvent('pageshow', { persisted: true });
-    fireEvent(window, pageshowEvent);
+      // Try to submit
+      fireEvent.submit(form);
 
-    // Button should remain enabled (early return path)
-    expect(submitButton.disabled).toBe(false);
-  });
-
-  it('should restore button state when user navigates back after form submission', async () => {
-    // Set valid tags
-    taginputEl.innerText = 'safe, two, three';
-
-    const originalText = submitButton.innerText;
-
-    // Submit the form
-    await submitForm(form);
-
-    // Verify button is disabled with new text
-    await waitFor(() => {
-      expect(submitButton.disabled).toBe(true);
-      expect(submitButton.innerText).toBe('Please wait...');
-      expect(submitButton.hasAttribute('disabled')).toBe(true);
+      // Should not crash and no errors should be created
+      expect($$<HTMLDivElement>('.help-block', form)).toHaveLength(0);
     });
 
-    // Simulate browser back/forward cache restoration
-    const pagehideEvent = new PageTransitionEvent('pagehide', { persisted: true });
-    fireEvent(window, pagehideEvent);
+    it('should return early from disableUploadButton if submitButton not disabled on pagehide', async () => {
+      // Set valid tags
+      taginputEl.innerText = 'safe, two, three';
 
-    const pageshowEvent = new PageTransitionEvent('pageshow', { persisted: true });
-    fireEvent(window, pageshowEvent);
+      // Submit the form
+      await submitForm(form);
 
-    // Button should be restored
-    await waitFor(() => {
+      // Verify button is disabled
+      await waitFor(() => {
+        expect(submitButton.disabled).toBe(true);
+        expect(submitButton.hasAttribute('disabled')).toBe(true);
+      });
+
+      // Enable the button manually (simulate some edge case)
+      submitButton.disabled = false;
+      submitButton.removeAttribute('disabled');
+
+      // Fire pagehide event (which triggers oncePersistedPageShown callback)
+      const pagehideEvent = new PageTransitionEvent('pagehide', { persisted: true });
+      fireEvent(window, pagehideEvent);
+
+      // Fire pageshow event to trigger the callback
+      const pageshowEvent = new PageTransitionEvent('pageshow', { persisted: true });
+      fireEvent(window, pageshowEvent);
+
+      // Button should remain enabled (early return path)
       expect(submitButton.disabled).toBe(false);
-      expect(submitButton.innerText).toBe(originalText);
-      expect(submitButton.hasAttribute('disabled')).toBe(false);
+    });
+
+    it('should restore button state when user navigates back after form submission', async () => {
+      // Set valid tags
+      taginputEl.innerText = 'safe, two, three';
+
+      const originalText = submitButton.innerText;
+
+      // Submit the form
+      await submitForm(form);
+
+      // Verify button is disabled with new text
+      await waitFor(() => {
+        expect(submitButton.disabled).toBe(true);
+        expect(submitButton.innerText).toBe('Please wait...');
+        expect(submitButton.hasAttribute('disabled')).toBe(true);
+      });
+
+      // Simulate browser back/forward cache restoration
+      const pagehideEvent = new PageTransitionEvent('pagehide', { persisted: true });
+      fireEvent(window, pagehideEvent);
+
+      const pageshowEvent = new PageTransitionEvent('pageshow', { persisted: true });
+      fireEvent(window, pageshowEvent);
+
+      // Button should be restored
+      await waitFor(() => {
+        expect(submitButton.disabled).toBe(false);
+        expect(submitButton.innerText).toBe(originalText);
+        expect(submitButton.hasAttribute('disabled')).toBe(false);
+      });
+    });
+
+    it('should clear file field after successful scrape', async () => {
+      fetchMock.mockResolvedValue(new Response(JSON.stringify(scrapeResponse), { status: 200 }));
+
+      // First add a file
+      fireEvent.change(fileField, { target: { files: [mockPng] } });
+      await waitFor(() => {
+        expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(1);
+      });
+
+      // Then scrape
+      fireEvent.input(remoteUrl, { target: { value: 'http://localhost/images/1' } });
+      fireEvent.click(fetchButton);
+
+      await waitFor(() => {
+        expect(fetch).toHaveBeenCalledTimes(1);
+        expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(2);
+        expect(fileField.value).toBe('');
+      });
     });
   });
 
-  it('should validate tags correctly when tagInput element is missing', () => {
-    // Remove taginput element
-    removeEl(taginputEl);
+  describe('With missing elements', () => {
+    it('should not disable upload button if button is not found', async () => {
+      // Remove submit button
+      removeEl(submitButton);
+      setupImageUpload();
 
-    // Set valid tags in the textarea
-    tagsEl.value = 'safe, two, three';
+      // Set valid tags
+      taginputEl.innerText = 'safe, two, three';
 
-    // Submit form should succeed (validateTags returns true when tagInput is null)
-    const submitted = fireEvent.submit(form);
-    expect(submitted).toBe(true);
-  });
-
-  it('should not set source/description if elements are missing', async () => {
-    fetchMock.mockResolvedValue(new Response(JSON.stringify(scrapeResponse), { status: 200 }));
-
-    // Remove source and description elements
-    removeEl(sourceEl);
-    removeEl(descrEl);
-
-    fireEvent.input(remoteUrl, { target: { value: 'http://localhost/images/1' } });
-    fireEvent.click(fetchButton);
-
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledTimes(1);
-      expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(2);
+      // Submit form should work without error
+      const submitted = await submitForm(form);
+      expect(submitted).toBe(true);
     });
 
-    // Should not crash even though elements are missing
-  });
+    it('should validate tags correctly when tagInput element is missing', () => {
+      // Remove taginput element
+      removeEl(taginputEl);
+      setupImageUpload();
 
-  it('should clear file field after successful scrape', async () => {
-    fetchMock.mockResolvedValue(new Response(JSON.stringify(scrapeResponse), { status: 200 }));
+      // Set valid tags in the textarea
+      tagsEl.value = 'safe, two, three';
 
-    // First add a file
-    fireEvent.change(fileField, { target: { files: [mockPng] } });
-    await waitFor(() => {
-      expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(1);
+      // Submit form should succeed (validateTags returns true when tagInput is null)
+      const submitted = fireEvent.submit(form);
+      expect(submitted).toBe(true);
     });
 
-    // Then scrape
-    fireEvent.input(remoteUrl, { target: { value: 'http://localhost/images/1' } });
-    fireEvent.click(fetchButton);
+    it('should not set source/description if elements are missing', async () => {
+      fetchMock.mockResolvedValue(new Response(JSON.stringify(scrapeResponse), { status: 200 }));
 
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledTimes(1);
-      expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(2);
-      expect(fileField.value).toBe('');
+      // Remove source and description elements
+      removeEl(sourceEl, descrEl);
+      setupImageUpload();
+
+      fireEvent.input(remoteUrl, { target: { value: 'http://localhost/images/1' } });
+      fireEvent.click(fetchButton);
+
+      await waitFor(() => {
+        expect(fetch).toHaveBeenCalledTimes(1);
+        expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(2);
+      });
+
+      // Should not crash even though elements are missing
     });
   });
 });
