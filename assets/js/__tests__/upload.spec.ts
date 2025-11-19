@@ -146,7 +146,7 @@ describe('Image upload form', () => {
   describe('With all elements', () => {
     beforeEach(() => {
       setupImageUpload();
-    })
+    });
 
     it('should disable fetch button on empty source', () => {
       fireEvent.input(remoteUrl, { target: { value: '' } });

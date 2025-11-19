@@ -176,7 +176,7 @@ describe('Array Utilities', () => {
 
     it('should handle default case if no elements match', () => {
       expect(findOr([1], x => x > 2, 0)).toEqual(0);
-    })
+    });
 
     it('should handle default case if there are no elements', () => {
       expect(findOr([], x => x > 2, 0)).toEqual(0);
