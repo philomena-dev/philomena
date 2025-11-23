@@ -22,7 +22,7 @@ jobs:
 
   typos:
     name: 'Check for spelling errors'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@v5
       - run: ./scripts/install/typos.sh
@@ -30,7 +30,7 @@ jobs:
 
   shellcheck:
     name: Shellcheck
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@v5
       - run: ./scripts/install/shellcheck.sh
@@ -58,7 +58,7 @@ jobs:
 
   prettier:
     name: 'Prettier Formatting Check'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
