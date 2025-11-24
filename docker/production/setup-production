@@ -1,0 +1,15 @@
+#!/bin/sh
+set -e
+
+# Check if the schema_migrations table exists
+TABLE_EXISTS=$(psql -tAc "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'schema_migrations');")
+
+if [ "$TABLE_EXISTS" = "f" ]; then
+  echo "database appears to be uninitialized (table public.schema_migrations is missing), setting up..."
+  psql < priv/repo/structure.sql
+  philomena eval 'Philomena.Release.seed()'
+else
+  echo "database appears to be initialized, skipping setup"
+fi
+
+philomena eval 'Philomena.Release.migrate()'

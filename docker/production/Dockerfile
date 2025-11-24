@@ -1,3 +1,10 @@
+# We need to grab "psql" from the Postgres image for database setup
+FROM postgres:18.1-alpine AS pg
+
+#
+# Step 1: Build Philomena release
+#
+
 FROM elixir:1.19.3-alpine AS builder
 
 WORKDIR /tmp/philomena
@@ -28,6 +35,11 @@ RUN cd /tmp/philomena \
 # Digest and copy static assets
 RUN mix phx.digest -o /tmp/philomena/_build/prod/rel/philomena/lib/philomena-*/priv/static
 
+#
+# Step 2: Copy only the final release into a minimal image
+# Also copy psql from the Postgres image
+#
+
 FROM alpine:3.22
 
 LABEL org.opencontainers.image.authors="liamwhite <liamwhite@users.noreply.github.com>, Nighty <luna@nighty.cloud>, and contributors"
@@ -36,8 +48,10 @@ LABEL org.opencontainers.image.source="https://github.com/philomena-dev/philomen
 LABEL org.opencontainers.image.licenses="AGPL-3.0-only"
 
 # Install runtime dependencies
+# Required by Erlang/Elixir: libncursesw libstdc++ libgcc
+# Required by psql: libedit krb5-libs libldap
 RUN apk update \
-    && apk add --no-cache libncursesw libstdc++ libgcc
+    && apk add --no-cache libncursesw libstdc++ libgcc libedit krb5-libs libldap
 
 # Set up a non-root user to run the application
 RUN addgroup -g 1000 -S philomena \
@@ -48,10 +62,17 @@ COPY --from=builder --chown=1000:1000 /tmp/philomena/_build/prod/rel/philomena /
 COPY --from=builder --chown=1000:1000 /tmp/philomena/config /srv/philomena/config
 
 # ...and the production scripts from the repository
+COPY --chown=1000:1000 docker/production/purge-cache /usr/local/bin/purge-cache
 COPY --chown=1000:1000 docker/production/run-cron /usr/local/bin/run-cron
 COPY --chown=1000:1000 docker/production/run-cron-daily /usr/local/bin/run-cron-daily
 COPY --chown=1000:1000 docker/production/run-production /usr/local/bin/run-production
-COPY --chown=1000:1000 docker/production/purge-cache /usr/local/bin/purge-cache
+COPY --chown=1000:1000 docker/production/setup-production /usr/local/bin/setup-production
+
+# Copy postgres client.
+COPY --from=pg /usr/local/bin/psql /usr/local/bin/psql
+COPY --from=pg /usr/local/lib/libpq.so /usr/local/lib/libpq.so
+COPY --from=pg /usr/local/lib/libpq.so.5 /usr/local/lib/libpq.so.5
+COPY --from=pg /usr/local/lib/libpq.so.5.18 /usr/local/lib/libpq.so.5.18
 
 # A "philomena" symlink for easier access
 RUN ln -sf /srv/philomena/bin/philomena /usr/local/bin/philomena
@@ -59,7 +80,7 @@ RUN ln -sf /srv/philomena/bin/philomena /usr/local/bin/philomena
 USER philomena
 
 # Create the static assets symlink as the philomena user
-RUN ln -sf /srv/philomena/lib/philomena-*/priv/static /srv/philomena/static
+RUN ln -sf /srv/philomena/lib/philomena-*/priv /srv/philomena/priv
 
 WORKDIR /srv/philomena
 
