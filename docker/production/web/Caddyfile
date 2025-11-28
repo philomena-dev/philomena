@@ -110,7 +110,7 @@
 		import cors
 
 		# Delegate to app if there's no such file
-		reverse_proxy http://{$APP_ADDRESS}:4000 {
+		reverse_proxy http://{$APP_ADDRESS} {
 			header_up X-Real-Ip {client_ip}
 			header_up X-Forwarded-For {client_ip}
 			header_up X-Forwarded-Ssl on
