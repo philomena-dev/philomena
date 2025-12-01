@@ -70,6 +70,7 @@ COPY --chown=1000:1000 docker/production/setup-production /usr/local/bin/setup-p
 
 # Copy postgres client.
 COPY --from=pg /usr/local/bin/psql /usr/local/bin/psql
+COPY --from=pg /usr/local/bin/pg_isready /usr/local/bin/pg_isready
 COPY --from=pg /usr/local/lib/libpq.so /usr/local/lib/libpq.so
 COPY --from=pg /usr/local/lib/libpq.so.5 /usr/local/lib/libpq.so.5
 COPY --from=pg /usr/local/lib/libpq.so.5.18 /usr/local/lib/libpq.so.5.18

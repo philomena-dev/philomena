@@ -1,6 +1,16 @@
 #!/bin/sh
 set -e
 
+echo "Waiting for database to start..."
+until pg_isready; do
+  sleep 2
+done
+
+echo "Waiting for OpenSearch..."
+until step wget --no-check-certificate -qO - $OPENSEARCH_URL; do
+  sleep 2
+done
+
 # Check if the schema_migrations table exists
 TABLE_EXISTS=$(psql -tAc "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'schema_migrations');")
 

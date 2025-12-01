@@ -15,7 +15,7 @@ defmodule Philomena.Release do
   end
 
   def seed do
-    load_app()
+    start_app()
     Code.require_file("priv/repo/seeds.exs")
   end
 
