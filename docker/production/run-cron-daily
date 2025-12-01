@@ -1,4 +1,6 @@
 #!/bin/sh
+set -e
+
 export RELEASE_NODE=philomena_daily
 
 philomena eval 'Philomena.Release.generate_autocomplete()'
