@@ -7,7 +7,7 @@ until pg_isready; do
 done
 
 echo "Waiting for OpenSearch..."
-until step wget --no-check-certificate -qO - $OPENSEARCH_URL; do
+until wget --no-check-certificate -qO - $OPENSEARCH_URL; do
   sleep 2
 done
 
