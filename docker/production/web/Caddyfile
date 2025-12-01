@@ -151,7 +151,6 @@
 	@tags path_regexp ^/tags/(.+)$
 	@html path_regexp ^/(.+\.html)$
 	@static path_regexp ^/(.+\.html|challenge\.css|favicon\.svg)$
-	@fonts path_regexp ^/(.+\.(ico|js|css|eot|woff|svg|ttf|otf|png|jpg|swf|json|gif|woff2))$
 
 	import s3path @imgdownload /images/{re.imgdownload.1}/{re.imgdownload.2}/full.{re.imgdownload.3}
 	import s3path @imgview /images/{re.imgview.1}/{re.imgview.2}/full.{re.imgview.3}
