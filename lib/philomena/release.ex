@@ -19,6 +19,11 @@ defmodule Philomena.Release do
     Code.require_file("priv/repo/seeds.exs")
   end
 
+  def create_buckets do
+    start_app()
+    PhilomenaMedia.Objects.create_buckets()
+  end
+
   def update_channels do
     start_app()
     Philomena.Channels.update_tracked_channels!()
