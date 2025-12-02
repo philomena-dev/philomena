@@ -49,7 +49,7 @@
 	}
 }
 
-{$APP_DOMAIN} {
+{$APP_URL} {
 	@json path_regexp /.+\.json$
 	@static path_regexp ^/.+\.(ico|js|css|eot|woff|svg|ttf|otf|png|jpg|swf|gif|woff2|mp3)$
 	@downtime expression {$DOWNTIME} == true
@@ -57,7 +57,7 @@
 	rate_limit {
 		zone dynamic {
 			match {
-				host {$APP_DOMAIN}
+				host {$SITE_DOMAIN}
 			}
 			key {client_ip}
 			events 30
@@ -139,7 +139,7 @@
 	log_append user_agent {http.request.header.User-Agent}
 }
 
-{$CDN_DOMAIN} {
+{$CDN_URL} {
 	# Handle images and static assets
 	@allimages path /img/* /avatars/* /spns/* /badge-img/* /tag-img/*
 	@imgdownload path_regexp ^/img/download/(.+)/([0-9]+).*\.([A-Za-z0-9]+)$
