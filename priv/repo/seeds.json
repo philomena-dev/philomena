@@ -57,14 +57,6 @@
       "access_level": "staff"
     }
   ],
-  "users": [
-    {
-      "name": "Administrator",
-      "email": "admin@example.com",
-      "password": "philomena123",
-      "role": "admin"
-    }
-  ],
   "rating_tags": ["safe", "suggestive", "questionable", "explicit", "semi-grimdark", "grimdark", "grotesque"],
   "roles": [
     { "name": "moderator", "resource_type": "Image" },

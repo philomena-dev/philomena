@@ -86,17 +86,22 @@ for forum_def <- resources["forums"] do
   |> Repo.insert(on_conflict: :nothing)
 end
 
-IO.puts("---- Generating users")
+IO.puts("---- Generating the admin user")
 
-for user_def <- resources["users"] do
-  {:ok, user} = Users.register_user(user_def)
+user_def = %{
+  "name" => System.get_env("ADMIN_USERNAME", "Administrator"),
+  "email" => System.get_env("ADMIN_EMAIL", "admin@example.com"),
+  "password" => System.get_env("ADMIN_PASSWORD", "philomena123"),
+  "role" => "admin"
+}
 
-  user
-  |> Repo.preload([:roles])
-  |> User.confirm_changeset()
-  |> User.update_changeset(%{role: user_def["role"]}, [])
-  |> Repo.update!()
-end
+{:ok, user} = Users.register_user(user_def)
+
+user
+|> Repo.preload([:roles])
+|> User.confirm_changeset()
+|> User.update_changeset(%{role: user_def["role"]}, [])
+|> Repo.update!()
 
 IO.puts("---- Generating roles")
 
