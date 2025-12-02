@@ -5,7 +5,7 @@ ARG CADDY_FS_S3_VERSION=v0.11.0
 # Step 1: Build and digest Philomena static assets
 #
 
-FROM elixir:1.19.3-alpine AS philomena
+FROM elixir:1.19.4-alpine AS philomena
 
 WORKDIR /tmp/philomena
 
