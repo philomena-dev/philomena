@@ -56,7 +56,7 @@ defmodule PhilomenaWeb.Admin.UserBanController do
     case Bans.create_user(conn.assigns.current_user, user_ban_params) do
       {:ok, user_ban} ->
         conn
-        |> put_flash(:info, "User was successfully banned.")
+        |> put_flash(:info, "User Was Successfully Banned.")
         |> moderation_log(details: &log_details/2, data: user_ban)
         |> redirect(to: ~p"/admin/user_bans")
 
@@ -74,7 +74,7 @@ defmodule PhilomenaWeb.Admin.UserBanController do
     case Bans.update_user(conn.assigns.user, user_ban_params) do
       {:ok, user_ban} ->
         conn
-        |> put_flash(:info, "User ban successfully updated.")
+        |> put_flash(:info, "User Ban Successfully Updated.")
         |> moderation_log(details: &log_details/2, data: user_ban)
         |> redirect(to: ~p"/admin/user_bans")
 
@@ -87,7 +87,7 @@ defmodule PhilomenaWeb.Admin.UserBanController do
     {:ok, user_ban} = Bans.delete_user(conn.assigns.user)
 
     conn
-    |> put_flash(:info, "User ban successfully deleted.")
+    |> put_flash(:info, "User Ban Successfully Deleted.")
     |> moderation_log(details: &log_details/2, data: user_ban)
     |> redirect(to: ~p"/admin/user_bans")
   end
