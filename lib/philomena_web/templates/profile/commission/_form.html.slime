@@ -17,6 +17,10 @@
     = textarea f, :will_create, class: "input input--wide input--text", placeholder: "List specific content you are willing to accept commissions for."
     = error_tag f, :will_create
   .field
+    => label f, :neither_create, "Something that I sometimes draw (optional):"
+    = textarea f, :neither_create, class: "input input--wide input--text", placeholder: "List specific content you are sometimes willing to accept commissions for."
+    = error_tag f, :neither_create
+  .field
     => label f, :will_not_create, "Content you will not draw or create (optional):"
     = textarea f, :will_not_create, class: "input input--wide input--text", placeholder: "List specific content you are not willing to accept commissions for."
     = error_tag f, :will_not_create
