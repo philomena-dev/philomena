@@ -1,6 +1,6 @@
 h1
   = @commission.user.name
-  | 's Commissions
+  | 's Commissions Info!
 
 .column-layout
 
