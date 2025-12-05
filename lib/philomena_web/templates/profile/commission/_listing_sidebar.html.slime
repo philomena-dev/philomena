@@ -8,7 +8,7 @@
     br
 
     strong> Status:
-    = if @commission.open, do: "Open", else: "Closed"
+    = if @commission.open, do: "Open", else: "No"
 
     br
 
@@ -50,11 +50,19 @@
     .block__content.commission__block_body
       = @rendered.will_create
 
+/ Will neither create block
+= if @commission.neither_create not in [nil, ""] do
+  .block
+    .block__header
+      span.block__header__title Will maybe draw/create
+    .block__content.commission__block_body
+      = @rendered.will_n_create
+
 / Will not create block
 = if @commission.will_not_create not in [nil, ""] do
   .block
     .block__header
-      span.block__header__title Will not draw/create
+      span.block__header__title Won't draw/create
     .block__content.commission__block_body
       = @rendered.will_not_create
 
