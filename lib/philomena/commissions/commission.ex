@@ -55,17 +55,16 @@ defmodule Philomena.Commissions.Commission do
   def categories do
     [
       Anthro: "Anthro",
-      "Canon Characters": "Canon Characters",
+      "Cyberchase Characters": "Cyberchase Characters",
       Comics: "Comics",
-      "Fetish Art": "Fetish Art",
-      "Human and EqG": "Human and EqG",
+      "Fetish": "Fetish",
       NSFW: "NSFW",
-      "Original Characters": "Original Characters",
+      "OCs": "OCs",
       "Original Species": "Original Species",
-      Pony: "Pony",
       Requests: "Requests",
-      Safe: "Safe",
+      SFW: "SFW",
       Shipping: "Shipping",
+      Transformation: "Transformation",
       "Violence and Gore": "Violence and Gore"
     ]
   end
@@ -85,6 +84,8 @@ defmodule Philomena.Commissions.Commission do
       "Crafted Item",
       "Sculpture",
       "Plushie",
+      "Trading Card",
+      "Reference Sheet",
       "Other"
     ]
   end
