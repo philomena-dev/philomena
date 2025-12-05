@@ -13,4 +13,4 @@
       = if String.length(@image.description) > 0 do
         = @body
       - else
-        em No description provided.
+        em No description set yet.
