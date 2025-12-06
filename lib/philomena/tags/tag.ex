@@ -168,8 +168,8 @@ defmodule Philomena.Tags.Tag do
     |> Enum.sort_by(
       &{
         &1.category != "error",
-        &1.category != "rating",
         &1.category != "origin",
+        &1.category != "rating",
         &1.category != "character",
         &1.category != "oc",
         &1.category != "species",
