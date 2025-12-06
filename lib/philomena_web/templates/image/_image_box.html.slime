@@ -28,11 +28,11 @@ elixir:
       i.fa.fa-arrow-up title="Yay!"
     span.score title="Score" data-image-id=@image.id = @image.score
     a.interaction--downvote href="#" rel="nofollow" data-image-id=@image.id
-      i.fa.fa-arrow-down title="Neigh!"
-    a.interaction--comments href="/#{@image.id}#comments" title="Comments"
+      i.fa.fa-arrow-down title="Delete!"
+    a.interaction--comments href="/#{@image.id}#comments" title="Comment!"
       i.fa.fa-comments
       span.comments_count data-image-id=@image.id = @image.comments_count
     a.interaction--hide href="#" rel="nofollow" data-image-id=@image.id
-      i.fa.fa-eye-slash title="Hide"
+      i.fa.fa-eye-slash title="Hide!"
   .media-box__content class=size_class
     = render PhilomenaWeb.ImageView, "_image_container.html", link: link, image: @image, size: @size, conn: @conn
