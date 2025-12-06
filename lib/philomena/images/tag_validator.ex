@@ -26,7 +26,7 @@ defmodule Philomena.Images.TagValidator do
     rating_set = ratings(tag_set)
 
     changeset
-    |> validate_number_of_tags(tag_set, 3)
+    |> validate_number_of_tags(tag_set, 4)
     |> validate_bad_words(tag_set)
     |> validate_has_rating(rating_set)
     |> validate_safe(rating_set)
@@ -38,13 +38,11 @@ defmodule Philomena.Images.TagValidator do
     safe = MapSet.intersection(tag_set, safe_rating())
     sexual = MapSet.intersection(tag_set, sexual_ratings())
     horror = MapSet.intersection(tag_set, horror_ratings())
-    gross = MapSet.intersection(tag_set, gross_rating())
 
     %{
       safe: safe,
       sexual: sexual,
-      horror: horror,
-      gross: gross
+      horror: horror
     }
   end
 
@@ -71,7 +69,7 @@ defmodule Philomena.Images.TagValidator do
     end
   end
 
-  defp validate_has_rating(changeset, %{safe: s, sexual: x, horror: h, gross: g}) do
+  defp validate_has_rating(changeset, %{safe: s, sexual: x, horror: h}) do
     if MapSet.size(s) > 0 or MapSet.size(x) > 0 or MapSet.size(h) > 0 or MapSet.size(g) > 0 do
       changeset
     else
@@ -79,7 +77,7 @@ defmodule Philomena.Images.TagValidator do
     end
   end
 
-  defp validate_safe(changeset, %{safe: s, sexual: x, horror: h, gross: g}) do
+  defp validate_safe(changeset, %{safe: s, sexual: x, horror: h}) do
     if MapSet.size(s) > 0 and (MapSet.size(x) > 0 or MapSet.size(h) > 0 or MapSet.size(g) > 0) do
       add_error(changeset, :tag_input, "may not contain any other rating if safe")
     else
@@ -113,11 +111,9 @@ defmodule Philomena.Images.TagValidator do
     safe_rating()
     |> MapSet.union(sexual_ratings())
     |> MapSet.union(horror_ratings())
-    |> MapSet.union(gross_rating())
   end
 
   defp safe_rating, do: MapSet.new(["safe"])
   defp sexual_ratings, do: MapSet.new(["suggestive", "questionable", "explicit"])
-  defp horror_ratings, do: MapSet.new(["semi-grimdark", "grimdark"])
-  defp gross_rating, do: MapSet.new(["grotesque"])
+  defp horror_ratings, do: MapSet.new(["grimdark", "grotesque"])
 end
