@@ -161,18 +161,25 @@ export function pickAndResize(elem: ImageTargetElement) {
       video.className = 'image-partscaled';
     }
   } else {
-    let image;
-    if (scaled === 'true') {
-      image = `<picture><img id="image-display" src="${uri}" class="image-scaled"></picture>`;
-    } else if (scaled === 'partscaled') {
-      image = `<picture><img id="image-display" src="${uri}" class="image-partscaled"></picture>`;
-    } else {
-      image = `<picture><img id="image-display" src="${uri}" width="${imageWidth}" height="${imageHeight}"></picture>`;
+    const picture = document.createElement('picture');
+    const img = document.createElement('img');
+    picture.appendChild(img);
+    img.id = 'image-display';
+    img.src = uri;
+    if (version === 'full') {
+      // Let layout engine know image size before it arrives
+      img.width = imageWidth;
+      img.height = imageHeight;
     }
-    if (elem.innerHTML === image) return;
+    if (scaled === 'true') {
+      img.className = 'image-scaled';
+    } else if (scaled === 'partscaled') {
+      img.className = 'image-partscaled';
+    }
+    if (elem.children.length === 1 && elem.children[0].isEqualNode(picture)) return;
 
     clearEl(elem);
-    elem.insertAdjacentHTML('afterbegin', image);
+    elem.appendChild(picture);
   }
 }
 
