@@ -39,7 +39,7 @@ defmodule Philomena.Tags.Tag do
     "commissioner" => "origin",
     "editor" => "origin",
     "fanfic" => "content-fanmade",
-    "game" => "content-game",
+    "game" => "content-fanmade",
     "oc" => "oc",
     "photographer" => "origin",
     "series" => "content-fanmade",
