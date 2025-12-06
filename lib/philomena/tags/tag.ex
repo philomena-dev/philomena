@@ -31,12 +31,15 @@ defmodule Philomena.Tags.Tag do
   ]
 
   @namespace_categories %{
+    "animator" => "origin",
     "artist" => "origin",
     "art pack" => "content-fanmade",
     "colorist" => "origin",
     "comic" => "content-fanmade",
+    "commissioner" => "origin",
     "editor" => "origin",
     "fanfic" => "content-fanmade",
+    "game" => "content-game",
     "oc" => "oc",
     "photographer" => "origin",
     "series" => "content-fanmade",
@@ -45,12 +48,17 @@ defmodule Philomena.Tags.Tag do
   }
 
   @underscore_safe_namespaces [
+    "animator:",
     "artist:",
     "colorist:",
+    "comic:",
     "commissioner:",
     "editor:",
+    "fanfic:",
     "oc:",
     "photographer:"
+    "ship:",
+    "spoiler:",
   ]
 
   @derive {Phoenix.Param, key: :slug}
@@ -169,6 +177,8 @@ defmodule Philomena.Tags.Tag do
         &1.category != "content-fanmade",
         &1.category != "content-official",
         &1.category != "spoiler",
+        &1.category != "gender",
+        &1.category != "cybersite",
         &1.name
       }
     )
@@ -186,6 +196,8 @@ defmodule Philomena.Tags.Tag do
       "content-fanmade",
       "content-official",
       "spoiler"
+      "gender"
+      "cybersite"
     ]
   end
 
