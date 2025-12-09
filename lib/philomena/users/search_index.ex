@@ -70,7 +70,7 @@ defmodule Philomena.Users.SearchIndex do
       email: String.downcase(user.email),
       posts_count: user.posts_count,
       topics_count: user.topics_count,
-      uploads_count: user.uploads_count,
+      images_count: user.images_count,
       image_votes_count: user.image_votes_count,
       comments_count: user.comments_count,
       metadata_updates_count: user.metadata_updates_count,
