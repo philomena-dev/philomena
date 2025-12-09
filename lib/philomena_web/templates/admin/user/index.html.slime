@@ -12,7 +12,7 @@ h1 Users
         "Sort by confirmation date": :confirmed_at,
         "Sort by last update date": :updated_at,
         "Sort by deactivation date": :deleted_at,
-        "Sort by uploads": :uploads_count,
+        "Sort by uploads": :images_count,
         "Sort by favorites": :image_faves_count,
         "Sort by comments": :comments_count,
         "Sort by votes": :image_votes_count,
@@ -216,11 +216,11 @@ table.table
         code = link "otp_required_for_login:true", to: ~p"/admin/users?#{[uq: "otp_required_for_login:true"]}"
     tr
       td
-        code uploads_count
+        code images_count
       td Integer
       td Matches the number of uploads the user has made.
       td
-        code = link "uploads_count.gte:200", to: ~p"/admin/users?#{[uq: "uploads_count.gte:200"]}"
+        code = link "images_count.gte:200", to: ~p"/admin/users?#{[uq: "images_count.gte:200"]}"
     tr
       td
         code images_favourited_count
