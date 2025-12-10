@@ -7,7 +7,7 @@ LABEL org.opencontainers.image.licenses="AGPL-3.0-only"
 
 WORKDIR /tmp/fiberglass-server
 
-COPY ./docker/production/fiberglass/fiberglass-server.ru /tmp/fiberglass-server/fiberglass-server.ru
+COPY docker/production/fiberglass/fiberglass-server.ru /tmp/fiberglass-server/fiberglass-server.ru
 
 USER root
 

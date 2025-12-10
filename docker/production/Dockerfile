@@ -77,6 +77,7 @@ COPY --chown=1000:1000 docker/production/run-cron /usr/local/bin/run-cron
 COPY --chown=1000:1000 docker/production/run-cron-daily /usr/local/bin/run-cron-daily
 COPY --chown=1000:1000 docker/production/run-production /usr/local/bin/run-production
 COPY --chown=1000:1000 docker/production/setup-production /usr/local/bin/setup-production
+COPY --chown=1000:1000 docker/production/programs/* /usr/local/bin/
 
 # Copy postgres client.
 COPY --from=pg /usr/local/bin/psql /usr/local/bin/psql
