@@ -1,4 +1,4 @@
-FROM rust:1.91-slim-trixie
+FROM rust:1.91-slim-trixie AS builder
 
 RUN apt update \
     && apt install -y build-essential git libmagic-dev libturbojpeg0-dev libpng-dev \
@@ -61,13 +61,33 @@ RUN cd /tmp \
     && make -j$(nproc) install
 
 COPY native/philomena /tmp/philomena
-COPY docker/mediaproc/safe-rsvg-convert /usr/bin/safe-rsvg-convert
 
 RUN cd /tmp/philomena \
-    && cargo build --release -p mediaproc_server \
-    && cp target/release/mediaproc_server /usr/bin/mediaproc_server
+    && cargo build --release -p mediaproc_server
 
-# Set up unprivileged user account
+FROM debian:trixie-slim
+
+# Programs and runtime libraries.
+RUN apt update \
+    && apt install -y gifsicle optipng libjpeg-turbo-progs file imagemagick \
+       libvpx9 libmp3lame0 libopus0 libvorbis0a libvorbisenc2 libx264-164 \
+       libx265-215 librsvg2-2 librsvg2-bin \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy additional ffmpeg libs, as well as all the binaries.
+COPY --from=builder /usr/lib/libav* /usr/lib
+COPY --from=builder /usr/lib/libswresample* /usr/lib
+COPY --from=builder /usr/lib/libswscale* /usr/lib
+COPY --from=builder /usr/bin/ffmpeg /usr/bin/ffmpeg
+COPY --from=builder /usr/bin/ffprobe /usr/bin/ffprobe
+COPY --from=builder /tmp/philomena/target/release/mediaproc_server /usr/bin/mediaproc_server
+COPY --from=builder /usr/local/bin/image-intensities /usr/bin/image-intensities
+COPY --from=builder /usr/local/bin/mediastat /usr/bin/mediastat
+COPY --from=builder /usr/local/bin/svgstat /usr/bin/svgstat
+COPY --from=builder /usr/local/bin/mediathumb /usr/bin/mediathumb
+COPY docker/mediaproc/safe-rsvg-convert /usr/bin/safe-rsvg-convert
+
+# Set up unprivileged user account.
 RUN useradd -ms /bin/bash mediaproc
 USER mediaproc
 WORKDIR /home/mediaproc
