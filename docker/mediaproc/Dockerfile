@@ -71,7 +71,8 @@ FROM debian:trixie-slim
 RUN apt update \
     && apt install -y gifsicle optipng libjpeg-turbo-progs file imagemagick \
        libvpx9 libmp3lame0 libopus0 libvorbis0a libvorbisenc2 libx264-164 \
-       libx265-215 librsvg2-2 librsvg2-bin
+       libx265-215 librsvg2-2 librsvg2-bin \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy additional ffmpeg libs, as well as all the binaries.
 COPY --from=builder /usr/lib/libav* /usr/lib
