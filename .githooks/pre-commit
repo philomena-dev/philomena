@@ -18,19 +18,39 @@ if [[ -z "$files" ]]; then
   exit 0
 fi
 
-echo "$files" | step xargs typos
+if command -v typos &> /dev/null; then
+  echo "$files" | step xargs typos
+else
+  info "Skipping typos check, executable not found"
+fi
 
-./scripts/shellcheck.sh
+if command -v shellcheck &> /dev/null; then
+  ./scripts/shellcheck.sh
+else
+  info "Skipping shellcheck, executable not found"
+fi
 
-echo "$files" | step xargs npx prettier --ignore-unknown --write
+if command -v npx &> /dev/null; then
+  echo "$files" | step xargs npx prettier --ignore-unknown --write
+else
+  info "Skipping prettier, npx not found"
+fi
 
 # `rustfmt` doesn't ignore non-rust files automatically
 rust_files=$(echo "$files" | { grep -E '\.rs$' || true; })
 if [[ -n "$rust_files" ]]; then
-  echo "$rust_files" | step xargs cargo fmt --manifest-path native/Cargo.toml --
+  if command -v cargo &> /dev/null; then
+    echo "$rust_files" | step xargs cargo fmt --manifest-path native/Cargo.toml --
+  else
+    info "Skipping rustfmt, cargo not found"
+  fi
 fi
 
-echo "$files" | step xargs mix format
+if command -v mix &> /dev/null; then
+  echo "$files" | step xargs mix format
+else
+  info "Skipping mix format, mix not found"
+fi
 
 # Add the modified/prettified files to staging
 echo "$files" | step xargs git add
