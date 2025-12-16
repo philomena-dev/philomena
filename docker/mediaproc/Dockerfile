@@ -92,4 +92,5 @@ RUN useradd -ms /bin/bash mediaproc
 USER mediaproc
 WORKDIR /home/mediaproc
 ENV RUST_LOG=trace
+EXPOSE 1500
 CMD ["/usr/bin/mediaproc_server", "0.0.0.0:1500"]
