@@ -167,6 +167,7 @@ div.image-container video {
 
 .image-partscaled {
   max-width: 100%;
+  height: auto;
 }
 
 .image-description {
