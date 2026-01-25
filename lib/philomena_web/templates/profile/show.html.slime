@@ -9,7 +9,7 @@
     div
       h1.profile-top__name-header
         = @user.name
-        | 's profile
+        |  User Profile
       = render PhilomenaWeb.UserAttributionView, "_user_title.html", object: %{user: @user}, large: true
       br
 
