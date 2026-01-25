@@ -74,7 +74,7 @@ defmodule Philomena.Commissions.Commission do
       Learning with Pibby: "Learning with Pibby",
       Murder Drones: "Murder Drones",
       My Singing Monsters: "My Singing Monsters",
-      NSFW and R34: "NSFW and R34",
+      NSFW and 18+: "NSFW and 18+",
       "OCs": "OCs",
       "Original Species": "Original Species",
       Pizza Tower: "Pizza Tower",
