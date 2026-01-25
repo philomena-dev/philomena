@@ -102,7 +102,7 @@ defmodule Philomena.Commissions.Commission do
       "Vector",
       "Cel Shaded",
       "Fully Shaded",
-      "Traditional",
+      "On Paper",
       "Pixel Art",
       "Animation - 2D",
       "Animation - CGI/3D",
