@@ -17,7 +17,7 @@ h1
     => submit "Alias tag", class: "button"
 
 br
-= button_to "Remove tag alias", ~p"/tags/#{@tag}/alias", method: "delete", class: "button", data: [confirm: "Are you really, really sure?", disable_with: raw("Saving&hellip;")]
+= button_to "Remove tag alias", ~p"/tags/#{@tag}/alias", method: "delete", class: "button", data: [confirm: "YOU WANT SOME FUCKING HELP TO EDIT ALIAS!!!", disable_with: raw("Saving&hellip;")]
 
 br
 = link "Back", to: ~p"/tags/#{@tag}"
