@@ -21,7 +21,7 @@
       br
       br
 
-      = link "More information", to: ~p"/profiles/#{@user}/commission"
+      = link "More Info", to: ~p"/profiles/#{@user}/commission"
 
     - current?(@user, @conn.assigns.current_user) ->
       = if Enum.any?(@conn.assigns.user.verified_links) do
