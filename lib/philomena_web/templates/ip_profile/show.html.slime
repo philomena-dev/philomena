@@ -1,6 +1,6 @@
 h1
   = @ip
-  ' 's IP profile
+  ' 's IP Profile
 
 ul
   li = link "View images this IP has uploaded", to: ~p"/search?#{[q: "ip:#{@ip}"]}"
