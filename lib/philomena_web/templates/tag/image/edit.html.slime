@@ -35,7 +35,7 @@
           => submit "Update tag image", class: "button"
 
       br
-      = button_to "Remove tag image", ~p"/tags/#{@tag}/image", method: "delete", class: "button", data: [confirm: "Are you really, really sure?"]
+      = button_to "Remove tag image", ~p"/tags/#{@tag}/image", method: "delete", class: "button", data: [confirm: "You want to fucking edit the spoilered image?!"]
 
     br
     = link "Back", to: ~p"/tags/#{@tag}"
