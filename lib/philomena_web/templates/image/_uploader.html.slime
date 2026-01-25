@@ -23,4 +23,4 @@ span.image_uploader
     = if @image.anonymous do
       = button_to "Reveal author", ~p"/images/#{@image}/anonymous", class: "button button--small", method: "delete", data: [confirm: "YOU WANT TO REVEAL THIS USER ON SPRUNKIHUB?"]
     - else
-      = button_to "Hide author", ~p"/images/#{@image}/anonymous", class: "button button--small", method: "create", data: [confirm: "Are you really, really sure?"]
+      = button_to "Hide author", ~p"/images/#{@image}/anonymous", class: "button button--small", method: "create", data: [confirm: "Are you really, really freaking sure?"]
