@@ -54,19 +54,39 @@ defmodule Philomena.Commissions.Commission do
 
   def categories do
     [
-      Anthro: "Anthro",
-      "Canon Characters": "Canon Characters",
+      Abgerny: "Abgerny",
+      Anthro and Furry: "Anthro and Furry",
+      Chikn Nuggit: "Chikn Nuggit",
       Comics: "Comics",
-      "Fetish Art": "Fetish Art",
-      "Human and EqG": "Human and EqG",
-      NSFW: "NSFW",
-      "Original Characters": "Original Characters",
+      Cool as Ice Incredibox: "Cool as Ice Incredibox",
+      Cyberchase: "Cyberchase",
+      Dandy's World: "Dandy's World",
+      Eddsworld: "Eddsworld",
+      Flavor Frenzy: "Flavor Frenzy",
+      Forsaken: "Forsaken",
+      Friday Night Funkin': "Friday Night Funkin'",
+      Fundamental Paper Education: "Fundamental Paper Education",
+      "Gore, Grimdark, and Violence": "Gore, Grimdark, and Violence",
+      Hazbin Hotel and Helluva Boss: "Hazbin Hotel and Helluva Boss",
+      "Human and Humanoid": "Human and Humanoid",
+      Indigo Park: "Indigo Park",
+      "Kink and Fetish": "Kink and Fetish",
+      Learning with Pibby: "Learning with Pibby",
+      Murder Drones: "Murder Drones",
+      My Singing Monsters: "My Singing Monsters",
+      NSFW and R34: "NSFW and R34",
+      "OCs": "OCs",
       "Original Species": "Original Species",
-      Pony: "Pony",
+      Pizza Tower: "Pizza Tower",
+      Plants vs. Zombies: "Plants vs. Zombies",
+      Poppy Playtime: "Poppy Playtime",
+      Pretty Blood: "Pretty Blood",
       Requests: "Requests",
       Safe: "Safe",
       Shipping: "Shipping",
-      "Violence and Gore": "Violence and Gore"
+      SMG4: "SMG4",
+      Sprunki: "Sprunki",
+      The Amazing Digital Circus: "The Amazing Digital Circus",
     ]
   end
 
@@ -81,11 +101,13 @@ defmodule Philomena.Commissions.Commission do
       "Fully Shaded",
       "Traditional",
       "Pixel Art",
-      "Animation",
+      "Animation - 2D",
+      "Animation - CGI/3D",
       "Crafted Item",
       "Sculpture",
       "Plushie",
-      "Other"
+      "Trading Card",
+      "Others"
     ]
   end
 end
