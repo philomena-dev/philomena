@@ -22,6 +22,10 @@ defmodule PhilomenaWeb.StaffView do
     do:
       "Volunteers who help us run the site by taking simpler tasks off the hands of administrators and moderators."
 
+  def category_description("Beta Testers"),
+    do:
+      "People can test their betas."
+
   def category_description("Others"),
     do:
       "People associated with the site in some other way, sometimes (but not necessarily) having staff-like permissions."
@@ -33,6 +37,7 @@ defmodule PhilomenaWeb.StaffView do
   def category_class("Public Relations"), do: "block--warning"
   def category_class("Moderators"), do: "block--success"
   def category_class("Assistants"), do: "block--assistant"
+  def category_class("Beta Testers"), do: "block--success"
   def category_class(_), do: ""
 
   def staff_description(%{description: desc}) when desc not in [nil, ""] do
