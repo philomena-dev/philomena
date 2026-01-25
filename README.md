@@ -1,4 +1,4 @@
-# Philomena
+# Sprunkomena
 
 ![Philomena](/assets/static/images/phoenix.svg)
 
