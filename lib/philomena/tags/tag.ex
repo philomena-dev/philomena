@@ -20,11 +20,14 @@ defmodule Philomena.Tags.Tag do
     "commissioner",
     "editor",
     "fanfic",
+    "game",
+    "generator",
     "oc",
     "parent",
     "parents",
     "photographer",
     "series",
+    "ship",
     "species",
     "spoiler",
     "video"
@@ -33,12 +36,16 @@ defmodule Philomena.Tags.Tag do
   @namespace_categories %{
     "artist" => "origin",
     "art pack" => "content-fanmade",
+    "ask" => "content-fanmade",
     "colorist" => "origin",
     "comic" => "content-fanmade",
     "editor" => "origin",
     "fanfic" => "content-fanmade",
+    "game" => "content-fanmade",
+    "generator" => "origin",
     "oc" => "oc",
     "photographer" => "origin",
+    "prompter" => "origin",
     "series" => "content-fanmade",
     "spoiler" => "spoiler",
     "video" => "content-fanmade"
@@ -166,8 +173,8 @@ defmodule Philomena.Tags.Tag do
         &1.category != "oc",
         &1.category != "species",
         &1.category != "body-type",
-        &1.category != "content-fanmade",
         &1.category != "content-official",
+        &1.category != "content-fanmade",
         &1.category != "spoiler",
         &1.name
       }
