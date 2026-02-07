@@ -5,6 +5,7 @@ defmodule PhilomenaMedia.Processors.Png do
   alias PhilomenaMedia.Analyzers.Result
   alias PhilomenaMedia.Remote
   alias PhilomenaMedia.Processors.Processor
+  alias PhilomenaMedia.Strip
   alias PhilomenaMedia.Processors
 
   @behaviour Processor
@@ -18,14 +19,24 @@ defmodule PhilomenaMedia.Processors.Png do
   def process(analysis, file, versions) do
     animated? = analysis.animated?
 
-    {:ok, intensities} = Intensities.file(file)
+    stripped = strip(file, animated?)
 
-    scaled = Enum.flat_map(versions, &scale(file, animated?, &1))
+    {:ok, intensities} = Intensities.file(stripped)
 
-    [
-      intensities: intensities,
-      thumbnails: scaled
-    ]
+    scaled = Enum.flat_map(versions, &scale(stripped, animated?, &1))
+
+    if stripped != file do
+      [
+        replace_original: stripped,
+        intensities: intensities,
+        thumbnails: scaled
+      ]
+    else
+      [
+        intensities: intensities,
+        thumbnails: scaled
+      ]
+    end
   end
 
   @spec post_process(Result.t(), Path.t()) :: Processors.edit_script()
@@ -43,6 +54,9 @@ defmodule PhilomenaMedia.Processors.Png do
     {:ok, intensities} = Intensities.file(file)
     intensities
   end
+
+  defp strip(file, true = _animated?), do: file
+  defp strip(file, _animated?), do: Strip.strip(file, ".png")
 
   # Sobelow misidentifies removing the .bak file
   # sobelow_skip ["Traversal.FileModule"]
