@@ -122,12 +122,21 @@ defmodule Philomena.Reports do
 
   """
   def close_report_query({reportable_type, reportable_id} = _type_and_id, closing_user) do
+    now = DateTime.utc_now(:second)
+
     from r in Report,
       where:
         r.reportable_type == ^reportable_type and r.reportable_id == ^reportable_id and
           r.open == true,
       select: r.id,
-      update: [set: [open: false, state: "closed", admin_id: ^closing_user.id]]
+      update: [
+        set: [
+          open: false,
+          state: "closed",
+          admin_id: ^closing_user.id,
+          updated_at: ^now
+        ]
+      ]
   end
 
   @doc """
