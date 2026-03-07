@@ -155,7 +155,7 @@
           ' Reported
           => pretty_time(report.created_at)
 
-          = if report.user do
+          = if can?(@conn, :edit, report) and report.user do
             ' by
             =< link report.user.name, to: ~p"/profiles/#{report.user}"
 
