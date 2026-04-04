@@ -1,7 +1,7 @@
 # Workaround for alpine packages not having PostgreSQL 18 client yet.
-FROM postgres:18.1-alpine AS pg
+FROM postgres:18.3-alpine AS pg
 
-FROM elixir:1.19.4-alpine
+FROM elixir:1.19.5-alpine
 
 # TODO: remove this once alpine has the postgresql18-client package
 # Alternatively: consider if we want to keep using this workaround long-term
