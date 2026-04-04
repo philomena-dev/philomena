@@ -39,7 +39,7 @@ export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
       },
     },
     build: {
-      target: ['es2019', 'chrome80', 'firefox69', 'edge80', 'safari13', 'ios13', 'opera63'],
+      target: ['es2019', 'chrome80', 'firefox69', 'edge80', 'safari15', 'ios15', 'opera63'],
       outDir: path.resolve(__dirname, '../priv/static'),
       emptyOutDir: false,
       sourcemap: isDev,

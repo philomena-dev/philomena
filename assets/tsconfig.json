@@ -22,7 +22,7 @@
     // than our support target.
     "lib": ["ES2019", "DOM", "DOM.Iterable"],
     "target": "ES2019",
-    "types": ["vitest/globals"],
+    "types": ["vitest/globals", "node"],
 
     "baseUrl": "./js",
     "useDefineForClassFields": true,

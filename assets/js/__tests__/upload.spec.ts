@@ -25,7 +25,7 @@ const errorResponse = {
 /* eslint-enable camelcase */
 
 const tagSets = ['', 'a tag', 'safe', 'one, two, three', 'safe, explicit', 'safe, explicit, three', 'safe, two, three'];
-const tagErrorCounts = [1, 2, 1, 1, 2, 1, 0];
+const tagErrorCounts = [0, 2, 1, 1, 2, 1, 0];
 
 describe('Image upload form', () => {
   let mockPng: File;
@@ -309,23 +309,31 @@ describe('Image upload form', () => {
 
     it('should prevent form submission if tag checks fail', async () => {
       for (let i = 0; i < tagSets.length; i += 1) {
-        taginputEl.innerText = tagSets[i];
+        if (tagErrorCounts[i] === 0) continue;
 
-        if (await submitForm(form)) {
-          // form submit succeeded
-          await waitFor(() => {
-            assertSubmitButtonIsDisabled();
-            const succeededUnloadEvent = new Event('beforeunload', { cancelable: true });
-            expect(fireEvent(window, succeededUnloadEvent)).toBe(true);
-          });
-        } else {
-          // form submit prevented
-          const frm = form;
-          await waitFor(() => {
-            assertSubmitButtonIsEnabled();
-            expect($$<HTMLDivElement>('.help-block', frm)).toHaveLength(tagErrorCounts[i]);
-          });
-        }
+        taginputEl.innerText = tagSets[i];
+        await submitForm(form);
+
+        const frm = form;
+        await waitFor(() => {
+          assertSubmitButtonIsEnabled();
+          expect($$<HTMLDivElement>('.help-block', frm)).toHaveLength(tagErrorCounts[i]);
+        });
+      }
+    });
+
+    it('should allow form submission if tag checks pass', async () => {
+      for (let i = 0; i < tagSets.length; i += 1) {
+        if (tagErrorCounts[i] !== 0) continue;
+
+        taginputEl.innerText = tagSets[i];
+        await submitForm(form);
+
+        await waitFor(() => {
+          assertSubmitButtonIsDisabled();
+          const succeededUnloadEvent = new Event('beforeunload', { cancelable: true });
+          expect(fireEvent(window, succeededUnloadEvent)).toBe(true);
+        });
       }
     });
 
@@ -440,8 +448,8 @@ describe('Image upload form', () => {
     });
 
     it('should validate tags correctly when tagInput element is missing', () => {
-      // Remove taginput element
-      removeEl(taginputEl);
+      // Remove all taginput elements so validateTags finds no element at all
+      $$<HTMLElement>('.js-taginput', form).forEach(el => removeEl(el));
       setupImageUpload();
 
       // Set valid tags in the textarea
