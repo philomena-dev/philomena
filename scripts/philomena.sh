@@ -85,7 +85,7 @@ function down {
 
 function test {
   step docker compose build "${services[@]}"
-  step docker compose up --wait "${services_except_app[@]}"
+  step docker compose up "${services_except_app[@]}"
 
   if [[ "${DEVCONTAINER:-0}" == "1" ]]; then
     step run-test
