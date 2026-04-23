@@ -54,6 +54,7 @@ defmodule Philomena.Application do
 
   # Redis adapter really really wants you to have a unique node name,
   # so just fake one if iex is being started
+  # sobelow_skip ["DOS.StringToAtom"]
   defp valid_node_name(node) when node in [nil, :nonode@nohost],
     do: String.to_atom(Base.encode16(:crypto.strong_rand_bytes(6)))
 
