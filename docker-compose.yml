@@ -73,7 +73,6 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    attach: false
 
   opensearch:
     image: opensearchproject/opensearch:3.5.0
