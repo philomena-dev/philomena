@@ -2,7 +2,7 @@ FROM rust:1.94-slim-trixie AS builder
 
 RUN apt update \
     && apt install -y build-essential git libmagic-dev libturbojpeg0-dev libpng-dev \
-       gifsicle optipng libjpeg-turbo-progs librsvg2-bin librsvg2-dev file imagemagick \
+       gifsicle optipng libjpeg-turbo-progs librsvg2-bin librsvg2-dev file imagemagick-7.q16hdri \
        libx264-dev libx265-dev libvpx-dev libdav1d-dev libaom-dev libopus-dev \
        libmp3lame-dev libvorbis-dev libwebp-dev libjxl-dev nasm wget
 
@@ -69,7 +69,7 @@ FROM debian:trixie-slim
 
 # Programs and runtime libraries.
 RUN apt update \
-    && apt install -y gifsicle optipng libjpeg-turbo-progs file imagemagick \
+    && apt install -y gifsicle optipng libjpeg-turbo-progs file imagemagick-7.q16hdri \
        libvpx9 libmp3lame0 libopus0 libvorbis0a libvorbisenc2 libx264-164 \
        libx265-215 librsvg2-2 librsvg2-bin \
     && rm -rf /var/lib/apt/lists/*
