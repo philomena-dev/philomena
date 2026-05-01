@@ -88,6 +88,9 @@ defmodule Philomena.Images.Query do
   defp user_my_transform(_ctx, _value),
     do: {:error, "Unknown `my' value."}
 
+  defp anon_my_transform(_ctx, _value),
+    do: {:error, "You must be logged in to use `my' queries."}
+
   defp invalid_filter_guard(%{user: user} = ctx, search_string) do
     case parse(fields_for(user), ctx, PhilomenaQuery.Parse.String.normalize(search_string)) do
       {:ok, query} -> query
@@ -122,11 +125,12 @@ defmodule Philomena.Images.Query do
         ~W(faved_by orig_sha512_hash sha512_hash uploader source_url original_format mime_type file_name),
       bool_fields: ~W(animated processed thumbnails_generated),
       ngram_fields: ~W(description),
-      custom_fields: ~W(gallery_id filter_id),
+      custom_fields: ~W(gallery_id filter_id my),
       default_field: {"tags", :term},
       transforms: %{
         "gallery_id" => &gallery_id_transform/2,
-        "filter_id" => &filter_id_transform/2
+        "filter_id" => &filter_id_transform/2,
+        "my" => &anon_my_transform/2
       },
       aliases: %{
         "faved_by" => "favourited_by_users",
