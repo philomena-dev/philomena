@@ -140,6 +140,8 @@ defmodule Philomena.Subscriptions do
       def maybe_subscribe_on(multi, change_name, user, field) do
         Philomena.Subscriptions.maybe_subscribe_on(multi, __MODULE__, change_name, user, field)
       end
+
+      defoverridable create_subscription: 2, delete_subscription: 2
     end
   end
 

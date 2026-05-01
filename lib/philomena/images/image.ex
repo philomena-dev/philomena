@@ -83,6 +83,7 @@ defmodule Philomena.Images.Image do
     field :hidden_image_key, :string
     field :scratchpad, :string
     field :hides_count, :integer, default: 0
+    field :subscriptions_count, :integer, default: 0
     field :approved, :boolean
 
     field :removed_tags, {:array, :any}, default: [], virtual: true
