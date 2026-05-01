@@ -40,6 +40,7 @@ defmodule Philomena.Images.Image do
     has_many :downvoters, through: [:downvotes, :user]
     has_many :favers, through: [:faves, :user]
     has_many :hiders, through: [:hides, :user]
+    has_many :subscribers, through: [:subscriptions, :user]
     many_to_many :tags, Tag, join_through: "image_taggings", on_replace: :delete
     many_to_many :locked_tags, Tag, join_through: "image_tag_locks", on_replace: :delete
     has_one :intensity, ImageIntensity
