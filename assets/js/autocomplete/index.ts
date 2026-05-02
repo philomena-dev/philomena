@@ -2,6 +2,7 @@ import { LocalAutocompleter } from '../utils/local-autocompleter';
 import * as history from './history';
 import { AutocompletableInput, TextInputElement } from './input';
 import {
+  HistoryItemDeleteDetail,
   HistorySuggestionComponent,
   ItemSelection,
   PropertySuggestionComponent,
@@ -53,6 +54,7 @@ class Autocomplete {
 
   constructor() {
     this.popup.onItemSelected(this.confirmSuggestion.bind(this));
+    this.popup.onHistoryItemDeleteClicked(this.onHistoryItemDeleteClicked.bind(this));
   }
 
   /**
@@ -83,6 +85,7 @@ class Autocomplete {
 
     this.input = AutocompletableInput.fromElement(document.activeElement);
     if (!this.isActive()) {
+      console.debug('Autocomplete is not active, hiding...');
       this.popup.hide();
       return;
     }
@@ -258,6 +261,7 @@ class Autocomplete {
   }
 
   onClick(event: MouseEvent) {
+    console.log('onClick');
     if (this.input?.isEnabled() && this.input.element !== event.target) {
       // We lost focus. Hide the popup.
       // We use this method instead of the `focusout` event because this way it's
@@ -269,6 +273,7 @@ class Autocomplete {
   }
 
   hidePopup(reason: string) {
+    console.debug(`Hiding autocomplete popup. Reason: ${reason}`);
     this.serverSideTagSuggestions.abortLastSchedule(`[Autocomplete] Popup was hidden. ${reason}`);
     this.popup.hide();
   }
@@ -390,6 +395,21 @@ class Autocomplete {
     // Although, we don't make this a hard assertion just in case, to make sure this
     // code is tolerant to any bugs in the described assumption.
     this.hidePopup('The user accepted the existing suggestion');
+  }
+
+  onHistoryItemDeleteClicked(detail: HistoryItemDeleteDetail) {
+    this.assertActive();
+
+    // Stop propagation to avoid invoking the `onClick` handler, which would
+    // register the loss of focus on the input and hide the popup otherwise.
+    detail.clickEvent.stopPropagation();
+
+    history.deleteHistoryRecord(this.input, detail.suggestion.content);
+
+    // Click on the delete button removes focus from the input, so we restore it
+    this.input.element.focus();
+
+    this.refresh();
   }
 
   updateInputWithSelectedValue(this: ActiveAutocomplete, suggestion: Suggestion) {

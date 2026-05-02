@@ -115,7 +115,7 @@ export class HistorySuggestionComponent implements SuggestionComponent {
           textContent: this.content.slice(this.matchLength),
         }),
       ]),
-      // Here will be a `delete` button to remove the item from the history.
+      makeEl('span', {}, [' ', makeEl('i', { className: 'fa-solid fa-xmark autocomplete__item__history__delete' })]),
     ];
   }
 }
@@ -180,13 +180,23 @@ interface SuggestionItem {
   suggestion: Suggestion;
 }
 
+export interface HistoryItemDeleteDetail {
+  suggestion: HistorySuggestionComponent;
+  clickEvent: PointerEvent;
+}
+
 declare global {
   interface ItemSelectedEvent extends CustomEvent<ItemSelection> {
     target: HTMLElement;
   }
 
+  interface HistoryItemDeleteEvent extends CustomEvent<HistoryItemDeleteDetail> {
+    target: HTMLElement;
+  }
+
   interface GlobalEventHandlersEventMap {
     itemselected: ItemSelectedEvent;
+    historyitemdelete: HistoryItemDeleteEvent;
   }
 }
 
@@ -280,7 +290,7 @@ export class SuggestionsPopupComponent {
     return this;
   }
 
-  appendSuggestion(suggestion: Suggestion) {
+  private appendSuggestion(suggestion: Suggestion) {
     const type = suggestion.type;
 
     const element = makeEl(
@@ -301,6 +311,19 @@ export class SuggestionsPopupComponent {
 
   private watchItem(item: SuggestionItem) {
     item.element.addEventListener('click', event => {
+      if (
+        item.suggestion.type === 'history' &&
+        event.target instanceof HTMLElement &&
+        event.target.matches('.autocomplete__item__history__delete')
+      ) {
+        const detail: HistoryItemDeleteDetail = {
+          suggestion: item.suggestion,
+          clickEvent: event,
+        };
+        this.container.dispatchEvent(new CustomEvent('historyitemdelete', { detail }));
+        return;
+      }
+
       const detail: ItemSelection = {
         suggestion: item.suggestion,
         shiftKey: event.shiftKey,
@@ -413,6 +436,12 @@ export class SuggestionsPopupComponent {
 
   onItemSelected(callback: (event: ItemSelection) => void) {
     this.container.addEventListener('itemselected', event => {
+      callback(event.detail);
+    });
+  }
+
+  onHistoryItemDeleteClicked(callback: (detail: HistoryItemDeleteDetail) => void) {
+    this.container.addEventListener('historyitemdelete', event => {
       callback(event.detail);
     });
   }

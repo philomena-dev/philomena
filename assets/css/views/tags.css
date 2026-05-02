@@ -79,6 +79,9 @@
 
 .autocomplete__item__history {
   color: var(--autocomplete-history-color);
+  display: flex;
+  justify-content: space-between;
+  white-space: pre;
 }
 
 .autocomplete__item__property {
@@ -98,6 +101,15 @@
   color: var(--autocomplete-history-match-color);
 }
 
+.autocomplete__item__history__delete:hover {
+  /*
+    We could make delete button appear only on hover, which would declutter the
+    UI a bit, but this would make it almost impossible to click this button on
+    mobile, thus it's always visible.
+  */
+  color: var(--autocomplete-history-match-color);
+}
+
 .autocomplete__item__tag__match,
 .autocomplete__item__property__match {
   color: var(--autocomplete-tag-match-color);
@@ -105,6 +117,12 @@
 
 .autocomplete__item__tag__count {
   color: var(--autocomplete-tag-count-color);
+
+  /*
+    History delete button has 1.25em. We compensate it with padding here to
+    keep image counts and delete button right-aligned with each other.
+  */
+  padding-right: 0.25em;
 
   /*
     Reduce the space size between groups of 3 digits in big numbers like "1 000 000".
