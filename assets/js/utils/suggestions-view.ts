@@ -115,7 +115,10 @@ export class HistorySuggestionComponent implements SuggestionComponent {
           textContent: this.content.slice(this.matchLength),
         }),
       ]),
-      makeEl('i', { className: 'fa-solid fa-xmark autocomplete__item__history__delete' }),
+      makeEl('i', {
+        title: 'Delete this history item',
+        className: 'fa-solid fa-xmark autocomplete__item__history__delete',
+      }),
     ];
   }
 }
