@@ -104,6 +104,12 @@
 .autocomplete__item__history__delete {
   /* 1 character width padding between the label and the delete button */
   padding-left: 1ch;
+
+  /*
+    Font-awesome overrides the line-height for some reason, which makes the
+    icon not vertically aligned with the text.
+  */
+  line-height: inherit;
 }
 
 .autocomplete__item__history__delete:hover {
