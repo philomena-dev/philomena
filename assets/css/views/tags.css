@@ -101,6 +101,11 @@
   color: var(--autocomplete-history-match-color);
 }
 
+.autocomplete__item__history__delete {
+  /* 1 character width padding between the label and the delete button */
+  padding-left: 1ch;
+}
+
 .autocomplete__item__history__delete:hover {
   /*
     We could make delete button appear only on hover, which would declutter the
