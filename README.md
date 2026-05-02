@@ -8,7 +8,9 @@ Make sure you have [Docker](https://docs.docker.com/engine/install/) and [Docker
 
 You can open this repo via a [devcontainer](https://containers.dev/) in VSCode, JetBrains, GitHub Codespaces or any other [supported IDE](https://containers.dev/supporting). This setup is the recommended way to develop and this way it's guaranteed everyone uses the same dev configs and dependencies.
 
-If you can't/don't want to use devcontainers, then go through the [`.devcontainer/Dockerfile`](.devcontainer/Dockerfile) to see what dependencies/configurations you need to set up on your host machine.
+If you can't/don't want to use devcontainers, then go through the [`docker/app/Dockerfile`](docker/app/Dockerfile) to see what dependencies/configurations you need to set up on your host machine.
+
+<sub>Note that there are some additional [Prerequisites for Remote SSH Development](#prerequisites-for-remote-ssh-development).</sub>
 
 ## Dev Stack
 
@@ -33,7 +35,16 @@ Once the application has started, navigate to http://localhost:8080 and log in w
 
 The devcontainer is configured with the `docker-compose.yml`. The IDE attaches to the `app` service of the stack. You can use `docker compose` to manage the stack but be careful not to shutdown the `app` service. Use `philomena` commands instead that make sure the `app` service is always running.
 
-If you are developing on a remote SSH host, then make sure to configure port forwarding for `web:80` (yes, use the `host:port` notation) to be able to access the application in your browser.
+### Prerequisites for Remote SSH Development
+
+If you are developing on a remote SSH host that runs a devcontainer, then make sure to configure port forwarding like this:
+
+| Port     | Forwarded Address |
+| -------- | ----------------- |
+| `web:80` | `localhost:80`    |
+| `5173`   | `localhost:5173`  |
+
+Yes, use the `host:port` notation for `web:80`. It's because the `web` service runs in a separate container.
 
 ## Troubleshooting
 
