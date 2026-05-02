@@ -85,7 +85,6 @@ class Autocomplete {
 
     this.input = AutocompletableInput.fromElement(document.activeElement);
     if (!this.isActive()) {
-      console.debug('Autocomplete is not active, hiding...');
       this.popup.hide();
       return;
     }
@@ -261,7 +260,6 @@ class Autocomplete {
   }
 
   onClick(event: MouseEvent) {
-    console.log('onClick');
     if (this.input?.isEnabled() && this.input.element !== event.target) {
       // We lost focus. Hide the popup.
       // We use this method instead of the `focusout` event because this way it's
@@ -273,7 +271,6 @@ class Autocomplete {
   }
 
   hidePopup(reason: string) {
-    console.debug(`Hiding autocomplete popup. Reason: ${reason}`);
     this.serverSideTagSuggestions.abortLastSchedule(`[Autocomplete] Popup was hidden. ${reason}`);
     this.popup.hide();
   }
