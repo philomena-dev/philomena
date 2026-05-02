@@ -82,6 +82,11 @@
   display: flex;
   justify-content: space-between;
   white-space: pre;
+  padding: 0;
+}
+
+.autocomplete__item__history .autocomplete__item__content {
+  padding: 5px;
 }
 
 .autocomplete__item__property {
@@ -102,14 +107,11 @@
 }
 
 .autocomplete__item__history__delete {
-  /* 1 character width padding between the label and the delete button */
-  padding-left: 1ch;
-
-  /*
-    Font-awesome overrides the line-height for some reason, which makes the
-    icon not vertically aligned with the text.
-  */
-  line-height: inherit;
+  font-size: 8px;
+  width: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .autocomplete__item__history__delete:hover {
@@ -119,6 +121,7 @@
     mobile, thus it's always visible.
   */
   color: var(--autocomplete-history-match-color);
+  background-color: var(--autocomplete-history-delete-hover-background);
 }
 
 .autocomplete__item__tag__match,
@@ -128,12 +131,6 @@
 
 .autocomplete__item__tag__count {
   color: var(--autocomplete-tag-count-color);
-
-  /*
-    History delete button has 1.25em. We compensate it with padding here to
-    keep image counts and delete button right-aligned with each other.
-  */
-  padding-right: 0.25em;
 
   /*
     Reduce the space size between groups of 3 digits in big numbers like "1 000 000".

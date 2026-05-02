@@ -115,10 +115,11 @@ export class HistorySuggestionComponent implements SuggestionComponent {
           textContent: this.content.slice(this.matchLength),
         }),
       ]),
-      makeEl('i', {
-        title: 'Delete this history item',
-        className: 'fa-solid fa-xmark autocomplete__item__history__delete',
-      }),
+      makeEl('div', { className: 'autocomplete__item__history__delete', title: 'Delete this history item' }, [
+        makeEl('i', {
+          className: 'fa-solid fa-xmark',
+        }),
+      ]),
     ];
   }
 }
@@ -317,7 +318,7 @@ export class SuggestionsPopupComponent {
       if (
         item.suggestion.type === 'history' &&
         event.target instanceof HTMLElement &&
-        event.target.matches('.autocomplete__item__history__delete')
+        event.target.closest('.autocomplete__item__history__delete')
       ) {
         const detail: HistoryItemDeleteDetail = {
           suggestion: item.suggestion,
