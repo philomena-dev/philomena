@@ -110,6 +110,24 @@ export class TestContext {
     await vi.runAllTimersAsync();
   }
 
+  async deleteHistoryItem(content: string) {
+    const items = [...this.popup.querySelectorAll('.autocomplete__item__history')];
+    const item = items.find(elem => elem.textContent.trimStart() === content);
+
+    if (!item) {
+      throw new Error(`History item with content "${content}" was not found`);
+    }
+
+    const deleteButton = item.querySelector('.autocomplete__item__history__delete');
+
+    if (!deleteButton) {
+      throw new Error(`Delete button for history item with content "${content}" was not found`);
+    }
+
+    expect(fireEvent.click(deleteButton)).toEqual(true);
+    await vi.runAllTimersAsync();
+  }
+
   /**
    * Sets the input to `value`. Allows for a special `<>` syntax. These characters
    * are removed from the input. Their position is used to set the selection.
