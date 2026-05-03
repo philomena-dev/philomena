@@ -4,7 +4,7 @@
  * Apply event-based actions through data-* attributes. The attributes are structured like so: [data-event-action]
  */
 
-import { assertType } from './utils/assert';
+import { assertNotUndefined, assertType } from './utils/assert';
 import { $, $$ } from './utils/dom';
 import { fetchHtml, handleError } from './utils/requests';
 import { showBlock } from './utils/image';
@@ -23,7 +23,6 @@ declare global {
 type EventType = 'click' | 'change' | 'fetchcomplete';
 
 interface ActionData {
-  attr: string;
   el: HTMLElement;
   value: string;
   base?: ParentNode;
@@ -143,34 +142,45 @@ const actions: Record<string, Action> = {
   },
 
   tab(data) {
-    const block = data.el.parentNode?.parentNode;
-    if (!(block instanceof HTMLElement)) return;
-
-    const newTab = $<HTMLElement>(`.block__tab[data-tab="${data.value}"]`, block);
-    const loadTab = data.el.dataset.loadTab;
-
-    // Switch tab
-    const selectedTab = $<HTMLElement>('.selected', block);
-    if (selectedTab) {
-      selectedTab.classList.remove('selected');
-    }
-    data.el.classList.add('selected');
-
-    // Switch contents
-    actions.tabHide({ ...data, base: block, value: '.block__tab' });
-    actions.show({ ...data, base: block, value: `.block__tab[data-tab="${data.value}"]` });
-
-    // If the tab has a 'data-load-tab' attribute, load and insert the content
-    if (loadTab && newTab && !newTab.dataset.loaded) {
-      fetchHtml(loadTab)
-        .then(handleError)
-        .then(response => response.text())
-        .then(response => (newTab.innerHTML = response))
-        .then(() => (newTab.dataset.loaded = 'true'))
-        .catch(() => (newTab.textContent = 'Error!'));
-    }
+    switchTab(data);
   },
 };
+
+function switchTab(data: ActionData & { noPushState?: boolean }) {
+  const block = data.el.parentNode?.parentNode;
+  if (!(block instanceof HTMLElement)) return;
+
+  const newTab = $<HTMLElement>(`.block__tab[data-tab="${data.value}"]`, block);
+  const loadTab = data.el.dataset.loadTab;
+
+  // Switch tab
+  const selectedTab = $<HTMLElement>('.selected', block);
+  if (selectedTab) {
+    selectedTab.classList.remove('selected');
+  }
+  data.el.classList.add('selected');
+
+  // Switch contents
+  actions.tabHide({ ...data, base: block, value: '.block__tab' });
+  actions.show({ ...data, base: block, value: `.block__tab[data-tab="${data.value}"]` });
+
+  if (!data.noPushState && block.dataset.tabPersistInQueryParams === 'true') {
+    // Save navigation state in the URL query params
+    const url = new URL(window.location.href);
+    url.searchParams.set('tab', data.value);
+    window.history.pushState({}, '', url);
+  }
+
+  // If the tab has a 'data-load-tab' attribute, load and insert the content
+  if (loadTab && newTab && !newTab.dataset.loaded) {
+    fetchHtml(loadTab)
+      .then(handleError)
+      .then(response => response.text())
+      .then(response => (newTab.innerHTML = response))
+      .then(() => (newTab.dataset.loaded = 'true'))
+      .catch(() => (newTab.textContent = 'Error!'));
+  }
+}
 
 // Use this function to apply a callback to elements matching the selectors
 function selectorCb(base: ParentNode = document, selector: string, cb: (el: Element) => void) {
@@ -197,7 +207,7 @@ function matchAttributes(event: Event) {
       const value = el?.getAttribute(attr) || '';
 
       if (el && value) {
-        actions[action]({ attr, el, value });
+        actions[action]({ el, value });
         event.preventDefault();
       }
     }
@@ -208,4 +218,20 @@ export function registerEvents() {
   for (const type in types) {
     document.addEventListener(type, matchAttributes);
   }
+
+  window.addEventListener('popstate', () => {
+    const url = new URL(window.location.href);
+    const tab = url.searchParams.get('tab');
+    const tabs = $$<HTMLElement>(`[data-click-tab]`);
+    const explicitTab = tab && tabs.find(btn => btn.dataset.clickTab === tab);
+    const tabBtn = explicitTab || tabs.find(btn => btn.dataset.hasOwnProperty('tabDefault'));
+    if (tabBtn) {
+      switchTab({
+        el: tabBtn,
+        value: assertNotUndefined(tabBtn.dataset.clickTab),
+        // We don't need to push a new state on back/forward navigation, only switch the tab
+        noPushState: true,
+      });
+    }
+  });
 }
