@@ -1331,6 +1331,7 @@ defmodule Philomena.Images do
       downvoters: user_query,
       upvoters: user_query,
       hiders: user_query,
+      subscribers: user_query,
       deleter: user_query,
       tags: base_tags_query
     ]

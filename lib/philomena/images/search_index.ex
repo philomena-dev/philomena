@@ -53,6 +53,7 @@ defmodule Philomena.Images.SearchIndex do
           size: %{type: "integer"},
           orig_size: %{type: "integer"},
           sha512_hash: %{type: "keyword"},
+          subscriber_ids: %{type: "keyword"},
           source_url: %{type: "keyword"},
           source_count: %{type: "integer"},
           tag_count: %{type: "integer"},
@@ -142,6 +143,7 @@ defmodule Philomena.Images.SearchIndex do
       hidden_by_user_ids: image.hiders |> Enum.map(& &1.id),
       upvoter_ids: image.upvoters |> Enum.map(& &1.id),
       downvoter_ids: image.downvoters |> Enum.map(& &1.id),
+      subscriber_ids: image.subscribers |> Enum.map(& &1.id),
       deleted_by_user_id: image.deleter_id,
       duplicate_id: image.duplicate_id,
       galleries:
