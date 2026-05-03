@@ -11,6 +11,7 @@ defmodule PhilomenaMedia.Icc do
   This assumes the file has an embedded profile. If it does not, the extraction
   will fail and this function returns `false`.
   """
+  # sobelow_skip ["Traversal.FileModule"]
   @spec srgb_profile?(Path.t()) :: boolean()
   def srgb_profile?(file) do
     profile = Briefly.create!(extname: ".icc")
