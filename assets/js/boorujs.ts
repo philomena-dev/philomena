@@ -141,9 +141,7 @@ const actions: Record<string, Action> = {
     }
   },
 
-  tab(data) {
-    switchTab(data);
-  },
+  tab: switchTab,
 };
 
 function switchTab(data: ActionData & { noPushState?: boolean }) {
