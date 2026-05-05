@@ -65,6 +65,7 @@ defmodule PhilomenaMedia.Analyzers do
       :error = Analyzers.analyze_path(file)
 
   """
+  @spec analyze_path(Path.t()) :: {:ok, Result.t()} | {:unsupported_mime, Mime.t()}
   def analyze_path(path) when is_binary(path) do
     with {:ok, mime} <- Mime.file(path),
          {:ok, analyzer} <- analyzer(mime) do
