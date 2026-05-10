@@ -75,7 +75,7 @@ services:
       - postgres_data:/var/lib/postgresql
 
   opensearch:
-    image: opensearchproject/opensearch:3.5.0
+    image: opensearchproject/opensearch:3.6.0
     volumes:
       - opensearch_data:/usr/share/opensearch/data
       - ${HOST_WORKSPACE:-.}/docker/opensearch/opensearch.yml:/usr/share/opensearch/config/opensearch.yml
@@ -86,11 +86,11 @@ services:
         hard: 65536
 
   valkey:
-    image: valkey/valkey:9.0.3-alpine
+    image: valkey/valkey:9.0.4-alpine
     attach: false
 
   files:
-    image: andrewgaul/s3proxy:sha-44129c8
+    image: andrewgaul/s3proxy:sha-f461ef7
     environment:
       - JCLOUDS_FILESYSTEM_BASEDIR=/data
       - S3PROXY_IGNORE_UNKNOWN_HEADERS=true

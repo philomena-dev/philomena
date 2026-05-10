@@ -1,11 +1,4 @@
-# Workaround for alpine packages not having PostgreSQL 18 client yet.
-FROM postgres:18.3-alpine AS pg
-
 FROM elixir:1.19.5-alpine
-
-# TODO: remove this once alpine has the postgresql18-client package
-# Alternatively: consider if we want to keep using this workaround long-term
-COPY --from=pg /usr/local/bin/pg_dump /usr/local/bin/pg_dump
 
 ARG CONTAINER_WORKSPACE=/srv/philomena
 
@@ -23,7 +16,7 @@ RUN apk add \
     git \
     npm \
     nodejs \
-    postgresql17-client \
+    postgresql18-client \
     curl \
     wget \
     docker-cli-compose \
