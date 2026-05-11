@@ -12,7 +12,7 @@ ADD https://api.github.com/repos/philomena-dev/mediatools/git/refs/heads/master 
 
 RUN wget -qO /tmp/FFmpeg.tar.gz https://github.com/philomena-dev/FFmpeg/archive/refs/heads/release/8.0.tar.gz \
     && wget -qO /tmp/cli_intensities.tar.gz https://github.com/philomena-dev/cli_intensities/archive/refs/heads/master.tar.gz \
-    && wget -qO /tmp/mediatools.tar.gz https://github.com/philomena-dev/mediatools/archive/refs/heads/master.tar.gz
+    && wget -qO /tmp/mediatools.tar.gz https://github.com/philomena-dev/mediatools/archive/refs/tags/1.2.3.tar.gz
 
 RUN cd /tmp \
     && tar -xf FFmpeg.tar.gz \
@@ -57,7 +57,7 @@ RUN cd /tmp \
     && make -j$(nproc) install \
     && cd /tmp/cli_intensities-master \
     && make -j$(nproc) install \
-    && cd /tmp/mediatools-master \
+    && cd /tmp/mediatools-1.2.3 \
     && make -j$(nproc) install
 
 COPY native/philomena /tmp/philomena

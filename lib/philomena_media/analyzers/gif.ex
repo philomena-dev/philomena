@@ -23,7 +23,7 @@ defmodule PhilomenaMedia.Analyzers.Gif do
   defp stats(file) do
     case Remote.cmd("mediastat", [file]) do
       {output, 0} ->
-        [_size, frames, width, height, num, den] =
+        [_animated, frames, width, height, num, den] =
           output
           |> String.trim()
           |> String.split(" ")
