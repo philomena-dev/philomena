@@ -166,7 +166,7 @@ export function pickAndResize(elem: ImageTargetElement) {
     picture.appendChild(img);
     img.id = 'image-display';
     img.src = uri;
-    if (version === 'full') {
+    if (version === 'full' && scaled === 'false') {
       // Let layout engine know image size before it arrives
       img.width = imageWidth;
       img.height = imageHeight;
