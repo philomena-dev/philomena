@@ -6,14 +6,16 @@ defmodule Philomena.Autocomplete.Autocomplete do
 
   @primary_key false
   schema "autocomplete" do
-    field :content, :binary
+    field :file, :string
+    field :uploaded_file, :string, virtual: true
+    field :removed_file, :string, virtual: true
     timestamps(inserted_at: :created_at, updated_at: false, type: :utc_datetime)
   end
 
   @doc false
   def changeset(autocomplete, attrs) do
     autocomplete
-    |> cast(attrs, [:content])
-    |> validate_required([:content])
+    |> cast(attrs, [:file, :uploaded_file, :removed_file])
+    |> validate_required([:file])
   end
 end

@@ -44,9 +44,9 @@ defmodule Philomena.Release do
     Philomena.ModerationLogs.cleanup!()
   end
 
-  def generate_autocomplete do
+  def generate_and_prune_autocomplete do
     start_app()
-    Philomena.Autocomplete.generate_autocomplete!()
+    Philomena.Autocomplete.generate_and_prune_autocomplete!()
   end
 
   def clean_tags do

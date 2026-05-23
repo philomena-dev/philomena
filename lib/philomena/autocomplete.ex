@@ -12,9 +12,10 @@ defmodule Philomena.Autocomplete do
 
   alias Philomena.Autocomplete.Autocomplete
   alias Philomena.Autocomplete.Generator
+  alias Philomena.Autocomplete.Uploader
 
   @doc """
-  Gets the current local autocompletion binary.
+  Gets the current local autocompletion information.
 
   Returns nil if the binary is not currently generated.
 
@@ -35,20 +36,52 @@ defmodule Philomena.Autocomplete do
   end
 
   @doc """
-  Creates a new local autocompletion binary, replacing any which currently exist.
+  Creates a new local autocompletion binary and prunes existing binaries.
+  """
+  def generate_and_prune_autocomplete! do
+    generate_autocomplete!()
+    prune_autocomplete!()
+  end
+
+  @doc """
+  Creates a new local autocompletion binary.
   """
   def generate_autocomplete! do
-    ac_file = Generator.generate()
+    path = generate_autocomplete_file!()
 
-    # Insert the autocomplete binary
-    new_ac =
-      %Autocomplete{}
-      |> Autocomplete.changeset(%{content: ac_file})
-      |> Repo.insert!()
+    %Autocomplete{}
+    |> Uploader.prepare_upload(path)
+    |> Repo.insert!()
+    |> Uploader.persist_upload()
+  end
 
-    # Remove anything older
+  @doc """
+  Removes old autocomplete binaries.
+  """
+  def prune_autocomplete! do
     Autocomplete
-    |> where([ac], ac.created_at < ^new_ac.created_at)
-    |> Repo.delete_all()
+    |> where([ac], ac.created_at < ago(1, "week"))
+    |> Repo.all()
+    |> Enum.each(&delete_autocomplete/1)
+  end
+
+  defp delete_autocomplete(%Autocomplete{} = autocomplete) do
+    if autocomplete.file do
+      Uploader.unpersist_upload(autocomplete)
+
+      Autocomplete
+      |> where([ac], ac.file == ^autocomplete.file)
+      |> Repo.delete_all()
+    end
+  end
+
+  # sobelow_skip ["Traversal.FileModule"]
+  defp generate_autocomplete_file! do
+    content = Generator.generate()
+    file = Briefly.create!()
+
+    File.write!(file, content)
+
+    file
   end
 end

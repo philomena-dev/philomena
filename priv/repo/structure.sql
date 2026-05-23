@@ -2,10 +2,10 @@
 -- PostgreSQL database dump
 --
 
-\restrict hgf9CfMeD1rU4CvxcBOzalhPAIJmwKqP0y1eMNujQOmt5EMX2Gnh4Z2aHUUnVGK
+\restrict nOqN7gS2zjoE8aNiKCTVfnfcMKFhyhuGAdVRERGqnwhJ1yxd6Iy7PJxFva9Su1s
 
--- Dumped from database version 18.0
--- Dumped by pg_dump version 18.0
+-- Dumped from database version 18.3
+-- Dumped by pg_dump version 18.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -122,8 +122,8 @@ ALTER SEQUENCE public.artist_links_id_seq OWNED BY public.artist_links.id;
 --
 
 CREATE TABLE public.autocomplete (
-    content bytea NOT NULL,
-    created_at timestamp without time zone NOT NULL
+    created_at timestamp without time zone NOT NULL,
+    file character varying(255)
 );
 
 
@@ -5565,7 +5565,7 @@ ALTER TABLE ONLY public.users
 -- PostgreSQL database dump complete
 --
 
-\unrestrict hgf9CfMeD1rU4CvxcBOzalhPAIJmwKqP0y1eMNujQOmt5EMX2Gnh4Z2aHUUnVGK
+\unrestrict nOqN7gS2zjoE8aNiKCTVfnfcMKFhyhuGAdVRERGqnwhJ1yxd6Iy7PJxFva9Su1s
 
 INSERT INTO public."schema_migrations" (version) VALUES (20200503002523);
 INSERT INTO public."schema_migrations" (version) VALUES (20200607000511);
@@ -5592,11 +5592,12 @@ INSERT INTO public."schema_migrations" (version) VALUES (20240728191353);
 INSERT INTO public."schema_migrations" (version) VALUES (20240818182358);
 INSERT INTO public."schema_migrations" (version) VALUES (20241216165826);
 INSERT INTO public."schema_migrations" (version) VALUES (20250407021536);
+INSERT INTO public."schema_migrations" (version) VALUES (20250430092058);
+INSERT INTO public."schema_migrations" (version) VALUES (20250501023533);
 INSERT INTO public."schema_migrations" (version) VALUES (20250501174007);
 INSERT INTO public."schema_migrations" (version) VALUES (20250502110018);
 INSERT INTO public."schema_migrations" (version) VALUES (20250507183410);
 INSERT INTO public."schema_migrations" (version) VALUES (20250617121030);
 INSERT INTO public."schema_migrations" (version) VALUES (20250617122513);
 INSERT INTO public."schema_migrations" (version) VALUES (20251103173014);
-INSERT INTO public."schema_migrations" (version) VALUES (20250430092058);
-INSERT INTO public."schema_migrations" (version) VALUES (20250501023533);
+INSERT INTO public."schema_migrations" (version) VALUES (20260523031354);
