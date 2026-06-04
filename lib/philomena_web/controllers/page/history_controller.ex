@@ -34,6 +34,6 @@ defmodule PhilomenaWeb.Page.HistoryController do
     end)
   end
 
-  defp split(nil), do: ""
+  defp split(nil), do: []
   defp split(body), do: String.split(body, "\n")
 end
