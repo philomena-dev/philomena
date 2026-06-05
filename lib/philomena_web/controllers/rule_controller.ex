@@ -114,7 +114,7 @@ defmodule PhilomenaWeb.RuleController do
     }
   end
 
-  defp split(nil), do: ""
+  defp split(nil), do: []
   defp split(body), do: String.split(body, "\n")
 
   defp generate_diff(versions) when length(versions) < 2 do
