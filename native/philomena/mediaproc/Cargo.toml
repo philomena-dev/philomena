@@ -5,5 +5,5 @@ edition = "2024"
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
-tarpc = { version = "0.35", features = ["full"] }
-tokio = { version = "1.0", features = ["full"] }
+tarpc = { version = "0.37", features = ["serde-transport-bincode", "tcp"] }
+tokio = { version = "1.0", features = ["net"] }
