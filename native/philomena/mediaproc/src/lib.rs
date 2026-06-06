@@ -1,6 +1,6 @@
-use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
+use std::sync::LazyLock;
 
 pub mod client;
 
@@ -32,7 +32,7 @@ pub enum ExecuteCommandError {
 }
 
 /// Enumeration of permitted program names.
-pub static PERMITTED_PROGRAMS: Lazy<HashSet<&'static str>> = Lazy::new(|| {
+pub static PERMITTED_PROGRAMS: LazyLock<HashSet<&'static str>> = LazyLock::new(|| {
     vec![
         "ffprobe",
         "ffmpeg",

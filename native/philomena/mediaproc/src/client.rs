@@ -4,7 +4,7 @@ use std::path::Path;
 use std::time::{Duration, Instant};
 
 use crate::{CommandReply, ExecuteCommandError, FileMap, MediaProcessorClient};
-use once_cell::sync::Lazy;
+use std::sync::LazyLock;
 use tarpc::context::Context;
 
 #[derive(Default)]
@@ -18,7 +18,7 @@ struct CallParameters {
 }
 
 /// List of file extensions which can be forwarded.
-static FORWARDED_EXTS: Lazy<HashSet<OsString>> = Lazy::new(|| {
+static FORWARDED_EXTS: LazyLock<HashSet<OsString>> = LazyLock::new(|| {
     vec![
         "gif", "jpg", "jpeg", "png", "svg", "webm", "webp", "mp4", "icc",
     ]
