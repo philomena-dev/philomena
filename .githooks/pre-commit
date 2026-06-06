@@ -40,7 +40,7 @@ fi
 rust_files=$(echo "$files" | { grep -E '\.rs$' || true; })
 if [[ -n "$rust_files" ]]; then
   if command -v cargo &> /dev/null; then
-    echo "$rust_files" | step xargs cargo fmt --manifest-path native/Cargo.toml --
+    echo "$rust_files" | step xargs cargo fmt --manifest-path native/philomena/Cargo.toml --
   else
     info "Skipping rustfmt, cargo not found"
   fi
