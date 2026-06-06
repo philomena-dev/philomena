@@ -14,14 +14,16 @@ defmodule PhilomenaWeb.ImageLoader do
   # sobelow_skip ["SQL.Query"]
   def default_query(conn, options \\ []) do
     body =
-      if delay_home_images?(conn.assigns.current_user),
-        do: %{
+      if delay_home_images?(conn.assigns.current_user) do
+        %{
           bool: %{
             must: [%{range: %{created_at: %{lte: "now-3m"}}}],
             must_not: [%{term: %{thumbnails_generated: false}}]
           }
-        },
-        else: %{match_all: %{}}
+        }
+      else
+        %{match_all: %{}}
+      end
 
     query(conn, body, options)
   end
