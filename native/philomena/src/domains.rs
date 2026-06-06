@@ -2,12 +2,12 @@ use std::collections::BTreeSet;
 use std::env;
 
 use http::Uri;
-use once_cell::sync::Lazy;
 use regex::Regex;
+use std::sync::LazyLock;
 
 pub type DomainSet = BTreeSet<String>;
 
-static DOMAINS: Lazy<Option<DomainSet>> = Lazy::new(|| {
+static DOMAINS: LazyLock<Option<DomainSet>> = LazyLock::new(|| {
     if let Ok(domains) = env::var("SITE_DOMAINS") {
         return Some(domains.split(',').map(|s| s.to_string()).collect());
     }
