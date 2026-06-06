@@ -1,0 +1,5 @@
+**
+!docker/mediaproc/Dockerfile
+!docker/mediaproc/safe-rsvg-convert
+!native/philomena
+native/philomena/target
