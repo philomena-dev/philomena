@@ -83,6 +83,11 @@ function down {
   fi
 }
 
+function test_ci {
+  step docker compose up --no-build --wait "${services_except_app[@]}"
+  step docker compose run --rm app run-test
+}
+
 function test {
   step docker compose build "${services[@]}"
   step docker compose up --wait "${services_except_app[@]}"
@@ -135,6 +140,7 @@ case "$subcommand" in
   up) up "$@" ;;
   down) down "$@" ;;
   test) test "$@" ;;
+  test_ci) test_ci "$@" ;;
   clean) clean "$@" ;;
 
   *)

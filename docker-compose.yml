@@ -12,6 +12,8 @@ volumes:
 
 services:
   app:
+    image: localhost/philomena-app:latest
+    pull_policy: never
     build:
       context: .
       dockerfile: ./docker/app/Dockerfile
@@ -99,6 +101,8 @@ services:
     attach: false
 
   mediaproc:
+    image: localhost/philomena-mediaproc:latest
+    pull_policy: never
     build:
       context: .
       dockerfile: ./docker/mediaproc/Dockerfile
@@ -111,6 +115,8 @@ services:
           pids: 8192
 
   web:
+    image: localhost/philomena-web:latest
+    pull_policy: never
     build:
       context: .
       dockerfile: ./docker/web/Dockerfile

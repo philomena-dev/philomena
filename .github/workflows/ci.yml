@@ -8,6 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/bake-action@v7
+        with:
+          files: docker-compose.yml
+          load: true
+          set: |
+            *.cache-from=type=gha
+            *.cache-to=type=gha
       - uses: actions/cache@v4
         with:
           path: |
@@ -16,9 +24,8 @@ jobs:
             deps
           key: ${{ runner.os }}-deps-3-${{ hashFiles('mix.lock') }}-${{ hashFiles('native/philomena/Cargo.lock') }}
 
-      - run: docker compose pull
-      - run: docker compose build
-      - run: ./scripts/philomena.sh test
+      - run: ./scripts/philomena.sh test_ci
+      - run: sudo chown -R $USER $GITHUB_WORKSPACE
 
   typos:
     name: 'Check for spelling errors'
