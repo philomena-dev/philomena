@@ -26,12 +26,11 @@ pub fn common_options() -> Options<'static> {
     options.extension.philomena = true;
     options.render.ignore_empty_links = true;
 
-    options.extension.image_url_rewriter = Some(Arc::new(|url: &str| camo::image_url_careful(url)));
+    options.extension.image_url_rewriter = Some(Arc::new(|url: &str| camo::image_url(url)));
 
     if let Some(domains) = domains::get() {
-        options.extension.link_url_rewriter = Some(Arc::new(|url: &str| {
-            domains::relativize_careful(domains, url)
-        }));
+        options.extension.link_url_rewriter =
+            Some(Arc::new(|url: &str| domains::relativize(domains, url)));
     }
 
     options

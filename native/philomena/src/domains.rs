@@ -19,7 +19,7 @@ pub fn get() -> &'static Option<DomainSet> {
     &DOMAINS
 }
 
-pub fn relativize(domains: &DomainSet, url: &str) -> Option<String> {
+pub fn try_relativize(domains: &DomainSet, url: &str) -> Option<String> {
     let uri = url.parse::<Uri>().ok()?;
 
     if let Some(a) = uri.authority() {
@@ -33,6 +33,6 @@ pub fn relativize(domains: &DomainSet, url: &str) -> Option<String> {
     Some(url.into())
 }
 
-pub fn relativize_careful(domains: &DomainSet, url: &str) -> String {
-    relativize(domains, url).unwrap_or_else(|| url.into())
+pub fn relativize(domains: &DomainSet, url: &str) -> String {
+    try_relativize(domains, url).unwrap_or_else(|| url.into())
 }
