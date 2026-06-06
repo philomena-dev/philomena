@@ -16,6 +16,7 @@ config :philomena, PhilomenaWeb.Endpoint,
   check_origin: false,
   watchers: [
     node: [
+      "watch.js",
       "node_modules/vite/bin/vite.js",
       "--mode",
       "development",
@@ -26,6 +27,7 @@ config :philomena, PhilomenaWeb.Endpoint,
       cd: Path.expand("../assets", __DIR__)
     ],
     node: [
+      "watch.js",
       "node_modules/vite/bin/vite.js",
       "build",
       "--mode",
