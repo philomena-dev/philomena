@@ -34,7 +34,7 @@ fn markdown_to_html_unsafe(input: &str, reps: HashMap<String, String>) -> String
 
 #[rustler::nif]
 fn camo_image_url(input: &str) -> String {
-    camo::image_url_careful(input)
+    camo::image_url(input)
 }
 
 // Remote NIF wrappers.
