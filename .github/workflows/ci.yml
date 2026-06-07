@@ -19,6 +19,7 @@ jobs:
       - run: docker compose pull
       - run: docker compose build
       - run: ./scripts/philomena.sh test
+      - run: sudo chown -R $USER $GITHUB_WORKSPACE
 
   typos:
     name: 'Check for spelling errors'
