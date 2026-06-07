@@ -18,8 +18,12 @@ jobs:
 
       - run: docker compose pull
       - run: docker compose build
-      - run: ./scripts/philomena.sh test
-      - run: sudo chown -R $USER $GITHUB_WORKSPACE
+      - name: Run tests
+        run: ./scripts/philomena.sh test
+      # Artifacts from docker bind mount are owned by root, but cache action
+      # can only save artifacts running under the default user:
+      - name: Change artifact ownership for cache action
+        run: sudo chown -R $USER $GITHUB_WORKSPACE
 
   typos:
     name: 'Check for spelling errors'

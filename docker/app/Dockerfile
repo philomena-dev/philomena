@@ -27,10 +27,8 @@ RUN apk add \
     openssh
 
 # The default `cargo` and `rust` packages in Alpine repo don't include important
-# rust dev components like `rust-src` (std lib sources), `rustfmt`, `clippy`, etc.
-# In any case, it's much better to use rustup for rust toolchain management.
-# Also, this lives in a separate RUN statement to cache this step separately, as
-# it's quite slow to install.
+# components like `rust-src` (std lib sources), `rustfmt`, and `clippy`.
+# It's also more conventional to use rustup for rust toolchain management.
 COPY scripts scripts
 COPY rust-toolchain.toml rust-toolchain.toml
 
