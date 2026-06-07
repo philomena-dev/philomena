@@ -18,7 +18,5 @@
   {"lib/philomena/static_pages.ex", :call_without_opaque},
   {"lib/philomena/tags.ex", :call_without_opaque},
   {"lib/philomena/topics.ex", :call_without_opaque},
-  {"lib/philomena/users.ex", :call_without_opaque},
-  {"lib/philomena/users/user.ex", :call_without_opaque},
-  {"lib/philomena_web/plugs/content_security_policy_plug.ex", :call_without_opaque}
+  {"lib/philomena/users.ex", :call_without_opaque}
 ]

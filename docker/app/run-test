@@ -13,7 +13,7 @@ mix format --check-formatted
 # if it's not done doing whatever it does yet
 printf "Waiting for OpenSearch"
 
-until wget -qO - opensearch:9200; do
+until wget -qO - http://opensearch:9200; do
   printf "."
   sleep 2
 done
