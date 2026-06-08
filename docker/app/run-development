@@ -20,7 +20,7 @@ background() {
     step mix run -e 'Philomena.Release.verify_artist_links()' > /dev/null
     step mix run -e 'Philomena.Release.update_stats()' > /dev/null
     step mix run -e 'Philomena.Release.clean_moderation_logs()' > /dev/null
-    step mix run -e 'Philomena.Release.generate_autocomplete()' > /dev/null
+    step mix run -e 'Philomena.Release.generate_and_prune_autocomplete()' > /dev/null
     step mix run -e 'Philomena.Release.clean_tags()' > /dev/null
 
     sleep 300

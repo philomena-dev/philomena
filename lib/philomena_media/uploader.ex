@@ -1,6 +1,6 @@
 defmodule PhilomenaMedia.Uploader do
   @moduledoc """
-  Upload and processing callback logic for media files.
+  Upload and processing callback logic for files.
 
   To use the uploader, the target schema must be modified to add at least the
   following fields, assuming the name of the field to write to the database is `foo`:
@@ -114,12 +114,57 @@ defmodule PhilomenaMedia.Uploader do
   @type schema :: struct()
   @type schema_or_changeset :: struct() | Ecto.Changeset.t()
 
+  @type storage_key :: String.t()
   @type field_name :: String.t()
   @type file_root :: String.t()
 
   @doc """
-  Performs analysis of the specified `m:Plug.Upload`, and invokes a changeset callback on the schema
-  or changeset passed in.
+  Prepares the specified file path for persistence to the storage layer, and invokes a
+  changeset callback on the schema or changeset passed in with the properties of the upload.
+
+  The storage key (location to write the persisted file) is set by the assignment to the
+  schema's `field_name`, and passed with the `field_name` attribute into the changeset callback.
+
+  Additional attributes to be passed to the changeset callback may be passed in `extra_attrs`.
+
+  This function is used to handle direct file uploads without validation for generated files.
+  Use `analyze_upload/4` for handling user-controlled media uploads.
+
+  This function does not persist an upload to storage.
+  """
+  @spec prepare_upload(
+          schema_or_changeset(),
+          field_name(),
+          storage_key(),
+          Path.t(),
+          (schema_or_changeset(), map() -> Ecto.Changeset.t()),
+          map()
+        ) :: Ecto.Changeset.t()
+  def prepare_upload(
+        schema_or_changeset,
+        field_name,
+        storage_key,
+        upload_file_path,
+        changeset_fn,
+        extra_attrs \\ %{}
+      ) do
+    removed_storage_key =
+      schema_or_changeset
+      |> change()
+      |> get_changeset_field(field_name)
+
+    attributes =
+      extra_attrs
+      |> Map.put(field_name, storage_key)
+      |> Map.put(uploaded_field_name(field_name), upload_file_path)
+      |> Map.put(removed_field_name(field_name), removed_storage_key)
+
+    changeset_fn.(schema_or_changeset, attributes)
+  end
+
+  @doc """
+  Performs analysis of the specified image in the `m:Plug.Upload`, and invokes a changeset callback on the
+  schema or changeset passed in with the properties of the upload.
 
   The file name which will be written to is set by the assignment to the schema's `field_name`, and
   the below attributes are prefixed by the `field_name`.
@@ -134,7 +179,7 @@ defmodule PhilomenaMedia.Uploader do
   * `format` (String) - the file extension, one of `~w(gif jpg png svg webm)`, determined by reading the file
   * `mime_type` (String) - the file's sniffed MIME type, determined by reading the file
   * `duration` (float) - the duration of the media file
-  * `aspect_ratio` (float) - width divided by height.
+  * `aspect_ratio` (float) - width divided by height
   * `orig_sha512_hash` (String) - the SHA-512 hash of the file
   * `sha512_hash` (String) - the SHA-512 hash of the file
   * `is_animated` (boolean) - whether the file contains animation
@@ -185,13 +230,12 @@ defmodule PhilomenaMedia.Uploader do
         |> validate_inclusion(:image_width, 699..729)
       end
 
-  The key (location to write the persisted file) is passed with the `field_name` attribute into the
-  changeset callback. The key is calculated using the current date, a UUID, and the computed
-  extension. A file uploaded may therefore be given a key such as
+  The storage key is calculated using the current date, a UUID, and the computed extension.
+  A file uploaded may therefore be given a key such as
   `2024/1/1/0bce8eea-17e0-11ef-b7d4-0242ac120006.png`. See `PhilomenaMedia.Filename.build/1` for
   the actual construction.
 
-  This function does not persist an upload to storage.
+  Attributes are passed to the changeset function as in `prepare_upload/5`.
 
   See the module documentation for a complete example.
 
@@ -212,11 +256,6 @@ defmodule PhilomenaMedia.Uploader do
   def analyze_upload(schema_or_changeset, field_name, upload_parameter, changeset_fn) do
     with {:ok, analysis} <- Analyzers.analyze_upload(upload_parameter),
          analysis <- extra_attributes(analysis, upload_parameter) do
-      removed =
-        schema_or_changeset
-        |> change()
-        |> get_field(field(field_name))
-
       attributes =
         %{
           "name" => analysis.name,
@@ -233,11 +272,15 @@ defmodule PhilomenaMedia.Uploader do
           "is_animated" => analysis.animated?
         }
         |> prefix_attributes(field_name)
-        |> Map.put(field_name, analysis.new_name)
-        |> Map.put(upload_key(field_name), upload_parameter.path)
-        |> Map.put(remove_key(field_name), removed)
 
-      changeset_fn.(schema_or_changeset, attributes)
+      prepare_upload(
+        schema_or_changeset,
+        field_name,
+        analysis.storage_key,
+        upload_parameter.path,
+        changeset_fn,
+        attributes
+      )
     else
       {:unsupported_mime, mime} ->
         attributes = prefix_attributes(%{"mime_type" => mime}, field_name)
@@ -252,7 +295,7 @@ defmodule PhilomenaMedia.Uploader do
   Writes the file to permanent storage. This should be the second-to-last step
   before completing a file operation.
 
-  The key (location to write the persisted file) is fetched from the schema by `field_name`.
+  The storage key (location to write the persisted file) is fetched from the schema by `field_name`.
   This is then prefixed with the `file_root` specified by the caller. Finally, the file is
   written to storage.
 
@@ -268,15 +311,15 @@ defmodule PhilomenaMedia.Uploader do
   """
   @spec persist_upload(schema(), file_root(), field_name()) :: :ok
   def persist_upload(schema, file_root, field_name) do
-    source = Map.get(schema, field(upload_key(field_name)))
-    dest = Map.get(schema, field(field_name))
+    source = get_schema_field(schema, uploaded_field_name(field_name))
+    dest = get_schema_field(schema, field_name)
     target = Path.join(file_root, dest)
 
     persist_file(target, source)
   end
 
   @doc """
-  Persist an arbitrary file to storage with the given key.
+  Persist an arbitrary file to storage with the given storage key.
 
   > #### Warning {: .warning}
   >
@@ -284,7 +327,7 @@ defmodule PhilomenaMedia.Uploader do
   > to allow overriding the key. If you do not need to override the key, use
   > `persist_upload/3` instead.
 
-  The key (location to write the persisted file) and the file path to upload are passed through
+  The storage key and the file path to upload are passed through
   to `PhilomenaMedia.Objects.upload/2` without modification. See the definition of that function for
   additional details.
 
@@ -303,9 +346,8 @@ defmodule PhilomenaMedia.Uploader do
   Removes the old file from permanent storage. This should be the last step in
   completing a file operation.
 
-  The key (location to write the persisted file) is fetched from the schema by `field_name`.
-  This is then prefixed with the `file_root` specified by the caller. Finally, the file is
-  purged from storage.
+  The storage key is fetched from the schema by `field_name`. This is then prefixed with
+  the `file_root` specified by the caller. Finally, the file is purged from storage.
 
   See the module documentation for a complete example.
 
@@ -320,7 +362,7 @@ defmodule PhilomenaMedia.Uploader do
   @spec unpersist_old_upload(schema(), file_root(), field_name()) :: :ok
   def unpersist_old_upload(schema, file_root, field_name) do
     schema
-    |> Map.get(field(remove_key(field_name)))
+    |> get_schema_field(removed_field_name(field_name))
     |> try_remove(file_root)
   end
 
@@ -330,7 +372,7 @@ defmodule PhilomenaMedia.Uploader do
 
     stat = File.stat!(path)
     sha512 = Sha512.file(path)
-    new_name = Filename.build(analysis.extension)
+    storage_key = Filename.build(analysis.extension)
 
     analysis
     |> Map.put(:size, stat.size)
@@ -338,7 +380,7 @@ defmodule PhilomenaMedia.Uploader do
     |> Map.put(:width, width)
     |> Map.put(:height, height)
     |> Map.put(:sha512, sha512)
-    |> Map.put(:new_name, new_name)
+    |> Map.put(:storage_key, storage_key)
     |> Map.put(:aspect_ratio, aspect_ratio)
   end
 
@@ -355,9 +397,13 @@ defmodule PhilomenaMedia.Uploader do
   defp prefix_attributes(map, prefix),
     do: Map.new(map, fn {key, value} -> {"#{prefix}_#{key}", value} end)
 
-  defp upload_key(field_name), do: "uploaded_#{field_name}"
+  defp uploaded_field_name(field_name), do: "uploaded_#{field_name}"
 
-  defp remove_key(field_name), do: "removed_#{field_name}"
+  defp removed_field_name(field_name), do: "removed_#{field_name}"
 
-  defp field(field_name), do: String.to_existing_atom(field_name)
+  defp get_schema_field(schema, field_name),
+    do: Map.get(schema, String.to_existing_atom(field_name))
+
+  defp get_changeset_field(changeset, field_name),
+    do: get_field(changeset, String.to_existing_atom(field_name))
 end

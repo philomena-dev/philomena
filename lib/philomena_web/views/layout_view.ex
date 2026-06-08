@@ -5,6 +5,7 @@ defmodule PhilomenaWeb.LayoutView do
   alias PhilomenaWeb.ImageView
   alias Philomena.Config
   alias Philomena.Users.User
+  alias Philomena.Autocomplete
   alias Plug.Conn
 
   @themes User.themes()
@@ -52,6 +53,7 @@ defmodule PhilomenaWeb.LayoutView do
   def clientside_data(conn) do
     conn = Conn.fetch_cookies(conn)
 
+    autocomplete = Autocomplete.get_autocomplete()
     extra = Map.get(conn.assigns, :clientside_data, [])
     interactions = Map.get(conn.assigns, :interactions, [])
     user = conn.assigns.current_user
@@ -75,7 +77,8 @@ defmodule PhilomenaWeb.LayoutView do
       fancy_tag_upload: if(user, do: user.fancy_tag_field_on_upload, else: "true") |> to_string(),
       interactions: JSON.encode!(interactions),
       ignored_tag_list: JSON.encode!(ignored_tag_list(conn.assigns[:tags])),
-      hide_staff_tools: conn.cookies["hide_staff_tools"] |> to_string()
+      hide_staff_tools: conn.cookies["hide_staff_tools"] |> to_string(),
+      autocomplete_file_url: if(autocomplete, do: autocomplete_file_url(autocomplete), else: nil)
     ]
 
     data = Keyword.merge(data, extra)
@@ -166,5 +169,13 @@ defmodule PhilomenaWeb.LayoutView do
       [ua] -> ua
       _ -> ""
     end
+  end
+
+  def autocomplete_file_url(autocomplete) do
+    "#{autocomplete_url_root()}/#{autocomplete.file}"
+  end
+
+  def autocomplete_url_root do
+    Application.get_env(:philomena, :autocomplete_url_root)
   end
 end

@@ -34,6 +34,7 @@ export class TestContext {
 
   constructor(fakeAutocompleteResponse: Response) {
     this.fakeAutocompleteResponse = fakeAutocompleteResponse;
+    window.booru.autocompleteFileUrl = '/autocomplete/compiled';
 
     vi.useFakeTimers().setSystemTime(0);
     fetchMock.enableMocks();
@@ -179,7 +180,7 @@ export class TestContext {
     await vi.runAllTimersAsync();
   }
 
-  snapPequests() {
+  snapRequests() {
     const snapshot = vi.mocked(fetch).mock.calls.map(([input]) => {
       const request = input as unknown as Request;
       const meta: Record<string, unknown> = {};
@@ -283,10 +284,10 @@ export const autocompleteTest = test.extend<{ ctx: TestContext }>({
     // Initialize the lazy autocomplete index cache
     await ctx.focusInput();
 
-    expect(ctx.snapPequests()).toMatchInlineSnapshot(`
+    expect(ctx.snapRequests()).toMatchInlineSnapshot(`
       [
         {
-          "dest": "GET http://localhost:3000/autocomplete/compiled?vsn=2&key=1970-0-1",
+          "dest": "GET http://localhost:3000/autocomplete/compiled",
           "meta": {
             "cache": "force-cache",
             "credentials": "omit",
