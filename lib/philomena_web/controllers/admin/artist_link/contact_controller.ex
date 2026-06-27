@@ -17,7 +17,7 @@ defmodule PhilomenaWeb.Admin.ArtistLink.ContactController do
       ArtistLinks.contact_artist_link(conn.assigns.artist_link, conn.assigns.current_user)
 
     conn
-    |> put_flash(:info, "Artist successfully marked as contacted.")
+    |> put_flash(:info, "Creator successfully marked as contacted.")
     |> moderation_log(details: &log_details/2, data: artist_link)
     |> redirect(to: ~p"/admin/artist_links")
   end

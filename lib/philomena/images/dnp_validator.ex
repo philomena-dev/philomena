@@ -27,7 +27,7 @@ defmodule Philomena.Images.DnpValidator do
   end
 
   defp validate_artist_only(changeset, tags_with_dnp, uploader) do
-    validate_tags_with_dnp(changeset, tags_with_dnp, uploader, "Artist Upload Only")
+    validate_tags_with_dnp(changeset, tags_with_dnp, uploader, "Creator Upload Only")
   end
 
   defp validate_no_edits(changeset, tags_with_dnp, uploader, edit_present?) do

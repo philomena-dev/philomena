@@ -80,16 +80,16 @@
         tr
           = cond do
             - same_artist_tags?(report) ->
-              td.success Same artist tags
+              td.success Same creator tags
 
             - more_artist_tags_on_target?(report) ->
-              td.warning More artist tags on target
+              td.warning More creator tags on target
 
             - more_artist_tags_on_source?(report) ->
-              td.warning More artist tags on source
+              td.warning More creator tags on source
 
             - true ->
-              td.danger Different artist tags
+              td.danger Different creator tags
 
         tr
           = cond do

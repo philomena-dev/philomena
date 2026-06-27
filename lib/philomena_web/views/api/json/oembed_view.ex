@@ -32,13 +32,13 @@ defmodule PhilomenaWeb.Api.Json.OembedView do
       thumbnail_height: thumbnail_height,
       url: ImageView.pretty_url(image, true, false),
       width: image.image_width,
-      height: image.image_height,
+      height: image.image_height
     }
   end
 
   defp artist_tags(tags) do
     tags
-    |> Enum.filter(&(&1.namespace == "artist"))
+    |> Enum.filter(&(&1.namespace == "creator"))
     |> Enum.map_join(", ", & &1.name_in_namespace)
   end
 end

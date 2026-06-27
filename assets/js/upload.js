@@ -132,7 +132,7 @@ function setupImageUpload() {
         // Set description
         if (descrEl) descrEl.value = descrEl.value || data.description || '';
         // Add author
-        if (tagsEl && data.author_name) addTag(tagsEl, `prompter:${data.author_name.toLowerCase()}`);
+        if (tagsEl && data.author_name) addTag(tagsEl, `creator:${data.author_name.toLowerCase()}`);
         // Clear selected file, if any
         fileField.value = '';
         showImages(data.images);

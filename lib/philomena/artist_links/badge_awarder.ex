@@ -5,12 +5,12 @@ defmodule Philomena.ArtistLinks.BadgeAwarder do
 
   alias Philomena.Badges
 
-  @badge_title "Artist"
+  @badge_title "Content Creator"
 
   @doc """
   Awards a badge to an artist with a verified link.
 
-  If the badge with the title `"Artist"` does not exist, no award will be created.
+  If the badge with the title `"Content Creator"` does not exist, no award will be created.
   If the user already has an award with that badge title, no award will be created.
 
   Returns `{:ok, award}`, `{:ok, nil}`, or `{:error, changeset}`. The return value is
