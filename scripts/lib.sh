@@ -54,7 +54,7 @@ function step {
 
   colorized_cmd=$(colorize_command "${cmd[@]}")
 
-  echo >&$global_stdout -e "\033[32;1m$task❱\033[0m $colorized_cmd" >&2
+  echo >&$global_stdout -e "\033[32;1m${task}❱\033[0m $colorized_cmd" >&2
 
   "$@"
 }
