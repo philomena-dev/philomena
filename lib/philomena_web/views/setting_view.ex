@@ -29,15 +29,34 @@ defmodule PhilomenaWeb.SettingView do
     ]
   end
 
-  def local_tab_class(conn) do
-    case conn.assigns.current_user do
-      nil -> ""
-      _user -> "hidden"
-    end
-  end
-
   def staff?(%{role: role}), do: role != "user"
   def staff?(_), do: false
+
+  def tab_class(conn, tab_id, opts \\ []) do
+    if is_active_tab(conn, tab_id, opts), do: "", else: "hidden"
+  end
+
+  def tab_link(conn, display_name, tab_id, opts \\ []) do
+    default = Keyword.get(opts, :default, false)
+    class = if is_active_tab(conn, tab_id, opts), do: "selected", else: ""
+
+    link(display_name,
+      to: "?tab=#{tab_id}",
+      data: [click_tab: tab_id, tab_default: default],
+      class: class
+    )
+  end
+
+  defp is_active_tab(conn, tab_id, opts) do
+    default = Keyword.get(opts, :default, false)
+    tab = conn.params["tab"]
+
+    if is_nil(tab) do
+      default
+    else
+      tab == tab_id
+    end
+  end
 
   def field_with_help(title, children) do
     content =
