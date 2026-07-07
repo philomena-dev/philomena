@@ -149,9 +149,28 @@ paths:
         via the JSON API; alternatively (on self-hosted instances) the file
         may be sent as a direct multipart upload in `image[image]`.
 
-        You *must* provide the direct link to the image in the `url`
-        parameter, and you *must* set the `content-type` header to
-        `application/json` for the site to process your request.
+        **URL-based uploads:**
+
+        Set `content-type` to `application/json`. The following fields are required in the JSON body:
+
+        ```json
+        {
+          "image": {
+            "tag_input": "safe, cute, fox", // at least 3 tags (5 on Furbooru), must include a rating tag
+          },
+          "url": "https://example.com/cute-fox.png" // direct links only
+        }
+        ```
+
+        **Multipart Form Uploads:**
+
+        Set `content-type` to `multipart/form-data` and send a multipart body with the following fields (Javascript example):
+
+        ```javascript
+        const formData = new FormData()
+        formData.append('image[image]', '@filename')
+        formData.append('image[tag_input]', 'safe, cute, fox') // at least 3 tags (5 on Furbooru), must include a rating tag
+        ```
 
         At least three tags must be provided via `image[tag_input]`, including
         a rating tag.
@@ -179,19 +198,41 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ImageUploadRequest'
-            example:
-              image:
-                description: >-
-                  > Hey there this is a test post!
+            examples:
+              one_source:
+                summary: Upload with a single source URL
+                value:
+                  image:
+                    description: >-
+                      > Hey there this is a test post!
 
-                  Descriptions are **weird**.
+                      Descriptions are **weird**.
 
-                  Have a >>0 re-upload :)
-                tag_input: >-
-                  artist needed, safe, derpy hooves, pegasus, pony, bag,
-                  building, chair, letter, mail, muffin, sitting, smiling
-                source_url: https://derpibooru.org/images/0
-              url: https://derpicdn.net/img/view/2012/1/2/0.jpg
+                      Have a >>0 re-upload :)
+                    tag_input: >-
+                      artist needed, safe, derpy hooves, pegasus, pony, bag,
+                      building, chair, letter, mail, muffin, sitting, smiling
+                    source_url: https://derpibooru.org/images/0
+                  url: https://derpicdn.net/img/view/2012/1/2/0.jpg
+              multiple_sources:
+                summary: Upload with multiple source URLs
+                value:
+                  image:
+                    description: >-
+                      > Hey there this is a test post!
+
+                      Descriptions are **weird**.
+
+                      Have a >>0 re-upload :)
+                    tag_input: >-
+                      artist needed, safe, derpy hooves, pegasus, pony, bag,
+                      building, chair, letter, mail, muffin, sitting, smiling
+                    sources:
+                      '0':
+                        source: https://derpibooru.org/images/0
+                      '1':
+                        source: https://example.com/alternate-source
+                  url: https://derpicdn.net/img/view/2012/1/2/0.jpg
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/ImageUploadMultipartRequest'
