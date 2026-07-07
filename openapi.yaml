@@ -97,7 +97,7 @@ tags:
   - name: Images
     description: Individual images and image uploads
   - name: Search
-    description: Query-string based search over site content
+    description: Search over the site content
   - name: Tags
     description: Tag details
   - name: Comments
@@ -182,9 +182,9 @@ paths:
             example:
               image:
                 description: >-
-                  [bq]Hey there this is a test post![/bq]
+                  > Hey there this is a test post!
 
-                  Descriptions are *weird*.
+                  Descriptions are **weird**.
 
                   Have a >>0 re-upload :)
                 tag_input: >-
