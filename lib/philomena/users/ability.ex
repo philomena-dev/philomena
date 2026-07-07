@@ -572,6 +572,7 @@ defimpl Canada.Can, for: Atom do
   alias Philomena.Tags.Tag
   alias Philomena.Rules.Rule
   alias Philomena.StaticPages.StaticPage
+  alias Philomena.Users.User
 
   #
   # Anonymous / non-logged-in users can...
@@ -611,6 +612,9 @@ defimpl Canada.Can, for: Atom do
 
   # Create and edit posts
   def can?(_user, :create_post, %Topic{locked_at: nil, hidden_from_users: false}), do: true
+
+  # View profile pages
+  def can?(_user, :show, %User{}), do: true
 
   def can?(_user, :show, %DnpEntry{aasm_state: "listed"}), do: true
   def can?(_user, :show_reason, %DnpEntry{aasm_state: "listed", hide_reason: false}), do: true
