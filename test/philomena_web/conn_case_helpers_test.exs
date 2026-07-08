@@ -54,6 +54,22 @@ defmodule PhilomenaWeb.ConnCaseHelpersTest do
     end
   end
 
+  describe "register_and_log_in_role_moderator/2" do
+    setup %{conn: conn} do
+      register_and_log_in_role_moderator(%{conn: conn}, "Badge")
+    end
+
+    test "grants a moderator the resource_type admin role_map entry", %{conn: conn, user: user} do
+      assert user.role == "moderator"
+
+      # The "Badge" role_map grant lets an otherwise-plain moderator reach the
+      # admin badge index, which a plain moderator is denied.
+      conn = get(conn, ~p"/admin/badges")
+      assert html_response(conn, 200) =~ "Badges"
+      assert conn.assigns.current_user.id == user.id
+    end
+  end
+
   describe "register_and_log_in_totp_user/1" do
     setup :register_and_log_in_totp_user
 

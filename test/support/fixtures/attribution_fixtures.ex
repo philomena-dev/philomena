@@ -19,4 +19,22 @@ defmodule Philomena.AttributionFixtures do
       user: user
     ]
   end
+
+  @doc """
+  Clears the Valkey tag-change rate-limit counters for the shared attribution
+  IP.
+
+  Tag changes authored through `Philomena.Images.update_tags/3` bump the
+  `rltcn:`/`rltcr:` counters keyed on the attribution IP (see
+  `Philomena.TagChanges.Limits` — 50 tag changes per 10 minutes for
+  anonymous/unverified users). The SQL sandbox does not roll Valkey back, so
+  the counter accumulates across test runs (10-minute TTL) and eventually
+  trips `{:error, :check_limits, :limit_exceeded, ...}`. Tests that author tag
+  changes with the shared `attribution/1` fixture must reset it in setup.
+  """
+  def reset_tag_change_limits(attrs \\ attribution()) do
+    ip = attrs[:ip]
+    Redix.command!(:redix, ["DEL", "rltcn:#{ip}", "rltcr:#{ip}"])
+    :ok
+  end
 end

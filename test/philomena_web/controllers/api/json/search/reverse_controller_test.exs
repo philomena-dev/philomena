@@ -8,7 +8,9 @@ defmodule PhilomenaWeb.Api.Json.Search.ReverseControllerTest do
   # Reverse search matches against Postgres intensity rows, not OpenSearch,
   # so this module can stay async.
 
-  import Philomena.ImagesFixtures
+  # The local png_upload/0 deliberately differs from the fixture one (no
+  # tempfile registration — reverse search never gives the file away).
+  import Philomena.ImagesFixtures, except: [png_upload: 0]
 
   alias Philomena.ImageIntensities.ImageIntensity
   alias Philomena.Repo

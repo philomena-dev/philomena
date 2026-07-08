@@ -105,6 +105,45 @@ defmodule PhilomenaWeb.ConnCase do
   end
 
   @doc """
+  Setup-style helper that registers a moderator granted the `resource_type`
+  admin `role_map` entry and logs them in, returning `%{conn:, user:}`.
+
+      setup %{conn: conn} do
+        register_and_log_in_role_moderator(%{conn: conn}, "Badge")
+      end
+
+  Several admin resources (Badge, Advert, SiteNotice, …) gate their abilities
+  on a `{resource_type => %{"admin" => _}}` entry in the user's `role_map`,
+  which is rebuilt at login from the `roles` association — so the grant is a
+  `Philomena.Roles.Role` row plus a `users_roles` join. A "Forum" resource_type
+  is inert (no ability rule keys on it); the admin forum controller test uses
+  it to prove the grant still does nothing.
+  """
+  def register_and_log_in_role_moderator(%{conn: conn}, resource_type) do
+    user = role_moderator_fixture(resource_type)
+    %{conn: log_in_user(conn, user), user: user}
+  end
+
+  @doc """
+  Logs in a fresh moderator granted the `resource_type` admin `role_map` entry,
+  returning the updated `conn`. See `register_and_log_in_role_moderator/2` for
+  what the grant is and why it is needed.
+  """
+  def log_in_role_moderator(conn, resource_type) do
+    log_in_user(conn, role_moderator_fixture(resource_type))
+  end
+
+  defp role_moderator_fixture(resource_type) do
+    user = Philomena.UsersFixtures.moderator_user_fixture()
+
+    role =
+      Philomena.Repo.insert!(%Philomena.Roles.Role{name: "admin", resource_type: resource_type})
+
+    Philomena.Repo.insert_all("users_roles", [%{user_id: user.id, role_id: role.id}])
+    user
+  end
+
+  @doc """
   Setup helper providing a user and their API key for `/api/v1` requests.
 
       setup :create_api_user

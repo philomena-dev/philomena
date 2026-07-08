@@ -38,5 +38,56 @@ defmodule PhilomenaWeb.Registration.PasswordControllerTest do
       assert Flash.get(old_password_conn.assigns.flash, :error) =~ "Failed to update password"
       assert get_session(old_password_conn, :user_token) == get_session(conn, :user_token)
     end
+
+    test "invalidates all previous session tokens on success", %{conn: conn, user: user} do
+      old_token = get_session(conn, :user_token)
+
+      put(conn, ~p"/registrations/password", %{
+        "current_password" => valid_user_password(),
+        "user" => %{
+          "password" => "new valid password",
+          "password_confirmation" => "new valid password"
+        }
+      })
+
+      refute Users.get_user_by_session_token(old_token)
+      assert Users.get_user_by_email_and_password(user.email, "new valid password", & &1)
+    end
+  end
+
+  describe "PATCH /registrations/password" do
+    test "behaves like PUT", %{conn: conn, user: user} do
+      conn =
+        patch(conn, ~p"/registrations/password", %{
+          "current_password" => valid_user_password(),
+          "user" => %{
+            "password" => "new valid password",
+            "password_confirmation" => "new valid password"
+          }
+        })
+
+      assert redirected_to(conn) == ~p"/registrations/edit"
+      assert Users.get_user_by_email_and_password(user.email, "new valid password", & &1)
+    end
+
+    test "raises without a current_password param", %{conn: conn} do
+      assert_raise Phoenix.ActionClauseError, fn ->
+        patch(conn, ~p"/registrations/password", %{
+          "user" => %{"password" => "new valid password"}
+        })
+      end
+    end
+
+    test "redirects anonymous users to the login page" do
+      conn = build_conn()
+
+      conn =
+        patch(conn, ~p"/registrations/password", %{
+          "current_password" => "irrelevant",
+          "user" => %{"password" => "new valid password"}
+        })
+
+      assert redirected_to(conn) == ~p"/sessions/new"
+    end
   end
 end

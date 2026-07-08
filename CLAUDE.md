@@ -26,7 +26,17 @@ Elixir commands (`mix ...`) must run inside the `app` container (or the devconta
 - `mix credo` — lint
 - `mix sobelow --config` and `mix deps.audit` — security checks (CI runs both)
 - `mix dialyzer` — static analysis (CI runs it; slow on first run while PLT builds)
-- `philomena test` (from host) replicates the full CI sequence: format check → `mix test` → sobelow → deps.audit → dialyzer
+- `philomena test` (from host) replicates the full CI sequence: format check → `mix test` → sobelow → deps.audit → dialyzer. It recompiles everything and runs dialyzer — use it as a final pass, not for iteration; iterate with targeted `mix test` runs instead.
+
+**Running tests from the host:** the `app` container pins `MIX_ENV=dev`, so a plain `docker compose exec app mix test` hits the dev database and fails with a sandbox error. Override the env:
+
+```bash
+docker compose exec -T -e MIX_ENV=test app mix test [test/path/to/file_test.exs]
+```
+
+(and once on a fresh stack, `mix ecto.create && mix ecto.load` with the same `-e MIX_ENV=test`).
+
+Test conventions — file layout, auth-level setup helpers, fixtures, OpenSearch index handling, external-call stubbing — are documented in `test/CONVENTIONS.md`; read it before writing controller or context tests.
 
 ### Database
 

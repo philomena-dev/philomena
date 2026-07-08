@@ -24,4 +24,16 @@ defmodule PhilomenaWeb.DeactivationControllerTest do
       assert user.deleted_by_user_id == user.id
     end
   end
+
+  describe "when not logged in" do
+    test "GET /deactivations redirects to the login page" do
+      conn = build_conn() |> get(~p"/deactivations")
+      assert redirected_to(conn) == ~p"/sessions/new"
+    end
+
+    test "DELETE /deactivations redirects to the login page" do
+      conn = build_conn() |> delete(~p"/deactivations")
+      assert redirected_to(conn) == ~p"/sessions/new"
+    end
+  end
 end

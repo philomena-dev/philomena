@@ -62,4 +62,19 @@ defmodule Philomena.ImagesFixtures do
     |> put_assoc(:sources, Enum.map(sources, &%Source{source: &1}))
     |> Repo.insert!()
   end
+
+  @png_fixture Path.absname("test/support/fixtures/files/upload-test.png")
+
+  @doc """
+  Builds a `%Plug.Upload{}` for the shared 100x100 PNG fixture, with its
+  tempfile registered to the calling process the way `Plug.Parsers` would.
+
+  Use this for actions that drive the media pipeline (e.g. replacing an
+  image's file via `Image.FileController`).
+  """
+  def png_upload do
+    {:ok, path} = Plug.Upload.random_file("image-upload-test")
+    File.cp!(@png_fixture, path)
+    %Plug.Upload{path: path, content_type: "image/png", filename: "upload-test.png"}
+  end
 end

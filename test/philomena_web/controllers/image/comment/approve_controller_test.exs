@@ -1,0 +1,102 @@
+defmodule PhilomenaWeb.Image.Comment.ApproveControllerTest do
+  use PhilomenaWeb.ConnCase, async: true
+
+  import Philomena.CommentsFixtures
+  import Philomena.ImagesFixtures
+  import Philomena.UsersFixtures
+
+  alias Philomena.Repo
+
+  # A comment whose body contains an external link, posted by an untrusted
+  # (freshly-registered) user, is withheld from approval.
+  defp unapproved_comment(image) do
+    comment =
+      comment_fixture(image, confirmed_user_fixture(), %{
+        "body" => "buy now at https://spam.example/"
+      })
+
+    refute Repo.reload!(comment).approved
+    comment
+  end
+
+  describe "POST /images/:image_id/comments/:comment_id/approve" do
+    test "redirects anonymous users to login", %{conn: conn} do
+      image = image_fixture()
+      comment = unapproved_comment(image)
+
+      conn = post(conn, ~p"/images/#{image}/comments/#{comment}/approve")
+
+      assert redirected_to(conn) == ~p"/sessions/new"
+      refute Repo.reload!(comment).approved
+    end
+
+    test "rejects a regular user", %{conn: conn} do
+      image = image_fixture()
+      comment = unapproved_comment(image)
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+
+      conn = post(conn, ~p"/images/#{image}/comments/#{comment}/approve")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      refute Repo.reload!(comment).approved
+    end
+
+    test "as a moderator approves the comment", %{conn: conn} do
+      image = image_fixture()
+      comment = unapproved_comment(image)
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+
+      conn = post(conn, ~p"/images/#{image}/comments/#{comment}/approve")
+
+      assert redirected_to(conn) == ~p"/images/#{image}" <> "#comment_#{comment.id}"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Comment has been approved."
+      assert Repo.reload!(comment).approved
+    end
+
+    test "as an admin approves the comment", %{conn: conn} do
+      image = image_fixture()
+      comment = unapproved_comment(image)
+      %{conn: conn} = register_and_log_in_admin(%{conn: conn})
+
+      conn = post(conn, ~p"/images/#{image}/comments/#{comment}/approve")
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Comment has been approved."
+      assert Repo.reload!(comment).approved
+    end
+
+    # Approving an already-approved comment is idempotent (no verify plug).
+    test "approving an already-approved comment still succeeds", %{conn: conn} do
+      image = image_fixture()
+      comment = comment_fixture(image)
+      assert Repo.reload!(comment).approved
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+
+      conn = post(conn, ~p"/images/#{image}/comments/#{comment}/approve")
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Comment has been approved."
+      assert Repo.reload!(comment).approved
+    end
+
+    test "for an unknown comment_id redirects with the authorization flash", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+      image = image_fixture()
+
+      conn = post(conn, ~p"/images/#{image}/comments/999999999/approve")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+    end
+
+    # NOTE: the comment_id is interpolated into the load query, so a
+    # non-integer value raises Ecto.Query.CastError (a 500).
+    test "for a non-integer comment_id raises CastError", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+      image = image_fixture()
+
+      assert_raise Ecto.Query.CastError, fn ->
+        post(conn, ~p"/images/#{image}/comments/not-a-number/approve")
+      end
+    end
+  end
+end

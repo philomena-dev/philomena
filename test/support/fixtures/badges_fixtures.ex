@@ -36,4 +36,16 @@ defmodule Philomena.BadgesFixtures do
 
     award
   end
+
+  @doc """
+  A real SVG upload — badge create/update-image run the media pipeline and the
+  badge image_changeset requires an `image/svg+xml` MIME type.
+  """
+  def svg_upload do
+    %Plug.Upload{
+      path: Path.absname("test/support/fixtures/files/badge-test.svg"),
+      filename: "badge.svg",
+      content_type: "image/svg+xml"
+    }
+  end
 end

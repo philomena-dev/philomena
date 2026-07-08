@@ -82,4 +82,26 @@ defmodule PhilomenaWeb.UnlockControllerTest do
       assert Users.get_user!(user.id).locked_at
     end
   end
+
+  describe "when already logged in" do
+    setup %{conn: conn} do
+      register_and_log_in_user(%{conn: conn})
+    end
+
+    test "GET /unlocks/new redirects to the homepage", %{conn: conn} do
+      conn = get(conn, ~p"/unlocks/new")
+      assert redirected_to(conn) == "/"
+    end
+
+    test "POST /unlocks redirects to the homepage", %{conn: conn, user: user} do
+      conn = post(conn, ~p"/unlocks", %{"user" => %{"email" => user.email}})
+      assert redirected_to(conn) == "/"
+    end
+
+    test "GET /unlocks/:id redirects to the homepage", %{conn: conn} do
+      conn = get(conn, ~p"/unlocks/oops")
+      assert redirected_to(conn) == "/"
+      refute Flash.get(conn.assigns.flash, :error)
+    end
+  end
 end

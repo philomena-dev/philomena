@@ -15,4 +15,26 @@ defmodule PhilomenaWeb.RouteCoverageTest do
                mix run --no-start -e 'PhilomenaWeb.RouteCoverage.regenerate()'
            """
   end
+
+  test "every route in test/route_coverage.txt is marked [x]" do
+    unchecked =
+      RouteCoverage.file_path()
+      |> File.read!()
+      |> String.split("\n")
+      |> Enum.filter(&String.starts_with?(&1, "[ ]"))
+
+    assert unchecked == [],
+           """
+           #{length(unchecked)} route(s) in test/route_coverage.txt are still
+           marked [ ], meaning they have no characterization tests yet:
+
+           #{Enum.join(unchecked, "\n")}
+
+           Every routed action must have characterization tests meeting the
+           definition of done in CHARACTERIZATION-TESTS.md (at least one test
+           per auth level that can reach the action, plus one failure-path test
+           for write actions). Add those tests, then flip the line's [ ] to [x]
+           in test/route_coverage.txt.
+           """
+  end
 end

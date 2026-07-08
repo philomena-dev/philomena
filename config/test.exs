@@ -6,7 +6,16 @@ config :philomena, Philomena.Repo,
   username: "postgres",
   password: "postgres",
   database: "philomena_test",
-  pool: Ecto.Adapters.SQL.Sandbox
+  pool: Ecto.Adapters.SQL.Sandbox,
+  # ExUnit runs up to System.schedulers_online() * 2 async tests at once
+  # (its max_cases default), each holding a sandbox connection; with the
+  # default pool_size of 10 the pool falls behind and sandbox checkouts
+  # start timing out (DBConnection.ConnectionError) once enough async
+  # tests exist. Size the pool to match, and give checkouts more queue
+  # headroom for bcrypt-heavy user fixtures.
+  pool_size: System.schedulers_online() * 2,
+  queue_target: 200,
+  queue_interval: 2000
 
 config :philomena,
   pwned_passwords: false,

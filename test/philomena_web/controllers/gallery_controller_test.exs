@@ -1,0 +1,304 @@
+defmodule PhilomenaWeb.GalleryControllerTest do
+  use PhilomenaWeb.ConnCase, async: false
+
+  @moduletag :search
+
+  import Ecto.Query
+  import Philomena.GalleriesFixtures
+  import Philomena.ImagesFixtures
+  import Philomena.UsersFixtures
+
+  alias PhilomenaQuery.SearchHelpers
+  alias Philomena.Galleries
+  alias Philomena.Galleries.Gallery
+  alias Philomena.Images.Image
+
+  setup do
+    SearchHelpers.recreate_index!(Gallery)
+    SearchHelpers.recreate_index!(Image)
+    :ok
+  end
+
+  describe "GET /galleries" do
+    test "lists galleries for anonymous users", %{conn: conn} do
+      user = confirmed_user_fixture()
+      gallery = gallery_fixture(user, title: "Test Listed Gallery")
+      SearchHelpers.reindex_all!(Gallery)
+
+      conn = get(conn, ~p"/galleries")
+      response = html_response(conn, 200)
+
+      assert response =~ "Galleries - Derpibooru"
+      assert response =~ "Test Listed Gallery"
+      assert response =~ ~p"/galleries/#{gallery.id}"
+    end
+
+    test "filters galleries by title", %{conn: conn} do
+      user = confirmed_user_fixture()
+      _wanted = gallery_fixture(user, title: "Test Wanted Gallery")
+      _other = gallery_fixture(user, title: "Test Unrelated Gallery")
+      SearchHelpers.reindex_all!(Gallery)
+
+      conn = get(conn, ~p"/galleries?#{[gallery: [title: "wanted"]]}")
+      response = html_response(conn, 200)
+
+      assert response =~ "Test Wanted Gallery"
+      refute response =~ "Test Unrelated Gallery"
+    end
+
+    test "renders with no galleries", %{conn: conn} do
+      conn = get(conn, ~p"/galleries")
+
+      assert html_response(conn, 200) =~ "Galleries - Derpibooru"
+    end
+  end
+
+  describe "GET /galleries/:id" do
+    test "renders a gallery and its images for anonymous users", %{conn: conn} do
+      user = confirmed_user_fixture()
+      gallery = gallery_fixture(user, title: "Test Shown Gallery")
+      image = image_fixture()
+
+      {:ok, _} = Galleries.add_image_to_gallery(gallery, image)
+      SearchHelpers.reindex_all!(Image)
+
+      conn = get(conn, ~p"/galleries/#{gallery}")
+      response = html_response(conn, 200)
+
+      assert response =~ "Showing Gallery - Derpibooru"
+      assert response =~ "Test Shown Gallery"
+      assert response =~ ~p"/images/#{image.id}"
+    end
+
+    test "renders an empty gallery", %{conn: conn} do
+      user = confirmed_user_fixture()
+      gallery = gallery_fixture(user, title: "Test Empty Gallery")
+
+      conn = get(conn, ~p"/galleries/#{gallery}")
+      response = html_response(conn, 200)
+
+      assert response =~ "Showing Gallery - Derpibooru"
+      assert response =~ "Test Empty Gallery"
+    end
+
+    test "renders a gallery for logged-in users", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+      gallery = gallery_fixture(confirmed_user_fixture())
+
+      conn = get(conn, ~p"/galleries/#{gallery}")
+
+      assert html_response(conn, 200) =~ "Showing Gallery - Derpibooru"
+    end
+
+    test "redirects to / for an unknown id", %{conn: conn} do
+      conn = get(conn, ~p"/galleries/999999999")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You can't access that page."
+    end
+  end
+
+  describe "GET /galleries/new" do
+    test "redirects anonymous users to the login page", %{conn: conn} do
+      conn = get(conn, ~p"/galleries/new")
+
+      assert redirected_to(conn) == ~p"/sessions/new"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "You must log in to access this page."
+    end
+
+    test "renders the form for logged-in users", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+
+      response = html_response(get(conn, ~p"/galleries/new"), 200)
+
+      assert response =~ "New Gallery - Derpibooru"
+      assert response =~ "Create a Gallery"
+    end
+
+    test "redirects banned users with the ban flash", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_banned_user(%{conn: conn})
+
+      conn = get(conn, ~p"/galleries/new")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You are currently banned"
+    end
+  end
+
+  describe "POST /galleries" do
+    test "creates the gallery and redirects to it", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      thumbnail = image_fixture()
+
+      conn =
+        post(conn, ~p"/galleries", %{
+          "gallery" => %{
+            "title" => "A new test gallery",
+            "thumbnail_id" => to_string(thumbnail.id),
+            "spoiler_warning" => "",
+            "description" => "Test gallery description"
+          }
+        })
+
+      gallery = Philomena.Repo.one!(from g in Gallery, where: g.user_id == ^user.id)
+
+      assert redirected_to(conn) == ~p"/galleries/#{gallery}"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Gallery successfully created."
+      assert gallery.title == "A new test gallery"
+      assert gallery.thumbnail_id == thumbnail.id
+    end
+
+    test "re-renders the form when the title is blank", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      thumbnail = image_fixture()
+
+      conn =
+        post(conn, ~p"/galleries", %{
+          "gallery" => %{"title" => "", "thumbnail_id" => to_string(thumbnail.id)}
+        })
+
+      response = html_response(conn, 200)
+      assert response =~ "Create a Gallery"
+      refute Philomena.Repo.exists?(from g in Gallery, where: g.user_id == ^user.id)
+    end
+
+    test "redirects banned users with the ban flash", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_banned_user(%{conn: conn})
+
+      conn = post(conn, ~p"/galleries", %{})
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You are currently banned"
+    end
+  end
+
+  describe "GET /galleries/:id/edit" do
+    test "redirects anonymous users to the login page", %{conn: conn} do
+      gallery = gallery_fixture(confirmed_user_fixture())
+
+      conn = get(conn, ~p"/galleries/#{gallery}/edit")
+
+      assert redirected_to(conn) == ~p"/sessions/new"
+    end
+
+    test "renders the form for the gallery's owner", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      gallery = gallery_fixture(user)
+
+      response = html_response(get(conn, ~p"/galleries/#{gallery}/edit"), 200)
+
+      assert response =~ "Editing Gallery - Derpibooru"
+    end
+
+    test "redirects other users with the authorization flash", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+      gallery = gallery_fixture(confirmed_user_fixture())
+
+      conn = get(conn, ~p"/galleries/#{gallery}/edit")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+    end
+
+    test "renders the form for a moderator", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+      gallery = gallery_fixture(confirmed_user_fixture())
+
+      response = html_response(get(conn, ~p"/galleries/#{gallery}/edit"), 200)
+
+      assert response =~ "Editing Gallery - Derpibooru"
+    end
+
+    test "redirects to / with the authorization flash for an unknown id", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+
+      conn = get(conn, ~p"/galleries/999999999/edit")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+    end
+  end
+
+  describe "PATCH /galleries/:id" do
+    test "updates the gallery as its owner", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      gallery = gallery_fixture(user)
+
+      conn =
+        patch(conn, ~p"/galleries/#{gallery}", %{
+          "gallery" => %{"title" => "Renamed test gallery"}
+        })
+
+      assert redirected_to(conn) == ~p"/galleries/#{gallery}"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Gallery successfully updated."
+      assert Philomena.Repo.reload!(gallery).title == "Renamed test gallery"
+    end
+
+    test "PUT also updates the gallery", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      gallery = gallery_fixture(user)
+
+      conn =
+        put(conn, ~p"/galleries/#{gallery}", %{"gallery" => %{"title" => "Renamed via PUT"}})
+
+      assert redirected_to(conn) == ~p"/galleries/#{gallery}"
+      assert Philomena.Repo.reload!(gallery).title == "Renamed via PUT"
+    end
+
+    test "re-renders the form when the title is blank", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      gallery = gallery_fixture(user)
+
+      conn = patch(conn, ~p"/galleries/#{gallery}", %{"gallery" => %{"title" => ""}})
+
+      assert html_response(conn, 200) =~ "Editing Gallery"
+      assert Philomena.Repo.reload!(gallery).title == gallery.title
+    end
+
+    test "redirects other users with the authorization flash", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+      gallery = gallery_fixture(confirmed_user_fixture())
+
+      conn = patch(conn, ~p"/galleries/#{gallery}", %{"gallery" => %{"title" => "Hijacked"}})
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      assert Philomena.Repo.reload!(gallery).title == gallery.title
+    end
+  end
+
+  describe "DELETE /galleries/:id" do
+    test "destroys the gallery as its owner", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      gallery = gallery_fixture(user)
+
+      conn = delete(conn, ~p"/galleries/#{gallery}")
+
+      assert redirected_to(conn) == ~p"/galleries"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Gallery successfully destroyed."
+      assert Philomena.Repo.reload(gallery) == nil
+    end
+
+    test "redirects other users with the authorization flash", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+      gallery = gallery_fixture(confirmed_user_fixture())
+
+      conn = delete(conn, ~p"/galleries/#{gallery}")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      refute Philomena.Repo.reload(gallery) == nil
+    end
+
+    test "redirects banned users with the ban flash", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_banned_user(%{conn: conn})
+
+      conn = delete(conn, ~p"/galleries/999999999")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You are currently banned"
+    end
+  end
+end

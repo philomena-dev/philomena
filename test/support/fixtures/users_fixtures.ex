@@ -57,6 +57,25 @@ defmodule Philomena.UsersFixtures do
   end
 
   @doc """
+  Fixture for a confirmed user that has an avatar set (a bare filename in the
+  `avatar` column; no object is actually uploaded).
+  """
+  def user_with_avatar_fixture(attrs \\ %{}) do
+    confirmed_user_fixture(attrs)
+    |> Ecto.Changeset.change(avatar: "test/avatar.png")
+    |> Repo.update!()
+  end
+
+  @doc """
+  Fixture for a confirmed user marked as verified (auto-approval status).
+  """
+  def verified_user_fixture(attrs \\ %{}) do
+    confirmed_user_fixture(attrs)
+    |> Users.User.verify_changeset()
+    |> Repo.update!()
+  end
+
+  @doc """
   Fixture for a confirmed user with an active ban.
 
   The ban is issued by `banning_user` (a fresh admin when `nil`), has the

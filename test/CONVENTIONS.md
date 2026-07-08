@@ -66,6 +66,35 @@ One test per auth level that can reach the action:
 - Context functions that enqueue Exq jobs are safe: test config consumes no
   queues, so nothing reaches OpenSearch.
 
+## Singleton toggle controllers (phase 3)
+
+The nearly identical singleton `create`/`delete` controllers (subscriptions,
+notification reads, image vote/fave/hide) share generated tests from
+`PhilomenaWeb.SingletonToggleTests` (`test/support/singleton_toggle_tests.ex`):
+
+```elixir
+use PhilomenaWeb.ConnCase, async: true
+use PhilomenaWeb.SingletonToggleTests
+
+defp subscription_target(user) do  # user is nil in the anonymous tests
+  image = image_fixture()
+
+  %{
+    path: ~p"/images/#{image}/subscription",
+    subscribe!: fn -> {:ok, _} = Images.create_subscription(image, user) end,
+    subscribed?: fn -> Repo.exists?(...) end
+  }
+end
+
+subscription_toggle_tests()
+```
+
+`read_singleton_tests()` (requires `read_target/1`) and
+`image_interaction_guard_tests(verbs)` (requires `interaction_path/1`) work
+the same way — see the module doc for the exact contracts. Add
+controller-specific behavior (hidden topics, restricted forums, parameter
+quirks) as ordinary hand-written tests alongside the generator call.
+
 ## External calls
 
 All stubbed in `config/test.exs`; smoke-tested by

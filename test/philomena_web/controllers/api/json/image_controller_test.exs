@@ -1,9 +1,8 @@
 defmodule PhilomenaWeb.Api.Json.ImageControllerTest do
-  use PhilomenaWeb.ConnCase, async: true
-
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior.
+  # async: false — a successful :create spawns a background upload process
+  # (Images.async_upload/2) that hits the Repo; it is only allowed on the
+  # sandbox connection in shared mode, which ConnCase enables for sync tests.
+  use PhilomenaWeb.ConnCase, async: false
 
   import Philomena.ImagesFixtures
   import Philomena.UsersFixtures
@@ -14,13 +13,26 @@ defmodule PhilomenaWeb.Api.Json.ImageControllerTest do
 
   @png_fixture Path.absname("test/support/fixtures/files/upload-test.png")
 
-  # A Plug.Upload whose tempfile is registered to the test process, the way
-  # Plug.Parsers would provide it — `Images.create_image/2` hands the file
-  # off with `Plug.Upload.give_away/3`, which requires a registered path.
-  defp png_upload do
-    {:ok, path} = Plug.Upload.random_file("api-image-test")
-    File.cp!(@png_fixture, path)
-    %Plug.Upload{path: path, content_type: "image/png", filename: "upload-test.png"}
+  # A successful :create spawns an unsupervised upload process
+  # (Images.async_upload/2) that writes to the Repo. Its sandbox allowance
+  # dies with the test process, so wait for it to exit before the test ends;
+  # otherwise it retries with OwnershipError every 5s for the rest of the
+  # suite. The endpoint call runs in the test process, so the upload process
+  # is our direct child.
+  defp await_async_upload do
+    test_pid = self()
+
+    for pid <- Process.list(), Process.info(pid, :parent) == {:parent, test_pid} do
+      ref = Process.monitor(pid)
+
+      receive do
+        {:DOWN, ^ref, :process, ^pid, _reason} -> :ok
+      after
+        5_000 -> raise "async upload process #{inspect(pid)} did not exit"
+      end
+    end
+
+    :ok
   end
 
   describe "GET /api/v1/json/images/:id" do
@@ -224,6 +236,8 @@ defmodule PhilomenaWeb.Api.Json.ImageControllerTest do
       assert Enum.sort(image["tags"]) == ["pony", "safe", "solo"]
 
       assert %Image{} = Repo.get(Image, image["id"])
+
+      await_async_upload()
     end
 
     test "returns 400 with changeset errors for invalid tags", %{conn: conn} do
@@ -305,6 +319,8 @@ defmodule PhilomenaWeb.Api.Json.ImageControllerTest do
 
       assert %{"image" => %{"width" => 1, "height" => 1, "mime_type" => "image/png"}} =
                json_response(conn, 200)
+
+      await_async_upload()
     end
 
     test "crashes when the request has no User-Agent header", %{conn: conn} do

@@ -1,0 +1,124 @@
+defmodule PhilomenaWeb.Profile.ReportControllerTest do
+  use PhilomenaWeb.ConnCase, async: true
+
+  import Ecto.Query
+  import Philomena.RulesFixtures
+  import Philomena.UsersFixtures
+
+  alias Philomena.Reports.Report
+  alias Philomena.Repo
+
+  describe "GET /profiles/:profile_id/reports/new" do
+    test "renders the report form for anonymous users", %{conn: conn} do
+      user = confirmed_user_fixture()
+
+      response = html_response(get(conn, ~p"/profiles/#{user}/reports/new"), 200)
+
+      assert response =~ "Reporting User - Derpibooru"
+      assert response =~ "Submit a report"
+    end
+
+    test "renders the report form for logged-in users", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+      user = confirmed_user_fixture()
+
+      assert html_response(get(conn, ~p"/profiles/#{user}/reports/new"), 200) =~
+               "Reporting User - Derpibooru"
+    end
+
+    test "redirects to / with the authorization flash for an unknown profile", %{conn: conn} do
+      conn = get(conn, ~p"/profiles/nonexistent-user/reports/new")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+    end
+  end
+
+  describe "POST /profiles/:profile_id/reports" do
+    test "as a logged-in user creates the report and redirects to /reports", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      reported = confirmed_user_fixture()
+      rule = rule_fixture()
+
+      conn =
+        post(conn, ~p"/profiles/#{reported}/reports", %{
+          "report" => %{
+            "reason" => "Test user report",
+            "rule_id" => rule.id,
+            "user_agent" => "Test Browser/1.0"
+          }
+        })
+
+      assert redirected_to(conn) == ~p"/reports"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) ==
+               "Your report has been received and will be checked by staff shortly."
+
+      report =
+        Repo.one!(
+          from r in Report,
+            where: r.reportable_type == "User" and r.reportable_id == ^reported.id
+        )
+
+      assert report.user_id == user.id
+      assert report.state == "open"
+    end
+
+    test "anonymously creates the report and redirects to /", %{conn: conn} do
+      reported = confirmed_user_fixture()
+      rule = rule_fixture()
+
+      conn =
+        post(conn, ~p"/profiles/#{reported}/reports", %{
+          "report" => %{
+            "reason" => "Anonymous user report",
+            "rule_id" => rule.id,
+            "user_agent" => "Test Browser/1.0"
+          }
+        })
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) ==
+               "Your report has been received and will be checked by staff shortly."
+
+      report =
+        Repo.one!(
+          from r in Report,
+            where: r.reportable_type == "User" and r.reportable_id == ^reported.id
+        )
+
+      assert report.user_id == nil
+    end
+
+    test "with a blank reason crashes trying to re-render the form", %{conn: conn} do
+      # NOTE: ReportController.create/5 re-renders "new.html" on changeset
+      # failure in the calling controller's nonexistent default view — same
+      # 500 as the other report wrappers (KNOWN-ODDITIES.md)
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+      reported = confirmed_user_fixture()
+      rule = rule_fixture()
+
+      assert_raise ArgumentError, ~r/no "new" html template defined/, fn ->
+        post(conn, ~p"/profiles/#{reported}/reports", %{
+          "report" => %{
+            "reason" => "",
+            "rule_id" => rule.id,
+            "user_agent" => "Test Browser/1.0"
+          }
+        })
+      end
+
+      assert Repo.aggregate(Report, :count) == 0
+    end
+
+    test "as a banned user redirects with the ban flash", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_banned_user(%{conn: conn})
+
+      conn = post(conn, ~p"/profiles/some-user/reports", %{})
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You are currently banned"
+    end
+  end
+end
