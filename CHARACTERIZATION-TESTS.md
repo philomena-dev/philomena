@@ -505,12 +505,18 @@ and `test/philomena_query/search_helpers_test.exs`.
   in `PhilomenaQuery.Search`, prefixed by
   `config :philomena, :opensearch_index_prefix` (`"test_"` in test, unset
   elsewhere). `Search.index_name(Image)` returns the effective name.
-- **Per-test lifecycle** lives in `PhilomenaQuery.SearchHelpers`
-  (`test/support/search_helpers.ex`): `recreate_index!/1` in setup,
-  then `reindex_all!/1` (or `index_documents!/2`) after inserting fixtures —
-  inserts only enqueue dead Exq jobs, so indexing is always explicit. Both
-  reindex helpers force a `_refresh`; without it, searches race OpenSearch's
-  ~1s refresh interval.
+- **Index lifecycle** lives in `PhilomenaQuery.SearchHelpers`
+  (`test/support/search_helpers.ex`). `create_all_indexes!/0` runs once from
+  `test_helper.exs`, building every index with its current mapping; each test
+  then empties the indexes it reads with `clear_index!/1` in setup, and calls
+  `reindex_all!/1` (or `index_documents!/2`) after inserting fixtures — inserts
+  only enqueue dead Exq jobs, so indexing is always explicit. Both reindex
+  helpers force a `_refresh`; without it, searches race OpenSearch's ~1s
+  refresh interval. Dropping and recreating an index per test (the original
+  design) is a cluster-metadata operation costing ~95 ms, and at 276 calls a
+  run it was the entire serial phase of the suite; `clear_index!/1` deletes
+  documents instead, in ~0.8 ms. Nothing in the suite needs a fresh mapping
+  mid-run.
 - **Convention**: search-backed test modules are `async: false` and tagged
   `@moduletag :search`. The tag is currently informational (nothing is
   excluded by default since OpenSearch is always up in the compose stack);
@@ -668,14 +674,12 @@ forum subscription, and gallery subscription/read tests (all Postgres-only,
 - **The whole family sits in `require_authenticated_user`**, so the
   anonymous case is uniformly a 302 to `/sessions/new` — and because that
   (and `FilterBannedUsersPlug`) halt before the resource loads, the id in
-  the path never has to exist. Only `image_interaction_guard_tests/1`
-  exploits that: it takes a dummy id (`interaction_path(1)`) and builds no
-  fixtures. `subscription_toggle_tests/0` and `read_singleton_tests/0` do
-  not — their anonymous tests call `subscription_target(nil)` /
-  `read_target(nil)` purely to read `:path`, so the target function still
-  inserts its fixtures for a request that never reaches them, and in four
-  cases (gallery subscription, gallery/topic/image read) that includes a
-  `confirmed_user_fixture()` and its bcrypt hash. Harmless, but wasted.
+  the path never has to exist. Every generator exploits that and builds no
+  fixtures for its anonymous tests: `image_interaction_guard_tests/1` takes
+  a dummy id (`interaction_path(1)`), while `subscription_toggle_tests/0`
+  and `read_singleton_tests/0` call the instantiating module's
+  `anonymous_path/0`. Consequently `subscription_target/1` and
+  `read_target/1` always receive a real user, never `nil`.
   Ban filtering splits the family: vote/fave/hide reject banned users
   ("You are currently banned." flash, redirect to referrer `/`), while the
   subscription/read controllers have no ban plug — a banned user can still
@@ -723,9 +727,17 @@ forum subscription, and gallery subscription/read tests (all Postgres-only,
   the full run started failing randomly-distributed tests with
   `DBConnection.ConnectionError` at sandbox checkout once this batch
   landed. `config/test.exs` now sizes the pool to match `max_cases` and
-  raises `queue_target`/`queue_interval` for the bcrypt-heavy user
+  raises `queue_target`/`queue_interval` for the then-bcrypt-heavy user
   fixtures. If random `ConnectionError` flakes reappear as later phases
   add tests, revisit these numbers before suspecting the tests.
+- **bcrypt runs at 4 rounds in test** (`config/runtime.exs`, guarded by
+  `config_env()`; override with `BCRYPT_ROUNDS`). At the production cost of
+  12 rounds a hash takes ~166 ms, and since every user fixture pays for one
+  — a TOTP fixture for eleven, the password plus ten backup codes — it
+  dominated the run. 4 rounds costs ~0.8 ms. Nothing depends on the cost
+  factor: bcrypt reads it back out of the stored hash when verifying. Note
+  `config/runtime.exs` is evaluated _after_ `config/test.exs`, so this
+  cannot be overridden from the latter.
 
 ## Field notes from the phase-3 toggle batch (second 8 controllers)
 

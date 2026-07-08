@@ -76,7 +76,11 @@ notification reads, image vote/fave/hide) share generated tests from
 use PhilomenaWeb.ConnCase, async: true
 use PhilomenaWeb.SingletonToggleTests
 
-defp subscription_target(user) do  # user is nil in the anonymous tests
+# require_authenticated_user halts before the resource loads, so the ids in
+# this path need not exist — the anonymous tests build no fixtures.
+defp anonymous_path, do: ~p"/images/1/subscription"
+
+defp subscription_target(user) do  # user is always a real user
   image = image_fixture()
 
   %{
@@ -89,7 +93,7 @@ end
 subscription_toggle_tests()
 ```
 
-`read_singleton_tests()` (requires `read_target/1`) and
+`read_singleton_tests()` (requires `anonymous_path/0` and `read_target/1`) and
 `image_interaction_guard_tests(verbs)` (requires `interaction_path/1`) work
 the same way — see the module doc for the exact contracts. Add
 controller-specific behavior (hidden topics, restricted forums, parameter
@@ -115,11 +119,16 @@ All stubbed in `config/test.exs`; smoke-tested by
 
 Search-backed tests hit the real OpenSearch from the compose stack, on
 `test_`-prefixed indexes (`:opensearch_index_prefix`) so they can never
-touch dev data. The SQL sandbox does not roll indexes back, so:
+touch dev data. Every searchable index is dropped and recreated **once** per
+`mix test` run — `test_helper.exs` calls
+`PhilomenaQuery.SearchHelpers.create_all_indexes!()` — so each run starts
+from the current mappings. The SQL sandbox does not roll indexes back, so:
 
 - Module must be `async: false` and tagged `@moduletag :search`.
-- Recreate the indexes the action reads in setup:
-  `PhilomenaQuery.SearchHelpers.recreate_index!(Image)`.
+- Clear the indexes the action reads in setup:
+  `PhilomenaQuery.SearchHelpers.clear_index!(Image)`. This deletes the
+  documents (`_delete_by_query`) and leaves the mapping alone; recreating the
+  index per test is a cluster-metadata operation and ~100x slower.
 - Index fixtures explicitly after inserting them —
   `SearchHelpers.reindex_all!(Image)` or `index_documents!([img], Image)` —
   both force a `_refresh` so documents are immediately searchable.

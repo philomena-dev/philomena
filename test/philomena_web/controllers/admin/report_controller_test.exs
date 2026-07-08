@@ -13,7 +13,7 @@ defmodule PhilomenaWeb.Admin.ReportControllerTest do
   alias PhilomenaQuery.SearchHelpers
 
   setup do
-    SearchHelpers.recreate_index!(Report)
+    SearchHelpers.clear_index!(Report)
     :ok
   end
 

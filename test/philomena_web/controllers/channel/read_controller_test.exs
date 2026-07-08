@@ -10,6 +10,10 @@ defmodule PhilomenaWeb.Channel.ReadControllerTest do
   alias Philomena.Notifications.ChannelLiveNotification
   alias Philomena.Repo
 
+  # require_authenticated_user halts before the resource loads, so the ids in
+  # this path need not exist.
+  defp anonymous_path, do: ~p"/channels/1/read"
+
   defp read_target(user) do
     channel = channel_fixture()
 

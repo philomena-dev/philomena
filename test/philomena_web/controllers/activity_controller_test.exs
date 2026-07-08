@@ -15,8 +15,8 @@ defmodule PhilomenaWeb.ActivityControllerTest do
   alias Philomena.Images.Image
 
   setup do
-    SearchHelpers.recreate_index!(Image)
-    SearchHelpers.recreate_index!(Comment)
+    SearchHelpers.clear_index!(Image)
+    SearchHelpers.clear_index!(Comment)
     :ok
   end
 

@@ -12,7 +12,7 @@ defmodule PhilomenaWeb.Api.Json.Search.CommentControllerTest do
   alias PhilomenaQuery.SearchHelpers
 
   setup do
-    SearchHelpers.recreate_index!(Comment)
+    SearchHelpers.clear_index!(Comment)
     :ok
   end
 

@@ -9,6 +9,10 @@ defmodule PhilomenaWeb.Gallery.SubscriptionControllerTest do
   alias Philomena.Galleries
   alias Philomena.Repo
 
+  # require_authenticated_user halts before the resource loads, so the ids in
+  # this path need not exist.
+  defp anonymous_path, do: ~p"/galleries/1/subscription"
+
   defp subscription_target(user) do
     gallery = gallery_fixture(confirmed_user_fixture())
 

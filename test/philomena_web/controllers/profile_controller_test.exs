@@ -17,9 +17,9 @@ defmodule PhilomenaWeb.ProfileControllerTest do
   alias Philomena.Repo
 
   setup do
-    SearchHelpers.recreate_index!(Image)
-    SearchHelpers.recreate_index!(Comment)
-    SearchHelpers.recreate_index!(Post)
+    SearchHelpers.clear_index!(Image)
+    SearchHelpers.clear_index!(Comment)
+    SearchHelpers.clear_index!(Post)
     :ok
   end
 

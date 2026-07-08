@@ -13,7 +13,7 @@ defmodule PhilomenaWeb.Admin.UserControllerTest do
   alias Philomena.Repo
 
   setup do
-    SearchHelpers.recreate_index!(User)
+    SearchHelpers.clear_index!(User)
     :ok
   end
 

@@ -10,7 +10,7 @@ defmodule PhilomenaWeb.Api.Json.Search.GalleryControllerTest do
   alias PhilomenaQuery.SearchHelpers
 
   setup do
-    SearchHelpers.recreate_index!(Gallery)
+    SearchHelpers.clear_index!(Gallery)
     :ok
   end
 

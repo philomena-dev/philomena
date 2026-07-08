@@ -14,7 +14,7 @@ defmodule PhilomenaWeb.Api.Json.Search.PostControllerTest do
   alias PhilomenaQuery.SearchHelpers
 
   setup do
-    SearchHelpers.recreate_index!(Post)
+    SearchHelpers.clear_index!(Post)
     :ok
   end
 

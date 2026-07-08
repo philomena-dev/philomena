@@ -1,5 +1,5 @@
 defmodule Philomena.ModerationLogsTest do
-  use Philomena.DataCase
+  use Philomena.DataCase, async: true
 
   alias Philomena.ModerationLogs
 

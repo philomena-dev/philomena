@@ -1,5 +1,5 @@
 defmodule PhilomenaWeb.DeactivationControllerTest do
-  use PhilomenaWeb.ConnCase
+  use PhilomenaWeb.ConnCase, async: true
 
   alias Philomena.Users
 

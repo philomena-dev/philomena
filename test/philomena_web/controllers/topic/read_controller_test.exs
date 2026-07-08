@@ -12,6 +12,10 @@ defmodule PhilomenaWeb.Topic.ReadControllerTest do
   alias Philomena.Repo
   alias Philomena.Topics
 
+  # require_authenticated_user halts before the resource loads, so the ids in
+  # this path need not exist.
+  defp anonymous_path, do: ~p"/forums/dummy/topics/1/read"
+
   defp read_target(user) do
     forum = forum_fixture()
     topic = topic_fixture(forum)

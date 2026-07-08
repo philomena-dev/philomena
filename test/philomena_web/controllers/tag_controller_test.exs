@@ -18,8 +18,8 @@ defmodule PhilomenaWeb.TagControllerTest do
   alias Philomena.Tags.Tag
 
   setup do
-    SearchHelpers.recreate_index!(Tag)
-    SearchHelpers.recreate_index!(Image)
+    SearchHelpers.clear_index!(Tag)
+    SearchHelpers.clear_index!(Image)
     :ok
   end
 

@@ -8,6 +8,10 @@ defmodule PhilomenaWeb.Forum.SubscriptionControllerTest do
   alias Philomena.Forums
   alias Philomena.Repo
 
+  # require_authenticated_user halts before the resource loads, so the ids in
+  # this path need not exist.
+  defp anonymous_path, do: ~p"/forums/dummy/subscription"
+
   defp subscription_target(user) do
     forum = forum_fixture()
 

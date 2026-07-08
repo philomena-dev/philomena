@@ -10,7 +10,7 @@ defmodule PhilomenaWeb.Api.Json.Search.FilterControllerTest do
   alias PhilomenaQuery.SearchHelpers
 
   setup do
-    SearchHelpers.recreate_index!(Filter)
+    SearchHelpers.clear_index!(Filter)
     :ok
   end
 

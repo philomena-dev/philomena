@@ -18,7 +18,7 @@ defmodule PhilomenaWeb.TagChangeControllerTest do
   import Ecto.Query
 
   setup do
-    SearchHelpers.recreate_index!(TagChange)
+    SearchHelpers.clear_index!(TagChange)
     # Valkey rate-limit counters are not rolled back by the SQL sandbox; reset
     # the tag-change limit so accumulated counts don't trip check_limits.
     reset_tag_change_limits()

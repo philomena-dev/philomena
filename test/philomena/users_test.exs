@@ -1,5 +1,5 @@
 defmodule Philomena.UsersTest do
-  use Philomena.DataCase
+  use Philomena.DataCase, async: true
 
   alias Philomena.Users
   import Philomena.UsersFixtures

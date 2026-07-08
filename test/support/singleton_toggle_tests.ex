@@ -16,10 +16,23 @@ defmodule PhilomenaWeb.SingletonToggleTests do
       use PhilomenaWeb.ConnCase, async: true
       use PhilomenaWeb.SingletonToggleTests
 
+  ### The anonymous tests and `anonymous_path/0`
+
+  `subscription_toggle_tests/0` and `read_singleton_tests/0` both require a
+  zero-arity `anonymous_path/0` returning the route under test with dummy
+  ids:
+
+      defp anonymous_path, do: ~p"/images/1/subscription"
+
+  `require_authenticated_user` runs in the router pipeline and halts before
+  the controller — and therefore before any `load_resource`/`LoadTopicPlug`
+  runs — so the ids in that path need not exist, and the anonymous tests
+  build no fixtures at all. They only ever assert the login redirect.
+
   ### Subscription controllers (`*.SubscriptionController`)
 
-  Define `subscription_target/1`, taking the acting user (`nil` for the
-  anonymous tests, which only use `:path`), then call
+  Define `subscription_target/1`, taking the acting user (always a real
+  user — the anonymous tests use `anonymous_path/0` instead), then call
   `subscription_toggle_tests()`:
 
       defp subscription_target(user) do
@@ -94,19 +107,17 @@ defmodule PhilomenaWeb.SingletonToggleTests do
 
   @doc """
   Generates the shared tests for a subscription toggle controller.
-  Requires `subscription_target/1` (see the moduledoc).
+  Requires `anonymous_path/0` and `subscription_target/1` (see the moduledoc).
   """
   defmacro subscription_toggle_tests do
     quote do
       test "anonymous POST redirects to the login page", %{conn: conn} do
-        %{path: path} = subscription_target(nil)
-        conn = post(conn, path)
+        conn = post(conn, anonymous_path())
         PhilomenaWeb.SingletonToggleTests.assert_login_redirect(conn)
       end
 
       test "anonymous DELETE redirects to the login page", %{conn: conn} do
-        %{path: path} = subscription_target(nil)
-        conn = delete(conn, path)
+        conn = delete(conn, anonymous_path())
         PhilomenaWeb.SingletonToggleTests.assert_login_redirect(conn)
       end
 
@@ -162,13 +173,12 @@ defmodule PhilomenaWeb.SingletonToggleTests do
 
   @doc """
   Generates the shared tests for a notification-clearing read controller.
-  Requires `read_target/1` (see the moduledoc).
+  Requires `anonymous_path/0` and `read_target/1` (see the moduledoc).
   """
   defmacro read_singleton_tests do
     quote do
       test "anonymous POST redirects to the login page", %{conn: conn} do
-        %{path: path} = read_target(nil)
-        conn = post(conn, path)
+        conn = post(conn, anonymous_path())
         PhilomenaWeb.SingletonToggleTests.assert_login_redirect(conn)
       end
 

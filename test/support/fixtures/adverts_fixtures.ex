@@ -33,17 +33,20 @@ defmodule Philomena.AdvertsFixtures do
     |> Repo.insert!()
   end
 
+  @png_fixture Path.absname("test/support/fixtures/files/advert-test.png")
+  @undersized_png_fixture Path.absname("test/support/fixtures/files/upload-test.png")
+
   @doc """
   A real 700x85 PNG upload — advert create/update-image run the media pipeline
   and the advert image_changeset validates width (699..729) and height
   (79..91).
   """
   def png_upload do
-    %Plug.Upload{
-      path: Path.absname("test/support/fixtures/files/advert-test.png"),
-      filename: "advert.png",
-      content_type: "image/png"
-    }
+    # Copy into a tempfile: the upload pipeline may mutate or consume the file it
+    # is given, and pointing at the tracked fixture corrupts the working tree.
+    {:ok, path} = Plug.Upload.random_file("advert-upload-test")
+    File.cp!(@png_fixture, path)
+    %Plug.Upload{path: path, filename: "advert.png", content_type: "image/png"}
   end
 
   @doc """
@@ -51,10 +54,10 @@ defmodule Philomena.AdvertsFixtures do
   width/height validations.
   """
   def undersized_png_upload do
-    %Plug.Upload{
-      path: Path.absname("test/support/fixtures/files/upload-test.png"),
-      filename: "small.png",
-      content_type: "image/png"
-    }
+    # Copy into a tempfile: the upload pipeline may mutate or consume the file it
+    # is given, and pointing at the tracked fixture corrupts the working tree.
+    {:ok, path} = Plug.Upload.random_file("advert-undersized-test")
+    File.cp!(@undersized_png_fixture, path)
+    %Plug.Upload{path: path, filename: "small.png", content_type: "image/png"}
   end
 end

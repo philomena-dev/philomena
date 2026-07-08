@@ -16,7 +16,7 @@ defmodule PhilomenaWeb.Autocomplete.TagControllerTest do
   alias PhilomenaQuery.SearchHelpers
 
   setup do
-    SearchHelpers.recreate_index!(Tag)
+    SearchHelpers.clear_index!(Tag)
     :ok
   end
 

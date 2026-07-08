@@ -4,12 +4,14 @@ defmodule PhilomenaQuery.SearchHelpers do
 
   Tests hit the real OpenSearch instance from the compose stack, namespaced
   away from development data by the `:opensearch_index_prefix` set in
-  `config/test.exs` (`"test_"`). The SQL sandbox does not roll indexes
-  back, so search-backed tests must:
+  `config/test.exs` (`"test_"`). Every searchable index is created once per
+  `mix test` run, with the current mappings, by `create_all_indexes!/0` in
+  `test/test_helper.exs`. The SQL sandbox does not roll indexes back, so
+  search-backed tests must:
 
     * be tagged `@moduletag :search` and use `async: false` (indexes are
       shared across the test run),
-    * recreate the indexes they read in `setup` with `recreate_index!/1`,
+    * clear the indexes they read in `setup` with `clear_index!/1`,
     * index their fixtures explicitly (fixture inserts only enqueue dead
       Exq jobs) with `reindex_all!/1` or `index_documents!/2` before
       querying.
@@ -17,7 +19,7 @@ defmodule PhilomenaQuery.SearchHelpers do
   ## Example
 
       setup do
-        SearchHelpers.recreate_index!(Image)
+        SearchHelpers.clear_index!(Image)
         :ok
       end
 
@@ -37,12 +39,34 @@ defmodule PhilomenaQuery.SearchHelpers do
   alias PhilomenaQuery.Search.Client
 
   @doc """
-  Drop and recreate the index for `schema`, leaving it empty with a fresh
-  mapping.
+  Drop and recreate every searchable index, so each `mix test` run starts from
+  the current mappings. Called once from `test_helper.exs`; per-test isolation
+  is `clear_index!/1` from there on.
+
+  The schema list comes from `SearchIndexer.schemas/0` rather than a local copy,
+  so a newly searchable schema is picked up here automatically.
   """
-  def recreate_index!(schema) do
-    Search.delete_index!(schema)
-    Search.create_index!(schema)
+  def create_all_indexes! do
+    Enum.each(SearchIndexer.schemas(), fn schema ->
+      Search.delete_index!(schema)
+      Search.create_index!(schema)
+    end)
+  end
+
+  @doc """
+  Remove every document from `schema`'s index, leaving the mapping intact, and
+  refresh so the emptied index is immediately visible to search.
+
+  This is the per-test isolation primitive. Dropping and recreating the index
+  instead is ~100x slower (a cluster-metadata operation) and nothing in the
+  suite needs a fresh mapping mid-run.
+  """
+  def clear_index!(schema) do
+    url =
+      "#{SearchPolicy.opensearch_url()}/#{Search.index_name(schema)}" <>
+        "/_delete_by_query?refresh=true&conflicts=proceed"
+
+    {:ok, %{status: 200}} = Client.post(url, %{query: %{match_all: %{}}})
     :ok
   end
 

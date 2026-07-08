@@ -4,6 +4,7 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
   @moduletag :search
 
   import Ecto.Query
+  import Philomena.AttributionFixtures
   import Philomena.ImagesFixtures
 
   alias PhilomenaQuery.SearchHelpers
@@ -15,7 +16,14 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
     # The successful update actions re-render the image's _tags.html.slime
     # partial, whose quick tag table queries the tags index
     # (TagView.lookup_quick_tags/1). Without the index the render 500s.
-    SearchHelpers.recreate_index!(Tag)
+    SearchHelpers.clear_index!(Tag)
+
+    # Valkey tag-change counters (rltcn:/rltcr:, 50 per 10 min) are keyed by IP
+    # and are not rolled back by the SQL sandbox. The logged-in tests below
+    # author tag changes from the default ConnTest IP, so the counter
+    # accumulates across runs until check_limits trips (a 300 with an empty
+    # body). The anonymous tests use put_unique_ip/1 and need no reset.
+    reset_tag_change_limits(ip: "127.0.0.1")
     :ok
   end
 

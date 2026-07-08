@@ -5,25 +5,17 @@ defmodule PhilomenaWeb.Search.ReverseControllerTest do
   # so this module can stay async. GET /search/reverse (index) simply
   # delegates to create/2.
 
-  # The local png_upload/0 deliberately differs from the fixture one (no
-  # tempfile registration — reverse search never gives the file away).
-  import Philomena.ImagesFixtures, except: [png_upload: 0]
+  # png_upload/0 hands the pipeline a tempfile copy of the fixture: Mime.file/1
+  # round-trips every absolute path argument through mediaproc, which writes the
+  # returned bytes back over the original path. Pointing at the tracked fixture
+  # corrupts the working tree.
+  import Philomena.ImagesFixtures
 
   alias Philomena.ImageIntensities.ImageIntensity
   alias Philomena.Repo
 
-  @png_fixture Path.absname("test/support/fixtures/files/upload-test.png")
-
   # Intensities of the 1x1 fixture PNG, as computed by the media processor.
   @png_intensity 54.213
-
-  defp png_upload do
-    %Plug.Upload{
-      path: @png_fixture,
-      content_type: "image/png",
-      filename: "upload-test.png"
-    }
-  end
 
   defp insert_intensities(image, value) do
     Repo.insert!(%ImageIntensity{image_id: image.id, nw: value, ne: value, sw: value, se: value})

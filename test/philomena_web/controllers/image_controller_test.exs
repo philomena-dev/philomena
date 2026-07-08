@@ -13,10 +13,10 @@ defmodule PhilomenaWeb.ImageControllerTest do
   alias Philomena.Repo
 
   setup do
-    SearchHelpers.recreate_index!(Image)
+    SearchHelpers.clear_index!(Image)
     # :show and :new render the quick tag table, which queries the tags index
     # (TagView.lookup_quick_tags/1) the first time it is built in a test run.
-    SearchHelpers.recreate_index!(Tag)
+    SearchHelpers.clear_index!(Tag)
     :ok
   end
 

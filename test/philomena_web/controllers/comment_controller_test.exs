@@ -11,7 +11,7 @@ defmodule PhilomenaWeb.CommentControllerTest do
   alias Philomena.Repo
 
   setup do
-    SearchHelpers.recreate_index!(Comment)
+    SearchHelpers.clear_index!(Comment)
     :ok
   end
 

@@ -37,15 +37,17 @@ defmodule Philomena.BadgesFixtures do
     award
   end
 
+  @svg_fixture Path.absname("test/support/fixtures/files/badge-test.svg")
+
   @doc """
   A real SVG upload — badge create/update-image run the media pipeline and the
   badge image_changeset requires an `image/svg+xml` MIME type.
   """
   def svg_upload do
-    %Plug.Upload{
-      path: Path.absname("test/support/fixtures/files/badge-test.svg"),
-      filename: "badge.svg",
-      content_type: "image/svg+xml"
-    }
+    # Copy into a tempfile: the upload pipeline may mutate or consume the file it
+    # is given, and pointing at the tracked fixture corrupts the working tree.
+    {:ok, path} = Plug.Upload.random_file("badge-upload-test")
+    File.cp!(@svg_fixture, path)
+    %Plug.Upload{path: path, filename: "badge.svg", content_type: "image/svg+xml"}
   end
 end

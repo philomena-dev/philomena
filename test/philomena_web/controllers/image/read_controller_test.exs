@@ -12,6 +12,10 @@ defmodule PhilomenaWeb.Image.ReadControllerTest do
   alias Philomena.Notifications.ImageCommentNotification
   alias Philomena.Repo
 
+  # require_authenticated_user halts before the resource loads, so the ids in
+  # this path need not exist.
+  defp anonymous_path, do: ~p"/images/1/read"
+
   defp read_target(user) do
     image = image_fixture()
 

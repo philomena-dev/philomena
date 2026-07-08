@@ -14,8 +14,8 @@ defmodule PhilomenaWeb.GalleryControllerTest do
   alias Philomena.Images.Image
 
   setup do
-    SearchHelpers.recreate_index!(Gallery)
-    SearchHelpers.recreate_index!(Image)
+    SearchHelpers.clear_index!(Gallery)
+    SearchHelpers.clear_index!(Image)
     :ok
   end
 

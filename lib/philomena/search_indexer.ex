@@ -63,6 +63,18 @@ defmodule Philomena.SearchIndexer do
   }
 
   @doc """
+  Return every schema module which has a search index.
+
+  ## Example
+
+      iex> SearchIndexer.schemas()
+      [Comment, Filter, Gallery, Image, Post, Report, Tag, TagChange, User]
+
+  """
+  @spec schemas :: [module()]
+  def schemas, do: @schemas
+
+  @doc """
   Recreate the index corresponding to all schemas, and then reindex all of the
   documents within.
 

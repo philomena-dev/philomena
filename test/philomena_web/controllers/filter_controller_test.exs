@@ -31,7 +31,7 @@ defmodule PhilomenaWeb.FilterControllerTest do
     end
 
     test "with fq searches the filter index", %{conn: conn} do
-      SearchHelpers.recreate_index!(Filter)
+      SearchHelpers.clear_index!(Filter)
       %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
       mine = filter_fixture(user)
       _other = filter_fixture(confirmed_user_fixture())
@@ -44,7 +44,7 @@ defmodule PhilomenaWeb.FilterControllerTest do
     end
 
     test "with fq does not return other users' private filters", %{conn: conn} do
-      SearchHelpers.recreate_index!(Filter)
+      SearchHelpers.clear_index!(Filter)
       %{conn: conn} = register_and_log_in_user(%{conn: conn})
       other = filter_fixture(confirmed_user_fixture())
       SearchHelpers.reindex_all!(Filter)
@@ -55,7 +55,7 @@ defmodule PhilomenaWeb.FilterControllerTest do
     end
 
     test "with an invalid fq renders the error message", %{conn: conn} do
-      SearchHelpers.recreate_index!(Filter)
+      SearchHelpers.clear_index!(Filter)
 
       response = html_response(get(conn, ~p"/filters?#{[fq: "name:("]}"), 200)
 

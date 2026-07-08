@@ -1,7 +1,8 @@
 defmodule PhilomenaQuery.SearchHelpersTest do
   @moduledoc """
   Smoke tests for the OpenSearch strategy: test-prefixed indexes on the
-  shared cluster, recreated per test, with explicit reindex + refresh.
+  shared cluster, created once at boot and cleared of documents per test,
+  with explicit reindex + refresh.
   """
 
   use Philomena.DataCase, async: false
@@ -15,7 +16,7 @@ defmodule PhilomenaQuery.SearchHelpersTest do
   alias PhilomenaQuery.SearchHelpers
 
   setup do
-    SearchHelpers.recreate_index!(Image)
+    SearchHelpers.clear_index!(Image)
     :ok
   end
 
@@ -33,7 +34,7 @@ defmodule PhilomenaQuery.SearchHelpersTest do
     assert hit["_id"] == to_string(image.id)
   end
 
-  test "recreate_index!/1 leaves the index empty" do
+  test "clear_index!/1 leaves the index empty" do
     results = Search.search(Image, %{query: %{match_all: %{}}})
 
     assert [] == results["hits"]["hits"]

@@ -12,7 +12,7 @@ defmodule PhilomenaWeb.PostControllerTest do
   alias Philomena.Repo
 
   setup do
-    SearchHelpers.recreate_index!(Post)
+    SearchHelpers.clear_index!(Post)
     :ok
   end
 
