@@ -90,7 +90,10 @@ config :philomena, :s3_secondary_options,
 
 config :philomena, :s3_secondary_bucket, System.get_env("ALT_S3_BUCKET")
 
-config :ex_aws, http_client: ExAws.Request.Req
+# Test stubs the ex_aws HTTP client in config/test.exs
+if config_env() != :test do
+  config :ex_aws, http_client: ExAws.Request.Req
+end
 
 config :ex_aws, :retries,
   max_attempts: 20,
@@ -131,8 +134,11 @@ if config_env() == :prod do
     secret_key_base: System.fetch_env!("SECRET_KEY_BASE"),
     server: not is_nil(System.get_env("START_ENDPOINT"))
 else
-  # Don't send email in development
-  config :philomena, Philomena.Mailer, adapter: Swoosh.Adapters.Local
+  # Don't send email in development; test uses Swoosh.Adapters.Test
+  # (config/test.exs)
+  if config_env() == :dev do
+    config :philomena, Philomena.Mailer, adapter: Swoosh.Adapters.Local
+  end
 
   # Use this to debug slime templates
   # config :slime, :keep_lines, true

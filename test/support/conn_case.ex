@@ -64,6 +64,62 @@ defmodule PhilomenaWeb.ConnCase do
   end
 
   @doc """
+  Setup helper that registers and logs in a moderator.
+
+      setup :register_and_log_in_moderator
+  """
+  def register_and_log_in_moderator(%{conn: conn}) do
+    user = Philomena.UsersFixtures.moderator_user_fixture()
+    %{conn: log_in_user(conn, user), user: user}
+  end
+
+  @doc """
+  Setup helper that registers and logs in an admin.
+
+      setup :register_and_log_in_admin
+  """
+  def register_and_log_in_admin(%{conn: conn}) do
+    user = Philomena.UsersFixtures.admin_user_fixture()
+    %{conn: log_in_user(conn, user), user: user}
+  end
+
+  @doc """
+  Setup helper that registers and logs in a user with an active ban.
+
+      setup :register_and_log_in_banned_user
+  """
+  def register_and_log_in_banned_user(%{conn: conn}) do
+    user = Philomena.UsersFixtures.banned_user_fixture()
+    %{conn: log_in_user(conn, user), user: user}
+  end
+
+  @doc """
+  Setup helper that registers and logs in a TOTP-enabled user, including
+  the TOTP session token.
+
+      setup :register_and_log_in_totp_user
+  """
+  def register_and_log_in_totp_user(%{conn: conn}) do
+    user = Philomena.UsersFixtures.totp_user_fixture()
+    %{conn: log_in_totp_user(conn, user), user: user}
+  end
+
+  @doc """
+  Setup helper providing a user and their API key for `/api/v1` requests.
+
+      setup :create_api_user
+
+  The `:api` pipeline authenticates solely via the `key` query parameter
+  (`PhilomenaWeb.ApiTokenPlug`); session login has no effect on it. Any
+  user fixture's `authentication_token` works as a key, so for other roles
+  use e.g. `moderator_user_fixture().authentication_token` directly.
+  """
+  def create_api_user(_context) do
+    user = Philomena.UsersFixtures.confirmed_user_fixture()
+    %{user: user, api_key: user.authentication_token}
+  end
+
+  @doc """
   Logs the given `user` into the `conn`.
 
   It returns an updated `conn`.
@@ -74,5 +130,21 @@ defmodule PhilomenaWeb.ConnCase do
     conn
     |> Phoenix.ConnTest.init_test_session(%{})
     |> Plug.Conn.put_session(:user_token, token)
+  end
+
+  @doc """
+  Logs the given TOTP-enabled `user` into the `conn` along with the TOTP
+  session token that `PhilomenaWeb.TotpPlug` (the `:ensure_totp` pipeline)
+  checks. Without it, any request from a TOTP-enabled user to an
+  `:ensure_totp` route redirects to `/sessions/totp/new`.
+
+  It returns an updated `conn`.
+  """
+  def log_in_totp_user(conn, user) do
+    totp_token = Philomena.Users.generate_user_totp_token(user)
+
+    conn
+    |> log_in_user(user)
+    |> Plug.Conn.put_session(:totp_token, totp_token)
   end
 end
