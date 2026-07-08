@@ -1,15 +1,11 @@
 defmodule PhilomenaWeb.Autocomplete.TagControllerTest do
   use PhilomenaWeb.ConnCase, async: false
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior.
-  #
   # The action prefix-searches the OpenSearch tag index, so it follows the
-  # search recipe (recreate index in setup, reindex after fixtures). It has two
-  # shapes: v1 (default, "?vsn" absent) returns a bare list of label/value
-  # maps; v2 ("?vsn=2") returns a {suggestions|error} object and validates its
-  # params. Both filter out tags with no images.
+  # search recipe (recreate index in setup, reindex after fixtures). It has
+  # two shapes: v1 (default, "?vsn" absent) returns a bare list of
+  # label/value maps; v2 ("?vsn=2") returns a {suggestions|error} object and
+  # validates its params. Both filter out tags with no images.
 
   @moduletag :search
 

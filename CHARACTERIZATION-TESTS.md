@@ -628,10 +628,10 @@ tests (only tag changes is search-backed; everything else stays
   badges: `create_advert/1` runs the image upload pipeline). `RelativeDate`
   fields cast plain `%DateTime{}` values fine. The click side effect of
   `GET /adverts/:id` is batched by the `Adverts.Server` GenServer, so there
-  is nothing synchronous to assert — and the eventual flush runs outside
-  the SQL sandbox, where the advert row doesn't exist, so ~10s into a run
-  the GenServer logs a `not_null_violation` crash and restarts (harmless
-  noise, same category as the async-upload `OwnershipError`).
+  is nothing synchronous to assert. That GenServer would flush from a
+  process owning no sandbox connection (a `DBConnection.OwnershipError` ~10s
+  into a run), so `test_helper.exs` terminates it for the whole test run;
+  its `record_impression`/`record_click` casts are then dropped silently.
 - **Fave/vote/hide rows are arranged through the interaction Multis**
   (`Repo.transaction(ImageFaves.create_fave_transaction(image, user))`,
   same for `ImageVotes`) — no controller round-trip needed. The favorites
@@ -667,12 +667,19 @@ forum subscription, and gallery subscription/read tests (all Postgres-only,
   controller-specific oddities hand-written.
 - **The whole family sits in `require_authenticated_user`**, so the
   anonymous case is uniformly a 302 to `/sessions/new` — and because that
-  (and `FilterBannedUsersPlug`) halt before the resource loads, those
-  generated tests use a dummy id and need no fixtures. Ban filtering splits
-  the family: vote/fave/hide reject banned users ("You are currently
-  banned." flash, redirect to referrer `/`), while the subscription/read
-  controllers have no ban plug — a banned user can still subscribe (pinned
-  in the image subscription test).
+  (and `FilterBannedUsersPlug`) halt before the resource loads, the id in
+  the path never has to exist. Only `image_interaction_guard_tests/1`
+  exploits that: it takes a dummy id (`interaction_path(1)`) and builds no
+  fixtures. `subscription_toggle_tests/0` and `read_singleton_tests/0` do
+  not — their anonymous tests call `subscription_target(nil)` /
+  `read_target(nil)` purely to read `:path`, so the target function still
+  inserts its fixtures for a request that never reaches them, and in four
+  cases (gallery subscription, gallery/topic/image read) that includes a
+  `confirmed_user_fixture()` and its bcrypt hash. Harmless, but wasted.
+  Ban filtering splits the family: vote/fave/hide reject banned users
+  ("You are currently banned." flash, redirect to referrer `/`), while the
+  subscription/read controllers have no ban plug — a banned user can still
+  subscribe (pinned in the image subscription test).
 - **`Plug.Test` preserves param types.** `post(conn, path, %{"up" => true})`
   delivers a real boolean to the controller, mirroring the JSON fetch
   client; sending a raw `"up=true"` body with an explicit urlencoded

@@ -1,10 +1,8 @@
 defmodule PhilomenaWeb.Topic.Post.DeleteControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior. "Delete" here is the destroy-content tool (blanks the body), the
-  # tier above hide.
+  # "Delete" here is the destroy-content tool (blanks the body), the tier
+  # above hide.
 
   import Philomena.ForumsFixtures
   import Philomena.PostsFixtures

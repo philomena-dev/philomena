@@ -1,10 +1,8 @@
 defmodule PhilomenaWeb.Image.DestroyControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior. This is the hard-delete (content destruction) tool, gated on
-  # the `:destroy` ability, which plain moderators lack.
+  # This is the hard-delete (content destruction) tool, gated on the
+  # `:destroy` ability, which plain moderators lack.
 
   import Philomena.ImagesFixtures
 

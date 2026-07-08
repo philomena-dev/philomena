@@ -1,10 +1,8 @@
 defmodule PhilomenaWeb.SettingControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior. The route is public: anonymous users get the local
-  # (cookie-backed) settings only.
+  # The route is public: anonymous users get the local (cookie-backed)
+  # settings only.
 
   alias Philomena.Repo
 

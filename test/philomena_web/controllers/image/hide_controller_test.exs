@@ -2,10 +2,8 @@ defmodule PhilomenaWeb.Image.HideControllerTest do
   use PhilomenaWeb.ConnCase, async: true
   use PhilomenaWeb.SingletonToggleTests
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior. This is the user "hide this image" interaction, not the
-  # moderator hide (which is Image.DeleteController).
+  # This is the user "hide this image" interaction, not the moderator hide
+  # (which is Image.DeleteController).
 
   import Ecto.Query
   import Philomena.ImagesFixtures

@@ -1,8 +1,7 @@
 defmodule PhilomenaQuery.SearchHelpersTest do
   @moduledoc """
-  Smoke tests for the phase-0 OpenSearch strategy (see
-  CHARACTERIZATION-TESTS.md): test-prefixed indexes on the shared cluster,
-  recreated per test, with explicit reindex + refresh.
+  Smoke tests for the OpenSearch strategy: test-prefixed indexes on the
+  shared cluster, recreated per test, with explicit reindex + refresh.
   """
 
   use Philomena.DataCase, async: false

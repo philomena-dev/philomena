@@ -1,13 +1,9 @@
 defmodule PhilomenaWeb.Channel.NsfwControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior.
-  #
   # The controller only sets/clears the JS-readable `chan_nsfw` cookie and
-  # redirects to /channels; it never touches the database and has no failure
-  # surface (it always succeeds), so there is no failure-path test.
+  # redirects to /channels; it never touches the database and has no
+  # failure surface (it always succeeds), so there is no failure-path test.
 
   describe "POST /channels/nsfw" do
     test "sets chan_nsfw=true and redirects for anonymous users", %{conn: conn} do

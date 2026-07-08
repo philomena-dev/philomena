@@ -1,12 +1,10 @@
 defmodule PhilomenaWeb.Tag.ImageControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md). :update drives the tag spoiler
-  # image through the real media pipeline (analysis is synchronous, the S3
-  # persist goes through the ex_aws stub). All three actions authorize :edit on
-  # the tag, so any moderator can reach them. Tags are slug-keyed, so there is
-  # no non-integer-id crash.
+  # :update drives the tag spoiler image through the real media pipeline
+  # (analysis is synchronous, the S3 persist goes through the ex_aws stub).
+  # All three actions authorize :edit on the tag, so any moderator can
+  # reach them. Tags are slug-keyed, so there is no non-integer-id crash.
 
   import Philomena.ImagesFixtures
   import Philomena.TagsFixtures

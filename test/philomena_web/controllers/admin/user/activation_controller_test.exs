@@ -1,10 +1,8 @@
 defmodule PhilomenaWeb.Admin.User.ActivationControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior. Postgres-only: the Users context only enqueues (dead) reindex
-  # jobs, and moderation_log/2 is a synchronous Repo.insert.
+  # Postgres-only: the Users context only enqueues (dead) reindex jobs, and
+  # moderation_log/2 is a synchronous Repo.insert.
 
   import Philomena.UsersFixtures
 

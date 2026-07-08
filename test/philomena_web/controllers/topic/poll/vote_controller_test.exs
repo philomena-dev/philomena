@@ -1,9 +1,7 @@
 defmodule PhilomenaWeb.Topic.Poll.VoteControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior. :create is public (any logged-in user); :index and :delete are
+  # :create is public (any logged-in user); :index and :delete are
   # moderator-only (verify_authorized gates on :hide of the topic).
 
   import Ecto.Query

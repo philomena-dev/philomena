@@ -1,12 +1,11 @@
 defmodule PhilomenaWeb.Tag.AliasControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md). All three actions authorize
-  # :alias on the tag, which a *plain* moderator lacks (they only have :edit),
-  # so only an admin or a Tag-admin role_map moderator can reach them. The
-  # actual alias/unalias work is a dead Exq enqueue; only the synchronous
-  # aliased_tag_id write on :update is observable. Tags are slug-keyed.
+  # All three actions authorize :alias on the tag, which a *plain*
+  # moderator lacks (they only have :edit), so only an admin or a Tag-admin
+  # role_map moderator can reach them. The actual alias/unalias work is a
+  # dead Exq enqueue; only the synchronous aliased_tag_id write on :update
+  # is observable. Tags are slug-keyed.
 
   import Philomena.TagsFixtures
   import Philomena.UsersFixtures

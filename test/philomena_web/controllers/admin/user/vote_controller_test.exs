@@ -1,10 +1,10 @@
 defmodule PhilomenaWeb.Admin.User.VoteControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests (see CHARACTERIZATION-TESTS.md). Postgres-only.
-  # The actual vote/fave wipe is performed by UserUnvoteWorker, which is only
-  # enqueued (a dead Exq enqueue in test), so only the flash/redirect and the
-  # synchronous moderation_log insert are observable here.
+  # Postgres-only. The actual vote/fave wipe is performed by UserUnvoteWorker,
+  # which is only enqueued (a dead Exq enqueue in test), so only the
+  # flash/redirect and the synchronous moderation_log insert are observable
+  # here.
 
   import Philomena.UsersFixtures
 

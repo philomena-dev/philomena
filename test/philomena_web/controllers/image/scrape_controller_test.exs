@@ -1,16 +1,13 @@
 defmodule PhilomenaWeb.Image.ScrapeControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior.
-  #
-  # The action passes the `url` param through PhilomenaProxy.Scrapers.scrape!/1
-  # and renders the result as JSON. Any test that reaches a scraper which
-  # performs outbound HTTP must stub PhilomenaProxy.Http at the Req.Test seam;
-  # an unstubbed outbound request raises. For a generic host only the `Raw`
-  # scraper does HTTP (a HEAD probe of the content-type); the others are
-  # regex/host matches on the URL.
+  # The action passes the `url` param through
+  # PhilomenaProxy.Scrapers.scrape!/1 and renders the result as JSON. Any
+  # test that reaches a scraper which performs outbound HTTP must stub
+  # PhilomenaProxy.Http at the Req.Test seam; an unstubbed outbound request
+  # raises. For a generic host only the `Raw` scraper does HTTP (a HEAD
+  # probe of the content-type); the others are regex/host matches on the
+  # URL.
 
   describe "POST /images/scrape" do
     test "returns a scrape result for a directly-linked image (Raw scraper)", %{conn: conn} do

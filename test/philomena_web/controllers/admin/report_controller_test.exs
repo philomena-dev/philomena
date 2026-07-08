@@ -1,10 +1,8 @@
 defmodule PhilomenaWeb.Admin.ReportControllerTest do
   use PhilomenaWeb.ConnCase, async: false
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior. The index action reads the Report OpenSearch index, so this
-  # module is search-backed.
+  # The index action reads the Report OpenSearch index, so this module is
+  # search-backed.
 
   @moduletag :search
 

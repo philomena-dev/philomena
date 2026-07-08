@@ -1,11 +1,9 @@
 defmodule PhilomenaWeb.DuplicateReportControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior. The :index/:show/:create actions live in the public (Tor-authorized)
-  # scope with no Canary gate, so any visitor can reach them; the accept/reject/
-  # claim moderation children are tested separately.
+  # The :index/:show/:create actions live in the public (Tor-authorized)
+  # scope with no Canary gate, so any visitor can reach them; the
+  # accept/reject/claim moderation children are tested separately.
 
   import Philomena.ImagesFixtures
   import Philomena.UsersFixtures

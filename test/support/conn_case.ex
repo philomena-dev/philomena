@@ -17,12 +17,10 @@ defmodule PhilomenaWeb.ConnCase do
 
   using do
     quote do
-      # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
       import PhilomenaWeb.ConnCase
 
-      # The default endpoint for testing
       @endpoint PhilomenaWeb.Endpoint
 
       use PhilomenaWeb, :verified_routes
@@ -36,7 +34,6 @@ defmodule PhilomenaWeb.ConnCase do
       Ecto.Adapters.SQL.Sandbox.mode(Philomena.Repo, {:shared, self()})
     end
 
-    # Insert default filter
     %Philomena.Filters.Filter{name: "Default", system: true}
     |> Philomena.Filters.change_filter()
     |> Philomena.Repo.insert!()

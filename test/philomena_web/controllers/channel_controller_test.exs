@@ -1,10 +1,8 @@
 defmodule PhilomenaWeb.ChannelControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior. The read-only actions (:index, :show) and the staff-facing
-  # write actions (:new, :create, :edit, :update, :delete) are covered here.
+  # The read-only actions (:index, :show) and the staff-facing write
+  # actions (:new, :create, :edit, :update, :delete) are covered here.
 
   import Philomena.ChannelsFixtures
 

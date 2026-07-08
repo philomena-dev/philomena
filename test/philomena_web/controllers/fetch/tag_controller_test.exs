@@ -1,10 +1,6 @@
 defmodule PhilomenaWeb.Fetch.TagControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior.
-  #
   # The action loads up to 50 tags by id from Postgres and renders them as
   # JSON. This is a read-only route with no failure-path write to test.
 

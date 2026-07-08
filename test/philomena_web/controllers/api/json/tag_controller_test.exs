@@ -1,10 +1,6 @@
 defmodule PhilomenaWeb.Api.Json.TagControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior.
-
   import Philomena.TagsFixtures
 
   alias Philomena.Tags

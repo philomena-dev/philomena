@@ -1,9 +1,8 @@
 defmodule PhilomenaWeb.DuplicateReport.AcceptReverseControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md). Accepting in reverse rejects the
-  # original report and merges the *target* image into the source instead.
+  # Accepting in reverse rejects the original report and merges the
+  # *target* image into the source instead.
 
   import Philomena.ImagesFixtures
   import Philomena.DuplicateReportsFixtures

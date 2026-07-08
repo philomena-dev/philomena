@@ -1,11 +1,10 @@
 defmodule PhilomenaWeb.Tag.ReindexControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md). :create is gated on :alias (a
-  # plain moderator lacks it) and only enqueues (dead) reindex workers, so
-  # there is nothing to observe beyond the flash and redirect. Tags are
-  # slug-keyed, so there is no non-integer-id crash.
+  # :create is gated on :alias (a plain moderator lacks it) and only
+  # enqueues (dead) reindex workers, so there is nothing to observe beyond
+  # the flash and redirect. Tags are slug-keyed, so there is no
+  # non-integer-id crash.
 
   import Philomena.TagsFixtures
   import Philomena.UsersFixtures

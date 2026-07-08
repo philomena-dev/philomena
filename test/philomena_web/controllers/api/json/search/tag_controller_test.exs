@@ -1,10 +1,6 @@
 defmodule PhilomenaWeb.Api.Json.Search.TagControllerTest do
   use PhilomenaWeb.ConnCase, async: false
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior.
-
   @moduletag :search
 
   import Philomena.TagsFixtures

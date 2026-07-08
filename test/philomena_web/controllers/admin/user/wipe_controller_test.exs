@@ -1,10 +1,9 @@
 defmodule PhilomenaWeb.Admin.User.WipeControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests (see CHARACTERIZATION-TESTS.md). Postgres-only.
-  # The actual PII wipe is performed by UserWipeWorker, which is only enqueued
-  # (a dead Exq enqueue in test), so only the flash/redirect and the
-  # synchronous moderation_log insert are observable here.
+  # Postgres-only. The actual PII wipe is performed by UserWipeWorker, which
+  # is only enqueued (a dead Exq enqueue in test), so only the flash/redirect
+  # and the synchronous moderation_log insert are observable here.
 
   import Philomena.UsersFixtures
 

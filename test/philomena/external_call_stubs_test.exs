@@ -1,8 +1,7 @@
 defmodule Philomena.ExternalCallStubsTest do
   @moduledoc """
-  Smoke tests for the phase-0 external call stubbing (see
-  CHARACTERIZATION-TESTS.md): mailer, object storage (ex_aws), and
-  outbound HTTP (PhilomenaProxy.Http via Req.Test).
+  Smoke tests for the external call stubbing: mailer, object storage
+  (ex_aws), and outbound HTTP (PhilomenaProxy.Http via Req.Test).
   """
 
   use Philomena.DataCase, async: true

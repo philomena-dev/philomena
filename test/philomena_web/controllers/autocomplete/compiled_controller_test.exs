@@ -1,13 +1,9 @@
 defmodule PhilomenaWeb.Autocomplete.CompiledControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior.
-  #
   # The action serves the most recent pregenerated autocomplete binary from
-  # Postgres, dropping the session either way. This is a read-only route with
-  # no failure-path write to test.
+  # Postgres, dropping the session either way. This is a read-only route
+  # with no failure-path write to test.
 
   import Philomena.AutocompleteFixtures
 

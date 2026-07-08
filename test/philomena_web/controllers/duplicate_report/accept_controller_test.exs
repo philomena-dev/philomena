@@ -1,10 +1,9 @@
 defmodule PhilomenaWeb.DuplicateReport.AcceptControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md). Accepting a report merges the
-  # source image into the target: the merge runs synchronously (S3 ops go
-  # through the ex_aws stub, reindexing is a dead Exq enqueue).
+  # Accepting a report merges the source image into the target: the merge
+  # runs synchronously (S3 ops go through the ex_aws stub, reindexing is a
+  # dead Exq enqueue).
 
   import Philomena.ImagesFixtures
   import Philomena.DuplicateReportsFixtures

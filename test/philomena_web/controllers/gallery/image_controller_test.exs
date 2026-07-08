@@ -1,10 +1,8 @@
 defmodule PhilomenaWeb.Gallery.ImageControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior. The image id travels in the request body, not the path (the
-  # route is a singleton).
+  # The image id travels in the request body, not the path (the route is a
+  # singleton).
 
   import Ecto.Query
   import Philomena.GalleriesFixtures

@@ -1,9 +1,9 @@
 defmodule PhilomenaWeb.SingletonToggleTests do
   @moduledoc """
   Shared characterization-test generators for the singleton toggle
-  controller family (taxonomy #4 in CHARACTERIZATION-TESTS.md): the long
-  tail of nearly identical singleton `create`/`delete` controllers —
-  subscriptions, notification reads, and the image interaction endpoints.
+  controller family: the long tail of nearly identical singleton
+  `create`/`delete` controllers — subscriptions, notification reads, and
+  the image interaction endpoints.
 
   Every route in this family sits in the `require_authenticated_user`
   scope, so the generators pin the uniform anonymous login redirect plus

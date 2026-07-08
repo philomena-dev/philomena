@@ -1,10 +1,8 @@
 defmodule PhilomenaWeb.TagChange.FullRevertControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md). full_revert only enqueues a
-  # (dead) TagChangeRevertWorker, so there is nothing to observe beyond the
-  # flash and redirect.
+  # full_revert only enqueues a (dead) TagChangeRevertWorker, so there is
+  # nothing to observe beyond the flash and redirect.
 
   import Philomena.UsersFixtures
 

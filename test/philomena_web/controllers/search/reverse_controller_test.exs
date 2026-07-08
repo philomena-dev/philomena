@@ -1,13 +1,9 @@
 defmodule PhilomenaWeb.Search.ReverseControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior.
-  #
-  # Reverse search matches against Postgres intensity rows, not OpenSearch, so
-  # this module can stay async. GET /search/reverse (index) simply delegates
-  # to create/2.
+  # Reverse search matches against Postgres intensity rows, not OpenSearch,
+  # so this module can stay async. GET /search/reverse (index) simply
+  # delegates to create/2.
 
   # The local png_upload/0 deliberately differs from the fixture one (no
   # tempfile registration — reverse search never gives the file away).

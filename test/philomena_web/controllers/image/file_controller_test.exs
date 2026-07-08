@@ -1,13 +1,10 @@
 defmodule PhilomenaWeb.Image.FileControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior.
-  #
-  # `Images.update_file/2` drives the media pipeline synchronously (analyze,
-  # persist to the stubbed S3, enqueue the dead ThumbnailWorker/reindex jobs),
-  # with no spawned upload process, so this file stays `async: true`.
+  # `Images.update_file/2` drives the media pipeline synchronously
+  # (analyze, persist to the stubbed S3, enqueue the dead
+  # ThumbnailWorker/reindex jobs), with no spawned upload process, so this
+  # file stays `async: true`.
 
   import Philomena.ImagesFixtures
 

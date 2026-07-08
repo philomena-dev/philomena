@@ -1,12 +1,10 @@
 defmodule PhilomenaWeb.TagControllerTest do
   use PhilomenaWeb.ConnCase, async: false
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior. The read-only actions (:index, :show) and the moderation actions
-  # (:edit, :update, :delete) are covered here. Tags are keyed by slug, so the
-  # "by-id" endpoints have no non-integer-id crash; unknown slugs are pinned
-  # instead.
+  # The read-only actions (:index, :show) and the moderation actions
+  # (:edit, :update, :delete) are covered here. Tags are keyed by slug, so
+  # the "by-id" endpoints have no non-integer-id crash; unknown slugs are
+  # pinned instead.
 
   @moduletag :search
 

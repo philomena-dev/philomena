@@ -1,11 +1,11 @@
 defmodule PhilomenaWeb.Admin.User.EraseControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests (see CHARACTERIZATION-TESTS.md). Postgres-only.
-  # Users.erase_user/2 synchronously deactivates and renames the account, then
-  # enqueues UserEraseWorker for the rest (a dead Exq enqueue in test); the
-  # rename also enqueues (dead) UserRenameWorker. So the deactivation and rename
-  # are observable, but the deeper deletion is not.
+  # Postgres-only. Users.erase_user/2 synchronously deactivates and renames
+  # the account, then enqueues UserEraseWorker for the rest (a dead Exq
+  # enqueue in test); the rename also enqueues (dead) UserRenameWorker. So
+  # the deactivation and rename are observable, but the deeper deletion is
+  # not.
 
   import Philomena.UsersFixtures
 

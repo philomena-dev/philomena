@@ -1,7 +1,7 @@
 defmodule PhilomenaWeb.Admin.User.ForceFilterControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests (see CHARACTERIZATION-TESTS.md). Postgres-only.
+  # Postgres-only.
 
   import Philomena.UsersFixtures
   import Philomena.FiltersFixtures

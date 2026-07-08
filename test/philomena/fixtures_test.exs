@@ -1,8 +1,7 @@
 defmodule Philomena.FixturesTest do
   @moduledoc """
-  Smoke tests for the phase-0 fixture modules (see
-  CHARACTERIZATION-TESTS.md). Each test proves the fixture inserts a row
-  in the expected shape; controller tests build on top of these.
+  Smoke tests for the fixture modules. Each test proves the fixture inserts
+  a row in the expected shape; controller tests build on top of these.
   """
 
   use Philomena.DataCase, async: true

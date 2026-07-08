@@ -9,12 +9,9 @@ defmodule PhilomenaWeb.AdvertControllerTest do
 
       conn = get(conn, ~p"/adverts/#{advert}")
 
-      # NOTE: the click is recorded asynchronously (Adverts.Server batches
-      # updates every 10 seconds), so there is no synchronous side effect
-      # to assert on. The eventual flush runs outside the SQL sandbox,
-      # where this advert row doesn't exist, so ~10s into the test run the
-      # GenServer logs a not_null_violation crash and restarts — harmless
-      # noise, same category as the async-upload OwnershipError.
+      # NOTE: the click is recorded asynchronously via Adverts.Server, which
+      # is terminated for the test run, so there is no synchronous side
+      # effect to assert.
       assert redirected_to(conn) == advert.link
     end
 

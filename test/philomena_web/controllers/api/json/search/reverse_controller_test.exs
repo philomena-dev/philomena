@@ -1,10 +1,6 @@
 defmodule PhilomenaWeb.Api.Json.Search.ReverseControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior.
-  #
   # Reverse search matches against Postgres intensity rows, not OpenSearch,
   # so this module can stay async.
 

@@ -1,9 +1,6 @@
 defmodule PhilomenaWeb.DuplicateReport.ClaimControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md).
-
   import Philomena.ImagesFixtures
   import Philomena.DuplicateReportsFixtures
 

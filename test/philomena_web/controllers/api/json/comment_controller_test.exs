@@ -1,10 +1,6 @@
 defmodule PhilomenaWeb.Api.Json.CommentControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior.
-
   import Philomena.CommentsFixtures
   import Philomena.ImagesFixtures
   import Philomena.UsersFixtures

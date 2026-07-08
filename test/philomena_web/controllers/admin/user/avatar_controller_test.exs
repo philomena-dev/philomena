@@ -1,10 +1,9 @@
 defmodule PhilomenaWeb.Admin.User.AvatarControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md). Postgres-only: the S3 delete in
-  # Users.remove_avatar/1 goes through the stubbed ex_aws client and the
-  # reindex is a dead Exq enqueue; moderation_log/2 is a synchronous insert.
+  # Postgres-only: the S3 delete in Users.remove_avatar/1 goes through the
+  # stubbed ex_aws client and the reindex is a dead Exq enqueue;
+  # moderation_log/2 is a synchronous insert.
 
   import Philomena.UsersFixtures
 

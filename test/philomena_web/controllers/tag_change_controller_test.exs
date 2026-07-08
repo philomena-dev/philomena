@@ -3,10 +3,8 @@ defmodule PhilomenaWeb.TagChangeControllerTest do
 
   @moduletag :search
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior. The read-only :index action and the moderation :delete action
-  # are both covered here.
+  # The read-only :index action and the moderation :delete action are both
+  # covered here.
 
   import Philomena.AttributionFixtures
   import Philomena.ImagesFixtures

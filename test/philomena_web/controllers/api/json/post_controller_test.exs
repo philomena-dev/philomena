@@ -1,10 +1,6 @@
 defmodule PhilomenaWeb.Api.Json.PostControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior.
-
   import Philomena.ForumsFixtures
   import Philomena.PostsFixtures
   import Philomena.TopicsFixtures

@@ -1,10 +1,8 @@
 defmodule PhilomenaWeb.Image.DeleteControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Characterization tests: these pin the current observable behavior of the
-  # endpoint (see CHARACTERIZATION-TESTS.md), they do not specify desired
-  # behavior. This controller is the moderation "hide/delete image" tool
-  # (the user-facing hide is Image.HideController).
+  # This controller is the moderation "hide/delete image" tool (the
+  # user-facing hide is Image.HideController).
 
   import Philomena.ImagesFixtures
 
