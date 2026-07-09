@@ -127,22 +127,27 @@ defmodule PhilomenaWeb.Topic.Poll.VoteControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Your vote was not recorded."
     end
 
-    test "crashes on a non-integer option id", %{conn: conn, forum: forum, topic: topic} do
-      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+    test "drops a non-integer option id without crashing",
+         %{conn: conn, forum: forum, topic: topic} do
+      # A non-integer option id is unparsable, so filter_options drops it
+      # (rather than raising ArgumentError as it used to). No valid options
+      # remain, so no vote is recorded and the request still redirects cleanly.
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
 
-      assert_raise ArgumentError, ~r/not a textual representation of an integer/, fn ->
+      conn =
         post(conn, ~p"/forums/#{forum}/topics/#{topic}/poll/votes", %{
           "poll" => %{"option_ids" => ["not-a-number"]}
         })
-      end
+
+      assert redirected_to(conn) == ~p"/forums/#{forum}/topics/#{topic}"
+      assert Repo.aggregate(from(pv in PollVote, where: pv.user_id == ^user.id), :count) == 0
     end
 
-    test "records a vote for an option belonging to a different poll",
+    test "does not record a vote for an option belonging to a different poll",
          %{conn: conn, forum: forum, topic: topic} do
-      # NOTE: filter_options never checks that the submitted option ids belong
-      # to the poll being voted on (the context has a TODO admitting the
-      # missing integrity check) - a vote for any existing poll option is
-      # accepted and counted. KNOWN-ODDITIES.md
+      # filter_options now restricts the submitted option ids to those that
+      # actually belong to the poll being voted on, so an option id from a
+      # foreign poll is dropped and never counted.
       %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
 
       other_topic =
@@ -167,12 +172,13 @@ defmodule PhilomenaWeb.Topic.Poll.VoteControllerTest do
         })
 
       assert redirected_to(conn) == ~p"/forums/#{forum}/topics/#{topic}"
-      assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Your vote has been recorded."
 
-      assert Repo.exists?(
+      refute Repo.exists?(
                from pv in PollVote,
                  where: pv.poll_option_id == ^foreign_option.id and pv.user_id == ^user.id
              )
+
+      assert Repo.reload!(foreign_option).vote_count == 0
     end
 
     test "redirects to / with the not-found flash when the topic has no poll",
