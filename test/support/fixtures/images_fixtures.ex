@@ -15,6 +15,7 @@ defmodule Philomena.ImagesFixtures do
   alias Philomena.Images.Source
   alias Philomena.Repo
   alias Philomena.Tags
+  alias PhilomenaMedia.Sha512
 
   @doc """
   Inserts a processed 100x100 PNG image.
@@ -76,5 +77,18 @@ defmodule Philomena.ImagesFixtures do
     {:ok, path} = Plug.Upload.random_file("image-upload-test")
     File.cp!(@png_fixture, path)
     %Plug.Upload{path: path, content_type: "image/png", filename: "upload-test.png"}
+  end
+
+  @doc """
+  The SHA-512 hash `analyze_upload` computes for `png_upload/0`'s file - i.e.
+  the value an image's `image_orig_sha512_hash`/`image_sha512_hash` takes on
+  once its file is replaced with that upload.
+
+  Use it to arrange dedup-on-replace scenarios: seed an image (or a *different*
+  image) with this hash to make a replacement byte-identical to an existing
+  file.
+  """
+  def png_upload_sha512 do
+    Sha512.file(@png_fixture)
   end
 end

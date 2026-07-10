@@ -46,11 +46,10 @@ defmodule PhilomenaWeb.Image.FileControllerTest do
       assert reloaded.processed == false
       assert reloaded.thumbnails_generated == false
 
-      # NOTE: remove_hash nulls image_orig_sha512_hash first, but the
-      # subsequent analysis of the new file re-sets it, so on success the hash
-      # is the new file's, not nil (contrast the no-file failure path).
+      # On success the stored hash becomes the replacement file's own hash.
       assert reloaded.image_orig_sha512_hash != nil
       assert reloaded.image_orig_sha512_hash != image.image_orig_sha512_hash
+      assert reloaded.image_orig_sha512_hash == png_upload_sha512()
     end
 
     test "as an admin replaces the file", %{conn: conn} do
@@ -62,6 +61,52 @@ defmodule PhilomenaWeb.Image.FileControllerTest do
       assert redirected_to(conn) == ~p"/images/#{image}"
       assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Successfully updated file."
       assert Repo.reload!(image).processed == false
+    end
+
+    # The dedup check in image_changeset excludes the image being updated, so
+    # re-uploading an image's *own* current file (byte-identical replacement,
+    # same orig_sha512_hash) is not treated as a duplicate and succeeds. This
+    # is the case the removed pre-emptive remove_hash used to make room for.
+    test "as a moderator replacing with a byte-identical copy of its own file succeeds", %{
+      conn: conn
+    } do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+      sha = png_upload_sha512()
+      image = image_fixture(image_sha512_hash: sha, image_orig_sha512_hash: sha)
+
+      conn = put(conn, ~p"/images/#{image}/file", %{"image" => %{"image" => png_upload()}})
+
+      assert redirected_to(conn) == ~p"/images/#{image}"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Successfully updated file."
+
+      reloaded = Repo.reload!(image)
+      assert reloaded.processed == false
+      assert reloaded.thumbnails_generated == false
+      # Same file, same hash - the replacement went through.
+      assert reloaded.image_orig_sha512_hash == sha
+    end
+
+    # A file that matches a *different* image's fingerprint is still rejected as
+    # a duplicate (image_changeset adds the "has already been uploaded" error),
+    # so update_file returns an error and the target image is left untouched -
+    # its own fingerprint preserved.
+    test "as a moderator replacing with a file already uploaded as another image fails", %{
+      conn: conn
+    } do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+      dup_sha = png_upload_sha512()
+      _other = image_fixture(image_sha512_hash: dup_sha, image_orig_sha512_hash: dup_sha)
+      image = image_fixture()
+
+      conn = put(conn, ~p"/images/#{image}/file", %{"image" => %{"image" => png_upload()}})
+
+      assert redirected_to(conn) == ~p"/images/#{image}"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Failed to update file!"
+
+      reloaded = Repo.reload!(image)
+      # The target keeps its own fingerprint and file.
+      assert reloaded.image_orig_sha512_hash == image.image_orig_sha512_hash
+      assert reloaded.processed == true
     end
 
     # verify_not_deleted halts before replacing a hidden image.
@@ -77,11 +122,11 @@ defmodule PhilomenaWeb.Image.FileControllerTest do
       assert Repo.reload!(image).image_orig_sha512_hash != nil
     end
 
-    # NOTE: update_file re-renders the "Failed to update file!" error branch on
-    # a request with no file (image_changeset's validate_required(:image)
-    # fails). But the action calls Images.remove_hash/1 *before* update_file, so
-    # a failed replacement still nulls image_orig_sha512_hash as a side effect.
-    test "without a file redirects with the failure flash but still removes the hash", %{
+    # update_file re-renders the "Failed to update file!" error branch on a
+    # request with no file (image_changeset's validate_required(:image) fails).
+    # The action goes straight to update_file, so a failed replacement leaves
+    # the image untouched - crucially the dedup fingerprint is preserved.
+    test "without a file redirects with the failure flash and preserves the hash", %{
       conn: conn
     } do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
@@ -93,7 +138,8 @@ defmodule PhilomenaWeb.Image.FileControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Failed to update file!"
 
       reloaded = Repo.reload!(image)
-      assert reloaded.image_orig_sha512_hash == nil
+      # The hash is untouched - a failed replace no longer wipes the fingerprint.
+      assert reloaded.image_orig_sha512_hash == image.image_orig_sha512_hash
       # The file itself was not replaced.
       assert reloaded.processed == true
     end
