@@ -90,8 +90,17 @@ defmodule PhilomenaWeb.Router do
     ]
 
     resources "/passwords", PasswordController, only: [:new, :create, :edit, :update]
-    resources "/confirmations", ConfirmationController, only: [:new, :create, :show]
+    resources "/confirmations", ConfirmationController, only: [:new, :create]
     resources "/unlocks", UnlockController, only: [:new, :create, :show]
+  end
+
+  scope "/", PhilomenaWeb do
+    pipe_through [
+      :browser,
+      :ensure_tor_authorized
+    ]
+
+    resources "/confirmations", ConfirmationController, only: [:show]
   end
 
   scope "/", PhilomenaWeb do

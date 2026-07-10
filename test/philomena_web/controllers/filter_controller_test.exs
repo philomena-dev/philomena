@@ -121,14 +121,13 @@ defmodule PhilomenaWeb.FilterControllerTest do
   end
 
   describe "GET /filters/new" do
-    test "redirects anonymous users with the authorization flash", %{conn: conn} do
-      # NOTE: load_and_authorize_resource runs before RequireUserPlug, and the
-      # anonymous Canada impl has no :new rule for Filter, so anonymous users
-      # get the Canary flash rather than the sign-in one.
+    test "redirects anonymous users with the sign-in flash", %{conn: conn} do
       conn = get(conn, ~p"/filters/new")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "You must be signed in to see this page."
     end
 
     test "renders the form for logged-in users", %{conn: conn} do
@@ -159,11 +158,13 @@ defmodule PhilomenaWeb.FilterControllerTest do
   end
 
   describe "POST /filters" do
-    test "redirects anonymous users with the authorization flash", %{conn: conn} do
+    test "redirects anonymous users with the sign-in flash", %{conn: conn} do
       conn = post(conn, ~p"/filters", %{"filter" => %{"name" => "Anon filter"}})
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "You must be signed in to see this page."
     end
 
     test "creates a filter and redirects to it", %{conn: conn} do
