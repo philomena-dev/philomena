@@ -66,6 +66,32 @@ defmodule PhilomenaQuery.Search do
           optional(:page_size) => integer()
         }
 
+  @doc """
+  Return the name of the index which stores documents for the given schema
+  module, including any environment prefix.
+
+  Index modules define bare names (e.g. `"images"`); a prefix may be set
+  with the `:opensearch_index_prefix` configuration key to namespace all
+  indexes for the current environment. The test environment uses `"test_"`
+  so test runs cannot touch development data on a shared cluster.
+
+  ## Example
+
+      iex> Search.index_name(Image)
+      "images"
+
+  """
+  @spec index_name(schema_module()) :: String.t()
+  def index_name(module) do
+    prefixed_index_name(@policy.index_for(module))
+  end
+
+  defp prefixed_index_name(index) do
+    prefix = Application.get_env(:philomena, :opensearch_index_prefix, "")
+
+    "#{prefix}#{index.index_name()}"
+  end
+
   @doc ~S"""
   Create the index with the module's index name and mapping.
 
@@ -85,7 +111,7 @@ defmodule PhilomenaQuery.Search do
   def create_index!(module) do
     index = @policy.index_for(module)
 
-    Api.create_index(@policy.opensearch_url(), index.index_name(), index.mapping())
+    Api.create_index(@policy.opensearch_url(), prefixed_index_name(index), index.mapping())
   end
 
   @doc ~S"""
@@ -105,7 +131,56 @@ defmodule PhilomenaQuery.Search do
   def delete_index!(module) do
     index = @policy.index_for(module)
 
-    Api.delete_index(@policy.opensearch_url(), index.index_name())
+    Api.delete_index(@policy.opensearch_url(), prefixed_index_name(index))
+  end
+
+  @doc ~S"""
+  Remove every document from the module's index, leaving the mapping intact.
+
+  `POST /#{index_name}/_delete_by_query`
+
+  Unlike `delete_index!/1`, the index itself survives, so this does not have to be followed
+  by a `create_index!/1`. Version conflicts are ignored, and the emptied index is refreshed
+  before returning.
+
+  ## Example
+
+      iex> Search.clear_index!(Image)
+
+  """
+  @spec clear_index!(schema_module()) :: :ok
+  def clear_index!(module) do
+    index = @policy.index_for(module)
+    body = %{query: %{match_all: %{}}}
+
+    {:ok, %{status: 200}} =
+      Api.delete_by_query(@policy.opensearch_url(), prefixed_index_name(index), body)
+
+    :ok
+  end
+
+  @doc ~S"""
+  Force a refresh of the module's index.
+
+  `POST /#{index_name}/_refresh`
+
+  Indexing is near real-time: documents written by `index_document/2` or `reindex/3` only
+  become visible to search on the index's refresh interval, which is 5 seconds unless
+  changed in the mapping. This performs that refresh immediately.
+
+  ## Example
+
+      iex> Search.refresh_index!(Image)
+
+  """
+  @spec refresh_index!(schema_module()) :: :ok
+  def refresh_index!(module) do
+    index = @policy.index_for(module)
+
+    {:ok, %{status: 200}} =
+      Api.refresh_index(@policy.opensearch_url(), prefixed_index_name(index))
+
+    :ok
   end
 
   @doc ~S"""
@@ -125,7 +200,7 @@ defmodule PhilomenaQuery.Search do
   def update_mapping!(module) do
     index = @policy.index_for(module)
 
-    index_name = index.index_name()
+    index_name = prefixed_index_name(index)
     mapping = index.mapping().mappings.properties
 
     Api.update_index_mapping(@policy.opensearch_url(), index_name, %{properties: mapping})
@@ -151,7 +226,7 @@ defmodule PhilomenaQuery.Search do
     index = @policy.index_for(module)
     data = index.as_json(doc)
 
-    Api.index_document(@policy.opensearch_url(), index.index_name(), data, data.id)
+    Api.index_document(@policy.opensearch_url(), prefixed_index_name(index), data, data.id)
   end
 
   @doc ~S"""
@@ -174,7 +249,7 @@ defmodule PhilomenaQuery.Search do
   def delete_document(id, module) do
     index = @policy.index_for(module)
 
-    Api.delete_document(@policy.opensearch_url(), index.index_name(), id)
+    Api.delete_document(@policy.opensearch_url(), prefixed_index_name(index), id)
   end
 
   @doc """
@@ -222,7 +297,7 @@ defmodule PhilomenaQuery.Search do
             doc = index.as_json(record)
 
             [
-              %{index: %{_index: index.index_name(), _id: doc.id}},
+              %{index: %{_index: prefixed_index_name(index), _id: doc.id}},
               doc
             ]
           end)
@@ -363,7 +438,7 @@ defmodule PhilomenaQuery.Search do
         query: query_body
       }
 
-    Api.update_by_query(@policy.opensearch_url(), index.index_name(), body)
+    Api.update_by_query(@policy.opensearch_url(), prefixed_index_name(index), body)
   end
 
   @doc ~S"""
@@ -393,7 +468,7 @@ defmodule PhilomenaQuery.Search do
     index = @policy.index_for(module)
 
     {:ok, %{body: results, status: 200}} =
-      Api.search(@policy.opensearch_url(), index.index_name(), query_body)
+      Api.search(@policy.opensearch_url(), prefixed_index_name(index), query_body)
 
     results
   end
@@ -423,7 +498,7 @@ defmodule PhilomenaQuery.Search do
     msearch_body =
       Enum.flat_map(definitions, fn def ->
         [
-          %{index: @policy.index_for(def.module).index_name()},
+          %{index: prefixed_index_name(@policy.index_for(def.module))},
           def.body
         ]
       end)
@@ -686,7 +761,7 @@ defmodule PhilomenaQuery.Search do
   @spec delete_documents([term()], schema_module()) :: any()
   def delete_documents(ids, module) when is_list(ids) do
     index = @policy.index_for(module)
-    index_name = index.index_name()
+    index_name = prefixed_index_name(index)
 
     lines = Enum.map(ids, &%{delete: %{_index: index_name, _id: &1}})
 

@@ -67,4 +67,33 @@ defmodule PhilomenaWeb.RegistrationControllerTest do
       assert redirected_to(conn) == ~p"/sessions/new"
     end
   end
+
+  describe "PATCH/PUT /registrations" do
+    setup :register_and_log_in_user
+
+    # NOTE: the router routes :update for the registration singleton, but
+    # RegistrationController defines no update/2 - the route is dead and
+    # raises for any logged-in user (KNOWN-ODDITIES.md).
+    test "PATCH raises UndefinedFunctionError", %{conn: conn} do
+      assert_raise UndefinedFunctionError,
+                   ~r/function PhilomenaWeb\.RegistrationController\.update\/2 is undefined or private/,
+                   fn ->
+                     patch(conn, ~p"/registrations", %{"user" => %{}})
+                   end
+    end
+
+    test "PUT raises UndefinedFunctionError", %{conn: conn} do
+      assert_raise UndefinedFunctionError,
+                   ~r/function PhilomenaWeb\.RegistrationController\.update\/2 is undefined or private/,
+                   fn ->
+                     put(conn, ~p"/registrations", %{"user" => %{}})
+                   end
+    end
+
+    test "redirects anonymous users to the login page" do
+      conn = build_conn()
+      conn = patch(conn, ~p"/registrations", %{"user" => %{}})
+      assert redirected_to(conn) == ~p"/sessions/new"
+    end
+  end
 end

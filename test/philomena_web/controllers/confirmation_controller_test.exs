@@ -87,4 +87,31 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
       refute Users.get_user!(user.id).confirmed_at
     end
   end
+
+  describe "when already logged in" do
+    test "GET /confirmations/new redirects to the homepage", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+      conn = get(conn, ~p"/confirmations/new")
+      assert redirected_to(conn) == "/"
+    end
+
+    # NOTE: a logged-in *unconfirmed* user is logged out by
+    # EnsureUserEnabledPlug (in the :browser pipeline) before
+    # redirect_if_user_is_authenticated ever runs - following their own
+    # valid confirmation link logs them out instead of confirming.
+    test "GET /confirmations/:id logs an unconfirmed user out without confirming",
+         %{conn: conn, user: user} do
+      token =
+        extract_user_token(fn url ->
+          Users.deliver_user_confirmation_instructions(user, url)
+        end)
+
+      conn = conn |> log_in_user(user) |> get(~p"/confirmations/#{token}")
+
+      assert redirected_to(conn) == "/"
+      assert Flash.get(conn.assigns.flash, :error) =~ "Your account is not currently active."
+      refute get_session(conn, :user_token)
+      refute Users.get_user!(user.id).confirmed_at
+    end
+  end
 end

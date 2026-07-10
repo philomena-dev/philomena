@@ -1,0 +1,142 @@
+defmodule PhilomenaWeb.Image.AnonymousControllerTest do
+  use PhilomenaWeb.ConnCase, async: true
+
+  import Philomena.ImagesFixtures
+
+  alias Philomena.Repo
+
+  defp anonymous?(image), do: Repo.reload!(image).anonymous
+
+  describe "POST /images/:image_id/anonymous" do
+    test "redirects anonymous users to login", %{conn: conn} do
+      image = image_fixture(anonymous: false)
+
+      conn = post(conn, ~p"/images/#{image}/anonymous")
+
+      assert redirected_to(conn) == ~p"/sessions/new"
+      refute anonymous?(image)
+    end
+
+    # NOTE: this controller's verify_authorized checks `:show, :ip_address`,
+    # which a regular user lacks, so they get the authorization redirect.
+    test "rejects a regular user", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+      image = image_fixture(anonymous: false)
+
+      conn = post(conn, ~p"/images/#{image}/anonymous")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      refute anonymous?(image)
+    end
+
+    test "as a moderator hides the author", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+      image = image_fixture(anonymous: false)
+
+      conn = post(conn, ~p"/images/#{image}/anonymous")
+
+      assert redirected_to(conn) == ~p"/images/#{image}"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Successfully updated anonymity."
+      assert anonymous?(image)
+    end
+
+    test "as an admin hides the author", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_admin(%{conn: conn})
+      image = image_fixture(anonymous: false)
+
+      conn = post(conn, ~p"/images/#{image}/anonymous")
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Successfully updated anonymity."
+      assert anonymous?(image)
+    end
+
+    # NOTE: this controller loads the image with plain load_resource (no
+    # authorize), and Canary's not_found_handler does not run on :create, so
+    # an unknown id passes verify_authorized and then crashes in
+    # update_anonymous, whose function head requires a %Image{}.
+    test "for an unknown image_id raises FunctionClauseError", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+
+      assert_raise FunctionClauseError, ~r/update_anonymous/, fn ->
+        post(conn, ~p"/images/999999999/anonymous")
+      end
+    end
+
+    # NOTE: the image_id is interpolated into the load query, so a non-integer
+    # value raises Ecto.Query.CastError (a 500).
+    test "for a non-integer image_id raises CastError", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+
+      assert_raise Ecto.Query.CastError, fn ->
+        post(conn, ~p"/images/not-a-number/anonymous")
+      end
+    end
+  end
+
+  describe "DELETE /images/:image_id/anonymous" do
+    test "redirects anonymous users to login", %{conn: conn} do
+      image = image_fixture(anonymous: true)
+
+      conn = delete(conn, ~p"/images/#{image}/anonymous")
+
+      assert redirected_to(conn) == ~p"/sessions/new"
+      assert anonymous?(image)
+    end
+
+    test "rejects a regular user", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+      image = image_fixture(anonymous: true)
+
+      conn = delete(conn, ~p"/images/#{image}/anonymous")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      assert anonymous?(image)
+    end
+
+    test "as a moderator reveals the author", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+      image = image_fixture(anonymous: true)
+
+      conn = delete(conn, ~p"/images/#{image}/anonymous")
+
+      assert redirected_to(conn) == ~p"/images/#{image}"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Successfully updated anonymity."
+      refute anonymous?(image)
+    end
+
+    test "as an admin reveals the author", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_admin(%{conn: conn})
+      image = image_fixture(anonymous: true)
+
+      conn = delete(conn, ~p"/images/#{image}/anonymous")
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Successfully updated anonymity."
+      refute anonymous?(image)
+    end
+
+    # NOTE: unlike :create, Canary's not_found_handler runs on the :delete
+    # load_resource, so an unknown id redirects rather than crashing.
+    test "for an unknown image_id redirects with the not-found flash", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+
+      conn = delete(conn, ~p"/images/999999999/anonymous")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
+    end
+
+    # NOTE: the image_id is interpolated into the load query, so a non-integer
+    # value raises Ecto.Query.CastError (a 500).
+    test "for a non-integer image_id raises CastError", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+
+      assert_raise Ecto.Query.CastError, fn ->
+        delete(conn, ~p"/images/not-a-number/anonymous")
+      end
+    end
+  end
+end

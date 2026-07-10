@@ -4,6 +4,7 @@ defmodule Philomena.UsersFixtures do
   entities via the `Philomena.Users` context.
   """
 
+  alias Philomena.Bans
   alias Philomena.Users
   alias Philomena.Repo
 
@@ -34,6 +35,83 @@ defmodule Philomena.UsersFixtures do
   def locked_user_fixture(attrs \\ %{}) do
     user_fixture(attrs)
     |> Users.User.lock_changeset()
+    |> Repo.update!()
+  end
+
+  def assistant_user_fixture(attrs \\ %{}) do
+    confirmed_user_fixture(attrs)
+    |> Ecto.Changeset.change(role: "assistant")
+    |> Repo.update!()
+  end
+
+  def moderator_user_fixture(attrs \\ %{}) do
+    confirmed_user_fixture(attrs)
+    |> Ecto.Changeset.change(role: "moderator")
+    |> Repo.update!()
+  end
+
+  def admin_user_fixture(attrs \\ %{}) do
+    confirmed_user_fixture(attrs)
+    |> Ecto.Changeset.change(role: "admin")
+    |> Repo.update!()
+  end
+
+  @doc """
+  Fixture for a confirmed user that has an avatar set (a bare filename in the
+  `avatar` column; no object is actually uploaded).
+  """
+  def user_with_avatar_fixture(attrs \\ %{}) do
+    confirmed_user_fixture(attrs)
+    |> Ecto.Changeset.change(avatar: "test/avatar.png")
+    |> Repo.update!()
+  end
+
+  @doc """
+  Fixture for a confirmed user marked as verified (auto-approval status).
+  """
+  def verified_user_fixture(attrs \\ %{}) do
+    confirmed_user_fixture(attrs)
+    |> Users.User.verify_changeset()
+    |> Repo.update!()
+  end
+
+  @doc """
+  Fixture for a confirmed user with an active ban.
+
+  The ban is issued by `banning_user` (a fresh admin when `nil`), has the
+  reason "Banned in test", and is valid for one year.
+  """
+  def banned_user_fixture(banning_user \\ nil, attrs \\ %{}) do
+    user = confirmed_user_fixture(attrs)
+
+    {:ok, _ban} =
+      Bans.create_user(banning_user || admin_user_fixture(), %{
+        "user_id" => user.id,
+        "reason" => "Banned in test",
+        "valid_until" => DateTime.add(DateTime.utc_now(:second), 365, :day)
+      })
+
+    user
+  end
+
+  @doc """
+  Fixture for a confirmed user with TOTP (2FA) enabled.
+
+  The generated secret can be recovered with `Philomena.Users.User.totp_secret/1`
+  to produce valid codes in tests that exercise the TOTP flow itself; for
+  everything else, use `PhilomenaWeb.ConnCase.log_in_totp_user/2`.
+  """
+  def totp_user_fixture(attrs \\ %{}) do
+    hashed_backup_codes =
+      Users.User.random_backup_codes()
+      |> Enum.map(&Users.Password.hash_pwd_salt/1)
+
+    confirmed_user_fixture(attrs)
+    |> Users.User.create_totp_secret_changeset()
+    |> Ecto.Changeset.change(
+      otp_required_for_login: true,
+      otp_backup_codes: hashed_backup_codes
+    )
     |> Repo.update!()
   end
 
