@@ -60,7 +60,7 @@ defmodule PhilomenaWeb.Profile.AwardControllerTest do
       assert award.reason == "for testing"
     end
 
-    # NOTE: Award.changeset now validate_requireds badge_id and declares the FK
+    # NOTE: Award.changeset now validate_required badge_id and declares the FK
     # constraint, so a nonexistent badge_id returns {:error, changeset} and the
     # controller re-renders new.html (200) instead of raising. No award persists.
     test "a nonexistent badge_id re-renders the form", %{conn: conn} do
