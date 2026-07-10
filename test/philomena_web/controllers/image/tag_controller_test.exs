@@ -8,6 +8,7 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
   import Philomena.ImagesFixtures
 
   alias PhilomenaQuery.Search
+  alias Philomena.TagChanges.Limits
   alias Philomena.TagChanges.TagChange
   alias Philomena.Tags.Tag
   alias Philomena.Repo
@@ -31,6 +32,16 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
 
   defp tag_names(image) do
     image |> Repo.preload(:tags, force: true) |> Map.fetch!(:tags) |> Enum.map(& &1.name)
+  end
+
+  # Fills the user's Valkey tag bucket to the 50-change limit so the next
+  # multi-tag update trips Images.update_tags' check_limits step and takes the
+  # controller's rate-limited error branch. Registers cleanup of the counters
+  # (they carry a 10-minute TTL and the SQL sandbox does not roll them back).
+  defp fill_tag_bucket!(user) do
+    ip = %Postgrex.INET{address: {127, 0, 0, 1}, netmask: 32}
+    :ok = Limits.update_tag_count_after_update(user, ip, 50)
+    on_exit(fn -> reset_tag_change_limits(user: user, ip: ip) end)
   end
 
   test "PATCH as a logged-in user updates the tags and renders the partial", %{conn: conn} do
@@ -121,6 +132,53 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
 
     assert redirected_to(conn) == "/"
     assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+  end
+
+  test "a rate-limited non-AJAX PATCH redirects to the referrer with a flash", %{conn: conn} do
+    %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+    image = image_fixture()
+    fill_tag_bucket!(user)
+
+    conn =
+      conn
+      |> put_req_header("referer", ~p"/images/#{image}")
+      |> patch(~p"/images/#{image}/tags", %{
+        "image" => %{
+          "old_tag_input" => "safe",
+          "tag_input" => "safe, added test tag, other added tag"
+        }
+      })
+
+    assert redirected_to(conn) == ~p"/images/#{image}"
+
+    assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+             "Too many tags changed. Change fewer tags or try again later."
+
+    # check_limits rolls the whole transaction back, so no tags were changed.
+    assert tag_names(image) == ["safe"]
+  end
+
+  test "a rate-limited AJAX PATCH responds 300 with an empty body and the flash", %{conn: conn} do
+    %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+    image = image_fixture()
+    fill_tag_bucket!(user)
+
+    conn =
+      conn
+      |> put_req_header("x-requested-with", "XMLHttpRequest")
+      |> patch(~p"/images/#{image}/tags", %{
+        "image" => %{
+          "old_tag_input" => "safe",
+          "tag_input" => "safe, added test tag, other added tag"
+        }
+      })
+
+    assert response(conn, 300) == ""
+
+    assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+             "Too many tags changed. Change fewer tags or try again later."
+
+    assert tag_names(image) == ["safe"]
   end
 
   test "PATCH as a banned user redirects with the ban flash", %{conn: conn} do

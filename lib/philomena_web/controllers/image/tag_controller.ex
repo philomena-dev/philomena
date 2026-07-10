@@ -90,16 +90,27 @@ defmodule PhilomenaWeb.Image.TagController do
         )
 
       {:error, :check_limits, _error, _} ->
-        conn
-        |> put_flash(:error, "Too many tags changed. Change fewer tags or try again later.")
-        |> Conn.send_resp(:multiple_choices, "")
-        |> Conn.halt()
+        error_response(conn, "Too many tags changed. Change fewer tags or try again later.")
 
       _err ->
-        conn
-        |> put_flash(:error, "Failed to update tags!")
-        |> Conn.send_resp(:multiple_choices, "")
-        |> Conn.halt()
+        error_response(conn, "Failed to update tags!")
+    end
+  end
+
+  # Matches the behavior of PhilomenaWeb.LimitPlug: AJAX requests get an
+  # empty 300 response (ujs.ts reloads the page so the flash renders),
+  # everything else is redirected back to the referrer.
+  defp error_response(conn, message) do
+    conn = put_flash(conn, :error, message)
+
+    if conn.assigns.ajax? do
+      conn
+      |> Conn.send_resp(:multiple_choices, "")
+      |> Conn.halt()
+    else
+      conn
+      |> redirect(external: conn.assigns.referrer)
+      |> Conn.halt()
     end
   end
 end

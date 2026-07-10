@@ -26,7 +26,7 @@ defmodule PhilomenaWeb.TagChangeControllerTest do
     :ok
   end
 
-  defp tag_change_fixture!(user) do
+  defp tag_change_fixture!(user, added_tags \\ "added test tag, other added tag") do
     image = image_fixture()
 
     # The tag changeset requires at least 3 tags, so the update keeps the
@@ -34,7 +34,7 @@ defmodule PhilomenaWeb.TagChangeControllerTest do
     {:ok, _} =
       Images.update_tags(image, attribution(user), %{
         "old_tag_input" => "safe",
-        "tag_input" => "safe, added test tag, other added tag"
+        "tag_input" => "safe, #{added_tags}"
       })
 
     SearchHelpers.reindex_all!(TagChange)
@@ -83,23 +83,96 @@ defmodule PhilomenaWeb.TagChangeControllerTest do
       refute response =~ "added test tag"
     end
 
-    test "resource_type and resource_id params only change the heading", %{conn: conn} do
+    test "resource_type=image filters the listing to that image's changes", %{conn: conn} do
+      image = tag_change_fixture!(confirmed_user_fixture(), "filtered marker tag, second tag")
+
+      _other_image =
+        tag_change_fixture!(confirmed_user_fixture(), "unrelated marker tag, second tag")
+
+      conn = get(conn, ~p"/tag_changes?#{[resource_type: "image", resource_id: image.id]}")
+      response = html_response(conn, 200)
+
+      # The heading names the resource, as before...
+      assert response =~ "Showing tag changes for"
+      assert response =~ "image ##{image.id}"
+
+      # ...and the resource params now also filter the listing: only the
+      # requested image's change appears, the unrelated one is absent.
+      assert response =~ "filtered marker tag"
+      refute response =~ "unrelated marker tag"
+    end
+
+    test "resource_type=user filters by user name, case-insensitively", %{conn: conn} do
+      user = confirmed_user_fixture()
+      tag_change_fixture!(user, "filtered marker tag, second tag")
+      tag_change_fixture!(confirmed_user_fixture(), "unrelated marker tag, second tag")
+
+      # The filter downcases the given name before the term match.
+      conn =
+        get(
+          conn,
+          ~p"/tag_changes?#{[resource_type: "user", resource_id: String.upcase(user.name)]}"
+        )
+
+      response = html_response(conn, 200)
+
+      assert response =~ "filtered marker tag"
+      refute response =~ "unrelated marker tag"
+    end
+
+    test "tcq composes with resource params as AND", %{conn: conn} do
       user = confirmed_user_fixture()
       image = tag_change_fixture!(user)
       other_image = image_fixture()
 
-      # NOTE: resource_type/resource_id are display-only - TagChanges.load
-      # compiles a search query from the "tcq" param alone, so pointing at
-      # a different image still lists every tag change.
-      conn =
-        get(conn, ~p"/tag_changes?#{[resource_type: "image", resource_id: other_image.id]}")
+      # tcq matching + resource filter pointing at the same image: listed.
+      conn1 =
+        get(
+          conn,
+          ~p"/tag_changes?#{[tcq: "image_id:#{image.id}", resource_type: "image", resource_id: image.id]}"
+        )
 
-      response = html_response(conn, 200)
+      assert html_response(conn1, 200) =~ "added test tag"
 
-      assert response =~ "Showing tag changes for"
-      assert response =~ "image ##{other_image.id}"
-      assert response =~ "added test tag"
-      assert response =~ ~p"/images/#{image}"
+      # The same tcq joined with a resource filter for a change-free image
+      # matches nothing.
+      conn2 =
+        get(
+          conn,
+          ~p"/tag_changes?#{[tcq: "image_id:#{image.id}", resource_type: "image", resource_id: other_image.id]}"
+        )
+
+      refute html_response(conn2, 200) =~ "added test tag"
+    end
+
+    test "resource_type=ip lists nothing for non-staff viewers", %{conn: conn} do
+      tag_change_fixture!(confirmed_user_fixture())
+
+      # attribution/1 stamps every change with 203.0.113.1, but ip filtering
+      # is moderator/admin-only - anonymous viewers get match_none.
+      conn = get(conn, ~p"/tag_changes?#{[resource_type: "ip", resource_id: "203.0.113.1"]}")
+
+      refute html_response(conn, 200) =~ "added test tag"
+    end
+
+    test "a moderator can filter by ip; an invalid ip matches nothing", %{conn: conn} do
+      tag_change_fixture!(confirmed_user_fixture())
+
+      conn = log_in_user(conn, moderator_user_fixture())
+
+      conn1 = get(conn, ~p"/tag_changes?#{[resource_type: "ip", resource_id: "203.0.113.1"]}")
+      assert html_response(conn1, 200) =~ "added test tag"
+
+      conn2 = get(conn, ~p"/tag_changes?#{[resource_type: "ip", resource_id: "not-an-ip"]}")
+      refute html_response(conn2, 200) =~ "added test tag"
+    end
+
+    test "an unknown resource_type lists nothing", %{conn: conn} do
+      tag_change_fixture!(confirmed_user_fixture())
+
+      conn = get(conn, ~p"/tag_changes?#{[resource_type: "banana", resource_id: "1"]}")
+
+      refute html_response(conn, 200) =~ "added test tag"
     end
   end
 
