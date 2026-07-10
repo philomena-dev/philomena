@@ -1,7 +1,10 @@
 defmodule Philomena.TagChanges.Limits do
   @moduledoc """
   Tag change limits for anonymous and unverified users.
-  Verified users are exempt entirely; see `considered_for_limit?/1`.
+
+  Verified users are exempt entirely, as are staff (admins, moderators,
+  assistants) and users with `bypass_rate_limits` set; see
+  `considered_for_limit?/1`.
   """
 
   @tag_changes_per_ten_minutes 50
@@ -98,9 +101,12 @@ defmodule Philomena.TagChanges.Limits do
     :ok
   end
 
-  defp considered_for_limit?(user) do
-    is_nil(user) or not user.verified
-  end
+  # Staff and rate-limit-bypassing users are never limited (matching
+  # PhilomenaWeb.LimitPlug); anonymous and unverified users are.
+  defp considered_for_limit?(nil), do: true
+  defp considered_for_limit?(%{role: role}) when role in ~W(admin moderator assistant), do: false
+  defp considered_for_limit?(%{bypass_rate_limits: true}), do: false
+  defp considered_for_limit?(user), do: not user.verified
 
   defp tag_count_key(user, ip) do
     "rltcn:#{scope(user, ip)}"

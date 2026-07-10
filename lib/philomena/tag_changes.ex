@@ -5,6 +5,7 @@ defmodule Philomena.TagChanges do
 
   import Ecto.Query, warn: false
   alias Philomena.Repo
+  alias PhilomenaQuery.Parse.IpParser
   alias PhilomenaQuery.Search
   alias Philomena.TagChangeRevertWorker
   alias Philomena.TagChanges
@@ -285,7 +286,7 @@ defmodule Philomena.TagChanges do
       %{
         query: %{
           bool: %{
-            must: [query]
+            must: [query | resource_filters(user, params)]
           }
         },
         sort: parse_sort(params)
@@ -296,6 +297,33 @@ defmodule Philomena.TagChanges do
       preload(TagChange, [:user, image: [:user, :sources, tags: :aliases], tags: [:tag]])
     )
   end
+
+  defp resource_filters(user, %{"resource_type" => type, "resource_id" => id})
+       when is_binary(type) and is_binary(id) and id != "" do
+    [resource_filter(user, type, id)]
+  end
+
+  defp resource_filters(_user, _params), do: []
+
+  # Term filters mirroring the fields each role may query through `tcq`
+  # (see Philomena.TagChanges.Query): ip and fingerprint are moderator-only.
+  # A recognized resource the requester may not filter by, or an invalid
+  # value, matches nothing rather than silently listing everything.
+  defp resource_filter(_user, "image", id), do: %{term: %{image_id: id}}
+  defp resource_filter(_user, "tag", name), do: %{term: %{tag: String.downcase(name)}}
+  defp resource_filter(_user, "user", name), do: %{term: %{user: String.downcase(name)}}
+
+  defp resource_filter(%{role: role}, "ip", ip) when role in ~W(moderator admin) do
+    case IpParser.parse(ip) do
+      {:ok, _tokens, "", _, _, _} -> %{term: %{ip: ip}}
+      _ -> %{match_none: %{}}
+    end
+  end
+
+  defp resource_filter(%{role: role}, "fingerprint", fp) when role in ~W(moderator admin),
+    do: %{term: %{fingerprint: fp}}
+
+  defp resource_filter(_user, _type, _id), do: %{match_none: %{}}
 
   defp parse_sort(%{"sf" => sf, "sd" => sd})
        when sf in ["created_at", "tag_count", "added_tag_count", "removed_tag_count"] and

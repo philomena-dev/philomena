@@ -20,12 +20,20 @@ defmodule Philomena.TagChanges.LimitsTest do
   @tag_limit 50
   @rating_limit 1
 
-  # Lightweight, DB-free actors. Limits only reads `user.id` (for the scope key)
-  # and `user.verified` (for the exemption), and touches Valkey via Redix - it
-  # never hits Postgres - so a bare struct with a unique id is enough and keeps
-  # the counters isolated per test.
+  # Lightweight, DB-free actors. Limits only reads `user.id` (for the scope
+  # key) plus `user.role`, `user.bypass_rate_limits`, and `user.verified` (for
+  # the exemptions), and touches Valkey via Redix - it never hits Postgres - so
+  # a bare struct with a unique id is enough and keeps the counters isolated
+  # per test. The struct defaults (`role: "user"`, `bypass_rate_limits: false`)
+  # make the plain actors subject to the limits.
   defp unverified_user, do: %User{id: System.unique_integer([:positive]), verified: false}
   defp verified_user, do: %User{id: System.unique_integer([:positive]), verified: true}
+
+  defp staff_user(role),
+    do: %User{id: System.unique_integer([:positive]), verified: false, role: role}
+
+  defp bypass_user,
+    do: %User{id: System.unique_integer([:positive]), verified: false, bypass_rate_limits: true}
 
   defp unique_ip do
     n = System.unique_integer([:positive])
@@ -153,6 +161,40 @@ defmodule Philomena.TagChanges.LimitsTest do
 
       # increment_counter/4 short-circuits on `considered_for_limit?/1`, so
       # nothing was ever written to Valkey.
+      assert is_nil(raw_tag_count(user))
+    end
+  end
+
+  describe "staff and rate-limit-bypassing users are exempt" do
+    test "staff roles are never limited, even unverified, and no counter is recorded" do
+      for role <- ~w(admin moderator assistant) do
+        ip = unique_ip()
+        user = staff_user(role)
+        track(user, ip)
+
+        # Blowing far past both limits is a no-op for staff...
+        Limits.update_tag_count_after_update(user, ip, @tag_limit * 10)
+        Limits.update_rating_count_after_update(user, ip, @rating_limit * 10)
+
+        refute Limits.limited_for_tag_count?(user, ip, 1)
+        refute Limits.limited_for_rating_count?(user, ip)
+
+        # ...and increment_counter/4 short-circuits on considered_for_limit?/1,
+        # so the counters never advance.
+        assert is_nil(raw_tag_count(user))
+      end
+    end
+
+    test "a bypass_rate_limits user is never limited and no counter is recorded" do
+      ip = unique_ip()
+      user = bypass_user()
+      track(user, ip)
+
+      Limits.update_tag_count_after_update(user, ip, @tag_limit * 10)
+      Limits.update_rating_count_after_update(user, ip, @rating_limit * 10)
+
+      refute Limits.limited_for_tag_count?(user, ip, 1)
+      refute Limits.limited_for_rating_count?(user, ip)
       assert is_nil(raw_tag_count(user))
     end
   end
