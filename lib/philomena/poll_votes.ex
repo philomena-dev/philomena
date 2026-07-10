@@ -156,7 +156,26 @@ defmodule Philomena.PollVotes do
 
   """
   def delete_poll_vote(%PollVote{} = poll_vote) do
-    Repo.delete(poll_vote)
+    Multi.new()
+    |> Multi.delete(:poll_vote, poll_vote)
+    |> Multi.run(:update_option_count, fn repo, _changes ->
+      {_count, [poll_id]} =
+        PollOption
+        |> where(id: ^poll_vote.poll_option_id)
+        |> select([po], po.poll_id)
+        |> repo.update_all(inc: [vote_count: -1])
+
+      {:ok, poll_id}
+    end)
+    |> Multi.run(:update_poll_votes_count, fn repo, %{update_option_count: poll_id} ->
+      {count, nil} =
+        Poll
+        |> where(id: ^poll_id)
+        |> repo.update_all(inc: [total_votes: -1])
+
+      {:ok, count}
+    end)
+    |> Repo.transaction()
   end
 
   @doc """
