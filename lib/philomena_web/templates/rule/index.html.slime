@@ -1,9 +1,10 @@
 h1 Site Rules
 
-p
-  i.fa.fa-clock>
-  ' The rules were last updated
-  strong = pretty_time @last_updated_at
+= if @last_updated_at do
+  p
+    i.fa.fa-clock>
+    ' The rules were last updated
+    strong = pretty_time @last_updated_at
 
 = if can?(@conn, :create, Philomena.Rules.Rule) do
   .block

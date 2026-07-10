@@ -58,15 +58,15 @@ defmodule PhilomenaWeb.Admin.ForumControllerTest do
       assert response =~ forum.name
     end
 
-    # NOTE: The admin forum index renders `@forums`, which is populated by
-    # ForumListPlug (in the :browser pipeline), not the controller. With no
-    # forums visible, Canary's load_resource reuses the empty assign and
-    # probes `Enum.at(resources, 0).__struct__`, raising BadMapError - the
-    # same empty-list 500 pinned for the public ForumController.
-    test "500s on the empty index", %{conn: conn} do
-      assert_raise BadMapError, ~r/expected a map, got:\s*nil/, fn ->
-        get(conn, ~p"/admin/forums")
-      end
+    # NOTE: the empty index now renders 200 rather than raising BadMapError; the
+    # empty ForumListPlug assign is handled instead of being probed with
+    # Enum.at(resources, 0).__struct__.
+    test "renders the empty index", %{conn: conn} do
+      conn = get(conn, ~p"/admin/forums")
+
+      response = html_response(conn, 200)
+      assert response =~ "Admin - Forums - Derpibooru"
+      assert response =~ "Listing Forums"
     end
   end
 

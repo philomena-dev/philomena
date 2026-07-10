@@ -87,17 +87,15 @@ defmodule PhilomenaWeb.Image.Comment.ReportControllerTest do
            )
   end
 
-  test "POST with a blank reason crashes trying to re-render the form", %{conn: conn} do
-    # NOTE: ReportController.create/5 re-renders "new.html" on changeset
-    # failure but relies on the default view of the *calling* controller,
-    # and PhilomenaWeb.Image.Comment.ReportView does not exist - every
-    # invalid report submission 500s. (KNOWN-ODDITIES.md)
+  test "POST with a blank reason re-renders the report form", %{conn: conn} do
+    # NOTE: the create failure now renders new.html through the shared
+    # PhilomenaWeb.ReportView (200) rather than raising on a missing view.
     %{conn: conn} = register_and_log_in_user(%{conn: conn})
     image = image_fixture()
     comment = comment_fixture(image)
     rule = rule_fixture()
 
-    assert_raise ArgumentError, ~r/no "new" html template defined/, fn ->
+    conn =
       post(conn, ~p"/images/#{image}/comments/#{comment}/reports", %{
         "report" => %{
           "reason" => "",
@@ -105,8 +103,8 @@ defmodule PhilomenaWeb.Image.Comment.ReportControllerTest do
           "user_agent" => "Test Browser/1.0"
         }
       })
-    end
 
+    assert html_response(conn, 200) =~ "Submit a report"
     assert Repo.aggregate(Report, :count) == 0
   end
 

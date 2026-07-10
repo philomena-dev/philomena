@@ -42,10 +42,25 @@ defmodule PhilomenaWeb.DuplicateReportController do
     )
   end
 
-  def create(conn, %{"duplicate_report" => duplicate_report_params}) do
+  def create(conn, %{"duplicate_report" => duplicate_report_params})
+      when is_map(duplicate_report_params) do
+    source = load_image(duplicate_report_params["image_id"])
+    target = load_image(duplicate_report_params["duplicate_of_image_id"])
+
+    create_report(conn, source, target, duplicate_report_params)
+  end
+
+  def create(conn, _params), do: PhilomenaWeb.NotFoundPlug.call(conn)
+
+  # Without a source image there is nowhere to redirect back to.
+  defp create_report(conn, nil, _target, _params),
+    do: PhilomenaWeb.NotFoundPlug.call(conn)
+
+  defp create_report(conn, source, nil, _params),
+    do: report_failed(conn, source)
+
+  defp create_report(conn, source, target, duplicate_report_params) do
     attributes = conn.assigns.attributes
-    source = Repo.get!(Image, duplicate_report_params["image_id"])
-    target = Repo.get!(Image, duplicate_report_params["duplicate_of_image_id"])
 
     case DuplicateReports.create_duplicate_report(
            source,
@@ -59,9 +74,20 @@ defmodule PhilomenaWeb.DuplicateReportController do
         |> redirect(to: ~p"/images/#{duplicate_report.image_id}")
 
       {:error, _changeset} ->
-        conn
-        |> put_flash(:error, "Failed to submit duplicate report")
-        |> redirect(to: ~p"/images/#{source}")
+        report_failed(conn, source)
+    end
+  end
+
+  defp report_failed(conn, source) do
+    conn
+    |> put_flash(:error, "Failed to submit duplicate report")
+    |> redirect(to: ~p"/images/#{source}")
+  end
+
+  defp load_image(id) do
+    case PhilomenaWeb.IntegerId.parse(id) do
+      {:ok, id} -> Repo.get(Image, id)
+      :error -> nil
     end
   end
 

@@ -37,13 +37,14 @@ defmodule PhilomenaWeb.Admin.User.WipeControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "PII wipe queued"
     end
 
-    # NOTE: :create is not covered by the not_found handler, so an unknown slug
-    # passes nil through; the controller dereferences user.id (BadMapError on
-    # nil) before the worker enqueue - nil-pass-through family.
-    test "raises for an unknown slug", %{conn: conn} do
-      assert_raise BadMapError, ~r/expected a map, got:\s*nil/, fn ->
-        post(conn, ~p"/admin/users/no-such-user/wipe")
-      end
+    # NOTE: load_resource now uses required: true, so Canary's not_found handler
+    # runs on :create too - an unknown slug redirects with the not-found flash
+    # rather than dereferencing a nil user.
+    test "redirects with the not-found flash for an unknown slug", %{conn: conn} do
+      conn = post(conn, ~p"/admin/users/no-such-user/wipe")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 

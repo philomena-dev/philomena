@@ -68,32 +68,31 @@ defmodule PhilomenaWeb.RegistrationControllerTest do
     end
   end
 
-  describe "PATCH/PUT /registrations" do
+  describe "PATCH/PUT /registrations (no longer routed)" do
     setup :register_and_log_in_user
 
-    # NOTE: the router routes :update for the registration singleton, but
-    # RegistrationController defines no update/2 - the route is dead and
-    # raises for any logged-in user (KNOWN-ODDITIES.md).
-    test "PATCH raises UndefinedFunctionError", %{conn: conn} do
-      assert_raise UndefinedFunctionError,
-                   ~r/function PhilomenaWeb\.RegistrationController\.update\/2 is undefined or private/,
-                   fn ->
-                     patch(conn, ~p"/registrations", %{"user" => %{}})
-                   end
+    # NOTE: the router now routes only :edit for the registration singleton, so
+    # PATCH/PUT /registrations is unrouted and answers 404 - account settings
+    # save through the nested Registration.* singletons and /settings instead.
+    test "PATCH answers 404 for a logged-in user", %{conn: conn} do
+      conn = patch(conn, "/registrations", %{"user" => %{}})
+
+      assert conn.status == 404
     end
 
-    test "PUT raises UndefinedFunctionError", %{conn: conn} do
-      assert_raise UndefinedFunctionError,
-                   ~r/function PhilomenaWeb\.RegistrationController\.update\/2 is undefined or private/,
-                   fn ->
-                     put(conn, ~p"/registrations", %{"user" => %{}})
-                   end
+    test "PUT answers 404 for a logged-in user", %{conn: conn} do
+      conn = put(conn, "/registrations", %{"user" => %{}})
+
+      assert conn.status == 404
     end
 
-    test "redirects anonymous users to the login page" do
+    # NOTE: with the route gone the pipeline never runs, so an anonymous user
+    # gets the same 404 rather than the login redirect.
+    test "PATCH answers 404 for an anonymous user" do
       conn = build_conn()
-      conn = patch(conn, ~p"/registrations", %{"user" => %{}})
-      assert redirected_to(conn) == ~p"/sessions/new"
+      conn = patch(conn, "/registrations", %{"user" => %{}})
+
+      assert conn.status == 404
     end
   end
 end

@@ -65,11 +65,12 @@ defmodule PhilomenaWeb.RuleControllerTest do
       assert response =~ "Create New Rule"
     end
 
-    test "crashes when no rules exist", %{conn: conn} do
-      # NOTE: probable bug (see KNOWN-ODDITIES.md) - the index computes
-      # Enum.max/2 over the rule update timestamps, which raises on an empty
-      # rules table instead of rendering an empty list.
-      assert_raise Enum.EmptyError, ~r/^empty error$/, fn -> get(conn, ~p"/rules") end
+    test "renders an empty index when no rules exist", %{conn: conn} do
+      # NOTE: the index now omits the "last updated" line when there are no
+      # rules instead of raising Enum.EmptyError on the empty table.
+      conn = get(conn, ~p"/rules")
+
+      assert html_response(conn, 200) =~ "Site Rules"
     end
   end
 
@@ -116,10 +117,16 @@ defmodule PhilomenaWeb.RuleControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You can't access that page."
     end
 
-    test "crashes on a non-integer position", %{conn: conn} do
-      assert_raise Ecto.Query.CastError, ~r/position/, fn ->
-        get(conn, ~p"/rules/not-a-position")
-      end
+    # NOTE: a non-integer position short-circuits to NotFoundPlug via the central
+    # IntegerId guard, so the flash is the not-found message rather than the
+    # "You can't access that page." an unknown integer position gets.
+    test "redirects to / with the not-found flash for a non-integer position", %{conn: conn} do
+      conn = get(conn, ~p"/rules/not-a-position")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
   end
 
@@ -243,12 +250,15 @@ defmodule PhilomenaWeb.RuleControllerTest do
                "Couldn't find what you were looking"
     end
 
-    test "crashes on a non-integer position", %{conn: conn} do
+    test "redirects to / with the not-found flash for a non-integer position", %{conn: conn} do
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
 
-      assert_raise Ecto.Query.CastError, ~r/position/, fn ->
-        get(conn, ~p"/rules/not-a-position/edit")
-      end
+      conn = get(conn, ~p"/rules/not-a-position/edit")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Couldn't find what you were looking"
     end
   end
 

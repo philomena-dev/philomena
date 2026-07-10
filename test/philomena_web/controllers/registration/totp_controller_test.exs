@@ -49,22 +49,20 @@ defmodule PhilomenaWeb.Registration.TotpControllerTest do
   describe "PATCH /registrations/totp (enabling)" do
     setup :register_and_log_in_user
 
-    test "enables TOTP with a valid code, then crashes after sending the redirect",
-         %{conn: conn, user: user} do
+    test "enables TOTP with a valid code and redirects", %{conn: conn, user: user} do
       user = put_totp_secret(user)
 
-      # NOTE: the success branch of update/2 returns the result of
-      # Users.reindex_user/1 (a %User{}) instead of the redirect conn it
-      # built, so the response is sent and then the plug pipeline raises
-      # (KNOWN-ODDITIES.md).
-      assert_raise RuntimeError, ~r/expected action\/2 to return a Plug.Conn/, fn ->
+      # NOTE: the success branch now ends on the redirect conn (the reindex
+      # happens before it), so enabling 2FA redirects cleanly instead of raising.
+      conn =
         patch(conn, ~p"/registrations/totp", %{
           "user" => %{
             "current_password" => valid_user_password(),
             "twofactor_token" => valid_totp_code(user)
           }
         })
-      end
+
+      assert redirected_to(conn) == ~p"/registrations/totp/edit"
 
       user = Users.get_user!(user.id)
       assert user.otp_required_for_login
@@ -86,41 +84,39 @@ defmodule PhilomenaWeb.Registration.TotpControllerTest do
       refute Users.get_user!(user.id).otp_required_for_login
     end
 
-    test "crashes on an invalid TOTP code", %{conn: conn, user: user} do
+    test "re-renders on an invalid TOTP code", %{conn: conn, user: user} do
       put_totp_secret(user)
 
-      # NOTE: an invalid code falls through to the backup-code check, and a
-      # user who has not enabled TOTP yet has otp_backup_codes: nil -
-      # Enum.any?/2 crashes, so a typo'd code while enabling 2FA is a 500
-      # (KNOWN-ODDITIES.md).
-      assert_raise Protocol.UndefinedError,
-                   ~r/protocol Enumerable not implemented for Atom.*Got value:\s*nil/s,
-                   fn ->
-                     patch(conn, ~p"/registrations/totp", %{
-                       "user" => %{
-                         "current_password" => valid_user_password(),
-                         "twofactor_token" => "not a code"
-                       }
-                     })
-                   end
+      # NOTE: an invalid code now re-renders the setup page (200) with a
+      # changeset error; the backup-code check safely returns false for a user
+      # who is still enabling 2FA (otp_backup_codes: nil).
+      conn =
+        patch(conn, ~p"/registrations/totp", %{
+          "user" => %{
+            "current_password" => valid_user_password(),
+            "twofactor_token" => "not a code"
+          }
+        })
 
+      assert html_response(conn, 200) =~ "data:image/png;base64,"
       refute Users.get_user!(user.id).otp_required_for_login
     end
   end
 
   describe "PATCH /registrations/totp (disabling)" do
-    test "disables TOTP with a valid code, with the same crash shape", %{conn: conn} do
+    test "disables TOTP with a valid code and redirects", %{conn: conn} do
       user = totp_user_fixture()
       conn = log_in_totp_user(conn, user)
 
-      assert_raise RuntimeError, ~r/expected action\/2 to return a Plug.Conn/, fn ->
+      conn =
         patch(conn, ~p"/registrations/totp", %{
           "user" => %{
             "current_password" => valid_user_password(),
             "twofactor_token" => valid_totp_code(user)
           }
         })
-      end
+
+      assert redirected_to(conn) == ~p"/registrations/totp/edit"
 
       user = Users.get_user!(user.id)
       refute user.otp_required_for_login

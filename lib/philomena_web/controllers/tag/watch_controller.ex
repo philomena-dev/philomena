@@ -4,7 +4,7 @@ defmodule PhilomenaWeb.Tag.WatchController do
   alias Philomena.Tags.Tag
   alias Philomena.Users
 
-  plug :load_resource, model: Tag, id_field: "slug", id_name: "tag_id", persisted: true
+  plug :load_resource, model: Tag, id_field: "slug", id_name: "tag_id", required: true
 
   def create(conn, _params) do
     case Users.watch_tag(conn.assigns.current_user, conn.assigns.tag) do

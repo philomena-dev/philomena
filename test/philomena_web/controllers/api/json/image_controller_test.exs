@@ -301,17 +301,18 @@ defmodule PhilomenaWeb.Api.Json.ImageControllerTest do
       await_async_upload()
     end
 
-    test "crashes when the request has no User-Agent header", %{conn: conn} do
+    test "without a User-Agent header the request no longer crashes", %{conn: conn} do
       user = confirmed_user_fixture()
 
-      # NOTE: API attribution fingerprints the User-Agent header with crc32,
-      # which raises on a UA-less request - a 500 instead of any HTTP error.
-      # Logged in KNOWN-ODDITIES.md.
-      assert_raise ArgumentError, ~r/1st argument: not an iodata term/, fn ->
+      # NOTE: API attribution now fingerprints a missing User-Agent as crc32("")
+      # instead of raising, so a UA-less request proceeds like a normal one;
+      # with no url or uploaded file it fails image validation and returns a 400.
+      conn =
         post(conn, ~p"/api/v1/json/images?key=#{user.authentication_token}", %{
           "image" => %{"tag_input" => "safe, solo, pony"}
         })
-      end
+
+      assert %{"errors" => _} = json_response(conn, 400)
     end
 
     test "returns 401 with an empty body when no API key is given", %{conn: conn} do

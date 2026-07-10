@@ -5,7 +5,7 @@ defmodule PhilomenaWeb.Image.AnonymousController do
   alias Philomena.Images
 
   plug :verify_authorized
-  plug :load_resource, model: Image, id_name: "image_id", persisted: true
+  plug :load_resource, model: Image, id_name: "image_id", required: true
 
   def create(conn, _params) do
     Images.update_anonymous(conn.assigns.image, %{"anonymous" => true})

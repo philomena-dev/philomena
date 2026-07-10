@@ -110,29 +110,34 @@ defmodule PhilomenaWeb.Session.TotpControllerTest do
       refute get_session(conn, :totp_token)
     end
 
-    test "crashes for a numeric token from a user without TOTP enabled", %{conn: conn} do
-      # NOTE: a non-TOTP user posting a numeric token reaches totp_secret/1
-      # with nil secret fields; the encryptor hands them straight to
-      # Base.decode64!/2, which raises FunctionClauseError (KNOWN-ODDITIES.md).
+    test "a numeric token from a user without TOTP enabled is rejected", %{conn: conn} do
+      # NOTE: a non-TOTP user (no secret, no backup codes) now takes the
+      # invalid-token branch cleanly - totp_valid?/backup_code_valid? guard the
+      # nil fields - rather than crashing in the encryptor.
       user = confirmed_user_fixture()
 
-      assert_raise FunctionClauseError,
-                   ~r/no function clause matching in Base\.decode64!\/2/,
-                   fn ->
-                     conn
-                     |> log_in_user(user)
-                     |> post(~p"/sessions/totp", %{"user" => %{"twofactor_token" => "123456"}})
-                   end
+      conn =
+        conn
+        |> log_in_user(user)
+        |> post(~p"/sessions/totp", %{"user" => %{"twofactor_token" => "123456"}})
+
+      assert redirected_to(conn) == "/"
+      assert Flash.get(conn.assigns.flash, :error) =~ "Invalid TOTP token entered"
+      refute get_session(conn, :user_token)
+      refute get_session(conn, :totp_token)
     end
 
-    test "raises without a user param", %{conn: conn} do
-      # NOTE: create/2 pattern-matches params in the function body, so a
-      # missing "user" key is a MatchError, not Phoenix.ActionClauseError.
+    test "a request without a user param is rejected", %{conn: conn} do
+      # NOTE: a missing "user" key now takes the fallback create/2 clause and the
+      # invalid-token branch, rather than raising MatchError.
       user = totp_user_fixture()
 
-      assert_raise MatchError, ~r/no match of right hand side value:\s*%\{\}/, fn ->
-        conn |> log_in_user(user) |> post(~p"/sessions/totp", %{})
-      end
+      conn = conn |> log_in_user(user) |> post(~p"/sessions/totp", %{})
+
+      assert redirected_to(conn) == "/"
+      assert Flash.get(conn.assigns.flash, :error) =~ "Invalid TOTP token entered"
+      refute get_session(conn, :user_token)
+      refute get_session(conn, :totp_token)
     end
   end
 end

@@ -33,10 +33,13 @@ defmodule PhilomenaWeb.AdvertControllerTest do
                "Couldn't find what you were looking for!"
     end
 
-    test "raises for a non-integer advert id", %{conn: conn} do
-      assert_raise Ecto.Query.CastError, ~r/cannot be cast to type :id/, fn ->
-        get(conn, ~p"/adverts/not-a-number")
-      end
+    test "redirects with the not-found flash for a non-integer advert id", %{conn: conn} do
+      conn = get(conn, ~p"/adverts/not-a-number")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Couldn't find what you were looking for!"
     end
   end
 end

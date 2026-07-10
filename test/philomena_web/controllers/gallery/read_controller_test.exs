@@ -35,14 +35,15 @@ defmodule PhilomenaWeb.Gallery.ReadControllerTest do
 
   read_singleton_tests()
 
-  test "POST for an unknown gallery crashes with FunctionClauseError", %{conn: conn} do
-    # NOTE: plain load_resource only runs the not_found_handler for :show
-    # actions, so the nil gallery reaches clear_gallery_notification/2 and
-    # the request 500s instead of rendering not-found. (KNOWN-ODDITIES.md)
+  test "POST for an unknown gallery redirects with the not-found flash", %{conn: conn} do
+    # NOTE: load_resource now uses required: true, so Canary runs its not-found
+    # handler on :create - an unknown gallery redirects instead of passing nil
+    # into clear_gallery_notification/2.
     %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
-    assert_raise FunctionClauseError, ~r/clear_gallery_notification\/2/, fn ->
-      post(conn, ~p"/galleries/999999999/read")
-    end
+    conn = post(conn, ~p"/galleries/999999999/read")
+
+    assert redirected_to(conn) == "/"
+    assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
   end
 end

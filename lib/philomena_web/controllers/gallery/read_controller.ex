@@ -5,7 +5,7 @@ defmodule PhilomenaWeb.Gallery.ReadController do
   alias Philomena.Galleries.Gallery
   alias Philomena.Galleries
 
-  plug :load_resource, model: Gallery, id_name: "gallery_id", persisted: true
+  plug :load_resource, model: Gallery, id_name: "gallery_id", required: true
 
   def create(conn, _params) do
     gallery = conn.assigns.gallery

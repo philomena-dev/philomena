@@ -128,10 +128,15 @@ defmodule PhilomenaWeb.ImageControllerTest do
                "Couldn't find what you were looking for!"
     end
 
-    test "crashes on a non-integer id", %{conn: conn} do
-      assert_raise Ecto.Query.CastError, ~r/cannot be cast to type :id/, fn ->
-        get(conn, ~p"/images/not-a-number")
-      end
+    # NOTE: load_image now parses the id first, so a non-integer id redirects
+    # with the not-found flash rather than raising a cast error.
+    test "redirects to / with the not-found flash for a non-integer id", %{conn: conn} do
+      conn = get(conn, ~p"/images/not-a-number")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Couldn't find what you were looking for!"
     end
 
     test "renders an image via the /:id shorthand route", %{conn: conn} do

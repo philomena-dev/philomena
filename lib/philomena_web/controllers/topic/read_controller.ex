@@ -9,7 +9,7 @@ defmodule PhilomenaWeb.Topic.ReadController do
     model: Forum,
     id_name: "forum_id",
     id_field: "short_name",
-    persisted: true
+    required: true
 
   plug PhilomenaWeb.LoadTopicPlug, show_hidden: true
 

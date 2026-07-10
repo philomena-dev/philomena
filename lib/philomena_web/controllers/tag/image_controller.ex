@@ -26,7 +26,7 @@ defmodule PhilomenaWeb.Tag.ImageController do
         |> moderation_log(details: &log_details/2, data: tag)
         |> redirect(to: ~p"/tags/#{tag}")
 
-      {:error, :tag, changeset, _changes} ->
+      {:error, changeset} ->
         render(conn, "edit.html", changeset: changeset)
     end
   end

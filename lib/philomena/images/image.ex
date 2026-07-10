@@ -327,17 +327,21 @@ defmodule Philomena.Images.Image do
   end
 
   def uploader_changeset(image, attrs) do
-    user_id =
-      if attrs["username"] not in [nil, ""] do
-        Repo.get_by!(User, name: attrs["username"]).id
-      else
-        nil
-      end
-
     change(image)
-    |> put_change(:user_id, user_id)
     |> put_change(:ip, %Postgrex.INET{address: {127, 0, 0, 1}, netmask: 32})
     |> put_change(:fingerprint, "ffff")
+    |> put_uploader(attrs["username"])
+  end
+
+  # A blank username anonymizes the image.
+  defp put_uploader(changeset, username) when username in [nil, ""],
+    do: put_change(changeset, :user_id, nil)
+
+  defp put_uploader(changeset, username) do
+    case Repo.get_by(User, name: username) do
+      nil -> add_error(changeset, :username, "does not name a known user")
+      user -> put_change(changeset, :user_id, user.id)
+    end
   end
 
   def anonymous_changeset(image, attrs) do

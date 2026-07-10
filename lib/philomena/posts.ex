@@ -207,6 +207,9 @@ defmodule Philomena.Posts do
       iex> hide_post(post, %{staff_note: "Rule violation"}, user)
       {:ok, %Post{}}
 
+      iex> hide_post(post, %{deletion_reason: ""}, user)
+      {:error, %Ecto.Changeset{}}
+
   """
   def hide_post(%Post{} = post, attrs, user) do
     post = post |> Repo.preload(:topic)
@@ -225,7 +228,7 @@ defmodule Philomena.Posts do
         {:ok, post}
 
       error ->
-        error
+        normalize_multi_error(error)
     end
   end
 
@@ -419,4 +422,12 @@ defmodule Philomena.Posts do
     |> where([p], field(p, ^column) in ^condition)
     |> Search.reindex(Post)
   end
+
+  # `Repo.transaction/1` reports a failed step as `{:error, name, value, changes}`.
+  # Callers only ever want the changeset that failed, in the shape every other
+  # context function returns it.
+  defp normalize_multi_error({:error, _name, %Ecto.Changeset{} = changeset, _changes}),
+    do: {:error, changeset}
+
+  defp normalize_multi_error(result), do: result
 end

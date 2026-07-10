@@ -11,7 +11,7 @@ defmodule PhilomenaWeb.Admin.DnpEntry.TransitionController do
     only: [:create],
     id_name: "dnp_entry_id",
     preload: [:tag],
-    persisted: true
+    required: true
 
   def create(conn, %{"state" => new_state}) do
     case DnpEntries.transition_dnp_entry(

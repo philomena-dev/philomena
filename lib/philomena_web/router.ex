@@ -102,7 +102,7 @@ defmodule PhilomenaWeb.Router do
       :require_authenticated_user
     ]
 
-    resources "/registrations", RegistrationController, only: [:edit, :update], singleton: true
+    resources "/registrations", RegistrationController, only: [:edit], singleton: true
     resources "/sessions", SessionController, only: [:delete], singleton: true
     resources "/deactivations", DeactivationController, only: [:show, :delete], singleton: true
 
@@ -178,7 +178,7 @@ defmodule PhilomenaWeb.Router do
       resources "/categories", CategoryController, only: [:show]
     end
 
-    resources "/notifications", NotificationController, only: [:index, :delete]
+    resources "/notifications", NotificationController, only: [:index]
 
     resources "/conversations", ConversationController, only: [:index, :show, :new, :create] do
       resources "/reports", Conversation.ReportController, only: [:new, :create]
@@ -285,7 +285,7 @@ defmodule PhilomenaWeb.Router do
         only: [:edit, :update],
         singleton: true
 
-      resources "/artist_links", Profile.ArtistLinkController
+      resources "/artist_links", Profile.ArtistLinkController, except: [:delete]
       resources "/awards", Profile.AwardController, except: [:index, :show]
 
       resources "/ip_history", Profile.IpHistoryController, only: [:index]

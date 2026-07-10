@@ -84,18 +84,15 @@ defmodule PhilomenaWeb.Tag.ImageControllerTest do
       assert tag.image_mime_type == "image/png"
     end
 
-    test "an update with no file is a case clause error", %{conn: conn} do
-      # NOTE: update_tag_image returns {:error, changeset} on a failed upload,
-      # but the controller only matches the 4-tuple {:error, :tag, cs, changes};
-      # a missing file therefore raises CaseClauseError (500), not a re-render.
+    test "an update with no file re-renders the form", %{conn: conn} do
+      # NOTE: the update/2 error branch now matches {:error, changeset} and
+      # re-renders edit.html (200) rather than raising CaseClauseError.
       tag = tag_fixture()
       conn = log_in_user(conn, moderator_user_fixture())
 
-      assert_raise CaseClauseError,
-                   ~r/no case clause matching:\s*\{:error,\s*#Ecto\.Changeset<.*image_format: \{"can't be blank".*Tags\.Tag/s,
-                   fn ->
-                     patch(conn, ~p"/tags/#{tag}/image", %{"tag" => %{}})
-                   end
+      conn = patch(conn, ~p"/tags/#{tag}/image", %{"tag" => %{}})
+
+      assert html_response(conn, 200) =~ "Update tag image"
     end
 
     test "an unknown slug takes the not-authorized redirect", %{conn: conn} do

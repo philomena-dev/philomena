@@ -36,21 +36,16 @@ defmodule PhilomenaWeb.Admin.UserBanController do
   end
 
   def new(conn, %{"user_id" => id}) do
-    target_user = Users.get_user!(id)
-    changeset = Bans.change_user(Ecto.build_assoc(target_user, :bans))
+    case target_user(id) do
+      nil ->
+        no_target_user(conn)
 
-    render(conn, "new.html",
-      title: "New User Ban",
-      target_user: target_user,
-      changeset: changeset
-    )
+      target_user ->
+        render_new(conn, target_user, Bans.change_user(Ecto.build_assoc(target_user, :bans)))
+    end
   end
 
-  def new(conn, _params) do
-    conn
-    |> put_flash(:error, "Must create ban on user.")
-    |> redirect(to: ~p"/admin/user_bans")
-  end
+  def new(conn, _params), do: no_target_user(conn)
 
   def create(conn, %{"user" => user_ban_params}) do
     case Bans.create_user(conn.assigns.current_user, user_ban_params) do
@@ -61,7 +56,33 @@ defmodule PhilomenaWeb.Admin.UserBanController do
         |> redirect(to: ~p"/admin/user_bans")
 
       {:error, changeset} ->
-        render(conn, "new.html", changeset: changeset)
+        # `new.html` names the user being banned; the form posts their id back
+        # in a hidden field.
+        case target_user(user_ban_params["user_id"]) do
+          nil -> no_target_user(conn)
+          target_user -> render_new(conn, target_user, changeset)
+        end
+    end
+  end
+
+  defp render_new(conn, target_user, changeset) do
+    render(conn, "new.html",
+      title: "New User Ban",
+      target_user: target_user,
+      changeset: changeset
+    )
+  end
+
+  defp no_target_user(conn) do
+    conn
+    |> put_flash(:error, "Must create ban on user.")
+    |> redirect(to: ~p"/admin/user_bans")
+  end
+
+  defp target_user(id) do
+    case PhilomenaWeb.IntegerId.parse(id) do
+      {:ok, id} -> Repo.get(Users.User, id)
+      :error -> nil
     end
   end
 

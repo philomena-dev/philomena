@@ -157,16 +157,18 @@ defmodule PhilomenaWeb.SingletonToggleTests do
         refute target.subscribed?.()
       end
 
-      test "DELETE when not subscribed raises Ecto.StaleEntryError", %{conn: conn} do
-        # NOTE: delete_subscription/2 deletes a struct built from the ids
-        # without checking that the row exists, so unsubscribing while not
-        # subscribed is a 500, not the error partial. (KNOWN-ODDITIES.md)
+      test "DELETE when not subscribed renders the non-watching partial idempotently",
+           %{conn: conn} do
+        # delete_subscription/2 now deletes via delete_all (idempotent, like
+        # create's on_conflict: :nothing), so unsubscribing while not
+        # subscribed is a clean success rather than an Ecto.StaleEntryError.
         %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
         target = subscription_target(user)
 
-        assert_raise Ecto.StaleEntryError, ~r/attempted to delete a stale struct/, fn ->
-          delete(conn, target.path)
-        end
+        conn = delete(conn, target.path)
+
+        refute PhilomenaWeb.SingletonToggleTests.subscription_partial_watching?(conn)
+        refute target.subscribed?.()
       end
     end
   end
@@ -249,12 +251,19 @@ defmodule PhilomenaWeb.SingletonToggleTests do
           assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
         end
 
-        test "a non-integer image id raises Ecto.Query.CastError", %{conn: conn} do
+        test "a non-integer image id redirects to / with the not-found flash", %{conn: conn} do
+          # the central IntegerId guard short-circuits a non-integer id to
+          # NotFoundPlug before Canary authorizes, so the flash is the
+          # not-found message rather than the "You can't access that page." an
+          # unknown integer id gets
           %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
-          assert_raise Ecto.Query.CastError, ~r/cannot be cast to type :id/, fn ->
-            post(conn, interaction_path("not-a-number"))
-          end
+          conn = post(conn, interaction_path("not-a-number"))
+
+          assert redirected_to(conn) == "/"
+
+          assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+                   "Couldn't find what you were looking for!"
         end
       end
 

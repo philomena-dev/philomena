@@ -100,25 +100,31 @@ defmodule PhilomenaWeb.Admin.Batch.TagControllerTest do
       assert json_response(conn, 200) == %{"succeeded" => [image.id], "failed" => []}
     end
 
-    # NOTE: a non-integer image id raises ArgumentError in String.to_integer/1
-    # (a 500).
-    test "raises on a non-integer image id", %{conn: conn} do
-      assert_raise ArgumentError,
-                   ~r/1st argument: not a textual representation of an integer/,
-                   fn ->
-                     patch(conn, ~p"/admin/batch/tags",
-                       tags: "safe",
-                       image_ids: ["not-an-integer"]
-                     )
-                   end
+    # NOTE: a non-integer image id can't name an image, so it is now reported in
+    # `failed` while the parsable ids still process, rather than raising.
+    test "returns a non-integer image id in failed and processes the rest", %{conn: conn} do
+      image = image_fixture()
+      _tag = tag_fixture(name: "batch-mixed-tag")
+
+      conn =
+        patch(conn, ~p"/admin/batch/tags",
+          tags: "batch-mixed-tag",
+          image_ids: [to_string(image.id), "not-an-integer"]
+        )
+
+      assert json_response(conn, 200) == %{
+               "succeeded" => [image.id],
+               "failed" => ["not-an-integer"]
+             }
     end
 
-    # NOTE: a missing tags/image_ids param does not match update/2 and raises
-    # Phoenix.ActionClauseError (a 500).
-    test "raises when required params are missing", %{conn: conn} do
-      assert_raise Phoenix.ActionClauseError, fn ->
-        patch(conn, ~p"/admin/batch/tags", image_ids: [])
-      end
+    # NOTE: a request missing tags (or carrying a non-list image_ids / non-binary
+    # tags) no longer matches the primary update/2 clause and now answers 400
+    # with empty lists rather than raising.
+    test "answers 400 when required params are missing", %{conn: conn} do
+      conn = patch(conn, ~p"/admin/batch/tags", image_ids: [])
+
+      assert json_response(conn, 400) == %{"succeeded" => [], "failed" => []}
     end
   end
 

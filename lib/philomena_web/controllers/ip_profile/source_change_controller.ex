@@ -9,7 +9,13 @@ defmodule PhilomenaWeb.IpProfile.SourceChangeController do
   plug :verify_authorized
 
   def index(conn, %{"ip_profile_id" => ip} = params) do
-    {:ok, ip} = EctoNetwork.INET.cast(ip)
+    case EctoNetwork.INET.cast(ip) do
+      {:ok, ip} -> list_source_changes(conn, ip, params)
+      _error -> PhilomenaWeb.NotFoundPlug.call(conn)
+    end
+  end
+
+  defp list_source_changes(conn, ip, params) do
     range = IpMask.parse_mask(ip, params)
 
     source_changes =

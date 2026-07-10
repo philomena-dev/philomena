@@ -7,6 +7,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostControllerTest do
   import Philomena.UsersFixtures
 
   alias Philomena.Posts
+  alias Philomena.Repo
   alias Philomena.Topics
 
   describe "GET /api/v1/json/forums/:forum_id/topics/:topic_id/posts" do
@@ -57,25 +58,26 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostControllerTest do
       assert %{"body" => "Reply number 25"} = last
     end
 
-    test "crashes for an unknown topic or forum", %{conn: conn} do
+    test "returns 404 for an unknown topic or forum", %{conn: conn} do
       forum = forum_fixture()
 
-      # NOTE: the total is taken from the first returned post's topic, so an
-      # empty page (unknown topic, unknown forum, or a page past the end)
-      # crashes on hd([]) with a 500 instead of returning a 404 or an empty
-      # list. Logged in KNOWN-ODDITIES.md.
-      assert_raise ArgumentError, ~r/empty list/, fn ->
-        get(conn, ~p"/api/v1/json/forums/#{forum}/topics/nonexistent/posts")
-      end
+      # NOTE: the total now comes from the topic (loaded up front), so an
+      # unknown topic or forum 404s instead of crashing on hd([]).
+      conn = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/nonexistent/posts")
+
+      assert response(conn, 404) == ""
     end
 
-    test "crashes for a page past the last post", %{conn: conn} do
+    test "returns an empty list for a page past the last post", %{conn: conn} do
       forum = forum_fixture()
       topic = topic_fixture(forum)
 
-      assert_raise ArgumentError, ~r/empty list/, fn ->
-        get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts?page=2")
-      end
+      # NOTE: a page past the end now returns an empty list with the topic's
+      # post_count as the total, rather than crashing on hd([]).
+      conn = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts?page=2")
+
+      total = Repo.reload!(topic).post_count
+      assert json_response(conn, 200) == %{"posts" => [], "total" => total}
     end
   end
 
@@ -164,15 +166,15 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostControllerTest do
       assert response(conn, 404) == ""
     end
 
-    test "raises for a non-integer id", %{conn: conn} do
+    test "returns 404 for a non-integer id", %{conn: conn} do
       forum = forum_fixture()
       topic = topic_fixture(forum)
 
-      # NOTE: the id is interpolated into the query without casting, so a
-      # non-integer id becomes a 500 rather than a 404.
-      assert_raise Ecto.Query.CastError, fn ->
-        get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts/not-a-number")
-      end
+      # NOTE: the id is now parsed first, so a non-integer id 404s like an
+      # unknown id rather than raising a cast error.
+      conn = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts/not-a-number")
+
+      assert response(conn, 404) == ""
     end
   end
 end

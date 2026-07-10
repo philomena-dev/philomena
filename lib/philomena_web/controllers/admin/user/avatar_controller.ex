@@ -5,7 +5,7 @@ defmodule PhilomenaWeb.Admin.User.AvatarController do
   alias Philomena.Users
 
   plug :verify_authorized
-  plug :load_resource, model: User, id_name: "user_id", id_field: "slug", persisted: true
+  plug :load_resource, model: User, id_name: "user_id", id_field: "slug", required: true
 
   def delete(conn, _params) do
     {:ok, user} = Users.remove_avatar(conn.assigns.user)

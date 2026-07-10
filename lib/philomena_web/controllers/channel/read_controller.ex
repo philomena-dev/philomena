@@ -5,7 +5,7 @@ defmodule PhilomenaWeb.Channel.ReadController do
   alias Philomena.Channels.Channel
   alias Philomena.Channels
 
-  plug :load_resource, model: Channel, id_name: "channel_id", persisted: true
+  plug :load_resource, model: Channel, id_name: "channel_id", required: true
 
   def create(conn, _params) do
     channel = conn.assigns.channel

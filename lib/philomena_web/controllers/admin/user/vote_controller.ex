@@ -5,7 +5,7 @@ defmodule PhilomenaWeb.Admin.User.VoteController do
   alias Philomena.Users.User
 
   plug :verify_authorized
-  plug :load_resource, model: User, id_name: "user_id", id_field: "slug", persisted: true
+  plug :load_resource, model: User, id_name: "user_id", id_field: "slug", required: true
 
   def delete(conn, _params) do
     user = conn.assigns.user

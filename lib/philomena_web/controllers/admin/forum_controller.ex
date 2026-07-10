@@ -5,7 +5,7 @@ defmodule PhilomenaWeb.Admin.ForumController do
   alias Philomena.Forums
 
   plug :verify_authorized
-  plug :load_resource, model: Forum, id_field: "short_name"
+  plug :load_resource, model: Forum, id_field: "short_name", only: [:edit, :update]
 
   def index(conn, _params) do
     render(conn, "index.html", title: "Admin - Forums")

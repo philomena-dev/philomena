@@ -71,14 +71,15 @@ defmodule PhilomenaWeb.Tag.WatchControllerTest do
     assert Repo.reload!(user).watched_tag_ids == [tag.id]
   end
 
-  test "POST for an unknown tag crashes with BadMapError", %{conn: conn} do
-    # NOTE: plain load_resource only runs the not_found_handler for :show
-    # actions, so the nil tag reaches Users.watch_tag/2, which crashes on
-    # tag.id. (KNOWN-ODDITIES.md)
+  test "POST for an unknown tag redirects with the not-found flash", %{conn: conn} do
+    # NOTE: load_resource now uses required: true, so Canary runs its not-found
+    # handler on :create - an unknown slug redirects instead of passing nil
+    # into Users.watch_tag/2.
     %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
-    assert_raise BadMapError, ~r/expected a map, got:\s*nil/, fn ->
-      post(conn, ~p"/tags/unknown-slug/watch")
-    end
+    conn = post(conn, ~p"/tags/unknown-slug/watch")
+
+    assert redirected_to(conn) == "/"
+    assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
   end
 end

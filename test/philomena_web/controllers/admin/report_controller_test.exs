@@ -116,11 +116,12 @@ defmodule PhilomenaWeb.Admin.ReportControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
-    # NOTE: a non-integer report id raises Ecto.Query.CastError (a 500).
-    test "raises on a non-integer report id", %{conn: conn} do
-      assert_raise Ecto.Query.CastError, fn ->
-        get(conn, ~p"/admin/reports/not-an-integer")
-      end
+    # NOTE: a non-integer report id short-circuits to NotFoundPlug via the
+    # central IntegerId guard.
+    test "redirects with the not-found flash for a non-integer report id", %{conn: conn} do
+      conn = get(conn, ~p"/admin/reports/not-an-integer")
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 end

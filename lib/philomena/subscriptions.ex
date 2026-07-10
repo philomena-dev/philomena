@@ -181,8 +181,13 @@ defmodule Philomena.Subscriptions do
 
   @doc false
   def delete_subscription(subscription_module, field_name, object, user) do
-    struct!(subscription_module, [{field_name, object.id}, {:user_id, user.id}])
-    |> Repo.delete()
+    subscription = struct!(subscription_module, [{field_name, object.id}, {:user_id, user.id}])
+
+    subscription_module
+    |> where([s], field(s, ^field_name) == ^object.id and s.user_id == ^user.id)
+    |> Repo.delete_all()
+
+    {:ok, subscription}
   end
 
   @doc false

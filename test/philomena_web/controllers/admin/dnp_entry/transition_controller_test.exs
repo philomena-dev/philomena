@@ -54,23 +54,23 @@ defmodule PhilomenaWeb.Admin.DnpEntry.TransitionControllerTest do
   describe "POST /admin/dnp_entries/:dnp_entry_id/transition (create) failure paths" do
     setup [:register_and_log_in_moderator]
 
-    # NOTE: :load_resource assigns a nil dnp_entry for an unknown id on :create
-    # (no not-found handler for the create action), so the controller crashes
-    # with FunctionClauseError in transition_dnp_entry/3 (which requires a
-    # %DnpEntry{}) instead of redirecting.
-    test "raises for an unknown entry id", %{conn: conn} do
-      assert_raise FunctionClauseError,
-                   ~r/no function clause matching in Philomena\.DnpEntries\.transition_dnp_entry\/3/,
-                   fn ->
-                     post(conn, ~p"/admin/dnp_entries/#{0}/transition", state: "claimed")
-                   end
+    # NOTE: load_resource now uses required: true, so Canary's not_found handler
+    # runs on :create too - an unknown entry id redirects rather than crashing
+    # in transition_dnp_entry/3.
+    test "redirects with the not-found flash for an unknown entry id", %{conn: conn} do
+      conn = post(conn, ~p"/admin/dnp_entries/#{0}/transition", state: "claimed")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
-    # NOTE: a non-integer entry id raises Ecto.Query.CastError (a 500).
-    test "raises on a non-integer entry id", %{conn: conn} do
-      assert_raise Ecto.Query.CastError, fn ->
-        post(conn, ~p"/admin/dnp_entries/not-an-integer/transition", state: "claimed")
-      end
+    # NOTE: a non-integer entry id short-circuits to NotFoundPlug via the central
+    # IntegerId guard.
+    test "redirects with the not-found flash for a non-integer entry id", %{conn: conn} do
+      conn = post(conn, ~p"/admin/dnp_entries/not-an-integer/transition", state: "claimed")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
     # NOTE: a missing state param does not match the create/2 clause and

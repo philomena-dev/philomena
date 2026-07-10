@@ -29,6 +29,20 @@ defmodule Philomena.PollVotes do
   def get_poll_vote!(id), do: Repo.get!(PollVote, id)
 
   @doc """
+  Gets a single poll_vote, or nil when no vote has the given id.
+
+  ## Examples
+
+      iex> get_poll_vote(123)
+      %PollVote{}
+
+      iex> get_poll_vote(456)
+      nil
+
+  """
+  def get_poll_vote(id), do: Repo.get(PollVote, id)
+
+  @doc """
   Creates a poll_vote.
 
   ## Examples

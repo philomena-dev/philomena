@@ -97,15 +97,18 @@ defmodule PhilomenaWeb.Image.TamperControllerTest do
                "Couldn't find what you were looking for!"
     end
 
-    # NOTE: the image_id is interpolated into the load query, so a non-integer
-    # value raises Ecto.Query.CastError (a 500).
-    test "for a non-integer image_id raises CastError", %{conn: conn} do
+    # NOTE: a non-integer image_id short-circuits to NotFoundPlug via the central
+    # IntegerId guard before Canary authorizes.
+    test "for a non-integer image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       voter = confirmed_user_fixture()
 
-      assert_raise Ecto.Query.CastError, fn ->
-        post(conn, ~p"/images/not-a-number/tamper", %{"user_id" => voter.id})
-      end
+      conn = post(conn, ~p"/images/not-a-number/tamper", %{"user_id" => voter.id})
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
   end
 end

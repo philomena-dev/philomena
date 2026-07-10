@@ -56,11 +56,14 @@ defmodule PhilomenaWeb.Admin.Report.CloseControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    # NOTE: a non-integer report id raises Ecto.Query.CastError (a 500).
-    test "raises on a non-integer report id", %{conn: conn} do
-      assert_raise Ecto.Query.CastError, fn ->
-        post(conn, ~p"/admin/reports/not-an-integer/close")
-      end
+    # NOTE: a non-integer report id short-circuits to NotFoundPlug via the
+    # central IntegerId guard before Canary authorizes, so the flash is the
+    # not-found message rather than the "You can't access that page." an unknown
+    # integer id gets.
+    test "redirects with the not-found flash for a non-integer report id", %{conn: conn} do
+      conn = post(conn, ~p"/admin/reports/not-an-integer/close")
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 end

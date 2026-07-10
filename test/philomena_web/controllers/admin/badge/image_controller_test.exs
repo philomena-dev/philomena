@@ -51,12 +51,13 @@ defmodule PhilomenaWeb.Admin.Badge.ImageControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
-    test "crashes on a non-integer id", %{conn: conn} do
+    test "redirects with a not-found flash for a non-integer id", %{conn: conn} do
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
 
-      assert_raise Ecto.Query.CastError, fn ->
-        get(conn, ~p"/admin/badges/not-a-number/image/edit")
-      end
+      conn = get(conn, ~p"/admin/badges/not-a-number/image/edit")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 
@@ -95,20 +96,18 @@ defmodule PhilomenaWeb.Admin.Badge.ImageControllerTest do
       assert redirected_to(conn) == ~p"/admin/badges"
     end
 
-    # NOTE: `update_badge_image/2` returns `{:error, %Ecto.Changeset{}}`, but
-    # the controller matches `{:error, :badge, changeset, _changes}`, so an
-    # invalid upload (here, no image) raises CaseClauseError (500) instead of
-    # re-rendering the edit form. Same dead error branch as the parent
-    # BadgeController.
-    test "500s on a validation failure (missing image)", %{conn: conn} do
+    # NOTE: the update/2 error branch now matches {:error, changeset} and
+    # re-renders edit.html (200) rather than raising CaseClauseError.
+    test "re-renders the form on a validation failure (missing image)", %{conn: conn} do
       badge = badge_fixture()
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
 
-      assert_raise CaseClauseError,
-                   ~r/no case clause matching:\s*\{:error,\s*#Ecto\.Changeset<.*action: :update.*image_mime_type: \{"can't be blank".*Badges\.Badge/s,
-                   fn ->
-                     patch(conn, ~p"/admin/badges/#{badge}/image", %{"badge" => %{}})
-                   end
+      conn = patch(conn, ~p"/admin/badges/#{badge}/image", %{"badge" => %{}})
+
+      response = html_response(conn, 200)
+      assert response =~ "Upload SVG image"
+      assert response =~ "Oops, something went wrong!"
+      assert Repo.get(Badge, badge.id).image == "test.svg"
     end
   end
 

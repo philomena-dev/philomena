@@ -51,26 +51,31 @@ defmodule PhilomenaWeb.Image.AnonymousControllerTest do
       assert anonymous?(image)
     end
 
-    # NOTE: this controller loads the image with plain load_resource (no
-    # authorize), and Canary's not_found_handler does not run on :create, so
-    # an unknown id passes verify_authorized and then crashes in
-    # update_anonymous, whose function head requires a %Image{}.
-    test "for an unknown image_id raises FunctionClauseError", %{conn: conn} do
+    # NOTE: the load_resource now uses required: true, so Canary's
+    # not_found_handler runs on :create too - an unknown id redirects rather
+    # than crashing in update_anonymous.
+    test "for an unknown image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise FunctionClauseError, ~r/update_anonymous/, fn ->
-        post(conn, ~p"/images/999999999/anonymous")
-      end
+      conn = post(conn, ~p"/images/999999999/anonymous")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
 
-    # NOTE: the image_id is interpolated into the load query, so a non-integer
-    # value raises Ecto.Query.CastError (a 500).
-    test "for a non-integer image_id raises CastError", %{conn: conn} do
+    # NOTE: a non-integer image_id short-circuits to NotFoundPlug via the central
+    # IntegerId guard.
+    test "for a non-integer image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise Ecto.Query.CastError, fn ->
-        post(conn, ~p"/images/not-a-number/anonymous")
-      end
+      conn = post(conn, ~p"/images/not-a-number/anonymous")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
   end
 
@@ -129,14 +134,17 @@ defmodule PhilomenaWeb.Image.AnonymousControllerTest do
                "Couldn't find what you were looking for!"
     end
 
-    # NOTE: the image_id is interpolated into the load query, so a non-integer
-    # value raises Ecto.Query.CastError (a 500).
-    test "for a non-integer image_id raises CastError", %{conn: conn} do
+    # NOTE: a non-integer image_id short-circuits to NotFoundPlug via the central
+    # IntegerId guard.
+    test "for a non-integer image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise Ecto.Query.CastError, fn ->
-        delete(conn, ~p"/images/not-a-number/anonymous")
-      end
+      conn = delete(conn, ~p"/images/not-a-number/anonymous")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
   end
 end

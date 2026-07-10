@@ -90,14 +90,14 @@ defmodule PhilomenaWeb.CommissionControllerTest do
       refute response =~ "Test Sketch Artist"
     end
 
-    test "crashes on invalid search parameters", %{conn: conn} do
-      # NOTE: probable bug (see KNOWN-ODDITIES.md) - the changeset-error
-      # branch renders the index with commissions: [], and the pagination
-      # partial crashes on the bare list (it expects a Scrivener page), so
-      # invalid search input 500s instead of rendering errors.
-      assert_raise BadMapError, ~r/expected a map, got:\s*\[\]/, fn ->
-        get(conn, ~p"/commissions?#{[commission: [price_min: "not-a-price"]]}")
-      end
+    test "renders an empty result set on invalid search parameters", %{conn: conn} do
+      # NOTE: an invalid search now renders an empty Scrivener page (200) with an
+      # error changeset rather than crashing the pagination partial on a bare
+      # list.
+      conn = get(conn, ~p"/commissions?#{[commission: [price_min: "not-a-price"]]}")
+      response = html_response(conn, 200)
+
+      assert response =~ "Commissions Directory"
     end
   end
 end

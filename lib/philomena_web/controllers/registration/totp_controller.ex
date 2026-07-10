@@ -32,7 +32,7 @@ defmodule PhilomenaWeb.Registration.TotpController do
     end
   end
 
-  def update(conn, params) do
+  def update(conn, %{"user" => %{"current_password" => _password}} = params) do
     backup_codes = User.random_backup_codes()
     user = conn.assigns.current_user
 
@@ -41,17 +41,29 @@ defmodule PhilomenaWeb.Registration.TotpController do
     |> Repo.update()
     |> case do
       {:error, changeset} ->
-        secret = User.totp_secret(user)
-        qrcode = User.totp_qrcode(user)
-        render(conn, "edit.html", changeset: changeset, totp_secret: secret, totp_qrcode: qrcode)
+        render_edit(conn, user, changeset)
 
       {:ok, user} ->
+        Users.reindex_user(user)
+
         conn
         |> put_flash(:totp_backup_codes, backup_codes)
         |> put_session(:user_return_to, ~p"/registrations/totp/edit")
         |> UserAuth.totp_auth_user(user, %{})
-
-        Users.reindex_user(user)
     end
+  end
+
+  def update(conn, _params), do: redirect(conn, to: ~p"/registrations/totp/edit")
+
+  # `edit` generates the secret; without one there is no QR code to re-render.
+  defp render_edit(conn, %{encrypted_otp_secret: nil}, _changeset),
+    do: redirect(conn, to: ~p"/registrations/totp/edit")
+
+  defp render_edit(conn, user, changeset) do
+    render(conn, "edit.html",
+      changeset: changeset,
+      totp_secret: User.totp_secret(user),
+      totp_qrcode: User.totp_qrcode(user)
+    )
   end
 end

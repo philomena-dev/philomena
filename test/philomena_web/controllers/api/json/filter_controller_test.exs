@@ -107,12 +107,12 @@ defmodule PhilomenaWeb.Api.Json.FilterControllerTest do
       assert response(conn, 404) == ""
     end
 
-    test "raises for a non-integer id", %{conn: conn} do
-      # NOTE: the id is interpolated into the query without casting, so a
-      # non-integer id becomes a 500 rather than a 404.
-      assert_raise Ecto.Query.CastError, fn ->
-        get(conn, ~p"/api/v1/json/filters/not-a-number")
-      end
+    test "returns 404 for a non-integer id", %{conn: conn} do
+      # NOTE: the id is now parsed first, so a non-integer id 404s like an
+      # unknown id rather than raising a cast error.
+      conn = get(conn, ~p"/api/v1/json/filters/not-a-number")
+
+      assert response(conn, 404) == ""
     end
   end
 end

@@ -7,7 +7,7 @@ defmodule PhilomenaWeb.Admin.Badge.UserController do
   import Ecto.Query
 
   plug :verify_authorized
-  plug :load_resource, model: Badge, id_name: "badge_id", persisted: true
+  plug :load_resource, model: Badge, id_name: "badge_id", required: true
 
   def index(conn, _params) do
     badge = conn.assigns.badge

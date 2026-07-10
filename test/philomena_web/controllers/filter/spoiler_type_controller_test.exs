@@ -41,25 +41,26 @@ defmodule PhilomenaWeb.Filter.SpoilerTypeControllerTest do
     assert Repo.reload!(user).spoiler_type == "off"
   end
 
-  test "PATCH with an invalid spoiler type raises MatchError", %{conn: conn} do
-    # NOTE: the controller pattern-matches {:ok, user}, so a validation
-    # failure is a 500 rather than an error response
-    %{conn: conn} = register_and_log_in_user(%{conn: conn})
+  test "PATCH with an invalid spoiler type redirects with the failure flash", %{conn: conn} do
+    # NOTE: an invalid spoiler_type now redirects to the referrer with the
+    # failure flash rather than raising MatchError.
+    %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
 
-    assert_raise MatchError,
-                 ~r/no match of right hand side value:.*spoiler_type: \{"is invalid".*Users\.User/s,
-                 fn ->
-                   patch(conn, ~p"/filters/spoiler_type", %{
-                     "user" => %{"spoiler_type" => "bogus"}
-                   })
-                 end
+    conn = patch(conn, ~p"/filters/spoiler_type", %{"user" => %{"spoiler_type" => "bogus"}})
+
+    assert redirected_to(conn) == "/"
+    assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Couldn't change spoiler type!"
+    assert Repo.reload!(user).spoiler_type == "static"
   end
 
-  test "PATCH without user params raises Phoenix.ActionClauseError", %{conn: conn} do
+  test "PATCH without user params redirects with the failure flash", %{conn: conn} do
+    # NOTE: a request without the user param takes the fallback update/2 clause
+    # and redirects with the failure flash rather than raising ActionClauseError.
     %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
-    assert_raise Phoenix.ActionClauseError, fn ->
-      patch(conn, ~p"/filters/spoiler_type")
-    end
+    conn = patch(conn, ~p"/filters/spoiler_type")
+
+    assert redirected_to(conn) == "/"
+    assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Couldn't change spoiler type!"
   end
 end

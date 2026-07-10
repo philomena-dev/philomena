@@ -27,12 +27,22 @@ defmodule PhilomenaWeb.EnsureUserEnabledPlug do
   defp disabled_or_unconfirmed?(%{confirmed_at: nil}), do: true
   defp disabled_or_unconfirmed?(_user), do: false
 
-  defp maybe_halt(true, conn) do
+  defp maybe_halt(true, conn), do: halt_disabled(conn, conn.path_info)
+  defp maybe_halt(_any, conn), do: conn
+
+  # The `:api` pipeline fetches neither session nor flash, and there is no
+  # session to log out of - the caller authenticated with a key.
+  defp halt_disabled(conn, ["api" | _]) do
+    conn
+    |> Conn.put_status(:forbidden)
+    |> Controller.text("")
+    |> Conn.halt()
+  end
+
+  defp halt_disabled(conn, _path_info) do
     conn
     |> Controller.put_flash(:error, "Your account is not currently active.")
     |> UserAuth.log_out_user()
     |> Conn.halt()
   end
-
-  defp maybe_halt(_any, conn), do: conn
 end

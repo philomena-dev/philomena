@@ -48,16 +48,15 @@ defmodule PhilomenaWeb.TagChange.FullRevertControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Reversion of tag changes enqueued"
     end
 
-    test "a request with no target key is a case clause error", %{conn: conn} do
-      # NOTE: create/2 dispatches on user_id/ip/fingerprint with no fallback,
-      # so a request missing all three raises CaseClauseError (500).
+    test "a request with no target key redirects with the failure flash", %{conn: conn} do
+      # NOTE: a request naming none of user_id/ip/fingerprint now redirects to
+      # the referrer with the failure flash rather than raising CaseClauseError.
       conn = log_in_user(conn, moderator_user_fixture())
 
-      assert_raise CaseClauseError,
-                   ~r/no case clause matching:\s*%\{"something" => "else"\}/,
-                   fn ->
-                     post(conn, ~p"/tag_changes/full_revert", %{"something" => "else"})
-                   end
+      conn = post(conn, ~p"/tag_changes/full_revert", %{"something" => "else"})
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Couldn't revert those tag changes!"
     end
   end
 end

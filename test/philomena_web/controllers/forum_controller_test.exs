@@ -28,14 +28,18 @@ defmodule PhilomenaWeb.ForumControllerTest do
       refute response =~ "Assistant Lounge"
     end
 
-    test "crashes when the user can see no forums at all", %{conn: conn} do
+    test "renders an empty index when the user can see no forums", %{conn: conn} do
       _staff = forum_fixture(name: "Staff Lounge", access_level: "staff")
 
-      # NOTE: probable bug (see KNOWN-ODDITIES.md) - ForumListPlug assigns
-      # forums: [] for a user with no visible forums, and Canary's fetch_all
-      # crashes on the empty list, so this request 500s instead of rendering
-      # an empty index.
-      assert_raise BadMapError, ~r/expected a map, got:\s*nil/, fn -> get(conn, ~p"/forums") end
+      # NOTE: the empty ForumListPlug assign is now handled - Canary no longer
+      # probes Enum.at(resources, 0).__struct__ on the empty list, so a user
+      # who can see zero forums gets an empty index instead of a 500.
+      conn = get(conn, ~p"/forums")
+      response = html_response(conn, 200)
+
+      assert response =~ "Forums - Derpibooru"
+      assert response =~ "Discussion Forums"
+      refute response =~ "Staff Lounge"
     end
   end
 

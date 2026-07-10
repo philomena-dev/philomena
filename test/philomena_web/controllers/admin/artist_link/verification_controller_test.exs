@@ -54,11 +54,14 @@ defmodule PhilomenaWeb.Admin.ArtistLink.VerificationControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    # NOTE: a non-integer link id raises Ecto.Query.CastError (a 500).
-    test "raises on a non-integer link id", %{conn: conn} do
-      assert_raise Ecto.Query.CastError, fn ->
-        post(conn, ~p"/admin/artist_links/not-an-integer/verification")
-      end
+    # NOTE: a non-integer link id short-circuits to NotFoundPlug via the central
+    # IntegerId guard before Canary authorizes, so the flash is the not-found
+    # message rather than the "You can't access that page." an unknown integer
+    # id gets.
+    test "redirects with the not-found flash for a non-integer link id", %{conn: conn} do
+      conn = post(conn, ~p"/admin/artist_links/not-an-integer/verification")
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 end

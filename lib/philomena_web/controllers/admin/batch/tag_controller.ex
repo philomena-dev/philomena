@@ -3,13 +3,15 @@ defmodule PhilomenaWeb.Admin.Batch.TagController do
 
   alias Philomena.Tags.Tag
   alias Philomena.Images
+  alias PhilomenaWeb.IntegerId
   alias Philomena.Repo
   import Ecto.Query
 
   plug :verify_authorized
   plug PhilomenaWeb.UserAttributionPlug
 
-  def update(conn, %{"tags" => tag_list, "image_ids" => image_ids}) do
+  def update(conn, %{"tags" => tag_list, "image_ids" => image_ids})
+      when is_binary(tag_list) and is_list(image_ids) do
     tags = Tag.parse_tag_list(tag_list)
 
     added_tag_names = Enum.reject(tags, &String.starts_with?(&1, "-"))
@@ -40,7 +42,7 @@ defmodule PhilomenaWeb.Admin.Batch.TagController do
       user_id: attributes[:user].id
     }
 
-    image_ids = Enum.map(image_ids, &String.to_integer/1)
+    {image_ids, unparsable_ids} = partition_ids(image_ids)
 
     case Images.batch_update(image_ids, added_tags, removed_tags, attributes) do
       {:ok, _} ->
@@ -63,11 +65,28 @@ defmodule PhilomenaWeb.Admin.Batch.TagController do
             user: conn.assigns.current_user
           }
         )
-        |> json(%{succeeded: image_ids, failed: []})
+        |> json(%{succeeded: image_ids, failed: unparsable_ids})
 
       _error ->
-        json(conn, %{succeeded: [], failed: image_ids})
+        json(conn, %{succeeded: [], failed: image_ids ++ unparsable_ids})
     end
+  end
+
+  def update(conn, _params) do
+    conn
+    |> put_status(:bad_request)
+    |> json(%{succeeded: [], failed: []})
+  end
+
+  # An id that is not an integer cannot name an image, so it is reported as
+  # failed rather than crashing the whole batch.
+  defp partition_ids(image_ids) do
+    {parsed, unparsable} =
+      image_ids
+      |> Enum.map(&{&1, IntegerId.parse(&1)})
+      |> Enum.split_with(&match?({_id, {:ok, _int}}, &1))
+
+    {Enum.map(parsed, fn {_id, {:ok, int}} -> int end), Enum.map(unparsable, &elem(&1, 0))}
   end
 
   defp verify_authorized(conn, _opts) do

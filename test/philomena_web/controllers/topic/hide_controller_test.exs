@@ -64,22 +64,21 @@ defmodule PhilomenaWeb.Topic.HideControllerTest do
       assert topic.deleted_by_id == user.id
     end
 
-    # Failure path: hide_changeset requires deletion_reason, so a blank reason
-    # makes the hide_topic Multi fail - returning a 4-tuple
-    # ({:error, :topic, changeset, changes}) that the controller's
-    # {:error, _changeset} branch does not match, raising CaseClauseError (500).
-    # NOTE: KNOWN-ODDITIES.md
-    test "with a blank deletion reason raises CaseClauseError",
+    # Failure path: hide_changeset requires deletion_reason. hide_topic now
+    # normalizes its Multi failure to {:error, changeset}, so a blank reason
+    # redirects back with the "Unable to delete the topic!" flash instead of
+    # raising CaseClauseError.
+    test "with a blank deletion reason redirects back with the failure flash",
          %{conn: conn, forum: forum, topic: topic} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise CaseClauseError,
-                   ~r/no case clause matching:\s*\{:error, :topic,.*deletion_reason: \{"can't be blank"/s,
-                   fn ->
-                     post(conn, ~p"/forums/#{forum}/topics/#{topic}/hide", %{
-                       "topic" => %{"deletion_reason" => ""}
-                     })
-                   end
+      conn =
+        post(conn, ~p"/forums/#{forum}/topics/#{topic}/hide", %{
+          "topic" => %{"deletion_reason" => ""}
+        })
+
+      assert redirected_to(conn) == ~p"/forums/#{forum}/topics/#{topic}"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Unable to delete the topic!"
 
       refute Repo.reload!(topic).hidden_from_users
     end
