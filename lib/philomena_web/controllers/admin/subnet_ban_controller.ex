@@ -21,25 +21,39 @@ defmodule PhilomenaWeb.Admin.SubnetBanController do
   end
 
   def index(conn, %{"ip" => ip}) when is_binary(ip) do
-    {:ok, ip} = EctoNetwork.INET.cast(ip)
+    case EctoNetwork.INET.cast(ip) do
+      {:ok, ip} ->
+        Bans.Subnet
+        |> where([sb], fragment("? >>= ?", sb.specification, ^ip))
+        |> load_bans(conn)
 
-    Bans.Subnet
-    |> where([sb], fragment("? >>= ?", sb.specification, ^ip))
-    |> load_bans(conn)
+      _error ->
+        conn
+        |> put_flash(:error, "`#{ip}' is not a valid IP address or CIDR range.")
+        |> redirect(to: ~p"/admin/subnet_bans")
+    end
   end
 
   def index(conn, _params) do
     load_bans(Bans.Subnet, conn)
   end
 
-  def new(conn, %{"specification" => ip}) do
-    {:ok, ip} = EctoNetwork.INET.cast(ip)
-    changeset = Bans.change_subnet(%Bans.Subnet{specification: ip})
-    render(conn, "new.html", title: "New Subnet Ban", changeset: changeset)
+  def new(conn, %{"specification" => ip}) when is_binary(ip) do
+    case EctoNetwork.INET.cast(ip) do
+      {:ok, ip} ->
+        render_new(conn, %Bans.Subnet{specification: ip})
+
+      _error ->
+        conn
+        |> put_flash(:error, "`#{ip}' is not a valid IP address or CIDR range.")
+        |> render_new(%Bans.Subnet{})
+    end
   end
 
-  def new(conn, _params) do
-    changeset = Bans.change_subnet(%Bans.Subnet{})
+  def new(conn, _params), do: render_new(conn, %Bans.Subnet{})
+
+  defp render_new(conn, subnet) do
+    changeset = Bans.change_subnet(subnet)
     render(conn, "new.html", title: "New Subnet Ban", changeset: changeset)
   end
 

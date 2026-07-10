@@ -5,7 +5,7 @@ defmodule PhilomenaWeb.ForumController do
   alias Philomena.Repo
   import Ecto.Query
 
-  plug :load_and_authorize_resource, model: Forum, id_field: "short_name"
+  plug :load_and_authorize_resource, model: Forum, id_field: "short_name", only: [:show]
 
   def index(conn, _params) do
     user = conn.assigns.current_user

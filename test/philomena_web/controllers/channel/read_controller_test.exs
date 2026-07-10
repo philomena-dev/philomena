@@ -34,22 +34,25 @@ defmodule PhilomenaWeb.Channel.ReadControllerTest do
 
   read_singleton_tests()
 
-  test "POST for an unknown channel crashes with FunctionClauseError", %{conn: conn} do
-    # NOTE: plain load_resource only runs the not_found_handler for :show
-    # actions, so the nil channel reaches clear_channel_notification/2 and
-    # the request 500s instead of rendering not-found. (KNOWN-ODDITIES.md)
+  test "POST for an unknown channel redirects with the not-found flash", %{conn: conn} do
+    # NOTE: load_resource now uses required: true, so Canary runs its not-found
+    # handler on :create - an unknown channel redirects instead of passing nil
+    # into clear_channel_notification/2.
     %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
-    assert_raise FunctionClauseError, ~r/clear_channel_notification\/2/, fn ->
-      post(conn, ~p"/channels/999999999/read")
-    end
+    conn = post(conn, ~p"/channels/999999999/read")
+
+    assert redirected_to(conn) == "/"
+    assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
   end
 
-  test "a non-integer channel id raises Ecto.Query.CastError", %{conn: conn} do
+  test "a non-integer channel id redirects with the not-found flash", %{conn: conn} do
+    # the central IntegerId guard short-circuits a non-integer id to NotFoundPlug
     %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
-    assert_raise Ecto.Query.CastError, ~r/cannot be cast to type :id/, fn ->
-      post(conn, ~p"/channels/not-a-number/read")
-    end
+    conn = post(conn, ~p"/channels/not-a-number/read")
+
+    assert redirected_to(conn) == "/"
+    assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
   end
 end

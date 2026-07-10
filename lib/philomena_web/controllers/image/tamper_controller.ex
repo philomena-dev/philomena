@@ -10,7 +10,7 @@ defmodule PhilomenaWeb.Image.TamperController do
 
   plug PhilomenaWeb.CanaryMapPlug, create: :tamper
   plug :load_and_authorize_resource, model: Image, id_name: "image_id", persisted: true
-  plug :load_resource, model: User, id_name: "user_id", persisted: true
+  plug :load_resource, model: User, id_name: "user_id", required: true
 
   def create(conn, _params) do
     image = conn.assigns.image

@@ -23,8 +23,13 @@ defmodule PhilomenaWeb.Admin.ModNoteController do
     render(conn, "index.html", title: "Admin - Mod Notes", mod_notes: mod_notes)
   end
 
-  def new(conn, %{"notable_type" => type, "notable_id" => id}) do
-    changeset = ModNotes.change_mod_note(%ModNote{notable_type: type, notable_id: id})
+  def new(conn, params) do
+    changeset =
+      ModNotes.change_mod_note(%ModNote{
+        notable_type: params["notable_type"],
+        notable_id: params["notable_id"]
+      })
+
     render(conn, "new.html", title: "New Mod Note", changeset: changeset)
   end
 

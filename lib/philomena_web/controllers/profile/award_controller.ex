@@ -9,7 +9,7 @@ defmodule PhilomenaWeb.Profile.AwardController do
   import Ecto.Query
 
   plug :verify_authorized
-  plug :load_resource, model: User, id_name: "profile_id", id_field: "slug", persisted: true
+  plug :load_resource, model: User, id_name: "profile_id", id_field: "slug", required: true
   plug :load_resource, model: Award, only: [:edit, :update, :delete]
   plug :load_badges when action in [:new, :create, :edit, :update]
 

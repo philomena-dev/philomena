@@ -29,8 +29,6 @@
 [x] GET    /unlocks/:id                                                  UnlockController :show
 [x] POST   /unlocks                                                      UnlockController :create
 [x] GET    /registrations/edit                                           RegistrationController :edit
-[x] PATCH  /registrations                                                RegistrationController :update
-[x] PUT    /registrations                                                RegistrationController :update
 [x] DELETE /sessions                                                     SessionController :delete
 [x] GET    /deactivations                                                DeactivationController :show
 [x] DELETE /deactivations                                                DeactivationController :delete
@@ -75,7 +73,6 @@
 [x] GET    /notifications/unread                                         Notification.UnreadController :index
 [x] GET    /notifications/categories/:id                                 Notification.CategoryController :show
 [x] GET    /notifications                                                NotificationController :index
-[x] DELETE /notifications/:id                                            NotificationController :delete
 [x] GET    /conversations                                                ConversationController :index
 [x] GET    /conversations/new                                            ConversationController :new
 [x] GET    /conversations/:id                                            ConversationController :show
@@ -189,7 +186,6 @@
 [x] POST   /profiles/:profile_id/artist_links                            Profile.ArtistLinkController :create
 [x] PATCH  /profiles/:profile_id/artist_links/:id                        Profile.ArtistLinkController :update
 [x] PUT    /profiles/:profile_id/artist_links/:id                        Profile.ArtistLinkController :update
-[x] DELETE /profiles/:profile_id/artist_links/:id                        Profile.ArtistLinkController :delete
 [x] GET    /profiles/:profile_id/awards/:id/edit                         Profile.AwardController :edit
 [x] GET    /profiles/:profile_id/awards/new                              Profile.AwardController :new
 [x] POST   /profiles/:profile_id/awards                                  Profile.AwardController :create

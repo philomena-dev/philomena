@@ -31,12 +31,18 @@ defmodule Philomena.DnpEntries.DnpEntry do
   def update_changeset(dnp_entry, attrs, tag) do
     dnp_entry
     |> cast(attrs, [:conditions, :reason, :hide_reason, :instructions, :feedback, :dnp_type])
-    |> put_change(:tag_id, tag.id)
+    |> put_tag(tag)
     |> validate_required([:reason, :dnp_type])
     |> validate_inclusion(:dnp_type, types())
     |> validate_conditions()
     |> foreign_key_constraint(:tag_id, name: "fk_rails_473a736b4a")
   end
+
+  defp put_tag(changeset, nil),
+    do: add_error(changeset, :tag_id, "must be one of your linked tags")
+
+  defp put_tag(changeset, tag),
+    do: put_change(changeset, :tag_id, tag.id)
 
   def creation_changeset(dnp_entry, attrs, tag, user) do
     dnp_entry

@@ -107,10 +107,16 @@ defmodule PhilomenaWeb.FilterControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    test "crashes on a non-integer id", %{conn: conn} do
-      assert_raise Ecto.Query.CastError, ~r/cannot be cast to type :id/, fn ->
-        get(conn, ~p"/filters/not-a-number")
-      end
+    # NOTE: a non-integer id short-circuits to NotFoundPlug via the central
+    # IntegerId guard, so the flash is the not-found message rather than the
+    # "You can't access that page." an unknown integer id gets.
+    test "redirects with the not-found flash for a non-integer id", %{conn: conn} do
+      conn = get(conn, ~p"/filters/not-a-number")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
   end
 

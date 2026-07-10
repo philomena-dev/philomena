@@ -47,17 +47,16 @@ defmodule PhilomenaWeb.Admin.User.ForceFilterControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    # NOTE: :new is not covered by Canary's not_found handler, so an unknown
-    # slug passes nil through and Users.change_user(nil) raises
-    # FunctionClauseError.
-    test "raises for an unknown slug", %{conn: conn} do
+    # NOTE: load_resource now uses required: true, so Canary's not_found handler
+    # runs on :new too - an unknown slug redirects with the not-found flash
+    # rather than passing nil into Users.change_user/1.
+    test "redirects with the not-found flash for an unknown slug", %{conn: conn} do
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
 
-      assert_raise FunctionClauseError,
-                   ~r/no function clause matching in Philomena\.Users\.change_user\/1/,
-                   fn ->
-                     get(conn, ~p"/admin/users/no-such-user/force_filter/new")
-                   end
+      conn = get(conn, ~p"/admin/users/no-such-user/force_filter/new")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 
@@ -123,17 +122,17 @@ defmodule PhilomenaWeb.Admin.User.ForceFilterControllerTest do
                    end
     end
 
-    # NOTE: :create is not covered by the not_found handler, so an unknown slug
-    # passes nil through and Users.force_filter(nil, ...) raises
-    # FunctionClauseError.
-    test "raises for an unknown slug", %{conn: conn} do
-      assert_raise FunctionClauseError,
-                   ~r/no function clause matching in Philomena\.Users\.force_filter\/2/,
-                   fn ->
-                     post(conn, ~p"/admin/users/no-such-user/force_filter", %{
-                       "user" => %{"forced_filter_id" => 1}
-                     })
-                   end
+    # NOTE: load_resource now uses required: true, so Canary's not_found handler
+    # runs on :create too - an unknown slug redirects with the not-found flash
+    # rather than passing nil into Users.force_filter/2.
+    test "redirects with the not-found flash for an unknown slug", %{conn: conn} do
+      conn =
+        post(conn, ~p"/admin/users/no-such-user/force_filter", %{
+          "user" => %{"forced_filter_id" => 1}
+        })
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 

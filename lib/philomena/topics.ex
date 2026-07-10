@@ -205,6 +205,9 @@ defmodule Philomena.Topics do
       iex> move_topic(topic, 123)
       {:ok, %{topic: %Topic{}}}
 
+      iex> move_topic(topic, 456)
+      {:error, %Ecto.Changeset{}}
+
   """
   def move_topic(topic, new_forum_id) do
     old_forum_id = topic.forum_id
@@ -222,6 +225,7 @@ defmodule Philomena.Topics do
       inc: [post_count: topic.post_count, topic_count: 1]
     )
     |> Repo.transaction()
+    |> normalize_multi_error()
   end
 
   @doc """
@@ -231,6 +235,9 @@ defmodule Philomena.Topics do
 
       iex> hide_topic(topic, "Violates rules", moderator)
       {:ok, %Topic{}}
+
+      iex> hide_topic(topic, "", moderator)
+      {:error, %Ecto.Changeset{}}
 
   """
   def hide_topic(topic, deletion_reason, user) do
@@ -252,7 +259,7 @@ defmodule Philomena.Topics do
         {:ok, topic}
 
       error ->
-        error
+        normalize_multi_error(error)
     end
   end
 
@@ -340,4 +347,12 @@ defmodule Philomena.Topics do
       ]
     )
   end
+
+  # `Repo.transaction/1` reports a failed step as `{:error, name, value, changes}`.
+  # Callers only ever want the changeset that failed, in the shape every other
+  # context function returns it.
+  defp normalize_multi_error({:error, _name, %Ecto.Changeset{} = changeset, _changes}),
+    do: {:error, changeset}
+
+  defp normalize_multi_error(result), do: result
 end

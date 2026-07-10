@@ -159,10 +159,15 @@ defmodule Philomena.Users.User do
 
   defp validate_name(changeset) do
     changeset
-    |> update_change(:name, &String.trim/1)
+    |> update_change(:name, &trim_name/1)
     |> validate_required([:name])
     |> validate_length(:name, max: 50)
   end
+
+  # `cast/3` turns a submitted `""` into a change to nil, which
+  # `validate_required/2` below reports.
+  defp trim_name(nil), do: nil
+  defp trim_name(name), do: String.trim(name)
 
   defp validate_email(changeset) do
     changeset
@@ -599,6 +604,8 @@ defmodule Philomena.Users.User do
     put_change(changeset, :slug, Slug.slug(name))
   end
 
+  defp totp_valid?(%{encrypted_otp_secret: nil}, _token), do: false
+
   defp totp_valid?(user, token) do
     case Integer.parse(token) do
       {int_token, _rest} ->
@@ -609,6 +616,8 @@ defmodule Philomena.Users.User do
         false
     end
   end
+
+  defp backup_code_valid?(%{otp_backup_codes: nil}, _token), do: false
 
   defp backup_code_valid?(user, token),
     do: Enum.any?(user.otp_backup_codes, &Password.verify_pass(token, &1))

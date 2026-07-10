@@ -57,12 +57,13 @@ defmodule PhilomenaWeb.DuplicateReport.ClaimControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "can't access"
     end
 
-    test "a non-integer report id raises a cast error", %{conn: conn} do
+    test "a non-integer report id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise Ecto.Query.CastError, fn ->
-        post(conn, ~p"/duplicate_reports/not-an-integer/claim")
-      end
+      conn = post(conn, ~p"/duplicate_reports/not-an-integer/claim")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 
@@ -108,12 +109,13 @@ defmodule PhilomenaWeb.DuplicateReport.ClaimControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "can't access"
     end
 
-    test "a non-integer report id raises a cast error", %{conn: conn} do
+    test "a non-integer report id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise Ecto.Query.CastError, fn ->
-        delete(conn, ~p"/duplicate_reports/not-an-integer/claim")
-      end
+      conn = delete(conn, ~p"/duplicate_reports/not-an-integer/claim")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 end

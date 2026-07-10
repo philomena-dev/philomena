@@ -60,22 +60,19 @@ defmodule PhilomenaWeb.Profile.AwardControllerTest do
       assert award.reason == "for testing"
     end
 
-    # NOTE: `badge_awards.badge_id` has a database foreign-key constraint, but
-    # `Award.changeset` never declares it with `foreign_key_constraint/3`, so a
-    # nonexistent `badge_id` raises `Ecto.ConstraintError` (a 500) at insert
-    # time instead of returning `{:error, changeset}`. The controller's
-    # `{:error, changeset}` re-render branch is therefore effectively dead, and
-    # no award is persisted.
-    test "a nonexistent badge_id 500s with Ecto.ConstraintError", %{conn: conn} do
+    # NOTE: Award.changeset now validate_required badge_id and declares the FK
+    # constraint, so a nonexistent badge_id returns {:error, changeset} and the
+    # controller re-renders new.html (200) instead of raising. No award persists.
+    test "a nonexistent badge_id re-renders the form", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       other = confirmed_user_fixture()
 
-      assert_raise Ecto.ConstraintError, ~r/foreign_key_constraint/, fn ->
+      conn =
         post(conn, ~p"/profiles/#{other}/awards", %{
           "award" => %{"badge_id" => 2_000_000_000}
         })
-      end
 
+      assert html_response(conn, 200) =~ "New award"
       refute Repo.get_by(Award, user_id: other.id)
     end
 
@@ -116,15 +113,18 @@ defmodule PhilomenaWeb.Profile.AwardControllerTest do
                "Couldn't find what you were looking for!"
     end
 
-    # NOTE: the award is loaded by raw `id` path segment, so a non-integer id
-    # raises `Ecto.Query.CastError` (a 500) rather than the not-found redirect.
-    test "500s on a non-integer award id", %{conn: conn} do
+    # NOTE: a non-integer award id short-circuits to NotFoundPlug via the central
+    # IntegerId guard, redirecting with the not-found flash.
+    test "redirects with the not-found flash for a non-integer award id", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       other = confirmed_user_fixture()
 
-      assert_raise Ecto.Query.CastError, fn ->
-        get(conn, ~p"/profiles/#{other}/awards/not-a-number/edit")
-      end
+      conn = get(conn, ~p"/profiles/#{other}/awards/not-a-number/edit")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
 
     test "redirects a regular user with the authorization flash", %{conn: conn} do
@@ -171,22 +171,21 @@ defmodule PhilomenaWeb.Profile.AwardControllerTest do
       assert Repo.get!(Award, award.id).label == "Put label"
     end
 
-    # NOTE: same dead-error-branch shape as create - reassigning to a
-    # nonexistent `badge_id` raises `Ecto.ConstraintError` (the changeset never
-    # declares the FK), a 500, and the award keeps its old badge_id.
-    test "reassigning to a nonexistent badge_id 500s with Ecto.ConstraintError",
-         %{conn: conn} do
+    # NOTE: same as create - Award.changeset now declares the FK constraint, so
+    # reassigning to a nonexistent badge_id returns {:error, changeset} and the
+    # controller re-renders edit.html (200); the award keeps its old badge_id.
+    test "reassigning to a nonexistent badge_id re-renders the form", %{conn: conn} do
       %{conn: conn, user: mod} = register_and_log_in_moderator(%{conn: conn})
       other = confirmed_user_fixture()
       award = badge_award_fixture(mod, other)
       original_badge_id = award.badge_id
 
-      assert_raise Ecto.ConstraintError, ~r/foreign_key_constraint/, fn ->
+      conn =
         patch(conn, ~p"/profiles/#{other}/awards/#{award}", %{
           "award" => %{"badge_id" => 2_000_000_000}
         })
-      end
 
+      assert html_response(conn, 200) =~ "Editing award"
       assert Repo.get!(Award, award.id).badge_id == original_badge_id
     end
 

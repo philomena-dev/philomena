@@ -8,7 +8,7 @@ defmodule PhilomenaWeb.Tag.DetailController do
   import Ecto.Query
 
   plug :verify_authorized
-  plug :load_resource, model: Tag, id_name: "tag_id", id_field: "slug", persisted: true
+  plug :load_resource, model: Tag, id_name: "tag_id", id_field: "slug", required: true
 
   def index(conn, _params) do
     tag = conn.assigns.tag

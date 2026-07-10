@@ -68,15 +68,16 @@ defmodule PhilomenaWeb.Filter.SpoilerControllerTest do
     assert Repo.reload!(filter).spoilered_tag_ids == []
   end
 
-  test "POST for an unknown tag crashes with BadMapError", %{conn: conn} do
-    # NOTE: plain load_resource only runs the not_found_handler for :show
-    # actions, so the nil tag reaches Filters.spoiler_tag/2, which crashes
-    # on tag.id. (KNOWN-ODDITIES.md)
+  test "POST for an unknown tag redirects with the not-found flash", %{conn: conn} do
+    # NOTE: load_resource now uses required: true, so Canary runs its not-found
+    # handler on :create - an unknown slug redirects instead of passing nil
+    # into Filters.spoiler_tag/2.
     %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
     {:ok, _} = Users.update_filter(user, filter_fixture(user))
 
-    assert_raise BadMapError, ~r/expected a map, got:\s*nil/, fn ->
-      post(conn, ~p"/filters/spoiler?tag=unknown-slug")
-    end
+    conn = post(conn, ~p"/filters/spoiler?tag=unknown-slug")
+
+    assert redirected_to(conn) == "/"
+    assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
   end
 end

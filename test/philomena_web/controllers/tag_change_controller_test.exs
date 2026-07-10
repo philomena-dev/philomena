@@ -158,12 +158,13 @@ defmodule PhilomenaWeb.TagChangeControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "can't access"
     end
 
-    test "a non-integer id raises a cast error", %{conn: conn} do
+    test "a non-integer id redirects with the not-found flash", %{conn: conn} do
       conn = log_in_user(conn, moderator_user_fixture())
 
-      assert_raise Ecto.Query.CastError, fn ->
-        delete(conn, ~p"/tag_changes/not-an-integer", %{"redirect" => "/"})
-      end
+      conn = delete(conn, ~p"/tag_changes/not-an-integer", %{"redirect" => "/"})
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 end

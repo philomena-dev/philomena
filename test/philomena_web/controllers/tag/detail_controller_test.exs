@@ -66,16 +66,16 @@ defmodule PhilomenaWeb.Tag.DetailControllerTest do
       assert response =~ "Users that watch this tag"
     end
 
-    test "crashes for an unknown tag as moderator", %{conn: conn} do
+    test "redirects with the not-found flash for an unknown tag as moderator", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      # NOTE: probable bug (KNOWN-ODDITIES.md). Canary's load_resource does
-      # not run the not-found handler for :index actions, so an unknown
-      # slug reaches the controller with a nil tag and crashes (500)
-      # instead of 404ing.
-      assert_raise BadMapError, ~r/expected a map/, fn ->
-        get(conn, ~p"/tags/nonexistent-tag/details")
-      end
+      # NOTE: load_resource now uses required: true, so Canary runs its
+      # not-found handler on this :index action - an unknown slug redirects
+      # instead of dereferencing a nil tag.
+      conn = get(conn, ~p"/tags/nonexistent-tag/details")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 end

@@ -55,16 +55,14 @@ defmodule PhilomenaWeb.Admin.User.UnlockControllerTest do
       assert Repo.get(User, target.id).locked_at == nil
     end
 
-    # NOTE: :create is not covered by the not_found handler, so an unknown slug
-    # passes nil through. Users.unlock_user/1 has no nil guard of its own, so
-    # the FunctionClauseError is raised two frames deeper, in
-    # Ecto.Changeset.change/2 (via User.unlock_changeset/1).
-    test "raises for an unknown slug", %{conn: conn} do
-      assert_raise FunctionClauseError,
-                   ~r/no function clause matching in Ecto\.Changeset\.change\/2/,
-                   fn ->
-                     post(conn, ~p"/admin/users/no-such-user/unlock")
-                   end
+    # NOTE: load_resource now uses required: true, so Canary's not_found handler
+    # runs on :create too - an unknown slug redirects with the not-found flash
+    # rather than passing nil into Users.unlock_user/1.
+    test "redirects with the not-found flash for an unknown slug", %{conn: conn} do
+      conn = post(conn, ~p"/admin/users/no-such-user/unlock")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 

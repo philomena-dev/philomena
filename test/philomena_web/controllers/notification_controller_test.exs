@@ -70,14 +70,14 @@ defmodule PhilomenaWeb.NotificationControllerTest do
     refute response =~ topic.title
   end
 
-  test "DELETE /notifications/:id is routed but has no controller action", %{conn: conn} do
-    # NOTE: the router declares `resources "/notifications", only:
-    # [:index, :delete]` but NotificationController defines no delete/2, so
-    # the route 500s for everyone. (KNOWN-ODDITIES.md)
+  test "DELETE /notifications/:id is no longer routed and answers 404", %{conn: conn} do
+    # NOTE: the notifications resource now routes only :index, so this path is
+    # unrouted and answers 404 (notification clearing happens through the
+    # per-type read controllers instead).
     %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
-    assert_raise UndefinedFunctionError, ~r/delete\/2/, fn ->
-      delete(conn, ~p"/notifications/1")
-    end
+    conn = delete(conn, "/notifications/1")
+
+    assert conn.status == 404
   end
 end

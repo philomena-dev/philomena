@@ -322,26 +322,28 @@ defmodule PhilomenaWeb.Topic.Poll.VoteControllerTest do
       assert Repo.reload!(poll).total_votes == 1
     end
 
-    # NOTE: the vote is loaded with get_poll_vote!/1, so an unknown id raises
-    # Ecto.NoResultsError (a 500) rather than redirecting.
-    test "for an unknown vote id raises NoResultsError",
+    # NOTE: the vote is now loaded with get_poll_vote/1, so an unknown id
+    # redirects back to the topic with the failure flash rather than raising.
+    test "for an unknown vote id redirects back with the failure flash",
          %{conn: conn, forum: forum, topic: topic} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise Ecto.NoResultsError, fn ->
-        delete(conn, ~p"/forums/#{forum}/topics/#{topic}/poll/votes/999999999")
-      end
+      conn = delete(conn, ~p"/forums/#{forum}/topics/#{topic}/poll/votes/999999999")
+
+      assert redirected_to(conn) == ~p"/forums/#{forum}/topics/#{topic}"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Vote was not removed."
     end
 
-    # NOTE: a non-integer id is interpolated into the load query, raising
-    # Ecto.Query.CastError (a 500).
-    test "for a non-integer vote id raises CastError",
+    # NOTE: a non-integer id is parsed first (IntegerId.parse), so it takes the
+    # same nil path and redirects back with the failure flash.
+    test "for a non-integer vote id redirects back with the failure flash",
          %{conn: conn, forum: forum, topic: topic} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise Ecto.Query.CastError, fn ->
-        delete(conn, ~p"/forums/#{forum}/topics/#{topic}/poll/votes/not-a-number")
-      end
+      conn = delete(conn, ~p"/forums/#{forum}/topics/#{topic}/poll/votes/not-a-number")
+
+      assert redirected_to(conn) == ~p"/forums/#{forum}/topics/#{topic}"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Vote was not removed."
     end
   end
 end

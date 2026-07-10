@@ -4,6 +4,7 @@ defmodule PhilomenaWeb.Topic.Poll.VoteController do
   alias Philomena.Forums.Forum
   alias Philomena.PollOptions.PollOption
   alias Philomena.PollVotes
+  alias PhilomenaWeb.IntegerId
   alias Philomena.Repo
   import Ecto.Query
 
@@ -61,13 +62,27 @@ defmodule PhilomenaWeb.Topic.Poll.VoteController do
 
   def delete(conn, %{"id" => poll_vote_id}) do
     topic = conn.assigns.topic
-    poll_vote = PollVotes.get_poll_vote!(poll_vote_id)
 
-    {:ok, _poll_vote} = PollVotes.delete_poll_vote(poll_vote)
+    case load_poll_vote(poll_vote_id) do
+      nil ->
+        conn
+        |> put_flash(:error, "Vote was not removed.")
+        |> redirect(to: ~p"/forums/#{topic.forum}/topics/#{topic}")
 
-    conn
-    |> put_flash(:info, "Vote successfully removed.")
-    |> redirect(to: ~p"/forums/#{topic.forum}/topics/#{topic}")
+      poll_vote ->
+        {:ok, _poll_vote} = PollVotes.delete_poll_vote(poll_vote)
+
+        conn
+        |> put_flash(:info, "Vote successfully removed.")
+        |> redirect(to: ~p"/forums/#{topic.forum}/topics/#{topic}")
+    end
+  end
+
+  defp load_poll_vote(poll_vote_id) do
+    case IntegerId.parse(poll_vote_id) do
+      {:ok, id} -> PollVotes.get_poll_vote(id)
+      :error -> nil
+    end
   end
 
   defp verify_authorized(conn, _opts) do

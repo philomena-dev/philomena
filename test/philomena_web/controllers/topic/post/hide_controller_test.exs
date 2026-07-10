@@ -74,22 +74,20 @@ defmodule PhilomenaWeb.Topic.Post.HideControllerTest do
       assert post.deletion_reason == "Rule violation"
     end
 
-    # Failure path: hide_changeset requires deletion_reason, so a blank reason
-    # makes the hide_post Multi fail - returning a 4-tuple the controller's
-    # {:error, _changeset} branch does not match, raising CaseClauseError (500).
-    # NOTE: KNOWN-ODDITIES.md
-    test "with a blank deletion reason raises CaseClauseError",
+    # Failure path: hide_changeset requires deletion_reason. hide_post now
+    # normalizes its Multi failure to {:error, changeset}, so a blank reason
+    # redirects back with the "Unable to delete post!" flash instead of raising.
+    test "with a blank deletion reason redirects back with the failure flash",
          %{conn: conn, forum: forum, topic: topic, post: post} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise CaseClauseError,
-                   ~r/no case clause matching:\s*\{:error, :post,.*deletion_reason: \{"can't be blank"/s,
-                   fn ->
-                     post(conn, ~p"/forums/#{forum}/topics/#{topic}/posts/#{post}/hide", %{
-                       "post" => %{"deletion_reason" => ""}
-                     })
-                   end
+      conn =
+        post(conn, ~p"/forums/#{forum}/topics/#{topic}/posts/#{post}/hide", %{
+          "post" => %{"deletion_reason" => ""}
+        })
 
+      assert redirected_to(conn) =~ ~p"/forums/#{forum}/topics/#{topic}"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Unable to delete post!"
       refute Repo.reload!(post).hidden_from_users
     end
 
@@ -106,17 +104,21 @@ defmodule PhilomenaWeb.Topic.Post.HideControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    # NOTE: the post_id is interpolated into the load query, so a non-integer
-    # value raises Ecto.Query.CastError (a 500).
-    test "for a non-integer post_id raises CastError",
+    # NOTE: a non-integer post_id short-circuits to NotFoundPlug via the central
+    # IntegerId guard, redirecting with the not-found flash.
+    test "for a non-integer post_id redirects with the not-found flash",
          %{conn: conn, forum: forum, topic: topic} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise Ecto.Query.CastError, fn ->
+      conn =
         post(conn, ~p"/forums/#{forum}/topics/#{topic}/posts/not-a-number/hide", %{
           "post" => %{"deletion_reason" => "Spam"}
         })
-      end
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
   end
 

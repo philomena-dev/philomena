@@ -88,14 +88,15 @@ defmodule PhilomenaWeb.TagChange.RevertControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Successfully reverted 0 tag changes"
     end
 
-    test "a non-list ids param is an action clause error", %{conn: conn} do
-      # NOTE: create/2 only matches when "ids" is a list; a scalar value has no
-      # matching clause and raises Phoenix.ActionClauseError (500).
+    test "a non-list ids param redirects with the failure flash", %{conn: conn} do
+      # NOTE: a scalar "ids" now takes the fallback create/2 clause and redirects
+      # to the referrer with the failure flash rather than raising.
       conn = log_in_user(conn, moderator_user_fixture())
 
-      assert_raise Phoenix.ActionClauseError, fn ->
-        post(conn, ~p"/tag_changes/revert", %{"ids" => "42"})
-      end
+      conn = post(conn, ~p"/tag_changes/revert", %{"ids" => "42"})
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Couldn't revert those tag changes!"
     end
   end
 end

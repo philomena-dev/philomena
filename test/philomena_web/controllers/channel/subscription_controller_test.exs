@@ -40,11 +40,16 @@ defmodule PhilomenaWeb.Channel.SubscriptionControllerTest do
     assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
   end
 
-  test "a non-integer channel id raises Ecto.Query.CastError", %{conn: conn} do
+  test "a non-integer channel id redirects to / with the not-found flash", %{conn: conn} do
+    # the central IntegerId guard short-circuits a non-integer id to
+    # NotFoundPlug before Canary authorizes
     %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
-    assert_raise Ecto.Query.CastError, ~r/cannot be cast to type :id/, fn ->
-      post(conn, ~p"/channels/not-a-number/subscription")
-    end
+    conn = post(conn, ~p"/channels/not-a-number/subscription")
+
+    assert redirected_to(conn) == "/"
+
+    assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+             "Couldn't find what you were looking for!"
   end
 end

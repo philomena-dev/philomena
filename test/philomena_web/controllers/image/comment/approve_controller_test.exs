@@ -88,15 +88,18 @@ defmodule PhilomenaWeb.Image.Comment.ApproveControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    # NOTE: the comment_id is interpolated into the load query, so a
-    # non-integer value raises Ecto.Query.CastError (a 500).
-    test "for a non-integer comment_id raises CastError", %{conn: conn} do
+    # NOTE: a non-integer comment_id short-circuits to NotFoundPlug via the
+    # central IntegerId guard before Canary authorizes.
+    test "for a non-integer comment_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       image = image_fixture()
 
-      assert_raise Ecto.Query.CastError, fn ->
-        post(conn, ~p"/images/#{image}/comments/not-a-number/approve")
-      end
+      conn = post(conn, ~p"/images/#{image}/comments/not-a-number/approve")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
   end
 end

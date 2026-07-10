@@ -93,6 +93,7 @@ defmodule Philomena.Topics.Topic do
   def move_changeset(topic, new_forum_id) do
     change(topic)
     |> put_change(:forum_id, new_forum_id)
+    |> foreign_key_constraint(:forum_id, name: :fk_rails_eac66eb971)
   end
 
   def hide_changeset(topic, deletion_reason, user) do

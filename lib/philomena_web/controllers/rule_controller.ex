@@ -24,7 +24,7 @@ defmodule PhilomenaWeb.RuleController do
     last_updated_at =
       rules
       |> Enum.map(& &1.updated_at)
-      |> Enum.max(DateTime)
+      |> Enum.max(DateTime, fn -> nil end)
 
     render(conn, :index, rules: rules, last_updated_at: last_updated_at)
   end

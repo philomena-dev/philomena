@@ -44,15 +44,14 @@ defmodule PhilomenaWeb.Admin.User.VerificationControllerTest do
       assert Repo.get(User, target.id).verified
     end
 
-    # NOTE: :create is not covered by Canary's not_found handler, so an unknown
-    # slug passes nil through and Users.verify_user(nil) raises
-    # FunctionClauseError (nil-pass-through family).
-    test "raises for an unknown slug", %{conn: conn} do
-      assert_raise FunctionClauseError,
-                   ~r/no function clause matching in Philomena\.Users\.verify_user\/1/,
-                   fn ->
-                     post(conn, ~p"/admin/users/no-such-user/verification")
-                   end
+    # NOTE: load_resource now uses required: true, so Canary's not_found handler
+    # runs on :create too - an unknown slug redirects with the not-found flash
+    # rather than passing nil into Users.verify_user/1.
+    test "redirects with the not-found flash for an unknown slug", %{conn: conn} do
+      conn = post(conn, ~p"/admin/users/no-such-user/verification")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 

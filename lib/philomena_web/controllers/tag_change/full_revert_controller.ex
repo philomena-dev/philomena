@@ -1,9 +1,11 @@
 defmodule PhilomenaWeb.TagChange.FullRevertController do
   use PhilomenaWeb, :controller
 
-  alias Philomena.Users
+  alias Philomena.Users.User
   alias Philomena.TagChanges.TagChange
   alias Philomena.TagChanges
+  alias PhilomenaWeb.IntegerId
+  alias Philomena.Repo
 
   plug :verify_authorized
   plug PhilomenaWeb.UserAttributionPlug
@@ -16,25 +18,29 @@ defmodule PhilomenaWeb.TagChange.FullRevertController do
       batch_size: attributes[:batch_size] || 100
     }
 
-    case params do
-      %{"user_id" => user_id} ->
-        TagChanges.full_revert(%{user_id: user_id, attributes: attributes})
+    case revert_target(params) do
+      nil ->
+        conn
+        |> put_flash(:error, "Couldn't revert those tag changes!")
+        |> redirect(external: conn.assigns.referrer)
 
-      %{"ip" => ip} ->
-        TagChanges.full_revert(%{ip: ip, attributes: attributes})
+      target ->
+        TagChanges.full_revert(Map.put(target, :attributes, attributes))
 
-      %{"fingerprint" => fp} ->
-        TagChanges.full_revert(%{fingerprint: fp, attributes: attributes})
+        conn
+        |> put_flash(:info, "Reversion of tag changes enqueued.")
+        |> moderation_log(
+          details: &log_details/2,
+          data: %{user: conn.assigns.current_user, params: params}
+        )
+        |> redirect(external: conn.assigns.referrer)
     end
-
-    conn
-    |> put_flash(:info, "Reversion of tag changes enqueued.")
-    |> moderation_log(
-      details: &log_details/2,
-      data: %{user: conn.assigns.current_user, params: params}
-    )
-    |> redirect(external: conn.assigns.referrer)
   end
+
+  defp revert_target(%{"user_id" => user_id}), do: %{user_id: user_id}
+  defp revert_target(%{"ip" => ip}), do: %{ip: ip}
+  defp revert_target(%{"fingerprint" => fp}), do: %{fingerprint: fp}
+  defp revert_target(_params), do: nil
 
   defp verify_authorized(conn, _params) do
     if Canada.Can.can?(conn.assigns.current_user, :revert, TagChange) do
@@ -48,9 +54,7 @@ defmodule PhilomenaWeb.TagChange.FullRevertController do
     {subject, subject_path} =
       case data.params do
         %{"user_id" => user_id} ->
-          user = Users.get_user!(user_id)
-
-          {"user #{user.name}", ~p"/profiles/#{user}"}
+          log_user(user_id)
 
         %{"ip" => ip} ->
           {"ip #{ip}", ~p"/ip_profiles/#{ip}"}
@@ -60,5 +64,21 @@ defmodule PhilomenaWeb.TagChange.FullRevertController do
       end
 
     %{body: "Reverted all tag changes for #{subject}", subject_path: subject_path}
+  end
+
+  # The revert is enqueued for whatever id was named, so the log entry has to
+  # survive an id that names no user.
+  defp log_user(user_id) do
+    case load_user(user_id) do
+      nil -> {"user #{user_id}", ~p"/tag_changes"}
+      user -> {"user #{user.name}", ~p"/profiles/#{user}"}
+    end
+  end
+
+  defp load_user(user_id) do
+    case IntegerId.parse(user_id) do
+      {:ok, id} -> Repo.get(User, id)
+      :error -> nil
+    end
   end
 end

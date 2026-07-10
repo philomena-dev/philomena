@@ -87,15 +87,14 @@ defmodule PhilomenaWeb.Admin.ModNoteControllerTest do
       assert html_response(conn, 200) =~ "New mod note for"
     end
 
-    # NOTE: new/2 has only a clause requiring notable_type + notable_id (no
-    # fallback), so a bare /admin/mod_notes/new crashes with an
-    # ActionClauseError once authorization has passed.
-    test "crashes without notable params", %{conn: conn} do
+    # NOTE: new/2 now accepts a bare request and renders a blank form (200)
+    # rather than raising ActionClauseError.
+    test "renders a blank form without notable params", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise Phoenix.ActionClauseError, fn ->
-        get(conn, ~p"/admin/mod_notes/new")
-      end
+      conn = get(conn, ~p"/admin/mod_notes/new")
+
+      assert html_response(conn, 200) =~ "New mod note for"
     end
   end
 
@@ -210,12 +209,13 @@ defmodule PhilomenaWeb.Admin.ModNoteControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
-    test "crashes on a non-integer id", %{conn: conn} do
+    test "redirects to / with a not-found flash for a non-integer id", %{conn: conn} do
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
 
-      assert_raise Ecto.Query.CastError, fn ->
-        get(conn, ~p"/admin/mod_notes/not-a-number/edit")
-      end
+      conn = get(conn, ~p"/admin/mod_notes/not-a-number/edit")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 

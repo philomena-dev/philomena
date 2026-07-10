@@ -66,20 +66,21 @@ defmodule PhilomenaWeb.Admin.Badge.UserControllerTest do
   describe "GET /admin/badges/:badge_id/users unknown id" do
     setup [:register_and_log_in_admin]
 
-    # NOTE: For the :index action Canary's load_resource does not run its
-    # not_found handler, so an unknown badge_id leaves `@badge` nil and the
-    # query builds `^nil.id`, raising BadMapError (the same nil pass-through
-    # family as the other :index routes).
-    test "500s on an unknown badge_id", %{conn: conn} do
-      assert_raise BadMapError, ~r/expected a map, got:\s*nil/, fn ->
-        get(conn, ~p"/admin/badges/#{2_000_000_000}/users")
-      end
+    # NOTE: load_resource now uses required: true, so Canary's not_found handler
+    # runs on the :index action too - an unknown badge_id redirects rather than
+    # dereferencing a nil badge.
+    test "redirects with a not-found flash for an unknown badge_id", %{conn: conn} do
+      conn = get(conn, ~p"/admin/badges/#{2_000_000_000}/users")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
-    test "crashes on a non-integer badge_id", %{conn: conn} do
-      assert_raise Ecto.Query.CastError, fn ->
-        get(conn, ~p"/admin/badges/not-a-number/users")
-      end
+    test "redirects with a not-found flash for a non-integer badge_id", %{conn: conn} do
+      conn = get(conn, ~p"/admin/badges/not-a-number/users")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 end

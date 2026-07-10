@@ -151,21 +151,39 @@ defmodule PhilomenaWeb.Admin.UserBanControllerTest do
       assert Repo.get_by(UserBan, user_id: target.id, reason: "Admin issued")
     end
 
-    # NOTE: A changeset failure re-renders "new.html", but the error branch
-    # does not pass the `target_user` assign that new.html requires, so a
-    # validation failure crashes instead of showing the form errors.
-    test "crashes on a validation failure (missing target_user assign)", %{conn: conn} do
+    # NOTE: the create error branch now re-renders "new.html" with the
+    # @target_user assign resolved from the posted user_id, so a validation
+    # failure (here, a missing reason) shows the form (200) rather than raising.
+    test "re-renders the form on a validation failure", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       target = confirmed_user_fixture()
 
-      assert_raise ArgumentError, ~r/target_user/, fn ->
+      conn =
         post(conn, ~p"/admin/user_bans", %{
           "user" => %{
             "user_id" => target.id,
             "valid_until" => "5 years from now"
           }
         })
-      end
+
+      response = html_response(conn, 200)
+      assert response =~ "New User Ban for user"
+      assert response =~ target.name
+      refute Repo.get_by(UserBan, user_id: target.id)
+    end
+
+    # NOTE: when the posted user_id names no user, the error branch takes the
+    # no_target_user path and redirects with a flash instead of re-rendering.
+    test "redirects with a flash when the user_id names no user", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+
+      conn =
+        post(conn, ~p"/admin/user_bans", %{
+          "user" => %{"user_id" => 2_000_000_000, "valid_until" => "5 years from now"}
+        })
+
+      assert redirected_to(conn) == ~p"/admin/user_bans"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Must create ban on user."
     end
   end
 
@@ -195,14 +213,15 @@ defmodule PhilomenaWeb.Admin.UserBanControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
-    # NOTE: Non-integer ids crash in the query cast rather than 404ing, the
-    # same shape pinned for other by-id routes.
-    test "crashes on a non-integer id", %{conn: conn} do
+    # NOTE: a non-integer id short-circuits to NotFoundPlug via the central
+    # IntegerId guard rather than raising a cast error.
+    test "redirects to / with a not-found flash for a non-integer id", %{conn: conn} do
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
 
-      assert_raise Ecto.Query.CastError, fn ->
-        get(conn, ~p"/admin/user_bans/not-a-number/edit")
-      end
+      conn = get(conn, ~p"/admin/user_bans/not-a-number/edit")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 

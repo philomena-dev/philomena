@@ -9,8 +9,13 @@ defmodule PhilomenaWeb.IpProfileController do
   plug :authorize_ip
 
   def show(conn, %{"id" => ip}) do
-    {:ok, ip} = EctoNetwork.INET.cast(ip)
+    case EctoNetwork.INET.cast(ip) do
+      {:ok, ip} -> show_profile(conn, ip)
+      _error -> PhilomenaWeb.NotFoundPlug.call(conn)
+    end
+  end
 
+  defp show_profile(conn, ip) do
     user_ips =
       UserIp
       |> where(fragment("? >>= ip", ^ip))

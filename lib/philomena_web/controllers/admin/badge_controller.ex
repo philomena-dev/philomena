@@ -31,7 +31,7 @@ defmodule PhilomenaWeb.Admin.BadgeController do
         |> moderation_log(details: &log_details/2, data: badge)
         |> redirect(to: ~p"/admin/badges")
 
-      {:error, :badge, changeset, _changes} ->
+      {:error, changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
   end
@@ -49,7 +49,7 @@ defmodule PhilomenaWeb.Admin.BadgeController do
         |> moderation_log(details: &log_details/2, data: badge)
         |> redirect(to: ~p"/admin/badges")
 
-      {:error, :badge, changeset, _changes} ->
+      {:error, changeset} ->
         render(conn, "edit.html", changeset: changeset)
     end
   end

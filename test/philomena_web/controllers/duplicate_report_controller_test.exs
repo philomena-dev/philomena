@@ -91,10 +91,11 @@ defmodule PhilomenaWeb.DuplicateReportControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
-    test "a non-integer id raises a cast error", %{conn: conn} do
-      assert_raise Ecto.Query.CastError, fn ->
-        get(conn, ~p"/duplicate_reports/not-an-integer")
-      end
+    test "a non-integer id redirects with the not-found flash", %{conn: conn} do
+      conn = get(conn, ~p"/duplicate_reports/not-an-integer")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 
@@ -156,19 +157,50 @@ defmodule PhilomenaWeb.DuplicateReportControllerTest do
       refute Repo.exists?(DuplicateReport)
     end
 
-    test "an unknown image id raises", %{conn: conn} do
+    # NOTE: create now loads images with a parse-guarded Repo.get; an unknown (or
+    # non-integer) source image_id has nowhere to redirect back to, so it takes
+    # the NotFoundPlug path rather than raising.
+    test "an unknown source image id redirects with the not-found flash", %{conn: conn} do
       target = image_fixture()
 
-      # NOTE: create loads both images with Repo.get!/2 before authorizing,
-      # so a missing source image is a 500 rather than a validation failure.
-      assert_raise Ecto.NoResultsError, fn ->
+      conn =
         post(conn, ~p"/duplicate_reports", %{
           "duplicate_report" => %{
             "image_id" => 123_456_789,
             "duplicate_of_image_id" => target.id
           }
         })
-      end
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
+    end
+
+    # NOTE: a valid source with an unknown duplicate_of_image_id redirects back
+    # to the source image with the submission-failure flash.
+    test "an unknown target image id redirects to the source with the failure flash",
+         %{conn: conn} do
+      source = image_fixture()
+
+      conn =
+        post(conn, ~p"/duplicate_reports", %{
+          "duplicate_report" => %{
+            "image_id" => source.id,
+            "duplicate_of_image_id" => 123_456_789
+          }
+        })
+
+      assert redirected_to(conn) == ~p"/images/#{source}"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Failed to submit duplicate report"
+      refute Repo.exists?(DuplicateReport)
+    end
+
+    # NOTE: a request without the duplicate_report param takes the fallback
+    # create/2 clause and answers via NotFoundPlug.
+    test "a missing duplicate_report param redirects with the not-found flash", %{conn: conn} do
+      conn = post(conn, ~p"/duplicate_reports", %{})
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 end

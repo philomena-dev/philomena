@@ -200,16 +200,17 @@ defmodule PhilomenaWeb.DnpEntryControllerTest do
       refute Repo.exists?(from d in DnpEntry, where: d.requesting_user_id == ^user.id)
     end
 
-    test "crashes when the submitted tag is not one of the user's linked tags", %{conn: conn} do
-      # NOTE: create_dnp_entry looks the tag up in the selectable list and
-      # passes the nil miss straight into the changeset, which crashes on
-      # tag.id - same nil pass-through family as KNOWN-ODDITIES.md
+    test "re-renders when the submitted tag is not one of the user's linked tags",
+         %{conn: conn} do
+      # NOTE: a tag_id outside the user's verified links now arrives at the
+      # changeset as nil and adds a :tag_id error ("must be one of your linked
+      # tags"), so the form re-renders (200) rather than crashing on tag.id.
       %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
       tag = tag_fixture(name: "artist:test-owned-artist")
       other_tag = tag_fixture(name: "artist:test-unowned-artist")
       verify_artist_link!(user, tag)
 
-      assert_raise BadMapError, ~r/expected a map, got:\s*nil/, fn ->
+      conn =
         post(conn, ~p"/dnp", %{
           "dnp_entry" => %{
             "tag_id" => to_string(other_tag.id),
@@ -217,7 +218,9 @@ defmodule PhilomenaWeb.DnpEntryControllerTest do
             "reason" => "Not my tag"
           }
         })
-      end
+
+      assert html_response(conn, 200) =~ "New DNP Request"
+      refute Repo.exists?(from d in DnpEntry, where: d.requesting_user_id == ^user.id)
     end
 
     test "redirects banned users with the ban flash", %{conn: conn} do

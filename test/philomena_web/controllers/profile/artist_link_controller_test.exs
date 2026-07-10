@@ -235,29 +235,30 @@ defmodule PhilomenaWeb.Profile.ArtistLinkControllerTest do
     end
   end
 
-  describe "DELETE /profiles/:profile_id/artist_links/:id" do
-    test "redirects a regular user with the authorization flash", %{conn: conn} do
+  describe "DELETE /profiles/:profile_id/artist_links/:id (no longer routed)" do
+    # NOTE: the router now declares `resources "/artist_links", except: [:delete]`,
+    # so DELETE is unrouted and answers 404 for everyone (the path still exists
+    # for :show/:update, so the request reaches the router and returns 404 for
+    # the unmatched verb rather than crashing).
+    test "answers 404 for a regular user", %{conn: conn} do
       %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
       link = artist_link_fixture(user)
 
       conn = delete(conn, ~p"/profiles/#{user}/artist_links/#{link}")
 
-      assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      assert conn.status == 404
       assert Repo.get(ArtistLink, link.id)
     end
 
-    test "crashes for an admin because the action does not exist", %{conn: conn} do
-      # NOTE: the router generates DELETE via `resources "/artist_links"`,
-      # but the controller defines no delete/2 - a dead route reachable only
-      # by admins (who pass every authorization check). KNOWN-ODDITIES.md.
+    test "answers 404 for an admin", %{conn: conn} do
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
       artist = confirmed_user_fixture()
       link = artist_link_fixture(artist)
 
-      assert_raise UndefinedFunctionError, ~r/delete\/2/, fn ->
-        delete(conn, ~p"/profiles/#{artist}/artist_links/#{link}")
-      end
+      conn = delete(conn, ~p"/profiles/#{artist}/artist_links/#{link}")
+
+      assert conn.status == 404
+      assert Repo.get(ArtistLink, link.id)
     end
   end
 end

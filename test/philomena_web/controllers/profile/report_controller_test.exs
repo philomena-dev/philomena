@@ -91,15 +91,14 @@ defmodule PhilomenaWeb.Profile.ReportControllerTest do
       assert report.user_id == nil
     end
 
-    test "with a blank reason crashes trying to re-render the form", %{conn: conn} do
-      # NOTE: ReportController.create/5 re-renders "new.html" on changeset
-      # failure in the calling controller's nonexistent default view - same
-      # 500 as the other report wrappers (KNOWN-ODDITIES.md)
+    test "with a blank reason re-renders the report form", %{conn: conn} do
+      # NOTE: the create failure now renders new.html through the shared
+      # PhilomenaWeb.ReportView (200) rather than raising on a missing view.
       %{conn: conn} = register_and_log_in_user(%{conn: conn})
       reported = confirmed_user_fixture()
       rule = rule_fixture()
 
-      assert_raise ArgumentError, ~r/no "new" html template defined/, fn ->
+      conn =
         post(conn, ~p"/profiles/#{reported}/reports", %{
           "report" => %{
             "reason" => "",
@@ -107,8 +106,8 @@ defmodule PhilomenaWeb.Profile.ReportControllerTest do
             "user_agent" => "Test Browser/1.0"
           }
         })
-      end
 
+      assert html_response(conn, 200) =~ "Submit a report"
       assert Repo.aggregate(Report, :count) == 0
     end
 

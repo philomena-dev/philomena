@@ -5,7 +5,7 @@ defmodule PhilomenaWeb.Admin.User.VerificationController do
   alias Philomena.Users
 
   plug :verify_authorized
-  plug :load_resource, model: User, id_name: "user_id", id_field: "slug", persisted: true
+  plug :load_resource, model: User, id_name: "user_id", id_field: "slug", required: true
 
   def create(conn, _params) do
     {:ok, user} = Users.verify_user(conn.assigns.user)

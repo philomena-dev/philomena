@@ -64,12 +64,15 @@ defmodule PhilomenaWeb.Admin.SubnetBanControllerTest do
       assert response =~ ban.generated_ban_id
     end
 
-    # NOTE: The ip branch pattern-matches {:ok, ip} = EctoNetwork.INET.cast(ip),
-    # so an unparsable address is a MatchError (500), not a form error.
-    test "crashes on an invalid ip in the ip branch", %{conn: conn} do
-      assert_raise MatchError, ~r/no match of right hand side value:\s*:error/, fn ->
-        get(conn, ~p"/admin/subnet_bans?#{[ip: "not-an-ip"]}")
-      end
+    # NOTE: an unparsable address now redirects to the index with a flash rather
+    # than raising MatchError.
+    test "redirects with a flash on an invalid ip in the ip branch", %{conn: conn} do
+      conn = get(conn, ~p"/admin/subnet_bans?#{[ip: "not-an-ip"]}")
+
+      assert redirected_to(conn) == ~p"/admin/subnet_bans"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "`not-an-ip' is not a valid IP address or CIDR range."
     end
   end
 
@@ -92,14 +95,18 @@ defmodule PhilomenaWeb.Admin.SubnetBanControllerTest do
       assert html_response(conn, 200) =~ "New Subnet Ban"
     end
 
-    # NOTE: new/2 with a specification also pattern-matches the INET cast, so an
-    # invalid value crashes rather than rendering the form.
-    test "crashes on an invalid specification", %{conn: conn} do
+    # NOTE: an invalid specification now renders a blank form (200) with a flash
+    # rather than raising MatchError.
+    test "renders a blank form with a flash on an invalid specification", %{conn: conn} do
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
 
-      assert_raise MatchError, ~r/no match of right hand side value:\s*:error/, fn ->
-        get(conn, ~p"/admin/subnet_bans/new?#{[specification: "not-an-ip"]}")
-      end
+      conn = get(conn, ~p"/admin/subnet_bans/new?#{[specification: "not-an-ip"]}")
+
+      response = html_response(conn, 200)
+      assert response =~ "New Subnet Ban"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "`not-an-ip' is not a valid IP address or CIDR range."
     end
   end
 
@@ -191,12 +198,13 @@ defmodule PhilomenaWeb.Admin.SubnetBanControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
-    test "crashes on a non-integer id", %{conn: conn} do
+    test "redirects to / with a not-found flash for a non-integer id", %{conn: conn} do
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
 
-      assert_raise Ecto.Query.CastError, fn ->
-        get(conn, ~p"/admin/subnet_bans/not-a-number/edit")
-      end
+      conn = get(conn, ~p"/admin/subnet_bans/not-a-number/edit")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 

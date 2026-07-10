@@ -65,14 +65,19 @@ defmodule PhilomenaWeb.Image.TagLockControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    # NOTE: the image_id is interpolated into the load query, so a non-integer
-    # value raises Ecto.Query.CastError (a 500).
-    test "for a non-integer image_id raises CastError", %{conn: conn} do
+    # NOTE: a non-integer image_id short-circuits to NotFoundPlug via the central
+    # IntegerId guard before Canary authorizes, so the flash is the not-found
+    # message rather than the "You can't access that page." an unknown integer
+    # id gets.
+    test "for a non-integer image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise Ecto.Query.CastError, fn ->
-        get(conn, ~p"/images/not-a-number/tag_lock")
-      end
+      conn = get(conn, ~p"/images/not-a-number/tag_lock")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
   end
 
@@ -127,14 +132,19 @@ defmodule PhilomenaWeb.Image.TagLockControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    # NOTE: the image_id is interpolated into the load query, so a non-integer
-    # value raises Ecto.Query.CastError (a 500).
-    test "for a non-integer image_id raises CastError", %{conn: conn} do
+    # NOTE: a non-integer image_id short-circuits to NotFoundPlug via the central
+    # IntegerId guard before Canary authorizes, so the flash is the not-found
+    # message rather than the "You can't access that page." an unknown integer
+    # id gets.
+    test "for a non-integer image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise Ecto.Query.CastError, fn ->
-        post(conn, ~p"/images/not-a-number/tag_lock")
-      end
+      conn = post(conn, ~p"/images/not-a-number/tag_lock")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
   end
 
@@ -214,14 +224,19 @@ defmodule PhilomenaWeb.Image.TagLockControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    # NOTE: the image_id is interpolated into the load query, so a non-integer
-    # value raises Ecto.Query.CastError (a 500).
-    test "for a non-integer image_id raises CastError", %{conn: conn} do
+    # NOTE: a non-integer image_id short-circuits to NotFoundPlug via the central
+    # IntegerId guard before Canary authorizes, so the flash is the not-found
+    # message rather than the "You can't access that page." an unknown integer
+    # id gets.
+    test "for a non-integer image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise Ecto.Query.CastError, fn ->
-        put(conn, ~p"/images/not-a-number/tag_lock", %{"image" => %{"tag_input" => "safe"}})
-      end
+      conn = put(conn, ~p"/images/not-a-number/tag_lock", %{"image" => %{"tag_input" => "safe"}})
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
   end
 
@@ -276,14 +291,19 @@ defmodule PhilomenaWeb.Image.TagLockControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    # NOTE: the image_id is interpolated into the load query, so a non-integer
-    # value raises Ecto.Query.CastError (a 500).
-    test "for a non-integer image_id raises CastError", %{conn: conn} do
+    # NOTE: a non-integer image_id short-circuits to NotFoundPlug via the central
+    # IntegerId guard before Canary authorizes, so the flash is the not-found
+    # message rather than the "You can't access that page." an unknown integer
+    # id gets.
+    test "for a non-integer image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise Ecto.Query.CastError, fn ->
-        delete(conn, ~p"/images/not-a-number/tag_lock")
-      end
+      conn = delete(conn, ~p"/images/not-a-number/tag_lock")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
   end
 end

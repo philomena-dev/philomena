@@ -72,17 +72,34 @@ defmodule PhilomenaWeb.Image.UploaderControllerTest do
       assert uploader_id(image) == nil
     end
 
-    # NOTE: an unknown username hits Repo.get_by!(User, name: ...) in the
-    # changeset and raises Ecto.NoResultsError (a 500), not a validation error.
-    test "an unknown username raises NoResultsError", %{conn: conn} do
+    # NOTE: an unknown username now adds a changeset error, and the controller
+    # answers 300 (:multiple_choices, the AJAX convention) with a flash rather
+    # than raising. The image's uploader is left unchanged.
+    test "an unknown username answers 300 with the failure flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
-      image = image_fixture()
+      original = user_fixture()
+      image = image_fixture(user_id: original.id)
 
-      assert_raise Ecto.NoResultsError, fn ->
+      conn =
         put(conn, ~p"/images/#{image}/uploader", %{
           "image" => %{"username" => "no-such-user-#{System.unique_integer([:positive])}"}
         })
-      end
+
+      assert response(conn, 300) == ""
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Failed to update uploader!"
+      assert uploader_id(image) == original.id
+    end
+
+    # NOTE: a request without the `image` param takes the fallback update/2
+    # clause, which also answers 300 with the failure flash.
+    test "a missing image param answers 300 with the failure flash", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+      image = image_fixture()
+
+      conn = put(conn, ~p"/images/#{image}/uploader", %{})
+
+      assert response(conn, 300) == ""
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Failed to update uploader!"
     end
 
     # NOTE: unlike the load_and_authorize_resource controllers, this one loads
@@ -100,14 +117,18 @@ defmodule PhilomenaWeb.Image.UploaderControllerTest do
                "Couldn't find what you were looking for!"
     end
 
-    # NOTE: the image_id is interpolated into the load query, so a non-integer
-    # value raises Ecto.Query.CastError (a 500).
-    test "for a non-integer image_id raises CastError", %{conn: conn} do
+    # NOTE: a non-integer image_id short-circuits to NotFoundPlug via the central
+    # IntegerId guard.
+    test "for a non-integer image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise Ecto.Query.CastError, fn ->
+      conn =
         put(conn, ~p"/images/not-a-number/uploader", %{"image" => %{"username" => "somebody"}})
-      end
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
   end
 end

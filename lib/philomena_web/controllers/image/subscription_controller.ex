@@ -24,12 +24,8 @@ defmodule PhilomenaWeb.Image.SubscriptionController do
     image = conn.assigns.image
     user = conn.assigns.current_user
 
-    case Images.delete_subscription(image, user) do
-      {:ok, _subscription} ->
-        render(conn, "_subscription.html", image: image, watching: false, layout: false)
+    {:ok, _subscription} = Images.delete_subscription(image, user)
 
-      {:error, _changeset} ->
-        render(conn, "_error.html", layout: false)
-    end
+    render(conn, "_subscription.html", image: image, watching: false, layout: false)
   end
 end

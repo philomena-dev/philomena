@@ -37,7 +37,7 @@ defmodule PhilomenaWeb.UserAttributionPlug do
   defp user_agent(conn) do
     case Conn.get_req_header(conn, "user-agent") do
       [ua] -> ua
-      _ -> nil
+      _ -> ""
     end
   end
 

@@ -7,7 +7,7 @@ defmodule PhilomenaWeb.Filter.HideController do
   plug PhilomenaWeb.FilterBannedUsersPlug
   plug :authorize_filter
 
-  plug :load_resource, model: Tag, id_field: "slug", id_name: "tag", persisted: true
+  plug :load_resource, model: Tag, id_field: "slug", id_name: "tag", required: true
 
   def create(conn, _params) do
     case Filters.hide_tag(conn.assigns.current_filter, conn.assigns.tag) do

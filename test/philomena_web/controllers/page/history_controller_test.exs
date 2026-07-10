@@ -38,14 +38,14 @@ defmodule PhilomenaWeb.Page.HistoryControllerTest do
       assert response =~ page.title
     end
 
-    test "crashes for an unknown slug", %{conn: conn} do
-      # NOTE: probable bug (KNOWN-ODDITIES.md). Canary's load_resource does
-      # not run the not-found handler for :index actions, so an unknown
-      # slug reaches the controller with a nil page and crashes (500)
-      # instead of 404ing.
-      assert_raise BadMapError, ~r/expected a map/, fn ->
-        get(conn, ~p"/pages/nonexistent-page/history")
-      end
+    test "redirects with the not-found flash for an unknown slug", %{conn: conn} do
+      # NOTE: load_resource now uses required: true, so Canary runs its
+      # not-found handler on this :index action - an unknown slug redirects
+      # instead of dereferencing a nil page.
+      conn = get(conn, ~p"/pages/nonexistent-page/history")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 end

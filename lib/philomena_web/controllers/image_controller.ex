@@ -171,9 +171,14 @@ defmodule PhilomenaWeb.ImageController do
     |> Repo.all()
   end
 
-  defp load_image(conn, _opts) do
-    id = conn.params["id"]
+  defp load_image(conn, opts) do
+    case PhilomenaWeb.IntegerId.parse(conn.params["id"]) do
+      {:ok, id} -> do_load_image(conn, id, opts)
+      :error -> PhilomenaWeb.NotFoundPlug.call(conn)
+    end
+  end
 
+  defp do_load_image(conn, id, _opts) do
     {image, tag_changes, tag_changes_tags, source_changes} =
       Image
       |> from(as: :image)

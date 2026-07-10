@@ -23,6 +23,8 @@ defmodule Philomena.Badges.Award do
     badge_award
     |> cast(attrs, [:badge_id, :label, :reason, :badge_name])
     |> put_awarded_on()
+    |> validate_required([:badge_id])
+    |> foreign_key_constraint(:badge_id, name: :fk_rails_b95340cf70)
   end
 
   defp put_awarded_on(%{data: %{awarded_on: nil}} = changeset) do

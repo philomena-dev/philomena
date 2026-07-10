@@ -100,23 +100,23 @@ defmodule PhilomenaWeb.Api.Json.Filter.UserFilterControllerTest do
       assert id == second.id
     end
 
-    test "crashes for an unconfirmed user's API key", %{conn: conn} do
+    test "returns 403 for an unconfirmed user's API key", %{conn: conn} do
       user = user_fixture()
 
-      # NOTE: EnsureUserEnabledPlug calls put_flash/log_out_user, which assume
-      # a fetched session; the :api pipeline has none, so the request raises
-      # instead of returning 403. See KNOWN-ODDITIES.md.
-      assert_raise ArgumentError, ~r/flash/, fn ->
-        get(conn, ~p"/api/v1/json/filters/user?key=#{user.authentication_token}")
-      end
+      # NOTE: EnsureUserEnabledPlug now returns 403 with an empty text/plain body
+      # on the :api pipeline instead of raising (it no longer touches the
+      # unfetched session/flash).
+      conn = get(conn, ~p"/api/v1/json/filters/user?key=#{user.authentication_token}")
+
+      assert response(conn, 403) == ""
     end
 
-    test "crashes for a deactivated user's API key", %{conn: conn} do
+    test "returns 403 for a deactivated user's API key", %{conn: conn} do
       user = deactivated_user_fixture()
 
-      assert_raise ArgumentError, ~r/flash/, fn ->
-        get(conn, ~p"/api/v1/json/filters/user?key=#{user.authentication_token}")
-      end
+      conn = get(conn, ~p"/api/v1/json/filters/user?key=#{user.authentication_token}")
+
+      assert response(conn, 403) == ""
     end
   end
 end

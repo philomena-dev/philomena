@@ -55,9 +55,11 @@ defmodule PhilomenaWeb.ReportController do
           |> redirect(to: redirect_path(conn.assigns.current_user))
 
         {:error, changeset} ->
-          # Note that we are depending on the controller that called
-          # us to have set up the view already (Phoenix does this)
+          # The calling controllers are thin wrappers with no view of their own,
+          # so Phoenix's default view - derived from the caller's name - does
+          # not exist. Name the shared one explicitly.
           conn
+          |> put_view(PhilomenaWeb.ReportView)
           |> render("new.html", reportable: reportable, changeset: changeset, action: action)
       end
     end

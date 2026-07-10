@@ -61,14 +61,17 @@ defmodule PhilomenaWeb.Image.SourceHistoryControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    # NOTE: the image_id is interpolated into the load query, so a non-integer
-    # value raises Ecto.Query.CastError (a 500).
-    test "for a non-integer image_id raises CastError", %{conn: conn} do
+    # NOTE: a non-integer image_id short-circuits to NotFoundPlug via the central
+    # IntegerId guard before Canary authorizes.
+    test "for a non-integer image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise Ecto.Query.CastError, fn ->
-        delete(conn, ~p"/images/not-a-number/source_history")
-      end
+      conn = delete(conn, ~p"/images/not-a-number/source_history")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
   end
 end

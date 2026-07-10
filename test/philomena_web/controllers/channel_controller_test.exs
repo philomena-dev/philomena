@@ -230,12 +230,15 @@ defmodule PhilomenaWeb.ChannelControllerTest do
                "Couldn't find what you were looking"
     end
 
-    test "crashes on a non-integer id", %{conn: conn} do
+    test "redirects with the not-found flash for a non-integer id", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise Ecto.Query.CastError, fn ->
-        get(conn, ~p"/channels/not-a-number/edit")
-      end
+      conn = get(conn, ~p"/channels/not-a-number/edit")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Couldn't find what you were looking"
     end
   end
 

@@ -2,12 +2,16 @@ defmodule PhilomenaWeb.Fetch.TagController do
   use PhilomenaWeb, :controller
 
   alias Philomena.Tags.Tag
+  alias PhilomenaWeb.IntegerId
   alias Philomena.Repo
   import Ecto.Query
 
   def index(conn, %{"ids" => ids}) when is_list(ids) do
-    # limit amount to 50
-    ids = Enum.take(ids, 50)
+    ids =
+      ids
+      # limit amount to 50
+      |> Enum.take(50)
+      |> Enum.flat_map(&parse_id/1)
 
     tags =
       Tag
@@ -17,6 +21,15 @@ defmodule PhilomenaWeb.Fetch.TagController do
 
     conn
     |> json(%{tags: tags})
+  end
+
+  def index(conn, _params), do: json(conn, %{tags: []})
+
+  defp parse_id(id) do
+    case IntegerId.parse(id) do
+      {:ok, id} -> [id]
+      :error -> []
+    end
   end
 
   defp tag_json(tag) do

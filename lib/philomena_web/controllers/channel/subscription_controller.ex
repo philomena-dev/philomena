@@ -24,12 +24,8 @@ defmodule PhilomenaWeb.Channel.SubscriptionController do
     channel = conn.assigns.channel
     user = conn.assigns.current_user
 
-    case Channels.delete_subscription(channel, user) do
-      {:ok, _subscription} ->
-        render(conn, "_subscription.html", channel: channel, watching: false, layout: false)
+    {:ok, _subscription} = Channels.delete_subscription(channel, user)
 
-      {:error, _changeset} ->
-        render(conn, "_error.html", layout: false)
-    end
+    render(conn, "_subscription.html", channel: channel, watching: false, layout: false)
   end
 end

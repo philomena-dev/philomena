@@ -98,16 +98,18 @@ defmodule PhilomenaWeb.Conversation.Message.ApproveControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    # NOTE: the message_id is interpolated into the load query, so a
-    # non-integer value raises Ecto.Query.CastError (a 500) rather than
-    # redirecting like an unknown numeric id.
-    test "for a non-integer message_id raises CastError", %{conn: conn} do
+    # NOTE: a non-integer message_id short-circuits to NotFoundPlug via the
+    # central IntegerId guard, redirecting with the not-found flash.
+    test "for a non-integer message_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       conversation = conversation_fixture(confirmed_user_fixture(), confirmed_user_fixture())
 
-      assert_raise Ecto.Query.CastError, fn ->
-        post(conn, ~p"/conversations/#{conversation}/messages/not-a-number/approve")
-      end
+      conn = post(conn, ~p"/conversations/#{conversation}/messages/not-a-number/approve")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
   end
 end

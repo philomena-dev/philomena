@@ -47,18 +47,14 @@ defmodule PhilomenaWeb.Admin.User.ActivationControllerTest do
       assert Repo.get(User, target.id).deleted_at == nil
     end
 
-    # NOTE: load_resource (not load_and_authorize) with persisted: true assigns
-    # nil for an unknown slug, and Canary runs its not_found handler only for
-    # :show/:edit/:update/:delete - NOT for :create. So on this :create action
-    # the nil passes through and Users.reactivate_user(nil) raises
-    # FunctionClauseError (nil-pass-through family), whereas the sibling :delete
-    # action below redirects with the not-found flash for the same input.
-    test "raises for an unknown slug", %{conn: conn} do
-      assert_raise FunctionClauseError,
-                   ~r/no function clause matching in Philomena\.Users\.reactivate_user\/1/,
-                   fn ->
-                     post(conn, ~p"/admin/users/no-such-user/activation")
-                   end
+    # NOTE: load_resource now uses required: true, so Canary's not_found handler
+    # runs on :create too - an unknown slug redirects with the not-found flash
+    # rather than passing nil into Users.reactivate_user/1.
+    test "redirects with the not-found flash for an unknown slug", %{conn: conn} do
+      conn = post(conn, ~p"/admin/users/no-such-user/activation")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 

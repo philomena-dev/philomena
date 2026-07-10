@@ -28,7 +28,7 @@ defmodule PhilomenaWeb do
       use Gettext, backend: PhilomenaWeb.Gettext
 
       import Plug.Conn
-      import Canary.Plugs
+      import PhilomenaWeb.CanaryPlugs
       import PhilomenaWeb.ModerationLogPlug, only: [moderation_log: 2]
 
       unquote(verified_routes())

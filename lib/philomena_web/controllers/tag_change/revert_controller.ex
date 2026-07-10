@@ -27,10 +27,16 @@ defmodule PhilomenaWeb.TagChange.RevertController do
         |> redirect(external: conn.assigns.referrer)
 
       _error ->
-        conn
-        |> put_flash(:error, "Couldn't revert those tag changes!")
-        |> redirect(external: conn.assigns.referrer)
+        revert_failed(conn)
     end
+  end
+
+  def create(conn, _params), do: revert_failed(conn)
+
+  defp revert_failed(conn) do
+    conn
+    |> put_flash(:error, "Couldn't revert those tag changes!")
+    |> redirect(external: conn.assigns.referrer)
   end
 
   defp verify_authorized(conn, _params) do

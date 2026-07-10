@@ -58,45 +58,52 @@ defmodule PhilomenaWeb.Topic.MoveControllerTest do
       assert Repo.reload!(topic).forum_id == target_forum.id
     end
 
-    # Failure path: the target forum id is interpolated straight into the
-    # topic's forum_id via a plain put_change with no foreign_key_constraint,
-    # so a nonexistent target raises Ecto.ConstraintError (a 500). The
-    # controller's {:error, _changeset} branch is unreachable: move_topic runs
-    # a Multi, whose failure would be a 4-tuple the branch doesn't match.
-    # NOTE: KNOWN-ODDITIES.md
-    test "moving to a nonexistent forum id raises a constraint error",
+    # NOTE: move_changeset now declares the FK constraint and move_topic
+    # normalizes the Multi failure, so a nonexistent target forum redirects back
+    # to the topic with the failure flash instead of raising Ecto.ConstraintError.
+    test "moving to a nonexistent forum id redirects back with the failure flash",
          %{conn: conn, forum: forum, topic: topic} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise Ecto.ConstraintError, fn ->
+      conn =
         post(conn, ~p"/forums/#{forum}/topics/#{topic}/move", %{
           "topic" => %{"target_forum_id" => "999999999"}
         })
-      end
+
+      assert redirected_to(conn) == ~p"/forums/#{forum}/topics/#{topic}"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Unable to move the topic!"
+      assert Repo.reload!(topic).forum_id == forum.id
     end
 
-    # NOTE: create/2 only matches %{"topic" => %{"target_forum_id" => _}}, so a
-    # request without those params raises Phoenix.ActionClauseError (a 500).
-    test "a request without the target_forum_id param raises ActionClauseError",
+    # NOTE: a request without the target_forum_id param now takes the fallback
+    # create/2 clause and redirects back with the failure flash rather than
+    # raising ActionClauseError.
+    test "a request without the target_forum_id param redirects back with the failure flash",
          %{conn: conn, forum: forum, topic: topic} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise Phoenix.ActionClauseError, fn ->
-        post(conn, ~p"/forums/#{forum}/topics/#{topic}/move", %{})
-      end
+      conn = post(conn, ~p"/forums/#{forum}/topics/#{topic}/move", %{})
+
+      assert redirected_to(conn) == ~p"/forums/#{forum}/topics/#{topic}"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Unable to move the topic!"
+      assert Repo.reload!(topic).forum_id == forum.id
     end
 
-    # NOTE: the target_forum_id is fed to String.to_integer/1, so a non-integer
-    # value raises ArgumentError (a 500).
-    test "a non-integer target_forum_id raises ArgumentError",
+    # NOTE: the target_forum_id is now parsed with IntegerId.parse, so a
+    # non-integer value redirects back with the failure flash rather than
+    # raising ArgumentError.
+    test "a non-integer target_forum_id redirects back with the failure flash",
          %{conn: conn, forum: forum, topic: topic} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise ArgumentError, ~r/not a textual representation of an integer/, fn ->
+      conn =
         post(conn, ~p"/forums/#{forum}/topics/#{topic}/move", %{
           "topic" => %{"target_forum_id" => "not-a-number"}
         })
-      end
+
+      assert redirected_to(conn) == ~p"/forums/#{forum}/topics/#{topic}"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Unable to move the topic!"
+      assert Repo.reload!(topic).forum_id == forum.id
     end
 
     test "redirects to / with the not-found flash for an unknown topic",
