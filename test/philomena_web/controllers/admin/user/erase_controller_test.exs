@@ -12,8 +12,9 @@ defmodule PhilomenaWeb.Admin.User.EraseControllerTest do
   alias Philomena.Users.User
   alias Philomena.Repo
 
-  # NOTE: gated on `can?(:index, User)`, so ANY moderator (not just admin) can
-  # erase a user.
+  # NOTE: gated on `can?(:edit, %User{})` (matching the parent edit form), which
+  # a plain moderator lacks - so erasing a user is admin-only (or a User-role_map
+  # moderator).
 
   describe "GET /admin/users/:user_id/erase/new authorization" do
     test "redirects anonymous users to login", %{conn: conn} do
@@ -128,14 +129,16 @@ defmodule PhilomenaWeb.Admin.User.EraseControllerTest do
   describe "POST /admin/users/:user_id/erase (create) as a plain moderator" do
     setup [:register_and_log_in_moderator]
 
-    test "is allowed for a plain moderator", %{conn: conn} do
+    test "is denied to a plain moderator", %{conn: conn} do
       target = confirmed_user_fixture()
       conn = post(conn, ~p"/admin/users/#{target.slug}/erase")
-      assert redirected_to(conn) =~ "/profiles/"
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
 
+      # unchanged: the account is neither deactivated nor renamed
       reloaded = Repo.get(User, target.id)
-      assert reloaded.deleted_at != nil
-      assert reloaded.name =~ ~r/^deactivated_/
+      assert reloaded.deleted_at == nil
+      refute reloaded.name =~ ~r/^deactivated_/
     end
   end
 end

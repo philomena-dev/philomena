@@ -8,8 +8,9 @@ defmodule PhilomenaWeb.Admin.User.ApiKeyControllerTest do
   alias Philomena.Users.User
   alias Philomena.Repo
 
-  # NOTE: gated on `can?(:index, User)`, so ANY moderator (not just admin) can
-  # reset a user's API token.
+  # NOTE: gated on `can?(:edit, %User{})` (matching the parent edit form), which
+  # a plain moderator lacks - so resetting a user's API token is admin-only (or a
+  # User-role_map moderator).
 
   describe "DELETE /admin/users/:user_id/api_key authorization" do
     test "redirects anonymous users to login", %{conn: conn} do
@@ -56,12 +57,14 @@ defmodule PhilomenaWeb.Admin.User.ApiKeyControllerTest do
   describe "DELETE /admin/users/:user_id/api_key as a plain moderator" do
     setup [:register_and_log_in_moderator]
 
-    test "is allowed for a plain moderator", %{conn: conn} do
+    test "is denied to a plain moderator", %{conn: conn} do
       target = confirmed_user_fixture()
       old_token = target.authentication_token
       conn = delete(conn, ~p"/admin/users/#{target.slug}/api_key")
-      assert redirected_to(conn) == ~p"/profiles/#{target}"
-      assert Repo.get(User, target.id).authentication_token != old_token
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      # unchanged: the API token is untouched
+      assert Repo.get(User, target.id).authentication_token == old_token
     end
   end
 end
