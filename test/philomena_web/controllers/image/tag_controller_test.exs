@@ -18,11 +18,13 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
     # (TagView.lookup_quick_tags/1). Without the index the render 500s.
     Search.clear_index!(Tag)
 
-    # Valkey tag-change counters (rltcn:/rltcr:, 50 per 10 min) are keyed by IP
-    # and are not rolled back by the SQL sandbox. The logged-in tests below
-    # author tag changes from the default ConnTest IP, so the counter
-    # accumulates across runs until check_limits trips (a 300 with an empty
-    # body). The anonymous tests use put_unique_ip/1 and need no reset.
+    # Valkey tag-change counters (rltcn:/rltcr:, 50 per 10 min) are scoped to the
+    # acting identity - `u:<user_id>` for a logged-in user, `i:<ip>` for an
+    # anonymous visitor - and are not rolled back by the SQL sandbox. The
+    # logged-in tests below each register a fresh user, so their `u:` bucket
+    # starts empty; the anonymous tests use put_unique_ip/1 for a fresh `i:`
+    # bucket. This clears the anonymous `i:127.0.0.1` bucket (the default
+    # ConnTest IP) defensively so accumulated counts can't trip check_limits.
     reset_tag_change_limits(ip: "127.0.0.1")
     :ok
   end
