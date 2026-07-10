@@ -3,8 +3,7 @@ defmodule Philomena.TagChanges.LimitsTest do
   # SQL sandbox does not roll them back and they carry a 10-minute TTL. Every
   # test therefore uses a fresh user id / IP and clears its own keys in an
   # on_exit callback so nothing leaks into a later test or a later `mix test`
-  # run (see KNOWN-ODDITIES.md, "Tag-change rate limits live outside the
-  # database").
+  # run
   use Philomena.DataCase, async: false
 
   import Philomena.AttributionFixtures

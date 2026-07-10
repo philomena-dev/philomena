@@ -8,7 +8,7 @@ Operational reference for writing the characterization tests.
   what it should do. Never change `lib/` in the same PR as tests.
 - Write the naive assertion first, run it, and pin whatever actually happens.
   Anything surprising gets a `# NOTE:` comment in the test; anything that
-  looks like a bug also gets an entry in `KNOWN-ODDITIES.md`.
+  looks like a bug should be written to `KNOWN-ODDITIES.md`.
 - Definition of done per controller: every routed action has at least one
   test per auth level that can reach it, plus one failure-path test for each
   write action.
@@ -51,7 +51,7 @@ One test per auth level that can reach the action:
 - Live in `test/support/fixtures/`, one module per context, small composable
   functions. Go through context `create_*` functions where they exist
   (`Forums.create_forum/1`); images, badges, and system filters are the
-  sanctioned exceptions (direct row insert - see `FIELD-NOTES.md`).
+  sanctioned exceptions.
 - Every core context has a fixture module: users, forums, topics, posts,
   comments, images, tags, filters, galleries, conversations, reports, rules,
   channels, badges. `test/philomena/fixtures_test.exs` smoke-tests them and
@@ -136,8 +136,6 @@ See `PhilomenaQuery.SearchHelpers` (`test/support/search_helpers.ex`) and
 `test/philomena_query/search_helpers_test.exs` for a worked example.
 
 ## Assertion idioms
-
-Condensed from `FIELD-NOTES.md` (rationale there):
 
 - JSON missing resource: `assert response(conn, 404) == ""` - empty
   `text/plain`, not JSON.

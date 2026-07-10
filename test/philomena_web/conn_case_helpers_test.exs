@@ -10,7 +10,7 @@ defmodule PhilomenaWeb.ConnCaseHelpersTest do
 
   alias Philomena.UsersFixtures
 
-  # GET /forums crashes on an empty forum table (see KNOWN-ODDITIES.md), so
+  # GET /forums crashes on an empty forum table, so
   # the tests that browse it need at least one forum row.
   defp create_forum(_context) do
     %{forum: Philomena.ForumsFixtures.forum_fixture()}
