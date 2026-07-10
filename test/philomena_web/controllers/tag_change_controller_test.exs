@@ -134,7 +134,7 @@ defmodule PhilomenaWeb.TagChangeControllerTest do
 
       assert html_response(conn1, 200) =~ "added test tag"
 
-      # The same tcq ANDed with a resource filter for a change-free image
+      # The same tcq joined with a resource filter for a change-free image
       # matches nothing.
       conn2 =
         get(
