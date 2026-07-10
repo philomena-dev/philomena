@@ -18,7 +18,9 @@ const scrapeResponse = {
   source_url: 'http://localhost/images',
   author_name: 'test',
 };
-const nullResponse = null;
+const notFoundResponse = {
+  errors: ['No images found at that URL.'],
+};
 const errorResponse = {
   errors: ['Error 1', 'Error 2'],
 };
@@ -234,8 +236,8 @@ describe('Image upload form', () => {
       expect(addTagListener).not.toHaveBeenCalled();
     });
 
-    it('should show null scrape result', () => {
-      fetchMock.mockResolvedValue(new Response(JSON.stringify(nullResponse), { status: 200 }));
+    it('should show server-provided error when no images are found (422)', () => {
+      fetchMock.mockResolvedValue(new Response(JSON.stringify(notFoundResponse), { status: 422 }));
 
       fireEvent.input(remoteUrl, { target: { value: 'http://localhost/images/1' } });
       fireEvent.click(fetchButton);
@@ -243,12 +245,12 @@ describe('Image upload form', () => {
       return waitFor(() => {
         expect(fetch).toHaveBeenCalledTimes(1);
         expect($$<HTMLImageElement>('img', imgPreviews)).toHaveLength(0);
-        expect(scraperError.innerText).toEqual('No image found at that address.');
+        expect(scraperError.innerText).toEqual('No images found at that URL.');
       });
     });
 
     it('should show error scrape result', () => {
-      fetchMock.mockResolvedValue(new Response(JSON.stringify(errorResponse), { status: 200 }));
+      fetchMock.mockResolvedValue(new Response(JSON.stringify(errorResponse), { status: 422 }));
 
       fireEvent.input(remoteUrl, { target: { value: 'http://localhost/images/1' } });
       fireEvent.click(fetchButton);
@@ -303,6 +305,20 @@ describe('Image upload form', () => {
         expect($$<HTMLElement>('img,video', imgPreviews)).toHaveLength(0);
         expect(fetchButton.disabled).toBe(false);
         // The error element should be visible (hidden class removed)
+        expect(scraperError.classList.contains('hidden')).toBe(false);
+      });
+    });
+
+    it('shows scraper error when server responds with an unexpected error status', async () => {
+      fetchMock.mockResolvedValue(new Response('', { status: 500 }));
+
+      fireEvent.input(remoteUrl, { target: { value: 'http://localhost/images/1' } });
+      fireEvent.click(fetchButton);
+
+      await waitFor(() => {
+        expect(fetch).toHaveBeenCalledTimes(1);
+        expect($$<HTMLElement>('img,video', imgPreviews)).toHaveLength(0);
+        expect(fetchButton.disabled).toBe(false);
         expect(scraperError.classList.contains('hidden')).toBe(false);
       });
     });

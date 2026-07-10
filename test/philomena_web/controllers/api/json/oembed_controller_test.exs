@@ -48,7 +48,9 @@ defmodule PhilomenaWeb.Api.Json.OembedControllerTest do
 
       for url <- [
             "https://derpicdn.net/img/#{year}/#{month}/#{day}/#{image.id}/full.png",
+            "https://derpicdn.net/img/#{year}/#{month}/#{day}/#{image.id}-1a2b3c4d/full.png",
             "https://derpicdn.net/img/view/#{year}/#{month}/#{day}/#{image.id}.png",
+            "https://derpicdn.net/img/download/#{year}/#{month}/#{day}/#{image.id}.png",
             "https://derpicdn.net/img/view/#{year}/#{month}/#{day}/#{image.id}__safe.png"
           ] do
         conn = get(conn, ~p"/api/v1/json/oembed?url=#{url}")
@@ -58,18 +60,17 @@ defmodule PhilomenaWeb.Api.Json.OembedControllerTest do
       end
     end
 
-    test "mistakes a date component for the image id when a CDN URL has no id segment",
-         %{conn: conn} do
+    test "resolves no image for a CDN URL without an id segment", %{conn: conn} do
       image = image_fixture()
 
-      # NOTE: the CDN regex just grabs the last number followed by `/x`, `_x`
-      # or `.`, so in a URL without an id segment the day component (here the
-      # fixture image's id) is looked up as an image id.
+      # NOTE: the CDN regex anchors on the full YYYY/M/D date prefix, so a
+      # date component (here the fixture image's id in the day position) can
+      # never be mistaken for an image id, and a CDN-shaped path that fails
+      # the CDN regex does not fall through to the generic site regex.
       url = "https://derpicdn.net/img/2026/7/#{image.id}/full.png"
       conn = get(conn, ~p"/api/v1/json/oembed?url=#{url}")
 
-      assert %{"derpibooru_id" => id} = json_response(conn, 200)
-      assert id == image.id
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "renders empty author fields for an image without artist tags or sources",
@@ -92,9 +93,7 @@ defmodule PhilomenaWeb.Api.Json.OembedControllerTest do
       url = "https://derpibooru.org/images/1000"
       conn = get(conn, ~p"/api/v1/json/oembed?url=#{url}")
 
-      # NOTE: unlike the other JSON API endpoints (empty text/plain 404),
-      # oembed renders a JSON error object.
-      assert json_response(conn, 404) == %{"error" => "Couldn't find an image"}
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns 404 for an image hidden from users", %{conn: conn} do
@@ -103,20 +102,20 @@ defmodule PhilomenaWeb.Api.Json.OembedControllerTest do
       url = "https://derpibooru.org/images/#{image.id}"
       conn = get(conn, ~p"/api/v1/json/oembed?url=#{url}")
 
-      assert json_response(conn, 404) == %{"error" => "Couldn't find an image"}
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns 404 for a URL whose path contains no number", %{conn: conn} do
       url = "https://derpibooru.org/images/abc"
       conn = get(conn, ~p"/api/v1/json/oembed?url=#{url}")
 
-      assert json_response(conn, 404) == %{"error" => "Couldn't find an image"}
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns 404 when the url parameter is missing", %{conn: conn} do
       conn = get(conn, ~p"/api/v1/json/oembed")
 
-      assert json_response(conn, 404) == %{"error" => "Couldn't find an image"}
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns 404 for a host-only URL without a path", %{conn: conn} do
@@ -125,7 +124,7 @@ defmodule PhilomenaWeb.Api.Json.OembedControllerTest do
       url = "https://derpibooru.org"
       conn = get(conn, ~p"/api/v1/json/oembed?url=#{url}")
 
-      assert json_response(conn, 404) == %{"error" => "Couldn't find an image"}
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns 404 for an image id that exceeds the integer column range", %{conn: conn} do
@@ -134,7 +133,7 @@ defmodule PhilomenaWeb.Api.Json.OembedControllerTest do
       url = "https://derpibooru.org/images/99999999999999999999"
       conn = get(conn, ~p"/api/v1/json/oembed?url=#{url}")
 
-      assert json_response(conn, 404) == %{"error" => "Couldn't find an image"}
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
   end
 end

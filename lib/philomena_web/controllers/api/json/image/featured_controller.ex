@@ -6,6 +6,7 @@ defmodule PhilomenaWeb.Api.Json.Image.FeaturedController do
   alias Philomena.Interactions
   alias Philomena.Repo
   import Ecto.Query
+  import PhilomenaWeb.Api.Json.NotFound
 
   def show(conn, _params) do
     user = conn.assigns.current_user
@@ -22,8 +23,7 @@ defmodule PhilomenaWeb.Api.Json.Image.FeaturedController do
     case featured_image do
       nil ->
         conn
-        |> put_status(:not_found)
-        |> text("")
+        |> not_found()
         |> halt()
 
       _ ->

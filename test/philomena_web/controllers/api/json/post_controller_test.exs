@@ -75,9 +75,7 @@ defmodule PhilomenaWeb.Api.Json.PostControllerTest do
 
       conn = get(conn, ~p"/api/v1/json/posts/#{post.id}")
 
-      # NOTE: the 404 body is empty text/plain, not a JSON error object.
-      assert response(conn, 404) == ""
-      assert response_content_type(conn, :text)
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns 404 for a post in a hidden topic", %{conn: conn} do
@@ -90,7 +88,7 @@ defmodule PhilomenaWeb.Api.Json.PostControllerTest do
 
       conn = get(conn, ~p"/api/v1/json/posts/#{post.id}")
 
-      assert response(conn, 404) == ""
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns 404 for a post in a restricted forum", %{conn: conn} do
@@ -100,13 +98,13 @@ defmodule PhilomenaWeb.Api.Json.PostControllerTest do
 
       conn = get(conn, ~p"/api/v1/json/posts/#{post.id}")
 
-      assert response(conn, 404) == ""
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns 404 for an unknown id", %{conn: conn} do
       conn = get(conn, ~p"/api/v1/json/posts/#{0}")
 
-      assert response(conn, 404) == ""
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "raises for a non-integer id", %{conn: conn} do

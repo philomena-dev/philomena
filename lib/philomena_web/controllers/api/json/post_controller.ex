@@ -4,6 +4,7 @@ defmodule PhilomenaWeb.Api.Json.PostController do
   alias Philomena.Posts.Post
   alias Philomena.Repo
   import Ecto.Query
+  import PhilomenaWeb.Api.Json.NotFound
 
   def show(conn, %{"id" => post_id}) do
     post =
@@ -18,9 +19,7 @@ defmodule PhilomenaWeb.Api.Json.PostController do
       |> Repo.one()
 
     if is_nil(post) do
-      conn
-      |> put_status(:not_found)
-      |> text("")
+      not_found(conn)
     else
       conn
       |> put_view(PhilomenaWeb.Api.Json.Forum.Topic.PostView)

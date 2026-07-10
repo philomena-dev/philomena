@@ -4,6 +4,7 @@ defmodule PhilomenaWeb.Api.Json.TagController do
   alias Philomena.Tags.Tag
   alias Philomena.Repo
   import Ecto.Query
+  import PhilomenaWeb.Api.Json.NotFound
 
   def show(conn, %{"id" => slug}) do
     tag =
@@ -14,9 +15,7 @@ defmodule PhilomenaWeb.Api.Json.TagController do
 
     case tag do
       nil ->
-        conn
-        |> put_status(:not_found)
-        |> text("")
+        not_found(conn)
 
       _ ->
         render(conn, "show.json", tag: tag)

@@ -45,12 +45,16 @@ defmodule PhilomenaWeb.Admin.Batch.TagController do
     {image_ids, unparsable_ids} = partition_ids(image_ids)
 
     case Images.batch_update(image_ids, added_tags, removed_tags, attributes) do
-      {:ok, _} ->
+      {:ok, matched_ids} ->
+        # Ids which parsed but matched no existing, non-hidden image were
+        # never touched by the batch, so they are reported as failed.
+        unmatched_ids = image_ids -- matched_ids
+
         PhilomenaWeb.Endpoint.broadcast!(
           "firehose",
           "image:batch_tag_update",
           %{
-            image_ids: image_ids,
+            image_ids: matched_ids,
             added: Enum.map(added_tags, & &1.name),
             removed: Enum.map(removed_tags, & &1.name)
           }
@@ -61,11 +65,11 @@ defmodule PhilomenaWeb.Admin.Batch.TagController do
           details: &log_details/2,
           data: %{
             tag_list: tag_list,
-            image_count: Enum.count(image_ids),
+            image_count: Enum.count(matched_ids),
             user: conn.assigns.current_user
           }
         )
-        |> json(%{succeeded: image_ids, failed: unparsable_ids})
+        |> json(%{succeeded: matched_ids, failed: unmatched_ids ++ unparsable_ids})
 
       _error ->
         json(conn, %{succeeded: [], failed: image_ids ++ unparsable_ids})

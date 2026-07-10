@@ -4,6 +4,7 @@ defmodule PhilomenaWeb.Api.Json.ProfileController do
   alias Philomena.Users.User
   alias Philomena.Repo
   import Ecto.Query
+  import PhilomenaWeb.Api.Json.NotFound
 
   def show(conn, %{"id" => id}) do
     user =
@@ -13,9 +14,7 @@ defmodule PhilomenaWeb.Api.Json.ProfileController do
       |> Repo.one()
 
     if is_nil(user) or user.deleted_at do
-      conn
-      |> put_status(:not_found)
-      |> text("")
+      not_found(conn)
     else
       render(conn, "show.json", user: user)
     end

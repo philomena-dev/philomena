@@ -520,11 +520,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Oembed'
         '404':
-          description: No image could be resolved from the URL.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OembedError'
+          $ref: '#/components/responses/NotFound'
 
   /json/tags/{slug}:
     get:
@@ -762,12 +758,13 @@ paths:
     get:
       tags: [Forums]
       summary: List posts in a topic
-      description: Returns posts in fixed pages of 25, ordered by topic position.
+      description: Returns posts ordered by topic position.
       operationId: getTopicPosts
       parameters:
         - $ref: '#/components/parameters/ForumShortName'
         - $ref: '#/components/parameters/TopicSlug'
         - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
       responses:
         '200':
           description: Posts in the topic. `total` is the topic's post count.
@@ -951,6 +948,10 @@ components:
   responses:
     NotFound:
       description: The requested resource does not exist or is not visible.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFoundError'
     SearchError:
       description: The search query could not be parsed.
       content:
@@ -1088,7 +1089,7 @@ components:
           type: string
           deprecated: true
           description: >
-            (Deprecated — use the `source_urls` field instead) Provides the
+            (Deprecated - use the `source_urls` field instead) Provides the
             first source URL of the image as stored in the database, intended
             for legacy applications only.
         source_urls:
@@ -1962,13 +1963,14 @@ components:
         - width
         - height
 
-    OembedError:
+    NotFoundError:
       type: object
       properties:
         error:
           type: string
+          description: Always `Not found`.
           examples:
-            - Couldn't find an image
+            - Not found
       required: [error]
 
     SearchError:

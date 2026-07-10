@@ -60,9 +60,7 @@ defmodule PhilomenaWeb.Api.Json.ForumControllerTest do
     test "returns 404 for an unknown short name", %{conn: conn} do
       conn = get(conn, ~p"/api/v1/json/forums/nonexistent")
 
-      # NOTE: the 404 body is empty text/plain, not a JSON error object.
-      assert response(conn, 404) == ""
-      assert response_content_type(conn, :text)
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns 404 for a forum with a restricted access level", %{conn: conn} do
@@ -70,7 +68,7 @@ defmodule PhilomenaWeb.Api.Json.ForumControllerTest do
 
       conn = get(conn, ~p"/api/v1/json/forums/#{forum}")
 
-      assert response(conn, 404) == ""
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
   end
 end

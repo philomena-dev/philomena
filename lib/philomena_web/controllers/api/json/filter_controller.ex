@@ -5,6 +5,7 @@ defmodule PhilomenaWeb.Api.Json.FilterController do
   alias PhilomenaWeb.IntegerId
   alias Philomena.Repo
   import Ecto.Query
+  import PhilomenaWeb.Api.Json.NotFound
 
   def show(conn, %{"id" => id}) do
     user = conn.assigns.current_user
@@ -13,9 +14,7 @@ defmodule PhilomenaWeb.Api.Json.FilterController do
     if Canada.Can.can?(user, :show, filter) do
       render(conn, "show.json", filter: filter)
     else
-      conn
-      |> put_status(:not_found)
-      |> text("")
+      not_found(conn)
     end
   end
 

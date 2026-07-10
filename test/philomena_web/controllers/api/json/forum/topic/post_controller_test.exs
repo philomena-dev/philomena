@@ -45,7 +45,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostControllerTest do
       assert hidden_id == reply.id
     end
 
-    test "paginates in fixed windows of 25 by topic position", %{conn: conn} do
+    test "paginates in windows of 25 by topic position by default", %{conn: conn} do
       user = confirmed_user_fixture()
       forum = forum_fixture()
       topic = topic_fixture(forum, user)
@@ -53,9 +53,36 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostControllerTest do
 
       conn2 = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts?page=2")
 
-      # NOTE: the page window is hardcoded to 25 posts; per_page is ignored.
       assert %{"posts" => [last], "total" => 26} = json_response(conn2, 200)
       assert %{"body" => "Reply number 25"} = last
+
+      # A non-integer per_page falls back to the default window of 25.
+      conn3 =
+        get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts?page=2&per_page=zebra")
+
+      assert %{"posts" => [%{"body" => "Reply number 25"}], "total" => 26} =
+               json_response(conn3, 200)
+    end
+
+    test "honors per_page when windowing by topic position", %{conn: conn} do
+      user = confirmed_user_fixture()
+      forum = forum_fixture()
+      topic = topic_fixture(forum, user, %{"posts" => %{"0" => %{"body" => "First post"}}})
+      post_fixture(topic, user, %{"body" => "Second post"})
+      post_fixture(topic, user, %{"body" => "Third post"})
+
+      conn1 = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts?per_page=1")
+
+      assert %{"posts" => [%{"body" => "First post"}], "total" => 3} = json_response(conn1, 200)
+
+      conn2 = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts?per_page=1&page=2")
+
+      assert %{"posts" => [%{"body" => "Second post"}], "total" => 3} = json_response(conn2, 200)
+
+      # per_page is clamped to a minimum of 1.
+      conn3 = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts?per_page=0")
+
+      assert %{"posts" => [%{"body" => "First post"}], "total" => 3} = json_response(conn3, 200)
     end
 
     test "returns 404 for an unknown topic or forum", %{conn: conn} do
@@ -65,7 +92,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostControllerTest do
       # unknown topic or forum 404s instead of crashing on hd([]).
       conn = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/nonexistent/posts")
 
-      assert response(conn, 404) == ""
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns an empty list for a page past the last post", %{conn: conn} do
@@ -118,9 +145,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostControllerTest do
 
       conn = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts/#{post.id}")
 
-      # NOTE: the 404 body is empty text/plain, not a JSON error object.
-      assert response(conn, 404) == ""
-      assert response_content_type(conn, :text)
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns 404 for a post in a hidden topic", %{conn: conn} do
@@ -133,7 +158,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostControllerTest do
 
       conn = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts/#{post.id}")
 
-      assert response(conn, 404) == ""
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns 404 for a post under the wrong topic slug", %{conn: conn} do
@@ -144,7 +169,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostControllerTest do
 
       conn = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{other_topic}/posts/#{post.id}")
 
-      assert response(conn, 404) == ""
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns 404 for a post in a restricted forum", %{conn: conn} do
@@ -154,7 +179,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostControllerTest do
 
       conn = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts/#{post.id}")
 
-      assert response(conn, 404) == ""
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns 404 for an unknown id", %{conn: conn} do
@@ -163,7 +188,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostControllerTest do
 
       conn = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts/#{0}")
 
-      assert response(conn, 404) == ""
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns 404 for a non-integer id", %{conn: conn} do
@@ -174,7 +199,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostControllerTest do
       # unknown id rather than raising a cast error.
       conn = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts/not-a-number")
 
-      assert response(conn, 404) == ""
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
   end
 end
