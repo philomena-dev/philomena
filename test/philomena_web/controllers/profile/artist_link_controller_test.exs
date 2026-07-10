@@ -54,17 +54,17 @@ defmodule PhilomenaWeb.Profile.ArtistLinkControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    test "shows a moderator their own links on another user's profile", %{conn: conn} do
-      # NOTE: index queries by current_user, not the profile being viewed -
-      # a moderator opening an artist's link page sees their own (usually
-      # empty) list, not the artist's links.
+    test "shows a moderator the artist's links on another user's profile", %{conn: conn} do
+      # index scopes to the profile user (conn.assigns.user), not current_user -
+      # a moderator opening an artist's link page sees the artist's links.
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       artist = confirmed_user_fixture()
       link = artist_link_fixture(artist)
 
       response = html_response(get(conn, ~p"/profiles/#{artist}/artist_links"), 200)
 
-      refute response =~ link.uri
+      assert response =~ "Artist Links - Derpibooru"
+      assert response =~ link.uri
     end
   end
 

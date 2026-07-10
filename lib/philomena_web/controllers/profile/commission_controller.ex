@@ -79,7 +79,7 @@ defmodule PhilomenaWeb.Profile.CommissionController do
   end
 
   def create(conn, %{"commission" => commission_params}) do
-    user = conn.assigns.current_user
+    user = conn.assigns.user
 
     case Commissions.create_commission(user, commission_params) do
       {:ok, _commission} ->

@@ -166,12 +166,11 @@ defmodule PhilomenaWeb.Profile.CommissionControllerTest do
       refute Repo.get_by(Commission, user_id: user.id)
     end
 
-    test "a moderator posting to an artist's profile creates a commission for themselves",
+    test "a moderator posting to an artist's profile creates a commission for the artist",
          %{conn: conn} do
-      # NOTE: :ensure_correct_user lets moderators through and
-      # :ensure_no_commission/:ensure_links_verified check the *profile*
-      # user, but create/2 acts on current_user - so the commission is
-      # created for the moderator, not the artist.
+      # :ensure_correct_user lets moderators through, and create/2 acts on the
+      # profile user (conn.assigns.user) per the on-behalf-of policy - so the
+      # commission is created for the artist, not the moderator.
       %{conn: conn, user: moderator} = register_and_log_in_moderator(%{conn: conn})
       artist = confirmed_user_fixture()
       verify_artist_link!(artist)
@@ -181,9 +180,9 @@ defmodule PhilomenaWeb.Profile.CommissionControllerTest do
           "commission" => valid_commission_params()
         })
 
-      assert redirected_to(conn) == ~p"/profiles/#{moderator}/commission"
-      assert Repo.get_by!(Commission, user_id: moderator.id)
-      refute Repo.get_by(Commission, user_id: artist.id)
+      assert redirected_to(conn) == ~p"/profiles/#{artist}/commission"
+      assert Repo.get_by!(Commission, user_id: artist.id)
+      refute Repo.get_by(Commission, user_id: moderator.id)
     end
 
     test "redirects banned users with the ban flash", %{conn: conn} do

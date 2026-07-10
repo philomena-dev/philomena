@@ -29,7 +29,7 @@ defmodule PhilomenaWeb.Profile.ArtistLinkController do
     persisted: true
 
   def index(conn, _params) do
-    user = conn.assigns.current_user
+    user = conn.assigns.user
 
     artist_links =
       ArtistLink
