@@ -23,11 +23,11 @@
 [x] PATCH  /passwords/:id                                                PasswordController :update
 [x] PUT    /passwords/:id                                                PasswordController :update
 [x] GET    /confirmations/new                                            ConfirmationController :new
-[x] GET    /confirmations/:id                                            ConfirmationController :show
 [x] POST   /confirmations                                                ConfirmationController :create
 [x] GET    /unlocks/new                                                  UnlockController :new
 [x] GET    /unlocks/:id                                                  UnlockController :show
 [x] POST   /unlocks                                                      UnlockController :create
+[x] GET    /confirmations/:id                                            ConfirmationController :show
 [x] GET    /registrations/edit                                           RegistrationController :edit
 [x] DELETE /sessions                                                     SessionController :delete
 [x] GET    /deactivations                                                DeactivationController :show

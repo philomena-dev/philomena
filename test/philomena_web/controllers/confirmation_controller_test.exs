@@ -95,12 +95,33 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
       assert redirected_to(conn) == "/"
     end
 
-    # NOTE: a logged-in *unconfirmed* user is logged out by
-    # EnsureUserEnabledPlug (in the :browser pipeline) before
-    # redirect_if_user_is_authenticated ever runs - following their own
-    # valid confirmation link logs them out instead of confirming.
-    test "GET /confirmations/:id logs an unconfirmed user out without confirming",
+    # EnsureUserEnabledPlug exempts a merely-unconfirmed session on the
+    # confirmation-show path only, and the router moved GET /confirmations/:id
+    # out of redirect_if_user_is_authenticated, so a logged-in unconfirmed user
+    # can follow their own link: the account is confirmed and they stay logged
+    # in.
+    test "GET /confirmations/:id confirms an unconfirmed logged-in user and keeps them logged in",
          %{conn: conn, user: user} do
+      token =
+        extract_user_token(fn url ->
+          Users.deliver_user_confirmation_instructions(user, url)
+        end)
+
+      conn = conn |> log_in_user(user) |> get(~p"/confirmations/#{token}")
+
+      assert redirected_to(conn) == "/"
+      assert Flash.get(conn.assigns.flash, :info) =~ "Account confirmed successfully."
+      assert get_session(conn, :user_token)
+      assert Users.get_user!(user.id).confirmed_at
+    end
+
+    # A deactivated (deleted_at set) account is locked out everywhere,
+    # including the confirmation-show path, so it is still logged out and left
+    # unconfirmed.
+    test "GET /confirmations/:id logs a deactivated user out without confirming",
+         %{conn: conn} do
+      user = deactivated_user_fixture()
+
       token =
         extract_user_token(fn url ->
           Users.deliver_user_confirmation_instructions(user, url)
@@ -112,6 +133,34 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
       assert Flash.get(conn.assigns.flash, :error) =~ "Your account is not currently active."
       refute get_session(conn, :user_token)
       refute Users.get_user!(user.id).confirmed_at
+    end
+
+    # NOTE: GET /confirmations/:id is no longer guarded by
+    # redirect_if_user_is_authenticated, so a confirmed logged-in user now
+    # reaches the controller (previously it silently redirected to "/") and
+    # gets the invalid-link error while remaining logged in.
+    test "GET /confirmations/:id reaches the controller for a confirmed logged-in user",
+         %{conn: conn} do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+
+      conn = get(conn, ~p"/confirmations/oops")
+
+      assert redirected_to(conn) == "/"
+
+      assert Flash.get(conn.assigns.flash, :error) =~
+               "Confirmation link is invalid or it has expired"
+
+      assert get_session(conn, :user_token)
+    end
+
+    # NOTE: the EnsureUserEnabledPlug exemption is show-only, so an unconfirmed
+    # logged-in user hitting the resend-instructions form is still logged out.
+    test "GET /confirmations/new logs an unconfirmed user out", %{conn: conn, user: user} do
+      conn = conn |> log_in_user(user) |> get(~p"/confirmations/new")
+
+      assert redirected_to(conn) == "/"
+      assert Flash.get(conn.assigns.flash, :error) =~ "Your account is not currently active."
+      refute get_session(conn, :user_token)
     end
   end
 end
