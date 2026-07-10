@@ -107,9 +107,6 @@ defmodule Philomena.Subscriptions do
           iex> delete_subscription(object, user)
           {:ok, %Subscription{}}
 
-          iex> delete_subscription(object, user)
-          {:error, %Ecto.Changeset{}}
-
       """
       def delete_subscription(object, user) do
         unquote(on_delete)

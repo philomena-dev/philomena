@@ -29,12 +29,8 @@ defmodule PhilomenaWeb.Forum.SubscriptionController do
     forum = conn.assigns.forum
     user = conn.assigns.current_user
 
-    case Forums.delete_subscription(forum, user) do
-      {:ok, _subscription} ->
-        render(conn, "_subscription.html", forum: forum, watching: false, layout: false)
+    {:ok, _subscription} = Forums.delete_subscription(forum, user)
 
-      {:error, _changeset} ->
-        render(conn, "_error.html", layout: false)
-    end
+    render(conn, "_subscription.html", forum: forum, watching: false, layout: false)
   end
 end

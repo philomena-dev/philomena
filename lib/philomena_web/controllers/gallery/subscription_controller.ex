@@ -24,12 +24,8 @@ defmodule PhilomenaWeb.Gallery.SubscriptionController do
     gallery = conn.assigns.gallery
     user = conn.assigns.current_user
 
-    case Galleries.delete_subscription(gallery, user) do
-      {:ok, _subscription} ->
-        render(conn, "_subscription.html", gallery: gallery, watching: false, layout: false)
+    {:ok, _subscription} = Galleries.delete_subscription(gallery, user)
 
-      {:error, _changeset} ->
-        render(conn, "_error.html", layout: false)
-    end
+    render(conn, "_subscription.html", gallery: gallery, watching: false, layout: false)
   end
 end
