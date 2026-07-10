@@ -374,6 +374,25 @@ defmodule Philomena.Posts do
   end
 
   @doc """
+  Queues every post in the given topic for search index updates.
+
+  Used when a topic's visibility changes: a post's indexed `hidden_from_users`
+  reflects its topic's hidden state (see `Philomena.Posts.SearchIndex`), so
+  hiding or unhiding a topic must refresh all of its posts.
+
+  ## Examples
+
+      iex> reindex_posts_in_topic(topic_id)
+      :ok
+
+  """
+  def reindex_posts_in_topic(topic_id) do
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["Posts", "topic_id", [topic_id]])
+
+    :ok
+  end
+
+  @doc """
   Provides preload queries for post indexing operations.
 
   ## Examples
@@ -387,7 +406,7 @@ defmodule Philomena.Posts do
 
     topic_query =
       Topic
-      |> select([t], struct(t, [:forum_id, :title]))
+      |> select([t], struct(t, [:forum_id, :title, :hidden_from_users]))
       |> preload([:forum])
 
     [

@@ -54,35 +54,46 @@ defmodule PhilomenaWeb.Api.Json.Search.PostControllerTest do
                json_response(conn, 200)
     end
 
-    test "returns a null stub for a matched post in a hidden topic", %{conn: conn} do
+    test "excludes a matched post whose topic is hidden", %{conn: conn} do
       moderator = moderator_user_fixture()
       forum = forum_fixture()
       topic = topic_fixture(forum, nil, %{"posts" => %{"0" => %{"body" => "chartreuse okapi"}}})
-      [post] = topic.posts
 
       {:ok, _} = Topics.hide_topic(topic, "spam", moderator)
       SearchHelpers.reindex_all!(Post)
 
       conn = get(conn, ~p"/api/v1/json/search/posts?q=chartreuse")
 
-      # NOTE: hiding a topic does not mark its posts hidden in the index, so
-      # they still match searches; the view then nulls every field except the
-      # id. Logged in KNOWN-ODDITIES.md.
-      assert json_response(conn, 200) == %{
-               "total" => 1,
-               "posts" => [
-                 %{
-                   "id" => post.id,
-                   "user_id" => nil,
-                   "author" => nil,
-                   "body" => nil,
-                   "created_at" => nil,
-                   "updated_at" => nil,
-                   "edited_at" => nil,
-                   "edit_reason" => nil
-                 }
-               ]
-             }
+      # NOTE: a post in a hidden topic is folded to hidden_from_users: true in
+      # the index (as_json/1 indexes `post.hidden_from_users or
+      # post.topic.hidden_from_users`), so the endpoint's hardcoded
+      # hidden_from_users: false filter excludes it entirely - it is neither
+      # returned nor counted in total.
+      assert json_response(conn, 200) == %{"total" => 0, "posts" => []}
+    end
+
+    test "restores a post to search when its topic is unhidden", %{conn: conn} do
+      moderator = moderator_user_fixture()
+      forum = forum_fixture()
+      topic = topic_fixture(forum, nil, %{"posts" => %{"0" => %{"body" => "chartreuse okapi"}}})
+
+      # Hiding the topic and reindexing folds its posts to hidden, excluding them.
+      {:ok, hidden_topic} = Topics.hide_topic(topic, "spam", moderator)
+      SearchHelpers.reindex_all!(Post)
+
+      conn = get(conn, ~p"/api/v1/json/search/posts?q=chartreuse")
+      assert json_response(conn, 200) == %{"total" => 0, "posts" => []}
+
+      # Unhiding it (which enqueues a topic-wide post reindex in production; here
+      # we drive the reindex explicitly) folds the posts back to visible, so the
+      # post is searchable again with its real body.
+      {:ok, _} = Topics.unhide_topic(hidden_topic)
+      SearchHelpers.reindex_all!(Post)
+
+      conn = get(conn, ~p"/api/v1/json/search/posts?q=chartreuse")
+
+      assert %{"total" => 1, "posts" => [%{"body" => "chartreuse okapi"}]} =
+               json_response(conn, 200)
     end
 
     test "returns an empty result for a missing query string", %{conn: conn} do
