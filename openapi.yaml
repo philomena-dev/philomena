@@ -775,6 +775,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PostSearchResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
   /json/forums/{forum_id}/topics/{topic_id}/posts/{id}:
     get:
