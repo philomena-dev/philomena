@@ -55,17 +55,34 @@ defmodule PhilomenaWeb.Image.VoteControllerTest do
       assert %ImageVote{up: false} = vote(image, user)
     end
 
-    test "a form-encoded up=true body records a downvote", %{conn: conn, user: user} do
-      # NOTE: the controller compares `params["up"] == true` against a
-      # boolean, so the string "true" from a form-encoded body counts as a
-      # downvote. Only the JSON fetch client in assets/js sends a real
-      # boolean. (KNOWN-ODDITIES.md)
+    test "a form-encoded up=true body records an upvote", %{conn: conn, user: user} do
+      # parse_up/1 accepts both the boolean `true` (from the JSON fetch client)
+      # and the string "true" (from a form-encoded body), so a form-encoded
+      # up=true now records an upvote.
       image = image_fixture()
 
       conn =
         conn
         |> put_req_header("content-type", "application/x-www-form-urlencoded")
         |> post(~p"/images/#{image}/vote", "up=true")
+
+      assert json_response(conn, 200) == %{
+               "score" => 1,
+               "faves" => 0,
+               "upvotes" => 1,
+               "downvotes" => 0
+             }
+
+      assert %ImageVote{up: true} = vote(image, user)
+    end
+
+    test "a form-encoded up=false body records a downvote", %{conn: conn, user: user} do
+      image = image_fixture()
+
+      conn =
+        conn
+        |> put_req_header("content-type", "application/x-www-form-urlencoded")
+        |> post(~p"/images/#{image}/vote", "up=false")
 
       assert json_response(conn, 200) == %{
                "score" => -1,
@@ -75,6 +92,29 @@ defmodule PhilomenaWeb.Image.VoteControllerTest do
              }
 
       assert %ImageVote{up: false} = vote(image, user)
+    end
+
+    test "with a missing `up` param returns 400 and records no vote",
+         %{conn: conn, user: user} do
+      # parse_up/1 only accepts true/"true"/false/"false"; a missing `up`
+      # param is unparsable, so the controller returns 400 with an empty JSON
+      # body and records nothing.
+      image = image_fixture()
+
+      conn = post(conn, ~p"/images/#{image}/vote", %{})
+
+      assert json_response(conn, 400) == %{}
+      refute vote(image, user)
+    end
+
+    test "with a junk `up` param returns 400 and records no vote",
+         %{conn: conn, user: user} do
+      image = image_fixture()
+
+      conn = post(conn, ~p"/images/#{image}/vote", %{"up" => "banana"})
+
+      assert json_response(conn, 400) == %{}
+      refute vote(image, user)
     end
 
     test "revoting replaces the existing vote", %{conn: conn, user: user} do

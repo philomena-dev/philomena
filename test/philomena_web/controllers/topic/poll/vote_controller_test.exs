@@ -304,7 +304,7 @@ defmodule PhilomenaWeb.Topic.Poll.VoteControllerTest do
       assert Repo.get(PollVote, vote.id)
     end
 
-    test "as a moderator removes the vote row but leaves the cached tallies stale",
+    test "as a moderator removes the vote row and decrements the cached tallies",
          %{conn: conn, forum: forum, topic: topic, poll: poll, option_a: option_a} do
       vote = record_vote(poll, option_a)
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
@@ -315,11 +315,11 @@ defmodule PhilomenaWeb.Topic.Poll.VoteControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Vote successfully removed."
       refute Repo.get(PollVote, vote.id)
 
-      # NOTE: delete_poll_vote/1 just deletes the row; unlike create, it does
-      # not decrement the cached vote_count/total_votes counters, so the tallies
-      # stay at their pre-deletion values. KNOWN-ODDITIES.md
-      assert Repo.reload!(option_a).vote_count == 1
-      assert Repo.reload!(poll).total_votes == 1
+      # delete_poll_vote/1 now runs a Multi that deletes the row and decrements
+      # both the poll option's vote_count and the poll's total_votes by 1, so
+      # the cached tallies fall back to zero.
+      assert Repo.reload!(option_a).vote_count == 0
+      assert Repo.reload!(poll).total_votes == 0
     end
 
     # NOTE: the vote is now loaded with get_poll_vote/1, so an unknown id

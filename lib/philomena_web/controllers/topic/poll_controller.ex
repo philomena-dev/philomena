@@ -5,6 +5,8 @@ defmodule PhilomenaWeb.Topic.PollController do
   alias Philomena.Polls
   alias Philomena.Repo
 
+  plug PhilomenaWeb.CanaryMapPlug, edit: :show, update: :show
+
   plug :load_and_authorize_resource,
     model: Forum,
     id_name: "forum_id",

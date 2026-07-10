@@ -46,20 +46,17 @@ defmodule PhilomenaWeb.Topic.PollControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    # NOTE: unlike the topic mod tools, PollController loads the Forum with a
-    # plain load_and_authorize_resource and no CanaryMapPlug, so the Forum is
-    # authorized against the raw action (:edit). Moderators have only :show on
-    # forums, so they are rejected here - poll editing is effectively admin-only,
-    # even though the later verify_authorized plug gates on :hide (a moderator
-    # capability). KNOWN-ODDITIES.md
-    test "rejects a moderator with the authorization flash",
-         %{conn: conn, forum: forum, topic: topic} do
+    # PollController now maps edit/update to :show via CanaryMapPlug before
+    # load_and_authorize_resource, so the Forum is authorized against :show
+    # (which moderators have) rather than the raw :edit. The later
+    # verify_authorized plug gates on :hide of the topic, also a moderator
+    # capability, so moderators can now render the edit form.
+    test "renders the edit form for a moderator", %{conn: conn, forum: forum, topic: topic} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      conn = get(conn, ~p"/forums/#{forum}/topics/#{topic}/poll/edit")
+      response = html_response(get(conn, ~p"/forums/#{forum}/topics/#{topic}/poll/edit"), 200)
 
-      assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      assert response =~ "Editing Poll - Derpibooru"
     end
 
     test "renders the edit form for an admin", %{conn: conn, forum: forum, topic: topic} do
@@ -108,20 +105,25 @@ defmodule PhilomenaWeb.Topic.PollControllerTest do
       assert Repo.reload!(poll).title == "Best test option?"
     end
 
-    # See the :edit note above - moderators are rejected by the Forum :update
-    # authorization.
-    test "rejects a moderator with the authorization flash",
+    # See the :edit note above - update is also mapped to :show, so moderators
+    # can now update the poll.
+    test "as a moderator updates the poll and redirects to the topic",
          %{conn: conn, forum: forum, topic: topic, poll: poll} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
       conn =
         patch(conn, ~p"/forums/#{forum}/topics/#{topic}/poll", %{
-          "poll" => %{"title" => "New title"}
+          "poll" => %{
+            "title" => "Moderator updated title",
+            "active_until" =>
+              DateTime.utc_now(:second) |> DateTime.add(3, :day) |> DateTime.to_iso8601(),
+            "vote_method" => "single"
+          }
         })
 
-      assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
-      assert Repo.reload!(poll).title == "Best test option?"
+      assert redirected_to(conn) == ~p"/forums/#{forum}/topics/#{topic}"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Poll successfully updated."
+      assert Repo.reload!(poll).title == "Moderator updated title"
     end
 
     test "as an admin updates the poll and redirects to the topic",
