@@ -29,7 +29,7 @@ config :philomena, :opensearch_index_prefix, "test_"
 # External call stubbing. The mailer delivers to the test process
 # (`Swoosh.TestAssertions.assert_email_sent/1`); ex_aws object storage
 # operations succeed without any storage running; PhilomenaProxy.Http
-# (scrapers, camo) routes through Req.Test — tests that trigger outbound
+# (scrapers, camo) routes through Req.Test - tests that trigger outbound
 # HTTP must `Req.Test.stub(PhilomenaProxy.Http, fun)` or the request raises.
 # The mailer and ex_aws defaults set in config/runtime.exs are skipped for
 # the test environment so these values win.

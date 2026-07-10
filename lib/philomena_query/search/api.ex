@@ -40,6 +40,18 @@ defmodule PhilomenaQuery.Search.Api do
   end
 
   @doc """
+  Refresh the index named `name`, making previously indexed documents visible to search.
+
+  https://opensearch.org/docs/latest/api-reference/index-apis/refresh/
+  """
+  @spec refresh_index(server_url(), index_name()) :: Client.result()
+  def refresh_index(url, name) do
+    url
+    |> prepare_url([name, "_refresh"])
+    |> Client.post(%{})
+  end
+
+  @doc """
   Update the index named `name` with the given `properties`.
 
   https://opensearch.org/docs/latest/api-reference/index-apis/put-mapping/
@@ -99,6 +111,22 @@ defmodule PhilomenaQuery.Search.Api do
     url
     |> prepare_url([name, "_update_by_query"])
     |> append_query_string(%{conflicts: "proceed", wait_for_completion: "false"})
+    |> Client.post(body)
+  end
+
+  @doc """
+  Synchronously delete every document matching `body` from the index named `name`.
+
+  Sets `conflicts` to `proceed` and `refresh` to `true`, so the deletions are visible to
+  search as soon as the call returns.
+
+  https://opensearch.org/docs/latest/api-reference/document-apis/delete-by-query/
+  """
+  @spec delete_by_query(server_url(), index_name(), map()) :: Client.result()
+  def delete_by_query(url, name, body) do
+    url
+    |> prepare_url([name, "_delete_by_query"])
+    |> append_query_string(%{conflicts: "proceed", refresh: "true"})
     |> Client.post(body)
   end
 

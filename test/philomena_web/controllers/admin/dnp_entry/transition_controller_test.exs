@@ -59,9 +59,11 @@ defmodule PhilomenaWeb.Admin.DnpEntry.TransitionControllerTest do
     # with FunctionClauseError in transition_dnp_entry/3 (which requires a
     # %DnpEntry{}) instead of redirecting.
     test "raises for an unknown entry id", %{conn: conn} do
-      assert_raise FunctionClauseError, fn ->
-        post(conn, ~p"/admin/dnp_entries/#{0}/transition", state: "claimed")
-      end
+      assert_raise FunctionClauseError,
+                   ~r/no function clause matching in Philomena\.DnpEntries\.transition_dnp_entry\/3/,
+                   fn ->
+                     post(conn, ~p"/admin/dnp_entries/#{0}/transition", state: "claimed")
+                   end
     end
 
     # NOTE: a non-integer entry id raises Ecto.Query.CastError (a 500).

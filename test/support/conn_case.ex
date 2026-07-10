@@ -111,7 +111,7 @@ defmodule PhilomenaWeb.ConnCase do
 
   Several admin resources (Badge, Advert, SiteNotice, …) gate their abilities
   on a `{resource_type => %{"admin" => _}}` entry in the user's `role_map`,
-  which is rebuilt at login from the `roles` association — so the grant is a
+  which is rebuilt at login from the `roles` association - so the grant is a
   `Philomena.Roles.Role` row plus a `users_roles` join. A "Forum" resource_type
   is inert (no ability rule keys on it); the admin forum controller test uses
   it to prove the grant still does nothing.
@@ -182,5 +182,50 @@ defmodule PhilomenaWeb.ConnCase do
     conn
     |> log_in_user(user)
     |> Plug.Conn.put_session(:totp_token, totp_token)
+  end
+
+  @doc """
+  Gives the `conn` a fresh, unique `remote_ip`.
+
+  It returns an updated `conn`.
+
+  `PhilomenaWeb.LimitPlug` rate-limits writes on a Valkey counter keyed by the
+  current user id, `conn.remote_ip`, and the controller/action - so for
+  anonymous writes the IP is the only part that varies. The SQL sandbox does
+  not roll Valkey back, and the counter's TTL (a few seconds to a minute)
+  outlives a ~6 s suite run, so a fixed address inherits counters from earlier
+  tests and from earlier runs, and eventually trips the limit. Every anonymous
+  write test therefore needs its own address.
+  """
+  def put_unique_ip(conn) do
+    n = System.unique_integer([:positive])
+    %{conn | remote_ip: {10, rem(div(n, 65536), 256), rem(div(n, 256), 256), rem(n, 256)}}
+  end
+
+  @doc """
+  Waits for the background upload process spawned by a successful image
+  `:create` to exit.
+
+  A successful `:create` has `Philomena.Images.create_image/2` spawn an
+  unsupervised upload process that writes to the Repo. Its sandbox allowance
+  dies with the test process, so wait for it to exit before the test ends;
+  otherwise it retries with `OwnershipError` every 5s for the rest of the
+  suite. The endpoint call runs in the test process, so the upload process is
+  our direct child.
+  """
+  def await_async_upload do
+    test_pid = self()
+
+    for pid <- Process.list(), Process.info(pid, :parent) == {:parent, test_pid} do
+      ref = Process.monitor(pid)
+
+      receive do
+        {:DOWN, ^ref, :process, ^pid, _reason} -> :ok
+      after
+        5_000 -> raise "async upload process #{inspect(pid)} did not exit"
+      end
+    end
+
+    :ok
   end
 end

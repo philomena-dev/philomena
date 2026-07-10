@@ -71,7 +71,7 @@ defmodule PhilomenaWeb.Admin.Badge.UserControllerTest do
     # query builds `^nil.id`, raising BadMapError (the same nil pass-through
     # family as the other :index routes).
     test "500s on an unknown badge_id", %{conn: conn} do
-      assert_raise BadMapError, fn ->
+      assert_raise BadMapError, ~r/expected a map, got:\s*nil/, fn ->
         get(conn, ~p"/admin/badges/#{2_000_000_000}/users")
       end
     end

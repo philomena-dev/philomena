@@ -141,7 +141,7 @@ defmodule PhilomenaWeb.Topic.Poll.VoteControllerTest do
          %{conn: conn, forum: forum, topic: topic} do
       # NOTE: filter_options never checks that the submitted option ids belong
       # to the poll being voted on (the context has a TODO admitting the
-      # missing integrity check) — a vote for any existing poll option is
+      # missing integrity check) - a vote for any existing poll option is
       # accepted and counted. KNOWN-ODDITIES.md
       %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
 

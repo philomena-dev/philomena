@@ -70,7 +70,7 @@ defmodule PhilomenaWeb.Registration.NameControllerTest do
 
     test "crashes on an empty name", %{conn: conn} do
       # NOTE: cast/3 turns "" into a nil change, and validate_name's
-      # String.trim/1 update_change crashes on it — submitting an empty
+      # String.trim/1 update_change crashes on it - submitting an empty
       # name is a 500 (KNOWN-ODDITIES.md).
       assert_raise FunctionClauseError, ~r/String.trim\/1/, fn ->
         patch(conn, ~p"/registrations/name", %{"user" => %{"name" => ""}})

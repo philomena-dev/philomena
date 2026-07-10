@@ -82,7 +82,7 @@ defmodule PhilomenaWeb.Profile.ScratchpadControllerTest do
     end
 
     # NOTE: `scratchpad_changeset` only casts `:scratchpad` with no validation,
-    # so a blank value is a success — there is no reachable `{:error, changeset}`
+    # so a blank value is a success - there is no reachable `{:error, changeset}`
     # re-render branch. `cast/3` treats "" as empty and stores `nil`.
     test "storing a blank scratchpad succeeds and stores nil", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})

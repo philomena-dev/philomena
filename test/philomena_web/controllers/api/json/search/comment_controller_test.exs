@@ -9,10 +9,11 @@ defmodule PhilomenaWeb.Api.Json.Search.CommentControllerTest do
 
   alias Philomena.Comments
   alias Philomena.Comments.Comment
+  alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
 
   setup do
-    SearchHelpers.clear_index!(Comment)
+    Search.clear_index!(Comment)
     :ok
   end
 
@@ -69,7 +70,7 @@ defmodule PhilomenaWeb.Api.Json.Search.CommentControllerTest do
 
     test "returns an empty result for a missing query string", %{conn: conn} do
       # NOTE: a missing/empty q compiles to match_none, a 200 with no
-      # results — not a 400.
+      # results - not a 400.
       conn = get(conn, ~p"/api/v1/json/search/comments")
 
       assert json_response(conn, 200) == %{"comments" => [], "total" => 0}

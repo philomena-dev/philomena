@@ -104,9 +104,11 @@ defmodule PhilomenaWeb.Admin.Badge.ImageControllerTest do
       badge = badge_fixture()
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
 
-      assert_raise CaseClauseError, fn ->
-        patch(conn, ~p"/admin/badges/#{badge}/image", %{"badge" => %{}})
-      end
+      assert_raise CaseClauseError,
+                   ~r/no case clause matching:\s*\{:error,\s*#Ecto\.Changeset<.*action: :update.*image_mime_type: \{"can't be blank".*Badges\.Badge/s,
+                   fn ->
+                     patch(conn, ~p"/admin/badges/#{badge}/image", %{"badge" => %{}})
+                   end
     end
   end
 

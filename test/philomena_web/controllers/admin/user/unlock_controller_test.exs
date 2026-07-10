@@ -55,11 +55,15 @@ defmodule PhilomenaWeb.Admin.User.UnlockControllerTest do
     end
 
     # NOTE: :create is not covered by the not_found handler, so an unknown slug
-    # passes nil through and Users.unlock_user(nil) raises FunctionClauseError.
+    # passes nil through. Users.unlock_user/1 has no nil guard of its own, so
+    # the FunctionClauseError is raised two frames deeper, in
+    # Ecto.Changeset.change/2 (via User.unlock_changeset/1).
     test "raises for an unknown slug", %{conn: conn} do
-      assert_raise FunctionClauseError, fn ->
-        post(conn, ~p"/admin/users/no-such-user/unlock")
-      end
+      assert_raise FunctionClauseError,
+                   ~r/no function clause matching in Ecto\.Changeset\.change\/2/,
+                   fn ->
+                     post(conn, ~p"/admin/users/no-such-user/unlock")
+                   end
     end
   end
 

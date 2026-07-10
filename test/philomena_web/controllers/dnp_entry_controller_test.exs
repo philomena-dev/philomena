@@ -203,13 +203,13 @@ defmodule PhilomenaWeb.DnpEntryControllerTest do
     test "crashes when the submitted tag is not one of the user's linked tags", %{conn: conn} do
       # NOTE: create_dnp_entry looks the tag up in the selectable list and
       # passes the nil miss straight into the changeset, which crashes on
-      # tag.id — same nil pass-through family as KNOWN-ODDITIES.md
+      # tag.id - same nil pass-through family as KNOWN-ODDITIES.md
       %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
       tag = tag_fixture(name: "artist:test-owned-artist")
       other_tag = tag_fixture(name: "artist:test-unowned-artist")
       verify_artist_link!(user, tag)
 
-      assert_raise BadMapError, fn ->
+      assert_raise BadMapError, ~r/expected a map, got:\s*nil/, fn ->
         post(conn, ~p"/dnp", %{
           "dnp_entry" => %{
             "tag_id" => to_string(other_tag.id),
@@ -238,7 +238,7 @@ defmodule PhilomenaWeb.DnpEntryControllerTest do
     end
 
     test "redirects the requesting artist with the authorization flash", %{conn: conn} do
-      # NOTE: there is no user-facing edit — only moderators can edit entries,
+      # NOTE: there is no user-facing edit - only moderators can edit entries,
       # even the artist who requested one cannot
       %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
       tag = tag_fixture(name: "artist:test-requester-artist")
@@ -254,7 +254,7 @@ defmodule PhilomenaWeb.DnpEntryControllerTest do
     test "redirects a moderator without a tag_id param with the authorization flash",
          %{conn: conn} do
       # NOTE: the :set_tags plug offers moderators the ?tag_id= tag, but
-      # falls back to their own linked tags without it — a moderator with no
+      # falls back to their own linked tags without it - a moderator with no
       # verified artist link of their own cannot open the edit form bare
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       tag = tag_fixture(name: "artist:test-mod-bare-artist")

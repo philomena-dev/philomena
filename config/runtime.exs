@@ -7,12 +7,7 @@ import Config
 #
 # See `mix help release` for more information.
 
-# The test suite creates thousands of users, and every user fixture pays for one
-# bcrypt hash (a TOTP fixture pays for eleven — the password plus ten backup
-# codes). At the production cost of 12 rounds that is ~166 ms each and dominates
-# the run; 4 rounds, bcrypt's minimum, costs ~0.8 ms. Nothing in the suite
-# depends on the cost factor: bcrypt reads it back out of the stored hash when
-# verifying.
+# Test env should use 4 rounds (the minimum allowed) for speed, but all other envs should use 12 rounds for security.
 config :bcrypt_elixir,
   log_rounds:
     String.to_integer(

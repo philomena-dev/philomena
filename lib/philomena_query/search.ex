@@ -135,6 +135,55 @@ defmodule PhilomenaQuery.Search do
   end
 
   @doc ~S"""
+  Remove every document from the module's index, leaving the mapping intact.
+
+  `POST /#{index_name}/_delete_by_query`
+
+  Unlike `delete_index!/1`, the index itself survives, so this does not have to be followed
+  by a `create_index!/1`. Version conflicts are ignored, and the emptied index is refreshed
+  before returning.
+
+  ## Example
+
+      iex> Search.clear_index!(Image)
+
+  """
+  @spec clear_index!(schema_module()) :: :ok
+  def clear_index!(module) do
+    index = @policy.index_for(module)
+    body = %{query: %{match_all: %{}}}
+
+    {:ok, %{status: 200}} =
+      Api.delete_by_query(@policy.opensearch_url(), prefixed_index_name(index), body)
+
+    :ok
+  end
+
+  @doc ~S"""
+  Force a refresh of the module's index.
+
+  `POST /#{index_name}/_refresh`
+
+  Indexing is near real-time: documents written by `index_document/2` or `reindex/3` only
+  become visible to search on the index's refresh interval, which is 5 seconds unless
+  changed in the mapping. This performs that refresh immediately.
+
+  ## Example
+
+      iex> Search.refresh_index!(Image)
+
+  """
+  @spec refresh_index!(schema_module()) :: :ok
+  def refresh_index!(module) do
+    index = @policy.index_for(module)
+
+    {:ok, %{status: 200}} =
+      Api.refresh_index(@policy.opensearch_url(), prefixed_index_name(index))
+
+    :ok
+  end
+
+  @doc ~S"""
   Update the schema mapping for the module's index name.
 
   `PUT /#{index_name}/_mapping`

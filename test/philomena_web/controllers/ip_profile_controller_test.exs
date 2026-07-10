@@ -44,11 +44,11 @@ defmodule PhilomenaWeb.IpProfileControllerTest do
 
     # NOTE: the id is cast with `{:ok, ip} = EctoNetwork.INET.cast(ip)`, so a
     # value that doesn't parse as an IP/CIDR raises `MatchError` (a 500) rather
-    # than a not-found response — the same shape as the admin subnet-ban pages.
+    # than a not-found response - the same shape as the admin subnet-ban pages.
     test "500s on an unparsable IP", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise MatchError, fn ->
+      assert_raise MatchError, ~r/no match of right hand side value:\s*:error/, fn ->
         get(conn, ~p"/ip_profiles/#{"not-an-ip"}")
       end
     end

@@ -44,7 +44,7 @@ defmodule PhilomenaWeb.Admin.User.AvatarControllerTest do
       assert Repo.get(User, target.id).avatar == nil
     end
 
-    # NOTE: succeeds even when the user has no avatar — remove_avatar_changeset
+    # NOTE: succeeds even when the user has no avatar - remove_avatar_changeset
     # just sets avatar: nil unconditionally.
     test "still succeeds when the user has no avatar", %{conn: conn} do
       target = confirmed_user_fixture()

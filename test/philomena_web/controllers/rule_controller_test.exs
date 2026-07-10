@@ -13,7 +13,7 @@ defmodule PhilomenaWeb.RuleControllerTest do
   import Ecto.Query, only: [from: 2]
 
   # Rules are authorized against Rule, on which only admins have the write
-  # abilities — regular users and moderators (plain or role_map) have only
+  # abilities - regular users and moderators (plain or role_map) have only
   # :index/:show. The write routes sit in the require_authenticated_user
   # scope, so anonymous users are bounced to login before authorization runs.
 
@@ -66,10 +66,10 @@ defmodule PhilomenaWeb.RuleControllerTest do
     end
 
     test "crashes when no rules exist", %{conn: conn} do
-      # NOTE: probable bug (see KNOWN-ODDITIES.md) — the index computes
+      # NOTE: probable bug (see KNOWN-ODDITIES.md) - the index computes
       # Enum.max/2 over the rule update timestamps, which raises on an empty
       # rules table instead of rendering an empty list.
-      assert_raise Enum.EmptyError, fn -> get(conn, ~p"/rules") end
+      assert_raise Enum.EmptyError, ~r/^empty error$/, fn -> get(conn, ~p"/rules") end
     end
   end
 
@@ -90,7 +90,7 @@ defmodule PhilomenaWeb.RuleControllerTest do
 
       # NOTE: hidden/internal rules pass Canary (any %Rule{} is :show-able)
       # and are caught by the controller's own check_permission plug, which
-      # redirects to /rules — not to / like most unauthorized pages.
+      # redirects to /rules - not to / like most unauthorized pages.
       conn = get(conn, ~p"/rules/#{rule}")
 
       assert redirected_to(conn) == ~p"/rules"
@@ -140,7 +140,7 @@ defmodule PhilomenaWeb.RuleControllerTest do
     end
 
     test "redirects to / for a plain moderator", %{conn: conn} do
-      # NOTE: moderators have only :index/:show on rules — no write ability —
+      # NOTE: moderators have only :index/:show on rules - no write ability -
       # so even a plain moderator is turned away from the staff rule forms.
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 

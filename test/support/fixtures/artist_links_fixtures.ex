@@ -8,7 +8,7 @@ defmodule Philomena.ArtistLinksFixtures do
 
   @doc """
   Creates an unverified artist link for `user` pointing at `tag` (which must
-  be a creator-category tag — an `artist:`-prefixed `tag_fixture/1` name gets
+  be a creator-category tag - an `artist:`-prefixed `tag_fixture/1` name gets
   the `origin` category automatically).
 
   String-keyed attrs mirror the artist-link form (`"uri"`, `"public"`); a

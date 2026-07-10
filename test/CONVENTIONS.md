@@ -1,10 +1,6 @@
 # Controller Test Conventions
 
-Operational reference for writing the characterization tests. The plan,
-rationale, and accumulated field notes live in
-[CHARACTERIZATION-TESTS.md](../CHARACTERIZATION-TESTS.md); probable bugs found
-while pinning behavior are logged in
-[KNOWN-ODDITIES.md](../KNOWN-ODDITIES.md).
+Operational reference for writing the characterization tests.
 
 ## Ground rules
 
@@ -34,7 +30,7 @@ One test per auth level that can reach the action:
 
 | Level        | Setup                                                            |
 | ------------ | ---------------------------------------------------------------- |
-| anonymous    | nothing — use `conn` as provided                                 |
+| anonymous    | nothing - use `conn` as provided                                 |
 | user         | `setup :register_and_log_in_user`                                |
 | moderator    | `setup :register_and_log_in_moderator`                           |
 | admin        | `setup :register_and_log_in_admin`                               |
@@ -45,7 +41,7 @@ One test per auth level that can reach the action:
 - `/api/v1` authenticates **only** via the `key` query parameter; session
   login has no effect there. Pin that once per API controller (a
   session-authenticated request behaves as anonymous).
-- Use `confirmed_user_fixture()`-based users for API keys — unconfirmed and
+- Use `confirmed_user_fixture()`-based users for API keys - unconfirmed and
   deactivated users crash mid-pipeline on `/api/v1`.
 - A ban does not block reads; it surfaces as `conn.assigns.current_ban`,
   which write actions check.
@@ -55,7 +51,7 @@ One test per auth level that can reach the action:
 - Live in `test/support/fixtures/`, one module per context, small composable
   functions. Go through context `create_*` functions where they exist
   (`Forums.create_forum/1`); images, badges, and system filters are the
-  sanctioned exceptions (direct row insert — see the field notes).
+  sanctioned exceptions (direct row insert - see `FIELD-NOTES.md`).
 - Every core context has a fixture module: users, forums, topics, posts,
   comments, images, tags, filters, galleries, conversations, reports, rules,
   channels, badges. `test/philomena/fixtures_test.exs` smoke-tests them and
@@ -77,7 +73,7 @@ use PhilomenaWeb.ConnCase, async: true
 use PhilomenaWeb.SingletonToggleTests
 
 # require_authenticated_user halts before the resource loads, so the ids in
-# this path need not exist — the anonymous tests build no fixtures.
+# this path need not exist - the anonymous tests build no fixtures.
 defp anonymous_path, do: ~p"/images/1/subscription"
 
 defp subscription_target(user) do  # user is always a real user
@@ -95,7 +91,7 @@ subscription_toggle_tests()
 
 `read_singleton_tests()` (requires `anonymous_path/0` and `read_target/1`) and
 `image_interaction_guard_tests(verbs)` (requires `interaction_path/1`) work
-the same way — see the module doc for the exact contracts. Add
+the same way - see the module doc for the exact contracts. Add
 controller-specific behavior (hidden topics, restricted forums, parameter
 quirks) as ordinary hand-written tests alongside the generator call.
 
@@ -120,31 +116,34 @@ All stubbed in `config/test.exs`; smoke-tested by
 Search-backed tests hit the real OpenSearch from the compose stack, on
 `test_`-prefixed indexes (`:opensearch_index_prefix`) so they can never
 touch dev data. Every searchable index is dropped and recreated **once** per
-`mix test` run — `test_helper.exs` calls
-`PhilomenaQuery.SearchHelpers.create_all_indexes!()` — so each run starts
+`mix test` run - `test_helper.exs` calls
+`PhilomenaQuery.SearchHelpers.create_all_indexes!()` - so each run starts
 from the current mappings. The SQL sandbox does not roll indexes back, so:
 
 - Module must be `async: false` and tagged `@moduletag :search`.
 - Clear the indexes the action reads in setup:
-  `PhilomenaQuery.SearchHelpers.clear_index!(Image)`. This deletes the
+  `PhilomenaQuery.Search.clear_index!(Image)`. This deletes the
   documents (`_delete_by_query`) and leaves the mapping alone; recreating the
   index per test is a cluster-metadata operation and ~100x slower.
-- Index fixtures explicitly after inserting them —
-  `SearchHelpers.reindex_all!(Image)` or `index_documents!([img], Image)` —
-  both force a `_refresh` so documents are immediately searchable.
+- Index fixtures explicitly after inserting them -
+  `SearchHelpers.reindex_all!(Image)` - which forces a `_refresh` so documents
+  are immediately searchable. There is no single-record variant: serialization
+  walks associations, so records have to be loaded with the schema's
+  `indexing_preloads/0`, and going through `reindex_all!/1` is what applies
+  them.
 
 See `PhilomenaQuery.SearchHelpers` (`test/support/search_helpers.ex`) and
 `test/philomena_query/search_helpers_test.exs` for a worked example.
 
 ## Assertion idioms
 
-Condensed from the field notes (rationale there):
+Condensed from `FIELD-NOTES.md` (rationale there):
 
-- JSON missing resource: `assert response(conn, 404) == ""` — empty
+- JSON missing resource: `assert response(conn, 404) == ""` - empty
   `text/plain`, not JSON.
-- HTML not-found **and** unauthorized: 302 to `/` — assert
+- HTML not-found **and** unauthorized: 302 to `/` - assert
   `redirected_to(conn)` plus `Phoenix.Flash.get(conn.assigns.flash, :error)`.
-- Mid-pipeline crashes: `assert_raise Module, ~r/message/` — always pin the
+- Mid-pipeline crashes: `assert_raise Module, ~r/message/` - always pin the
   message, not just the exception module.
 - HTML markers: `response =~ "Page Title - Derpibooru"`, headings, entity
   names. No golden HTML files.

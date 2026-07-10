@@ -43,7 +43,7 @@ defmodule PhilomenaWeb.Topic.StickControllerTest do
     end
 
     # Failure path: stick_changeset never fails, so the only reachable failure
-    # surface is an unknown topic — LoadTopicPlug 404s and redirects to /.
+    # surface is an unknown topic - LoadTopicPlug 404s and redirects to /.
     test "redirects to / with the not-found flash for an unknown topic",
          %{conn: conn, forum: forum} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})

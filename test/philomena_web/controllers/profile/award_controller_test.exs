@@ -171,7 +171,7 @@ defmodule PhilomenaWeb.Profile.AwardControllerTest do
       assert Repo.get!(Award, award.id).label == "Put label"
     end
 
-    # NOTE: same dead-error-branch shape as create — reassigning to a
+    # NOTE: same dead-error-branch shape as create - reassigning to a
     # nonexistent `badge_id` raises `Ecto.ConstraintError` (the changeset never
     # declares the FK), a 500, and the award keeps its old badge_id.
     test "reassigning to a nonexistent badge_id 500s with Ecto.ConstraintError",

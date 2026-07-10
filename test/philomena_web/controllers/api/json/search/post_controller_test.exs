@@ -11,10 +11,11 @@ defmodule PhilomenaWeb.Api.Json.Search.PostControllerTest do
   alias Philomena.Posts
   alias Philomena.Posts.Post
   alias Philomena.Topics
+  alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
 
   setup do
-    SearchHelpers.clear_index!(Post)
+    Search.clear_index!(Post)
     :ok
   end
 
@@ -86,7 +87,7 @@ defmodule PhilomenaWeb.Api.Json.Search.PostControllerTest do
 
     test "returns an empty result for a missing query string", %{conn: conn} do
       # NOTE: a missing/empty q compiles to match_none, a 200 with no
-      # results — not a 400.
+      # results - not a 400.
       conn = get(conn, ~p"/api/v1/json/search/posts")
 
       assert json_response(conn, 200) == %{"posts" => [], "total" => 0}

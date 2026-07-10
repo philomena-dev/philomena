@@ -10,6 +10,7 @@ defmodule PhilomenaWeb.ProfileControllerTest do
   import Philomena.TopicsFixtures
   import Philomena.UsersFixtures
 
+  alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
   alias Philomena.Comments.Comment
   alias Philomena.Images.Image
@@ -17,9 +18,9 @@ defmodule PhilomenaWeb.ProfileControllerTest do
   alias Philomena.Repo
 
   setup do
-    SearchHelpers.clear_index!(Image)
-    SearchHelpers.clear_index!(Comment)
-    SearchHelpers.clear_index!(Post)
+    Search.clear_index!(Image)
+    Search.clear_index!(Comment)
+    Search.clear_index!(Post)
     :ok
   end
 

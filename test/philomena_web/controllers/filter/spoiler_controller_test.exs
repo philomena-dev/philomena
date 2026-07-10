@@ -75,7 +75,7 @@ defmodule PhilomenaWeb.Filter.SpoilerControllerTest do
     %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
     {:ok, _} = Users.update_filter(user, filter_fixture(user))
 
-    assert_raise BadMapError, fn ->
+    assert_raise BadMapError, ~r/expected a map, got:\s*nil/, fn ->
       post(conn, ~p"/filters/spoiler?tag=unknown-slug")
     end
   end

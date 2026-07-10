@@ -54,7 +54,7 @@ defmodule PhilomenaWeb.Admin.ArtistLinkControllerTest do
     end
 
     # NOTE: the default index only lists links in the unverified/link_verified/
-    # contacted states — a verified link is hidden unless ?all is passed.
+    # contacted states - a verified link is hidden unless ?all is passed.
     test "hides a verified link by default but shows it with ?all", %{conn: conn} do
       user = confirmed_user_fixture()
       tag = tag_fixture(name: "artist:index-verified")

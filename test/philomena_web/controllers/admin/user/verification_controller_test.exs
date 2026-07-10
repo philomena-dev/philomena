@@ -47,9 +47,11 @@ defmodule PhilomenaWeb.Admin.User.VerificationControllerTest do
     # slug passes nil through and Users.verify_user(nil) raises
     # FunctionClauseError (nil-pass-through family).
     test "raises for an unknown slug", %{conn: conn} do
-      assert_raise FunctionClauseError, fn ->
-        post(conn, ~p"/admin/users/no-such-user/verification")
-      end
+      assert_raise FunctionClauseError,
+                   ~r/no function clause matching in Philomena\.Users\.verify_user\/1/,
+                   fn ->
+                     post(conn, ~p"/admin/users/no-such-user/verification")
+                   end
     end
   end
 

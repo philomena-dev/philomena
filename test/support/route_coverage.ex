@@ -5,7 +5,7 @@ defmodule PhilomenaWeb.RouteCoverage do
 
   The checklist is kept in sync with the router by
   `test/philomena_web/route_coverage_test.exs`. After changing the router,
-  regenerate it — existing `[x]` marks are preserved — with:
+  regenerate it - existing `[x]` marks are preserved - with:
 
       docker compose exec -T -e MIX_ENV=test app \\
         mix run --no-start -e 'PhilomenaWeb.RouteCoverage.regenerate()'
@@ -82,9 +82,9 @@ defmodule PhilomenaWeb.RouteCoverage do
     """
     # Characterization-test route coverage checklist. See test/CONVENTIONS.md.
     #
-    # [x] means the route meets the definition of done in
-    # CHARACTERIZATION-TESTS.md: at least one test per auth level that can
-    # reach the action, plus one failure-path test for write actions. Flip
+    # [x] means the route meets the characterization definition of done:
+    # at least one test per auth level that can reach the action, plus one
+    # failure-path test for write actions. Flip
     # marks by hand as tests land. After router changes, regenerate the file
     # (marks are preserved) with:
     #

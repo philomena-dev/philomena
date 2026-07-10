@@ -7,16 +7,17 @@ defmodule PhilomenaWeb.ImageControllerTest do
   import Philomena.ImagesFixtures
   import Philomena.UsersFixtures
 
+  alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
   alias Philomena.Images.Image
   alias Philomena.Tags.Tag
   alias Philomena.Repo
 
   setup do
-    SearchHelpers.clear_index!(Image)
+    Search.clear_index!(Image)
     # :show and :new render the quick tag table, which queries the tags index
     # (TagView.lookup_quick_tags/1) the first time it is built in a test run.
-    SearchHelpers.clear_index!(Tag)
+    Search.clear_index!(Tag)
     :ok
   end
 
@@ -249,34 +250,6 @@ defmodule PhilomenaWeb.ImageControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You are currently banned."
       assert Repo.aggregate(Image, :count) == 0
     end
-  end
-
-  # A successful :create spawns an unsupervised upload process
-  # (Images.async_upload/2) that writes to the Repo; wait for it to exit
-  # before the test ends so it doesn't retry with OwnershipError for the
-  # rest of the suite (same recipe as the API image tests).
-  defp await_async_upload do
-    test_pid = self()
-
-    for pid <- Process.list(), Process.info(pid, :parent) == {:parent, test_pid} do
-      ref = Process.monitor(pid)
-
-      receive do
-        {:DOWN, ^ref, :process, ^pid, _reason} -> :ok
-      after
-        5_000 -> raise "async upload process #{inspect(pid)} did not exit"
-      end
-    end
-
-    :ok
-  end
-
-  # LimitPlug keys anonymous uploads by conn.remote_ip in Valkey, which is
-  # shared across the whole test run — give each anonymous write its own
-  # address.
-  defp put_unique_ip(conn) do
-    n = System.unique_integer([:positive])
-    %{conn | remote_ip: {10, rem(div(n, 65536), 256), rem(div(n, 256), 256), rem(n, 256)}}
   end
 
   defp hours_ago(hours) do

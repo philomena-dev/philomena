@@ -44,11 +44,11 @@ defmodule PhilomenaWeb.IpProfile.SourceChangeControllerTest do
     end
 
     # NOTE: same `{:ok, ip} = EctoNetwork.INET.cast(ip)` match as the IP profile
-    # — an unparsable IP raises `MatchError` (a 500).
+    # - an unparsable IP raises `MatchError` (a 500).
     test "500s on an unparsable IP", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise MatchError, fn ->
+      assert_raise MatchError, ~r/no match of right hand side value:\s*:error/, fn ->
         get(conn, ~p"/ip_profiles/#{"not-an-ip"}/source_changes")
       end
     end

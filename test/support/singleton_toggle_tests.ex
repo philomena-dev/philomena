@@ -2,7 +2,7 @@ defmodule PhilomenaWeb.SingletonToggleTests do
   @moduledoc """
   Shared characterization-test generators for the singleton toggle
   controller family: the long tail of nearly identical singleton
-  `create`/`delete` controllers — subscriptions, notification reads, and
+  `create`/`delete` controllers - subscriptions, notification reads, and
   the image interaction endpoints.
 
   Every route in this family sits in the `require_authenticated_user`
@@ -25,14 +25,14 @@ defmodule PhilomenaWeb.SingletonToggleTests do
       defp anonymous_path, do: ~p"/images/1/subscription"
 
   `require_authenticated_user` runs in the router pipeline and halts before
-  the controller — and therefore before any `load_resource`/`LoadTopicPlug`
-  runs — so the ids in that path need not exist, and the anonymous tests
+  the controller - and therefore before any `load_resource`/`LoadTopicPlug`
+  runs - so the ids in that path need not exist, and the anonymous tests
   build no fixtures at all. They only ever assert the login redirect.
 
   ### Subscription controllers (`*.SubscriptionController`)
 
   Define `subscription_target/1`, taking the acting user (always a real
-  user — the anonymous tests use `anonymous_path/0` instead), then call
+  user - the anonymous tests use `anonymous_path/0` instead), then call
   `subscription_toggle_tests()`:
 
       defp subscription_target(user) do
@@ -48,8 +48,8 @@ defmodule PhilomenaWeb.SingletonToggleTests do
   ### Read controllers (`*.ReadController`, notification clearing)
 
   Define `read_target/1` (same `user` contract) returning
-  `%{path:, arrange!:, notification?:}` — `arrange!` must create a
-  notification of the kind the controller clears for `user` — then call
+  `%{path:, arrange!:, notification?:}` - `arrange!` must create a
+  notification of the kind the controller clears for `user` - then call
   `read_singleton_tests()`.
 
   ### Image interaction controllers (vote/fave/hide)
@@ -88,14 +88,14 @@ defmodule PhilomenaWeb.SingletonToggleTests do
 
   @doc """
   Asserts the 200 subscription partial (`_subscription.html`,
-  `layout: false`) and returns whether it renders in the watching state —
+  `layout: false`) and returns whether it renders in the watching state -
   the Subscribe (`data-method="post"`) link is the hidden one iff the
   user is subscribed.
   """
   def subscription_partial_watching?(conn) do
     response = html_response(conn, 200)
 
-    # layout: false — a bare partial, no page chrome
+    # layout: false - a bare partial, no page chrome
     refute response =~ "Derpibooru"
     assert response =~ "js-subscription-target"
 

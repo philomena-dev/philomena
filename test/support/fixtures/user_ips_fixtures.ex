@@ -3,7 +3,7 @@ defmodule Philomena.UserIpsFixtures do
   Test helpers for `m:Philomena.UserIps.UserIp` rows.
 
   `UserIp` rows are only ever written by `UserAttributionPlug` internals (the
-  schema changeset casts nothing), so — like the commission directory tests —
+  schema changeset casts nothing), so - like the commission directory tests -
   fixtures insert directly.
   """
 

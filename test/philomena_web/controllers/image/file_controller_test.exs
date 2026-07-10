@@ -17,7 +17,7 @@ defmodule PhilomenaWeb.Image.FileControllerTest do
       conn = put(conn, ~p"/images/#{image}/file", %{"image" => %{"image" => png_upload()}})
 
       assert redirected_to(conn) == ~p"/sessions/new"
-      # Not touched — the plug pipeline halts before the action.
+      # Not touched - the plug pipeline halts before the action.
       assert Repo.reload!(image).processed == true
     end
 

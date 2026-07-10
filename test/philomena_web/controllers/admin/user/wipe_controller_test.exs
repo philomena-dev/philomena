@@ -39,9 +39,9 @@ defmodule PhilomenaWeb.Admin.User.WipeControllerTest do
 
     # NOTE: :create is not covered by the not_found handler, so an unknown slug
     # passes nil through; the controller dereferences user.id (BadMapError on
-    # nil) before the worker enqueue — nil-pass-through family.
+    # nil) before the worker enqueue - nil-pass-through family.
     test "raises for an unknown slug", %{conn: conn} do
-      assert_raise BadMapError, fn ->
+      assert_raise BadMapError, ~r/expected a map, got:\s*nil/, fn ->
         post(conn, ~p"/admin/users/no-such-user/wipe")
       end
     end

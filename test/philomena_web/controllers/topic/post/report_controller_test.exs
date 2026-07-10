@@ -107,7 +107,7 @@ defmodule PhilomenaWeb.Topic.Post.ReportControllerTest do
     test "with a blank reason crashes trying to re-render the form",
          %{conn: conn, forum: forum, topic: topic, post: post} do
       # NOTE: ReportController.create/5 re-renders "new.html" on changeset
-      # failure in the calling controller's nonexistent default view — same
+      # failure in the calling controller's nonexistent default view - same
       # 500 as the other report wrappers (KNOWN-ODDITIES.md)
       %{conn: conn} = register_and_log_in_user(%{conn: conn})
       rule = rule_fixture()

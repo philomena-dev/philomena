@@ -1,5 +1,5 @@
 defmodule PhilomenaWeb.Api.Json.ImageControllerTest do
-  # async: false — a successful :create spawns a background upload process
+  # async: false - a successful :create spawns a background upload process
   # (Images.async_upload/2) that hits the Repo; it is only allowed on the
   # sandbox connection in shared mode, which ConnCase enables for sync tests.
   use PhilomenaWeb.ConnCase, async: false
@@ -12,28 +12,6 @@ defmodule PhilomenaWeb.Api.Json.ImageControllerTest do
   alias Philomena.Repo
 
   @png_fixture Path.absname("test/support/fixtures/files/upload-test.png")
-
-  # A successful :create spawns an unsupervised upload process
-  # (Images.async_upload/2) that writes to the Repo. Its sandbox allowance
-  # dies with the test process, so wait for it to exit before the test ends;
-  # otherwise it retries with OwnershipError every 5s for the rest of the
-  # suite. The endpoint call runs in the test process, so the upload process
-  # is our direct child.
-  defp await_async_upload do
-    test_pid = self()
-
-    for pid <- Process.list(), Process.info(pid, :parent) == {:parent, test_pid} do
-      ref = Process.monitor(pid)
-
-      receive do
-        {:DOWN, ^ref, :process, ^pid, _reason} -> :ok
-      after
-        5_000 -> raise "async upload process #{inspect(pid)} did not exit"
-      end
-    end
-
-    :ok
-  end
 
   describe "GET /api/v1/json/images/:id" do
     test "shows an image with the full representation set", %{conn: conn} do
@@ -327,9 +305,9 @@ defmodule PhilomenaWeb.Api.Json.ImageControllerTest do
       user = confirmed_user_fixture()
 
       # NOTE: API attribution fingerprints the User-Agent header with crc32,
-      # which raises on a UA-less request — a 500 instead of any HTTP error.
+      # which raises on a UA-less request - a 500 instead of any HTTP error.
       # Logged in KNOWN-ODDITIES.md.
-      assert_raise ArgumentError, fn ->
+      assert_raise ArgumentError, ~r/1st argument: not an iodata term/, fn ->
         post(conn, ~p"/api/v1/json/images?key=#{user.authentication_token}", %{
           "image" => %{"tag_input" => "safe, solo, pony"}
         })

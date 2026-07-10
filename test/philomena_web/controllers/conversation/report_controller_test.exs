@@ -78,7 +78,7 @@ defmodule PhilomenaWeb.Conversation.ReportControllerTest do
   test "POST with a blank reason crashes trying to re-render the form", %{conn: conn} do
     # NOTE: ReportController.create/5 re-renders "new.html" on changeset
     # failure but relies on the default view of the *calling* controller,
-    # and PhilomenaWeb.Conversation.ReportView does not exist — every
+    # and PhilomenaWeb.Conversation.ReportView does not exist - every
     # invalid report submission 500s. (KNOWN-ODDITIES.md)
     %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
     conversation = conversation_fixture(confirmed_user_fixture(), user)

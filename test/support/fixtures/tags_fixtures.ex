@@ -13,7 +13,7 @@ defmodule Philomena.TagsFixtures do
   Creates a tag.
 
   `Tags.create_tag/1` only accepts `:name` (slug, namespace, and namespace
-  category are derived from it — e.g. `"artist:foo"` gets the `origin`
+  category are derived from it - e.g. `"artist:foo"` gets the `origin`
   category automatically). A non-namespace `category:` attr is applied with
   a direct update afterwards, the way the tag controller would.
   """

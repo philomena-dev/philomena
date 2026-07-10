@@ -5,11 +5,12 @@ defmodule PhilomenaWeb.Image.NavigateControllerTest do
 
   import Philomena.ImagesFixtures
 
+  alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
   alias Philomena.Images.Image
 
   setup do
-    SearchHelpers.clear_index!(Image)
+    Search.clear_index!(Image)
     :ok
   end
 

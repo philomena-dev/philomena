@@ -67,7 +67,7 @@ defmodule PhilomenaWeb.Admin.SubnetBanControllerTest do
     # NOTE: The ip branch pattern-matches {:ok, ip} = EctoNetwork.INET.cast(ip),
     # so an unparsable address is a MatchError (500), not a form error.
     test "crashes on an invalid ip in the ip branch", %{conn: conn} do
-      assert_raise MatchError, fn ->
+      assert_raise MatchError, ~r/no match of right hand side value:\s*:error/, fn ->
         get(conn, ~p"/admin/subnet_bans?#{[ip: "not-an-ip"]}")
       end
     end
@@ -97,7 +97,7 @@ defmodule PhilomenaWeb.Admin.SubnetBanControllerTest do
     test "crashes on an invalid specification", %{conn: conn} do
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
 
-      assert_raise MatchError, fn ->
+      assert_raise MatchError, ~r/no match of right hand side value:\s*:error/, fn ->
         get(conn, ~p"/admin/subnet_bans/new?#{[specification: "not-an-ip"]}")
       end
     end

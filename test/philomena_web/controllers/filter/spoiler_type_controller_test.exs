@@ -46,9 +46,13 @@ defmodule PhilomenaWeb.Filter.SpoilerTypeControllerTest do
     # failure is a 500 rather than an error response
     %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
-    assert_raise MatchError, fn ->
-      patch(conn, ~p"/filters/spoiler_type", %{"user" => %{"spoiler_type" => "bogus"}})
-    end
+    assert_raise MatchError,
+                 ~r/no match of right hand side value:.*spoiler_type: \{"is invalid".*Users\.User/s,
+                 fn ->
+                   patch(conn, ~p"/filters/spoiler_type", %{
+                     "user" => %{"spoiler_type" => "bogus"}
+                   })
+                 end
   end
 
   test "PATCH without user params raises Phoenix.ActionClauseError", %{conn: conn} do

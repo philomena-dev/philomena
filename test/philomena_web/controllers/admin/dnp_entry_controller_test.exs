@@ -54,7 +54,7 @@ defmodule PhilomenaWeb.Admin.DnpEntryControllerTest do
     end
 
     # NOTE: the default index only lists the active states (requested/claimed/
-    # rescinded/acknowledged) — a "listed" entry is hidden unless states[] asks.
+    # rescinded/acknowledged) - a "listed" entry is hidden unless states[] asks.
     test "hides a listed entry by default but shows it with states[]", %{conn: conn} do
       user = confirmed_user_fixture()
       tag = tag_fixture(name: "artist:dnp-listed")

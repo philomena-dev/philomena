@@ -113,15 +113,17 @@ defmodule PhilomenaWeb.Admin.BadgeControllerTest do
     # NOTE: `Badges.create_badge/1` returns `{:error, %Ecto.Changeset{}}` on a
     # validation failure, but the controller's create/2 only matches
     # `{:error, :badge, changeset, _changes}` (a Multi-shaped tuple that the
-    # context never produces). So any invalid badge submission — here, a
-    # missing image — raises CaseClauseError (a 500) instead of re-rendering
+    # context never produces). So any invalid badge submission - here, a
+    # missing image - raises CaseClauseError (a 500) instead of re-rendering
     # the form. The error branch is effectively dead.
     test "500s on a validation failure (missing image)", %{conn: conn} do
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
 
-      assert_raise CaseClauseError, fn ->
-        post(conn, ~p"/admin/badges", %{"badge" => %{"title" => "No Image Badge"}})
-      end
+      assert_raise CaseClauseError,
+                   ~r/no case clause matching:\s*\{:error,\s*#Ecto\.Changeset<.*action: :insert.*image: \{"can't be blank".*Badges\.Badge/s,
+                   fn ->
+                     post(conn, ~p"/admin/badges", %{"badge" => %{"title" => "No Image Badge"}})
+                   end
     end
   end
 
@@ -177,7 +179,7 @@ defmodule PhilomenaWeb.Admin.BadgeControllerTest do
       assert Repo.get(Badge, badge.id).title == "Updated Title"
     end
 
-    # NOTE: Same dead error branch as create/2 — `update_badge/2` returns
+    # NOTE: Same dead error branch as create/2 - `update_badge/2` returns
     # `{:error, changeset}` but the controller matches
     # `{:error, :badge, changeset, _changes}`, so a blank title is a
     # CaseClauseError 500, not a re-rendered form.
@@ -185,9 +187,11 @@ defmodule PhilomenaWeb.Admin.BadgeControllerTest do
       badge = badge_fixture()
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
 
-      assert_raise CaseClauseError, fn ->
-        patch(conn, ~p"/admin/badges/#{badge}", %{"badge" => %{"title" => ""}})
-      end
+      assert_raise CaseClauseError,
+                   ~r/no case clause matching:\s*\{:error,\s*#Ecto\.Changeset<.*action: :update.*title: \{"can't be blank".*Badges\.Badge/s,
+                   fn ->
+                     patch(conn, ~p"/admin/badges/#{badge}", %{"badge" => %{"title" => ""}})
+                   end
     end
   end
 

@@ -9,10 +9,11 @@ defmodule PhilomenaWeb.Api.Rss.WatchedControllerTest do
   alias Philomena.Images.Image
   alias Philomena.Repo
   alias Philomena.Users.User
+  alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
 
   setup do
-    SearchHelpers.clear_index!(Image)
+    Search.clear_index!(Image)
     :ok
   end
 

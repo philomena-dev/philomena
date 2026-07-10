@@ -15,7 +15,7 @@ defmodule Philomena.BadgesFixtures do
 
   `Badges.create_badge/1` runs the SVG upload pipeline
   (`persist_upload/1` crashes without a real uploaded file), which
-  characterization tests don't need — so this inserts the row directly with
+  characterization tests don't need - so this inserts the row directly with
   the image filename set the way the uploader would leave it.
   """
   def badge_fixture(attrs \\ %{}) do
@@ -40,7 +40,7 @@ defmodule Philomena.BadgesFixtures do
   @svg_fixture Path.absname("test/support/fixtures/files/badge-test.svg")
 
   @doc """
-  A real SVG upload — badge create/update-image run the media pipeline and the
+  A real SVG upload - badge create/update-image run the media pipeline and the
   badge image_changeset requires an `image/svg+xml` MIME type.
   """
   def svg_upload do

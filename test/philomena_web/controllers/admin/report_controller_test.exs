@@ -10,10 +10,11 @@ defmodule PhilomenaWeb.Admin.ReportControllerTest do
   import Philomena.ImagesFixtures
 
   alias Philomena.Reports.Report
+  alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
 
   setup do
-    SearchHelpers.clear_index!(Report)
+    Search.clear_index!(Report)
     :ok
   end
 

@@ -96,7 +96,7 @@ defmodule PhilomenaWeb.Tag.AliasControllerTest do
     test "aliasing into an unknown target re-renders the form with errors", %{conn: conn} do
       # NOTE: a nonexistent target tag makes alias_changeset fail
       # validate_required(:aliased_tag), so the controller re-renders edit.html
-      # at 200 — a genuine error branch.
+      # at 200 - a genuine error branch.
       tag = tag_fixture()
       conn = log_in_user(conn, admin_user_fixture())
 
@@ -140,7 +140,7 @@ defmodule PhilomenaWeb.Tag.AliasControllerTest do
       conn: conn
     } do
       # NOTE: a role-mod fails authorization on the nil resource, so the
-      # unauthorized handler fires — "can't access". An admin passes
+      # unauthorized handler fires - "can't access". An admin passes
       # authorization and hits the not-found handler instead (next test).
       conn = log_in_role_moderator(conn, "Tag")
       conn = delete(conn, ~p"/tags/nonexistent-tag/alias")
@@ -152,7 +152,7 @@ defmodule PhilomenaWeb.Tag.AliasControllerTest do
     test "an unknown slug is the not-found redirect for an admin", %{conn: conn} do
       # NOTE: can?(admin, _, nil) is true, but load_and_authorize_resource has
       # persisted: true, so Canary's not_found_handler fires on the nil
-      # resource before delete/2 runs — a clean "Couldn't find" redirect, NOT
+      # resource before delete/2 runs - a clean "Couldn't find" redirect, NOT
       # a crash.
       conn = log_in_user(conn, admin_user_fixture())
       conn = delete(conn, ~p"/tags/nonexistent-tag/alias")

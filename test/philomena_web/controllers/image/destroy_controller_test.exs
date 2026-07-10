@@ -34,7 +34,7 @@ defmodule PhilomenaWeb.Image.DestroyControllerTest do
     end
 
     # NOTE: unlike the other image mod tools, a plain moderator CANNOT destroy
-    # an image — the :destroy ability requires an Image-admin role_map grant.
+    # an image - the :destroy ability requires an Image-admin role_map grant.
     test "rejects a plain moderator", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       image = deleted_image()

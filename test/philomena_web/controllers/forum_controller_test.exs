@@ -31,11 +31,11 @@ defmodule PhilomenaWeb.ForumControllerTest do
     test "crashes when the user can see no forums at all", %{conn: conn} do
       _staff = forum_fixture(name: "Staff Lounge", access_level: "staff")
 
-      # NOTE: probable bug (see KNOWN-ODDITIES.md) — ForumListPlug assigns
+      # NOTE: probable bug (see KNOWN-ODDITIES.md) - ForumListPlug assigns
       # forums: [] for a user with no visible forums, and Canary's fetch_all
       # crashes on the empty list, so this request 500s instead of rendering
       # an empty index.
-      assert_raise BadMapError, fn -> get(conn, ~p"/forums") end
+      assert_raise BadMapError, ~r/expected a map, got:\s*nil/, fn -> get(conn, ~p"/forums") end
     end
   end
 
@@ -52,7 +52,7 @@ defmodule PhilomenaWeb.ForumControllerTest do
 
     test "redirects to / for an unknown short name", %{conn: conn} do
       # NOTE: an unknown forum is a 302 redirect with a flash, not a 404 page
-      # (unlike the JSON API, which returns a bare 404) — and the flash is the
+      # (unlike the JSON API, which returns a bare 404) - and the flash is the
       # *authorization* message, not the not-found one.
       conn = get(conn, ~p"/forums/nonexistent")
 

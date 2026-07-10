@@ -6,12 +6,13 @@ defmodule PhilomenaWeb.CommentControllerTest do
   import Philomena.CommentsFixtures
   import Philomena.ImagesFixtures
 
+  alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
   alias Philomena.Comments.Comment
   alias Philomena.Repo
 
   setup do
-    SearchHelpers.clear_index!(Comment)
+    Search.clear_index!(Comment)
     :ok
   end
 

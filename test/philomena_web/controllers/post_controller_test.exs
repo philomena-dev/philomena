@@ -7,12 +7,13 @@ defmodule PhilomenaWeb.PostControllerTest do
   import Philomena.PostsFixtures
   import Philomena.TopicsFixtures
 
+  alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
   alias Philomena.Posts.Post
   alias Philomena.Repo
 
   setup do
-    SearchHelpers.clear_index!(Post)
+    Search.clear_index!(Post)
     :ok
   end
 

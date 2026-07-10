@@ -7,7 +7,7 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
   import Philomena.AttributionFixtures
   import Philomena.ImagesFixtures
 
-  alias PhilomenaQuery.SearchHelpers
+  alias PhilomenaQuery.Search
   alias Philomena.TagChanges.TagChange
   alias Philomena.Tags.Tag
   alias Philomena.Repo
@@ -16,7 +16,7 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
     # The successful update actions re-render the image's _tags.html.slime
     # partial, whose quick tag table queries the tags index
     # (TagView.lookup_quick_tags/1). Without the index the render 500s.
-    SearchHelpers.clear_index!(Tag)
+    Search.clear_index!(Tag)
 
     # Valkey tag-change counters (rltcn:/rltcr:, 50 per 10 min) are keyed by IP
     # and are not rolled back by the SQL sandbox. The logged-in tests below
@@ -25,14 +25,6 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
     # body). The anonymous tests use put_unique_ip/1 and need no reset.
     reset_tag_change_limits(ip: "127.0.0.1")
     :ok
-  end
-
-  # LimitPlug keys anonymous metadata updates by remote IP in Valkey, which
-  # is shared across the whole (concurrent) test run — give each anonymous
-  # write its own address.
-  defp put_unique_ip(conn) do
-    n = System.unique_integer([:positive])
-    %{conn | remote_ip: {10, rem(div(n, 65536), 256), rem(div(n, 256), 256), rem(n, 256)}}
   end
 
   defp tag_names(image) do

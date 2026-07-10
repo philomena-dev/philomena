@@ -63,7 +63,7 @@ defmodule PhilomenaWeb.Api.Json.Search.ReverseControllerTest do
 
     test "returns empty results when no image is submitted", %{conn: conn} do
       # NOTE: ScraperCachePlug injects an empty "image" params map, so the
-      # missing upload surfaces as a failed changeset — again a 200 with
+      # missing upload surfaces as a failed changeset - again a 200 with
       # empty results, not a 400.
       conn = post(conn, ~p"/api/v1/json/search/reverse")
 

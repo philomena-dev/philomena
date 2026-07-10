@@ -35,8 +35,8 @@ defmodule PhilomenaWeb.FingerprintProfileControllerTest do
     end
 
     # NOTE: unlike the IP profile, the fingerprint is used directly as a string
-    # (no `EctoNetwork.INET.cast`), so any value — including one with no
-    # activity — renders a 200 rather than crashing.
+    # (no `EctoNetwork.INET.cast`), so any value - including one with no
+    # activity - renders a 200 rather than crashing.
     test "renders an empty profile for a fingerprint with no activity", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 

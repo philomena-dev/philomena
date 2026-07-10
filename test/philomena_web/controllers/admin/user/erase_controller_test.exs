@@ -100,7 +100,7 @@ defmodule PhilomenaWeb.Admin.User.EraseControllerTest do
     end
 
     # NOTE: the nonexistent-user guard redirects to the user index (no crash)
-    # for an unknown slug — the create write action's failure path.
+    # for an unknown slug - the create write action's failure path.
     test "redirects an unknown slug to the user index", %{conn: conn} do
       conn = post(conn, ~p"/admin/users/no-such-user/erase")
       assert redirected_to(conn) == ~p"/admin/users"

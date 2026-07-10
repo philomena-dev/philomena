@@ -12,14 +12,15 @@ defmodule PhilomenaWeb.TagControllerTest do
   import Philomena.TagsFixtures
   import Philomena.UsersFixtures
 
+  alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
   alias Philomena.Images.Image
   alias Philomena.Repo
   alias Philomena.Tags.Tag
 
   setup do
-    SearchHelpers.clear_index!(Tag)
-    SearchHelpers.clear_index!(Image)
+    Search.clear_index!(Tag)
+    Search.clear_index!(Image)
     :ok
   end
 
@@ -168,7 +169,7 @@ defmodule PhilomenaWeb.TagControllerTest do
       # NOTE: update_tag's changeset has no required fields, so there is no
       # reachable validation failure; the failure surface is the unknown slug.
       # A moderator fails authorization on the nil resource, so the
-      # unauthorized handler fires — "can't access".
+      # unauthorized handler fires - "can't access".
       conn = log_in_user(conn, moderator_user_fixture())
       conn = put(conn, ~p"/tags/nonexistent-tag", %{"tag" => %{"category" => "character"}})
 
@@ -179,7 +180,7 @@ defmodule PhilomenaWeb.TagControllerTest do
     test "an unknown slug is the not-found redirect for an admin", %{conn: conn} do
       # NOTE: can?(admin, _, nil) is true, but load_and_authorize_resource has
       # persisted: true, so Canary's not_found_handler fires on the nil
-      # resource before update/2 runs — a clean "Couldn't find" redirect, NOT
+      # resource before update/2 runs - a clean "Couldn't find" redirect, NOT
       # a crash. Same different-flash-by-role split as the tag alias/reindex
       # children.
       conn = log_in_user(conn, admin_user_fixture())
@@ -245,7 +246,7 @@ defmodule PhilomenaWeb.TagControllerTest do
     test "an unknown slug is the not-found redirect for an admin", %{conn: conn} do
       # NOTE: the delete_tag failure surface is the unknown slug; an admin
       # passes authorization on the nil resource but Canary's not_found_handler
-      # (persisted: true) fires before delete/2 — a clean "Couldn't find"
+      # (persisted: true) fires before delete/2 - a clean "Couldn't find"
       # redirect, not a crash.
       conn = log_in_user(conn, admin_user_fixture())
       conn = delete(conn, ~p"/tags/nonexistent-tag")

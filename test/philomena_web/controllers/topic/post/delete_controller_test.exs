@@ -57,7 +57,7 @@ defmodule PhilomenaWeb.Topic.Post.DeleteControllerTest do
     end
 
     # Failure path: destroy_changeset never fails, so the only reachable failure
-    # surface is an unknown post — load_and_authorize_resource authorizes the
+    # surface is an unknown post - load_and_authorize_resource authorizes the
     # nil resource, which no moderator rule matches, so it redirects with the
     # authorization flash.
     test "for an unknown post_id redirects with the authorization flash",

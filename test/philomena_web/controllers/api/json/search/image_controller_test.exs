@@ -9,10 +9,11 @@ defmodule PhilomenaWeb.Api.Json.Search.ImageControllerTest do
   alias Philomena.ImageFaves
   alias Philomena.Images.Image
   alias Philomena.Repo
+  alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
 
   setup do
-    SearchHelpers.clear_index!(Image)
+    Search.clear_index!(Image)
     :ok
   end
 
@@ -92,7 +93,7 @@ defmodule PhilomenaWeb.Api.Json.Search.ImageControllerTest do
       SearchHelpers.reindex_all!(Image)
 
       # NOTE: a missing/empty q compiles to match_none, a 200 with no
-      # results — not a 400.
+      # results - not a 400.
       conn = get(conn, ~p"/api/v1/json/search/images")
 
       assert json_response(conn, 200) == %{"images" => [], "interactions" => [], "total" => 0}

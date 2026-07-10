@@ -76,7 +76,7 @@ defmodule PhilomenaWeb.Image.FaveControllerTest do
 
       conn = delete(conn, ~p"/images/#{image}/fave")
 
-      # NOTE: unfaving only deletes the fave row — the upvote that faving
+      # NOTE: unfaving only deletes the fave row - the upvote that faving
       # created stays behind
       assert json_response(conn, 200) == %{
                "score" => 1,

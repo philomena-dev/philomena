@@ -11,7 +11,7 @@ defmodule PhilomenaWeb.ChannelControllerTest do
   alias Philomena.Repo
 
   # Channels are authorized against Channel, which every moderator (and admin)
-  # can act on — no role_map grant needed. The write routes sit in the
+  # can act on - no role_map grant needed. The write routes sit in the
   # require_authenticated_user scope, so anonymous users are bounced to login
   # before authorization runs.
 

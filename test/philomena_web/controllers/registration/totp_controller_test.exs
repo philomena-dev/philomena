@@ -90,17 +90,19 @@ defmodule PhilomenaWeb.Registration.TotpControllerTest do
       put_totp_secret(user)
 
       # NOTE: an invalid code falls through to the backup-code check, and a
-      # user who has not enabled TOTP yet has otp_backup_codes: nil —
+      # user who has not enabled TOTP yet has otp_backup_codes: nil -
       # Enum.any?/2 crashes, so a typo'd code while enabling 2FA is a 500
       # (KNOWN-ODDITIES.md).
-      assert_raise Protocol.UndefinedError, fn ->
-        patch(conn, ~p"/registrations/totp", %{
-          "user" => %{
-            "current_password" => valid_user_password(),
-            "twofactor_token" => "not a code"
-          }
-        })
-      end
+      assert_raise Protocol.UndefinedError,
+                   ~r/protocol Enumerable not implemented for Atom.*Got value:\s*nil/s,
+                   fn ->
+                     patch(conn, ~p"/registrations/totp", %{
+                       "user" => %{
+                         "current_password" => valid_user_password(),
+                         "twofactor_token" => "not a code"
+                       }
+                     })
+                   end
 
       refute Users.get_user!(user.id).otp_required_for_login
     end

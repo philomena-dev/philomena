@@ -77,7 +77,7 @@ defmodule PhilomenaWeb.Tag.WatchControllerTest do
     # tag.id. (KNOWN-ODDITIES.md)
     %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
-    assert_raise BadMapError, fn ->
+    assert_raise BadMapError, ~r/expected a map, got:\s*nil/, fn ->
       post(conn, ~p"/tags/unknown-slug/watch")
     end
   end

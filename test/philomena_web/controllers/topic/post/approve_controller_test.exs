@@ -80,7 +80,7 @@ defmodule PhilomenaWeb.Topic.Post.ApproveControllerTest do
       assert Repo.reload!(post).approved
     end
 
-    # Failure path: the only reachable failure surface is an unknown post —
+    # Failure path: the only reachable failure surface is an unknown post -
     # load_and_authorize_resource authorizes the nil resource, which no
     # moderator rule matches, so it redirects with the authorization flash.
     test "for an unknown post_id redirects with the authorization flash",

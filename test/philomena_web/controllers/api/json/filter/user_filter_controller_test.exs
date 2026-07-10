@@ -43,7 +43,7 @@ defmodule PhilomenaWeb.Api.Json.Filter.UserFilterControllerTest do
       conn = get(conn, ~p"/api/v1/json/filters/user?key=#{user.authentication_token}")
 
       # NOTE: system filters (including ConnCase's seeded "Default") are
-      # excluded — only rows with the user's user_id appear.
+      # excluded - only rows with the user's user_id appear.
       assert json_response(conn, 200) == %{
                "total" => 2,
                "filters" => [

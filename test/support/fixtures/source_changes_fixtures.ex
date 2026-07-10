@@ -5,8 +5,8 @@ defmodule Philomena.SourceChangesFixtures do
   Source changes are normally produced as a side effect of
   `Philomena.Images.update_sources/3`; the IP / fingerprint source-change pages
   filter them by attribution, so tests need rows with a chosen `ip` /
-  `fingerprint`. The schema changeset casts nothing, so — like the `UserIp` /
-  `UserFingerprint` fixtures — this inserts directly. `source_changes.ip`,
+  `fingerprint`. The schema changeset casts nothing, so - like the `UserIp` /
+  `UserFingerprint` fixtures - this inserts directly. `source_changes.ip`,
   `.fingerprint`, and `.value` are all `NOT NULL`, so both attribution fields
   always get a value.
   """

@@ -7,10 +7,11 @@ defmodule PhilomenaWeb.Api.Json.Search.GalleryControllerTest do
   import Philomena.UsersFixtures
 
   alias Philomena.Galleries.Gallery
+  alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
 
   setup do
-    SearchHelpers.clear_index!(Gallery)
+    Search.clear_index!(Gallery)
     :ok
   end
 
@@ -45,7 +46,7 @@ defmodule PhilomenaWeb.Api.Json.Search.GalleryControllerTest do
       SearchHelpers.reindex_all!(Gallery)
 
       # NOTE: a missing/empty q compiles to match_none, a 200 with no
-      # results — not a 400.
+      # results - not a 400.
       conn = get(conn, ~p"/api/v1/json/search/galleries")
 
       assert json_response(conn, 200) == %{"galleries" => [], "total" => 0}

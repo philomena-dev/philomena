@@ -26,7 +26,7 @@ defmodule Philomena.AttributionFixtures do
 
   Tag changes authored through `Philomena.Images.update_tags/3` bump the
   `rltcn:`/`rltcr:` counters keyed on the attribution IP (see
-  `Philomena.TagChanges.Limits` — 50 tag changes per 10 minutes for
+  `Philomena.TagChanges.Limits` - 50 tag changes per 10 minutes for
   anonymous/unverified users). The SQL sandbox does not roll Valkey back, so
   the counter accumulates across test runs (10-minute TTL) and eventually
   trips `{:error, :check_limits, :limit_exceeded, ...}`. Tests that author tag

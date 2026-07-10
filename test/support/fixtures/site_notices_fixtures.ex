@@ -8,7 +8,7 @@ defmodule Philomena.SiteNoticesFixtures do
 
   @doc """
   Creates a site notice, authored by a fresh admin. `start_date`/`finish_date`
-  are RelativeDate fields — a plain `%DateTime{}` casts fine.
+  are RelativeDate fields - a plain `%DateTime{}` casts fine.
   """
   def site_notice_fixture(attrs \\ %{}) do
     {:ok, notice} =

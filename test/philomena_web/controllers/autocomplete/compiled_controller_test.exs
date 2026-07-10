@@ -31,7 +31,7 @@ defmodule PhilomenaWeb.Autocomplete.CompiledControllerTest do
 
       # NOTE: get_autocomplete/0 orders by created_at desc; both rows here get
       # the same second-granularity timestamp, so the winner is whichever the
-      # database returns first — assert only that a valid binary is served.
+      # database returns first - assert only that a valid binary is served.
       assert response(conn, 200) in [<<1>>, <<2>>]
     end
 

@@ -21,7 +21,7 @@ defmodule PhilomenaWeb.Admin.Batch.TagControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    # NOTE: :batch_update on Tag has no plain-moderator rule — a moderator is
+    # NOTE: :batch_update on Tag has no plain-moderator rule - a moderator is
     # rejected; only admins (or a Tag-admin/batch_update role_map grant) pass.
     test "rejects a plain moderator", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
@@ -103,9 +103,14 @@ defmodule PhilomenaWeb.Admin.Batch.TagControllerTest do
     # NOTE: a non-integer image id raises ArgumentError in String.to_integer/1
     # (a 500).
     test "raises on a non-integer image id", %{conn: conn} do
-      assert_raise ArgumentError, fn ->
-        patch(conn, ~p"/admin/batch/tags", tags: "safe", image_ids: ["not-an-integer"])
-      end
+      assert_raise ArgumentError,
+                   ~r/1st argument: not a textual representation of an integer/,
+                   fn ->
+                     patch(conn, ~p"/admin/batch/tags",
+                       tags: "safe",
+                       image_ids: ["not-an-integer"]
+                     )
+                   end
     end
 
     # NOTE: a missing tags/image_ids param does not match update/2 and raises

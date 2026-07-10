@@ -13,12 +13,13 @@ defmodule PhilomenaWeb.TagChangeControllerTest do
   alias Philomena.Images
   alias Philomena.Repo
   alias Philomena.TagChanges.TagChange
+  alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
 
   import Ecto.Query
 
   setup do
-    SearchHelpers.clear_index!(TagChange)
+    Search.clear_index!(TagChange)
     # Valkey rate-limit counters are not rolled back by the SQL sandbox; reset
     # the tag-change limit so accumulated counts don't trip check_limits.
     reset_tag_change_limits()
@@ -76,7 +77,7 @@ defmodule PhilomenaWeb.TagChangeControllerTest do
 
       assert response =~ "added test tag"
 
-      conn = get(build_conn(), ~p"/tag_changes?#{[tcq: "image_id:#{image.id + 1}"]}")
+      conn = get(conn, ~p"/tag_changes?#{[tcq: "image_id:#{image.id + 1}"]}")
       response = html_response(conn, 200)
 
       refute response =~ "added test tag"
@@ -87,7 +88,7 @@ defmodule PhilomenaWeb.TagChangeControllerTest do
       image = tag_change_fixture!(user)
       other_image = image_fixture()
 
-      # NOTE: resource_type/resource_id are display-only — TagChanges.load
+      # NOTE: resource_type/resource_id are display-only - TagChanges.load
       # compiles a search query from the "tcq" param alone, so pointing at
       # a different image still lists every tag change.
       conn =

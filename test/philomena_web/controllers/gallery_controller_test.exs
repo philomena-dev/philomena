@@ -8,14 +8,15 @@ defmodule PhilomenaWeb.GalleryControllerTest do
   import Philomena.ImagesFixtures
   import Philomena.UsersFixtures
 
+  alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
   alias Philomena.Galleries
   alias Philomena.Galleries.Gallery
   alias Philomena.Images.Image
 
   setup do
-    SearchHelpers.clear_index!(Gallery)
-    SearchHelpers.clear_index!(Image)
+    Search.clear_index!(Gallery)
+    Search.clear_index!(Image)
     :ok
   end
 

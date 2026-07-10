@@ -57,7 +57,7 @@ defmodule PhilomenaWeb.Tag.ReindexControllerTest do
       conn: conn
     } do
       # NOTE: a role-mod fails authorization on the nil resource (no rule
-      # matches nil), so Canary's unauthorized handler fires — "can't access".
+      # matches nil), so Canary's unauthorized handler fires - "can't access".
       # An admin passes authorization and instead hits the not-found handler
       # (see the next test), so the same unknown slug yields a different flash
       # depending on role.
@@ -70,7 +70,7 @@ defmodule PhilomenaWeb.Tag.ReindexControllerTest do
 
     test "an unknown slug is the not-found redirect for an admin", %{conn: conn} do
       # NOTE: can?(admin, _, nil) is true, so an admin sails past the nil
-      # authorization — but load_and_authorize_resource has persisted: true, so
+      # authorization - but load_and_authorize_resource has persisted: true, so
       # Canary's not_found_handler fires on the nil resource before create/2
       # runs. The admin gets a clean "Couldn't find" redirect, NOT a 500.
       conn = log_in_user(conn, admin_user_fixture())

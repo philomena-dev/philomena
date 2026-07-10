@@ -6,10 +6,11 @@ defmodule PhilomenaWeb.Api.Json.Search.TagControllerTest do
   import Philomena.TagsFixtures
 
   alias Philomena.Tags.Tag
+  alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
 
   setup do
-    SearchHelpers.clear_index!(Tag)
+    Search.clear_index!(Tag)
     :ok
   end
 
@@ -66,7 +67,7 @@ defmodule PhilomenaWeb.Api.Json.Search.TagControllerTest do
       SearchHelpers.reindex_all!(Tag)
 
       # NOTE: a missing/empty q compiles to match_none, a 200 with no
-      # results — not a 400.
+      # results - not a 400.
       conn = get(conn, ~p"/api/v1/json/search/tags")
 
       assert json_response(conn, 200) == %{"tags" => [], "total" => 0}

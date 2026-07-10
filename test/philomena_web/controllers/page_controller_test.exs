@@ -45,7 +45,7 @@ defmodule PhilomenaWeb.PageControllerTest do
       %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
       # NOTE: Canary authorizes :index against the StaticPage module, which
-      # only staff ability rules match — the pages index is staff-only even
+      # only staff ability rules match - the pages index is staff-only even
       # though individual pages are public.
       conn = get(conn, ~p"/pages")
 

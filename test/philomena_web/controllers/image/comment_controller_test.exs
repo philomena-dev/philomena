@@ -9,14 +9,6 @@ defmodule PhilomenaWeb.Image.CommentControllerTest do
   alias Philomena.Comments.Comment
   alias Philomena.Repo
 
-  # LimitPlug keys anonymous comment creation by remote IP in Valkey, which
-  # is shared across the whole (concurrent) test run — give each anonymous
-  # write its own address.
-  defp put_unique_ip(conn) do
-    n = System.unique_integer([:positive])
-    %{conn | remote_ip: {10, rem(div(n, 65536), 256), rem(div(n, 256), 256), rem(n, 256)}}
-  end
-
   describe "GET /images/:image_id/comments" do
     test "renders the comment list without a layout", %{conn: conn} do
       image = image_fixture()

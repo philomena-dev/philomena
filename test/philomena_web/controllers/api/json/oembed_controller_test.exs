@@ -121,7 +121,7 @@ defmodule PhilomenaWeb.Api.Json.OembedControllerTest do
 
     test "crashes on a URL without a path", %{conn: conn} do
       # NOTE: URI.parse/1 yields a nil path for host-only URLs, which
-      # Regex.run/3 rejects — a 500, not a 404.
+      # Regex.run/3 rejects - a 500, not a 404.
       assert_raise FunctionClauseError, ~r/Regex\.run/, fn ->
         url = "https://derpibooru.org"
         get(conn, ~p"/api/v1/json/oembed?url=#{url}")
@@ -131,10 +131,12 @@ defmodule PhilomenaWeb.Api.Json.OembedControllerTest do
     test "crashes on an image id that exceeds the integer column range", %{conn: conn} do
       # NOTE: the extracted id is interpolated into the query unchecked, so
       # an id that does not fit in the id column raises instead of 404ing.
-      assert_raise DBConnection.EncodeError, fn ->
-        url = "https://derpibooru.org/images/99999999999999999999"
-        get(conn, ~p"/api/v1/json/oembed?url=#{url}")
-      end
+      assert_raise DBConnection.EncodeError,
+                   ~r/Postgrex expected an integer in -2147483648\.\.2147483647, got 99999999999999999999/,
+                   fn ->
+                     url = "https://derpibooru.org/images/99999999999999999999"
+                     get(conn, ~p"/api/v1/json/oembed?url=#{url}")
+                   end
     end
   end
 end

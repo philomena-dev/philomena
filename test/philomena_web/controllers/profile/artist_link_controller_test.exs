@@ -55,7 +55,7 @@ defmodule PhilomenaWeb.Profile.ArtistLinkControllerTest do
     end
 
     test "shows a moderator their own links on another user's profile", %{conn: conn} do
-      # NOTE: index queries by current_user, not the profile being viewed —
+      # NOTE: index queries by current_user, not the profile being viewed -
       # a moderator opening an artist's link page sees their own (usually
       # empty) list, not the artist's links.
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
@@ -173,7 +173,7 @@ defmodule PhilomenaWeb.Profile.ArtistLinkControllerTest do
 
   describe "GET /profiles/:profile_id/artist_links/:id/edit" do
     test "redirects the link's owner with the authorization flash", %{conn: conn} do
-      # NOTE: no ability rule grants users :edit on their own ArtistLink —
+      # NOTE: no ability rule grants users :edit on their own ArtistLink -
       # editing is moderator-only even under the owner's profile.
       %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
       link = artist_link_fixture(user)
@@ -249,7 +249,7 @@ defmodule PhilomenaWeb.Profile.ArtistLinkControllerTest do
 
     test "crashes for an admin because the action does not exist", %{conn: conn} do
       # NOTE: the router generates DELETE via `resources "/artist_links"`,
-      # but the controller defines no delete/2 — a dead route reachable only
+      # but the controller defines no delete/2 - a dead route reachable only
       # by admins (who pass every authorization check). KNOWN-ODDITIES.md.
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
       artist = confirmed_user_fixture()

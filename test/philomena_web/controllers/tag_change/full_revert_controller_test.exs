@@ -53,9 +53,11 @@ defmodule PhilomenaWeb.TagChange.FullRevertControllerTest do
       # so a request missing all three raises CaseClauseError (500).
       conn = log_in_user(conn, moderator_user_fixture())
 
-      assert_raise CaseClauseError, fn ->
-        post(conn, ~p"/tag_changes/full_revert", %{"something" => "else"})
-      end
+      assert_raise CaseClauseError,
+                   ~r/no case clause matching:\s*%\{"something" => "else"\}/,
+                   fn ->
+                     post(conn, ~p"/tag_changes/full_revert", %{"something" => "else"})
+                   end
     end
   end
 end

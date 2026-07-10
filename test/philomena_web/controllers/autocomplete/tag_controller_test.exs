@@ -13,10 +13,11 @@ defmodule PhilomenaWeb.Autocomplete.TagControllerTest do
 
   alias Philomena.Tags.Tag
   alias Philomena.Repo
+  alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
 
   setup do
-    SearchHelpers.clear_index!(Tag)
+    Search.clear_index!(Tag)
     :ok
   end
 

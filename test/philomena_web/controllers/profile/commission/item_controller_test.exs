@@ -40,7 +40,7 @@ defmodule PhilomenaWeb.Profile.Commission.ItemControllerTest do
 
     test "redirects a moderator with the authorization flash", %{conn: conn} do
       # NOTE: unlike Profile.CommissionController, :ensure_correct_user here
-      # has no moderator/admin bypass — items are strictly owner-only.
+      # has no moderator/admin bypass - items are strictly owner-only.
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       artist = confirmed_user_fixture()
       commission_fixture(artist)

@@ -31,10 +31,9 @@ defmodule PhilomenaWeb.RouteCoverageTest do
            #{Enum.join(unchecked, "\n")}
 
            Every routed action must have characterization tests meeting the
-           definition of done in CHARACTERIZATION-TESTS.md (at least one test
-           per auth level that can reach the action, plus one failure-path test
-           for write actions). Add those tests, then flip the line's [ ] to [x]
-           in test/route_coverage.txt.
+           definition of done (at least one test per auth level that can reach
+           the action, plus one failure-path test for write actions). Add those
+           tests, then flip the line's [ ] to [x] in test/route_coverage.txt.
            """
   end
 end

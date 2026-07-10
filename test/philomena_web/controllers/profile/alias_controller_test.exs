@@ -68,7 +68,7 @@ defmodule PhilomenaWeb.Profile.AliasControllerTest do
       assert response =~ "Potential Aliases"
     end
 
-    # NOTE: same `load_and_authorize_resource` `:index` shape as ip/fp_history —
+    # NOTE: same `load_and_authorize_resource` `:index` shape as ip/fp_history -
     # an unknown slug takes the not-authorized redirect, not the not-found one.
     test "redirects an unknown profile slug with the authorization flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})

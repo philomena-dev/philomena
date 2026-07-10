@@ -28,7 +28,7 @@ defmodule PhilomenaWeb.Admin.ForumControllerTest do
     end
 
     # NOTE: Unlike badges and adverts, the Forum ability is `can? :edit, Forum`,
-    # granted ONLY to admins (`role: "admin"`) — there is no role_map
+    # granted ONLY to admins (`role: "admin"`) - there is no role_map
     # ("Forum" => ...) grant anywhere in the ability rules. A
     # "Forum"-resource_type role_map entry therefore grants nothing, so the
     # moderator is still rejected.
@@ -61,10 +61,12 @@ defmodule PhilomenaWeb.Admin.ForumControllerTest do
     # NOTE: The admin forum index renders `@forums`, which is populated by
     # ForumListPlug (in the :browser pipeline), not the controller. With no
     # forums visible, Canary's load_resource reuses the empty assign and
-    # probes `Enum.at(resources, 0).__struct__`, raising BadMapError — the
+    # probes `Enum.at(resources, 0).__struct__`, raising BadMapError - the
     # same empty-list 500 pinned for the public ForumController.
     test "500s on the empty index", %{conn: conn} do
-      assert_raise BadMapError, fn -> get(conn, ~p"/admin/forums") end
+      assert_raise BadMapError, ~r/expected a map, got:\s*nil/, fn ->
+        get(conn, ~p"/admin/forums")
+      end
     end
   end
 
@@ -156,7 +158,7 @@ defmodule PhilomenaWeb.Admin.ForumControllerTest do
     end
 
     # NOTE: Forums are loaded by `short_name` (id_field), a string column, so
-    # an unknown/non-integer short name never casts — it just misses (no
+    # an unknown/non-integer short name never casts - it just misses (no
     # Ecto.Query.CastError, unlike the integer-id badge/advert routes).
     # Canary's plain load_resource runs its not_found handler for :edit here,
     # so a missing short name redirects with the not-found flash.

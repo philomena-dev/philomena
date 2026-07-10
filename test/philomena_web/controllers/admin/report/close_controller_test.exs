@@ -48,7 +48,7 @@ defmodule PhilomenaWeb.Admin.Report.CloseControllerTest do
     setup [:register_and_log_in_moderator]
 
     # NOTE: an unknown report id takes Canary's not-found path on :create
-    # (authorization fails against the nil resource) — the authorization
+    # (authorization fails against the nil resource) - the authorization
     # flash + redirect to /, not a 404.
     test "redirects for an unknown report id", %{conn: conn} do
       conn = post(conn, ~p"/admin/reports/#{0}/close")

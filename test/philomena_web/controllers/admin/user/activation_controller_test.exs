@@ -10,7 +10,7 @@ defmodule PhilomenaWeb.Admin.User.ActivationControllerTest do
   alias Philomena.Repo
 
   # NOTE: every Admin.User.* child controller gates on `can?(:index, User)`,
-  # which is granted to ANY moderator (not just admin) — unlike the parent
+  # which is granted to ANY moderator (not just admin) - unlike the parent
   # Admin.UserController :edit/:update, which are admin-only. So a plain
   # moderator who can merely list users can also (de)activate, verify, unlock,
   # reset API keys, force filters, wipe, and erase them.
@@ -48,14 +48,16 @@ defmodule PhilomenaWeb.Admin.User.ActivationControllerTest do
 
     # NOTE: load_resource (not load_and_authorize) with persisted: true assigns
     # nil for an unknown slug, and Canary runs its not_found handler only for
-    # :show/:edit/:update/:delete — NOT for :create. So on this :create action
+    # :show/:edit/:update/:delete - NOT for :create. So on this :create action
     # the nil passes through and Users.reactivate_user(nil) raises
     # FunctionClauseError (nil-pass-through family), whereas the sibling :delete
     # action below redirects with the not-found flash for the same input.
     test "raises for an unknown slug", %{conn: conn} do
-      assert_raise FunctionClauseError, fn ->
-        post(conn, ~p"/admin/users/no-such-user/activation")
-      end
+      assert_raise FunctionClauseError,
+                   ~r/no function clause matching in Philomena\.Users\.reactivate_user\/1/,
+                   fn ->
+                     post(conn, ~p"/admin/users/no-such-user/activation")
+                   end
     end
   end
 

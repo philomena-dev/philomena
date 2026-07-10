@@ -47,7 +47,7 @@ defmodule PhilomenaWeb.Admin.ArtistLink.VerificationControllerTest do
     setup [:register_and_log_in_moderator]
 
     # NOTE: an unknown link id takes Canary's not-found path on :create
-    # (authorization fails against the nil resource) — redirect to /.
+    # (authorization fails against the nil resource) - redirect to /.
     test "redirects for an unknown link id", %{conn: conn} do
       conn = post(conn, ~p"/admin/artist_links/#{0}/verification")
       assert redirected_to(conn) == "/"

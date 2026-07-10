@@ -49,7 +49,7 @@ defmodule PhilomenaWeb.Topic.PollControllerTest do
     # NOTE: unlike the topic mod tools, PollController loads the Forum with a
     # plain load_and_authorize_resource and no CanaryMapPlug, so the Forum is
     # authorized against the raw action (:edit). Moderators have only :show on
-    # forums, so they are rejected here — poll editing is effectively admin-only,
+    # forums, so they are rejected here - poll editing is effectively admin-only,
     # even though the later verify_authorized plug gates on :hide (a moderator
     # capability). KNOWN-ODDITIES.md
     test "rejects a moderator with the authorization flash",
@@ -108,7 +108,7 @@ defmodule PhilomenaWeb.Topic.PollControllerTest do
       assert Repo.reload!(poll).title == "Best test option?"
     end
 
-    # See the :edit note above — moderators are rejected by the Forum :update
+    # See the :edit note above - moderators are rejected by the Forum :update
     # authorization.
     test "rejects a moderator with the authorization flash",
          %{conn: conn, forum: forum, topic: topic, poll: poll} do

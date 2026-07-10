@@ -5,16 +5,17 @@ defmodule PhilomenaWeb.SearchControllerTest do
 
   import Philomena.ImagesFixtures
 
+  alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
   alias Philomena.Images.Image
   alias Philomena.Tags.Tag
 
   setup do
-    SearchHelpers.clear_index!(Image)
+    Search.clear_index!(Image)
     # The search form renders the quick tag table, which queries the tags
     # index (TagView.lookup_quick_tags/1) the first time it is built in a
     # test run.
-    SearchHelpers.clear_index!(Tag)
+    Search.clear_index!(Tag)
     :ok
   end
 

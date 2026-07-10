@@ -7,7 +7,7 @@ defmodule Philomena.BansFixtures do
   alias Philomena.Bans
 
   # Bans.create_* need a creator, the ban target, a reason, and a valid_until
-  # (a RelativeDate — a plain %DateTime{} casts fine). The user ban's automatic
+  # (a RelativeDate - a plain %DateTime{} casts fine). The user ban's automatic
   # subnet ban is skipped in tests (no user_ips rows).
 
   @doc """

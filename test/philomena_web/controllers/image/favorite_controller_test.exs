@@ -28,7 +28,7 @@ defmodule PhilomenaWeb.Image.FavoriteControllerTest do
       assert response =~ "Faved by"
       assert response =~ "1 user"
       assert response =~ faver.name
-      # layout: false — the response is a bare partial, no page chrome
+      # layout: false - the response is a bare partial, no page chrome
       refute response =~ "Derpibooru"
       # votes are only shown to users who can tamper (moderators)
       refute response =~ "Upvoted by"

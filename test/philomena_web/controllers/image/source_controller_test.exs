@@ -7,14 +7,6 @@ defmodule PhilomenaWeb.Image.SourceControllerTest do
   alias Philomena.SourceChanges.SourceChange
   alias Philomena.Repo
 
-  # LimitPlug keys anonymous metadata updates by remote IP in Valkey, which
-  # is shared across the whole (concurrent) test run — give each anonymous
-  # write its own address.
-  defp put_unique_ip(conn) do
-    n = System.unique_integer([:positive])
-    %{conn | remote_ip: {10, rem(div(n, 65536), 256), rem(div(n, 256), 256), rem(n, 256)}}
-  end
-
   test "PATCH as a logged-in user updates the sources and renders the partial",
        %{conn: conn} do
     %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})

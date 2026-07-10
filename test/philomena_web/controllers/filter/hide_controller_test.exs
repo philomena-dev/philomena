@@ -8,7 +8,7 @@ defmodule PhilomenaWeb.Filter.HideControllerTest do
   alias Philomena.Repo
   alias Philomena.Users
 
-  # The tag comes from the `tag` query parameter — this is a singleton
+  # The tag comes from the `tag` query parameter - this is a singleton
   # route on the *current* filter, not a nested tag route.
 
   test "anonymous POST redirects to the login page", %{conn: conn} do
@@ -78,7 +78,7 @@ defmodule PhilomenaWeb.Filter.HideControllerTest do
     %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
     {:ok, _} = Users.update_filter(user, filter_fixture(user))
 
-    assert_raise BadMapError, fn ->
+    assert_raise BadMapError, ~r/expected a map, got:\s*nil/, fn ->
       post(conn, ~p"/filters/hide?tag=unknown-slug")
     end
   end

@@ -7,10 +7,11 @@ defmodule PhilomenaWeb.Api.Json.Search.FilterControllerTest do
   import Philomena.UsersFixtures
 
   alias Philomena.Filters.Filter
+  alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
 
   setup do
-    SearchHelpers.clear_index!(Filter)
+    Search.clear_index!(Filter)
     :ok
   end
 
@@ -61,7 +62,7 @@ defmodule PhilomenaWeb.Api.Json.Search.FilterControllerTest do
       SearchHelpers.reindex_all!(Filter)
 
       # NOTE: a missing/empty q compiles to match_none, a 200 with no
-      # results — not a 400.
+      # results - not a 400.
       conn = get(conn, ~p"/api/v1/json/search/filters")
 
       assert json_response(conn, 200) == %{"filters" => [], "total" => 0}

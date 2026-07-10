@@ -170,7 +170,7 @@ defmodule PhilomenaWeb.Profile.CommissionControllerTest do
          %{conn: conn} do
       # NOTE: :ensure_correct_user lets moderators through and
       # :ensure_no_commission/:ensure_links_verified check the *profile*
-      # user, but create/2 acts on current_user — so the commission is
+      # user, but create/2 acts on current_user - so the commission is
       # created for the moderator, not the artist.
       %{conn: conn, user: moderator} = register_and_log_in_moderator(%{conn: conn})
       artist = confirmed_user_fixture()

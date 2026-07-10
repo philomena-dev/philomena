@@ -1,8 +1,8 @@
 # Characterization-test route coverage checklist. See test/CONVENTIONS.md.
 #
-# [x] means the route meets the definition of done in
-# CHARACTERIZATION-TESTS.md: at least one test per auth level that can
-# reach the action, plus one failure-path test for write actions. Flip
+# [x] means the route meets the characterization definition of done:
+# at least one test per auth level that can reach the action, plus one
+# failure-path test for write actions. Flip
 # marks by hand as tests land. After router changes, regenerate the file
 # (marks are preserved) with:
 #

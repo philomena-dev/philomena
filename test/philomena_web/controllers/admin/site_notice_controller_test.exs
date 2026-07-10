@@ -21,7 +21,7 @@ defmodule PhilomenaWeb.Admin.SiteNoticeControllerTest do
     end
 
     # NOTE: Unlike the ban controllers, a plain moderator CANNOT manage site
-    # notices — the ability is gated on the SiteNotice-admin role_map entry.
+    # notices - the ability is gated on the SiteNotice-admin role_map entry.
     test "rejects a plain moderator", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       conn = get(conn, ~p"/admin/site_notices")
@@ -223,7 +223,7 @@ defmodule PhilomenaWeb.Admin.SiteNoticeControllerTest do
     end
 
     # NOTE: SiteNotice has no admin-only delete gate (unlike the ban
-    # controllers) — a privileged moderator can delete.
+    # controllers) - a privileged moderator can delete.
     test "deletes the notice as an admin", %{conn: conn} do
       notice = site_notice_fixture()
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})

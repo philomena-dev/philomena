@@ -97,7 +97,7 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
 
     # NOTE: a logged-in *unconfirmed* user is logged out by
     # EnsureUserEnabledPlug (in the :browser pipeline) before
-    # redirect_if_user_is_authenticated ever runs — following their own
+    # redirect_if_user_is_authenticated ever runs - following their own
     # valid confirmation link logs them out instead of confirming.
     test "GET /confirmations/:id logs an unconfirmed user out without confirming",
          %{conn: conn, user: user} do

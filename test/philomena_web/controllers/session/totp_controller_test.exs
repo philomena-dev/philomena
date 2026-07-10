@@ -112,15 +112,17 @@ defmodule PhilomenaWeb.Session.TotpControllerTest do
 
     test "crashes for a numeric token from a user without TOTP enabled", %{conn: conn} do
       # NOTE: a non-TOTP user posting a numeric token reaches totp_secret/1
-      # with nil secret fields, which crashes in the encryptor
-      # (KNOWN-ODDITIES.md).
+      # with nil secret fields; the encryptor hands them straight to
+      # Base.decode64!/2, which raises FunctionClauseError (KNOWN-ODDITIES.md).
       user = confirmed_user_fixture()
 
-      assert_raise FunctionClauseError, fn ->
-        conn
-        |> log_in_user(user)
-        |> post(~p"/sessions/totp", %{"user" => %{"twofactor_token" => "123456"}})
-      end
+      assert_raise FunctionClauseError,
+                   ~r/no function clause matching in Base\.decode64!\/2/,
+                   fn ->
+                     conn
+                     |> log_in_user(user)
+                     |> post(~p"/sessions/totp", %{"user" => %{"twofactor_token" => "123456"}})
+                   end
     end
 
     test "raises without a user param", %{conn: conn} do
@@ -128,7 +130,7 @@ defmodule PhilomenaWeb.Session.TotpControllerTest do
       # missing "user" key is a MatchError, not Phoenix.ActionClauseError.
       user = totp_user_fixture()
 
-      assert_raise MatchError, fn ->
+      assert_raise MatchError, ~r/no match of right hand side value:\s*%\{\}/, fn ->
         conn |> log_in_user(user) |> post(~p"/sessions/totp", %{})
       end
     end

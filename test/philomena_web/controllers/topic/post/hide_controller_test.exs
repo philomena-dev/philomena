@@ -75,18 +75,20 @@ defmodule PhilomenaWeb.Topic.Post.HideControllerTest do
     end
 
     # Failure path: hide_changeset requires deletion_reason, so a blank reason
-    # makes the hide_post Multi fail — returning a 4-tuple the controller's
+    # makes the hide_post Multi fail - returning a 4-tuple the controller's
     # {:error, _changeset} branch does not match, raising CaseClauseError (500).
     # NOTE: KNOWN-ODDITIES.md
     test "with a blank deletion reason raises CaseClauseError",
          %{conn: conn, forum: forum, topic: topic, post: post} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      assert_raise CaseClauseError, fn ->
-        post(conn, ~p"/forums/#{forum}/topics/#{topic}/posts/#{post}/hide", %{
-          "post" => %{"deletion_reason" => ""}
-        })
-      end
+      assert_raise CaseClauseError,
+                   ~r/no case clause matching:\s*\{:error, :post,.*deletion_reason: \{"can't be blank"/s,
+                   fn ->
+                     post(conn, ~p"/forums/#{forum}/topics/#{topic}/posts/#{post}/hide", %{
+                       "post" => %{"deletion_reason" => ""}
+                     })
+                   end
 
       refute Repo.reload!(post).hidden_from_users
     end

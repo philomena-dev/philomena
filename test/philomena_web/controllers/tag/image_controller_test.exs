@@ -91,9 +91,11 @@ defmodule PhilomenaWeb.Tag.ImageControllerTest do
       tag = tag_fixture()
       conn = log_in_user(conn, moderator_user_fixture())
 
-      assert_raise CaseClauseError, fn ->
-        patch(conn, ~p"/tags/#{tag}/image", %{"tag" => %{}})
-      end
+      assert_raise CaseClauseError,
+                   ~r/no case clause matching:\s*\{:error,\s*#Ecto\.Changeset<.*image_format: \{"can't be blank".*Tags\.Tag/s,
+                   fn ->
+                     patch(conn, ~p"/tags/#{tag}/image", %{"tag" => %{}})
+                   end
     end
 
     test "an unknown slug takes the not-authorized redirect", %{conn: conn} do

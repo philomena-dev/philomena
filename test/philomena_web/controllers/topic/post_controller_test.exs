@@ -10,13 +10,6 @@ defmodule PhilomenaWeb.Topic.PostControllerTest do
   alias Philomena.Topics
   alias Philomena.Repo
 
-  # LimitPlug keys anonymous requests by IP in shared (non-sandboxed) Valkey;
-  # give each anonymous write test its own address
-  defp put_unique_ip(conn) do
-    n = System.unique_integer([:positive])
-    %{conn | remote_ip: {10, rem(div(n, 65536), 256), rem(div(n, 256), 256), rem(n, 256)}}
-  end
-
   setup do
     forum = forum_fixture()
     topic = topic_fixture(forum)

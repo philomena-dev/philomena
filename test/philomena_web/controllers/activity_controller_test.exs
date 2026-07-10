@@ -9,14 +9,15 @@ defmodule PhilomenaWeb.ActivityControllerTest do
   import Philomena.TopicsFixtures
   import Philomena.UsersFixtures
 
+  alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
   alias Philomena.Comments.Comment
   alias Philomena.Images
   alias Philomena.Images.Image
 
   setup do
-    SearchHelpers.clear_index!(Image)
-    SearchHelpers.clear_index!(Comment)
+    Search.clear_index!(Image)
+    Search.clear_index!(Comment)
     :ok
   end
 

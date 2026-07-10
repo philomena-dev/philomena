@@ -64,7 +64,7 @@ defmodule PhilomenaWeb.CommissionControllerTest do
     end
 
     test "does not list commissions from users with no recent activity", %{conn: conn} do
-      # No UserIp row at all — treated the same as stale activity.
+      # No UserIp row at all - treated the same as stale activity.
       user = confirmed_user_fixture(%{name: "Test Inactive Artist"})
       _commission = listed_commission_fixture(user)
 
@@ -91,11 +91,11 @@ defmodule PhilomenaWeb.CommissionControllerTest do
     end
 
     test "crashes on invalid search parameters", %{conn: conn} do
-      # NOTE: probable bug (see KNOWN-ODDITIES.md) — the changeset-error
+      # NOTE: probable bug (see KNOWN-ODDITIES.md) - the changeset-error
       # branch renders the index with commissions: [], and the pagination
       # partial crashes on the bare list (it expects a Scrivener page), so
       # invalid search input 500s instead of rendering errors.
-      assert_raise BadMapError, fn ->
+      assert_raise BadMapError, ~r/expected a map, got:\s*\[\]/, fn ->
         get(conn, ~p"/commissions?#{[commission: [price_min: "not-a-price"]]}")
       end
     end

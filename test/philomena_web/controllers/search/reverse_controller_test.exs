@@ -82,7 +82,7 @@ defmodule PhilomenaWeb.Search.ReverseControllerTest do
     test "renders the plain form when no image is submitted", %{conn: conn} do
       # NOTE: ScraperCachePlug injects an empty "image" params map, so a submit
       # with no upload takes the third create/2 clause and renders the form
-      # with images: nil — a 200, not a validation error, and no
+      # with images: nil - a 200, not a validation error, and no
       # "No images found!" message.
       conn = post(conn, ~p"/search/reverse")
       response = html_response(conn, 200)

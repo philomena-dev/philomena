@@ -8,7 +8,7 @@ defmodule PhilomenaWeb.Filter.CurrentControllerTest do
   alias Philomena.Repo
   alias Philomena.Users.User
 
-  # The filter to switch to comes from the `id` query/body parameter — the
+  # The filter to switch to comes from the `id` query/body parameter - the
   # route itself is a singleton (`PATCH /filters/current`).
 
   describe "PATCH /filters/current" do
@@ -109,7 +109,7 @@ defmodule PhilomenaWeb.Filter.CurrentControllerTest do
     end
 
     test "crashes without an id parameter", %{conn: conn} do
-      assert_raise ArgumentError, fn ->
+      assert_raise ArgumentError, ~r/nil given for :id\. Comparison with nil is forbidden/, fn ->
         patch(conn, ~p"/filters/current")
       end
     end

@@ -9,11 +9,12 @@ defmodule PhilomenaWeb.Admin.UserControllerTest do
   import Philomena.UsersFixtures
 
   alias Philomena.Users.User
+  alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
   alias Philomena.Repo
 
   setup do
-    SearchHelpers.clear_index!(User)
+    Search.clear_index!(User)
     :ok
   end
 
@@ -66,7 +67,7 @@ defmodule PhilomenaWeb.Admin.UserControllerTest do
       assert response =~ target.name
     end
 
-    # NOTE: an unparsable query takes the error branch — the index re-renders
+    # NOTE: an unparsable query takes the error branch - the index re-renders
     # (200) with a query-parse error message and an empty user list.
     test "renders the parse-error branch for an invalid query", %{conn: conn} do
       conn = get(conn, ~p"/admin/users?#{[uq: "("]}")
@@ -97,7 +98,7 @@ defmodule PhilomenaWeb.Admin.UserControllerTest do
 
   describe "GET /admin/users/:id/edit (edit) authorization" do
     # NOTE: index is open to moderators, but :edit/:update have no plain-moderator
-    # rule — only admins (or a User-moderator role_map grant) can edit a user.
+    # rule - only admins (or a User-moderator role_map grant) can edit a user.
     test "rejects a plain moderator", %{conn: conn} do
       target = confirmed_user_fixture()
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
@@ -129,7 +130,7 @@ defmodule PhilomenaWeb.Admin.UserControllerTest do
     end
 
     # NOTE: unlike the admin user-ban create branch, the update error branch
-    # re-renders edit.html cleanly (200) — @user is set by the :update
+    # re-renders edit.html cleanly (200) - @user is set by the :update
     # load_and_authorize plug, so the form template's assign is available.
     test "re-renders the form on an invalid role", %{conn: conn} do
       target = confirmed_user_fixture()

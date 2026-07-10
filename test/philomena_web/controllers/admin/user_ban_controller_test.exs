@@ -268,7 +268,7 @@ defmodule PhilomenaWeb.Admin.UserBanControllerTest do
     end
 
     # NOTE: delete is gated by check_can_delete (role == "admin"), so a
-    # moderator — who can create/edit/update bans — cannot delete them.
+    # moderator - who can create/edit/update bans - cannot delete them.
     test "rejects a moderator", %{conn: conn} do
       ban = user_ban_fixture()
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})

@@ -21,7 +21,7 @@ defmodule PhilomenaWeb.Admin.DonationControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    # NOTE: donations have no moderator ability rule — only admins (the catch-all
+    # NOTE: donations have no moderator ability rule - only admins (the catch-all
     # `role: "admin"` grant) can reach the admin donation controllers.
     test "rejects a plain moderator", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})

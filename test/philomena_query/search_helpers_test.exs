@@ -16,7 +16,7 @@ defmodule PhilomenaQuery.SearchHelpersTest do
   alias PhilomenaQuery.SearchHelpers
 
   setup do
-    SearchHelpers.clear_index!(Image)
+    Search.clear_index!(Image)
     :ok
   end
 
@@ -34,7 +34,7 @@ defmodule PhilomenaQuery.SearchHelpersTest do
     assert hit["_id"] == to_string(image.id)
   end
 
-  test "clear_index!/1 leaves the index empty" do
+  test "Search.clear_index!/1 leaves the index empty" do
     results = Search.search(Image, %{query: %{match_all: %{}}})
 
     assert [] == results["hits"]["hits"]

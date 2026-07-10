@@ -12,7 +12,7 @@ defmodule Philomena.AdvertsFixtures do
 
   `Adverts.create_advert/1` runs the image upload pipeline
   (`Uploader.analyze_upload/2` fails without a real uploaded file), which
-  characterization tests don't need — so, like badges, this inserts the row
+  characterization tests don't need - so, like badges, this inserts the row
   directly with the image filename set the way the uploader would leave it.
   """
   def advert_fixture(attrs \\ %{}) do
@@ -37,7 +37,7 @@ defmodule Philomena.AdvertsFixtures do
   @undersized_png_fixture Path.absname("test/support/fixtures/files/upload-test.png")
 
   @doc """
-  A real 700x85 PNG upload — advert create/update-image run the media pipeline
+  A real 700x85 PNG upload - advert create/update-image run the media pipeline
   and the advert image_changeset validates width (699..729) and height
   (79..91).
   """
@@ -50,7 +50,7 @@ defmodule Philomena.AdvertsFixtures do
   end
 
   @doc """
-  The shared 1x1 PNG — a valid PNG whose dimensions fail the advert
+  The shared 1x1 PNG - a valid PNG whose dimensions fail the advert
   width/height validations.
   """
   def undersized_png_upload do
