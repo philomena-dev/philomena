@@ -6,6 +6,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostController do
   alias PhilomenaWeb.IntegerId
   alias Philomena.Repo
   import Ecto.Query
+  import PhilomenaWeb.Api.Json.NotFound
 
   def index(conn, %{"forum_id" => forum_id, "topic_id" => topic_id}) do
     case load_topic(forum_id, topic_id) do
@@ -13,7 +14,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostController do
         not_found(conn)
 
       topic ->
-        page = conn.assigns.pagination.page_number
+        %{page_number: page, page_size: page_size} = conn.assigns.pagination
 
         posts =
           Post
@@ -21,7 +22,8 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostController do
           |> where(destroyed_content: false)
           |> where(
             [p],
-            p.topic_position >= ^(25 * (page - 1)) and p.topic_position < ^(25 * page)
+            p.topic_position >= ^(page_size * (page - 1)) and
+              p.topic_position < ^(page_size * page)
           )
           |> order_by(asc: :topic_position)
           |> preload(:user)
@@ -64,11 +66,5 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostController do
     |> where([t], t.hidden_from_users == false and t.slug == ^topic_id)
     |> where([_t, f], f.access_level == "normal" and f.short_name == ^forum_id)
     |> Repo.one()
-  end
-
-  defp not_found(conn) do
-    conn
-    |> put_status(:not_found)
-    |> text("")
   end
 end

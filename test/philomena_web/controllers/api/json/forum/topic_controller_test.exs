@@ -135,9 +135,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.TopicControllerTest do
 
       conn = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}")
 
-      # NOTE: the 404 body is empty text/plain, not a JSON error object.
-      assert response(conn, 404) == ""
-      assert response_content_type(conn, :text)
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns 404 for a topic in a restricted forum", %{conn: conn} do
@@ -146,7 +144,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.TopicControllerTest do
 
       conn = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}")
 
-      assert response(conn, 404) == ""
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns 404 for a topic slug under the wrong forum", %{conn: conn} do
@@ -156,7 +154,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.TopicControllerTest do
 
       conn = get(conn, ~p"/api/v1/json/forums/#{other_forum}/topics/#{topic}")
 
-      assert response(conn, 404) == ""
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns 404 for an unknown slug", %{conn: conn} do
@@ -164,7 +162,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.TopicControllerTest do
 
       conn = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/nonexistent")
 
-      assert response(conn, 404) == ""
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
   end
 end

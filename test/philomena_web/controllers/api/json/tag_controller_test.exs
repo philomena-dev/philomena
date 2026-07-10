@@ -69,9 +69,7 @@ defmodule PhilomenaWeb.Api.Json.TagControllerTest do
     test "returns 404 for an unknown slug", %{conn: conn} do
       conn = get(conn, ~p"/api/v1/json/tags/nonexistent")
 
-      # NOTE: the 404 body is empty text/plain, not a JSON error object.
-      assert response(conn, 404) == ""
-      assert response_content_type(conn, :text)
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "does not resolve a tag by its name when the slug differs", %{conn: conn} do
@@ -80,7 +78,7 @@ defmodule PhilomenaWeb.Api.Json.TagControllerTest do
       # NOTE: lookup is strictly by slug; the (URL-encoded) name 404s.
       conn = get(conn, "/api/v1/json/tags/artist%3Ahoofbeats")
 
-      assert response(conn, 404) == ""
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
   end
 end

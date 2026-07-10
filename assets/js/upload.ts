@@ -5,7 +5,7 @@
 import { findOr } from './utils/array';
 import { assertType, assertNotNull, assertString } from './utils/assert';
 import { normalizedKeyboardKey, keys } from './utils/keyboard';
-import { fetchJson, handleError } from './utils/requests';
+import { fetchJson } from './utils/requests';
 import { $, $$, clearEl, hideEl, makeEl, showEl } from './utils/dom';
 import { addTag } from './tagsinput';
 import { oncePersistedPageShown } from './utils/events';
@@ -23,13 +23,21 @@ interface ScraperResponse {
   source_url?: string;
   description?: string;
   author_name?: string;
-  errors?: string[];
 }
 
-function scrapeUrl(url: string): Promise<ScraperResponse | null> {
-  return fetchJson('POST', '/images/scrape', { url })
-    .then(handleError)
-    .then(response => response.json());
+interface ScraperError {
+  errors: string[];
+}
+
+function scrapeUrl(url: string): Promise<ScraperResponse | ScraperError> {
+  return fetchJson('POST', '/images/scrape', { url }).then(response => {
+    // Scrape failures are reported as 422 with a JSON body of error
+    // messages; anything else non-2xx is an unexpected server error.
+    if (!response.ok && response.status !== 422) {
+      throw new Error('Received error from server');
+    }
+    return response.json();
+  });
 }
 
 function elementForEmbeddedImage({ camo_url, type }: ScraperImage): HTMLImageElement | HTMLVideoElement {
@@ -155,11 +163,7 @@ export function setupImageUpload() {
 
     scrapeUrl(remoteUrl.value)
       .then(data => {
-        if (data === null) {
-          scraperError.innerText = 'No image found at that address.';
-          showError();
-          return;
-        } else if (data.errors && data.errors.length > 0) {
+        if ('errors' in data) {
           scraperError.innerText = data.errors.join(' ');
           showError();
           return;

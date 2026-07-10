@@ -1,10 +1,12 @@
 defmodule PhilomenaWeb.Admin.Batch.TagControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
+  import Ecto.Query
   import Philomena.ImagesFixtures
   import Philomena.TagsFixtures
 
   alias Philomena.Images.Image
+  alias Philomena.Images.Tagging
   alias Philomena.Repo
 
   describe "PATCH /admin/batch/tags authorization" do
@@ -75,16 +77,79 @@ defmodule PhilomenaWeb.Admin.Batch.TagControllerTest do
       refute tag.name in tag_names
     end
 
-    # NOTE: `succeeded` echoes back every passed id even when no image matched
-    # (the transaction still succeeds over an empty set).
-    test "reports unknown image ids as succeeded", %{conn: conn} do
+    # `succeeded` contains only the ids the batch actually matched; a
+    # well-formed id that names no image is reported as failed.
+    test "reports unknown image ids as failed", %{conn: conn} do
+      _tag = tag_fixture(name: "batch-unknown-id-tag")
+
       conn =
         patch(conn, ~p"/admin/batch/tags",
-          tags: "safe",
+          tags: "-batch-unknown-id-tag",
           image_ids: ["2000000000"]
         )
 
-      assert json_response(conn, 200) == %{"succeeded" => [2_000_000_000], "failed" => []}
+      assert json_response(conn, 200) == %{"succeeded" => [], "failed" => [2_000_000_000]}
+    end
+
+    # Tag additions are windowed to the matched images just like removals, so
+    # the batch commits over the matched subset and the unknown id fails.
+    test "adds an existing tag to the matched images and fails the unknown id",
+         %{conn: conn} do
+      image = image_fixture()
+      _tag = tag_fixture(name: "batch-fk-tag")
+
+      conn =
+        patch(conn, ~p"/admin/batch/tags",
+          tags: "batch-fk-tag",
+          image_ids: [to_string(image.id), "2000000000"]
+        )
+
+      assert json_response(conn, 200) == %{
+               "succeeded" => [image.id],
+               "failed" => [2_000_000_000]
+             }
+
+      tag_names =
+        image.id
+        |> tags_for_image()
+        |> Enum.map(& &1.name)
+
+      assert "batch-fk-tag" in tag_names
+
+      # No tagging row is ever created for the unmatched id.
+      refute Repo.exists?(where(Tagging, image_id: 2_000_000_000))
+    end
+
+    test "reports a hidden image's id as failed without tagging it", %{conn: conn} do
+      image = image_fixture(hidden_from_users: true)
+      tag = tag_fixture(name: "batch-hidden-tag")
+
+      conn =
+        patch(conn, ~p"/admin/batch/tags",
+          tags: "batch-hidden-tag",
+          image_ids: [to_string(image.id)]
+        )
+
+      assert json_response(conn, 200) == %{"succeeded" => [], "failed" => [image.id]}
+
+      # The hidden image never receives the tagging.
+      refute Repo.exists?(where(Tagging, image_id: ^image.id, tag_id: ^tag.id))
+    end
+
+    # NOTE: a tag list that resolves to zero actual tag changes (here a tag
+    # that does not exist) empties the batch, so no image is matched and
+    # every id is reported as failed.
+    test "reports all ids as failed when the tag list resolves to no tag changes",
+         %{conn: conn} do
+      image = image_fixture()
+
+      conn =
+        patch(conn, ~p"/admin/batch/tags",
+          tags: "this-tag-does-not-exist",
+          image_ids: [to_string(image.id)]
+        )
+
+      assert json_response(conn, 200) == %{"succeeded" => [], "failed" => [image.id]}
     end
 
     test "works via PUT as well", %{conn: conn} do

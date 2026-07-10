@@ -4,6 +4,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.TopicController do
   alias Philomena.Topics.Topic
   alias Philomena.Repo
   import Ecto.Query
+  import PhilomenaWeb.Api.Json.NotFound
 
   def index(conn, %{"forum_id" => id}) do
     topics =
@@ -30,9 +31,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.TopicController do
       |> Repo.one()
 
     if is_nil(topic) do
-      conn
-      |> put_status(:not_found)
-      |> text("")
+      not_found(conn)
     else
       render(conn, "show.json", topic: topic)
     end

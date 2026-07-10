@@ -8,7 +8,7 @@ defmodule PhilomenaWeb.Api.Json.Filter.UserFilterControllerTest do
     test "returns 403 with an empty body when anonymous", %{conn: conn} do
       conn = get(conn, ~p"/api/v1/json/filters/user")
 
-      # NOTE: empty text/plain body, mirroring the API's empty 404s.
+      # NOTE: the 403 body is empty text/plain, unlike the API's JSON 404s.
       assert response(conn, 403) == ""
       assert response_content_type(conn, :text)
     end

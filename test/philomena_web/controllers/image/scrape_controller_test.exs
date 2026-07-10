@@ -33,7 +33,7 @@ defmodule PhilomenaWeb.Image.ScrapeControllerTest do
       assert is_binary(camo_url)
     end
 
-    test "returns null when no scraper can handle the URL", %{conn: conn} do
+    test "returns a 422 error when no scraper can handle the URL", %{conn: conn} do
       # A non-image content-type makes Raw.can_handle?/2 false, and no other
       # scraper matches a generic host, so scrape!/1 returns nil.
       Req.Test.stub(PhilomenaProxy.Http, fn c ->
@@ -44,24 +44,30 @@ defmodule PhilomenaWeb.Image.ScrapeControllerTest do
 
       conn = post(conn, ~p"/images/scrape", %{"url" => "https://example.com/not-an-image"})
 
-      # NOTE: a no-match scrape renders the JSON literal `null`, not an error.
-      assert json_response(conn, 200) == nil
+      assert json_response(conn, 422) == %{"errors" => ["No images found at that URL."]}
     end
 
-    test "returns null for a URL with no host without any outbound request", %{conn: conn} do
-      # NOTE: scrape!/1 short-circuits to nil when URI.parse/1 finds no host,
-      # so no scraper runs and no HTTP stub is required.
+    test "returns a 422 error for a URL with no host without any outbound request",
+         %{conn: conn} do
+      # A hostless URL is rejected before any scraper runs, so no HTTP stub
+      # is required.
       conn = post(conn, ~p"/images/scrape", %{"url" => "not a url"})
 
-      assert json_response(conn, 200) == nil
+      assert json_response(conn, 422) == %{"errors" => ["The URL is invalid."]}
     end
 
-    test "returns null when the url parameter is missing", %{conn: conn} do
-      # NOTE: a missing url becomes "" (nil |> to_string |> trim), which parses
-      # to a hostless URI and returns nil. No HTTP stub required.
+    test "returns a 422 error when the url parameter is missing", %{conn: conn} do
+      # A missing url becomes "" (nil |> to_string |> trim) and is rejected
+      # up front. No HTTP stub required.
       conn = post(conn, ~p"/images/scrape")
 
-      assert json_response(conn, 200) == nil
+      assert json_response(conn, 422) == %{"errors" => ["A URL must be provided."]}
+    end
+
+    test "returns a 422 error for a blank url parameter", %{conn: conn} do
+      conn = post(conn, ~p"/images/scrape", %{"url" => "   "})
+
+      assert json_response(conn, 422) == %{"errors" => ["A URL must be provided."]}
     end
 
     test "is reachable by logged-in users", %{conn: conn} do
@@ -69,7 +75,7 @@ defmodule PhilomenaWeb.Image.ScrapeControllerTest do
 
       conn = post(conn, ~p"/images/scrape", %{"url" => "not a url"})
 
-      assert json_response(conn, 200) == nil
+      assert json_response(conn, 422) == %{"errors" => ["The URL is invalid."]}
     end
   end
 end

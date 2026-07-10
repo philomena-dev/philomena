@@ -1060,10 +1060,16 @@ defmodule Philomena.Images do
   All the tags provided to this function must exist in the database.
   If you're not sure if the tags exist or not, use Tags.get_or_create_tags first.
 
+  ## Return value
+
+  On success, returns `{:ok, image_ids}` where `image_ids` are the ids of
+  the images the batch actually matched (existing, non-hidden images);
+  requested ids that matched no such image are absent from the list.
+
   ## Examples
 
       iex> batch_update([1, 2], [tag1], [tag2], %{user_id: user.id, ip: ip, fingerprint: "ffff"})
-      {:ok, ...}
+      {:ok, [1, 2]}
 
   """
   def batch_update(image_ids, added_tags, removed_tags, attributes) do
@@ -1088,8 +1094,15 @@ defmodule Philomena.Images do
       |> select([i], i.id)
       |> Repo.all()
 
+    # Window insertions to the matched (existing, non-hidden) images, like
+    # the removals below: unmatched ids must never receive taggings, and
+    # ids naming no image at all would violate the foreign key.
+    matched_ids = MapSet.new(image_ids)
+
     to_insert =
-      Enum.flat_map(changes, fn change ->
+      changes
+      |> Enum.filter(&MapSet.member?(matched_ids, &1.image_id))
+      |> Enum.flat_map(fn change ->
         Enum.map(change.added_tags, &%{tag_id: &1.id, image_id: change.image_id})
       end)
 
@@ -1154,6 +1167,9 @@ defmodule Philomena.Images do
         on_conflict: update(Tag, inc: [images_count: fragment("EXCLUDED.images_count")]),
         conflict_target: [:id]
       )
+
+      # Report the ids the batch actually matched back to the caller.
+      image_ids
     end)
     |> case do
       {:ok, _} = result ->

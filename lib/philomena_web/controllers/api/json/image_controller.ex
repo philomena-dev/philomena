@@ -6,6 +6,7 @@ defmodule PhilomenaWeb.Api.Json.ImageController do
   alias Philomena.Interactions
   alias Philomena.Repo
   import Ecto.Query
+  import PhilomenaWeb.Api.Json.NotFound
 
   plug PhilomenaWeb.ScraperCachePlug
   plug PhilomenaWeb.ApiRequireAuthorizationPlug when action in [:create]
@@ -25,9 +26,7 @@ defmodule PhilomenaWeb.Api.Json.ImageController do
 
     case image do
       nil ->
-        conn
-        |> put_status(:not_found)
-        |> text("")
+        not_found(conn)
 
       _ ->
         interactions = Interactions.user_interactions([image], user)

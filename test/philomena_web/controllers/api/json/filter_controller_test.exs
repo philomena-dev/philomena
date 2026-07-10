@@ -47,15 +47,13 @@ defmodule PhilomenaWeb.Api.Json.FilterControllerTest do
 
       conn = get(conn, ~p"/api/v1/json/filters/#{filter}")
 
-      # NOTE: the 404 body is empty text/plain, not a JSON error object.
-      assert response(conn, 404) == ""
-      assert response_content_type(conn, :text)
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns 404 for a nonexistent filter id", %{conn: conn} do
       conn = get(conn, ~p"/api/v1/json/filters/#{0}")
 
-      assert response(conn, 404) == ""
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "shows a private filter to its owner authenticated by API key", %{conn: conn} do
@@ -75,7 +73,7 @@ defmodule PhilomenaWeb.Api.Json.FilterControllerTest do
 
       conn = get(conn, ~p"/api/v1/json/filters/#{filter}?key=#{other.authentication_token}")
 
-      assert response(conn, 404) == ""
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "shows any private filter to a moderator", %{conn: conn} do
@@ -104,7 +102,7 @@ defmodule PhilomenaWeb.Api.Json.FilterControllerTest do
         |> log_in_user(user)
         |> get(~p"/api/v1/json/filters/#{filter}")
 
-      assert response(conn, 404) == ""
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns 404 for a non-integer id", %{conn: conn} do
@@ -112,7 +110,7 @@ defmodule PhilomenaWeb.Api.Json.FilterControllerTest do
       # unknown id rather than raising a cast error.
       conn = get(conn, ~p"/api/v1/json/filters/not-a-number")
 
-      assert response(conn, 404) == ""
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
   end
 end

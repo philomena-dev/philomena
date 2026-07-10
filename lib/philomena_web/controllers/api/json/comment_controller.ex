@@ -4,6 +4,7 @@ defmodule PhilomenaWeb.Api.Json.CommentController do
   alias Philomena.Comments.Comment
   alias Philomena.Repo
   import Ecto.Query
+  import PhilomenaWeb.Api.Json.NotFound
 
   def show(conn, %{"id" => id}) do
     comment =
@@ -14,9 +15,7 @@ defmodule PhilomenaWeb.Api.Json.CommentController do
 
     cond do
       is_nil(comment) or comment.destroyed_content ->
-        conn
-        |> put_status(:not_found)
-        |> text("")
+        not_found(conn)
 
       comment.image.hidden_from_users ->
         conn
