@@ -9,8 +9,10 @@ defmodule PhilomenaWeb.Admin.User.ForceFilterControllerTest do
   alias Philomena.Users.User
   alias Philomena.Repo
 
-  # NOTE: gated on `can?(:index, User)`, so ANY moderator (not just admin) can
-  # force or remove a forced filter.
+  # NOTE: gated on `can?(:edit, %User{})` (matching the parent edit form), which
+  # a plain moderator lacks - so forcing/removing a forced filter, and even
+  # rendering the force-filter form, is admin-only (or a User-role_map
+  # moderator). The plug guards every action here (new/create/delete).
 
   describe "GET /admin/users/:user_id/force_filter/new" do
     test "redirects anonymous users to login", %{conn: conn} do
@@ -35,11 +37,14 @@ defmodule PhilomenaWeb.Admin.User.ForceFilterControllerTest do
       assert html_response(conn, 200) =~ "Forcing filter for user"
     end
 
-    test "renders the form for a plain moderator", %{conn: conn} do
+    # NOTE: the verify_authorized plug guards :new too, so a plain moderator no
+    # longer even sees the force-filter form.
+    test "is denied to a plain moderator", %{conn: conn} do
       target = confirmed_user_fixture()
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       conn = get(conn, ~p"/admin/users/#{target.slug}/force_filter/new")
-      assert html_response(conn, 200) =~ "Forcing filter for user"
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
     # NOTE: :new is not covered by Canary's not_found handler, so an unknown
@@ -135,7 +140,7 @@ defmodule PhilomenaWeb.Admin.User.ForceFilterControllerTest do
   describe "POST /admin/users/:user_id/force_filter (create) as a plain moderator" do
     setup [:register_and_log_in_moderator]
 
-    test "is allowed for a plain moderator", %{conn: conn} do
+    test "is denied to a plain moderator", %{conn: conn} do
       target = confirmed_user_fixture()
       filter = filter_fixture(target)
 
@@ -144,8 +149,10 @@ defmodule PhilomenaWeb.Admin.User.ForceFilterControllerTest do
           "user" => %{"forced_filter_id" => filter.id}
         })
 
-      assert redirected_to(conn) == ~p"/profiles/#{target}"
-      assert Repo.get(User, target.id).forced_filter_id == filter.id
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      # unchanged: no filter was forced
+      assert Repo.get(User, target.id).forced_filter_id == nil
     end
   end
 
@@ -198,11 +205,18 @@ defmodule PhilomenaWeb.Admin.User.ForceFilterControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    test "is allowed for a plain moderator", %{conn: conn} do
+    test "is denied to a plain moderator", %{conn: conn} do
       target = confirmed_user_fixture()
+      filter = filter_fixture(target)
+      {:ok, target} = Philomena.Users.force_filter(target, %{"forced_filter_id" => filter.id})
+
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       conn = delete(conn, ~p"/admin/users/#{target.slug}/force_filter")
-      assert redirected_to(conn) == ~p"/profiles/#{target}"
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      # unchanged: the forced filter remains in place
+      assert Repo.get(User, target.id).forced_filter_id == filter.id
     end
   end
 end

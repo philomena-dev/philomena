@@ -9,8 +9,9 @@ defmodule PhilomenaWeb.Admin.User.VerificationControllerTest do
   alias Philomena.Users.User
   alias Philomena.Repo
 
-  # NOTE: gated on `can?(:index, User)`, so ANY moderator (not just admin) can
-  # grant or revoke a user's verification.
+  # NOTE: gated on `can?(:edit, %User{})` (matching the parent edit form), which
+  # a plain moderator lacks - so granting or revoking verification is admin-only
+  # (or a User-role_map moderator).
 
   describe "POST /admin/users/:user_id/verification (grant) authorization" do
     test "redirects anonymous users to login", %{conn: conn} do
@@ -58,11 +59,13 @@ defmodule PhilomenaWeb.Admin.User.VerificationControllerTest do
   describe "POST /admin/users/:user_id/verification (grant) as a plain moderator" do
     setup [:register_and_log_in_moderator]
 
-    test "is allowed for a plain moderator", %{conn: conn} do
+    test "is denied to a plain moderator", %{conn: conn} do
       target = confirmed_user_fixture()
       conn = post(conn, ~p"/admin/users/#{target.slug}/verification")
-      assert redirected_to(conn) == ~p"/profiles/#{target}"
-      assert Repo.get(User, target.id).verified
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      # unchanged: the user stays unverified
+      refute Repo.get(User, target.id).verified
     end
   end
 
@@ -108,11 +111,13 @@ defmodule PhilomenaWeb.Admin.User.VerificationControllerTest do
   describe "DELETE /admin/users/:user_id/verification (revoke) as a plain moderator" do
     setup [:register_and_log_in_moderator]
 
-    test "is allowed for a plain moderator", %{conn: conn} do
+    test "is denied to a plain moderator", %{conn: conn} do
       target = verified_user_fixture()
       conn = delete(conn, ~p"/admin/users/#{target.slug}/verification")
-      assert redirected_to(conn) == ~p"/profiles/#{target}"
-      refute Repo.get(User, target.id).verified
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      # unchanged: the user stays verified
+      assert Repo.get(User, target.id).verified
     end
   end
 end

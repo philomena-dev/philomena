@@ -141,6 +141,29 @@ defmodule PhilomenaWeb.ConnCase do
   end
 
   @doc """
+  Setup-style helper that registers a moderator granted the `User` "moderator"
+  `role_map` entry (`%{"User" => %{"moderator" => _}}`) and logs them in,
+  returning `%{conn:, user:}`.
+
+  The `Admin.User.*` child controllers gate on `can?(:edit, %User{})`, which a
+  plain moderator lacks but which this grant satisfies (`Philomena.Users.Ability`
+  "Manage users", `role_map: %{"User" => %{"moderator" => _}}`). The grant is a
+  `Philomena.Roles.Role` row with `name: "moderator", resource_type: "User"` plus
+  a `users_roles` join - distinct from `register_and_log_in_role_moderator/2`,
+  which inserts a `name: "admin"` role and so produces
+  `%{resource_type => %{"admin" => _}}`.
+  """
+  def register_and_log_in_user_role_moderator(%{conn: conn}) do
+    user = Philomena.UsersFixtures.moderator_user_fixture()
+
+    role =
+      Philomena.Repo.insert!(%Philomena.Roles.Role{name: "moderator", resource_type: "User"})
+
+    Philomena.Repo.insert_all("users_roles", [%{user_id: user.id, role_id: role.id}])
+    %{conn: log_in_user(conn, user), user: user}
+  end
+
+  @doc """
   Setup helper providing a user and their API key for `/api/v1` requests.
 
       setup :create_api_user

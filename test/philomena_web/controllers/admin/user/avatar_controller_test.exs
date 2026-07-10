@@ -10,8 +10,9 @@ defmodule PhilomenaWeb.Admin.User.AvatarControllerTest do
   alias Philomena.Users.User
   alias Philomena.Repo
 
-  # NOTE: gated on `can?(:index, User)`, so ANY moderator (not just admin) can
-  # remove another user's avatar.
+  # NOTE: gated on `can?(:edit, %User{})` (matching the parent edit form), which
+  # a plain moderator lacks - so removing another user's avatar is admin-only
+  # (or a User-role_map moderator).
 
   describe "DELETE /admin/users/:user_id/avatar authorization" do
     test "redirects anonymous users to login", %{conn: conn} do
@@ -65,11 +66,13 @@ defmodule PhilomenaWeb.Admin.User.AvatarControllerTest do
   describe "DELETE /admin/users/:user_id/avatar as a plain moderator" do
     setup [:register_and_log_in_moderator]
 
-    test "is allowed for a plain moderator", %{conn: conn} do
+    test "is denied to a plain moderator", %{conn: conn} do
       target = user_with_avatar_fixture()
       conn = delete(conn, ~p"/admin/users/#{target.slug}/avatar")
-      assert redirected_to(conn) == ~p"/admin/users/#{target}/edit"
-      assert Repo.get(User, target.id).avatar == nil
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      # unchanged: the avatar is untouched
+      assert Repo.get(User, target.id).avatar == "test/avatar.png"
     end
   end
 end

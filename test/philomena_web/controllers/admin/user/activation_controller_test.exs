@@ -9,11 +9,12 @@ defmodule PhilomenaWeb.Admin.User.ActivationControllerTest do
   alias Philomena.Users.User
   alias Philomena.Repo
 
-  # NOTE: every Admin.User.* child controller gates on `can?(:index, User)`,
-  # which is granted to ANY moderator (not just admin) - unlike the parent
-  # Admin.UserController :edit/:update, which are admin-only. So a plain
-  # moderator who can merely list users can also (de)activate, verify, unlock,
-  # reset API keys, force filters, wipe, and erase them.
+  # NOTE: every Admin.User.* child controller now gates on `can?(:edit, %User{})`,
+  # matching the parent Admin.UserController edit form. A plain moderator does
+  # NOT have `:edit` on User (that is admin-only, or a `%{"User" => %{"moderator"}}`
+  # role_map grant - ability.ex "Manage users"), so plain moderators are denied
+  # these destructive actions. Only admins (and User-role_map moderators) may
+  # (de)activate, verify, unlock, reset API keys, force filters, wipe, or erase.
 
   describe "POST /admin/users/:user_id/activation (reactivate) authorization" do
     test "redirects anonymous users to login", %{conn: conn} do
@@ -64,7 +65,25 @@ defmodule PhilomenaWeb.Admin.User.ActivationControllerTest do
   describe "POST /admin/users/:user_id/activation (reactivate) as a plain moderator" do
     setup [:register_and_log_in_moderator]
 
-    test "is allowed for a plain moderator", %{conn: conn} do
+    test "is denied to a plain moderator", %{conn: conn} do
+      target = deactivated_user_fixture()
+      conn = post(conn, ~p"/admin/users/#{target.slug}/activation")
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      # unchanged: the account stays deactivated
+      assert Repo.get(User, target.id).deleted_at != nil
+    end
+  end
+
+  # NOTE: a moderator granted the `%{"User" => %{"moderator" => _}}` role_map
+  # (ability.ex "Manage users") passes the same `can?(:edit, %User{})` gate as an
+  # admin, so the privilege-escalation fix does not over-restrict them. Guards
+  # against "fixing" the fix by over-tightening the gate. See
+  # register_and_log_in_user_role_moderator/1.
+  describe "POST /admin/users/:user_id/activation (reactivate) as a User-role moderator" do
+    setup [:register_and_log_in_user_role_moderator]
+
+    test "is allowed for a moderator granted the User role", %{conn: conn} do
       target = deactivated_user_fixture()
       conn = post(conn, ~p"/admin/users/#{target.slug}/activation")
       assert redirected_to(conn) == ~p"/profiles/#{target}"
@@ -119,14 +138,16 @@ defmodule PhilomenaWeb.Admin.User.ActivationControllerTest do
   describe "DELETE /admin/users/:user_id/activation (deactivate) as a plain moderator" do
     setup [:register_and_log_in_moderator]
 
-    test "is allowed for a plain moderator", %{conn: conn, user: mod} do
+    test "is denied to a plain moderator", %{conn: conn} do
       target = confirmed_user_fixture()
       conn = delete(conn, ~p"/admin/users/#{target.slug}/activation")
-      assert redirected_to(conn) == ~p"/profiles/#{target}"
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
 
+      # unchanged: the account stays active
       reloaded = Repo.get(User, target.id)
-      assert reloaded.deleted_at != nil
-      assert reloaded.deleted_by_user_id == mod.id
+      assert reloaded.deleted_at == nil
+      assert reloaded.deleted_by_user_id == nil
     end
   end
 end
