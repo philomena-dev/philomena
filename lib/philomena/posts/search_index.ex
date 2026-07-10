@@ -65,7 +65,7 @@ defmodule Philomena.Posts.SearchIndex do
       anonymous: post.anonymous,
       created_at: post.created_at,
       updated_at: post.updated_at,
-      hidden_from_users: post.hidden_from_users,
+      hidden_from_users: post.hidden_from_users or post.topic.hidden_from_users,
       access_level: post.topic.forum.access_level,
       destroyed_content: post.destroyed_content,
       approved: post.approved,
