@@ -21,6 +21,21 @@ defmodule Philomena.AttributionFixtures do
   end
 
   @doc """
+  The same attribution as `attribution/1`, as the typed
+  `Philomena.Attribution.Actor` struct that actor-first context functions
+  take.
+  """
+  def actor(user \\ nil) do
+    attrs = attribution(user)
+
+    %Philomena.Attribution.Actor{
+      ip: attrs[:ip],
+      fingerprint: attrs[:fingerprint],
+      user: attrs[:user]
+    }
+  end
+
+  @doc """
   Clears the Valkey tag-change rate-limit counters for the given attribution.
 
   Tag changes authored through `Philomena.Images.update_tags/3` bump the

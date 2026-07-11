@@ -22,6 +22,8 @@ defmodule Philomena.Users.User do
   alias Philomena.Donations.Donation
   alias Philomena.UserNameChanges.UserNameChange
 
+  @type t :: %__MODULE__{}
+
   @derive {Phoenix.Param, key: :slug}
   @derive {Inspect, except: [:password]}
   schema "users" do

@@ -91,4 +91,22 @@ defmodule Philomena.AuthorizationTest do
       assert Authorization.authorize(nil, :show, image) == :ok
     end
   end
+
+  describe "authorize/3 with an Attribution.Actor" do
+    # The struct's user alone decides permissions; the IP and fingerprint
+    # attribute the action but grant nothing.
+    import Philomena.AttributionFixtures, only: [actor: 0, actor: 1]
+
+    test "resolves to the wrapped moderator", %{moderator: moderator} do
+      assert Authorization.authorize(actor(moderator), :edit, %Tag{}) == :ok
+    end
+
+    test "resolves to the wrapped regular user", %{user: user} do
+      assert Authorization.authorize(actor(user), :edit, %Tag{}) == {:error, :unauthorized}
+    end
+
+    test "an actor with no user is an anonymous visitor" do
+      assert Authorization.authorize(actor(), :edit, %Tag{}) == {:error, :unauthorized}
+    end
+  end
 end
