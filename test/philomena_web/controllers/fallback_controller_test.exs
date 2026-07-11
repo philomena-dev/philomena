@@ -1,7 +1,7 @@
 defmodule PhilomenaWeb.FallbackControllerTest do
   @moduledoc """
   Unit tests for `PhilomenaWeb.FallbackController`, the Phoenix `action_fallback`
-  that translates the two global context error shapes into today's exact
+  that translates the two global context error shapes into the exact
   responses.
 
   It delegates to `NotAuthorizedPlug` / `NotFoundPlug`, both of which branch on

@@ -2,25 +2,19 @@ defmodule Philomena.ModerationLogs.Paths do
   @moduledoc """
   Builders for moderation-log `subject_path` strings.
 
-  Today controllers build `subject_path` values with `~p` (VerifiedRoutes)
-  inside `log_details/2` closures. Moderation logging moves into the domain
-  contexts, which must not depend on `PhilomenaWeb` (and therefore cannot use `~p`).
-  These helpers reproduce the exact strings `~p` produces today using
-  plain interpolation.
-
-  The values are **data, not verified routes**: `subject_path` is stored in the
+  The values are data, not verified routes: `subject_path` is stored in the
   `moderation_logs` table and rendered by the mod-log UI as an opaque `href`.
   We deliberately give up compile-time route verification for them; they are
   simple, stable paths.
 
   ## Encoding
 
-  `~p` runs each interpolated dynamic segment through
-  `Phoenix.Param.to_param/1` and then `URI.encode(segment, &URI.char_unreserved?/1)`.
+  `~p` runs each interpolated dynamic segment through `Phoenix.Param.to_param/1`
+  and then `URI.encode(segment, &URI.char_unreserved?/1)`.
   Slugs (`Philomena.Slug.slug/1`) can contain characters that are *not*
   URI-unreserved - notably `+` (from spaces) and other escaped punctuation runs
   like `-dot-`, `-fwslash-` - so those bytes must be percent-encoded to stay
-  byte-identical to `~p`. `encode_segment/1` below matches Phoenix exactly.
+  identical to `~p`. `encode_segment/1` below matches Phoenix exactly.
   Integer ids and forum short names (`~r/\\A[a-z]+\\z/`) pass through unchanged,
   but are encoded the same way for uniformity.
   """

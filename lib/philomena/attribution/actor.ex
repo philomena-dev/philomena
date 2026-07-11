@@ -10,17 +10,7 @@ defmodule Philomena.Attribution.Actor do
 
   It carries the same three values as the existing `t:Philomena.Users.principal/0`
   keyword list (`lib/philomena/users.ex`), which many contexts still consume via
-  Access (`attribution[:user]`). During the refactor both representations are
-  emitted side by side; this struct is the typed replacement.
-
-  A `ban` field is expected to be added in Phase 2, when the
-  `FilterBannedUsersPlug` "banned users cannot write" rule migrates into the
-  contexts (see §3.7 and open decision 3 in §7); it is intentionally absent for
-  now.
-
-  This module lives alongside the existing `Philomena.Attribution` *protocol*
-  (`lib/philomena/attribution.ex`); a submodule with this name coexists with the
-  protocol without conflict.
+  Access (`attribution[:user]`).
   """
 
   alias Philomena.Users.User

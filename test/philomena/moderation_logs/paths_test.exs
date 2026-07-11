@@ -1,7 +1,7 @@
 defmodule Philomena.ModerationLogs.PathsTest do
   @moduledoc """
-  Pins that `Philomena.ModerationLogs.Paths` produces byte-identical strings to
-  the `~p` (VerifiedRoutes) forms controllers build today for moderation-log
+  Pins that `Philomena.ModerationLogs.Paths` produces identical strings to
+  the `~p` (VerifiedRoutes) forms controllers build for moderation-log
   `subject_path` values.
 
   The high-value assertion is equality against `~p` for the exact
