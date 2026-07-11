@@ -28,6 +28,14 @@ defmodule Philomena.ModerationLogs do
   @doc """
   Creates a moderation log.
 
+  This is called from within the context function that performs the logged
+  action, after that action succeeds - after the transaction commits, not
+  inside it - matching the post-success semantics of the former
+  `PhilomenaWeb.ModerationLogPlug`. `type` is
+  passed explicitly and kept byte-for-byte identical to the plug-derived
+  strings; `subject_path` is built with `Philomena.ModerationLogs.Paths` so the
+  context does not depend on `PhilomenaWeb`.
+
   ## Examples
 
       iex> create_moderation_log(%{field: value})
