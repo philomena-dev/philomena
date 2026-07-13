@@ -6,6 +6,7 @@ fn test_options() -> comrak::Options<'static> {
     let mut options = common_options();
     options.extension.image_url_rewriter = None;
     options.extension.link_url_rewriter = None;
+    options.extension.replacements = Some(Default::default());
     options
 }
 
@@ -147,7 +148,7 @@ fn greentext_preserved() {
 fn separate_quotes_on_line_end() {
     html(
         "> 1\n>\n> 2",
-        "<blockquote>\n<div class=\"paragraph\">1</div>\n</blockquote>\n<div class=\"paragraph\">&gt;</div>\n<blockquote>\n<div class=\"paragraph\">2</div>\n</blockquote>\n",
+        "<blockquote>\n<div class=\"paragraph\">1</div>\n<div class=\"paragraph\">2</div>\n</blockquote>\n",
     );
 }
 

@@ -15,7 +15,6 @@ members = [
     "mediaproc_client",
     "mediaproc_server",
 ]
-default-members = ["mediaproc"]
 
 [dependencies]
 base64 = "0.22"
