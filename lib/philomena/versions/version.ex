@@ -14,6 +14,7 @@ defmodule Philomena.Versions.Version do
     field :user, :any, virtual: true
     field :parent, :any, virtual: true
     field :body, :string, virtual: true
+    field :previous_body, :string, virtual: true
     field :edit_reason, :string, virtual: true
     field :difference, :any, virtual: true
 

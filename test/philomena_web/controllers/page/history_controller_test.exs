@@ -9,13 +9,13 @@ defmodule PhilomenaWeb.Page.HistoryControllerTest do
   describe "GET /pages/:page_id/history" do
     test "renders the revision history for anonymous users", %{conn: conn} do
       editor = user_fixture()
-      page = static_page_fixture(editor, %{body: "old line"})
+      page = static_page_fixture(editor, %{body: "The original text"})
 
       {:ok, _} =
         StaticPages.update_static_page(page, editor, %{
           title: page.title,
           slug: page.slug,
-          body: "new line"
+          body: "The updated text"
         })
 
       conn = get(conn, ~p"/pages/#{page}/history")
@@ -24,8 +24,12 @@ defmodule PhilomenaWeb.Page.HistoryControllerTest do
       assert response =~ "Revision History for Page"
       assert response =~ page.title
       assert response =~ editor.name
-      assert response =~ "old line"
-      assert response =~ "new line"
+      # The body renders as a line-by-line unified diff table over the raw
+      # markdown source. A word changed in place highlights the deleted word on
+      # the old-line row and the inserted word on the new-line row.
+      assert response =~ ~s(<table class="diff">)
+      assert response =~ ~s(<del class="diff__hl">original</del>)
+      assert response =~ ~s(<ins class="diff__hl">updated</ins>)
     end
 
     test "renders the initial version for a never-edited page", %{conn: conn} do

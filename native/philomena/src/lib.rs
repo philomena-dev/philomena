@@ -6,6 +6,7 @@ mod asyncnif;
 mod camo;
 mod domains;
 mod markdown;
+mod markdown_diff;
 mod remote;
 #[cfg(test)]
 mod tests;
@@ -28,6 +29,11 @@ fn markdown_to_html(input: &str, reps: HashMap<String, String>) -> String {
 #[rustler::nif(schedule = "DirtyCpu")]
 fn markdown_to_html_unsafe(input: &str, reps: HashMap<String, String>) -> String {
     markdown::to_html_unsafe(input, reps)
+}
+
+#[rustler::nif(schedule = "DirtyCpu")]
+fn markdown_diff_to_html(old: &str, new: &str) -> String {
+    markdown_diff::to_html(old, new)
 }
 
 // Camo NIF wrappers.
