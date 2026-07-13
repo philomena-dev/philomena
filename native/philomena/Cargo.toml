@@ -12,7 +12,6 @@ crate-type = ["dylib"]
 [workspace]
 members = [
     "mediaproc",
-    "mediaproc_client",
     "mediaproc_server",
 ]
 

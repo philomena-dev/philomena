@@ -795,15 +795,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "mediaproc_client"
-version = "0.1.0"
-dependencies = [
- "clap",
- "mediaproc",
- "tokio",
-]
-
-[[package]]
 name = "mediaproc_server"
 version = "0.1.0"
 dependencies = [
