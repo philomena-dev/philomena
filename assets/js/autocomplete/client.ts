@@ -59,11 +59,7 @@ export class AutocompleteClient {
    * Issues a GET request to fetch the compiled autocomplete index.
    */
   async getCompiledAutocomplete(): Promise<ArrayBuffer> {
-    const now = new Date();
-    const key = `${now.getUTCFullYear()}-${now.getUTCMonth()}-${now.getUTCDate()}`;
-
-    const response = await this.http.fetch(`/autocomplete/compiled`, {
-      query: { vsn: '2', key },
+    const response = await this.http.fetch(window.booru.autocompleteFileUrl, {
       credentials: 'omit',
       cache: 'force-cache',
     });

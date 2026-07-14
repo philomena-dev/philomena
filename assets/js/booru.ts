@@ -82,6 +82,10 @@ export interface BooruObject {
    */
   hideStaffTools: boolean;
   /**
+   * URL to the local autocomplete binary
+   */
+  autocompleteFileUrl: string;
+  /**
    * List of image IDs in the current gallery.
    */
   galleryImages?: number[];

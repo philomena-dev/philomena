@@ -26,7 +26,7 @@ defmodule PhilomenaWeb.ContentSecurityPolicyPlug do
       csp_config = [
         {:default_src, ["'self'"]},
         {:script_src, [default_script_src(conn.host) | script_src]},
-        {:connect_src, [default_connect_src(conn.host)]},
+        {:connect_src, [default_connect_src(conn.host), cdn_uri]},
         {:style_src, [default_style_src() | style_src]},
         {:object_src, ["'none'"]},
         {:frame_ancestors, ["'none'"]},

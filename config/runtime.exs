@@ -15,6 +15,8 @@ config :bcrypt_elixir,
     )
 
 config :philomena,
+  autocomplete_file_root: System.fetch_env!("AUTOCOMPLETE_FILE_ROOT"),
+  autocomplete_url_root: System.fetch_env!("AUTOCOMPLETE_URL_ROOT"),
   anonymous_name_salt: System.fetch_env!("ANONYMOUS_NAME_SALT"),
   hcaptcha_secret_key: System.fetch_env!("HCAPTCHA_SECRET_KEY"),
   hcaptcha_site_key: System.fetch_env!("HCAPTCHA_SITE_KEY"),
