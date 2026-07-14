@@ -1,18 +1,19 @@
-//! GitHub-style "pretty" diffing of two Markdown documents.
-//!
-//! The Markdown source is diffed line-by-line and rendered as a unified diff
-//! table: each line becomes a row with old/new line-number gutters, changed
-//! rows are marked with `diff__row--del` / `diff__row--ins`, and runs of
-//! unchanged lines beyond the context window collapse into an
-//! "N unchanged lines" separator row. When a line is edited in place, the
-//! exact changed words inside it are additionally wrapped in
-//! `<del class="diff__hl">` / `<ins class="diff__hl">`.
-//!
-//! The source text is HTML-escaped as it is emitted, so untrusted input stays
-//! inert; the only live markup is the table structure and the diff wrappers.
+// GitHub-style "pretty" diffing of two Markdown documents.
+//
+// The Markdown source is diffed line-by-line and rendered as a unified diff
+// table: each line becomes a row with old/new line-number gutters, changed
+// rows are marked with `diff__row--del` / `diff__row--ins`, and runs of
+// unchanged lines beyond the context window collapse into an
+// "N unchanged lines" separator row. When a line is edited in place, the
+// exact changed words inside it are additionally wrapped in
+// `<del class="diff__hl">` / `<ins class="diff__hl">`.
+//
+// The source text is HTML-escaped as it is emitted, so untrusted input stays
+// inert; the only live markup is the table structure and the diff wrappers.
 
 use similar::{Algorithm, ChangeTag, InlineChange, TextDiff};
 use std::fmt::Write;
+use std::time::Duration;
 
 /// Number of unchanged lines shown around each hunk.
 const CONTEXT_LINES: usize = 3;
@@ -24,6 +25,7 @@ pub fn to_html(old: &str, new: &str) -> String {
 
     let diff = TextDiff::configure()
         .algorithm(Algorithm::Patience)
+        .timeout(Duration::from_millis(50))
         .diff_lines(old.as_str(), new.as_str());
 
     let mut rows = String::new();
