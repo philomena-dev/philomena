@@ -272,3 +272,151 @@ fn auto_relative_links() {
         },
     );
 }
+
+fn diff(old: &str, new: &str, expected: &str) {
+    let output = crate::markdown_diff::to_html(old, new);
+
+    if output != expected {
+        println!("Old:\n========================\n{old}\n========================");
+        println!("New:\n========================\n{new}\n========================");
+        println!("Expected:\n========================\n{expected}\n========================");
+        println!("Output:\n========================\n{output}\n========================");
+    }
+    assert_eq!(output, expected);
+}
+
+#[test]
+fn diff_unchanged_document_renders_as_plain_context() {
+    diff(
+        "Hello world\n\nSecond line",
+        "Hello world\n\nSecond line",
+        concat!(
+            "<table class=\"diff\"><tbody>",
+            "<tr class=\"diff__row\"><td class=\"diff__gutter\">1</td><td class=\"diff__gutter\">1</td><td class=\"diff__text\">Hello world</td></tr>",
+            "<tr class=\"diff__row\"><td class=\"diff__gutter\">2</td><td class=\"diff__gutter\">2</td><td class=\"diff__text\"></td></tr>",
+            "<tr class=\"diff__row\"><td class=\"diff__gutter\">3</td><td class=\"diff__gutter\">3</td><td class=\"diff__text\">Second line</td></tr>",
+            "</tbody></table>",
+        ),
+    );
+}
+
+#[test]
+fn diff_word_change_highlights_only_the_changed_word() {
+    diff(
+        "The quick brown fox",
+        "The quick red fox",
+        concat!(
+            "<table class=\"diff\"><tbody>",
+            "<tr class=\"diff__row diff__row--del\"><td class=\"diff__gutter\">1</td><td class=\"diff__gutter\"></td><td class=\"diff__text\">The quick <del class=\"diff__hl\">brown</del> fox</td></tr>",
+            "<tr class=\"diff__row diff__row--ins\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\">1</td><td class=\"diff__text\">The quick <ins class=\"diff__hl\">red</ins> fox</td></tr>",
+            "</tbody></table>",
+        ),
+    );
+}
+
+#[test]
+fn diff_inserted_line_gets_its_own_row_without_highlights() {
+    diff(
+        "First line\nThird line",
+        "First line\nSecond line\nThird line",
+        concat!(
+            "<table class=\"diff\"><tbody>",
+            "<tr class=\"diff__row\"><td class=\"diff__gutter\">1</td><td class=\"diff__gutter\">1</td><td class=\"diff__text\">First line</td></tr>",
+            "<tr class=\"diff__row diff__row--ins\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\">2</td><td class=\"diff__text\">Second line</td></tr>",
+            "<tr class=\"diff__row\"><td class=\"diff__gutter\">2</td><td class=\"diff__gutter\">3</td><td class=\"diff__text\">Third line</td></tr>",
+            "</tbody></table>",
+        ),
+    );
+}
+
+#[test]
+fn diff_collapses_unchanged_lines_after_the_context_window() {
+    diff(
+        "start old\nl2\nl3\nl4\nl5\nl6\nl7\nl8\nl9",
+        "start new\nl2\nl3\nl4\nl5\nl6\nl7\nl8\nl9",
+        concat!(
+            "<table class=\"diff\"><tbody>",
+            "<tr class=\"diff__row diff__row--del\"><td class=\"diff__gutter\">1</td><td class=\"diff__gutter\"></td><td class=\"diff__text\">start <del class=\"diff__hl\">old</del></td></tr>",
+            "<tr class=\"diff__row diff__row--ins\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\">1</td><td class=\"diff__text\">start <ins class=\"diff__hl\">new</ins></td></tr>",
+            "<tr class=\"diff__row\"><td class=\"diff__gutter\">2</td><td class=\"diff__gutter\">2</td><td class=\"diff__text\">l2</td></tr>",
+            "<tr class=\"diff__row\"><td class=\"diff__gutter\">3</td><td class=\"diff__gutter\">3</td><td class=\"diff__text\">l3</td></tr>",
+            "<tr class=\"diff__row\"><td class=\"diff__gutter\">4</td><td class=\"diff__gutter\">4</td><td class=\"diff__text\">l4</td></tr>",
+            "<tr class=\"diff__row diff__row--gap\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\"></td><td class=\"diff__text\">5 unchanged lines</td></tr>",
+            "</tbody></table>",
+        ),
+    );
+}
+
+#[test]
+fn diff_collapses_unchanged_lines_before_the_context_window() {
+    diff(
+        "l1\nl2\nl3\nl4\nl5\nl6\nl7\nl8\nend old",
+        "l1\nl2\nl3\nl4\nl5\nl6\nl7\nl8\nend new",
+        concat!(
+            "<table class=\"diff\"><tbody>",
+            "<tr class=\"diff__row diff__row--gap\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\"></td><td class=\"diff__text\">5 unchanged lines</td></tr>",
+            "<tr class=\"diff__row\"><td class=\"diff__gutter\">6</td><td class=\"diff__gutter\">6</td><td class=\"diff__text\">l6</td></tr>",
+            "<tr class=\"diff__row\"><td class=\"diff__gutter\">7</td><td class=\"diff__gutter\">7</td><td class=\"diff__text\">l7</td></tr>",
+            "<tr class=\"diff__row\"><td class=\"diff__gutter\">8</td><td class=\"diff__gutter\">8</td><td class=\"diff__text\">l8</td></tr>",
+            "<tr class=\"diff__row diff__row--del\"><td class=\"diff__gutter\">9</td><td class=\"diff__gutter\"></td><td class=\"diff__text\">end <del class=\"diff__hl\">old</del></td></tr>",
+            "<tr class=\"diff__row diff__row--ins\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\">9</td><td class=\"diff__text\">end <ins class=\"diff__hl\">new</ins></td></tr>",
+            "</tbody></table>",
+        ),
+    );
+}
+
+#[test]
+fn diff_keeps_raw_user_html_escaped() {
+    diff(
+        "before <script> text",
+        "after <script> text",
+        concat!(
+            "<table class=\"diff\"><tbody>",
+            "<tr class=\"diff__row diff__row--del\"><td class=\"diff__gutter\">1</td><td class=\"diff__gutter\"></td><td class=\"diff__text\"><del class=\"diff__hl\">before</del> &lt;script&gt; text</td></tr>",
+            "<tr class=\"diff__row diff__row--ins\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\">1</td><td class=\"diff__text\"><ins class=\"diff__hl\">after</ins> &lt;script&gt; text</td></tr>",
+            "</tbody></table>",
+        ),
+    );
+}
+
+#[test]
+fn diff_from_empty_shows_pure_insertions() {
+    diff(
+        "",
+        "line one\nline two",
+        concat!(
+            "<table class=\"diff\"><tbody>",
+            "<tr class=\"diff__row diff__row--ins\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\">1</td><td class=\"diff__text\">line one</td></tr>",
+            "<tr class=\"diff__row diff__row--ins\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\">2</td><td class=\"diff__text\">line two</td></tr>",
+            "</tbody></table>",
+        ),
+    );
+}
+
+#[test]
+fn diff_to_empty_shows_pure_deletions() {
+    diff(
+        "only line",
+        "",
+        concat!(
+            "<table class=\"diff\"><tbody>",
+            "<tr class=\"diff__row diff__row--del\"><td class=\"diff__gutter\">1</td><td class=\"diff__gutter\"></td><td class=\"diff__text\">only line</td></tr>",
+            "</tbody></table>",
+        ),
+    );
+}
+
+#[test]
+fn diff_matches_lines_across_crlf_and_lf_revisions() {
+    diff(
+        "same one\r\nsame two",
+        "same one\nsame two\nadded three",
+        concat!(
+            "<table class=\"diff\"><tbody>",
+            "<tr class=\"diff__row\"><td class=\"diff__gutter\">1</td><td class=\"diff__gutter\">1</td><td class=\"diff__text\">same one</td></tr>",
+            "<tr class=\"diff__row\"><td class=\"diff__gutter\">2</td><td class=\"diff__gutter\">2</td><td class=\"diff__text\">same two</td></tr>",
+            "<tr class=\"diff__row diff__row--ins\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\">3</td><td class=\"diff__text\">added three</td></tr>",
+            "</tbody></table>",
+        ),
+    );
+}

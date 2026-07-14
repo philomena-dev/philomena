@@ -36,8 +36,8 @@ defmodule Philomena.Versions do
             | parent: parent,
               user: users[version.whodunnit],
               body: body,
-              edit_reason: previous_reason,
-              difference: difference(body, previous_body)
+              previous_body: previous_body,
+              edit_reason: previous_reason
           }
 
           {v, {body, edit_reason}}
@@ -46,9 +46,6 @@ defmodule Philomena.Versions do
 
     versions
   end
-
-  defp difference(previous, nil), do: [eq: previous]
-  defp difference(previous, next), do: String.myers_difference(previous, next)
 
   @doc """
   Creates a version.

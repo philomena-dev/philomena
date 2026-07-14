@@ -27,6 +27,29 @@ defmodule PhilomenaWeb.MarkdownRenderer do
     end)
   end
 
+  @doc """
+  Renders a line-by-line diff table between two Markdown sources to safe HTML.
+  """
+  # The NIF escapes the source text; only its own diff markup is live
+  # sobelow_skip ["XSS.Raw"]
+  def render_diff(old, new) do
+    (old || "")
+    |> Markdown.to_html_diff(new || "")
+    |> Phoenix.HTML.raw()
+  end
+
+  @doc """
+  Renders line diffs for a list of `Philomena.Versions.Version` structs (as
+  prepared by `Philomena.Versions.load_data_and_associations/2`). Each
+  version's `:difference` field is set to the rendered safe HTML diff against
+  the next-newer revision.
+  """
+  def render_version_diffs(versions) do
+    Enum.map(versions, fn v ->
+      %{v | difference: render_diff(v.body, v.previous_body)}
+    end)
+  end
+
   # This is rendered Markdown for use on static pages
   # sobelow_skip ["XSS.Raw"]
   def render_unsafe(text, conn) do

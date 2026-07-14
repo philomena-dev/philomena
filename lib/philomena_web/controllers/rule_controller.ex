@@ -103,7 +103,7 @@ defmodule PhilomenaWeb.RuleController do
     if old == new do
       nil
     else
-      List.myers_difference(split(old), split(new))
+      MarkdownRenderer.render_diff(old, new)
     end
   end
 
@@ -113,9 +113,6 @@ defmodule PhilomenaWeb.RuleController do
       example: diff_field(:example, previous, next)
     }
   end
-
-  defp split(nil), do: []
-  defp split(body), do: String.split(body, "\n")
 
   defp generate_diff(versions) when length(versions) < 2 do
     []

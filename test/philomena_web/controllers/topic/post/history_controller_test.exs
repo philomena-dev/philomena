@@ -29,11 +29,15 @@ defmodule PhilomenaWeb.Topic.Post.HistoryControllerTest do
       assert response =~ "Post History for Post #{post.id} - #{topic.title} - Forums"
       assert response =~ "Viewing last 25 versions of post by"
       assert response =~ author.name
-      # The version body is rendered as a character-level diff against the
-      # current body, so only the shared prefix survives contiguously; the
-      # edit's addition is wrapped in an <ins> tag.
+      # The version body renders as a line-by-line unified diff table over the
+      # raw markdown source. An in-place edit of a line produces a deleted row
+      # for the old text and an inserted row for the new, with word-level
+      # highlights marking the change.
+      assert response =~ ~s(<table class="diff">)
+      assert response =~ ~s(<tr class="diff__row diff__row--del">)
+      assert response =~ ~s(<tr class="diff__row diff__row--ins">)
       assert response =~ "Original post body"
-      assert response =~ "<ins class=\"differ\">"
+      assert response =~ ~s(<ins class="diff__hl"> plus an edit</ins>)
     end
 
     test "renders an empty history for a never-edited post", %{conn: conn} do

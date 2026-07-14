@@ -86,6 +86,31 @@ defmodule PhilomenaWeb.RuleControllerTest do
       assert response =~ "Revision history for this rule is unavailable"
     end
 
+    test "renders an AST pretty diff of a rule's edited description", %{conn: conn} do
+      rule = rule_fixture(%{name: "Test Rule: diff", description: "The original rule text"})
+
+      {:ok, _} =
+        Philomena.Rules.update_rule_with_version(rule, nil, %{
+          "description" => "The updated rule text"
+        })
+
+      conn = get(conn, ~p"/rules/#{rule}")
+      response = html_response(conn, 200)
+
+      # The description renders as a line-by-line unified diff table over the
+      # raw markdown source. The cell text is the escaped source, so the
+      # unchanged suffix "rule text" appears literally in the diff__text cell
+      # rather than inside rendered markup. (The two versions share a
+      # same-second timestamp, so the diff direction is not fixed - assert on
+      # markup that holds either way.)
+      assert response =~ ~s(<table class="diff">)
+      assert response =~ ~s(<del class="diff__hl">)
+      assert response =~ ~s(<ins class="diff__hl">)
+      assert response =~ "original"
+      assert response =~ "updated"
+      assert response =~ "rule text</td>"
+    end
+
     test "redirects to /rules for a hidden rule as anonymous", %{conn: conn} do
       rule = rule_fixture(%{name: "Test Hidden Rule", hidden: true})
 

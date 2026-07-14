@@ -171,9 +171,11 @@ table > tbody,
 
 /* I know this looks odd, but first one expands to
  .table > ...
- while the other one does the table verbatim */
-@mixin even-odd table > tbody tr;
-@mixin even-odd-element table > tbody tr;
+ while the other one does the table verbatim.
+ The child combinator before tr keeps striping out of nested tables
+ (e.g. diff tables rendered inside a .table cell). */
+@mixin even-odd table > tbody > tr;
+@mixin even-odd-element table > tbody > tr;
 
 td {
   padding: 5px;

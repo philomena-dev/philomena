@@ -4,6 +4,7 @@ defmodule PhilomenaWeb.Page.HistoryController do
   alias Philomena.StaticPages.StaticPage
   alias Philomena.StaticPages.Version
   alias Philomena.Repo
+  alias PhilomenaWeb.MarkdownRenderer
   import Ecto.Query
 
   plug :load_resource, model: StaticPage, id_name: "page_id", id_field: "slug", required: true
@@ -28,12 +29,9 @@ defmodule PhilomenaWeb.Page.HistoryController do
 
   defp generate_differences(pages, current_body) do
     Enum.map_reduce(pages, current_body, fn page, previous_body ->
-      difference = List.myers_difference(split(page.body), split(previous_body))
+      difference = MarkdownRenderer.render_diff(page.body, previous_body)
 
       {%{page | difference: difference}, page.body}
     end)
   end
-
-  defp split(nil), do: []
-  defp split(body), do: String.split(body, "\n")
 end

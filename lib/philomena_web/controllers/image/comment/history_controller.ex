@@ -5,6 +5,7 @@ defmodule PhilomenaWeb.Image.Comment.HistoryController do
   alias Philomena.Versions
   alias Philomena.Images.Image
   alias Philomena.Repo
+  alias PhilomenaWeb.MarkdownRenderer
   import Ecto.Query
 
   plug PhilomenaWeb.CanaryMapPlug, index: :show
@@ -23,6 +24,7 @@ defmodule PhilomenaWeb.Image.Comment.HistoryController do
       |> limit(25)
       |> Repo.all()
       |> Versions.load_data_and_associations(comment)
+      |> MarkdownRenderer.render_version_diffs()
 
     render(conn, "index.html",
       title: "Comment History for comment #{comment.id} on image #{image.id}",

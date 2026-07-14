@@ -5,6 +5,7 @@ defmodule PhilomenaWeb.Topic.Post.HistoryController do
   alias Philomena.Versions
   alias Philomena.Forums.Forum
   alias Philomena.Repo
+  alias PhilomenaWeb.MarkdownRenderer
   import Ecto.Query
 
   plug PhilomenaWeb.CanaryMapPlug, index: :show
@@ -29,6 +30,7 @@ defmodule PhilomenaWeb.Topic.Post.HistoryController do
       |> limit(25)
       |> Repo.all()
       |> Versions.load_data_and_associations(post)
+      |> MarkdownRenderer.render_version_diffs()
 
     render(conn, "index.html",
       title: "Post History for Post #{post.id} - #{topic.title} - Forums",
