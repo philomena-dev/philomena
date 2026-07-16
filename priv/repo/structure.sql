@@ -2,10 +2,10 @@
 -- PostgreSQL database dump
 --
 
-\restrict hgf9CfMeD1rU4CvxcBOzalhPAIJmwKqP0y1eMNujQOmt5EMX2Gnh4Z2aHUUnVGK
+\restrict WOWKI2UnM9XUXGesUkknfZZMcdFpGKByPmb5KA4COIIh9kGqSMbdy9BwSsCWBdY
 
--- Dumped from database version 18.0
--- Dumped by pg_dump version 18.0
+-- Dumped from database version 18.4
+-- Dumped by pg_dump version 18.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -259,6 +259,39 @@ CREATE SEQUENCE public.channels_id_seq
 --
 
 ALTER SEQUENCE public.channels_id_seq OWNED BY public.channels.id;
+
+
+--
+-- Name: comment_versions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.comment_versions (
+    id bigint NOT NULL,
+    comment_id bigint NOT NULL,
+    user_id bigint,
+    body text DEFAULT ''::text NOT NULL,
+    edit_reason character varying(255),
+    created_at timestamp(0) without time zone NOT NULL
+);
+
+
+--
+-- Name: comment_versions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.comment_versions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: comment_versions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.comment_versions_id_seq OWNED BY public.comment_versions.id;
 
 
 --
@@ -1289,6 +1322,39 @@ ALTER SEQUENCE public.polls_id_seq OWNED BY public.polls.id;
 
 
 --
+-- Name: post_versions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.post_versions (
+    id bigint NOT NULL,
+    post_id bigint NOT NULL,
+    user_id bigint,
+    body text DEFAULT ''::text NOT NULL,
+    edit_reason character varying(255),
+    created_at timestamp(0) without time zone NOT NULL
+);
+
+
+--
+-- Name: post_versions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.post_versions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: post_versions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.post_versions_id_seq OWNED BY public.post_versions.id;
+
+
+--
 -- Name: posts; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2223,17 +2289,17 @@ CREATE TABLE public.users_roles (
 
 
 --
--- Name: versions; Type: TABLE; Schema: public; Owner: -
+-- Name: versions_legacy; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.versions (
-    id integer NOT NULL,
-    item_type character varying NOT NULL,
-    item_id integer NOT NULL,
-    event character varying NOT NULL,
+CREATE TABLE public.versions_legacy (
+    id integer CONSTRAINT versions_id_not_null NOT NULL,
+    item_type character varying CONSTRAINT versions_item_type_not_null NOT NULL,
+    item_id integer CONSTRAINT versions_item_id_not_null NOT NULL,
+    event character varying CONSTRAINT versions_event_not_null NOT NULL,
     whodunnit character varying,
     object text,
-    created_at timestamp without time zone NOT NULL
+    created_at timestamp without time zone CONSTRAINT versions_created_at_not_null NOT NULL
 );
 
 
@@ -2253,7 +2319,7 @@ CREATE SEQUENCE public.versions_id_seq
 -- Name: versions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.versions_id_seq OWNED BY public.versions.id;
+ALTER SEQUENCE public.versions_id_seq OWNED BY public.versions_legacy.id;
 
 
 --
@@ -2298,6 +2364,13 @@ ALTER TABLE ONLY public.badges ALTER COLUMN id SET DEFAULT nextval('public.badge
 --
 
 ALTER TABLE ONLY public.channels ALTER COLUMN id SET DEFAULT nextval('public.channels_id_seq'::regclass);
+
+
+--
+-- Name: comment_versions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.comment_versions ALTER COLUMN id SET DEFAULT nextval('public.comment_versions_id_seq'::regclass);
 
 
 --
@@ -2462,6 +2535,13 @@ ALTER TABLE ONLY public.polls ALTER COLUMN id SET DEFAULT nextval('public.polls_
 
 
 --
+-- Name: post_versions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.post_versions ALTER COLUMN id SET DEFAULT nextval('public.post_versions_id_seq'::regclass);
+
+
+--
 -- Name: posts id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2616,10 +2696,10 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 
 
 --
--- Name: versions id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: versions_legacy id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.versions ALTER COLUMN id SET DEFAULT nextval('public.versions_id_seq'::regclass);
+ALTER TABLE ONLY public.versions_legacy ALTER COLUMN id SET DEFAULT nextval('public.versions_id_seq'::regclass);
 
 
 --
@@ -2660,6 +2740,14 @@ ALTER TABLE ONLY public.badges
 
 ALTER TABLE ONLY public.channels
     ADD CONSTRAINT channels_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: comment_versions comment_versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.comment_versions
+    ADD CONSTRAINT comment_versions_pkey PRIMARY KEY (id);
 
 
 --
@@ -2844,6 +2932,14 @@ ALTER TABLE ONLY public.poll_votes
 
 ALTER TABLE ONLY public.polls
     ADD CONSTRAINT polls_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: post_versions post_versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.post_versions
+    ADD CONSTRAINT post_versions_pkey PRIMARY KEY (id);
 
 
 --
@@ -3039,10 +3135,10 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: versions versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: versions_legacy versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.versions
+ALTER TABLE ONLY public.versions_legacy
     ADD CONSTRAINT versions_pkey PRIMARY KEY (id);
 
 
@@ -3072,6 +3168,20 @@ CREATE INDEX channel_live_notifications_user_id_read_index ON public.channel_liv
 --
 
 CREATE INDEX channel_live_notifications_user_id_updated_at_desc_index ON public.channel_live_notifications USING btree (user_id, updated_at DESC);
+
+
+--
+-- Name: comment_versions_comment_id_created_at_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX comment_versions_comment_id_created_at_index ON public.comment_versions USING btree (comment_id, created_at);
+
+
+--
+-- Name: comment_versions_user_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX comment_versions_user_id_index ON public.comment_versions USING btree (user_id);
 
 
 --
@@ -4415,7 +4525,7 @@ CREATE UNIQUE INDEX index_users_roles_on_user_id_and_role_id ON public.users_rol
 -- Name: index_versions_on_item_type_and_item_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_versions_on_item_type_and_item_id ON public.versions USING btree (item_type, item_id);
+CREATE INDEX index_versions_on_item_type_and_item_id ON public.versions_legacy USING btree (item_type, item_id);
 
 
 --
@@ -4458,6 +4568,20 @@ CREATE INDEX moderation_logs_user_id_created_at_index ON public.moderation_logs 
 --
 
 CREATE INDEX moderation_logs_user_id_index ON public.moderation_logs USING btree (user_id);
+
+
+--
+-- Name: post_versions_post_id_created_at_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX post_versions_post_id_created_at_index ON public.post_versions USING btree (post_id, created_at);
+
+
+--
+-- Name: post_versions_user_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX post_versions_user_id_index ON public.post_versions USING btree (user_id);
 
 
 --
@@ -4551,6 +4675,22 @@ ALTER TABLE ONLY public.channel_live_notifications
 
 ALTER TABLE ONLY public.channel_live_notifications
     ADD CONSTRAINT channel_live_notifications_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: comment_versions comment_versions_comment_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.comment_versions
+    ADD CONSTRAINT comment_versions_comment_id_fkey FOREIGN KEY (comment_id) REFERENCES public.comments(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: comment_versions comment_versions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.comment_versions
+    ADD CONSTRAINT comment_versions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE SET NULL;
 
 
 --
@@ -5474,6 +5614,22 @@ ALTER TABLE ONLY public.moderation_logs
 
 
 --
+-- Name: post_versions post_versions_post_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.post_versions
+    ADD CONSTRAINT post_versions_post_id_fkey FOREIGN KEY (post_id) REFERENCES public.posts(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: post_versions post_versions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.post_versions
+    ADD CONSTRAINT post_versions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
 -- Name: reports reports_rule_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5565,7 +5721,7 @@ ALTER TABLE ONLY public.users
 -- PostgreSQL database dump complete
 --
 
-\unrestrict hgf9CfMeD1rU4CvxcBOzalhPAIJmwKqP0y1eMNujQOmt5EMX2Gnh4Z2aHUUnVGK
+\unrestrict WOWKI2UnM9XUXGesUkknfZZMcdFpGKByPmb5KA4COIIh9kGqSMbdy9BwSsCWBdY
 
 INSERT INTO public."schema_migrations" (version) VALUES (20200503002523);
 INSERT INTO public."schema_migrations" (version) VALUES (20200607000511);
@@ -5592,11 +5748,12 @@ INSERT INTO public."schema_migrations" (version) VALUES (20240728191353);
 INSERT INTO public."schema_migrations" (version) VALUES (20240818182358);
 INSERT INTO public."schema_migrations" (version) VALUES (20241216165826);
 INSERT INTO public."schema_migrations" (version) VALUES (20250407021536);
+INSERT INTO public."schema_migrations" (version) VALUES (20250430092058);
+INSERT INTO public."schema_migrations" (version) VALUES (20250501023533);
 INSERT INTO public."schema_migrations" (version) VALUES (20250501174007);
 INSERT INTO public."schema_migrations" (version) VALUES (20250502110018);
 INSERT INTO public."schema_migrations" (version) VALUES (20250507183410);
 INSERT INTO public."schema_migrations" (version) VALUES (20250617121030);
 INSERT INTO public."schema_migrations" (version) VALUES (20250617122513);
 INSERT INTO public."schema_migrations" (version) VALUES (20251103173014);
-INSERT INTO public."schema_migrations" (version) VALUES (20250430092058);
-INSERT INTO public."schema_migrations" (version) VALUES (20250501023533);
+INSERT INTO public."schema_migrations" (version) VALUES (20260716190444);

@@ -190,10 +190,7 @@ defmodule PhilomenaWeb.Topic.PostControllerTest do
       assert reloaded.body == "Original reply body plus an edit"
       assert reloaded.edit_reason == "typo"
 
-      assert Repo.exists?(
-               from v in Philomena.Versions.Version,
-                 where: v.item_type == "Post" and v.item_id == ^post.id
-             )
+      assert Repo.exists?(from v in Philomena.Posts.PostVersion, where: v.post_id == ^post.id)
     end
 
     test "PUT also updates the post", %{conn: conn, forum: forum, topic: topic} do

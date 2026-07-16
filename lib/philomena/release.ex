@@ -79,6 +79,11 @@ defmodule Philomena.Release do
     Philomena.Reports.convert_reports!()
   end
 
+  def backfill_versions do
+    start_app()
+    Philomena.Versions.LegacyBackfill.run!()
+  end
+
   defp repos do
     Application.fetch_env!(@app, :ecto_repos)
   end
