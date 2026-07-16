@@ -12,6 +12,19 @@ defmodule PhilomenaMedia.Remote do
     end
   end
 
+  @doc """
+  Gets the raw, uncorrected MIME type of a file.
+  """
+  @spec get_mime(Path.t()) :: {:ok, String.t()} | :error
+  def get_mime(path) do
+    :ok = Philomena.Native.async_get_mime(mediaproc_addr(), path)
+
+    receive do
+      {:mime_reply, mime_reply} ->
+        mime_reply
+    end
+  end
+
   defp mediaproc_addr do
     Application.get_env(:philomena, :mediaproc_addr)
   end

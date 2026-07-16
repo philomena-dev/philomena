@@ -125,6 +125,18 @@ pub async fn execute_command(
     Ok(reply)
 }
 
+pub async fn get_mime(
+    client: &MediaProcessorClient,
+    path: &str,
+) -> Result<String, ExecuteCommandError> {
+    let content = std::fs::read(path).map_err(|_| ExecuteCommandError::LocalFilesystemError)?;
+
+    client
+        .get_mime(context_with_1_hour_deadline(), content)
+        .await
+        .map_err(|_| ExecuteCommandError::UnknownError)?
+}
+
 pub async fn connect_to_socket_server(server_addr: &str) -> Option<MediaProcessorClient> {
     let codec = tarpc::tokio_serde::formats::Bincode::default;
 

@@ -61,3 +61,29 @@ pub async fn execute_command(
 
     Ok((reply, file_map))
 }
+
+pub async fn get_mime(content: Vec<u8>) -> Result<String, ExecuteCommandError> {
+    use std::fs::write;
+
+    // Write the contents to a file in a new temporary directory.
+    let dir = tempfile::tempdir().map_err(|_| ExecuteCommandError::RemoteFilesystemError)?;
+    let path = dir.path().join("file");
+    write(&path, content).map_err(|_| ExecuteCommandError::RemoteFilesystemError)?;
+
+    let output = Command::new("file")
+        .arg("-b")
+        .arg("--mime-type")
+        .arg(&path)
+        .output()
+        .await
+        .map_err(|_| ExecuteCommandError::ExecutionError)?;
+
+    if !output.status.success() {
+        return Err(ExecuteCommandError::ExecutionError);
+    }
+
+    match String::from_utf8(output.stdout) {
+        Ok(mime) => Ok(mime.trim().to_string()),
+        Err(_) => Err(ExecuteCommandError::UnknownError),
+    }
+}

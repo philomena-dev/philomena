@@ -56,6 +56,12 @@ fn async_process_command(
     asyncnif::call_async(env, fut, remote::with_env)
 }
 
+#[rustler::nif]
+fn async_get_mime(env: Env, server_addr: String, path: String) -> Atom {
+    let fut = remote::get_mime(server_addr, path);
+    asyncnif::call_async(env, fut, remote::mime_with_env)
+}
+
 // Zip NIF wrappers.
 
 #[rustler::nif]

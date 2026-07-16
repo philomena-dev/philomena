@@ -4,7 +4,7 @@ defmodule PhilomenaWeb.Api.Json.Search.ReverseControllerTest do
   # Reverse search matches against Postgres intensity rows, not OpenSearch,
   # so this module can stay async.
 
-  # png_upload/0 hands the pipeline a tempfile copy of the fixture: Mime.file/1
+  # png_upload/0 hands the pipeline a tempfile copy of the fixture: Remote.cmd/2
   # round-trips every absolute path argument through mediaproc, which writes the
   # returned bytes back over the original path. Pointing at the tracked fixture
   # corrupts the working tree.
