@@ -29,6 +29,14 @@ impl MediaProcessor for MediaProcessorServer {
     ) -> Result<(CommandReply, FileMap), ExecuteCommandError> {
         command_server::execute_command(program, arguments, file_map).await
     }
+
+    async fn get_mime(
+        self,
+        _: context::Context,
+        content: Vec<u8>,
+    ) -> Result<String, ExecuteCommandError> {
+        command_server::get_mime(content).await
+    }
 }
 
 fn main() {

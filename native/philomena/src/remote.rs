@@ -1,10 +1,12 @@
 use mediaproc::CommandReply;
 use mediaproc::client::{connect_to_socket_server, execute_command};
+use rustler::types::atom::{error, ok};
 use rustler::{Encoder, Env, NifStruct, OwnedBinary, Term, atoms};
 
 atoms! {
     nil,
     command_reply,
+    mime_reply,
 }
 
 #[derive(NifStruct)]
@@ -48,6 +50,21 @@ pub async fn process_command(
             stderr: format!("failed to execute command: {err:?}").into(),
             status: 255,
         },
+    }
+}
+
+pub async fn get_mime(server_addr: String, path: String) -> Option<String> {
+    let client = connect_to_socket_server(&server_addr).await?;
+
+    mediaproc::client::get_mime(&client, &path).await.ok()
+}
+
+/// Converts the response into a {:mime_reply, {:ok, mime} | :error} message
+/// which gets sent back to the caller.
+pub fn mime_with_env<'a>(env: Env<'a>, r: Option<String>) -> Term<'a> {
+    match r {
+        Some(mime) => (mime_reply(), (ok(), mime)).encode(env),
+        None => (mime_reply(), error()).encode(env),
     }
 }
 

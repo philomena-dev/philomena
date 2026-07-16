@@ -19,6 +19,9 @@ defmodule Philomena.Native do
   def async_process_command(_server_addr, _program, _arguments),
     do: :erlang.nif_error(:nif_not_loaded)
 
+  @spec async_get_mime(String.t(), Path.t()) :: :ok
+  def async_get_mime(_server_addr, _path), do: :erlang.nif_error(:nif_not_loaded)
+
   @spec zip_open_writer(Path.t()) :: {:ok, reference()} | {:error, atom()}
   def zip_open_writer(_path), do: :erlang.nif_error(:nif_not_loaded)
 

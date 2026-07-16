@@ -12,6 +12,9 @@ pub trait MediaProcessor {
         arguments: Vec<String>,
         file_map: FileMap,
     ) -> Result<(CommandReply, FileMap), ExecuteCommandError>;
+
+    /// Gets the MIME type of the given file contents, as reported by file(1).
+    async fn get_mime(content: Vec<u8>) -> Result<String, ExecuteCommandError>;
 }
 
 /// Errors which can occur during command execution.
@@ -36,7 +39,6 @@ pub static PERMITTED_PROGRAMS: LazyLock<HashSet<&'static str>> = LazyLock::new(|
     vec![
         "ffprobe",
         "ffmpeg",
-        "file",
         "gifsicle",
         "image-intensities",
         "jpegtran",
