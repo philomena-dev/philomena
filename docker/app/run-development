@@ -66,6 +66,9 @@ elif [[ "$(mix ecto.migrations)" == *" down "* ]]; then
   step mix reindex_all
 fi
 
+# Apply any pending search index migrations
+step mix search.migrate
+
 # Explicitly compile deps to avoid racing
 step mix compile
 

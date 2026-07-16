@@ -2,6 +2,11 @@ defmodule Philomena.TagChanges.SearchIndex do
   @behaviour PhilomenaQuery.Search.Index
 
   @impl true
+  def version do
+    1
+  end
+
+  @impl true
   def index_name do
     "tag_changes"
   end

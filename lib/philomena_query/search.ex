@@ -11,6 +11,7 @@ defmodule PhilomenaQuery.Search do
 
   alias PhilomenaQuery.Batch
   alias PhilomenaQuery.Search.Api
+  alias PhilomenaQuery.Search.WriteTargets
   alias Philomena.Repo
   require Logger
   import Ecto.Query
@@ -92,46 +93,191 @@ defmodule PhilomenaQuery.Search do
     "#{prefix}#{index.index_name()}"
   end
 
-  @doc ~S"""
-  Create the index with the module's index name and mapping.
+  # Index names document writes must be sent to. Normally this is just the
+  # alias name; during an index migration it is every physical index backing
+  # the alias, so the new index is complete when the alias is swapped onto it.
+  # An explicit `targets:` option bypasses resolution (used by the migrator to
+  # bulk into the new index only).
+  @spec write_targets(module(), Keyword.t()) :: [String.t()]
+  defp write_targets(index, opts) do
+    Keyword.get(opts, :targets) || WriteTargets.targets_for(prefixed_index_name(index))
+  end
 
-  `PUT /#{index_name}`
+  @spec physical_index_name(module(), pos_integer()) :: String.t()
+  defp physical_index_name(index, version) do
+    "#{prefixed_index_name(index)}_v#{version}"
+  end
+
+  @doc ~S"""
+  Create a versioned physical index with the module's mapping, aliased to the
+  module's index name.
+
+  `PUT /#{index_name}_v#{version}`
+
+  The physical index is named `#{index_name}_v#{version}`; the alias carrying
+  the plain index name is attached in the same call, so the index becomes
+  addressable under its usual name atomically. The mapping version is recorded
+  in `mappings._meta` alongside any extra `meta:` entries.
 
   You **must** use this function before indexing documents in order for the mapping to be created
   correctly. If you index documents without a mapping created, the search engine will create a
   mapping which does not contain the correct types for mapping fields, which will require
   destroying and recreating the index.
 
+  ## Options
+
+  - `alias:` - set `false` to create the physical index without attaching the
+    alias (a migration target which is swapped in later). Defaults to `true`.
+  - `version:`, `mapping:` - override the index module's `version/0` and
+    `mapping/0`. Used by `Philomena.SearchMigrator` tests to simulate version
+    bumps. An overridden mapping must be atom-keyed like `mapping/0` results.
+  - `meta:` - extra entries for the `mappings._meta` block, e.g. the
+    migration start timestamp.
+
+  Raises unless the search engine acknowledges the creation.
+
   ## Example
 
       iex> Search.create_index!(Image)
+      :ok
 
   """
-  @spec create_index!(schema_module()) :: any()
-  def create_index!(module) do
+  @spec create_index!(schema_module(), Keyword.t()) :: :ok
+  def create_index!(module, opts \\ []) do
     index = @policy.index_for(module)
+    version = Keyword.get(opts, :version, index.version())
+    mapping = Keyword.get(opts, :mapping, index.mapping())
+    meta = opts |> Keyword.get(:meta, %{}) |> Map.put(:version, version)
 
-    Api.create_index(@policy.opensearch_url(), prefixed_index_name(index), index.mapping())
+    body =
+      mapping
+      |> put_in([:mappings, :_meta], meta)
+      |> maybe_put_alias(prefixed_index_name(index), Keyword.get(opts, :alias, true))
+
+    {:ok, %{status: 200}} =
+      Api.create_index(@policy.opensearch_url(), physical_index_name(index, version), body)
+
+    :ok
   end
 
+  defp maybe_put_alias(body, alias_name, true), do: Map.put(body, :aliases, %{alias_name => %{}})
+  defp maybe_put_alias(body, _alias_name, false), do: body
+
   @doc ~S"""
-  Delete the index with the module's index name.
+  Delete every physical index backing the module's index name.
 
-  `DELETE /#{index_name}`
+  `DELETE /#{physical_index_name}` for each member
 
-  This undoes the effect of `create_index!/1` and removes the index permanently, deleting
-  all indexed documents within.
+  This undoes the effect of `create_index!/2` and removes the indices
+  permanently, deleting all indexed documents within. All members are removed:
+  the aliased physical index, any unaliased migration target or orphan, and
+  any bare concrete index occupying the alias name. Deleting an aliased index
+  drops its alias with it.
+
+  Succeeds when there is nothing to delete.
 
   ## Example
 
       iex> Search.delete_index!(Image)
+      :ok
 
   """
-  @spec delete_index!(schema_module()) :: any()
+  @spec delete_index!(schema_module()) :: :ok
   def delete_index!(module) do
     index = @policy.index_for(module)
 
-    Api.delete_index(@policy.opensearch_url(), prefixed_index_name(index))
+    %{members: members} = alias_group(prefixed_index_name(index))
+
+    Enum.each(members, fn member ->
+      {:ok, %{status: status}} = Api.delete_index(@policy.opensearch_url(), member)
+
+      unless status in [200, 404] do
+        raise "Could not delete search index #{member} (status #{status})"
+      end
+    end)
+  end
+
+  @doc ~S"""
+  Return the live cluster state for the module's index name, as consumed by
+  `Philomena.SearchMigrator`.
+
+  The returned map contains:
+
+  - `alias:` - the (prefixed) alias name
+  - `status:` - `:aliased` when a physical index holds the alias, `:legacy`
+    when a bare concrete index occupies the alias name, `:missing` otherwise
+  - `live_physical:` - the index currently serving reads, if any
+  - `live_version:` - from the live index's `mappings._meta.version`, falling
+    back to the `_v` name suffix; `nil` for legacy indices without either
+  - `live_mapping:`, `live_settings:` - the live index's definition, for
+    `PhilomenaQuery.Search.MappingDiff`
+  - `orphans:` - members which are not the live index (stale migration
+    targets, or a bare index shadowed by an aliased one)
+  """
+  @spec live_state(schema_module()) :: %{
+          alias: String.t(),
+          status: :missing | :legacy | :aliased,
+          live_physical: String.t() | nil,
+          live_version: pos_integer() | nil,
+          live_mapping: map() | nil,
+          live_settings: map() | nil,
+          orphans: [String.t()]
+        }
+  def live_state(module) do
+    index = @policy.index_for(module)
+    alias_name = prefixed_index_name(index)
+
+    %{members: members, aliased: aliased} = alias_group(alias_name)
+
+    {status, live_physical} =
+      cond do
+        # More than one aliased member never happens through the migrator
+        # (swaps are atomic); prefer the newest if it does.
+        aliased != [] -> {:aliased, Enum.max_by(aliased, &(version_from_name(&1) || 0))}
+        alias_name in members -> {:legacy, alias_name}
+        true -> {:missing, nil}
+      end
+
+    state = %{
+      alias: alias_name,
+      status: status,
+      live_physical: live_physical,
+      live_version: nil,
+      live_mapping: nil,
+      live_settings: nil,
+      orphans: members -- List.wrap(live_physical)
+    }
+
+    case live_physical do
+      nil ->
+        state
+
+      name ->
+        {:ok, %{status: 200, body: body}} = Api.get_index(@policy.opensearch_url(), name)
+        %{"mappings" => mapping, "settings" => settings} = Map.fetch!(body, name)
+
+        %{
+          state
+          | live_version: get_in(mapping, ["_meta", "version"]) || version_from_name(name),
+            live_mapping: mapping,
+            live_settings: settings
+        }
+    end
+  end
+
+  defp version_from_name(name) do
+    case Regex.run(~r/_v(\d+)\z/, name) do
+      [_, version] -> String.to_integer(version)
+      nil -> nil
+    end
+  end
+
+  # Fetch the current alias group directly from the cluster, bypassing the
+  # `WriteTargets` cache - management operations need fresh state.
+  defp alias_group(alias_name) do
+    {:ok, %{status: 200, body: body}} = Api.get_all_aliases(@policy.opensearch_url())
+
+    WriteTargets.group(body, alias_name)
   end
 
   @doc ~S"""
@@ -189,21 +335,35 @@ defmodule PhilomenaQuery.Search do
   `PUT /#{index_name}/_mapping`
 
   This is used to add new fields to an existing search mapping. This cannot be used to
-  remove fields; removing fields requires recreating the index.
+  remove fields; removing fields requires recreating the index. The mapping
+  version is recorded in `mappings._meta`, so an additive migration updates
+  the live version without a rebuild.
+
+  ## Options
+
+  - `version:`, `mapping:` - override the index module's `version/0` and
+    `mapping/0`; see `create_index!/2`.
+
+  Raises unless the search engine acknowledges the update.
 
   ## Example
 
       iex> Search.update_mapping!(Image)
+      :ok
 
   """
-  @spec update_mapping!(schema_module()) :: any()
-  def update_mapping!(module) do
+  @spec update_mapping!(schema_module(), Keyword.t()) :: :ok
+  def update_mapping!(module, opts \\ []) do
     index = @policy.index_for(module)
+    version = Keyword.get(opts, :version, index.version())
+    mapping = Keyword.get(opts, :mapping, index.mapping())
 
-    index_name = prefixed_index_name(index)
-    mapping = index.mapping().mappings.properties
+    body = %{properties: mapping.mappings.properties, _meta: %{version: version}}
 
-    Api.update_index_mapping(@policy.opensearch_url(), index_name, %{properties: mapping})
+    {:ok, %{status: 200}} =
+      Api.update_index_mapping(@policy.opensearch_url(), prefixed_index_name(index), body)
+
+    :ok
   end
 
   @doc ~S"""
@@ -216,17 +376,24 @@ defmodule PhilomenaQuery.Search do
   Note that indexing is near real-time and requires an index refresh before the document will
   become visible. Unless changed in the mapping, this happens after 5 seconds have elapsed.
 
+  During an index migration the write fans out to every physical index backing
+  the alias; a `targets:` option overrides resolution. Failures against
+  individual physical indices are tolerated (a concurrently deleted old index
+  responds 404 while the surviving copy succeeds).
+
   ## Example
 
       iex> Search.index_document(%Image{...}, Image)
 
   """
-  @spec index_document(struct(), schema_module()) :: any()
-  def index_document(doc, module) do
+  @spec index_document(struct(), schema_module(), Keyword.t()) :: any()
+  def index_document(doc, module, opts \\ []) do
     index = @policy.index_for(module)
     data = index.as_json(doc)
 
-    Api.index_document(@policy.opensearch_url(), prefixed_index_name(index), data, data.id)
+    for target <- write_targets(index, opts) do
+      Api.index_document(@policy.opensearch_url(), target, data, data.id)
+    end
   end
 
   @doc ~S"""
@@ -245,11 +412,13 @@ defmodule PhilomenaQuery.Search do
       iex> Search.delete_document(image.id, Image)
 
   """
-  @spec delete_document(term(), schema_module()) :: any()
-  def delete_document(id, module) do
+  @spec delete_document(term(), schema_module(), Keyword.t()) :: any()
+  def delete_document(id, module, opts \\ []) do
     index = @policy.index_for(module)
 
-    Api.delete_document(@policy.opensearch_url(), prefixed_index_name(index), id)
+    for target <- write_targets(index, opts) do
+      Api.delete_document(@policy.opensearch_url(), target, id)
+    end
   end
 
   @doc """
@@ -292,14 +461,20 @@ defmodule PhilomenaQuery.Search do
       fn query ->
         records = Repo.all(query)
 
+        # Resolved per batch, so a long-running reindex spanning an index
+        # migration picks up write-target changes as they happen.
+        targets = write_targets(index, opts)
+
         lines =
           Enum.flat_map(records, fn record ->
             doc = index.as_json(record)
 
-            [
-              %{index: %{_index: prefixed_index_name(index), _id: doc.id}},
-              doc
-            ]
+            Enum.flat_map(targets, fn target ->
+              [
+                %{index: %{_index: target, _id: doc.id}},
+                doc
+              ]
+            end)
           end)
 
         Api.bulk(@policy.opensearch_url(), lines)
@@ -438,7 +613,13 @@ defmodule PhilomenaQuery.Search do
         query: query_body
       }
 
-    Api.update_by_query(@policy.opensearch_url(), prefixed_index_name(index), body)
+    # Fan out to every physical index explicitly: during a migration the new
+    # index is not yet reachable through the alias. Documents not yet bulk
+    # loaded into it simply do not match the query there; the bulk pass
+    # recomputes them from the database afterwards.
+    for target <- write_targets(index, []) do
+      Api.update_by_query(@policy.opensearch_url(), target, body)
+    end
   end
 
   @doc ~S"""
@@ -761,9 +942,9 @@ defmodule PhilomenaQuery.Search do
   @spec delete_documents([term()], schema_module()) :: any()
   def delete_documents(ids, module) when is_list(ids) do
     index = @policy.index_for(module)
-    index_name = prefixed_index_name(index)
+    targets = write_targets(index, [])
 
-    lines = Enum.map(ids, &%{delete: %{_index: index_name, _id: &1}})
+    lines = for id <- ids, target <- targets, do: %{delete: %{_index: target, _id: id}}
 
     Api.bulk(@policy.opensearch_url(), lines)
   end

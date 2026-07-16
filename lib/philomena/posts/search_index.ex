@@ -2,6 +2,11 @@ defmodule Philomena.Posts.SearchIndex do
   @behaviour PhilomenaQuery.Search.Index
 
   @impl true
+  def version do
+    1
+  end
+
+  @impl true
   def index_name do
     "posts"
   end

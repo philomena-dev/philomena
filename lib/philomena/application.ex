@@ -13,6 +13,11 @@ defmodule Philomena.Application do
       # Start the Ecto repository
       Philomena.Repo,
 
+      # Search write-target tracking, so document writes fan out to both
+      # indices during a search index migration. Must start before anything
+      # which writes documents (the endpoint and the Exq workers).
+      {PhilomenaQuery.Search.WriteTargets, []},
+
       # Background queueing system
       Philomena.ExqSupervisor,
 

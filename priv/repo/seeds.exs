@@ -12,17 +12,10 @@
 
 alias Philomena.{
   Repo,
-  Comments.Comment,
   Filters.Filter,
   Forums.Forum,
-  Galleries.Gallery,
-  Posts.Post,
-  Images.Image,
-  Reports.Report,
-  Filters.Filter,
   Roles.Role,
   Tags.Tag,
-  TagChanges.TagChange,
   Users.User,
   StaticPages.StaticPage,
   Rules.Rule,
@@ -37,10 +30,7 @@ import Ecto.Query
 
 IO.puts("---- Creating search indices")
 
-for model <- [Image, Comment, Gallery, Tag, TagChange, Post, Report, Filter, User] do
-  Search.delete_index!(model)
-  Search.create_index!(model)
-end
+Philomena.SearchMigrator.migrate_all(maintenance: false)
 
 resources =
   "priv/repo/seeds.json"

@@ -15,8 +15,16 @@ defmodule PhilomenaQuery.Search.Client do
 
   @doc """
   HTTP GET
+
+  The body may be omitted for endpoints which do not accept one.
   """
-  @spec get(String.t(), list_or_map()) :: result()
+  @spec get(String.t(), list_or_map() | nil) :: result()
+  def get(url, body \\ nil)
+
+  def get(url, nil) do
+    Req.get(url, encode_options())
+  end
+
   def get(url, body) do
     Req.get(url, encode_options(body))
   end

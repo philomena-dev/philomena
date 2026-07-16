@@ -115,10 +115,19 @@ All stubbed in `config/test.exs`; smoke-tested by
 
 Search-backed tests hit the real OpenSearch from the compose stack, on
 `test_`-prefixed indexes (`:opensearch_index_prefix`) so they can never
-touch dev data. Every searchable index is dropped and recreated **once** per
-`mix test` run - `test_helper.exs` calls
-`PhilomenaQuery.SearchHelpers.create_all_indexes!()` - so each run starts
-from the current mappings. The SQL sandbox does not roll indexes back, so:
+touch dev data. Indexes are versioned physical indexes behind an alias
+(`test_images` is an alias for `test_images_v1`), exactly as in production -
+see `Philomena.SearchMigrator`. Never create a bare index under an alias
+name in a test; it blocks the alias and degrades every later search test.
+Tests that create or delete indexes (migrator/write-target tests) must call
+`PhilomenaQuery.Search.WriteTargets.refresh/0` afterwards so cached write
+targets are deterministic, and restore a normal index in `on_exit` using
+HTTP-only helpers (no Repo access - the sandbox connection is gone by then).
+
+Every searchable index is dropped and recreated **once** per `mix test` run -
+`test_helper.exs` calls `PhilomenaQuery.SearchHelpers.create_all_indexes!()` -
+so each run starts from the current mappings. The SQL sandbox does not roll
+indexes back, so:
 
 - Module must be `async: false` and tagged `@moduletag :search`.
 - Clear the indexes the action reads in setup:

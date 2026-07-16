@@ -26,6 +26,13 @@ config :philomena,
 # test/CONVENTIONS.md.
 config :philomena, :opensearch_index_prefix, "test_"
 
+# Tests are single-node and refresh write targets explicitly with
+# `PhilomenaQuery.Search.WriteTargets.refresh/0`, so migrations need no
+# settle time and the background poll can stay quiet.
+config :philomena,
+  search_target_poll_interval_ms: 1_000,
+  search_migration_settle_ms: 0
+
 # External call stubbing. The mailer delivers to the test process
 # (`Swoosh.TestAssertions.assert_email_sent/1`); ex_aws object storage
 # operations succeed without any storage running; PhilomenaProxy.Http
