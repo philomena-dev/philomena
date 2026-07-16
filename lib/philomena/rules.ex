@@ -115,7 +115,7 @@ defmodule Philomena.Rules do
     Repo.all(
       from rv in RuleVersion,
         where: rv.rule_id == ^rule.id,
-        order_by: [desc: rv.created_at],
+        order_by: [desc: rv.created_at, desc: rv.id],
         preload: [:user]
     )
   end
