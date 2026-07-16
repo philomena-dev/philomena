@@ -4,7 +4,9 @@ defmodule PhilomenaQuery.SearchHelpers do
 
   Tests hit the real OpenSearch instance from the compose stack, namespaced
   away from development data by the `:opensearch_index_prefix` set in
-  `config/test.exs` (`"test_"`). Every searchable index is created once per
+  `config/test.exs` (`"test_"`). Indices are versioned physical indices behind
+  an alias (`test_images` -> `test_images_v1`), exactly as in production; see
+  `Philomena.SearchMigrator`. Every searchable index is created once per
   `mix test` run, with the current mappings, by `create_all_indexes!/0` in
   `test/test_helper.exs`. The SQL sandbox does not roll indexes back, so
   search-backed tests must:
@@ -34,23 +36,20 @@ defmodule PhilomenaQuery.SearchHelpers do
   """
 
   alias Philomena.SearchIndexer
+  alias Philomena.SearchMigrator
   alias PhilomenaQuery.Search
 
-  # `Search.delete_index!/1` and `Search.create_index!/1` return bare
-  # `PhilomenaQuery.Search.Client` results: `{:ok, response}` for ANY response
-  # status, `{:error, exception}` only for transport failures. Neither is
-  # checked by the caller, so a failed creation here would go unnoticed until
-  # the sync (`:search`-tagged) test phase, where every search test then fails
-  # with a baffling `index_not_found_exception`. Retry transient errors (in CI
-  # the suite boots seconds after a heavy full compile), and raise with the
-  # underlying response if recreation never succeeds.
+  # Index recreation raises on any unexpected engine response. Retry transient
+  # failures (in CI the suite boots seconds after a heavy full compile), and
+  # raise with the underlying error if recreation never succeeds.
   @recreate_attempts 10
   @recreate_backoff_ms 3_000
 
   @doc """
-  Drop and recreate every searchable index, so each `mix test` run starts from
-  the current mappings. Called once from `test_helper.exs`; per-test isolation
-  is `PhilomenaQuery.Search.clear_index!/1` from there on.
+  Drop and recreate every searchable index through the migrator, so each
+  `mix test` run starts from the current mappings with the same alias scheme
+  as production. Called once from `test_helper.exs`; per-test isolation is
+  `PhilomenaQuery.Search.clear_index!/1` from there on.
 
   The schema list comes from `SearchIndexer.schemas/0` rather than a local copy,
   so a newly searchable schema is picked up here automatically.
@@ -80,12 +79,10 @@ defmodule PhilomenaQuery.SearchHelpers do
   end
 
   defp try_recreate_index(schema) do
-    with {:ok, %{status: status}} when status in [200, 404] <- Search.delete_index!(schema),
-         {:ok, %{status: 200}} <- Search.create_index!(schema) do
-      :ok
-    else
-      error -> {:error, error}
-    end
+    :ok = Search.delete_index!(schema)
+    :ok = SearchMigrator.migrate_schema(schema, maintenance: false)
+  rescue
+    error -> {:error, error}
   end
 
   @doc """

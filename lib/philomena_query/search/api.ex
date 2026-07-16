@@ -40,6 +40,48 @@ defmodule PhilomenaQuery.Search.Api do
   end
 
   @doc """
+  Get the settings, mappings and aliases of the index named `name`.
+
+  `name` may be an index name, an alias name, or a comma-separated list of either;
+  the response maps each matched physical index name to its definition. Responds
+  with status 404 if no index matches.
+
+  https://opensearch.org/docs/latest/api-reference/index-apis/get-index/
+  """
+  @spec get_index(server_url(), index_name()) :: Client.result()
+  def get_index(url, name) do
+    url
+    |> prepare_url([name])
+    |> Client.get()
+  end
+
+  @doc """
+  Get every alias in the cluster, as a map of physical index name to its aliases.
+
+  https://opensearch.org/docs/latest/api-reference/index-apis/alias/
+  """
+  @spec get_all_aliases(server_url()) :: Client.result()
+  def get_all_aliases(url) do
+    url
+    |> prepare_url(["_alias"])
+    |> Client.get()
+  end
+
+  @doc """
+  Atomically update aliases with the given `%{actions: [...]}` body. All actions
+  (`add`, `remove`) apply in a single cluster state update, so readers never
+  observe an alias with zero or two indices mid-swap.
+
+  https://opensearch.org/docs/latest/api-reference/index-apis/update-alias/
+  """
+  @spec update_aliases(server_url(), map()) :: Client.result()
+  def update_aliases(url, body) do
+    url
+    |> prepare_url(["_aliases"])
+    |> Client.post(body)
+  end
+
+  @doc """
   Refresh the index named `name`, making previously indexed documents visible to search.
 
   https://opensearch.org/docs/latest/api-reference/index-apis/refresh/

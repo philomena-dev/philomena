@@ -16,6 +16,13 @@ config :logger,
 config :philomena,
   ecto_repos: [Philomena.Repo]
 
+# Search index migration pacing. The settle time must comfortably exceed the
+# poll interval (at least 2x, on every node), so all nodes observe a new
+# migration target index and dual-write to it before the bulk reindex starts.
+config :philomena,
+  search_target_poll_interval_ms: 5_000,
+  search_migration_settle_ms: 15_000
+
 config :exq,
   max_retries: 5,
   scheduler_enable: true,

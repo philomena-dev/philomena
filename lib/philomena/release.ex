@@ -19,6 +19,26 @@ defmodule Philomena.Release do
     Code.require_file("priv/repo/seeds.exs")
   end
 
+  def migrate_search do
+    start_app()
+    Philomena.SearchMigrator.migrate_all()
+  end
+
+  def search_status do
+    start_app()
+    status = Philomena.SearchMigrator.status()
+
+    for row <- status do
+      IO.puts(
+        "#{row.alias}: live=#{row.live_physical || "(none)"} " <>
+          "v#{row.live_version || "?"} desired=v#{row.desired_version} " <>
+          "action=#{inspect(row.action)} orphans=#{inspect(row.orphans)}"
+      )
+    end
+
+    status
+  end
+
   def create_buckets do
     start_app()
     PhilomenaMedia.Objects.create_buckets()
