@@ -100,9 +100,7 @@ defmodule PhilomenaWeb.RuleControllerTest do
       # The description renders as a line-by-line unified diff table over the
       # raw markdown source. The cell text is the escaped source, so the
       # unchanged suffix "rule text" appears literally in the diff__text cell
-      # rather than inside rendered markup. (The two versions share a
-      # same-second timestamp, so the diff direction is not fixed - assert on
-      # markup that holds either way.)
+      # rather than inside rendered markup.
       assert response =~ ~s(<table class="diff">)
       assert response =~ ~s(<del class="diff__hl">)
       assert response =~ ~s(<ins class="diff__hl">)
