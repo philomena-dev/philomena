@@ -249,6 +249,7 @@ defmodule Philomena.SearchMigrator do
     |> Enum.uniq()
     |> Enum.reject(&(&1 == new))
     |> Enum.each(&delete_physical_index/1)
+
     WriteTargets.refresh()
 
     :ok
