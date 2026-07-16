@@ -12,13 +12,13 @@ defmodule PhilomenaWeb.Page.HistoryController do
   def index(conn, _params) do
     page = conn.assigns.static_page
 
-    {versions, _last_body} =
+    versions =
       Version
       |> where(static_page_id: ^page.id)
       |> preload(:user)
-      |> order_by(desc: :created_at)
+      |> order_by(desc: :created_at, desc: :id)
       |> Repo.all()
-      |> generate_differences(page.body)
+      |> generate_differences()
 
     render(conn, "index.html",
       title: "Revision History for Page `#{page.title}'",
@@ -27,11 +27,18 @@ defmodule PhilomenaWeb.Page.HistoryController do
     )
   end
 
-  defp generate_differences(pages, current_body) do
-    Enum.map_reduce(pages, current_body, fn page, previous_body ->
-      difference = MarkdownRenderer.render_diff(page.body, previous_body)
+  # Versions store the body as it was after each edit, so a version's diff is
+  # taken from the next-older version's body to its own. The oldest version is
+  # the page's creation and diffs against the empty document.
+  defp generate_differences(versions) do
+    versions
+    |> Enum.reverse()
+    |> Enum.map_reduce(nil, fn version, previous_body ->
+      difference = MarkdownRenderer.render_diff(previous_body, version.body)
 
-      {%{page | difference: difference}, page.body}
+      {%{version | difference: difference}, version.body}
     end)
+    |> elem(0)
+    |> Enum.reverse()
   end
 end
