@@ -36,6 +36,17 @@ defmodule PhilomenaQuery.SearchHelpers do
   alias Philomena.SearchIndexer
   alias PhilomenaQuery.Search
 
+  # `Search.delete_index!/1` and `Search.create_index!/1` return bare
+  # `PhilomenaQuery.Search.Client` results: `{:ok, response}` for ANY response
+  # status, `{:error, exception}` only for transport failures. Neither is
+  # checked by the caller, so a failed creation here would go unnoticed until
+  # the sync (`:search`-tagged) test phase, where every search test then fails
+  # with a baffling `index_not_found_exception`. Retry transient errors (in CI
+  # the suite boots seconds after a heavy full compile), and raise with the
+  # underlying response if recreation never succeeds.
+  @recreate_attempts 10
+  @recreate_backoff_ms 3_000
+
   @doc """
   Drop and recreate every searchable index, so each `mix test` run starts from
   the current mappings. Called once from `test_helper.exs`; per-test isolation
@@ -45,10 +56,36 @@ defmodule PhilomenaQuery.SearchHelpers do
   so a newly searchable schema is picked up here automatically.
   """
   def create_all_indexes! do
-    Enum.each(SearchIndexer.schemas(), fn schema ->
-      Search.delete_index!(schema)
-      Search.create_index!(schema)
-    end)
+    Enum.each(SearchIndexer.schemas(), &recreate_index!(&1, 1))
+  end
+
+  defp recreate_index!(schema, attempt) do
+    case try_recreate_index(schema) do
+      :ok ->
+        :ok
+
+      {:error, error} when attempt < @recreate_attempts ->
+        IO.puts(
+          :stderr,
+          "Recreating the #{inspect(schema)} search index failed " <>
+            "(attempt #{attempt}/#{@recreate_attempts}, retrying): #{inspect(error)}"
+        )
+
+        Process.sleep(@recreate_backoff_ms)
+        recreate_index!(schema, attempt + 1)
+
+      {:error, error} ->
+        raise "Could not recreate the #{inspect(schema)} search index: #{inspect(error)}"
+    end
+  end
+
+  defp try_recreate_index(schema) do
+    with {:ok, %{status: status}} when status in [200, 404] <- Search.delete_index!(schema),
+         {:ok, %{status: 200}} <- Search.create_index!(schema) do
+      :ok
+    else
+      error -> {:error, error}
+    end
   end
 
   @doc """

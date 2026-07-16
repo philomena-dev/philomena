@@ -21,6 +21,12 @@ jobs:
       - run: docker compose build
       - name: Run tests
         run: ./scripts/philomena.sh test
+      - name: Dump service logs and system state on failure
+        if: failure()
+        run: |
+          docker compose logs --timestamps opensearch postgres valkey
+          df -h
+          free -h
       # Artifacts from docker bind mount are owned by root, but cache action
       # can only save artifacts running under the default user:
       - name: Change artifact ownership for cache action
