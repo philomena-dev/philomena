@@ -39,9 +39,9 @@ defmodule PhilomenaQuery.Search.WriteTargets do
   Return the index names a document write for `alias_name` must target.
 
   With a single physical index holding the alias (or a bare concrete index
-  occupying the alias name), this is `[alias_name]`, producing requests
-  identical to today's. With more than one member - a migration in progress -
-  it is the physical index names, so writes land in every copy.
+  occupying the alias name), this is `[alias_name]`. With more than one
+  member - a migration in progress - it is the physical index names, so
+  writes land in every copy.
 
   If no state has been published yet, a synchronous refresh is performed
   rather than assuming `[alias_name]`, which could silently drop writes to a

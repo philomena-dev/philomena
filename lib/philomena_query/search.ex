@@ -203,16 +203,15 @@ defmodule PhilomenaQuery.Search do
 
   The returned map contains:
 
-  - `alias:` - the (prefixed) alias name
-  - `status:` - `:aliased` when a physical index holds the alias, `:legacy`
+  - `alias` - the (prefixed) alias name
+  - `status` - `:aliased` when a physical index holds the alias, `:legacy`
     when a bare concrete index occupies the alias name, `:missing` otherwise
-  - `live_physical:` - the index currently serving reads, if any
-  - `live_version:` - from the live index's `mappings._meta.version`, falling
+  - `live_physical` - the index currently serving reads, if any
+  - `live_version` - from the live index's `mappings._meta.version`, falling
     back to the `_v` name suffix; `nil` for legacy indices without either
-  - `live_mapping:`, `live_settings:` - the live index's definition, for
-    `PhilomenaQuery.Search.MappingDiff`
-  - `orphans:` - members which are not the live index (stale migration
-    targets, or a bare index shadowed by an aliased one)
+  - `live_mapping`, `live_settings` - the live index's definition, for
+    `m:PhilomenaQuery.Search.MappingDiff`
+  - `orphans` - members which are not the live index (stale migration
   """
   @spec live_state(schema_module()) :: %{
           alias: String.t(),
@@ -377,7 +376,7 @@ defmodule PhilomenaQuery.Search do
   become visible. Unless changed in the mapping, this happens after 5 seconds have elapsed.
 
   During an index migration the write fans out to every physical index backing
-  the alias; a `targets:` option overrides resolution. Failures against
+  the alias; resolution can be overridden with the `targets` option. Failures against
   individual physical indices are tolerated (a concurrently deleted old index
   responds 404 while the surviving copy succeeds).
 
