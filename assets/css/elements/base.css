@@ -208,32 +208,6 @@ hr {
   margin: var(--padding-small);
 }
 
-/* rules page. API page also borrows stuff from here */
-.rule {
-  padding: 5px;
-}
-
-.rule h2 {
-  background: var(--background-odd-color);
-  border: var(--border);
-  padding: 5px;
-  padding-bottom: 7px;
-}
-
-.rule h2.important {
-  background: var(--danger-light-color);
-  border-color: var(--danger-color);
-}
-/* Make HTML lists with multi-line text readable */
-.rule ul {
-  margin: 0;
-  padding: 5px 20px;
-}
-
-.rule li {
-  padding: 5px 0;
-}
-
 #error_explanation {
   margin: 1em 0;
   background: var(--warning-light-color);
