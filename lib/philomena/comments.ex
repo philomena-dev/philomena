@@ -87,18 +87,12 @@ defmodule Philomena.Comments do
   """
   def update_comment(%Comment{} = comment, editor, attrs) do
     now = DateTime.utc_now(:second)
-    current_body = comment.body
-    current_reason = comment.edit_reason
-
     comment_changes = Comment.changeset(comment, attrs, now)
 
     Multi.new()
     |> Multi.update(:comment, comment_changes)
-    |> Multi.run(:version, fn _repo, _changes ->
-      Versions.create_version("Comment", comment.id, editor.id, %{
-        "body" => current_body,
-        "edit_reason" => current_reason
-      })
+    |> Multi.run(:version, fn repo, %{comment: updated} ->
+      Versions.record_edit(repo, comment, updated, editor)
     end)
     |> Repo.transaction()
   end

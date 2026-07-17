@@ -14,7 +14,8 @@ config :logger,
   ]
 
 config :philomena,
-  ecto_repos: [Philomena.Repo]
+  ecto_repos: [Philomena.Repo],
+  env: config_env()
 
 # Search index migration pacing. The settle time must comfortably exceed the
 # poll interval (at least 2x, on every node), so all nodes observe a new

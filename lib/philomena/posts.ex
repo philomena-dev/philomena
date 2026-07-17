@@ -153,18 +153,12 @@ defmodule Philomena.Posts do
   """
   def update_post(%Post{} = post, editor, attrs) do
     now = DateTime.utc_now(:second)
-    current_body = post.body
-    current_reason = post.edit_reason
-
     post_changes = Post.changeset(post, attrs, now)
 
     Multi.new()
     |> Multi.update(:post, post_changes)
-    |> Multi.run(:version, fn _repo, _changes ->
-      Versions.create_version("Post", post.id, editor.id, %{
-        "body" => current_body,
-        "edit_reason" => current_reason
-      })
+    |> Multi.run(:version, fn repo, %{post: updated} ->
+      Versions.record_edit(repo, post, updated, editor)
     end)
     |> Repo.transaction()
     |> case do

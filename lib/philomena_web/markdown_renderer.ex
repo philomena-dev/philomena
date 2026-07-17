@@ -39,14 +39,14 @@ defmodule PhilomenaWeb.MarkdownRenderer do
   end
 
   @doc """
-  Renders line diffs for a list of `Philomena.Versions.Version` structs (as
-  prepared by `Philomena.Versions.load_data_and_associations/2`). Each
-  version's `:difference` field is set to the rendered safe HTML diff against
-  the next-newer revision.
+  Renders line diffs for a list of version structs (as prepared by
+  `Philomena.Versions.load_post_versions/1` and `load_comment_versions/1`).
+  Each version's `:difference` field is set to the rendered safe HTML diff
+  from the next-older revision's body to this version's body.
   """
   def render_version_diffs(versions) do
     Enum.map(versions, fn v ->
-      %{v | difference: render_diff(v.body, v.previous_body)}
+      %{v | difference: render_diff(v.previous_body, v.body)}
     end)
   end
 
