@@ -62,6 +62,8 @@
     --success-strong-color: hsl(from $success-light-color h calc(s + 8) calc(l + 14));
     --danger-strong-color: hsl(from $danger-light-color h calc(s + 6) calc(l + 14));
 
+    --rule-important-color: hsl(from $danger-light-color h calc(s + 15) calc(l + 22));
+
     --header-hover-color: hsl(from $header-color h s calc(l - 8));
     --header-field-hover-color: hsl(from $header-color h s calc(l - 12));
     --header-secondary-hover-color: hsl(from $header-secondary-color h s calc(l - 4));

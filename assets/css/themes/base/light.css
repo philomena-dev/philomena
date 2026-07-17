@@ -79,6 +79,8 @@
     --success-strong-color: hsl(from $success-color h calc(s + 12) calc(l - 8));
     --danger-strong-color: hsl(from $danger-color h calc(s + 12) calc(l - 6));
 
+    --rule-important-color: hsl(from $danger-color h calc(s + 30) calc(l - 40));
+
     --link-dark-color: hsl(from $link-color h s calc(l - 20));
     --link-hover-dark-color: hsl(from $link-hover-color h s calc(l - 20));
 

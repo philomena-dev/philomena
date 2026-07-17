@@ -13,8 +13,5 @@ h1 Site Rules
         i.fa.fa-plus>
         ' Create New Rule
 
-br
-
-.flex.flex--column
-  = for rule <- @rules do
-    = render PhilomenaWeb.RuleView, "_rule.html", conn: @conn, rule: rule, show_timestamp: false
+= for rule <- @rules do
+  = render PhilomenaWeb.RuleView, "_rule.html", conn: @conn, rule: rule, show_timestamp: false
