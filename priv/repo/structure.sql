@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict WOWKI2UnM9XUXGesUkknfZZMcdFpGKByPmb5KA4COIIh9kGqSMbdy9BwSsCWBdY
+\restrict Fi3YcJe1ctRNIr2YIrdsc9WlpK0sqIbyXcnbaaNcKpuBWm6VichpgnOwufZZmMn
 
 -- Dumped from database version 18.4
 -- Dumped by pg_dump version 18.4
@@ -2095,6 +2095,41 @@ ALTER SEQUENCE public.user_name_changes_id_seq OWNED BY public.user_name_changes
 
 
 --
+-- Name: user_settings; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.user_settings (
+    user_id bigint NOT NULL,
+    spoiler_type character varying(255) DEFAULT 'static'::character varying NOT NULL,
+    theme character varying(255) DEFAULT 'dark-blue'::character varying NOT NULL,
+    images_per_page integer DEFAULT 15 NOT NULL,
+    comments_per_page integer DEFAULT 20 NOT NULL,
+    show_sidebar_and_watched_images boolean DEFAULT true NOT NULL,
+    fancy_tag_field_on_upload boolean DEFAULT true NOT NULL,
+    fancy_tag_field_on_edit boolean DEFAULT true NOT NULL,
+    anonymous_by_default boolean DEFAULT false NOT NULL,
+    scale_large_images character varying(255) DEFAULT 'true'::character varying NOT NULL,
+    comments_newest_first boolean DEFAULT true NOT NULL,
+    comments_always_jump_to_last boolean DEFAULT true NOT NULL,
+    watch_on_reply boolean DEFAULT true NOT NULL,
+    watch_on_new_topic boolean DEFAULT true NOT NULL,
+    watch_on_upload boolean DEFAULT true NOT NULL,
+    messages_newest_first boolean DEFAULT false NOT NULL,
+    no_spoilered_in_watched boolean DEFAULT false NOT NULL,
+    watched_images_query_str character varying(255) DEFAULT ''::character varying NOT NULL,
+    watched_images_exclude_str character varying(255) DEFAULT ''::character varying NOT NULL,
+    use_centered_layout boolean DEFAULT true NOT NULL,
+    hide_vote_counts boolean DEFAULT false NOT NULL,
+    delay_home_images boolean DEFAULT true NOT NULL,
+    staff_delay_home_images boolean DEFAULT false NOT NULL,
+    borderless_tags boolean DEFAULT false NOT NULL,
+    rounded_tags boolean DEFAULT false NOT NULL,
+    created_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
+);
+
+
+--
 -- Name: user_statistics; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3100,6 +3135,14 @@ ALTER TABLE ONLY public.user_ips
 
 ALTER TABLE ONLY public.user_name_changes
     ADD CONSTRAINT user_name_changes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_settings user_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_settings
+    ADD CONSTRAINT user_settings_pkey PRIMARY KEY (user_id);
 
 
 --
@@ -5702,6 +5745,14 @@ ALTER TABLE ONLY public.tag_changes
 
 
 --
+-- Name: user_settings user_settings_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_settings
+    ADD CONSTRAINT user_settings_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: user_tokens user_tokens_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5721,7 +5772,7 @@ ALTER TABLE ONLY public.users
 -- PostgreSQL database dump complete
 --
 
-\unrestrict WOWKI2UnM9XUXGesUkknfZZMcdFpGKByPmb5KA4COIIh9kGqSMbdy9BwSsCWBdY
+\unrestrict Fi3YcJe1ctRNIr2YIrdsc9WlpK0sqIbyXcnbaaNcKpuBWm6VichpgnOwufZZmMn
 
 INSERT INTO public."schema_migrations" (version) VALUES (20200503002523);
 INSERT INTO public."schema_migrations" (version) VALUES (20200607000511);
@@ -5757,3 +5808,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20250617121030);
 INSERT INTO public."schema_migrations" (version) VALUES (20250617122513);
 INSERT INTO public."schema_migrations" (version) VALUES (20251103173014);
 INSERT INTO public."schema_migrations" (version) VALUES (20260716190444);
+INSERT INTO public."schema_migrations" (version) VALUES (20260717000000);

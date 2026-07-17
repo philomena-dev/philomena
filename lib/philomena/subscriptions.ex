@@ -191,7 +191,7 @@ defmodule Philomena.Subscriptions do
   def maybe_subscribe_on(multi, module, change_name, user, field)
       when field in [:watch_on_reply, :watch_on_upload, :watch_on_new_topic] do
     case user do
-      %{^field => true} ->
+      %{settings: %{^field => true}} ->
         Multi.run(multi, :subscribe, fn _repo, changes ->
           object = Map.fetch!(changes, change_name)
           module.create_subscription(object, user)

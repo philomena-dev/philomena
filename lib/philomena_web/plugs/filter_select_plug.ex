@@ -35,10 +35,10 @@ defmodule PhilomenaWeb.FilterSelectPlug do
 
   defp maybe_assign_filters(conn, user) do
     filters = Filters.recent_and_user_filters(user)
-    user = Users.change_user(user)
 
     conn
-    |> Conn.assign(:user_changeset, user)
+    |> Conn.assign(:user_changeset, Users.change_user(user))
+    |> Conn.assign(:spoiler_changeset, Users.change_spoiler_type(user))
     |> Conn.assign(:available_filters, filters)
     |> Conn.assign(:spoiler_types, @spoiler_types)
   end

@@ -31,17 +31,18 @@ h1 Content Settings
           => link "the syntax guide", to: "/pages/search_syntax"
           ' for how to write queries.
 
-        .field
-          = label f, :watched_images_query_str, "Watch list search string (images found by this search are added to your watched images list)"
-          = textarea f, :watched_images_query_str, class: "input input--wide", autocapitalize: "none", spellcheck: "false"
-          = error_tag f, :watched_images_query_str
-        .field
-          = label f, :watched_images_exclude_str, "Watch list filter string (any images found by this search are removed from your watched images list)"
-          = textarea f, :watched_images_exclude_str, class: "input input--wide", autocapitalize: "none", spellcheck: "false"
-          = error_tag f, :watched_images_exclude_str
-        .field
-          => checkbox f, :no_spoilered_in_watched, class: "checkbox"
-          => label f, :no_spoilered_in_watched, "Hide images spoilered by filter in watchlist"
+        = inputs_for f, :settings, fn fs ->
+          .field
+            = label fs, :watched_images_query_str, "Watch list search string (images found by this search are added to your watched images list)"
+            = textarea fs, :watched_images_query_str, class: "input input--wide", autocapitalize: "none", spellcheck: "false"
+            = error_tag fs, :watched_images_query_str
+          .field
+            = label fs, :watched_images_exclude_str, "Watch list filter string (any images found by this search are removed from your watched images list)"
+            = textarea fs, :watched_images_exclude_str, class: "input input--wide", autocapitalize: "none", spellcheck: "false"
+            = error_tag fs, :watched_images_exclude_str
+          .field
+            => checkbox fs, :no_spoilered_in_watched, class: "checkbox"
+            => label fs, :no_spoilered_in_watched, "Hide images spoilered by filter in watchlist"
 
         h4 Other
         p
@@ -56,178 +57,182 @@ h1 Content Settings
           ' Do not share this URL with anyone, it may allow an attacker to compromise your account.
 
       .block__tab class=tab_class(@conn, "display") data-tab="display"
-        = field_with_help( \
-            "Align content to the center of the page - try this option out if you " <> \
-            "browse the site on a tablet or a fairly wide screen.",
+        = inputs_for f, :settings, fn fs ->
+          = field_with_help( \
+              "Align content to the center of the page - try this option out if you " <> \
+              "browse the site on a tablet or a fairly wide screen.",
+              [ \
+                checkbox(fs, :use_centered_layout, class: "checkbox"),
+                label(fs, :use_centered_layout),
+              ] \
+            )
+
+          = field_with_help( \
+            "Show the sidebar and new watched images on the homepage (the default) or hide it.",
             [ \
-              checkbox(f, :use_centered_layout, class: "checkbox"),
-              label(f, :use_centered_layout),
+              checkbox(fs, :show_sidebar_and_watched_images, class: "checkbox"),
+              label(fs, :show_sidebar_and_watched_images),
             ] \
           )
 
-        = field_with_help( \
-          "Show the sidebar and new watched images on the homepage (the default) or hide it.",
-          [ \
-            checkbox(f, :show_sidebar_and_watched_images, class: "checkbox"),
-            label(f, :show_sidebar_and_watched_images),
-          ] \
-        )
+          = field_with_help( \
+            "Hide upvote and downvote counts on images, showing only the overall score",
+            [ \
+              checkbox(fs, :hide_vote_counts, class: "checkbox"),
+              label(fs, :hide_vote_counts),
+            ] \
+          )
 
-        = field_with_help( \
-          "Hide upvote and downvote counts on images, showing only the overall score",
-          [ \
-            checkbox(f, :hide_vote_counts, class: "checkbox"),
-            label(f, :hide_vote_counts),
-          ] \
-        )
+          = field_with_help( \
+            "Removes the border of the tags",
+            [ \
+              checkbox(fs, :borderless_tags, class: "checkbox"),
+              label(fs, :borderless_tags),
+            ] \
+          )
 
-        = field_with_help( \
-          "Removes the border of the tags",
-          [ \
-            checkbox(f, :borderless_tags, class: "checkbox"),
-            label(f, :borderless_tags),
-          ] \
-        )
+          = field_with_help( \
+            "Adds rounding to the corners of the tags",
+            [ \
+              checkbox(fs, :rounded_tags, class: "checkbox"),
+              label(fs, :rounded_tags),
+            ] \
+          )
 
-        = field_with_help( \
-          "Adds rounding to the corners of the tags",
-          [ \
-            checkbox(f, :rounded_tags, class: "checkbox"),
-            label(f, :rounded_tags),
-          ] \
-        )
+          = field_with_help( \
+            "The number of images per page that are displayed on image listings " <> \
+            "and searches, up to a maximum of 50. For 1080p monitors, try 24.",
+            [ \
+              number_input(fs, :images_per_page, min: 1, max: 50, step: 1, class: "input"), \
+              label(fs, :images_per_page), \
+              error_tag(fs, :images_per_page) \
+            ] \
+          )
 
-        = field_with_help( \
-          "The number of images per page that are displayed on image listings " <> \
-          "and searches, up to a maximum of 50. For 1080p monitors, try 24.",
-          [ \
-            number_input(f, :images_per_page, min: 1, max: 50, step: 1, class: "input"), \
-            label(f, :images_per_page), \
-            error_tag(f, :images_per_page) \
-          ] \
-        )
+          .field
+            => select fs, :theme_name, themes(), class: "input"
+            label> Theme
+            = error_tag fs, :theme_name
 
-        .field
-          => select f, :theme_name, themes(), class: "input"
-          label> Theme
-          = error_tag f, :theme_name
+          .field
+            => select fs, :theme_color, theme_colors(), class: "input"
+            label> Theme color
+            = error_tag fs, :theme_color
 
-        .field
-          => select f, :theme_color, theme_colors(), class: "input"
-          label> Theme color
-          = error_tag f, :theme_color
+          .block.block--fixed.block--warning Don't forget to save the settings to apply the theme!
 
-        .block.block--fixed.block--warning Don't forget to save the settings to apply the theme!
+          .hidden#js-theme-paths data-theme-paths=JSON.encode!(theme_paths())
+          .field
+            => select fs, :scale_large_images, scale_options(), class: "input"
+            => label fs, :scale_large_images
+            = error_tag fs, :scale_large_images
 
-        .hidden#js-theme-paths data-theme-paths=JSON.encode!(theme_paths())
-        .field
-          => select f, :scale_large_images, scale_options(), class: "input"
-          => label f, :scale_large_images
-          = error_tag f, :scale_large_images
-
-        - delay_home_images = if staff?(@conn.assigns.current_user), do: :staff_delay_home_images, else: :delay_home_images
-        = field_with_help( \
-          "Hide images without thumbnails on the homepage and for the first 3 minutes after upload (to allow for last-minute tag changes)",
-          [ \
-            checkbox(f, delay_home_images, class: "checkbox"),
-            label(f, delay_home_images, "Delay home images"),
-          ] \
-        )
+          - delay_home_images = if staff?(@conn.assigns.current_user), do: :staff_delay_home_images, else: :delay_home_images
+          = field_with_help( \
+            "Hide images without thumbnails on the homepage and for the first 3 minutes after upload (to allow for last-minute tag changes)",
+            [ \
+              checkbox(fs, delay_home_images, class: "checkbox"),
+              label(fs, delay_home_images, "Delay home images"),
+            ] \
+          )
 
       .block__tab class=tab_class(@conn, "comments") data-tab="comments"
-        = field_with_help( \
-          "Display the newest comments at the top of the page.", \
-          [ \
-            checkbox(f, :comments_newest_first, class: "checkbox"), \
-            label(f, :comments_newest_first, "Newest comments first"), \
-          ] \
-        )
+        = inputs_for f, :settings, fn fs ->
+          = field_with_help( \
+            "Display the newest comments at the top of the page.", \
+            [ \
+              checkbox(fs, :comments_newest_first, class: "checkbox"), \
+              label(fs, :comments_newest_first, "Newest comments first"), \
+            ] \
+          )
 
-        = field_with_help( \
-          "This setting takes effect when the previous is disabled. " <> \
-          "Always jump to the latest page (enabled) or show the first page " <> \
-          "if the oldest comments are shown at the top of the page.\n" <> \
-          "Posting will always direct you to the latest page " <> \
-          "so that you can see your comment in context.",
-          [ \
-            checkbox(f, :comments_always_jump_to_last, class: "checkbox"),
-            label(f, :comments_always_jump_to_last, "Show latest comment page"),
-          ] \
-        )
+          = field_with_help( \
+            "This setting takes effect when the previous is disabled. " <> \
+            "Always jump to the latest page (enabled) or show the first page " <> \
+            "if the oldest comments are shown at the top of the page.\n" <> \
+            "Posting will always direct you to the latest page " <> \
+            "so that you can see your comment in context.",
+            [ \
+              checkbox(fs, :comments_always_jump_to_last, class: "checkbox"),
+              label(fs, :comments_always_jump_to_last, "Show latest comment page"),
+            ] \
+          )
 
-        = field_with_help( \
-          "The number of comments per page that are displayed on image pages.",
-          [ \
-            number_input(f, :comments_per_page, min: 1, max: 100, step: 1, class: "input"),
-            label(f, :comments_per_page),
-            error_tag(f, :comments_per_page),
-          ] \
-        )
+          = field_with_help( \
+            "The number of comments per page that are displayed on image pages.",
+            [ \
+              number_input(fs, :comments_per_page, min: 1, max: 100, step: 1, class: "input"),
+              label(fs, :comments_per_page),
+              error_tag(fs, :comments_per_page),
+            ] \
+          )
 
-        = field_with_help( \
-          "Show the newest messages first (enabled) or show the oldest messages " <> \
-          "at the top of a conversation. Enabling this makes it feel more like " <> \
-          "a top-posted email quote chain.",
-          [ \
-            checkbox(f, :messages_newest_first, class: "checkbox"),
-            label(f, :messages_newest_first, "Newest messages first"),
-          ] \
-        )
+          = field_with_help( \
+            "Show the newest messages first (enabled) or show the oldest messages " <> \
+            "at the top of a conversation. Enabling this makes it feel more like " <> \
+            "a top-posted email quote chain.",
+            [ \
+              checkbox(fs, :messages_newest_first, class: "checkbox"),
+              label(fs, :messages_newest_first, "Newest messages first"),
+            ] \
+          )
 
       .block__tab class=tab_class(@conn, "notifications") data-tab="notifications"
-        = field_with_help( \
-          "If enabled, you'll be subscribed to things (images or topics) " <> \
-          "automatically as soon as you post a comment or reply, keeping " <> \
-          "you in the conversation.",
-          [ \
-            checkbox(f, :watch_on_reply, class: "checkbox"), \
-            label(f, :watch_on_reply, "Subscribe on Reply"), \
-          ] \
-        )
+        = inputs_for f, :settings, fn fs ->
+          = field_with_help( \
+            "If enabled, you'll be subscribed to things (images or topics) " <> \
+            "automatically as soon as you post a comment or reply, keeping " <> \
+            "you in the conversation.",
+            [ \
+              checkbox(fs, :watch_on_reply, class: "checkbox"), \
+              label(fs, :watch_on_reply, "Subscribe on Reply"), \
+            ] \
+          )
 
-        = field_with_help( \
-          "If enabled, you'll be subscribed to images automatically " <> \
-          "as soon as you upload, to help you keep track of comments.",
-          [ \
-            checkbox(f, :watch_on_upload, class: "checkbox"), \
-            label(f, :watch_on_upload, "Subscribe on Upload"), \
-          ] \
-        )
+          = field_with_help( \
+            "If enabled, you'll be subscribed to images automatically " <> \
+            "as soon as you upload, to help you keep track of comments.",
+            [ \
+              checkbox(fs, :watch_on_upload, class: "checkbox"), \
+              label(fs, :watch_on_upload, "Subscribe on Upload"), \
+            ] \
+          )
 
-        = field_with_help( \
-          "If enabled you'll be subscribed to threads automatically as soon " <> \
-          "as you post, to help you keep track of replies.",
-          [ \
-            checkbox(f, :watch_on_new_topic, class: "checkbox"), \
-            label(f, :watch_on_new_topic, "Subscribe on New Threads"), \
-          ] \
-        )
+          = field_with_help( \
+            "If enabled you'll be subscribed to threads automatically as soon " <> \
+            "as you post, to help you keep track of replies.",
+            [ \
+              checkbox(fs, :watch_on_new_topic, class: "checkbox"), \
+              label(fs, :watch_on_new_topic, "Subscribe on New Threads"), \
+            ] \
+          )
 
       .block__tab class=tab_class(@conn, "metadata") data-tab="metadata"
-        .field
-          => checkbox f, :fancy_tag_field_on_upload, class: "checkbox"
-          => label f, :fancy_tag_field_on_upload, "Fancy tags - uploads"
+        = inputs_for f, :settings, fn fs ->
+          .field
+            => checkbox fs, :fancy_tag_field_on_upload, class: "checkbox"
+            => label fs, :fancy_tag_field_on_upload, "Fancy tags - uploads"
 
-        = field_with_help( \
-          "The fancy tag editor gives you autosuggestions and visual " <> \
-          "representations of the tags, but is sometimes not desired - " <> \
-          "for instance when dealing with batch uploads where you might " <> \
-          "want to copy-paste tags. You can choose which type of editor " <> \
-          "to use by default here.",
-          [ \
-            checkbox(f, :fancy_tag_field_on_edit, class: "checkbox"), \
-            label(f, :fancy_tag_field_on_edit, "Fancy tags - edits"), \
-          ] \
-        )
+          = field_with_help( \
+            "The fancy tag editor gives you autosuggestions and visual " <> \
+            "representations of the tags, but is sometimes not desired - " <> \
+            "for instance when dealing with batch uploads where you might " <> \
+            "want to copy-paste tags. You can choose which type of editor " <> \
+            "to use by default here.",
+            [ \
+              checkbox(fs, :fancy_tag_field_on_edit, class: "checkbox"), \
+              label(fs, :fancy_tag_field_on_edit, "Fancy tags - edits"), \
+            ] \
+          )
 
-        = field_with_help( \
-          "Check this box to post images and comments as anonymous by default, " <> \
-          "even if logged in.",
-          [ \
-            checkbox(f, :anonymous_by_default, class: "checkbox"), \
-            label(f, :anonymous_by_default), \
-          ] \
-        )
+          = field_with_help( \
+            "Check this box to post images and comments as anonymous by default, " <> \
+            "even if logged in.",
+            [ \
+              checkbox(fs, :anonymous_by_default, class: "checkbox"), \
+              label(fs, :anonymous_by_default), \
+            ] \
+          )
 
     .block__tab class=tab_class(@conn, "local", default: is_nil(@conn.assigns.current_user)) data-tab="local"
       .block.block--fixed.block--warning Settings on this tab are saved in the current browser. They are independent of your login.

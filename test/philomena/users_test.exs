@@ -3,7 +3,8 @@ defmodule Philomena.UsersTest do
 
   alias Philomena.Users
   import Philomena.UsersFixtures
-  alias Philomena.Users.{User, UserToken}
+  alias Philomena.Users.{Settings, User, UserToken}
+  alias Philomena.Repo
 
   describe "get_user_by_email/1" do
     test "does not return the user if the email does not exist" do
@@ -136,6 +137,22 @@ defmodule Philomena.UsersTest do
       assert is_binary(user.hashed_password)
       assert is_nil(user.confirmed_at)
       assert is_nil(user.password)
+    end
+
+    test "creates the associated user_settings row" do
+      email = unique_user_email()
+
+      {:ok, user} =
+        Users.register_user(%{name: email, email: email, password: valid_user_password()})
+
+      settings = Repo.get!(Settings, user.id)
+      assert settings.user_id == user.id
+      assert settings.spoiler_type == "static"
+      assert settings.theme == "dark-blue"
+      assert settings.images_per_page == 15
+
+      assert %Settings{} = user.settings
+      assert user.settings.user_id == user.id
     end
   end
 

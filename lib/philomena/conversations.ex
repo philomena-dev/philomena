@@ -225,7 +225,7 @@ defmodule Philomena.Conversations do
   """
   def list_messages(conversation, user, collection_renderer, pagination) do
     direction =
-      if user.messages_newest_first do
+      if user.settings.messages_newest_first do
         :desc
       else
         :asc

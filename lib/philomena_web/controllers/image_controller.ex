@@ -140,8 +140,10 @@ defmodule PhilomenaWeb.ImageController do
   end
 
   defp maybe_skip_to_last_comment_page(conn, image, %{
-         comments_newest_first: false,
-         comments_always_jump_to_last: true
+         settings: %{
+           comments_newest_first: false,
+           comments_always_jump_to_last: true
+         }
        }) do
     page = CommentLoader.last_page(conn, image)
 

@@ -1,6 +1,6 @@
 defmodule PhilomenaWeb.SettingView do
   use PhilomenaWeb, :view
-  alias Philomena.Users.User
+  alias Philomena.Users.Settings
 
   def themes do
     [
@@ -10,13 +10,13 @@ defmodule PhilomenaWeb.SettingView do
   end
 
   def theme_colors do
-    Enum.map(User.theme_colors(), fn name ->
+    Enum.map(Settings.theme_colors(), fn name ->
       {String.capitalize(name), name}
     end)
   end
 
   def theme_paths do
-    Map.new(User.themes(), fn name ->
+    Map.new(Settings.themes(), fn name ->
       {name, static_path(PhilomenaWeb.Endpoint, "/css/#{name}.css")}
     end)
   end

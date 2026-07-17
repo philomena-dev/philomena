@@ -5,15 +5,16 @@ defmodule PhilomenaWeb.LayoutView do
   alias PhilomenaWeb.ImageView
   alias Philomena.Config
   alias Philomena.Users.User
+  alias Philomena.Users.Settings
   alias Plug.Conn
 
-  @themes User.themes()
+  @themes Settings.themes()
 
   def layout_class(conn) do
     conn.assigns[:layout_class] || "layout--narrow"
   end
 
-  def container_class(%{use_centered_layout: false}), do: nil
+  def container_class(%{settings: %{use_centered_layout: false}}), do: nil
   def container_class(_user), do: "layout--center-aligned"
 
   def philomena_version, do: Application.spec(:philomena, :vsn)
@@ -69,10 +70,12 @@ defmodule PhilomenaWeb.LayoutView do
       user_role: if(user, do: user.role, else: nil),
       user_is_signed_in: if(user, do: "true", else: "false"),
       user_can_edit_filter: if(user, do: filter.user_id == user.id, else: "false") |> to_string(),
-      spoiler_type: if(user, do: user.spoiler_type, else: "static"),
+      spoiler_type: if(user, do: user.settings.spoiler_type, else: "static"),
       watched_tag_list: JSON.encode!(if(user, do: user.watched_tag_ids, else: [])),
-      fancy_tag_edit: if(user, do: user.fancy_tag_field_on_edit, else: "true") |> to_string(),
-      fancy_tag_upload: if(user, do: user.fancy_tag_field_on_upload, else: "true") |> to_string(),
+      fancy_tag_edit:
+        if(user, do: user.settings.fancy_tag_field_on_edit, else: "true") |> to_string(),
+      fancy_tag_upload:
+        if(user, do: user.settings.fancy_tag_field_on_upload, else: "true") |> to_string(),
       interactions: JSON.encode!(interactions),
       ignored_tag_list: JSON.encode!(ignored_tag_list(conn.assigns[:tags])),
       hide_staff_tools: conn.cookies["hide_staff_tools"] |> to_string()
@@ -87,7 +90,7 @@ defmodule PhilomenaWeb.LayoutView do
     Config.get(:footer)
   end
 
-  def stylesheet_path(conn, %{theme: theme})
+  def stylesheet_path(conn, %{settings: %{theme: theme}})
       when theme in @themes,
       do: static_path(conn, "/css/#{theme}.css")
 
@@ -97,7 +100,7 @@ defmodule PhilomenaWeb.LayoutView do
   def light_stylesheet_path(_conn),
     do: ~p"/css/light-blue.css"
 
-  def theme_name(%{theme: theme}), do: theme
+  def theme_name(%{settings: %{theme: theme}}), do: theme
   def theme_name(_user), do: "dark-blue"
 
   def hide_staff_tools_attribute(conn),

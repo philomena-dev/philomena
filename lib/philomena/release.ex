@@ -84,6 +84,11 @@ defmodule Philomena.Release do
     Philomena.Versions.LegacyBackfill.run!()
   end
 
+  def backfill_user_settings do
+    start_app()
+    Philomena.Users.SettingsBackfill.run!()
+  end
+
   defp repos do
     Application.fetch_env!(@app, :ecto_repos)
   end

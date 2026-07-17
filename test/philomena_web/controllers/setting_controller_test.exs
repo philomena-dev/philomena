@@ -4,6 +4,7 @@ defmodule PhilomenaWeb.SettingControllerTest do
   # The route is public: anonymous users get the local (cookie-backed)
   # settings only.
 
+  alias Philomena.Users.Settings
   alias Philomena.Repo
 
   describe "GET /settings/edit" do
@@ -41,9 +42,11 @@ defmodule PhilomenaWeb.SettingControllerTest do
       conn =
         patch(conn, ~p"/settings", %{
           "user" => %{
-            "theme_name" => "light",
-            "theme_color" => "orange",
-            "images_per_page" => "30",
+            "settings" => %{
+              "theme_name" => "light",
+              "theme_color" => "orange",
+              "images_per_page" => "30"
+            },
             "hidpi" => "true"
           }
         })
@@ -52,9 +55,9 @@ defmodule PhilomenaWeb.SettingControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Settings updated successfully."
       assert conn.resp_cookies["hidpi"].value == "true"
 
-      reloaded = Repo.reload!(user)
-      assert reloaded.theme == "light-orange"
-      assert reloaded.images_per_page == 30
+      settings = Repo.get!(Settings, user.id)
+      assert settings.theme == "light-orange"
+      assert settings.images_per_page == 30
     end
 
     test "PUT also updates settings", %{conn: conn} do
@@ -62,26 +65,28 @@ defmodule PhilomenaWeb.SettingControllerTest do
 
       conn =
         put(conn, ~p"/settings", %{
-          "user" => %{"theme_name" => "dark", "theme_color" => "green"}
+          "user" => %{"settings" => %{"theme_name" => "dark", "theme_color" => "green"}}
         })
 
       assert redirected_to(conn) == ~p"/settings/edit"
-      assert Repo.reload!(user).theme == "dark-green"
+      assert Repo.get!(Settings, user.id).theme == "dark-green"
     end
 
     test "falls back to dark-blue when only one theme component is submitted", %{conn: conn} do
       %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
 
-      conn = patch(conn, ~p"/settings", %{"user" => %{"theme_name" => "light"}})
+      conn =
+        patch(conn, ~p"/settings", %{"user" => %{"settings" => %{"theme_name" => "light"}}})
 
       assert redirected_to(conn) == ~p"/settings/edit"
-      assert Repo.reload!(user).theme == "dark-blue"
+      assert Repo.get!(Settings, user.id).theme == "dark-blue"
     end
 
     test "re-renders the form with the error flash for an invalid value", %{conn: conn} do
       %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
 
-      conn = patch(conn, ~p"/settings", %{"user" => %{"images_per_page" => "999"}})
+      conn =
+        patch(conn, ~p"/settings", %{"user" => %{"settings" => %{"images_per_page" => "999"}}})
 
       # the re-render is missing the :title assign (same shape as the other
       # UGC failure re-renders); pin the page heading instead
@@ -91,7 +96,7 @@ defmodule PhilomenaWeb.SettingControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
                "Your settings could not be saved!"
 
-      assert Repo.reload!(user).images_per_page == user.images_per_page
+      assert Repo.get!(Settings, user.id).images_per_page == user.settings.images_per_page
     end
 
     test "crashes when the user parameter is missing", %{conn: conn} do

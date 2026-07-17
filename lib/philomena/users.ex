@@ -10,7 +10,7 @@ defmodule Philomena.Users do
   alias Philomena.Schema.Approval
   alias PhilomenaQuery.Search
   alias Philomena.Users
-  alias Philomena.Users.{User, UserToken, UserNotifier, Uploader}
+  alias Philomena.Users.{User, UserToken, UserNotifier, Uploader, Settings}
   alias Philomena.{Forums, Forums.Forum}
   alias Philomena.Bans
   alias Philomena.Topics
@@ -53,7 +53,9 @@ defmodule Philomena.Users do
 
   """
   def get_user_by_authentication_token(token) when is_binary(token) do
-    Repo.get_by(User, authentication_token: token)
+    User
+    |> Repo.get_by(authentication_token: token)
+    |> Repo.preload(:settings)
   end
 
   @doc """
@@ -633,22 +635,34 @@ defmodule Philomena.Users do
   defp clean_roles(roles), do: Enum.filter(roles, &("" != &1))
 
   @doc """
+  Returns an `%Ecto.Changeset{}` for changing a user's spoiler type.
+
+  ## Examples
+
+      iex> change_spoiler_type(user)
+      %Ecto.Changeset{data: %Settings{}}
+
+  """
+  def change_spoiler_type(%User{} = user) do
+    Settings.spoiler_type_changeset(user.settings, %{})
+  end
+
+  @doc """
   Updates a user's spoiler type settings.
 
   ## Examples
 
       iex> update_spoiler_type(user, %{spoiler_type: "click"})
-      {:ok, %User{}}
+      {:ok, %Settings{}}
 
       iex> update_spoiler_type(user, %{spoiler_type: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
   def update_spoiler_type(%User{} = user, attrs) do
-    user
-    |> User.spoiler_type_changeset(attrs)
+    user.settings
+    |> Settings.spoiler_type_changeset(attrs)
     |> Repo.update()
-    |> reindex_after_update()
   end
 
   @doc """
@@ -1027,7 +1041,7 @@ defmodule Philomena.Users do
   defp load_with_roles(query) do
     query
     |> Repo.one()
-    |> Repo.preload([:roles, :current_filter])
+    |> Repo.preload([:roles, :current_filter, :settings])
     |> setup_roles()
   end
 
