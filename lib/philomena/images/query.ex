@@ -64,14 +64,14 @@ defmodule Philomena.Images.Query do
 
     tag_include = %{terms: %{tag_ids: user.watched_tag_ids}}
 
-    include_query = invalid_filter_guard(ctx, user.watched_images_query_str)
-    exclude_query = invalid_filter_guard(ctx, user.watched_images_exclude_str)
+    include_query = invalid_filter_guard(ctx, user.settings.watched_images_query_str)
+    exclude_query = invalid_filter_guard(ctx, user.settings.watched_images_exclude_str)
 
     should = [tag_include, include_query]
     must_not = [exclude_query]
 
     must_not =
-      if user.no_spoilered_in_watched do
+      if user.settings.no_spoilered_in_watched do
         user = user |> Repo.preload(:current_filter)
 
         tag_exclude = %{terms: %{tag_ids: user.current_filter.spoilered_tag_ids}}

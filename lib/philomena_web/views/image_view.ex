@@ -4,7 +4,7 @@ defmodule PhilomenaWeb.ImageView do
   alias Philomena.Tags.Tag
   alias Philomena.Images.Thumbnailer
 
-  def show_vote_counts?(%{hide_vote_counts: true}), do: false
+  def show_vote_counts?(%{settings: %{hide_vote_counts: true}}), do: false
   def show_vote_counts?(_user), do: true
 
   def title_text(image) do
@@ -233,7 +233,7 @@ defmodule PhilomenaWeb.ImageView do
   def deleter(%{deleter: %{name: name}}), do: name
   def deleter(_image), do: "System"
 
-  def scaled_value(%{scale_large_images: scale}), do: scale
+  def scaled_value(%{settings: %{scale_large_images: scale}}), do: scale
   def scaled_value(_user), do: "true"
 
   def hides_images?(conn), do: can?(conn, :hide, %Philomena.Images.Image{})

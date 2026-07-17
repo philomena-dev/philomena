@@ -12,6 +12,7 @@ defmodule Philomena.DataExports.Aggregator do
   alias Philomena.UserIps.UserIp
   alias Philomena.UserNameChanges.UserNameChange
   alias Philomena.Users.User
+  alias Philomena.Users.Settings
 
   # UGC for export
   alias Philomena.ArtistLinks.ArtistLink
@@ -40,31 +41,33 @@ defmodule Philomena.DataExports.Aggregator do
     :email,
     :description,
     :current_filter_id,
+    :personal_title
+  ]
+
+  # Self-view preferences, selected by user_id
+  @user_settings_columns [
     :spoiler_type,
     :theme,
     :images_per_page,
-    :show_large_thumbnails,
+    :comments_per_page,
     :show_sidebar_and_watched_images,
     :fancy_tag_field_on_upload,
     :fancy_tag_field_on_edit,
-    :fancy_tag_field_in_settings,
-    :autorefresh_by_default,
     :anonymous_by_default,
+    :scale_large_images,
     :comments_newest_first,
     :comments_always_jump_to_last,
-    :comments_per_page,
     :watch_on_reply,
     :watch_on_new_topic,
     :watch_on_upload,
     :messages_newest_first,
-    :serve_webm,
     :no_spoilered_in_watched,
     :watched_images_query_str,
     :watched_images_exclude_str,
     :use_centered_layout,
-    :personal_title,
     :hide_vote_counts,
-    :scale_large_images,
+    :delay_home_images,
+    :staff_delay_home_images,
     :borderless_tags,
     :rounded_tags
   ]
@@ -123,11 +126,15 @@ defmodule Philomena.DataExports.Aggregator do
   Get all of the export data for the given user.
   """
   def get_for_user(user_id) do
-    [select_user(user_id)] ++ select_indirect(user_id)
+    [select_user(user_id), select_user_settings(user_id)] ++ select_indirect(user_id)
   end
 
   defp select_user(user_id) do
     select_schema_by_key(user_id, User, @user_columns, :id)
+  end
+
+  defp select_user_settings(user_id) do
+    select_schema_by_key(user_id, Settings, @user_settings_columns, :user_id, :user_id)
   end
 
   defp select_indirect(user_id) do

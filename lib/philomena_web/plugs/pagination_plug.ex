@@ -48,9 +48,9 @@ defmodule PhilomenaWeb.PaginationPlug do
     end
   end
 
-  defp image_page_size(%{images_per_page: x}), do: x
+  defp image_page_size(%{settings: %{images_per_page: x}}), do: x
   defp image_page_size(_user), do: 15
 
-  defp comment_page_size(%{comments_per_page: x}), do: x
+  defp comment_page_size(%{settings: %{comments_per_page: x}}), do: x
   defp comment_page_size(_user), do: 25
 end

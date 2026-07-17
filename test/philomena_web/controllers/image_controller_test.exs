@@ -60,10 +60,11 @@ defmodule PhilomenaWeb.ImageControllerTest do
     end
 
     test "shows just-uploaded images to users who disabled the upload delay", %{conn: conn} do
-      user =
-        confirmed_user_fixture()
-        |> Ecto.Changeset.change(delay_home_images: false)
-        |> Repo.update!()
+      user = confirmed_user_fixture()
+
+      user.settings
+      |> Ecto.Changeset.change(delay_home_images: false)
+      |> Repo.update!()
 
       conn = log_in_user(conn, user)
 

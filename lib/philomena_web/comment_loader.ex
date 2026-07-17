@@ -58,7 +58,7 @@ defmodule PhilomenaWeb.CommentLoader do
   defp staff?(%{role: role}) when role in ~W(assistant moderator admin), do: true
   defp staff?(_user), do: false
 
-  defp load_direction(%{comments_newest_first: false}), do: :asc
+  defp load_direction(%{settings: %{comments_newest_first: false}}), do: :asc
   defp load_direction(_user), do: :desc
 
   defp filter_deleted(query, true), do: query
@@ -72,7 +72,7 @@ defmodule PhilomenaWeb.CommentLoader do
   defp filter_non_approved(query, _user, _show_hidden?),
     do: where(query, [c], c.approved)
 
-  defp filter_direction(query, time, %{comments_newest_first: false}),
+  defp filter_direction(query, time, %{settings: %{comments_newest_first: false}}),
     do: where(query, [c], c.created_at <= ^time)
 
   defp filter_direction(query, time, _user),

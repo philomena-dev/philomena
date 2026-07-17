@@ -4,16 +4,15 @@ defmodule Philomena.Users.User do
 
   use Ecto.Schema
   import Ecto.Changeset
-  import PhilomenaQuery.Ecto.QueryValidator
 
   alias Philomena.Schema.TagList
 
-  alias Philomena.Images.Query
   alias Philomena.Filters.Filter
   alias Philomena.ArtistLinks.ArtistLink
   alias Philomena.Badges
   alias Philomena.Galleries.Gallery
   alias Philomena.Users.User
+  alias Philomena.Users.Settings
   alias Philomena.Commissions.Commission
   alias Philomena.Roles.Role
   alias Philomena.UserFingerprints.UserFingerprint
@@ -38,6 +37,7 @@ defmodule Philomena.Users.User do
     has_one :commission, Commission
     many_to_many :roles, Role, join_through: "users_roles", on_replace: :delete
     has_many :name_changes, UserNameChange
+    has_one :settings, Settings, on_replace: :update
 
     belongs_to :current_filter, Filter
     belongs_to :forced_filter, Filter
@@ -68,37 +68,8 @@ defmodule Philomena.Users.User do
     field :avatar, :string
 
     # Settings
-    field :spoiler_type, :string, default: "static"
-    field :theme, :string, default: "dark-blue"
-    field :images_per_page, :integer, default: 15
-    field :show_large_thumbnails, :boolean, default: true
-    field :show_sidebar_and_watched_images, :boolean, default: true
-    field :fancy_tag_field_on_upload, :boolean, default: true
-    field :fancy_tag_field_on_edit, :boolean, default: true
-    field :fancy_tag_field_in_settings, :boolean, default: true
-    field :autorefresh_by_default, :boolean, default: false
-    field :anonymous_by_default, :boolean, default: false
-    field :scale_large_images, :string, default: "true"
-    field :comments_newest_first, :boolean, default: true
-    field :comments_always_jump_to_last, :boolean, default: true
-    field :comments_per_page, :integer, default: 20
-    field :watch_on_reply, :boolean, default: true
-    field :watch_on_new_topic, :boolean, default: true
-    field :watch_on_upload, :boolean, default: true
-    field :messages_newest_first, :boolean, default: false
-    field :serve_webm, :boolean, default: false
-    field :no_spoilered_in_watched, :boolean, default: false
-    field :watched_images_query_str, :string, default: ""
-    field :watched_images_exclude_str, :string, default: ""
-    field :use_centered_layout, :boolean, default: true
     field :personal_title, :string
-    field :show_hidden_items, :boolean, default: false
-    field :hide_vote_counts, :boolean, default: false
     field :hide_advertisements, :boolean, default: false
-    field :delay_home_images, :boolean, default: true
-    field :staff_delay_home_images, :boolean, default: false
-    field :borderless_tags, :boolean, default: false
-    field :rounded_tags, :boolean, default: false
 
     # Counters
     field :posts_count, :integer, default: 0
@@ -155,6 +126,7 @@ defmodule Philomena.Users.User do
     |> put_api_key()
     |> put_slug()
     |> unique_constraints()
+    |> put_assoc(:settings, %Settings{})
   end
 
   defp validate_name(changeset) do
@@ -308,68 +280,11 @@ defmodule Philomena.Users.User do
     )
   end
 
-  def spoiler_type_changeset(user, attrs) do
-    user
-    |> cast(attrs, [:spoiler_type])
-    |> validate_required([:spoiler_type])
-    |> validate_inclusion(:spoiler_type, ~W(static click hover off))
-  end
-
   def settings_changeset(user, attrs) do
     user
-    |> cast(attrs, [
-      :watched_tag_list,
-      :images_per_page,
-      :fancy_tag_field_on_upload,
-      :fancy_tag_field_on_edit,
-      :anonymous_by_default,
-      :scale_large_images,
-      :comments_per_page,
-      :theme,
-      :watched_images_query_str,
-      :no_spoilered_in_watched,
-      :watched_images_exclude_str,
-      :use_centered_layout,
-      :hide_vote_counts,
-      :comments_newest_first,
-      :watch_on_reply,
-      :watch_on_upload,
-      :watch_on_new_topic,
-      :comments_always_jump_to_last,
-      :messages_newest_first,
-      :show_sidebar_and_watched_images,
-      :delay_home_images,
-      :staff_delay_home_images,
-      :borderless_tags,
-      :rounded_tags
-    ])
-    |> validate_required([
-      :images_per_page,
-      :fancy_tag_field_on_upload,
-      :fancy_tag_field_on_edit,
-      :anonymous_by_default,
-      :scale_large_images,
-      :comments_per_page,
-      :theme,
-      :no_spoilered_in_watched,
-      :use_centered_layout,
-      :hide_vote_counts,
-      :watch_on_reply,
-      :watch_on_upload,
-      :watch_on_new_topic,
-      :comments_always_jump_to_last,
-      :messages_newest_first,
-      :show_sidebar_and_watched_images,
-      :borderless_tags,
-      :rounded_tags
-    ])
+    |> cast(attrs, [:watched_tag_list])
     |> TagList.propagate_tag_list(:watched_tag_list, :watched_tag_ids)
-    |> validate_inclusion(:theme, themes())
-    |> validate_inclusion(:images_per_page, 1..50)
-    |> validate_inclusion(:comments_per_page, 1..100)
-    |> validate_inclusion(:scale_large_images, ["false", "partscaled", "true"])
-    |> validate_query(:watched_images_query_str, &Query.compile(&1, user: user, watch: true))
-    |> validate_query(:watched_images_exclude_str, &Query.compile(&1, user: user, watch: true))
+    |> cast_assoc(:settings, with: &Settings.changeset(&1, &2, user))
   end
 
   def description_changeset(user, attrs) do
@@ -624,18 +539,4 @@ defmodule Philomena.Users.User do
 
   defp remove_backup_code(user, token),
     do: user.otp_backup_codes |> Enum.reject(&Password.verify_pass(token, &1))
-
-  def theme_colors do
-    ~W(red orange yellow blue green purple teal pink gray)
-  end
-
-  def theme_names do
-    ~W(dark light)
-  end
-
-  def themes do
-    for name <- theme_names(), color <- theme_colors() do
-      "#{name}-#{color}"
-    end
-  end
 end
