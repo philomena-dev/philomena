@@ -115,6 +115,16 @@
   border-color: var(--button-danger-border-color);
 }
 
+.rule--admin {
+  background: var(--warning-light-color);
+  border-color: var(--warning-color);
+}
+
+.rule--admin .rule__footer .button {
+  background-color: var(--warning-color);
+  border-color: var(--button-warning-border-color);
+}
+
 .rule--important .rule__footer .button:hover {
   background-color: var(--button-danger-hover-background);
   border-color: var(--button-danger-hover-border);
@@ -127,16 +137,6 @@
 
 .rule--important hr {
   background: var(--danger-color);
-}
-
-.rule--admin {
-  background: var(--warning-light-color);
-  border-color: var(--warning-color);
-}
-
-.rule--admin .rule__footer .button {
-  background-color: var(--warning-color);
-  border-color: var(--button-warning-border-color);
 }
 
 .rule--admin .rule__footer .button:hover {
@@ -159,6 +159,7 @@
 
 /* Emphasize the rule a #anchor link points at in blue, overriding
  * the red important-rule scheme */
+
 .rule:target {
   background: var(--primary-light-color);
   border-color: var(--primary-color);
