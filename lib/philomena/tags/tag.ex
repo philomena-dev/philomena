@@ -53,6 +53,13 @@ defmodule Philomena.Tags.Tag do
     "photographer:"
   ]
 
+  # Must match the tags_name_length_check constraint in the database,
+  # which counts bytes (octet_length). 255 is the largest length the
+  # autocomplete binary format can encode (uint8 name_length).
+  @name_length_limit 255
+
+  def name_length_limit, do: @name_length_limit
+
   @derive {Phoenix.Param, key: :slug}
 
   schema "tags" do
@@ -141,6 +148,11 @@ defmodule Philomena.Tags.Tag do
     tag
     |> cast(attrs, [:name])
     |> validate_required([:name])
+    |> validate_length(:name, max: @name_length_limit, count: :bytes)
+    |> check_constraint(:name,
+      name: :tags_name_length_check,
+      message: "should be at most #{@name_length_limit} byte(s)"
+    )
     |> put_slug()
     |> put_name_and_namespace()
     |> put_namespace_category()
@@ -151,9 +163,14 @@ defmodule Philomena.Tags.Tag do
     |> to_string()
     |> String.split(",")
     |> Enum.map(&clean_tag_name/1)
-    |> Enum.reject(&("" == &1))
+    |> Enum.reject(&(&1 == "" or oversized_name?(&1)))
     |> Enum.uniq()
   end
+
+  # Oversized names must never reach get_or_create_tags: its bulk insert
+  # bypasses changeset validation and would trip tags_name_length_check,
+  # failing the entire tag list.
+  defp oversized_name?(name), do: byte_size(name) > @name_length_limit
 
   def display_order(tags) do
     tags
