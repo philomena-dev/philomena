@@ -4,9 +4,9 @@ defmodule Philomena.Repo.Migrations.AddTagNameLengthLimit do
   # Deleting here cannot clean up OpenSearch: stale documents for the deleted
   # tags (and for images that carried them) remain until the next reindex.
   def up do
-    execute("DELETE FROM tags WHERE char_length(name) > 256")
+    execute("DELETE FROM tags WHERE octet_length(name) > 255")
 
-    create constraint(:tags, :tags_name_length_check, check: "char_length(name) <= 256")
+    create constraint(:tags, :tags_name_length_check, check: "octet_length(name) <= 255")
   end
 
   def down do

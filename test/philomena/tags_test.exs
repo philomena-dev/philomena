@@ -18,12 +18,12 @@ defmodule Philomena.TagsTest do
 
       assert {:error, changeset} = Tags.create_tag(%{name: name})
 
-      assert %{name: ["should be at most #{@limit} character(s)"]} == errors_on(changeset)
+      assert %{name: ["should be at most #{@limit} byte(s)"]} == errors_on(changeset)
     end
 
-    test "counts codepoints, not graphemes" do
-      # 200 graphemes of "e" + combining acute accent = 400 codepoints
-      name = String.duplicate("é", 200)
+    test "counts bytes, not characters" do
+      # 130 characters of "é" (2 bytes each in UTF-8) = 260 bytes
+      name = String.duplicate("é", 130)
 
       assert {:error, changeset} = Tags.create_tag(%{name: name})
       assert %{name: [_message]} = errors_on(changeset)

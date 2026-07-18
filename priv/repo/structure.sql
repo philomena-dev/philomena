@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict 6FWgIg9aclrNCvW1fRq5cp6BsK376NXfsRNY6XYaGZhqCqWbuud34RbZayiXG54
+\restrict BI9reuIeg5wxtS8mW9p6at0HNjJf4vvqvOHP9D84Fs4PQqboF6Zuy2Cc4ZkCZN6
 
 -- Dumped from database version 18.4
 -- Dumped by pg_dump version 18.4
@@ -1839,7 +1839,7 @@ CREATE TABLE public.tags (
     category character varying,
     mod_notes character varying,
     description character varying DEFAULT ''::character varying NOT NULL,
-    CONSTRAINT tags_name_length_check CHECK ((char_length((name)::text) <= 256))
+    CONSTRAINT tags_name_length_check CHECK ((octet_length((name)::text) <= 255))
 );
 
 
@@ -5773,7 +5773,7 @@ ALTER TABLE ONLY public.users
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 6FWgIg9aclrNCvW1fRq5cp6BsK376NXfsRNY6XYaGZhqCqWbuud34RbZayiXG54
+\unrestrict BI9reuIeg5wxtS8mW9p6at0HNjJf4vvqvOHP9D84Fs4PQqboF6Zuy2Cc4ZkCZN6
 
 INSERT INTO public."schema_migrations" (version) VALUES (20200503002523);
 INSERT INTO public."schema_migrations" (version) VALUES (20200607000511);
