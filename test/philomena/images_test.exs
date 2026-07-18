@@ -1,8 +1,11 @@
 defmodule Philomena.ImagesTest do
   use Philomena.DataCase, async: true
 
+  alias Philomena.Galleries
+  alias Philomena.Galleries.Interaction
   alias Philomena.Images
 
+  import Philomena.GalleriesFixtures
   import Philomena.ImagesFixtures
   import Philomena.UsersFixtures
   import Philomena.AttributionFixtures
@@ -24,6 +27,34 @@ defmodule Philomena.ImagesTest do
                Images.create_image(attribution(user), attrs)
 
       assert "has already been uploaded: it's image #{existing.id}" in errors_on(changeset).image
+    end
+  end
+
+  describe "hide_image/3 gallery cleanup" do
+    # Hiding (deleting) an image removes it from every gallery containing it.
+    # The gallery search document serializes image_count and image_ids, so the
+    # transaction must surface the affected gallery ids for reindexing - the
+    # galleries step returns them, and process_after_hide queues the reindex.
+    test "removes the image from galleries and returns the affected gallery ids" do
+      moderator = user_fixture()
+      image = image_fixture()
+      gallery = gallery_fixture(user_fixture())
+      {:ok, _} = Galleries.add_image_to_gallery(gallery, image)
+
+      assert {:ok, %{galleries: {1, [gallery_id]}}} =
+               Images.hide_image(image, moderator, %{"deletion_reason" => "Rule violation"})
+
+      assert gallery_id == gallery.id
+      assert Repo.reload!(gallery).image_count == 0
+      refute Repo.get_by(Interaction, gallery_id: gallery.id)
+    end
+
+    test "returns no gallery ids when the image is in no gallery" do
+      moderator = user_fixture()
+      image = image_fixture()
+
+      assert {:ok, %{galleries: {0, []}}} =
+               Images.hide_image(image, moderator, %{"deletion_reason" => "Rule violation"})
     end
   end
 
