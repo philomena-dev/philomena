@@ -34,6 +34,7 @@ defmodule Philomena.Images do
   alias Philomena.Interactions
   alias Philomena.Reports
   alias Philomena.Comments
+  alias Philomena.Galleries
   alias Philomena.Galleries.Gallery
   alias Philomena.Galleries.Interaction
   alias Philomena.Users.User
@@ -927,6 +928,7 @@ defmodule Philomena.Images do
       Gallery
       |> join(:inner, [g], gi in assoc(g, :interactions), on: gi.image_id == ^image.id)
       |> update(inc: [image_count: -1])
+      |> select([g], g.id)
 
     gallery_interactions = where(Interaction, image_id: ^image.id)
 
@@ -951,7 +953,13 @@ defmodule Philomena.Images do
 
   defp process_after_hide(result) do
     case result do
-      {:ok, %{image: image, tags: tags, reports: {_count, reports}} = result} ->
+      {:ok,
+       %{
+         image: image,
+         tags: tags,
+         reports: {_, reports},
+         galleries: {_, gallery_ids}
+       } = result} ->
         spawn(fn ->
           Thumbnailer.hide_thumbnails(image, image.hidden_image_key)
           purge_files(image, image.hidden_image_key)
@@ -960,6 +968,7 @@ defmodule Philomena.Images do
         Comments.reindex_comments_on_image(image)
         Reports.reindex_reports(reports)
         Tags.reindex_tags(tags)
+        Galleries.reindex_galleries(gallery_ids)
         reindex_image(image)
         reindex_copied_tags(result)
 

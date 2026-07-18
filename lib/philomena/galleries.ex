@@ -164,6 +164,23 @@ defmodule Philomena.Galleries do
   end
 
   @doc """
+  Queues multiple galleries for reindexing by their ids.
+
+  ## Examples
+
+      iex> reindex_galleries([1, 2, 3])
+      [1, 2, 3]
+
+  """
+  def reindex_galleries([]), do: []
+
+  def reindex_galleries(gallery_ids) do
+    Exq.enqueue(Exq, "indexing", IndexWorker, ["Galleries", "id", gallery_ids])
+
+    gallery_ids
+  end
+
+  @doc """
   Removes a gallery from the search index.
 
   Deletes the gallery's document from the search index.
