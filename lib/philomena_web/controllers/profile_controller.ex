@@ -184,17 +184,14 @@ defmodule PhilomenaWeb.ProfileController do
   end
 
   defp calculate_statistics(user) do
-    now =
-      DateTime.utc_now()
-      |> DateTime.to_unix(:second)
-      |> div(86400)
+    today = Date.utc_today()
 
     last_90 =
       UserStatistic
       |> where(user_id: ^user.id)
-      |> where([us], us.day >= ^(now - 89))
+      |> where([us], us.day >= ^Date.add(today, -89))
       |> Repo.all()
-      |> Map.new(&{now - &1.day, &1})
+      |> Map.new(&{Date.diff(today, &1.day), &1})
 
     %{
       images_count: individual_stat(last_90, :images_count),

@@ -8,7 +8,7 @@ defmodule Philomena.UserStatistics.UserStatistic do
 
   schema "user_statistics" do
     belongs_to :user, User, primary_key: true
-    field :day, :integer, default: 0, primary_key: true
+    field :day, :date, primary_key: true
     field :images_count, :integer, default: 0
     field :image_votes_count, :integer, default: 0
     field :comments_count, :integer, default: 0

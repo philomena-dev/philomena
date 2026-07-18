@@ -40,10 +40,7 @@ defmodule Philomena.UserStatistics do
 
   def inc_stat(user_id, action, amount)
       when action in @permitted_actions do
-    now =
-      DateTime.utc_now()
-      |> DateTime.to_unix(:second)
-      |> div(86400)
+    today = Date.utc_today()
 
     user_query = where(User, id: ^user_id)
 
@@ -51,7 +48,7 @@ defmodule Philomena.UserStatistics do
       Repo.update_all(user_query, inc: [{action, amount}])
 
       Repo.insert(
-        Map.put(%UserStatistic{day: now, user_id: user_id}, action, amount),
+        Map.put(%UserStatistic{day: today, user_id: user_id}, action, amount),
         on_conflict: [inc: [{action, amount}]],
         conflict_target: [:day, :user_id]
       )

@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict Fi3YcJe1ctRNIr2YIrdsc9WlpK0sqIbyXcnbaaNcKpuBWm6VichpgnOwufZZmMn
+\restrict CoNVQEWwXiutDYW7oGHkLpAbiYQP44tCdb0cYekylawBYAfihPnIjSMG98bdpC7
 
 -- Dumped from database version 18.4
 -- Dumped by pg_dump version 18.4
@@ -2135,7 +2135,7 @@ CREATE TABLE public.user_settings (
 
 CREATE TABLE public.user_statistics (
     user_id integer NOT NULL,
-    day integer DEFAULT 0 NOT NULL,
+    day date NOT NULL,
     images_count integer DEFAULT 0 NOT NULL,
     image_votes_count integer DEFAULT 0 NOT NULL,
     comments_count integer DEFAULT 0 NOT NULL,
@@ -5772,7 +5772,7 @@ ALTER TABLE ONLY public.users
 -- PostgreSQL database dump complete
 --
 
-\unrestrict Fi3YcJe1ctRNIr2YIrdsc9WlpK0sqIbyXcnbaaNcKpuBWm6VichpgnOwufZZmMn
+\unrestrict CoNVQEWwXiutDYW7oGHkLpAbiYQP44tCdb0cYekylawBYAfihPnIjSMG98bdpC7
 
 INSERT INTO public."schema_migrations" (version) VALUES (20200503002523);
 INSERT INTO public."schema_migrations" (version) VALUES (20200607000511);
@@ -5809,3 +5809,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20250617122513);
 INSERT INTO public."schema_migrations" (version) VALUES (20251103173014);
 INSERT INTO public."schema_migrations" (version) VALUES (20260716190444);
 INSERT INTO public."schema_migrations" (version) VALUES (20260717000000);
+INSERT INTO public."schema_migrations" (version) VALUES (20260718000000);
