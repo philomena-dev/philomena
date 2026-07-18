@@ -98,6 +98,39 @@ defmodule Philomena.TagChangeRevertWorkerTest do
     refute "vandal tag" in image_tag_names(image)
   end
 
+  test "an image with more tag changes than the batch size is fully reverted", %{user: user} do
+    image_a = image_fixture(tags: @base_tags)
+    image_b = image_fixture(tags: @base_tags)
+    change_tags!(image_a, user, @base_tags, "#{@base_tags}, vandal tag")
+    change_tags!(image_b, user, @base_tags, "#{@base_tags}, vandal one")
+
+    change_tags!(
+      image_b,
+      user,
+      "#{@base_tags}, vandal one",
+      "#{@base_tags}, vandal one, vandal two"
+    )
+
+    change_tags!(
+      image_b,
+      user,
+      "#{@base_tags}, vandal one, vandal two",
+      "#{@base_tags}, vandal two"
+    )
+
+    # image_b carries three tag changes, exceeding the batch size of 2; the
+    # emitted batch queries select by image_id value, so all three must land
+    # in one mass_revert call anyway.
+    full_revert!(user, 2)
+
+    refute "vandal tag" in image_tag_names(image_a)
+
+    names_b = image_tag_names(image_b)
+    refute "vandal one" in names_b
+    refute "vandal two" in names_b
+    assert "safe" in names_b
+  end
+
   test "a self-canceled remove/add pair does not strip the tag", %{user: user} do
     image = image_fixture(tags: "#{@base_tags}, original tag")
     change_tags!(image, user, "#{@base_tags}, original tag", @base_tags)
