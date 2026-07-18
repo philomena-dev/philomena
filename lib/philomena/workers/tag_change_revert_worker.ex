@@ -1,4 +1,9 @@
 defmodule Philomena.TagChangeRevertWorker do
+  @moduledoc """
+  Reverts every tag change made by a user, IP, or fingerprint, batching by
+  image so each image's tag history is reverted in a single operation.
+  """
+
   alias Philomena.TagChanges.TagChange
   alias Philomena.TagChanges
   alias PhilomenaQuery.Batch
@@ -27,8 +32,10 @@ defmodule Philomena.TagChangeRevertWorker do
     batch_size = attributes["batch_size"] || 100
     attributes = Map.delete(attributes, "batch_size")
 
+    # Batch on image_id, never on tag change id: a batch boundary that splits
+    # one image's tag history would un-cancel a `+tag`/`-tag` pair
     queryable
-    |> Batch.query_batches(batch_size: batch_size)
+    |> Batch.query_batches(batch_size: batch_size, id_field: :image_id)
     |> Enum.each(fn queryable ->
       ids = Repo.all(select(queryable, [tc], tc.id))
       TagChanges.mass_revert(ids, cast_ip(atomify_keys(attributes)))

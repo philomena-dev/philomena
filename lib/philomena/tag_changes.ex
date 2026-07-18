@@ -40,16 +40,17 @@ defmodule Philomena.TagChanges do
 
   # Accepts a list of TagChanges.Tag objects with tag_change and tag relations preloaded.
   def mass_revert_tags(tags, attributes) do
-    # Sort tags by tag change creation date, then uniq them by tag ID
-    # to keep the first, aka the latest, record. Then prepare the struct
-    # for the batch updater.
+    # Reverting a set of changes means restoring the state from before the
+    # earliest of them, so collapse each (image, tag) history to its earliest
+    # record and invert that. `created_at` has second precision,
+    # so ties are broken by tag change id.
     changes_per_image =
       tags
       |> Enum.group_by(& &1.tag_change.image_id)
       |> Enum.map(fn {image_id, instances} ->
         changed_tags =
           instances
-          |> Enum.sort_by(& &1.tag_change.created_at, :desc)
+          |> Enum.sort_by(&{DateTime.to_unix(&1.tag_change.created_at), &1.tag_change_id})
           |> Enum.uniq_by(& &1.tag_id)
 
         {added_tags, removed_tags} = Enum.split_with(changed_tags, & &1.added)
