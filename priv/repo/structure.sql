@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict CoNVQEWwXiutDYW7oGHkLpAbiYQP44tCdb0cYekylawBYAfihPnIjSMG98bdpC7
+\restrict 6FWgIg9aclrNCvW1fRq5cp6BsK376NXfsRNY6XYaGZhqCqWbuud34RbZayiXG54
 
 -- Dumped from database version 18.4
 -- Dumped by pg_dump version 18.4
@@ -1838,7 +1838,8 @@ CREATE TABLE public.tags (
     updated_at timestamp without time zone NOT NULL,
     category character varying,
     mod_notes character varying,
-    description character varying DEFAULT ''::character varying NOT NULL
+    description character varying DEFAULT ''::character varying NOT NULL,
+    CONSTRAINT tags_name_length_check CHECK ((char_length((name)::text) <= 256))
 );
 
 
@@ -5772,7 +5773,7 @@ ALTER TABLE ONLY public.users
 -- PostgreSQL database dump complete
 --
 
-\unrestrict CoNVQEWwXiutDYW7oGHkLpAbiYQP44tCdb0cYekylawBYAfihPnIjSMG98bdpC7
+\unrestrict 6FWgIg9aclrNCvW1fRq5cp6BsK376NXfsRNY6XYaGZhqCqWbuud34RbZayiXG54
 
 INSERT INTO public."schema_migrations" (version) VALUES (20200503002523);
 INSERT INTO public."schema_migrations" (version) VALUES (20200607000511);
@@ -5810,3 +5811,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20251103173014);
 INSERT INTO public."schema_migrations" (version) VALUES (20260716190444);
 INSERT INTO public."schema_migrations" (version) VALUES (20260717000000);
 INSERT INTO public."schema_migrations" (version) VALUES (20260718000000);
+INSERT INTO public."schema_migrations" (version) VALUES (20260718110812);

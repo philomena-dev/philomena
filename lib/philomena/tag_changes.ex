@@ -254,7 +254,7 @@ defmodule Philomena.TagChanges do
   Deletes tag changes that have no associated tags.
   ## Examples
       iex> delete_empty_tag_changes()
-      {number_of_deleted_records, nil}
+      {number_of_deleted_records, [%TagChange{}, ...]}
   """
   def delete_empty_tag_changes do
     {count, tag_changes} =
@@ -263,6 +263,7 @@ defmodule Philomena.TagChanges do
       |> where(
         not exists(where(TagChanges.Tag, [t], t.tag_change_id == parent_as(:tag_change).id))
       )
+      |> select([tc], tc)
       |> Repo.delete_all()
 
     Enum.each(tag_changes, &Search.delete_document(&1.id, TagChange))
