@@ -118,7 +118,7 @@ defmodule PhilomenaWeb.Image.ReportControllerTest do
     rule = rule_fixture()
 
     for _ <- 1..5 do
-      Philomena.ReportsFixtures.report_fixture([image_id: image.id], user)
+      Philomena.ReportsFixtures.report_fixture(user, image_id: image.id)
     end
 
     conn =

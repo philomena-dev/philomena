@@ -102,7 +102,7 @@ defmodule PhilomenaWeb.Conversation.ReportControllerTest do
     rule = rule_fixture()
 
     for _ <- 1..5 do
-      Philomena.ReportsFixtures.report_fixture([conversation_id: conversation.id], user)
+      Philomena.ReportsFixtures.report_fixture(user, conversation_id: conversation.id)
     end
 
     conn =

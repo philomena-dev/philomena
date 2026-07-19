@@ -75,7 +75,7 @@ defmodule Philomena.ReportsTest do
       }
 
       assert {:error, changeset} =
-               Reports.create_report([], attribution(), attrs)
+               Reports.create_report(attribution(), attrs, [])
 
       assert %{reportable: ["must reference exactly one target"]} = errors_on(changeset)
     end
@@ -182,7 +182,7 @@ defmodule Philomena.ReportsTest do
 
       assert report.open
 
-      assert {:ok, {1, _ids}} = Reports.close_reports([image_id: image.id], admin)
+      assert {:ok, {1, _ids}} = Reports.close_reports(admin, image_id: image.id)
 
       closed = Reports.get_report!(report.id)
       refute closed.open
@@ -195,7 +195,7 @@ defmodule Philomena.ReportsTest do
       report = report_fixture(reported_user_id: target.id)
       admin = admin_user_fixture()
 
-      assert {:ok, {1, _ids}} = Reports.close_reports([reported_user_id: target.id], admin)
+      assert {:ok, {1, _ids}} = Reports.close_reports(admin, reported_user_id: target.id)
 
       closed = Reports.get_report!(report.id)
       refute closed.open

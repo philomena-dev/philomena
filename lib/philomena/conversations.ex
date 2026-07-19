@@ -299,7 +299,7 @@ defmodule Philomena.Conversations do
         update: [set: [from_read: false, to_read: false]]
 
     reports_query =
-      Reports.close_report_query([conversation_id: message.conversation_id], approving_user)
+      Reports.close_report_query(approving_user, conversation_id: message.conversation_id)
 
     Multi.new()
     |> Multi.update(:message, message_changeset)
@@ -337,9 +337,9 @@ defmodule Philomena.Conversations do
       {:ok, nil}
     else
       Reports.create_system_report(
-        [conversation_id: message.conversation_id],
         "Approval",
-        "PM contains externally-embedded images"
+        "PM contains externally-embedded images",
+        conversation_id: message.conversation_id
       )
     end
   end

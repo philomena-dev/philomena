@@ -78,18 +78,18 @@ defmodule Philomena.Reports do
 
   @doc """
   Creates a report against the target named by `target`, a one-entry keyword
-  list of the target foreign key column and its id (e.g. `[image_id: image.id]`).
+  list of the target foreign key column and its id (e.g. `image_id: image.id`).
 
   ## Examples
 
-      iex> create_report([image_id: image.id], attribution, %{"reason" => "..."})
+      iex> create_report(attribution, %{"reason" => "..."}, image_id: image.id)
       {:ok, %Report{}}
 
-      iex> create_report([image_id: image.id], attribution, %{"reason" => ""})
+      iex> create_report(attribution, %{"reason" => ""}, image_id: image.id)
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_report(target, attribution, attrs \\ %{}) do
+  def create_report(attribution, attrs, target) do
     rule = Rules.find_rule(attrs["rule_id"])
 
     struct(Report, target)
@@ -101,12 +101,12 @@ defmodule Philomena.Reports do
   @doc """
   Returns an `m:Ecto.Query` which updates all open reports against the target
   named by `target`, a one-entry keyword list of the target foreign key column
-  and its id (e.g. `[image_id: image.id]`), to close them.
+  and its id (e.g. `image_id: image.id`), to close them.
 
   Because this is only a query due to the limitations of `m:Ecto.Multi`, this must be
   coupled with an associated call to `reindex_reports/1` to operate correctly, e.g.:
 
-      report_query = Reports.close_report_query([image_id: image.id], user)
+      report_query = Reports.close_report_query(user, image_id: image.id)
 
       Multi.new()
       |> Multi.update_all(:reports, report_query, [])
@@ -125,11 +125,11 @@ defmodule Philomena.Reports do
 
   ## Examples
 
-      iex> close_report_query([image_id: 1], %User{})
+      iex> close_report_query(%User{}, image_id: 1)
       #Ecto.Query<...>
 
   """
-  def close_report_query([{column, id}], closing_user) do
+  def close_report_query(closing_user, [{column, id}]) do
     now = DateTime.utc_now(:second)
 
     from r in Report,
@@ -152,9 +152,9 @@ defmodule Philomena.Reports do
 
   Returns `{:ok, {count, reports}}`.
   """
-  def close_reports(target, closing_user) do
+  def close_reports(closing_user, target) do
     {_count, reports} =
-      result = Repo.update_all(close_report_query(target, closing_user), [])
+      result = Repo.update_all(close_report_query(closing_user, target), [])
 
     reindex_reports(reports)
     {:ok, result}
@@ -163,15 +163,15 @@ defmodule Philomena.Reports do
   @doc """
   Automatically create a report with the given rule and reason against the
   target named by `target`, a one-entry keyword list of the target foreign key
-  column and its id (e.g. `[comment_id: comment.id]`).
+  column and its id (e.g. `comment_id: comment.id`).
 
   ## Examples
 
-      iex> create_system_report([comment_id: 1], "Rule #0", "Custom report reason")
+      iex> create_system_report("Rule #0", "Custom report reason", comment_id: 1)
       {:ok, %Report{}}
 
   """
-  def create_system_report(target, rule_name, reason) do
+  def create_system_report(rule_name, reason, target) do
     rule = Rules.get_by_name!(rule_name)
 
     attrs = %{

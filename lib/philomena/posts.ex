@@ -133,9 +133,9 @@ defmodule Philomena.Posts do
 
   def report_non_approved(post) do
     Reports.create_system_report(
-      [post_id: post.id],
       "Approval",
-      "Post contains external links"
+      "Post contains external links",
+      post_id: post.id
     )
   end
 
@@ -210,7 +210,7 @@ defmodule Philomena.Posts do
 
     Multi.new()
     |> Multi.update(:post, Post.hide_changeset(post, attrs, user))
-    |> Multi.update_all(:reports, Reports.close_report_query([post_id: post.id], user), [])
+    |> Multi.update_all(:reports, Reports.close_report_query(user, post_id: post.id), [])
     |> Multi.update_all(:topic, Topics.update_topic_last_post_query(post.topic_id), [])
     |> Multi.update_all(:forum, Forums.update_forum_last_post_query(post.topic.forum_id), [])
     |> Repo.transaction()
@@ -306,7 +306,7 @@ defmodule Philomena.Posts do
 
   """
   def approve_post(%Post{} = post, user) do
-    report_query = Reports.close_report_query([post_id: post.id], user)
+    report_query = Reports.close_report_query(user, post_id: post.id)
     post = Post.approve_changeset(post)
 
     Multi.new()

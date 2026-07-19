@@ -81,7 +81,7 @@ defmodule Philomena.Commissions do
     Multi.new()
     |> Multi.update_all(
       :reports,
-      Reports.close_report_query([commission_id: commission.id], closing_user),
+      Reports.close_report_query(closing_user, commission_id: commission.id),
       []
     )
     |> Multi.delete(:commission, commission)

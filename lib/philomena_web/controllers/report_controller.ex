@@ -40,7 +40,7 @@ defmodule PhilomenaWeb.ReportController do
       )
       |> redirect(to: "/")
     else
-      case Reports.create_report(target, attribution, report_params) do
+      case Reports.create_report(attribution, report_params, target) do
         {:ok, _report} ->
           conn
           |> put_flash(
