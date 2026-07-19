@@ -59,7 +59,7 @@ defmodule PhilomenaWeb.Gallery.ReportControllerTest do
       report =
         Repo.one!(
           from r in Report,
-            where: r.reportable_type == "Gallery" and r.reportable_id == ^gallery.id
+            where: r.gallery_id == ^gallery.id
         )
 
       assert report.user_id == user.id
@@ -87,7 +87,7 @@ defmodule PhilomenaWeb.Gallery.ReportControllerTest do
       report =
         Repo.one!(
           from r in Report,
-            where: r.reportable_type == "Gallery" and r.reportable_id == ^gallery.id
+            where: r.gallery_id == ^gallery.id
         )
 
       assert report.user_id == nil

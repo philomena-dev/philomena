@@ -5,7 +5,7 @@ defmodule PhilomenaWeb.Admin.ReportController do
   alias PhilomenaWeb.MarkdownRenderer
   alias Philomena.Reports.Report
   alias Philomena.Reports.Query
-  alias Philomena.Polymorphic
+  alias Philomena.Reports
   alias Philomena.ModNotes.ModNote
   alias Philomena.ModNotes
   alias Philomena.Repo
@@ -62,7 +62,7 @@ defmodule PhilomenaWeb.Admin.ReportController do
       |> preload([:admin, :rule, user: :linked_tags])
       |> order_by(desc: :created_at)
       |> Repo.all()
-      |> Polymorphic.load_polymorphic(reportable: [reportable_id: :reportable_type])
+      |> Reports.preload_targets()
 
     system_reports =
       Report
@@ -70,7 +70,7 @@ defmodule PhilomenaWeb.Admin.ReportController do
       |> preload([:admin, :rule, user: :linked_tags])
       |> order_by(desc: :created_at)
       |> Repo.all()
-      |> Polymorphic.load_polymorphic(reportable: [reportable_id: :reportable_type])
+      |> Reports.preload_targets()
 
     render(conn, "index.html",
       title: "Admin - Reports",
@@ -82,10 +82,7 @@ defmodule PhilomenaWeb.Admin.ReportController do
   end
 
   def show(conn, _params) do
-    [report] =
-      Polymorphic.load_polymorphic([conn.assigns.report],
-        reportable: [reportable_id: :reportable_type]
-      )
+    report = Reports.preload_targets(conn.assigns.report)
 
     body = MarkdownRenderer.render_one(%{body: report.reason}, conn)
 
@@ -104,7 +101,7 @@ defmodule PhilomenaWeb.Admin.ReportController do
       )
       |> Search.search_records(preload(Report, [:admin, :rule, user: :linked_tags]))
 
-    entries = Polymorphic.load_polymorphic(reports, reportable: [reportable_id: :reportable_type])
+    entries = Reports.preload_targets(reports)
 
     %{reports | entries: entries}
   end
@@ -130,7 +127,7 @@ defmodule PhilomenaWeb.Admin.ReportController do
       report = conn.assigns.report
 
       renderer = &MarkdownRenderer.render_collection(&1, conn)
-      mod_notes = ModNotes.list_all_mod_notes_by_type_and_id("Report", report.id, renderer)
+      mod_notes = ModNotes.list_all_mod_notes_for_target(renderer, report_id: report.id)
       assign(conn, :mod_notes, mod_notes)
     else
       conn

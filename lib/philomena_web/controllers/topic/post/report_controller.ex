@@ -29,12 +29,12 @@ defmodule PhilomenaWeb.Topic.Post.ReportController do
     action = ~p"/forums/#{topic.forum}/topics/#{topic}/posts/#{post}/reports"
 
     changeset =
-      %Report{reportable_type: "Post", reportable_id: post.id}
+      %Report{post_id: post.id}
       |> Reports.change_report()
 
     conn
     |> put_view(ReportView)
-    |> render("new.html", reportable: post, changeset: changeset, action: action)
+    |> render("new.html", subject: post, changeset: changeset, action: action)
   end
 
   def create(conn, params) do
@@ -42,6 +42,6 @@ defmodule PhilomenaWeb.Topic.Post.ReportController do
     post = conn.assigns.post
     action = ~p"/forums/#{topic.forum}/topics/#{topic}/posts/#{post}/reports"
 
-    ReportController.create(conn, action, "Post", post, params)
+    ReportController.create(conn, action, post, [post_id: post.id], params)
   end
 end

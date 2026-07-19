@@ -70,7 +70,7 @@ defmodule PhilomenaWeb.Topic.Post.ReportControllerTest do
       report =
         Repo.one!(
           from r in Report,
-            where: r.reportable_type == "Post" and r.reportable_id == ^post.id
+            where: r.post_id == ^post.id
         )
 
       assert report.user_id == user.id
@@ -98,7 +98,7 @@ defmodule PhilomenaWeb.Topic.Post.ReportControllerTest do
       report =
         Repo.one!(
           from r in Report,
-            where: r.reportable_type == "Post" and r.reportable_id == ^post.id
+            where: r.post_id == ^post.id
         )
 
       assert report.user_id == nil

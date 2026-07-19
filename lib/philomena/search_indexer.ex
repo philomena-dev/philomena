@@ -1,5 +1,4 @@
 defmodule Philomena.SearchIndexer do
-  alias PhilomenaQuery.Batch
   alias PhilomenaQuery.Search
 
   alias Philomena.Comments
@@ -22,7 +21,6 @@ defmodule Philomena.SearchIndexer do
   alias Philomena.Users.User
 
   alias Philomena.Maintenance
-  alias Philomena.Polymorphic
   alias Philomena.Repo
   import Ecto.Query
 
@@ -155,26 +153,7 @@ defmodule Philomena.SearchIndexer do
 
   @spec reindex_schema_impl(schema :: module(), opts :: Keyword.t()) ::
           Enumerable.t({:ok, integer()})
-  defp reindex_schema_impl(schema, opts)
-
-  defp reindex_schema_impl(Report, opts) do
-    # Reports currently require handling for their polymorphic nature
-    Report
-    |> preload([:user, :admin])
-    |> Batch.record_batches(batch_size: @batch_sizes[Report])
-    |> Task.async_stream(
-      fn records ->
-        records
-        |> Polymorphic.load_polymorphic(reportable: [reportable_id: :reportable_type])
-        |> Enum.map(&Search.index_document(&1, Report, Keyword.take(opts, [:targets])))
-      end,
-      timeout: :infinity,
-      max_concurrency: max_concurrency(opts)
-    )
-  end
-
   defp reindex_schema_impl(schema, opts) when schema in @schemas do
-    # Normal schemas can simply be reindexed with indexing_preloads
     context = Map.fetch!(@contexts, schema)
 
     schema

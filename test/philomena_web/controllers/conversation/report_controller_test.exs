@@ -67,7 +67,7 @@ defmodule PhilomenaWeb.Conversation.ReportControllerTest do
     report =
       Repo.one!(
         from r in Report,
-          where: r.reportable_type == "Conversation" and r.reportable_id == ^conversation.id
+          where: r.conversation_id == ^conversation.id
       )
 
     assert report.user_id == user.id
@@ -102,7 +102,7 @@ defmodule PhilomenaWeb.Conversation.ReportControllerTest do
     rule = rule_fixture()
 
     for _ <- 1..5 do
-      Philomena.ReportsFixtures.report_fixture({"Conversation", conversation.id}, user)
+      Philomena.ReportsFixtures.report_fixture(user, conversation_id: conversation.id)
     end
 
     conn =

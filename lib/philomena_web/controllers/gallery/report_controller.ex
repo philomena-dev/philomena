@@ -23,14 +23,14 @@ defmodule PhilomenaWeb.Gallery.ReportController do
     action = ~p"/galleries/#{gallery}/reports"
 
     changeset =
-      %Report{reportable_type: "Gallery", reportable_id: gallery.id}
+      %Report{gallery_id: gallery.id}
       |> Reports.change_report()
 
     conn
     |> put_view(ReportView)
     |> render("new.html",
       title: "Reporting Gallery",
-      reportable: gallery,
+      subject: gallery,
       changeset: changeset,
       action: action
     )
@@ -40,6 +40,6 @@ defmodule PhilomenaWeb.Gallery.ReportController do
     gallery = conn.assigns.gallery
     action = ~p"/galleries/#{gallery}/reports"
 
-    ReportController.create(conn, action, "Gallery", gallery, params)
+    ReportController.create(conn, action, gallery, [gallery_id: gallery.id], params)
   end
 end

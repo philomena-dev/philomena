@@ -27,14 +27,14 @@ defmodule PhilomenaWeb.Image.Comment.ReportController do
     action = ~p"/images/#{comment.image}/comments/#{comment}/reports"
 
     changeset =
-      %Report{reportable_type: "Comment", reportable_id: comment.id}
+      %Report{comment_id: comment.id}
       |> Reports.change_report()
 
     conn
     |> put_view(ReportView)
     |> render("new.html",
       title: "Reporting Comment",
-      reportable: comment,
+      subject: comment,
       changeset: changeset,
       action: action
     )
@@ -44,6 +44,6 @@ defmodule PhilomenaWeb.Image.Comment.ReportController do
     comment = conn.assigns.comment
     action = ~p"/images/#{comment.image}/comments/#{comment}/reports"
 
-    ReportController.create(conn, action, "Comment", comment, params)
+    ReportController.create(conn, action, comment, [comment_id: comment.id], params)
   end
 end

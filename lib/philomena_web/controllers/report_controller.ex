@@ -1,7 +1,6 @@
 defmodule PhilomenaWeb.ReportController do
   use PhilomenaWeb, :controller
 
-  alias Philomena.Polymorphic
   alias Philomena.Reports.Report
   alias Philomena.Reports
   alias Philomena.Repo
@@ -17,11 +16,7 @@ defmodule PhilomenaWeb.ReportController do
       |> preload(:rule)
       |> Repo.paginate(conn.assigns.scrivener)
 
-    polymorphic =
-      reports
-      |> Polymorphic.load_polymorphic(reportable: [reportable_id: :reportable_type])
-
-    reports = %{reports | entries: polymorphic}
+    reports = %{reports | entries: Reports.preload_targets(reports)}
 
     render(conn, "index.html", title: "My Reports", reports: reports)
   end
@@ -34,7 +29,7 @@ defmodule PhilomenaWeb.ReportController do
   # plug PhilomenaWeb.CheckCaptchaPlug when action in [:create]
   # plug :load_and_authorize_resource, model: Image, id_name: "image_id", persisted: true
 
-  def create(conn, action, reportable_type, reportable, %{"report" => report_params}) do
+  def create(conn, action, subject, target, %{"report" => report_params}) do
     attribution = conn.assigns.attributes
 
     if too_many_reports?(conn) do
@@ -45,7 +40,7 @@ defmodule PhilomenaWeb.ReportController do
       )
       |> redirect(to: "/")
     else
-      case Reports.create_report({reportable_type, reportable.id}, attribution, report_params) do
+      case Reports.create_report(attribution, report_params, target) do
         {:ok, _report} ->
           conn
           |> put_flash(
@@ -60,7 +55,7 @@ defmodule PhilomenaWeb.ReportController do
           # not exist. Name the shared one explicitly.
           conn
           |> put_view(PhilomenaWeb.ReportView)
-          |> render("new.html", reportable: reportable, changeset: changeset, action: action)
+          |> render("new.html", subject: subject, changeset: changeset, action: action)
       end
     end
   end

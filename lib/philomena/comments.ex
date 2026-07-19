@@ -128,7 +128,7 @@ defmodule Philomena.Comments do
 
   """
   def hide_comment(%Comment{} = comment, attrs, user) do
-    report_query = Reports.close_report_query({"Comment", comment.id}, user)
+    report_query = Reports.close_report_query(user, comment_id: comment.id)
     comment = Comment.hide_changeset(comment, attrs, user)
 
     Multi.new()
@@ -222,7 +222,7 @@ defmodule Philomena.Comments do
 
   """
   def approve_comment(%Comment{} = comment, user) do
-    report_query = Reports.close_report_query({"Comment", comment.id}, user)
+    report_query = Reports.close_report_query(user, comment_id: comment.id)
     comment = Comment.approve_changeset(comment)
 
     Multi.new()
@@ -263,9 +263,9 @@ defmodule Philomena.Comments do
 
   def report_non_approved(comment) do
     Reports.create_system_report(
-      {"Comment", comment.id},
       "Approval",
-      "Comment contains external links"
+      "Comment contains external links",
+      comment_id: comment.id
     )
   end
 

@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict BI9reuIeg5wxtS8mW9p6at0HNjJf4vvqvOHP9D84Fs4PQqboF6Zuy2Cc4ZkCZN6
+\restrict zz99oBd8amrHGQvE3YMjAT6I0qnHMNmvLb5mJBfFO1JqTafWgFbLRcafUqyghEC
 
 -- Dumped from database version 18.4
 -- Dumped by pg_dump version 18.4
@@ -1089,12 +1089,14 @@ ALTER SEQUENCE public.messages_id_seq OWNED BY public.messages.id;
 CREATE TABLE public.mod_notes (
     id integer NOT NULL,
     moderator_id integer NOT NULL,
-    notable_id integer NOT NULL,
-    notable_type character varying NOT NULL,
     deleted boolean DEFAULT false NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    body character varying NOT NULL
+    body character varying NOT NULL,
+    user_id bigint,
+    report_id bigint,
+    dnp_entry_id bigint,
+    CONSTRAINT mod_notes_notable_association_null CHECK ((num_nonnulls(user_id, report_id, dnp_entry_id) <= 1))
 );
 
 
@@ -1413,11 +1415,17 @@ CREATE TABLE public.reports (
     updated_at timestamp without time zone NOT NULL,
     user_id integer,
     admin_id integer,
-    reportable_id integer NOT NULL,
-    reportable_type character varying NOT NULL,
     reason character varying NOT NULL,
     system boolean DEFAULT false NOT NULL,
-    rule_id bigint
+    rule_id bigint,
+    image_id bigint,
+    comment_id bigint,
+    post_id bigint,
+    reported_user_id bigint,
+    commission_id bigint,
+    conversation_id bigint,
+    gallery_id bigint,
+    CONSTRAINT reports_reportable_association_null CHECK ((num_nonnulls(image_id, comment_id, post_id, reported_user_id, commission_id, conversation_id, gallery_id) <= 1))
 );
 
 
@@ -4034,13 +4042,6 @@ CREATE INDEX index_mod_notes_on_moderator_id ON public.mod_notes USING btree (mo
 
 
 --
--- Name: index_mod_notes_on_notable_type_and_notable_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_mod_notes_on_notable_type_and_notable_id ON public.mod_notes USING btree (notable_type, notable_id);
-
-
---
 -- Name: index_notifications_on_actor_id_and_actor_type; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4580,6 +4581,27 @@ CREATE INDEX index_vpns_on_ip ON public.vpns USING gist (ip inet_ops);
 
 
 --
+-- Name: mod_notes_dnp_entry_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mod_notes_dnp_entry_id_index ON public.mod_notes USING btree (dnp_entry_id) WHERE (dnp_entry_id IS NOT NULL);
+
+
+--
+-- Name: mod_notes_report_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mod_notes_report_id_index ON public.mod_notes USING btree (report_id) WHERE (report_id IS NOT NULL);
+
+
+--
+-- Name: mod_notes_user_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mod_notes_user_id_index ON public.mod_notes USING btree (user_id) WHERE (user_id IS NOT NULL);
+
+
+--
 -- Name: moderation_logs_created_at_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4626,6 +4648,55 @@ CREATE INDEX post_versions_post_id_created_at_index ON public.post_versions USIN
 --
 
 CREATE INDEX post_versions_user_id_index ON public.post_versions USING btree (user_id);
+
+
+--
+-- Name: reports_comment_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX reports_comment_id_index ON public.reports USING btree (comment_id) WHERE (comment_id IS NOT NULL);
+
+
+--
+-- Name: reports_commission_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX reports_commission_id_index ON public.reports USING btree (commission_id) WHERE (commission_id IS NOT NULL);
+
+
+--
+-- Name: reports_conversation_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX reports_conversation_id_index ON public.reports USING btree (conversation_id) WHERE (conversation_id IS NOT NULL);
+
+
+--
+-- Name: reports_gallery_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX reports_gallery_id_index ON public.reports USING btree (gallery_id) WHERE (gallery_id IS NOT NULL);
+
+
+--
+-- Name: reports_image_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX reports_image_id_index ON public.reports USING btree (image_id) WHERE (image_id IS NOT NULL);
+
+
+--
+-- Name: reports_post_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX reports_post_id_index ON public.reports USING btree (post_id) WHERE (post_id IS NOT NULL);
+
+
+--
+-- Name: reports_reported_user_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX reports_reported_user_id_index ON public.reports USING btree (reported_user_id) WHERE (reported_user_id IS NOT NULL);
 
 
 --
@@ -5650,6 +5721,30 @@ ALTER TABLE ONLY public.image_tag_locks
 
 
 --
+-- Name: mod_notes mod_notes_dnp_entry_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.mod_notes
+    ADD CONSTRAINT mod_notes_dnp_entry_id_fkey FOREIGN KEY (dnp_entry_id) REFERENCES public.dnp_entries(id) ON DELETE SET NULL;
+
+
+--
+-- Name: mod_notes mod_notes_report_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.mod_notes
+    ADD CONSTRAINT mod_notes_report_id_fkey FOREIGN KEY (report_id) REFERENCES public.reports(id) ON DELETE SET NULL;
+
+
+--
+-- Name: mod_notes mod_notes_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.mod_notes
+    ADD CONSTRAINT mod_notes_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
 -- Name: moderation_logs moderation_logs_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5671,6 +5766,62 @@ ALTER TABLE ONLY public.post_versions
 
 ALTER TABLE ONLY public.post_versions
     ADD CONSTRAINT post_versions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: reports reports_comment_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reports
+    ADD CONSTRAINT reports_comment_id_fkey FOREIGN KEY (comment_id) REFERENCES public.comments(id) ON DELETE SET NULL;
+
+
+--
+-- Name: reports reports_commission_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reports
+    ADD CONSTRAINT reports_commission_id_fkey FOREIGN KEY (commission_id) REFERENCES public.commissions(id) ON DELETE SET NULL;
+
+
+--
+-- Name: reports reports_conversation_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reports
+    ADD CONSTRAINT reports_conversation_id_fkey FOREIGN KEY (conversation_id) REFERENCES public.conversations(id) ON DELETE SET NULL;
+
+
+--
+-- Name: reports reports_gallery_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reports
+    ADD CONSTRAINT reports_gallery_id_fkey FOREIGN KEY (gallery_id) REFERENCES public.galleries(id) ON DELETE SET NULL;
+
+
+--
+-- Name: reports reports_image_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reports
+    ADD CONSTRAINT reports_image_id_fkey FOREIGN KEY (image_id) REFERENCES public.images(id) ON DELETE SET NULL;
+
+
+--
+-- Name: reports reports_post_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reports
+    ADD CONSTRAINT reports_post_id_fkey FOREIGN KEY (post_id) REFERENCES public.posts(id) ON DELETE SET NULL;
+
+
+--
+-- Name: reports reports_reported_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reports
+    ADD CONSTRAINT reports_reported_user_id_fkey FOREIGN KEY (reported_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
 
 
 --
@@ -5773,7 +5924,7 @@ ALTER TABLE ONLY public.users
 -- PostgreSQL database dump complete
 --
 
-\unrestrict BI9reuIeg5wxtS8mW9p6at0HNjJf4vvqvOHP9D84Fs4PQqboF6Zuy2Cc4ZkCZN6
+\unrestrict zz99oBd8amrHGQvE3YMjAT6I0qnHMNmvLb5mJBfFO1JqTafWgFbLRcafUqyghEC
 
 INSERT INTO public."schema_migrations" (version) VALUES (20200503002523);
 INSERT INTO public."schema_migrations" (version) VALUES (20200607000511);
@@ -5812,3 +5963,7 @@ INSERT INTO public."schema_migrations" (version) VALUES (20260716190444);
 INSERT INTO public."schema_migrations" (version) VALUES (20260717000000);
 INSERT INTO public."schema_migrations" (version) VALUES (20260718000000);
 INSERT INTO public."schema_migrations" (version) VALUES (20260718110812);
+INSERT INTO public."schema_migrations" (version) VALUES (20260719123608);
+INSERT INTO public."schema_migrations" (version) VALUES (20260719123609);
+INSERT INTO public."schema_migrations" (version) VALUES (20260719123610);
+INSERT INTO public."schema_migrations" (version) VALUES (20260719123611);

@@ -24,14 +24,14 @@ defmodule PhilomenaWeb.Image.ReportController do
     action = ~p"/images/#{image}/reports"
 
     changeset =
-      %Report{reportable_type: "Image", reportable_id: image.id}
+      %Report{image_id: image.id}
       |> Reports.change_report()
 
     conn
     |> put_view(ReportView)
     |> render("new.html",
       title: "Reporting Image",
-      reportable: image,
+      subject: image,
       changeset: changeset,
       action: action
     )
@@ -41,6 +41,6 @@ defmodule PhilomenaWeb.Image.ReportController do
     image = conn.assigns.image
     action = ~p"/images/#{image}/reports"
 
-    ReportController.create(conn, action, "Image", image, params)
+    ReportController.create(conn, action, image, [image_id: image.id], params)
   end
 end

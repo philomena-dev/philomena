@@ -9,7 +9,7 @@ defmodule PhilomenaWeb.Admin.Report.ClaimControllerTest do
 
   defp report_fixture!(_context) do
     image = image_fixture()
-    %{report: report_fixture({"Image", image.id})}
+    %{report: report_fixture(image_id: image.id)}
   end
 
   describe "POST /admin/reports/:report_id/claim authorization" do

@@ -18,12 +18,12 @@ defmodule PhilomenaWeb.ReportControllerTest do
     %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
     image = image_fixture()
 
-    _own = report_fixture({"Image", image.id}, user, %{"reason" => "My own report reason"})
+    _own = report_fixture(user, %{"reason" => "My own report reason"}, image_id: image.id)
 
     _other =
-      report_fixture({"Image", image.id}, confirmed_user_fixture(), %{
-        "reason" => "Somebody else's report reason"
-      })
+      report_fixture(confirmed_user_fixture(), %{"reason" => "Somebody else's report reason"},
+        image_id: image.id
+      )
 
     response = html_response(get(conn, ~p"/reports"), 200)
 

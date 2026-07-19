@@ -706,9 +706,9 @@ defmodule Philomena.Users do
         if not Approval.approved?(user, user.description, :external_links) or
              not Approval.approved?(user, user.personal_title, :external_links) do
           Reports.create_system_report(
-            {"User", user.id},
             "Review",
-            "Profile contains external links"
+            "Profile contains external links",
+            reported_user_id: user.id
           )
         end
 

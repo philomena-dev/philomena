@@ -11,8 +11,14 @@ defmodule Philomena.Reports do
   alias Philomena.Reports.Report
   alias Philomena.Reports
   alias Philomena.IndexWorker
-  alias Philomena.Polymorphic
   alias Philomena.Rules
+
+  alias Philomena.Images.Image
+  alias Philomena.Comments.Comment
+  alias Philomena.Posts.Post
+  alias Philomena.Commissions.Commission
+  alias Philomena.Conversations.Conversation
+  alias Philomena.Galleries.Gallery
 
   @reason_regex ~r/^(Rule|Other|Takedown|Verification|Approval|Review|System)([^:]*): (.*)$/
 
@@ -71,34 +77,36 @@ defmodule Philomena.Reports do
   def get_report!(id), do: Repo.get!(Report, id)
 
   @doc """
-  Creates a report.
+  Creates a report against the target named by `target`, a one-entry keyword
+  list of the target foreign key column and its id (e.g. `image_id: image.id`).
 
   ## Examples
 
-      iex> create_report(%{field: value})
+      iex> create_report(attribution, %{"reason" => "..."}, image_id: image.id)
       {:ok, %Report{}}
 
-      iex> create_report(%{field: bad_value})
+      iex> create_report(attribution, %{"reason" => ""}, image_id: image.id)
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_report({reportable_type, reportable_id} = _type_and_id, attribution, attrs \\ %{}) do
+  def create_report(attribution, attrs, target) do
     rule = Rules.find_rule(attrs["rule_id"])
 
-    %Report{reportable_type: reportable_type, reportable_id: reportable_id}
+    struct(Report, target)
     |> Report.user_creation_changeset(attrs, attribution, rule)
     |> Repo.insert()
     |> reindex_after_update()
   end
 
   @doc """
-  Returns an `m:Ecto.Query` which updates all open reports for the given `reportable_type`
-  and `reportable_id` to close them.
+  Returns an `m:Ecto.Query` which updates all open reports against the target
+  named by `target`, a one-entry keyword list of the target foreign key column
+  and its id (e.g. `image_id: image.id`), to close them.
 
   Because this is only a query due to the limitations of `m:Ecto.Multi`, this must be
   coupled with an associated call to `reindex_reports/1` to operate correctly, e.g.:
 
-      report_query = Reports.close_report_query({"Image", image.id}, user)
+      report_query = Reports.close_report_query(user, image_id: image.id)
 
       Multi.new()
       |> Multi.update_all(:reports, report_query, [])
@@ -117,17 +125,15 @@ defmodule Philomena.Reports do
 
   ## Examples
 
-      iex> close_report_query({"Image", 1}, %User{})
+      iex> close_report_query(%User{}, image_id: 1)
       #Ecto.Query<...>
 
   """
-  def close_report_query({reportable_type, reportable_id} = _type_and_id, closing_user) do
+  def close_report_query(closing_user, [{column, id}]) do
     now = DateTime.utc_now(:second)
 
     from r in Report,
-      where:
-        r.reportable_type == ^reportable_type and r.reportable_id == ^reportable_id and
-          r.open == true,
+      where: field(r, ^column) == ^id and r.open == true,
       select: r.id,
       update: [
         set: [
@@ -140,30 +146,32 @@ defmodule Philomena.Reports do
   end
 
   @doc """
-  Closes all open reports for the given reportable type and ID, marking them as closed by the specified user.
+  Closes all open reports against the target named by `target` (see
+  `close_report_query/2`), marking them as closed by the specified user.
   Also reindexes the affected reports.
 
   Returns `{:ok, {count, reports}}`.
   """
-  def close_reports(type_and_id, closing_user) do
+  def close_reports(closing_user, target) do
     {_count, reports} =
-      result = Repo.update_all(close_report_query(type_and_id, closing_user), [])
+      result = Repo.update_all(close_report_query(closing_user, target), [])
 
     reindex_reports(reports)
     {:ok, result}
   end
 
   @doc """
-  Automatically create a report with the given rule and reason on the given
-  `reportable_id` and `reportable_type`.
+  Automatically create a report with the given rule and reason against the
+  target named by `target`, a one-entry keyword list of the target foreign key
+  column and its id (e.g. `comment_id: comment.id`).
 
   ## Examples
 
-      iex> create_system_report({"Comment", 1}, "Rule #0", "Custom report reason")
+      iex> create_system_report("Rule #0", "Custom report reason", comment_id: 1)
       {:ok, %Report{}}
 
   """
-  def create_system_report({reportable_type, reportable_id} = _type_and_id, rule_name, reason) do
+  def create_system_report(rule_name, reason, target) do
     rule = Rules.get_by_name!(rule_name)
 
     attrs = %{
@@ -177,7 +185,7 @@ defmodule Philomena.Reports do
       fingerprint: "ffff"
     }
 
-    %Report{reportable_type: reportable_type, reportable_id: reportable_id}
+    struct(Report, target)
     |> Report.creation_changeset(attrs, attribution, rule)
     |> Repo.insert()
     |> reindex_after_update()
@@ -328,8 +336,35 @@ defmodule Philomena.Reports do
     |> where([r], field(r, ^column) in ^condition)
     |> preload([:user, :admin])
     |> Repo.all()
-    |> Polymorphic.load_polymorphic(reportable: [reportable_id: :reportable_type])
+    |> preload_targets()
     |> Enum.map(&Search.index_document(&1, Report))
+  end
+
+  @doc """
+  Preloads the target associations onto the given report(s).
+  """
+  def preload_targets(%Report{} = report) do
+    Repo.preload(report, Report.target_preloads())
+  end
+
+  def preload_targets(reports) do
+    reports
+    |> Enum.to_list()
+    |> Repo.preload(Report.target_preloads())
+  end
+
+  def indexing_preloads do
+    [
+      :user,
+      :admin,
+      :reported_user,
+      image: from(i in Image, preload: :user),
+      comment: from(c in Comment, preload: :user),
+      post: from(p in Post, preload: :user),
+      commission: from(x in Commission, preload: :user),
+      conversation: from(c in Conversation, preload: [:from, :to]),
+      gallery: from(g in Gallery, preload: :user)
+    ]
   end
 
   def convert_reports!() do

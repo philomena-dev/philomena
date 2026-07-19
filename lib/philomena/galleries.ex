@@ -15,6 +15,7 @@ defmodule Philomena.Galleries do
   alias Philomena.GalleryReorderWorker
   alias Philomena.Notifications
   alias Philomena.Images
+  alias Philomena.Reports
 
   use Philomena.Subscriptions,
     on_delete: :clear_gallery_notification,
@@ -86,7 +87,7 @@ defmodule Philomena.Galleries do
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_gallery(%Gallery{} = gallery) do
+  def delete_gallery(%Gallery{} = gallery, closing_user) do
     images =
       Interaction
       |> where(gallery_id: ^gallery.id)
@@ -94,12 +95,18 @@ defmodule Philomena.Galleries do
       |> Repo.all()
 
     Multi.new()
+    |> Multi.update_all(
+      :reports,
+      Reports.close_report_query(closing_user, gallery_id: gallery.id),
+      []
+    )
     |> Multi.delete(:gallery, gallery)
     |> Repo.transaction()
     |> case do
-      {:ok, %{gallery: gallery}} ->
+      {:ok, %{gallery: gallery, reports: {_count, reports}}} ->
         unindex_gallery(gallery)
         Images.reindex_images(images)
+        Reports.reindex_reports(reports)
 
         {:ok, gallery}
 

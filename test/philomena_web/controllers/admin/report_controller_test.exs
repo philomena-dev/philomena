@@ -20,7 +20,22 @@ defmodule PhilomenaWeb.Admin.ReportControllerTest do
 
   defp open_report_fixture do
     image = image_fixture()
-    report_fixture({"Image", image.id})
+    report_fixture(image_id: image.id)
+  end
+
+  # An orphaned report retains its rule and reporter but has all columns
+  # NULL, as if its target had been deleted (the FK nilify path). Built from a
+  # real report, then the column is nulled to simulate target deletion.
+  defp orphan_report_fixture do
+    image = image_fixture()
+    report = report_fixture(image_id: image.id)
+
+    {:ok, orphan} =
+      report
+      |> Ecto.Changeset.change(%{image_id: nil})
+      |> Philomena.Repo.update()
+
+    orphan
   end
 
   describe "GET /admin/reports authorization" do
@@ -103,6 +118,29 @@ defmodule PhilomenaWeb.Admin.ReportControllerTest do
       response = html_response(conn, 200)
       assert response =~ "Showing Report"
       assert response =~ report.reason
+    end
+  end
+
+  describe "orphaned report rendering" do
+    setup [:register_and_log_in_admin]
+
+    test "the show page renders the permanently-destroyed fallback", %{conn: conn} do
+      report = orphan_report_fixture()
+
+      conn = get(conn, ~p"/admin/reports/#{report}")
+      response = html_response(conn, 200)
+      assert response =~ "Showing Report"
+      assert response =~ "Reported item permanently destroyed."
+    end
+
+    test "the index renders an orphaned report without crashing", %{conn: conn} do
+      report = orphan_report_fixture()
+      SearchHelpers.reindex_all!(Report)
+
+      conn = get(conn, ~p"/admin/reports")
+      response = html_response(conn, 200)
+      assert response =~ report.reason
+      assert response =~ "Reported item permanently destroyed."
     end
   end
 

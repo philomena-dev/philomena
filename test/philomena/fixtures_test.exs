@@ -115,9 +115,8 @@ defmodule Philomena.FixturesTest do
       image = ImagesFixtures.image_fixture()
       user = confirmed_user_fixture()
 
-      report = ReportsFixtures.report_fixture({"Image", image.id}, user)
-      assert report.reportable_type == "Image"
-      assert report.reportable_id == image.id
+      report = ReportsFixtures.report_fixture(user, image_id: image.id)
+      assert report.image_id == image.id
       assert report.user_id == user.id
       assert report.open
       assert report.rule_id
@@ -126,7 +125,7 @@ defmodule Philomena.FixturesTest do
     test "creates an anonymous report" do
       image = ImagesFixtures.image_fixture()
 
-      report = ReportsFixtures.report_fixture({"Image", image.id})
+      report = ReportsFixtures.report_fixture(image_id: image.id)
       assert report.user_id == nil
     end
   end

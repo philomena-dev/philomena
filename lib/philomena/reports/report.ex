@@ -4,11 +4,37 @@ defmodule Philomena.Reports.Report do
 
   alias Philomena.Users.User
   alias Philomena.Rules.Rule
+  alias Philomena.Images.Image
+  alias Philomena.Comments.Comment
+  alias Philomena.Posts.Post
+  alias Philomena.Commissions.Commission
+  alias Philomena.Conversations.Conversation
+  alias Philomena.Galleries.Gallery
+
+  # Foreign key columns naming the report's target. Exactly one is set on a
+  # live report; all are NULL on an orphaned report whose target was deleted.
+  @target_columns [
+    :image_id,
+    :comment_id,
+    :post_id,
+    :reported_user_id,
+    :commission_id,
+    :conversation_id,
+    :gallery_id
+  ]
 
   schema "reports" do
     belongs_to :user, User
     belongs_to :admin, User
     belongs_to :rule, Rule, on_replace: :nilify
+
+    belongs_to :image, Image
+    belongs_to :comment, Comment
+    belongs_to :post, Post
+    belongs_to :reported_user, User
+    belongs_to :commission, Commission
+    belongs_to :conversation, Conversation
+    belongs_to :gallery, Gallery
 
     field :ip, EctoNetwork.INET
     field :fingerprint, :string
@@ -18,13 +44,28 @@ defmodule Philomena.Reports.Report do
     field :open, :boolean, default: true
     field :system, :boolean, default: false
 
-    # fixme: rails polymorphic relation
-    field :reportable_id, :integer
-    field :reportable_type, :string
-
-    field :reportable, :any, virtual: true
-
     timestamps(inserted_at: :created_at, type: :utc_datetime)
+  end
+
+  @doc """
+  The list of foreign key columns naming a report's target.
+  """
+  def target_columns, do: @target_columns
+
+  @doc """
+  Preloads to apply to the target associations so downstream views and the
+  search index have the nested data they expect.
+  """
+  def target_preloads do
+    [
+      :reported_user,
+      image: [:user, :sources, tags: :aliases],
+      comment: [:user, image: [:sources, tags: :aliases]],
+      post: [:user, topic: :forum],
+      commission: [:user],
+      conversation: [:from, :to],
+      gallery: [:user]
+    ]
   end
 
   @doc false
@@ -74,19 +115,29 @@ defmodule Philomena.Reports.Report do
     |> validate_length(:user_agent, max: 1000, count: :bytes)
     |> change(attribution)
     |> validate_required([
-      :reportable_id,
-      :reportable_type,
       :reason,
       :ip,
       :fingerprint,
       :user_agent
     ])
+    |> validate_target()
   end
 
   def user_creation_changeset(report, attrs, attribution, rule) do
     report
     |> creation_changeset(attrs, attribution, rule)
     |> validate_rule()
+  end
+
+  # A report must reference exactly one target on creation.
+  defp validate_target(changeset) do
+    set = Enum.count(@target_columns, &(not is_nil(get_field(changeset, &1))))
+
+    if set == 1 do
+      changeset
+    else
+      add_error(changeset, :target, "must reference exactly one target")
+    end
   end
 
   defp validate_rule(changeset) do

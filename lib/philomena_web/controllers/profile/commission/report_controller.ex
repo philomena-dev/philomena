@@ -35,14 +35,14 @@ defmodule PhilomenaWeb.Profile.Commission.ReportController do
     action = ~p"/profiles/#{user}/commission/reports"
 
     changeset =
-      %Report{reportable_type: "Commission", reportable_id: commission.id}
+      %Report{commission_id: commission.id}
       |> Reports.change_report()
 
     conn
     |> put_view(ReportView)
     |> render("new.html",
       title: "Reporting Commission",
-      reportable: commission,
+      subject: commission,
       changeset: changeset,
       action: action
     )
@@ -53,7 +53,7 @@ defmodule PhilomenaWeb.Profile.Commission.ReportController do
     commission = conn.assigns.user.commission
     action = ~p"/profiles/#{user}/commission/reports"
 
-    ReportController.create(conn, action, "Commission", commission, params)
+    ReportController.create(conn, action, commission, [commission_id: commission.id], params)
   end
 
   defp ensure_commission(conn, _opts) do

@@ -59,7 +59,7 @@ defmodule PhilomenaWeb.Image.Comment.ReportControllerTest do
     report =
       Repo.one!(
         from r in Report,
-          where: r.reportable_type == "Comment" and r.reportable_id == ^comment.id
+          where: r.comment_id == ^comment.id
       )
 
     assert report.user_id == user.id
@@ -83,7 +83,7 @@ defmodule PhilomenaWeb.Image.Comment.ReportControllerTest do
 
     assert Repo.exists?(
              from r in Report,
-               where: r.reportable_type == "Comment" and r.reportable_id == ^comment.id
+               where: r.comment_id == ^comment.id
            )
   end
 

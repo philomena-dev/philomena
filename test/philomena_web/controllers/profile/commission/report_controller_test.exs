@@ -73,7 +73,7 @@ defmodule PhilomenaWeb.Profile.Commission.ReportControllerTest do
       report =
         Repo.one!(
           from r in Report,
-            where: r.reportable_type == "Commission" and r.reportable_id == ^commission.id
+            where: r.commission_id == ^commission.id
         )
 
       assert report.user_id == user.id

@@ -25,14 +25,14 @@ defmodule PhilomenaWeb.Conversation.ReportController do
     action = ~p"/conversations/#{conversation}/reports"
 
     changeset =
-      %Report{reportable_type: "Conversation", reportable_id: conversation.id}
+      %Report{conversation_id: conversation.id}
       |> Reports.change_report()
 
     conn
     |> put_view(ReportView)
     |> render("new.html",
       title: "Reporting Conversation",
-      reportable: conversation,
+      subject: conversation,
       changeset: changeset,
       action: action
     )
@@ -42,6 +42,12 @@ defmodule PhilomenaWeb.Conversation.ReportController do
     conversation = conn.assigns.conversation
     action = ~p"/conversations/#{conversation}/reports"
 
-    ReportController.create(conn, action, "Conversation", conversation, params)
+    ReportController.create(
+      conn,
+      action,
+      conversation,
+      [conversation_id: conversation.id],
+      params
+    )
   end
 end

@@ -57,7 +57,7 @@ defmodule PhilomenaWeb.Profile.ReportControllerTest do
       report =
         Repo.one!(
           from r in Report,
-            where: r.reportable_type == "User" and r.reportable_id == ^reported.id
+            where: r.reported_user_id == ^reported.id
         )
 
       assert report.user_id == user.id
@@ -85,7 +85,7 @@ defmodule PhilomenaWeb.Profile.ReportControllerTest do
       report =
         Repo.one!(
           from r in Report,
-            where: r.reportable_type == "User" and r.reportable_id == ^reported.id
+            where: r.reported_user_id == ^reported.id
         )
 
       assert report.user_id == nil
