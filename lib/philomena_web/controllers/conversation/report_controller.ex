@@ -25,7 +25,7 @@ defmodule PhilomenaWeb.Conversation.ReportController do
     action = ~p"/conversations/#{conversation}/reports"
 
     changeset =
-      %Report{reportable_type: "Conversation", reportable_id: conversation.id}
+      %Report{conversation_id: conversation.id}
       |> Reports.change_report()
 
     conn

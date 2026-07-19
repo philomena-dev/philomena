@@ -63,6 +63,23 @@ defmodule PhilomenaWeb.Admin.ModNoteControllerTest do
       response = html_response(conn, 200)
       assert response =~ "Keeping an eye on this one"
     end
+
+    # An orphaned note has all columns NULL, as if its target had been
+    # deleted (the FK nilify path). Inserted directly since no target exists.
+    test "renders an orphaned note with the permanently-deleted fallback", %{
+      conn: conn,
+      user: admin
+    } do
+      {:ok, _note} =
+        %ModNote{moderator_id: admin.id}
+        |> Ecto.Changeset.change(%{body: "Orphaned note body"})
+        |> Repo.insert()
+
+      conn = get(conn, ~p"/admin/mod_notes")
+      response = html_response(conn, 200)
+      assert response =~ "Orphaned note body"
+      assert response =~ "Item permanently deleted"
+    end
   end
 
   describe "GET /admin/mod_notes/new" do

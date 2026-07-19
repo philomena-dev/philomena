@@ -23,7 +23,7 @@ defmodule PhilomenaWeb.Gallery.ReportController do
     action = ~p"/galleries/#{gallery}/reports"
 
     changeset =
-      %Report{reportable_type: "Gallery", reportable_id: gallery.id}
+      %Report{gallery_id: gallery.id}
       |> Reports.change_report()
 
     conn

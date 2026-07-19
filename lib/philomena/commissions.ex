@@ -11,6 +11,7 @@ defmodule Philomena.Commissions do
   alias Philomena.Commissions.Item
   alias Philomena.Commissions.QueryBuilder
   alias Philomena.Commissions.SearchQuery
+  alias Philomena.Reports
 
   @doc """
   Gets a single commission.
@@ -76,8 +77,24 @@ defmodule Philomena.Commissions do
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_commission(%Commission{} = commission) do
-    Repo.delete(commission)
+  def delete_commission(%Commission{} = commission, closing_user) do
+    Multi.new()
+    |> Multi.update_all(
+      :reports,
+      Reports.close_report_query({"Commission", commission.id}, closing_user),
+      []
+    )
+    |> Multi.delete(:commission, commission)
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{commission: commission, reports: {_count, reports}}} ->
+        Reports.reindex_reports(reports)
+
+        {:ok, commission}
+
+      error ->
+        error
+    end
   end
 
   @doc """

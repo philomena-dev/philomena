@@ -50,7 +50,7 @@ defmodule Philomena.Users.Eraser do
     |> where(user_id: ^user.id)
     |> Repo.all()
     |> Enum.each(fn gallery ->
-      {:ok, _gallery} = Galleries.delete_gallery(gallery)
+      {:ok, _gallery} = Galleries.delete_gallery(gallery, moderator)
     end)
 
     # Delete all posted topics

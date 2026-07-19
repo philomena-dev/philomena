@@ -1,6 +1,8 @@
 defmodule Philomena.Reports.SearchIndex do
   @behaviour PhilomenaQuery.Search.Index
 
+  alias Philomena.Reports.Report
+
   @impl true
   def version do
     1
@@ -59,8 +61,8 @@ defmodule Philomena.Reports.SearchIndex do
       user_id: report.user_id,
       admin: if(report.admin, do: String.downcase(report.admin.name)),
       admin_id: report.admin_id,
-      reportable_type: report.reportable_type,
-      reportable_id: report.reportable_id,
+      reportable_type: Report.reportable_type(report),
+      reportable_id: Report.reportable_id(report),
       fingerprint: report.fingerprint,
       open: report.open,
       reason: report.reason,
@@ -93,25 +95,27 @@ defmodule Philomena.Reports.SearchIndex do
     }
   end
 
-  defp image_id(%{reportable_type: "Image", reportable_id: image_id}), do: image_id
-  defp image_id(%{reportable_type: "Comment", reportable: %{image_id: image_id}}), do: image_id
+  defp image_id(%{image_id: image_id}) when not is_nil(image_id), do: image_id
+  defp image_id(%{comment: %{image_id: image_id}}), do: image_id
   defp image_id(_report), do: nil
 
-  defp related_users(%{reportable_type: "User", reportable: user}), do: [user]
+  defp related_users(%{reported_user_id: id, reported_user: user}) when not is_nil(id),
+    do: [user]
 
-  defp related_users(%{reportable_type: "Image", reportable: %{user: user}}), do: [user]
+  defp related_users(%{image_id: id, image: %{user: user}}) when not is_nil(id), do: [user]
 
-  defp related_users(%{reportable_type: "Comment", reportable: %{user: user}}), do: [user]
+  defp related_users(%{comment_id: id, comment: %{user: user}}) when not is_nil(id), do: [user]
 
-  defp related_users(%{reportable_type: "Gallery", reportable: %{creator: creator}}),
-    do: [creator]
+  defp related_users(%{gallery_id: id, gallery: %{user: user}}) when not is_nil(id), do: [user]
 
-  defp related_users(%{reportable_type: "Conversation", reportable: %{from: from, to: to}}),
-    do: [from, to]
+  defp related_users(%{conversation_id: id, conversation: %{from: from, to: to}})
+       when not is_nil(id),
+       do: [from, to]
 
-  defp related_users(%{reportable_type: "Post", reportable: %{user: user}}), do: [user]
+  defp related_users(%{post_id: id, post: %{user: user}}) when not is_nil(id), do: [user]
 
-  defp related_users(%{reportable_type: "Commission", reportable: %{user: user}}), do: [user]
+  defp related_users(%{commission_id: id, commission: %{user: user}}) when not is_nil(id),
+    do: [user]
 
   defp related_users(_report), do: []
 end

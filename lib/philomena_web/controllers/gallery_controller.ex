@@ -141,7 +141,7 @@ defmodule PhilomenaWeb.GalleryController do
   def delete(conn, _params) do
     gallery = conn.assigns.gallery
 
-    {:ok, _gallery} = Galleries.delete_gallery(gallery)
+    {:ok, _gallery} = Galleries.delete_gallery(gallery, conn.assigns.current_user)
 
     conn
     |> put_flash(:info, "Gallery successfully destroyed.")

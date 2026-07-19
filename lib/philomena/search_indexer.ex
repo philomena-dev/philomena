@@ -22,7 +22,6 @@ defmodule Philomena.SearchIndexer do
   alias Philomena.Users.User
 
   alias Philomena.Maintenance
-  alias Philomena.Polymorphic
   alias Philomena.Repo
   import Ecto.Query
 
@@ -158,15 +157,14 @@ defmodule Philomena.SearchIndexer do
   defp reindex_schema_impl(schema, opts)
 
   defp reindex_schema_impl(Report, opts) do
-    # Reports currently require handling for their polymorphic nature
+    # Reports resolve their reported target through one of several associations;
+    # each is preloaded with the users the search document needs.
     Report
-    |> preload([:user, :admin])
+    |> preload(^Reports.indexing_preloads())
     |> Batch.record_batches(batch_size: @batch_sizes[Report])
     |> Task.async_stream(
       fn records ->
-        records
-        |> Polymorphic.load_polymorphic(reportable: [reportable_id: :reportable_type])
-        |> Enum.map(&Search.index_document(&1, Report, Keyword.take(opts, [:targets])))
+        Enum.map(records, &Search.index_document(&1, Report, Keyword.take(opts, [:targets])))
       end,
       timeout: :infinity,
       max_concurrency: max_concurrency(opts)

@@ -7,7 +7,6 @@ defmodule Philomena.ModNotes do
   alias Philomena.Repo
 
   alias Philomena.ModNotes.ModNote
-  alias Philomena.Polymorphic
 
   @doc """
   Returns a list of 2-tuples of mod notes and rendered output for the notable type and id.
@@ -23,8 +22,10 @@ defmodule Philomena.ModNotes do
 
   """
   def list_all_mod_notes_by_type_and_id(notable_type, notable_id, collection_renderer) do
+    column = ModNote.column_for_type(notable_type)
+
     ModNote
-    |> where(notable_type: ^notable_type, notable_id: ^notable_id)
+    |> where([m], field(m, ^column) == ^notable_id)
     |> preload(:moderator)
     |> order_by(desc: :id)
     |> Repo.all()
@@ -64,8 +65,10 @@ defmodule Philomena.ModNotes do
         collection_renderer,
         pagination
       ) do
+    column = ModNote.column_for_type(notable_type)
+
     ModNote
-    |> where(notable_type: ^notable_type, notable_id: ^notable_id)
+    |> where([m], field(m, ^column) == ^notable_id)
     |> list_mod_notes(collection_renderer, pagination)
   end
 
@@ -97,9 +100,16 @@ defmodule Philomena.ModNotes do
 
   defp preload_and_render(mod_notes, collection_renderer) do
     bodies = collection_renderer.(mod_notes)
-    preloaded = Polymorphic.load_polymorphic(mod_notes, notable: [notable_id: :notable_type])
+    preloaded = preload_notable(mod_notes)
 
     Enum.zip(preloaded, bodies)
+  end
+
+  defp preload_notable(mod_notes) do
+    mod_notes
+    |> Enum.to_list()
+    |> Repo.preload(ModNote.notable_preloads())
+    |> Enum.map(&%{&1 | notable: ModNote.notable(&1)})
   end
 
   @doc """
@@ -132,7 +142,7 @@ defmodule Philomena.ModNotes do
   """
   def create_mod_note(creator, attrs \\ %{}) do
     %ModNote{moderator_id: creator.id}
-    |> ModNote.changeset(attrs)
+    |> ModNote.creation_changeset(attrs)
     |> Repo.insert()
   end
 

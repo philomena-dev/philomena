@@ -24,7 +24,7 @@ defmodule PhilomenaWeb.Profile.ReportController do
     action = ~p"/profiles/#{user}/reports"
 
     changeset =
-      %Report{reportable_type: "User", reportable_id: user.id}
+      %Report{reported_user_id: user.id}
       |> Reports.change_report()
 
     conn

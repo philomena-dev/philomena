@@ -114,7 +114,7 @@ defmodule PhilomenaWeb.Profile.CommissionController do
   def delete(conn, _params) do
     commission = conn.assigns.user.commission
 
-    {:ok, _commission} = Commissions.delete_commission(commission)
+    {:ok, _commission} = Commissions.delete_commission(commission, conn.assigns.current_user)
 
     conn
     |> put_flash(:info, "Commission deleted successfully.")

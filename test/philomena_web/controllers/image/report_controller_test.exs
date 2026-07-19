@@ -57,7 +57,7 @@ defmodule PhilomenaWeb.Image.ReportControllerTest do
     report =
       Repo.one!(
         from r in Report,
-          where: r.reportable_type == "Image" and r.reportable_id == ^image.id
+          where: r.image_id == ^image.id
       )
 
     assert report.user_id == user.id
@@ -85,7 +85,7 @@ defmodule PhilomenaWeb.Image.ReportControllerTest do
     report =
       Repo.one!(
         from r in Report,
-          where: r.reportable_type == "Image" and r.reportable_id == ^image.id
+          where: r.image_id == ^image.id
       )
 
     assert report.user_id == nil

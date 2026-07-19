@@ -11,8 +11,14 @@ defmodule Philomena.Reports do
   alias Philomena.Reports.Report
   alias Philomena.Reports
   alias Philomena.IndexWorker
-  alias Philomena.Polymorphic
   alias Philomena.Rules
+
+  alias Philomena.Images.Image
+  alias Philomena.Comments.Comment
+  alias Philomena.Posts.Post
+  alias Philomena.Commissions.Commission
+  alias Philomena.Conversations.Conversation
+  alias Philomena.Galleries.Gallery
 
   @reason_regex ~r/^(Rule|Other|Takedown|Verification|Approval|Review|System)([^:]*): (.*)$/
 
@@ -82,13 +88,18 @@ defmodule Philomena.Reports do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_report({reportable_type, reportable_id} = _type_and_id, attribution, attrs \\ %{}) do
+  def create_report({_reportable_type, _reportable_id} = type_and_id, attribution, attrs \\ %{}) do
     rule = Rules.find_rule(attrs["rule_id"])
 
-    %Report{reportable_type: reportable_type, reportable_id: reportable_id}
+    type_and_id
+    |> new_report()
     |> Report.user_creation_changeset(attrs, attribution, rule)
     |> Repo.insert()
     |> reindex_after_update()
+  end
+
+  defp new_report({reportable_type, reportable_id}) do
+    struct(Report, %{Report.column_for_type(reportable_type) => reportable_id})
   end
 
   @doc """
@@ -123,11 +134,10 @@ defmodule Philomena.Reports do
   """
   def close_report_query({reportable_type, reportable_id} = _type_and_id, closing_user) do
     now = DateTime.utc_now(:second)
+    column = Report.column_for_type(reportable_type)
 
     from r in Report,
-      where:
-        r.reportable_type == ^reportable_type and r.reportable_id == ^reportable_id and
-          r.open == true,
+      where: field(r, ^column) == ^reportable_id and r.open == true,
       select: r.id,
       update: [
         set: [
@@ -163,7 +173,7 @@ defmodule Philomena.Reports do
       {:ok, %Report{}}
 
   """
-  def create_system_report({reportable_type, reportable_id} = _type_and_id, rule_name, reason) do
+  def create_system_report({_reportable_type, _reportable_id} = type_and_id, rule_name, reason) do
     rule = Rules.get_by_name!(rule_name)
 
     attrs = %{
@@ -177,7 +187,8 @@ defmodule Philomena.Reports do
       fingerprint: "ffff"
     }
 
-    %Report{reportable_type: reportable_type, reportable_id: reportable_id}
+    type_and_id
+    |> new_report()
     |> Report.creation_changeset(attrs, attribution, rule)
     |> Repo.insert()
     |> reindex_after_update()
@@ -328,8 +339,38 @@ defmodule Philomena.Reports do
     |> where([r], field(r, ^column) in ^condition)
     |> preload([:user, :admin])
     |> Repo.all()
-    |> Polymorphic.load_polymorphic(reportable: [reportable_id: :reportable_type])
+    |> preload_reportable()
     |> Enum.map(&Search.index_document(&1, Report))
+  end
+
+  @doc """
+  Preloads the target associations onto the given report(s) and populates
+  the virtual `reportable` field with the resolved target struct.
+  """
+  def preload_reportable(%Report{} = report) do
+    [report] = preload_reportable([report])
+    report
+  end
+
+  def preload_reportable(reports) do
+    reports
+    |> Enum.to_list()
+    |> Repo.preload(Report.reportable_preloads())
+    |> Enum.map(&%{&1 | reportable: Report.reportable(&1)})
+  end
+
+  def indexing_preloads do
+    [
+      :user,
+      :admin,
+      :reported_user,
+      image: from(i in Image, preload: :user),
+      comment: from(c in Comment, preload: :user),
+      post: from(p in Post, preload: :user),
+      commission: from(x in Commission, preload: :user),
+      conversation: from(c in Conversation, preload: [:from, :to]),
+      gallery: from(g in Gallery, preload: :user)
+    ]
   end
 
   def convert_reports!() do

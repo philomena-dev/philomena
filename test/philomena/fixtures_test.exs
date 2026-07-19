@@ -16,6 +16,7 @@ defmodule Philomena.FixturesTest do
   alias Philomena.GalleriesFixtures
   alias Philomena.ImagesFixtures
   alias Philomena.PostsFixtures
+  alias Philomena.Reports.Report
   alias Philomena.ReportsFixtures
   alias Philomena.RulesFixtures
   alias Philomena.TagsFixtures
@@ -116,8 +117,8 @@ defmodule Philomena.FixturesTest do
       user = confirmed_user_fixture()
 
       report = ReportsFixtures.report_fixture({"Image", image.id}, user)
-      assert report.reportable_type == "Image"
-      assert report.reportable_id == image.id
+      assert Report.reportable_type(report) == "Image"
+      assert report.image_id == image.id
       assert report.user_id == user.id
       assert report.open
       assert report.rule_id

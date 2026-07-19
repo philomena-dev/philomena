@@ -67,7 +67,7 @@ defmodule PhilomenaWeb.Conversation.ReportControllerTest do
     report =
       Repo.one!(
         from r in Report,
-          where: r.reportable_type == "Conversation" and r.reportable_id == ^conversation.id
+          where: r.conversation_id == ^conversation.id
       )
 
     assert report.user_id == user.id

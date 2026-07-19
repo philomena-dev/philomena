@@ -1,7 +1,6 @@
 defmodule PhilomenaWeb.ReportController do
   use PhilomenaWeb, :controller
 
-  alias Philomena.Polymorphic
   alias Philomena.Reports.Report
   alias Philomena.Reports
   alias Philomena.Repo
@@ -17,11 +16,7 @@ defmodule PhilomenaWeb.ReportController do
       |> preload(:rule)
       |> Repo.paginate(conn.assigns.scrivener)
 
-    polymorphic =
-      reports
-      |> Polymorphic.load_polymorphic(reportable: [reportable_id: :reportable_type])
-
-    reports = %{reports | entries: polymorphic}
+    reports = %{reports | entries: Reports.preload_reportable(reports)}
 
     render(conn, "index.html", title: "My Reports", reports: reports)
   end

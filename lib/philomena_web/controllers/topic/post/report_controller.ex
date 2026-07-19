@@ -29,7 +29,7 @@ defmodule PhilomenaWeb.Topic.Post.ReportController do
     action = ~p"/forums/#{topic.forum}/topics/#{topic}/posts/#{post}/reports"
 
     changeset =
-      %Report{reportable_type: "Post", reportable_id: post.id}
+      %Report{post_id: post.id}
       |> Reports.change_report()
 
     conn

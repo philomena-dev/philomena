@@ -17,8 +17,8 @@ defmodule PhilomenaWeb.ReportView do
     |> Enum.map(&{"#{&1.name}: #{&1.short_description}", &1.id})
   end
 
-  def image?(changeset), do: get_field(changeset, :reportable_type) == "Image"
-  def conversation?(changeset), do: get_field(changeset, :reportable_type) == "Conversation"
+  def image?(changeset), do: not is_nil(get_field(changeset, :image_id))
+  def conversation?(changeset), do: not is_nil(get_field(changeset, :conversation_id))
 
   def report_row_class(%{state: "closed"}), do: "success"
   def report_row_class(%{state: "in_progress"}), do: "warning"

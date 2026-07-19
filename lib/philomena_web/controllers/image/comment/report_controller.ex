@@ -27,7 +27,7 @@ defmodule PhilomenaWeb.Image.Comment.ReportController do
     action = ~p"/images/#{comment.image}/comments/#{comment}/reports"
 
     changeset =
-      %Report{reportable_type: "Comment", reportable_id: comment.id}
+      %Report{comment_id: comment.id}
       |> Reports.change_report()
 
     conn

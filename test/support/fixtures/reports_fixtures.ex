@@ -9,7 +9,7 @@ defmodule Philomena.ReportsFixtures do
   alias Philomena.Reports
 
   @doc """
-  Creates a report against the polymorphic `{reportable_type, reportable_id}`
+  Creates a report against the `{reportable_type, reportable_id}`
   pair (e.g. `{"Image", image.id}`), reported by `user` (anonymous
   attribution when `nil`).
 
