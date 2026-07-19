@@ -4,9 +4,15 @@ defmodule Philomena.TagChanges do
   """
 
   import Ecto.Query, warn: false
+  import Philomena.Authorization, only: [authorize: 3]
+
   alias Philomena.Repo
   alias PhilomenaQuery.Parse.IpParser
   alias PhilomenaQuery.Search
+  alias Philomena.Attribution.Actor
+  alias Philomena.IntegerId
+  alias Philomena.ModerationLogs
+  alias Philomena.ModerationLogs.Paths
   alias Philomena.TagChangeRevertWorker
   alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
@@ -18,7 +24,44 @@ defmodule Philomena.TagChanges do
   alias Philomena.Tags.Tag
   alias Philomena.Users.User
 
-  # Accepts a list of TagChanges.TagChange IDs.
+  @doc """
+  Reverts the tag changes named by `ids` on behalf of `actor`.
+
+  Changes on images hidden from users are silently skipped, and an empty or
+  fully-skipped list is a successful reversion of zero changes.
+
+  Returns `{:ok, reverted_tag_changes}`, `{:error, :unauthorized}`, or
+  `{:error, :invalid_ids}` when `ids` is not a list. Failures inside the
+  batch update surface as their own `{:error, _}` shapes.
+  """
+  @spec revert_tag_changes(Actor.t(), any()) ::
+          {:ok, [TagChange.t()]} | {:error, any()}
+  def revert_tag_changes(%Actor{} = actor, ids) do
+    with :ok <- authorize(actor, :revert, TagChange),
+         {:ok, tag_changes} <- mass_revert_for(actor, ids) do
+      ModerationLogs.create_moderation_log(
+        actor.user,
+        "TagChange.Revert:create",
+        Paths.profile_path(actor.user),
+        "Reverted #{length(tag_changes)} tag changes"
+      )
+
+      {:ok, tag_changes}
+    end
+  end
+
+  defp mass_revert_for(actor, ids) when is_list(ids) do
+    mass_revert(ids, %{
+      ip: actor.ip,
+      fingerprint: actor.fingerprint,
+      user_id: actor.user.id
+    })
+  end
+
+  defp mass_revert_for(_actor, _ids), do: {:error, :invalid_ids}
+
+  # Accepts a list of TagChanges.TagChange IDs. This performs the actual reversion,
+  # and performs no authorization or logging.
   def mass_revert(ids, attributes) do
     tag_changes =
       Repo.all(
@@ -66,14 +109,69 @@ defmodule Philomena.TagChanges do
     Images.batch_update(changes_per_image, attributes)
   end
 
-  def full_revert(%{user_id: _user_id, attributes: _attributes} = params),
-    do: Exq.enqueue(Exq, "indexing", TagChangeRevertWorker, [params])
+  @doc """
+  Enqueues a background reversion of every tag change made by one identity,
+  on behalf of `actor`.
 
-  def full_revert(%{ip: _ip, attributes: _attributes} = params),
-    do: Exq.enqueue(Exq, "indexing", TagChangeRevertWorker, [params])
+  Returns `{:ok, target}`, `{:error, :unauthorized}`, or
+  `{:error, :invalid_target}` when `params` names no target.
+  """
+  @spec full_revert(Actor.t(), map()) ::
+          {:ok, map()} | {:error, :unauthorized | :invalid_target}
+  def full_revert(%Actor{} = actor, params) do
+    with :ok <- authorize(actor, :revert, TagChange),
+         {:ok, target} <- full_revert_target(params) do
+      attributes = %{
+        ip: to_string(actor.ip),
+        fingerprint: actor.fingerprint,
+        user_id: actor.user.id,
+        batch_size: 100
+      }
 
-  def full_revert(%{fingerprint: _fingerprint, attributes: _attributes} = params),
-    do: Exq.enqueue(Exq, "indexing", TagChangeRevertWorker, [params])
+      Exq.enqueue(Exq, "indexing", TagChangeRevertWorker, [
+        Map.put(target, :attributes, attributes)
+      ])
+
+      log_full_revert(actor.user, target)
+
+      {:ok, target}
+    end
+  end
+
+  defp full_revert_target(%{"user_id" => user_id}), do: {:ok, %{user_id: user_id}}
+  defp full_revert_target(%{"ip" => ip}), do: {:ok, %{ip: ip}}
+  defp full_revert_target(%{"fingerprint" => fingerprint}), do: {:ok, %{fingerprint: fingerprint}}
+  defp full_revert_target(_params), do: {:error, :invalid_target}
+
+  defp log_full_revert(user, target) do
+    {subject, subject_path} =
+      case target do
+        %{user_id: user_id} ->
+          full_revert_log_user(user_id)
+
+        %{ip: ip} ->
+          {"ip #{ip}", Paths.ip_profile_path(ip)}
+
+        %{fingerprint: fingerprint} ->
+          {"fingerprint #{fingerprint}", Paths.fingerprint_profile_path(fingerprint)}
+      end
+
+    ModerationLogs.create_moderation_log(
+      user,
+      "TagChange.FullRevert:create",
+      subject_path,
+      "Reverted all tag changes for #{subject}"
+    )
+  end
+
+  defp full_revert_log_user(user_id) do
+    with {:ok, id} <- IntegerId.parse(user_id),
+         %User{} = user <- Repo.get(User, id) do
+      {"user #{user.name}", Paths.profile_path(user)}
+    else
+      _ -> {"user #{user_id}", "/tag_changes"}
+    end
+  end
 
   @doc """
   Updates tag change search indices when a user's name changes.
@@ -229,26 +327,71 @@ defmodule Philomena.TagChanges do
   end
 
   @doc """
-  Deletes a TagChange.
+  Deletes the tag change named by the raw request `id` from the history, on
+  behalf of `actor` (a user, or `nil` for an anonymous visitor).
+
+  An id that cannot name a row is `{:error, :not_found}`, while a well-formed id
+  that names no row authorizes `nil` - which no rule permits - and is
+  therefore `{:error, :unauthorized}`.
 
   ## Examples
 
-      iex> delete_tag_change(tag_change)
+      iex> delete_tag_change(moderator, "1")
       {:ok, %TagChange{}}
 
-      iex> delete_tag_change(tag_change)
-      {:error, %Ecto.Changeset{}}
+      iex> delete_tag_change(user, "1")
+      {:error, :unauthorized}
+
+      iex> delete_tag_change(moderator, "not-an-integer")
+      {:error, :not_found}
 
   """
-  def delete_tag_change(%TagChange{} = tag_change) do
+  @spec delete_tag_change(User.t() | nil, any()) ::
+          {:ok, TagChange.t()}
+          | {:error, :unauthorized | :not_found}
+          | {:error, Ecto.Changeset.t()}
+  def delete_tag_change(actor, id) do
+    case IntegerId.parse(id) do
+      {:ok, id} ->
+        tag_change =
+          TagChange
+          |> preload([:user, :image, tags: [:tag]])
+          |> Repo.get(id)
+
+        with :ok <- authorize(actor, :delete, tag_change) do
+          delete_loaded_tag_change(actor, tag_change)
+        end
+
+      :error ->
+        {:error, :not_found}
+    end
+  end
+
+  defp delete_loaded_tag_change(actor, %TagChange{} = tag_change) do
     case Repo.delete(tag_change) do
       {:ok, %TagChange{} = tc} = result ->
         Search.delete_document(tc.id, TagChange)
+        log_tag_change_deletion(actor, tc)
         result
 
       result ->
         result
     end
+  end
+
+  defp log_tag_change_deletion(actor, %TagChange{user: user, image: image, tags: tags, ip: ip}) do
+    name =
+      case user do
+        %{name: name} -> name
+        _ -> to_string(ip)
+      end
+
+    ModerationLogs.create_moderation_log(
+      actor,
+      "TagChange:delete",
+      Paths.image_path(image),
+      "Deleted tag change by #{name} containing #{length(tags)} tags on image #{image.id} from history"
+    )
   end
 
   @doc """

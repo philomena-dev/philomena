@@ -11,13 +11,18 @@ defmodule Philomena.Authorization do
   The actor is permitted to be `nil` (an anonymous visitor).
   """
 
+  alias Philomena.Attribution.Actor
+
   @doc """
   Authorizes `actor` to perform `action` on `subject`.
 
   Returns `:ok` when Canada permits the action, otherwise
   `{:error, :unauthorized}`.
 
-  `actor` may be `nil` for an anonymous visitor.
+  `actor` may be `nil` for an anonymous visitor. It may also be a
+  `Philomena.Attribution.Actor`: permissions are decided by its `user` alone -
+  the IP and fingerprint attribute the action but grant nothing - so contexts
+  that take an attribution can pass it here unchanged.
 
   ## Examples
 
@@ -27,9 +32,14 @@ defmodule Philomena.Authorization do
       iex> authorize(nil, :hide, image)
       {:error, :unauthorized}
 
+      iex> authorize(%Actor{user: moderator, ip: ip}, :revert, TagChange)
+      :ok
+
   """
   @spec authorize(actor :: any(), action :: atom(), subject :: any()) ::
           :ok | {:error, :unauthorized}
+  def authorize(%Actor{user: user}, action, subject), do: authorize(user, action, subject)
+
   def authorize(actor, action, subject) do
     if Canada.Can.can?(actor, action, subject), do: :ok, else: {:error, :unauthorized}
   end
