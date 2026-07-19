@@ -9,23 +9,22 @@ defmodule Philomena.ModNotes do
   alias Philomena.ModNotes.ModNote
 
   @doc """
-  Returns a list of 2-tuples of mod notes and rendered output for the notable type and id.
+  Returns a list of 2-tuples of mod notes and rendered output for the notable
+  identified by the foreign key `column` (e.g. `:user_id`) and its `id`.
 
   See `list_mod_notes/3` for more information about collection rendering.
 
   ## Examples
 
-      iex> list_all_mod_notes_by_type_and_id("User", "1", & &1.body)
+      iex> list_all_mod_notes_by_column(:user_id, 1, & &1.body)
       [
         {%ModNote{body: "hello *world*"}, "hello *world*"}
       ]
 
   """
-  def list_all_mod_notes_by_type_and_id(notable_type, notable_id, collection_renderer) do
-    column = ModNote.column_for_type(notable_type)
-
+  def list_all_mod_notes_by_column(column, id, collection_renderer) do
     ModNote
-    |> where([m], field(m, ^column) == ^notable_id)
+    |> where([m], field(m, ^column) == ^id)
     |> preload(:moderator)
     |> order_by(desc: :id)
     |> Repo.all()
@@ -55,20 +54,14 @@ defmodule Philomena.ModNotes do
 
   @doc """
   Returns a `m:Scrivener.Page` of 2-tuples of mod notes and rendered output
-  for the notable type and id and current pagination.
+  for the notable identified by the foreign key `column` (e.g. `:user_id`) and
+  its `id` and current pagination.
 
   See `list_mod_notes/3` for more information.
   """
-  def list_mod_notes_by_notable_type_and_id(
-        notable_type,
-        notable_id,
-        collection_renderer,
-        pagination
-      ) do
-    column = ModNote.column_for_type(notable_type)
-
+  def list_mod_notes_by_column(column, id, collection_renderer, pagination) do
     ModNote
-    |> where([m], field(m, ^column) == ^notable_id)
+    |> where([m], field(m, ^column) == ^id)
     |> list_mod_notes(collection_renderer, pagination)
   end
 
@@ -129,20 +122,21 @@ defmodule Philomena.ModNotes do
   def get_mod_note!(id), do: Repo.get!(ModNote, id)
 
   @doc """
-  Creates a mod_note.
+  Creates a mod_note against the notable named by the foreign key `column`
+  (e.g. `:user_id`), authored by `creator`.
 
   ## Examples
 
-      iex> create_mod_note(%{field: value})
+      iex> create_mod_note(user, :user_id, %{"notable_id" => 1, "body" => "..."})
       {:ok, %ModNote{}}
 
-      iex> create_mod_note(%{field: bad_value})
+      iex> create_mod_note(user, :user_id, %{"notable_id" => 1, "body" => ""})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_mod_note(creator, attrs \\ %{}) do
+  def create_mod_note(creator, column, attrs \\ %{}) do
     %ModNote{moderator_id: creator.id}
-    |> ModNote.creation_changeset(attrs)
+    |> ModNote.creation_changeset(column, attrs)
     |> Repo.insert()
   end
 

@@ -267,7 +267,7 @@ defmodule PhilomenaWeb.ProfileController do
       renderer = &MarkdownRenderer.render_collection(&1, conn)
       user = conn.assigns.user
 
-      mod_notes = ModNotes.list_all_mod_notes_by_type_and_id("User", user.id, renderer)
+      mod_notes = ModNotes.list_all_mod_notes_by_column(:user_id, user.id, renderer)
       assign(conn, :mod_notes, mod_notes)
     else
       conn

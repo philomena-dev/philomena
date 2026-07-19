@@ -15,6 +15,8 @@ defmodule Philomena.ModNotes.ModNote do
     {:dnp_entry_id, :dnp_entry, "DnpEntry"}
   ]
 
+  @notable_column_names Enum.map(@associations, fn {column, _assoc, _type} -> column end)
+
   schema "mod_notes" do
     belongs_to :moderator, User
 
@@ -34,14 +36,7 @@ defmodule Philomena.ModNotes.ModNote do
   @doc """
   The list of foreign key columns, one per notable type.
   """
-  def notable_columns, do: Enum.map(@associations, fn {column, _assoc, _type} -> column end)
-
-  def column_for_type(type) do
-    Enum.find_value(@associations, fn
-      {column, _assoc, ^type} -> column
-      _ -> nil
-    end)
-  end
+  def notable_columns, do: @notable_column_names
 
   @doc """
   Preloads to apply to the associations so downstream views have the
@@ -90,25 +85,19 @@ defmodule Philomena.ModNotes.ModNote do
   end
 
   @doc false
-  def creation_changeset(mod_note, attrs) do
+  def creation_changeset(mod_note, column, attrs) do
     mod_note
     |> cast(attrs, [:notable_type, :notable_id, :body])
-    |> validate_required([:notable_type, :notable_id, :body])
-    |> validate_inclusion(:notable_type, ["User", "Report", "DnpEntry"])
-    |> put_notable()
+    |> validate_required([:body])
+    |> put_notable(column)
     |> validate_notable()
   end
 
-  # Map the posted `notable_type`/`notable_id` pair onto its column.
-  defp put_notable(changeset) do
-    type = get_field(changeset, :notable_type)
-    id = get_field(changeset, :notable_id)
-
-    case column_for_type(type) do
-      nil -> changeset
-      column -> put_change(changeset, column, id)
-    end
+  defp put_notable(changeset, column) when column in @notable_column_names do
+    put_change(changeset, column, get_field(changeset, :notable_id))
   end
+
+  defp put_notable(changeset, _column), do: changeset
 
   # A note must reference exactly one target on creation.
   defp validate_notable(changeset) do

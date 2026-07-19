@@ -41,6 +41,6 @@ defmodule PhilomenaWeb.Profile.ReportController do
     user = conn.assigns.user
     action = ~p"/profiles/#{user}/reports"
 
-    ReportController.create(conn, action, "User", user, params)
+    ReportController.create(conn, action, user, [reported_user_id: user.id], params)
   end
 end

@@ -127,7 +127,7 @@ defmodule PhilomenaWeb.Admin.ReportController do
       report = conn.assigns.report
 
       renderer = &MarkdownRenderer.render_collection(&1, conn)
-      mod_notes = ModNotes.list_all_mod_notes_by_type_and_id("Report", report.id, renderer)
+      mod_notes = ModNotes.list_all_mod_notes_by_column(:report_id, report.id, renderer)
       assign(conn, :mod_notes, mod_notes)
     else
       conn

@@ -20,7 +20,7 @@ defmodule PhilomenaWeb.Admin.ReportControllerTest do
 
   defp open_report_fixture do
     image = image_fixture()
-    report_fixture({"Image", image.id})
+    report_fixture(image_id: image.id)
   end
 
   # An orphaned report retains its rule and reporter but has all columns
@@ -28,7 +28,7 @@ defmodule PhilomenaWeb.Admin.ReportControllerTest do
   # real report, then the column is nulled to simulate target deletion.
   defp orphan_report_fixture do
     image = image_fixture()
-    report = report_fixture({"Image", image.id})
+    report = report_fixture(image_id: image.id)
 
     {:ok, orphan} =
       report

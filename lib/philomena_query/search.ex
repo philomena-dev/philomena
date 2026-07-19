@@ -34,6 +34,20 @@ defmodule PhilomenaQuery.Search do
   @type queryable :: any()
 
   @typedoc """
+  Options accepted by `reindex/3` and `reindex_stream/3`.
+
+  In addition to the batching options forwarded to `m:PhilomenaQuery.Batch`, the
+  reindex path accepts `max_concurrency` (the number of concurrent batch tasks)
+  and `targets` (an explicit list of physical indexes to write to).
+  """
+  @type reindex_options :: [
+          {:batch_size, integer()}
+          | {:id_field, atom()}
+          | {:max_concurrency, pos_integer()}
+          | {:targets, [String.t()]}
+        ]
+
+  @typedoc """
   A query body, as deliverable to any index's `_search` endpoint.
 
   See the query DSL documentation for additional information:
@@ -448,14 +462,14 @@ defmodule PhilomenaQuery.Search do
       |> Enum.each(&IO.inspect/1)
 
   """
-  @spec reindex_stream(queryable(), schema_module(), Batch.batch_options()) ::
+  @spec reindex_stream(queryable(), schema_module(), reindex_options()) ::
           Enumerable.t({:ok, integer()})
   def reindex_stream(queryable, module, opts \\ []) do
     max_concurrency = Keyword.get(opts, :max_concurrency, 1)
     index = @policy.index_for(module)
 
     queryable
-    |> Batch.query_batches(opts)
+    |> Batch.query_batches(Keyword.take(opts, [:batch_size, :id_field]))
     |> Task.async_stream(
       fn query ->
         records = Repo.all(query)
@@ -519,7 +533,7 @@ defmodule PhilomenaQuery.Search do
       Search.reindex(query, Image, batch_size: 1024)
 
   """
-  @spec reindex(queryable(), schema_module(), Batch.batch_options()) :: :ok
+  @spec reindex(queryable(), schema_module(), reindex_options()) :: :ok
   def reindex(queryable, module, opts \\ []) do
     queryable
     |> reindex_stream(module, opts)

@@ -41,6 +41,6 @@ defmodule PhilomenaWeb.Image.ReportController do
     image = conn.assigns.image
     action = ~p"/images/#{image}/reports"
 
-    ReportController.create(conn, action, "Image", image, params)
+    ReportController.create(conn, action, image, [image_id: image.id], params)
   end
 end

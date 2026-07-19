@@ -16,7 +16,7 @@ defmodule Philomena.GalleriesTest do
   describe "delete_gallery/2" do
     test "closes the gallery's open reports and nulls the target FK while keeping the row" do
       gallery = gallery_fixture(confirmed_user_fixture())
-      report = report_fixture({"Gallery", gallery.id})
+      report = report_fixture(gallery_id: gallery.id)
       admin = admin_user_fixture()
 
       assert report.open

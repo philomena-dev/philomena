@@ -92,7 +92,7 @@ defmodule Philomena.Users.Eraser do
       )
 
     # Close all reports against the user
-    {:ok, _} = Reports.close_reports({"User", user.id}, moderator)
+    {:ok, _} = Reports.close_reports([reported_user_id: user.id], moderator)
 
     # We succeeded
     :ok

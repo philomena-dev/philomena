@@ -29,7 +29,7 @@ defmodule PhilomenaWeb.ReportController do
   # plug PhilomenaWeb.CheckCaptchaPlug when action in [:create]
   # plug :load_and_authorize_resource, model: Image, id_name: "image_id", persisted: true
 
-  def create(conn, action, reportable_type, reportable, %{"report" => report_params}) do
+  def create(conn, action, reportable, target, %{"report" => report_params}) do
     attribution = conn.assigns.attributes
 
     if too_many_reports?(conn) do
@@ -40,7 +40,7 @@ defmodule PhilomenaWeb.ReportController do
       )
       |> redirect(to: "/")
     else
-      case Reports.create_report({reportable_type, reportable.id}, attribution, report_params) do
+      case Reports.create_report(target, attribution, report_params) do
         {:ok, _report} ->
           conn
           |> put_flash(

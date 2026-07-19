@@ -40,6 +40,6 @@ defmodule PhilomenaWeb.Gallery.ReportController do
     gallery = conn.assigns.gallery
     action = ~p"/galleries/#{gallery}/reports"
 
-    ReportController.create(conn, action, "Gallery", gallery, params)
+    ReportController.create(conn, action, gallery, [gallery_id: gallery.id], params)
   end
 end

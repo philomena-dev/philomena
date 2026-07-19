@@ -219,7 +219,7 @@ defmodule Philomena.Images do
 
   defp maybe_suggest_user_verification(%User{id: id, images_count: 5, verified: false}) do
     Reports.create_system_report(
-      {"User", id},
+      [reported_user_id: id],
       "Verification",
       "User has uploaded enough approved images to be considered for verification."
     )
@@ -926,7 +926,7 @@ defmodule Philomena.Images do
   end
 
   defp hide_image_multi(changeset, image, user, multi) do
-    report_query = Reports.close_report_query({"Image", image.id}, user)
+    report_query = Reports.close_report_query([image_id: image.id], user)
 
     multi
     |> Multi.update(:image, changeset)

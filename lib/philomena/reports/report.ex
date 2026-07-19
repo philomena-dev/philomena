@@ -55,13 +55,6 @@ defmodule Philomena.Reports.Report do
   """
   def reportable_columns, do: Enum.map(@associations, fn {column, _assoc, _type} -> column end)
 
-  def column_for_type(type) do
-    Enum.find_value(@associations, fn
-      {column, _assoc, ^type} -> column
-      _ -> nil
-    end)
-  end
-
   @doc """
   Preloads to apply to the associations so downstream views and the
   search index have the nested data they expect.

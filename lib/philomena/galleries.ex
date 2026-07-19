@@ -97,7 +97,7 @@ defmodule Philomena.Galleries do
     Multi.new()
     |> Multi.update_all(
       :reports,
-      Reports.close_report_query({"Gallery", gallery.id}, closing_user),
+      Reports.close_report_query([gallery_id: gallery.id], closing_user),
       []
     )
     |> Multi.delete(:gallery, gallery)

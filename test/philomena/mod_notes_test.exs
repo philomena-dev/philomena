@@ -11,26 +11,13 @@ defmodule Philomena.ModNotesTest do
   import Philomena.DnpEntriesFixtures
   import Philomena.TagsFixtures
 
-  describe "ModNote.column_for_type/1" do
-    test "maps each legacy notable type to its column" do
-      assert ModNote.column_for_type("User") == :user_id
-      assert ModNote.column_for_type("Report") == :report_id
-      assert ModNote.column_for_type("DnpEntry") == :dnp_entry_id
-    end
-
-    test "returns nil for an unknown type" do
-      assert ModNote.column_for_type("Image") == nil
-    end
-  end
-
-  describe "create_mod_note/2 mapping via the string API" do
-    test "a User note sets user_id" do
+  describe "create_mod_note/3 against a target column" do
+    test "a :user_id note sets user_id" do
       author = moderator_user_fixture()
       target = confirmed_user_fixture()
 
       {:ok, note} =
-        ModNotes.create_mod_note(author, %{
-          "notable_type" => "User",
+        ModNotes.create_mod_note(author, :user_id, %{
           "notable_id" => target.id,
           "body" => "watching"
         })
@@ -42,14 +29,13 @@ defmodule Philomena.ModNotesTest do
       assert ModNote.notable_id(note) == target.id
     end
 
-    test "a Report note sets report_id" do
+    test "a :report_id note sets report_id" do
       author = moderator_user_fixture()
       image = image_fixture()
-      report = report_fixture({"Image", image.id})
+      report = report_fixture(image_id: image.id)
 
       {:ok, note} =
-        ModNotes.create_mod_note(author, %{
-          "notable_type" => "Report",
+        ModNotes.create_mod_note(author, :report_id, %{
           "notable_id" => report.id,
           "body" => "watching report"
         })
@@ -60,15 +46,14 @@ defmodule Philomena.ModNotesTest do
       assert ModNote.notable_id(note) == report.id
     end
 
-    test "a DnpEntry note sets dnp_entry_id" do
+    test "a :dnp_entry_id note sets dnp_entry_id" do
       author = moderator_user_fixture()
       requester = confirmed_user_fixture()
       tag = tag_fixture()
       dnp_entry = dnp_entry_fixture(requester, tag)
 
       {:ok, note} =
-        ModNotes.create_mod_note(author, %{
-          "notable_type" => "DnpEntry",
+        ModNotes.create_mod_note(author, :dnp_entry_id, %{
           "notable_id" => dnp_entry.id,
           "body" => "watching dnp"
         })
@@ -80,34 +65,26 @@ defmodule Philomena.ModNotesTest do
     end
   end
 
-  describe "create_mod_note/2 validation" do
-    test "rejects a missing notable type and id" do
+  describe "create_mod_note/3 validation" do
+    test "rejects a nil target column" do
       author = moderator_user_fixture()
 
       assert {:error, changeset} =
-               ModNotes.create_mod_note(author, %{"body" => "orphan attempt"})
-
-      errors = errors_on(changeset)
-      assert errors[:notable_type] == ["can't be blank"]
-      assert errors[:notable_id] == ["can't be blank"]
-    end
-
-    test "rejects an unknown notable type" do
-      author = moderator_user_fixture()
-      target = confirmed_user_fixture()
-
-      assert {:error, changeset} =
-               ModNotes.create_mod_note(author, %{
-                 "notable_type" => "Image",
-                 "notable_id" => target.id,
-                 "body" => "bad type"
+               ModNotes.create_mod_note(author, nil, %{
+                 "notable_id" => 1,
+                 "body" => "orphan attempt"
                })
 
-      errors = errors_on(changeset)
-      assert errors[:notable_type] == ["is invalid"]
-      # No column is set for an unknown type, so the exactly-one check also
-      # fails.
-      assert errors[:notable] == ["must reference exactly one target"]
+      assert errors_on(changeset)[:notable] == ["must reference exactly one target"]
+    end
+
+    test "rejects a note whose notable_id is missing" do
+      author = moderator_user_fixture()
+
+      assert {:error, changeset} =
+               ModNotes.create_mod_note(author, :user_id, %{"body" => "no id"})
+
+      assert errors_on(changeset)[:notable] == ["must reference exactly one target"]
     end
   end
 
@@ -133,7 +110,7 @@ defmodule Philomena.ModNotesTest do
       author = moderator_user_fixture()
       target = confirmed_user_fixture()
       image = image_fixture()
-      report = report_fixture({"Image", image.id})
+      report = report_fixture(image_id: image.id)
 
       assert {:error, changeset} =
                %ModNote{moderator_id: author.id}
@@ -156,18 +133,17 @@ defmodule Philomena.ModNotesTest do
       author = moderator_user_fixture()
       owner = confirmed_user_fixture()
       image = image_fixture(%{user_id: owner.id})
-      report = report_fixture({"Image", image.id})
+      report = report_fixture(image_id: image.id)
 
       {:ok, _note} =
-        ModNotes.create_mod_note(author, %{
-          "notable_type" => "Report",
+        ModNotes.create_mod_note(author, :report_id, %{
           "notable_id" => report.id,
           "body" => "note on image report"
         })
 
       [{note, _body}] =
-        ModNotes.list_all_mod_notes_by_type_and_id(
-          "Report",
+        ModNotes.list_all_mod_notes_by_column(
+          :report_id,
           report.id,
           fn notes -> Enum.map(notes, & &1.body) end
         )

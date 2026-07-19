@@ -14,21 +14,7 @@ defmodule Philomena.ReportsTest do
   import Philomena.CommissionsFixtures
   import Philomena.RulesFixtures
 
-  describe "Report.column_for_type/1 and reportable_columns/0" do
-    test "maps each of the seven legacy type strings to its column" do
-      assert Report.column_for_type("Image") == :image_id
-      assert Report.column_for_type("Comment") == :comment_id
-      assert Report.column_for_type("Post") == :post_id
-      assert Report.column_for_type("User") == :reported_user_id
-      assert Report.column_for_type("Commission") == :commission_id
-      assert Report.column_for_type("Conversation") == :conversation_id
-      assert Report.column_for_type("Gallery") == :gallery_id
-    end
-
-    test "returns nil for an unknown type" do
-      assert Report.column_for_type("Nonexistent") == nil
-    end
-
+  describe "Report.reportable_columns/0" do
     test "reportable_columns lists all seven columns" do
       assert Report.reportable_columns() == [
                :image_id,
@@ -45,7 +31,7 @@ defmodule Philomena.ReportsTest do
   describe "create_report/3 single-target acceptance" do
     test "accepts an image report and sets image_id" do
       image = image_fixture()
-      report = report_fixture({"Image", image.id})
+      report = report_fixture(image_id: image.id)
 
       assert report.image_id == image.id
       assert Report.reportable_type(report) == "Image"
@@ -54,7 +40,7 @@ defmodule Philomena.ReportsTest do
 
     test "accepts a user report and sets reported_user_id" do
       target = confirmed_user_fixture()
-      report = report_fixture({"User", target.id})
+      report = report_fixture(reported_user_id: target.id)
 
       assert report.reported_user_id == target.id
       assert Report.reportable_type(report) == "User"
@@ -63,7 +49,7 @@ defmodule Philomena.ReportsTest do
 
     test "accepts a gallery report and sets gallery_id" do
       gallery = gallery_fixture(confirmed_user_fixture())
-      report = report_fixture({"Gallery", gallery.id})
+      report = report_fixture(gallery_id: gallery.id)
 
       assert report.gallery_id == gallery.id
       assert Report.reportable_type(report) == "Gallery"
@@ -72,7 +58,7 @@ defmodule Philomena.ReportsTest do
 
     test "accepts a commission report and sets commission_id" do
       commission = commission_fixture(confirmed_user_fixture())
-      report = report_fixture({"Commission", commission.id})
+      report = report_fixture(commission_id: commission.id)
 
       assert report.commission_id == commission.id
       assert Report.reportable_type(report) == "Commission"
@@ -81,7 +67,7 @@ defmodule Philomena.ReportsTest do
   end
 
   describe "create_report/3 target-count rejection" do
-    test "rejects a report with zero targets (unknown type)" do
+    test "rejects a report with zero targets" do
       attrs = %{
         "reason" => "no target",
         "user_agent" => "TB/1.0",
@@ -89,7 +75,7 @@ defmodule Philomena.ReportsTest do
       }
 
       assert {:error, changeset} =
-               Reports.create_report({"Nonexistent", 123}, attribution(), attrs)
+               Reports.create_report([], attribution(), attrs)
 
       assert %{reportable: ["must reference exactly one target"]} = errors_on(changeset)
     end
@@ -188,15 +174,15 @@ defmodule Philomena.ReportsTest do
     end
   end
 
-  describe "close_reports/2 via the {type_string, id} API" do
+  describe "close_reports/2 via the target-column API" do
     test "closes open reports for an image" do
       image = image_fixture()
-      report = report_fixture({"Image", image.id})
+      report = report_fixture(image_id: image.id)
       admin = admin_user_fixture()
 
       assert report.open
 
-      assert {:ok, {1, _ids}} = Reports.close_reports({"Image", image.id}, admin)
+      assert {:ok, {1, _ids}} = Reports.close_reports([image_id: image.id], admin)
 
       closed = Reports.get_report!(report.id)
       refute closed.open
@@ -206,10 +192,10 @@ defmodule Philomena.ReportsTest do
 
     test "closes open reports for a user" do
       target = confirmed_user_fixture()
-      report = report_fixture({"User", target.id})
+      report = report_fixture(reported_user_id: target.id)
       admin = admin_user_fixture()
 
-      assert {:ok, {1, _ids}} = Reports.close_reports({"User", target.id}, admin)
+      assert {:ok, {1, _ids}} = Reports.close_reports([reported_user_id: target.id], admin)
 
       closed = Reports.get_report!(report.id)
       refute closed.open
@@ -227,7 +213,7 @@ defmodule Philomena.ReportsTest do
     test "image report carries legacy reportable_type, reportable_id and image_id" do
       owner = confirmed_user_fixture()
       image = image_fixture(%{user_id: owner.id})
-      report = report_fixture({"Image", image.id})
+      report = report_fixture(image_id: image.id)
 
       json = SearchIndex.as_json(indexed_report(report))
 
@@ -239,7 +225,7 @@ defmodule Philomena.ReportsTest do
 
     test "user report carries legacy reportable_type and reportable_id" do
       target = confirmed_user_fixture()
-      report = report_fixture({"User", target.id})
+      report = report_fixture(reported_user_id: target.id)
 
       json = SearchIndex.as_json(indexed_report(report))
 
@@ -251,7 +237,7 @@ defmodule Philomena.ReportsTest do
     test "gallery report includes the gallery owner in related_users" do
       owner = confirmed_user_fixture()
       gallery = gallery_fixture(owner)
-      report = report_fixture({"Gallery", gallery.id})
+      report = report_fixture(gallery_id: gallery.id)
 
       json = SearchIndex.as_json(indexed_report(report))
 
@@ -264,7 +250,7 @@ defmodule Philomena.ReportsTest do
     test "commission report carries legacy reportable_type and reportable_id" do
       owner = confirmed_user_fixture()
       commission = commission_fixture(owner)
-      report = report_fixture({"Commission", commission.id})
+      report = report_fixture(commission_id: commission.id)
 
       json = SearchIndex.as_json(indexed_report(report))
 

@@ -7,14 +7,22 @@ defmodule PhilomenaWeb.Admin.ModNoteController do
 
   plug :load_and_authorize_resource, model: ModNote
 
+  # Whitelist mapping the URL/form `notable_type` string to its foreign key
+  # column, keeping the type-to-column translation at the web boundary.
+  @notable_columns %{
+    "User" => :user_id,
+    "Report" => :report_id,
+    "DnpEntry" => :dnp_entry_id
+  }
+
   def index(conn, params) do
     pagination = conn.assigns.scrivener
     renderer = &MarkdownRenderer.render_collection(&1, conn)
 
     mod_notes =
       case params do
-        %{"notable_type" => type, "notable_id" => id} ->
-          ModNotes.list_mod_notes_by_notable_type_and_id(type, id, renderer, pagination)
+        %{"notable_type" => type, "notable_id" => id} when is_map_key(@notable_columns, type) ->
+          ModNotes.list_mod_notes_by_column(@notable_columns[type], id, renderer, pagination)
 
         _ ->
           ModNotes.list_mod_notes(renderer, pagination)
@@ -34,7 +42,9 @@ defmodule PhilomenaWeb.Admin.ModNoteController do
   end
 
   def create(conn, %{"mod_note" => mod_note_params}) do
-    case ModNotes.create_mod_note(conn.assigns.current_user, mod_note_params) do
+    column = @notable_columns[mod_note_params["notable_type"]]
+
+    case ModNotes.create_mod_note(conn.assigns.current_user, column, mod_note_params) do
       {:ok, _mod_note} ->
         conn
         |> put_flash(:info, "Successfully created mod note.")

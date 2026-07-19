@@ -44,6 +44,6 @@ defmodule PhilomenaWeb.Image.Comment.ReportController do
     comment = conn.assigns.comment
     action = ~p"/images/#{comment.image}/comments/#{comment}/reports"
 
-    ReportController.create(conn, action, "Comment", comment, params)
+    ReportController.create(conn, action, comment, [comment_id: comment.id], params)
   end
 end

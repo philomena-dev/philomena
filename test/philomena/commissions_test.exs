@@ -14,7 +14,7 @@ defmodule Philomena.CommissionsTest do
   describe "delete_commission/2" do
     test "closes the commission's open reports and nulls the target FK while keeping the row" do
       commission = commission_fixture(confirmed_user_fixture())
-      report = report_fixture({"Commission", commission.id})
+      report = report_fixture(commission_id: commission.id)
       admin = admin_user_fixture()
 
       assert report.open
