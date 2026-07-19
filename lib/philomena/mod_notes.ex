@@ -9,20 +9,21 @@ defmodule Philomena.ModNotes do
   alias Philomena.ModNotes.ModNote
 
   @doc """
-  Returns a list of 2-tuples of mod notes and rendered output for the notable
-  identified by the foreign key `column` (e.g. `:user_id`) and its `id`.
+  Returns a list of 2-tuples of mod notes and rendered output for the target
+  named by `target`, a one-entry keyword list of the target foreign key column
+  and its id (e.g. `user_id: 1`).
 
   See `list_mod_notes/3` for more information about collection rendering.
 
   ## Examples
 
-      iex> list_all_mod_notes_by_column(:user_id, 1, & &1.body)
+      iex> list_all_mod_notes_for_target(& &1.body, user_id: 1)
       [
         {%ModNote{body: "hello *world*"}, "hello *world*"}
       ]
 
   """
-  def list_all_mod_notes_by_column(column, id, collection_renderer) do
+  def list_all_mod_notes_for_target(collection_renderer, [{column, id}]) do
     ModNote
     |> where([m], field(m, ^column) == ^id)
     |> preload(:moderator)
@@ -54,12 +55,12 @@ defmodule Philomena.ModNotes do
 
   @doc """
   Returns a `m:Scrivener.Page` of 2-tuples of mod notes and rendered output
-  for the notable identified by the foreign key `column` (e.g. `:user_id`) and
-  its `id` and current pagination.
+  for the target named by `target`, a one-entry keyword list of the target
+  foreign key column and its id (e.g. `user_id: 1`), and current pagination.
 
   See `list_mod_notes/3` for more information.
   """
-  def list_mod_notes_by_column(column, id, collection_renderer, pagination) do
+  def list_mod_notes_for_target(collection_renderer, pagination, [{column, id}]) do
     ModNote
     |> where([m], field(m, ^column) == ^id)
     |> list_mod_notes(collection_renderer, pagination)
@@ -93,16 +94,15 @@ defmodule Philomena.ModNotes do
 
   defp preload_and_render(mod_notes, collection_renderer) do
     bodies = collection_renderer.(mod_notes)
-    preloaded = preload_notable(mod_notes)
+    preloaded = preload_targets(mod_notes)
 
     Enum.zip(preloaded, bodies)
   end
 
-  defp preload_notable(mod_notes) do
+  defp preload_targets(mod_notes) do
     mod_notes
     |> Enum.to_list()
-    |> Repo.preload(ModNote.notable_preloads())
-    |> Enum.map(&%{&1 | notable: ModNote.notable(&1)})
+    |> Repo.preload(ModNote.target_preloads())
   end
 
   @doc """
@@ -122,21 +122,22 @@ defmodule Philomena.ModNotes do
   def get_mod_note!(id), do: Repo.get!(ModNote, id)
 
   @doc """
-  Creates a mod_note against the notable named by the foreign key `column`
-  (e.g. `:user_id`), authored by `creator`.
+  Creates a mod_note authored by `creator` against the target named by
+  `target`, a one-entry keyword list of the target foreign key column and its
+  id (e.g. `user_id: 1`).
 
   ## Examples
 
-      iex> create_mod_note(user, :user_id, %{"notable_id" => 1, "body" => "..."})
+      iex> create_mod_note(user, %{"body" => "..."}, user_id: 1)
       {:ok, %ModNote{}}
 
-      iex> create_mod_note(user, :user_id, %{"notable_id" => 1, "body" => ""})
+      iex> create_mod_note(user, %{"body" => ""}, user_id: 1)
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_mod_note(creator, column, attrs \\ %{}) do
+  def create_mod_note(creator, attrs, target) do
     %ModNote{moderator_id: creator.id}
-    |> ModNote.creation_changeset(column, attrs)
+    |> ModNote.creation_changeset(attrs, target)
     |> Repo.insert()
   end
 

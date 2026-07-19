@@ -20,11 +20,8 @@ defmodule Philomena.ModNotesFixtures do
     {:ok, note} =
       ModNotes.create_mod_note(
         author,
-        :user_id,
-        Enum.into(attrs, %{
-          "notable_id" => target.id,
-          "body" => "Keeping an eye on this one"
-        })
+        Enum.into(attrs, %{"body" => "Keeping an eye on this one"}),
+        user_id: target.id
       )
 
     note

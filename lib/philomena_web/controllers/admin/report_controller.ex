@@ -62,7 +62,7 @@ defmodule PhilomenaWeb.Admin.ReportController do
       |> preload([:admin, :rule, user: :linked_tags])
       |> order_by(desc: :created_at)
       |> Repo.all()
-      |> Reports.preload_reportable()
+      |> Reports.preload_targets()
 
     system_reports =
       Report
@@ -70,7 +70,7 @@ defmodule PhilomenaWeb.Admin.ReportController do
       |> preload([:admin, :rule, user: :linked_tags])
       |> order_by(desc: :created_at)
       |> Repo.all()
-      |> Reports.preload_reportable()
+      |> Reports.preload_targets()
 
     render(conn, "index.html",
       title: "Admin - Reports",
@@ -82,7 +82,7 @@ defmodule PhilomenaWeb.Admin.ReportController do
   end
 
   def show(conn, _params) do
-    report = Reports.preload_reportable(conn.assigns.report)
+    report = Reports.preload_targets(conn.assigns.report)
 
     body = MarkdownRenderer.render_one(%{body: report.reason}, conn)
 
@@ -101,7 +101,7 @@ defmodule PhilomenaWeb.Admin.ReportController do
       )
       |> Search.search_records(preload(Report, [:admin, :rule, user: :linked_tags]))
 
-    entries = Reports.preload_reportable(reports)
+    entries = Reports.preload_targets(reports)
 
     %{reports | entries: entries}
   end
@@ -127,7 +127,7 @@ defmodule PhilomenaWeb.Admin.ReportController do
       report = conn.assigns.report
 
       renderer = &MarkdownRenderer.render_collection(&1, conn)
-      mod_notes = ModNotes.list_all_mod_notes_by_column(:report_id, report.id, renderer)
+      mod_notes = ModNotes.list_all_mod_notes_for_target(renderer, report_id: report.id)
       assign(conn, :mod_notes, mod_notes)
     else
       conn

@@ -31,7 +31,7 @@ defmodule PhilomenaWeb.Profile.ReportController do
     |> put_view(ReportView)
     |> render("new.html",
       title: "Reporting User",
-      reportable: user,
+      subject: user,
       changeset: changeset,
       action: action
     )

@@ -31,7 +31,7 @@ defmodule PhilomenaWeb.Image.ReportController do
     |> put_view(ReportView)
     |> render("new.html",
       title: "Reporting Image",
-      reportable: image,
+      subject: image,
       changeset: changeset,
       action: action
     )

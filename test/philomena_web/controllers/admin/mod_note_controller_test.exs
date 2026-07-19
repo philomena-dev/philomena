@@ -51,13 +51,13 @@ defmodule PhilomenaWeb.Admin.ModNoteControllerTest do
       assert response =~ "Keeping an eye on this one"
     end
 
-    test "filters by notable_type and notable_id", %{conn: conn, user: admin} do
+    test "filters by target column", %{conn: conn, user: admin} do
       note = mod_note_fixture(admin)
 
       conn =
         get(
           conn,
-          ~p"/admin/mod_notes?#{[notable_type: "User", notable_id: note.notable_id]}"
+          ~p"/admin/mod_notes?#{[user_id: note.user_id]}"
         )
 
       response = html_response(conn, 200)
@@ -86,27 +86,27 @@ defmodule PhilomenaWeb.Admin.ModNoteControllerTest do
     test "rejects a regular user", %{conn: conn} do
       %{conn: conn} = register_and_log_in_user(%{conn: conn})
       target = confirmed_user_fixture()
-      conn = get(conn, ~p"/admin/mod_notes/new?#{[notable_type: "User", notable_id: target.id]}")
+      conn = get(conn, ~p"/admin/mod_notes/new?#{[user_id: target.id]}")
       assert redirected_to(conn) == "/"
     end
 
     test "renders the form for a moderator", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       target = confirmed_user_fixture()
-      conn = get(conn, ~p"/admin/mod_notes/new?#{[notable_type: "User", notable_id: target.id]}")
+      conn = get(conn, ~p"/admin/mod_notes/new?#{[user_id: target.id]}")
       assert html_response(conn, 200) =~ "New mod note for"
     end
 
     test "renders the form for an admin", %{conn: conn} do
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
       target = confirmed_user_fixture()
-      conn = get(conn, ~p"/admin/mod_notes/new?#{[notable_type: "User", notable_id: target.id]}")
+      conn = get(conn, ~p"/admin/mod_notes/new?#{[user_id: target.id]}")
       assert html_response(conn, 200) =~ "New mod note for"
     end
 
     # NOTE: new/2 now accepts a bare request and renders a blank form (200)
     # rather than raising ActionClauseError.
-    test "renders a blank form without notable params", %{conn: conn} do
+    test "renders a blank form without target params", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
       conn = get(conn, ~p"/admin/mod_notes/new")
@@ -123,8 +123,7 @@ defmodule PhilomenaWeb.Admin.ModNoteControllerTest do
       conn =
         post(conn, ~p"/admin/mod_notes", %{
           "mod_note" => %{
-            "notable_type" => "User",
-            "notable_id" => target.id,
+            "user_id" => target.id,
             "body" => "nope"
           }
         })
@@ -140,8 +139,7 @@ defmodule PhilomenaWeb.Admin.ModNoteControllerTest do
       conn =
         post(conn, ~p"/admin/mod_notes", %{
           "mod_note" => %{
-            "notable_type" => "User",
-            "notable_id" => target.id,
+            "user_id" => target.id,
             "body" => "Moderator authored note"
           }
         })
@@ -159,8 +157,7 @@ defmodule PhilomenaWeb.Admin.ModNoteControllerTest do
       conn =
         post(conn, ~p"/admin/mod_notes", %{
           "mod_note" => %{
-            "notable_type" => "User",
-            "notable_id" => target.id,
+            "user_id" => target.id,
             "body" => "Admin authored note"
           }
         })
@@ -176,8 +173,7 @@ defmodule PhilomenaWeb.Admin.ModNoteControllerTest do
       conn =
         post(conn, ~p"/admin/mod_notes", %{
           "mod_note" => %{
-            "notable_type" => "User",
-            "notable_id" => target.id,
+            "user_id" => target.id,
             "body" => ""
           }
         })

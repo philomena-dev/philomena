@@ -32,7 +32,7 @@ defmodule PhilomenaWeb.Conversation.ReportController do
     |> put_view(ReportView)
     |> render("new.html",
       title: "Reporting Conversation",
-      reportable: conversation,
+      subject: conversation,
       changeset: changeset,
       action: action
     )

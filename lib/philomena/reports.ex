@@ -336,24 +336,21 @@ defmodule Philomena.Reports do
     |> where([r], field(r, ^column) in ^condition)
     |> preload([:user, :admin])
     |> Repo.all()
-    |> preload_reportable()
+    |> preload_targets()
     |> Enum.map(&Search.index_document(&1, Report))
   end
 
   @doc """
-  Preloads the target associations onto the given report(s) and populates
-  the virtual `reportable` field with the resolved target struct.
+  Preloads the target associations onto the given report(s).
   """
-  def preload_reportable(%Report{} = report) do
-    [report] = preload_reportable([report])
-    report
+  def preload_targets(%Report{} = report) do
+    Repo.preload(report, Report.target_preloads())
   end
 
-  def preload_reportable(reports) do
+  def preload_targets(reports) do
     reports
     |> Enum.to_list()
-    |> Repo.preload(Report.reportable_preloads())
-    |> Enum.map(&%{&1 | reportable: Report.reportable(&1)})
+    |> Repo.preload(Report.target_preloads())
   end
 
   def indexing_preloads do

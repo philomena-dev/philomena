@@ -12,8 +12,8 @@ table.table
     = for report <- @reports do
       tr
         td
-          => reported_image @conn, report.reportable
-          = link_to_reportable report.reportable
+          => reported_image @conn, report_target(report)
+          = link_to_target report_target(report)
         td
           => report.rule.name
           | (

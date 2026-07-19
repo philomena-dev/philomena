@@ -14,9 +14,9 @@ defmodule Philomena.ReportsTest do
   import Philomena.CommissionsFixtures
   import Philomena.RulesFixtures
 
-  describe "Report.reportable_columns/0" do
-    test "reportable_columns lists all seven columns" do
-      assert Report.reportable_columns() == [
+  describe "Report.target_columns/0" do
+    test "target_columns lists all seven columns" do
+      assert Report.target_columns() == [
                :image_id,
                :comment_id,
                :post_id,
@@ -34,8 +34,6 @@ defmodule Philomena.ReportsTest do
       report = report_fixture(image_id: image.id)
 
       assert report.image_id == image.id
-      assert Report.reportable_type(report) == "Image"
-      assert Report.reportable_id(report) == image.id
     end
 
     test "accepts a user report and sets reported_user_id" do
@@ -43,8 +41,6 @@ defmodule Philomena.ReportsTest do
       report = report_fixture(reported_user_id: target.id)
 
       assert report.reported_user_id == target.id
-      assert Report.reportable_type(report) == "User"
-      assert Report.reportable_id(report) == target.id
     end
 
     test "accepts a gallery report and sets gallery_id" do
@@ -52,8 +48,6 @@ defmodule Philomena.ReportsTest do
       report = report_fixture(gallery_id: gallery.id)
 
       assert report.gallery_id == gallery.id
-      assert Report.reportable_type(report) == "Gallery"
-      assert Report.reportable_id(report) == gallery.id
     end
 
     test "accepts a commission report and sets commission_id" do
@@ -61,8 +55,6 @@ defmodule Philomena.ReportsTest do
       report = report_fixture(commission_id: commission.id)
 
       assert report.commission_id == commission.id
-      assert Report.reportable_type(report) == "Commission"
-      assert Report.reportable_id(report) == commission.id
     end
   end
 
@@ -77,7 +69,7 @@ defmodule Philomena.ReportsTest do
       assert {:error, changeset} =
                Reports.create_report(attribution(), attrs, [])
 
-      assert %{reportable: ["must reference exactly one target"]} = errors_on(changeset)
+      assert %{target: ["must reference exactly one target"]} = errors_on(changeset)
     end
   end
 
@@ -95,7 +87,7 @@ defmodule Philomena.ReportsTest do
         )
 
       refute changeset.valid?
-      assert %{reportable: ["must reference exactly one target"]} = errors_on(changeset)
+      assert %{target: ["must reference exactly one target"]} = errors_on(changeset)
     end
 
     test "rejects a report referencing no target" do
@@ -108,7 +100,7 @@ defmodule Philomena.ReportsTest do
         )
 
       refute changeset.valid?
-      assert %{reportable: ["must reference exactly one target"]} = errors_on(changeset)
+      assert %{target: ["must reference exactly one target"]} = errors_on(changeset)
     end
   end
 
@@ -123,7 +115,7 @@ defmodule Philomena.ReportsTest do
                })
                |> Repo.insert()
 
-      assert Report.reportable_type(report) == nil
+      assert Enum.all?(Report.target_columns(), &is_nil(Map.get(report, &1)))
     end
 
     test "rejects a report row with two non-NULL columns" do
@@ -139,12 +131,12 @@ defmodule Philomena.ReportsTest do
                  image_id: image.id,
                  gallery_id: gallery.id
                })
-               |> Ecto.Changeset.check_constraint(:reportable,
+               |> Ecto.Changeset.check_constraint(:target,
                  name: "reports_reportable_association_null"
                )
                |> Repo.insert()
 
-      assert %{reportable: ["is invalid"]} = errors_on(changeset)
+      assert %{target: ["is invalid"]} = errors_on(changeset)
     end
   end
 
@@ -162,15 +154,20 @@ defmodule Philomena.ReportsTest do
       %{orphan: orphan}
     end
 
-    test "reportable_type/id/reportable are nil", %{orphan: orphan} do
-      assert Report.reportable_type(orphan) == nil
-      assert Report.reportable_id(orphan) == nil
-      assert Report.reportable(orphan) == nil
+    test "all target columns are nil", %{orphan: orphan} do
+      assert Enum.all?(Report.target_columns(), &is_nil(Map.get(orphan, &1)))
     end
 
-    test "preload_reportable/1 leaves the virtual reportable nil", %{orphan: orphan} do
-      preloaded = Reports.preload_reportable(orphan)
-      assert preloaded.reportable == nil
+    test "preload_targets/1 leaves every target association nil", %{orphan: orphan} do
+      preloaded = Reports.preload_targets(orphan)
+
+      assert preloaded.image == nil
+      assert preloaded.comment == nil
+      assert preloaded.post == nil
+      assert preloaded.reported_user == nil
+      assert preloaded.commission == nil
+      assert preloaded.conversation == nil
+      assert preloaded.gallery == nil
     end
   end
 
@@ -207,7 +204,7 @@ defmodule Philomena.ReportsTest do
     defp indexed_report(report) do
       report
       |> Repo.preload([:user, :admin])
-      |> Reports.preload_reportable()
+      |> Reports.preload_targets()
     end
 
     test "image report carries legacy reportable_type, reportable_id and image_id" do

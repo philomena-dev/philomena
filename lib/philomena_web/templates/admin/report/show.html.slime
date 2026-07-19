@@ -1,6 +1,6 @@
 h1 Showing Report
 p
-  = link_to_reportable @report.reportable
+  = link_to_target report_target(@report)
 
 article.block.communication
   .block__content.communication__content.flex.flex--no-wrap
@@ -39,7 +39,7 @@ article.block.communication
 = if assigns[:mod_notes] do
   h4 Mod Notes
   = render PhilomenaWeb.Admin.ModNoteView, "_table.html", mod_notes: @mod_notes, conn: @conn
-  = link "Add New Note", to: ~p"/admin/mod_notes/new?#{[notable_id: @report.id, notable_type: "Report"]}"
+  = link "Add New Note", to: ~p"/admin/mod_notes/new?#{[report_id: @report.id]}"
 
 p
   = if @report.user do

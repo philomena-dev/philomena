@@ -16,7 +16,7 @@ defmodule PhilomenaWeb.ReportController do
       |> preload(:rule)
       |> Repo.paginate(conn.assigns.scrivener)
 
-    reports = %{reports | entries: Reports.preload_reportable(reports)}
+    reports = %{reports | entries: Reports.preload_targets(reports)}
 
     render(conn, "index.html", title: "My Reports", reports: reports)
   end
@@ -29,7 +29,7 @@ defmodule PhilomenaWeb.ReportController do
   # plug PhilomenaWeb.CheckCaptchaPlug when action in [:create]
   # plug :load_and_authorize_resource, model: Image, id_name: "image_id", persisted: true
 
-  def create(conn, action, reportable, target, %{"report" => report_params}) do
+  def create(conn, action, subject, target, %{"report" => report_params}) do
     attribution = conn.assigns.attributes
 
     if too_many_reports?(conn) do
@@ -55,7 +55,7 @@ defmodule PhilomenaWeb.ReportController do
           # not exist. Name the shared one explicitly.
           conn
           |> put_view(PhilomenaWeb.ReportView)
-          |> render("new.html", reportable: reportable, changeset: changeset, action: action)
+          |> render("new.html", subject: subject, changeset: changeset, action: action)
       end
     end
   end

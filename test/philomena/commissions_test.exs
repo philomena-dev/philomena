@@ -28,7 +28,7 @@ defmodule Philomena.CommissionsTest do
       assert closed.admin_id == admin.id
       # The FK is nilified by the database, orphaning the report as audit trail.
       assert closed.commission_id == nil
-      assert Report.reportable_type(closed) == nil
+      assert Enum.all?(Report.target_columns(), &is_nil(Map.get(closed, &1)))
 
       refute Repo.get(Commission, commission.id)
     end

@@ -1,6 +1,5 @@
 h2
   ' Editing mod note for
-  => Philomena.ModNotes.ModNote.notable_type(@mod_note)
-  => Philomena.ModNotes.ModNote.notable_id(@mod_note)
+  => target_label(@mod_note)
 
 = render PhilomenaWeb.Admin.ModNoteView, "_form.html", changeset: @changeset, action: ~p"/admin/mod_notes/#{@mod_note}", conn: @conn

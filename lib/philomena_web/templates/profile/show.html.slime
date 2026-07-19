@@ -142,8 +142,8 @@
     = if can_read_mod_notes?(@conn) and not hide_staff_tools?(@conn) do
       .block
         .block__header.flex.flex--no-wrap
-          a.flex__grow href=~p"/admin/mod_notes?#{[notable_id: @user.id, notable_type: "User"]}" Mod Notes
-          a.flex__right.flex__shrink href=~p"/admin/mod_notes/new?#{[notable_id: @user.id, notable_type: "User"]}"
+          a.flex__grow href=~p"/admin/mod_notes?#{[user_id: @user.id]}" Mod Notes
+          a.flex__right.flex__shrink href=~p"/admin/mod_notes/new?#{[user_id: @user.id]}"
             i.fa.fa-plus>
             ' New
         = if Enum.any?(@mod_notes) do

@@ -19,7 +19,7 @@ h1 Your Reports
           tr
             td class=report_row_class(r)
               = pretty_state(r)
-            td = link_to_reportable(r.reportable)
+            td = link_to_target(report_target(r))
             td
               => r.rule.name
               | (

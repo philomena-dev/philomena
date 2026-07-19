@@ -30,7 +30,7 @@ defmodule PhilomenaWeb.Gallery.ReportController do
     |> put_view(ReportView)
     |> render("new.html",
       title: "Reporting Gallery",
-      reportable: gallery,
+      subject: gallery,
       changeset: changeset,
       action: action
     )

@@ -155,7 +155,7 @@ defmodule PhilomenaWeb.DnpEntryController do
       dnp_entry = conn.assigns.dnp_entry
 
       renderer = &MarkdownRenderer.render_collection(&1, conn)
-      mod_notes = ModNotes.list_all_mod_notes_by_column(:dnp_entry_id, dnp_entry.id, renderer)
+      mod_notes = ModNotes.list_all_mod_notes_for_target(renderer, dnp_entry_id: dnp_entry.id)
       assign(conn, :mod_notes, mod_notes)
     else
       conn
