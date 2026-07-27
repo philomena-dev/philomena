@@ -132,7 +132,9 @@ defmodule Philomena.Images.Thumbnailer do
   end
 
   defp recompute_meta(image, file, changeset_fn) do
-    {:ok, %{dimensions: {width, height}}} = Analyzers.analyze_path(file)
+    {:ok, analysis} = Analyzers.analyze_path(file)
+
+    %{dimensions: {width, height}} = analysis
 
     image
     |> changeset_fn.(%{
@@ -140,7 +142,9 @@ defmodule Philomena.Images.Thumbnailer do
       "image_size" => File.stat!(file).size,
       "image_width" => width,
       "image_height" => height,
-      "image_aspect_ratio" => width / height
+      "image_aspect_ratio" => width / height,
+      "image_is_animated" => analysis.animated?,
+      "image_duration" => analysis.duration
     })
     |> Repo.update!()
   end

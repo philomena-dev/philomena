@@ -23,13 +23,13 @@ defmodule PhilomenaMedia.Analyzers.Png do
   defp stats(file) do
     case Remote.cmd("mediastat", [file]) do
       {output, 0} ->
-        [_size, frames, width, height, num, den] =
+        [animated, _frames, width, height, num, den] =
           output
           |> String.trim()
           |> String.split(" ")
           |> Enum.map(&String.to_integer/1)
 
-        %{animated?: frames > 1, dimensions: {width, height}, duration: num / den}
+        %{animated?: animated != 0, dimensions: {width, height}, duration: num / den}
 
       _ ->
         %{animated?: false, dimensions: {0, 0}, duration: 0.0}

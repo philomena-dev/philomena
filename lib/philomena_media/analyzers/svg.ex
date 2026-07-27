@@ -23,7 +23,7 @@ defmodule PhilomenaMedia.Analyzers.Svg do
   defp stats(file) do
     case Remote.cmd("svgstat", [file]) do
       {output, 0} ->
-        [_size, _frames, width, height, _num, _den] =
+        [_animated, _frames, width, height, _num, _den] =
           output
           |> String.trim()
           |> String.split(" ")
