@@ -18,11 +18,8 @@ defmodule Philomena.Attribution.Actor do
   @enforce_keys [:ip]
   defstruct user: nil, ip: nil, fingerprint: nil
 
-  # `%User{}` is used rather than `User.t()` to match the existing
-  # `t:Philomena.Users.principal/0` type: the `User` schema does not define a
-  # `t/0` type, so referencing it here would fail `--warnings-as-errors`.
   @type t :: %__MODULE__{
-          user: %User{} | nil,
+          user: User.t() | nil,
           ip: EctoNetwork.INET.t(),
           fingerprint: String.t() | nil
         }
