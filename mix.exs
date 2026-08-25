@@ -64,7 +64,9 @@ defmodule Philomena.MixProject do
       {:redix, "~> 1.4"},
       {:remote_ip, "~> 1.2"},
       {:briefly, "~> 0.5"},
-      {:req, "~> 0.5"},
+      # ExAws signs empty-body GET requests that Req 0.7 rewrites as POST.
+      # https://github.com/ex-aws/ex_aws/issues/1246
+      {:req, "0.6.3"},
       {:exq, "~> 0.21"},
       {:ex_aws, "~> 2.5"},
       {:ex_aws_s3, "~> 2.5"},

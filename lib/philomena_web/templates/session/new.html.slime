@@ -21,6 +21,8 @@ h1 Sign in
     => checkbox f, :remember_me
     = label f, :remember_me, "Remember me"
 
+  = render PhilomenaWeb.CaptchaView, "_captcha.html", name: "session", conn: @conn
+
   .actions
     = submit "Sign in", class: "button"
 
