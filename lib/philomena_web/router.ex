@@ -100,7 +100,7 @@ defmodule PhilomenaWeb.Router do
       :ensure_tor_authorized
     ]
 
-    resources "/confirmations", ConfirmationController, only: [:show]
+    resources "/confirmations", ConfirmationController, only: [:show, :update]
   end
 
   scope "/", PhilomenaWeb do

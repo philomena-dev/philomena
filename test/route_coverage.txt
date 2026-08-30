@@ -28,6 +28,8 @@
 [x] GET    /unlocks/:id                                                  UnlockController :show
 [x] POST   /unlocks                                                      UnlockController :create
 [x] GET    /confirmations/:id                                            ConfirmationController :show
+[x] PATCH  /confirmations/:id                                            ConfirmationController :update
+[x] PUT    /confirmations/:id                                            ConfirmationController :update
 [x] GET    /registrations/edit                                           RegistrationController :edit
 [x] DELETE /sessions                                                     SessionController :delete
 [x] GET    /deactivations                                                DeactivationController :show
