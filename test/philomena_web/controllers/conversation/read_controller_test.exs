@@ -42,7 +42,12 @@ defmodule PhilomenaWeb.Conversation.ReadControllerTest do
        %{conn: conn} do
     %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
     conversation = conversation_fixture(confirmed_user_fixture(), user)
-    {:ok, _} = Conversations.mark_conversation_read(conversation, user)
+
+    {:ok, _} =
+      Conversations.update_conversation_read(
+        Philomena.AttributionFixtures.actor(user),
+        conversation.slug
+      )
 
     conn = delete(conn, ~p"/conversations/#{conversation}/read")
 
@@ -80,7 +85,7 @@ defmodule PhilomenaWeb.Conversation.ReadControllerTest do
   test "POST as a non-participant moderator succeeds but changes neither flag",
        %{conn: conn} do
     # NOTE: moderators pass the :show authorization, but
-    # mark_conversation_read/3 only sets the flag for the from/to sides, so
+    # the context only sets flags for the from/to sides, so
     # the action is a flash + redirect no-op for them.
     %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
     conversation = conversation_fixture(confirmed_user_fixture(), confirmed_user_fixture())
@@ -95,14 +100,15 @@ defmodule PhilomenaWeb.Conversation.ReadControllerTest do
     assert conversation.from_read
   end
 
-  test "POST for an unknown conversation redirects to / with the authorization flash",
+  test "POST for an unknown conversation redirects with the not-found flash",
        %{conn: conn} do
-    # Canary sends the nil resource down the unauthorized path
     %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
     conn = post(conn, ~p"/conversations/unknown-slug/read")
 
     assert redirected_to(conn) == "/"
-    assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+    assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+             "Couldn't find what you were looking for!"
   end
 end

@@ -77,7 +77,7 @@ article.block.communication id="comment_#{@comment.id}"
 
           - true ->
 
-        = if can?(@conn, :show, :ip_address) do
+        = if can?(@conn, :show, :identity_metadata) do
           .communication__info.js-staff-action
             =<> link_to_ip(@conn, @comment.ip)
           .communication__info.js-staff-action

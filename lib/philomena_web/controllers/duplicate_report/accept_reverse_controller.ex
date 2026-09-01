@@ -1,40 +1,24 @@
 defmodule PhilomenaWeb.DuplicateReport.AcceptReverseController do
   use PhilomenaWeb, :controller
 
-  alias Philomena.DuplicateReports.DuplicateReport
   alias Philomena.DuplicateReports
 
-  plug PhilomenaWeb.CanaryMapPlug, create: :edit, delete: :edit
+  action_fallback PhilomenaWeb.FallbackController
 
-  plug :load_and_authorize_resource,
-    model: DuplicateReport,
-    id_name: "duplicate_report_id",
-    persisted: true,
-    preload: [:image, :duplicate_of_image]
-
-  def create(conn, _params) do
-    report = conn.assigns.duplicate_report
-    user = conn.assigns.current_user
-
-    case DuplicateReports.accept_reverse_duplicate_report(report, user) do
-      {:ok, report} ->
+  def create(conn, %{"duplicate_report_id" => id}) do
+    case DuplicateReports.create_duplicate_report_accept_reverse(conn.assigns.actor, id) do
+      {:ok, _duplicate_report} ->
         conn
         |> put_flash(:info, "Successfully accepted report in reverse.")
-        |> moderation_log(details: &log_details/2, data: report.duplicate_report)
         |> redirect(to: ~p"/duplicate_reports")
 
-      _error ->
+      {:error, %Ecto.Changeset{}} ->
         conn
         |> put_flash(:error, "Failed to accept report! Maybe someone else already accepted it.")
         |> redirect(to: ~p"/duplicate_reports")
-    end
-  end
 
-  defp log_details(_action, report) do
-    %{
-      body:
-        "Reverse-accepted duplicate report, merged #{report.image.id} into #{report.duplicate_of_image.id}",
-      subject_path: ~p"/images/#{report.image}"
-    }
+      error ->
+        error
+    end
   end
 end

@@ -100,16 +100,13 @@ defmodule PhilomenaWeb.FilterControllerTest do
       assert html_response(get(conn, ~p"/filters/#{filter}"), 200) =~ filter.name
     end
 
-    test "redirects with the authorization flash for an unknown filter", %{conn: conn} do
+    test "redirects with the not-found flash for an unknown filter", %{conn: conn} do
       conn = get(conn, ~p"/filters/999999999")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
-    # NOTE: a non-integer id short-circuits to NotFoundPlug via the central
-    # IntegerId guard, so the flash is the not-found message rather than the
-    # "You can't access that page." an unknown integer id gets.
     test "redirects with the not-found flash for a non-integer id", %{conn: conn} do
       conn = get(conn, ~p"/filters/not-a-number")
 
@@ -121,13 +118,13 @@ defmodule PhilomenaWeb.FilterControllerTest do
   end
 
   describe "GET /filters/new" do
-    test "redirects anonymous users with the sign-in flash", %{conn: conn} do
+    test "redirects anonymous users with the authorization flash", %{conn: conn} do
       conn = get(conn, ~p"/filters/new")
 
       assert redirected_to(conn) == "/"
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
-               "You must be signed in to see this page."
+               "You can't access that page."
     end
 
     test "renders the form for logged-in users", %{conn: conn} do
@@ -158,13 +155,13 @@ defmodule PhilomenaWeb.FilterControllerTest do
   end
 
   describe "POST /filters" do
-    test "redirects anonymous users with the sign-in flash", %{conn: conn} do
+    test "redirects anonymous users with the authorization flash", %{conn: conn} do
       conn = post(conn, ~p"/filters", %{"filter" => %{"name" => "Anon filter"}})
 
       assert redirected_to(conn) == "/"
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
-               "You must be signed in to see this page."
+               "You can't access that page."
     end
 
     test "creates a filter and redirects to it", %{conn: conn} do
@@ -286,7 +283,7 @@ defmodule PhilomenaWeb.FilterControllerTest do
     test "a filter in use as a current filter is not deleted", %{conn: conn} do
       %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
       filter = filter_fixture(user)
-      {:ok, _user} = Users.update_filter(user, filter)
+      {:ok, _user} = Users.set_current_filter(user, filter)
 
       conn = delete(conn, ~p"/filters/#{filter}")
 

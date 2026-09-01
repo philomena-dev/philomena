@@ -61,14 +61,16 @@ defmodule PhilomenaWeb.Image.DeleteControllerTest do
       refute Repo.reload!(image).hidden_from_users
     end
 
-    test "for an unknown image_id redirects with the authorization flash", %{conn: conn} do
+    test "for an unknown image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
       conn =
         post(conn, ~p"/images/999999999/delete", %{"image" => %{"deletion_reason" => "Spam"}})
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
   end
 
@@ -101,7 +103,7 @@ defmodule PhilomenaWeb.Image.DeleteControllerTest do
     end
 
     # verify_deleted halts when the image is not currently hidden.
-    test "on a non-deleted image redirects with the not-deleted flash", %{conn: conn} do
+    test "on a non-deleted image redirects with the error flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       image = image_fixture()
 
@@ -113,7 +115,7 @@ defmodule PhilomenaWeb.Image.DeleteControllerTest do
       assert redirected_to(conn) == ~p"/images/#{image}"
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
-               "Cannot change deletion reason on a non-deleted image!"
+               "Couldn't update deletion reason."
     end
 
     # Failure path: a blank reason on a hidden image fails validation.
@@ -176,20 +178,18 @@ defmodule PhilomenaWeb.Image.DeleteControllerTest do
       refute Repo.reload!(image).hidden_from_users
     end
 
-    # unhide_image/1 has a fall-through clause for non-hidden images, so the
-    # controller's {:ok, image} match still succeeds.
-    test "restoring a non-hidden image still succeeds", %{conn: conn} do
+    test "restoring a non-hidden image fails", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       image = image_fixture()
 
       conn = delete(conn, ~p"/images/#{image}/delete")
 
-      assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Image successfully restored."
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Failed to restore image."
       refute Repo.reload!(image).hidden_from_users
     end
 
     # NOTE: a non-integer image_id short-circuits to NotFoundPlug via the central
-    # IntegerId guard before Canary authorizes.
+    # IntegerId guard before authorization runs.
     test "for a non-integer image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 

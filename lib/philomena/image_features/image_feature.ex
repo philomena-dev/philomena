@@ -7,6 +7,8 @@ defmodule Philomena.ImageFeatures.ImageFeature do
 
   @primary_key false
 
+  @type t :: %__MODULE__{}
+
   schema "image_features" do
     belongs_to :image, Image
     belongs_to :user, User
@@ -15,7 +17,7 @@ defmodule Philomena.ImageFeatures.ImageFeature do
   end
 
   @doc false
-  def changeset(image_feature, attrs) do
+  def changeset(image_feature, attrs \\ %{}) do
     image_feature
     |> cast(attrs, [])
     |> validate_required([])

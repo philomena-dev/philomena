@@ -29,25 +29,25 @@ defmodule PhilomenaWeb.Image.SubscriptionControllerTest do
 
   subscription_toggle_tests()
 
-  test "POST for an unknown image redirects to / with the authorization flash",
+  test "POST for an unknown image redirects to / with the not-found flash",
        %{conn: conn} do
     %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
     conn = post(conn, ~p"/images/999999999/subscription")
 
     assert redirected_to(conn) == "/"
-    assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+    assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+             "Couldn't find what you were looking for!"
   end
 
-  test "banned users can still subscribe", %{conn: conn} do
-    # NOTE: unlike vote/fave/hide, the subscription controller has no
-    # FilterBannedUsersPlug, so a ban does not block watching an image
+  test "banned users can subscribe", %{conn: conn} do
     %{conn: conn, user: user} = register_and_log_in_banned_user(%{conn: conn})
     target = subscription_target(user)
 
     conn = post(conn, target.path)
 
-    assert PhilomenaWeb.SingletonToggleTests.subscription_partial_watching?(conn)
+    assert response(conn, 200) =~ "js-subscription-target"
     assert target.subscribed?.()
   end
 end

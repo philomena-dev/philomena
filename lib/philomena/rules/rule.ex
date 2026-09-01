@@ -2,6 +2,8 @@ defmodule Philomena.Rules.Rule do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @type t :: %__MODULE__{}
+
   @derive {Phoenix.Param, key: :position}
   schema "rules" do
     field :name, :string, default: ""

@@ -21,7 +21,9 @@ defmodule PhilomenaWeb.Registration.PasswordControllerTest do
       assert redirected_to(new_password_conn) == ~p"/registrations/edit"
       assert get_session(new_password_conn, :user_token) != get_session(conn, :user_token)
       assert Flash.get(new_password_conn.assigns.flash, :info) =~ "Password updated successfully"
-      assert Users.get_user_by_email_and_password(user.email, "new valid password", & &1)
+
+      assert {:ok, _} =
+               Users.fetch_user_by_email_and_password(user.email, "new valid password", & &1)
     end
 
     test "does not update password on invalid data", %{conn: conn} do
@@ -51,7 +53,9 @@ defmodule PhilomenaWeb.Registration.PasswordControllerTest do
       })
 
       refute Users.get_user_by_session_token(old_token)
-      assert Users.get_user_by_email_and_password(user.email, "new valid password", & &1)
+
+      assert {:ok, _} =
+               Users.fetch_user_by_email_and_password(user.email, "new valid password", & &1)
     end
   end
 
@@ -67,7 +71,9 @@ defmodule PhilomenaWeb.Registration.PasswordControllerTest do
         })
 
       assert redirected_to(conn) == ~p"/registrations/edit"
-      assert Users.get_user_by_email_and_password(user.email, "new valid password", & &1)
+
+      assert {:ok, _} =
+               Users.fetch_user_by_email_and_password(user.email, "new valid password", & &1)
     end
 
     test "raises without a current_password param", %{conn: conn} do

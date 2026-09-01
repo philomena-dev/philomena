@@ -1,10 +1,15 @@
 defmodule Philomena.CommissionsFixtures do
   @moduledoc """
-  This module defines test helpers for creating
-  entities via the `Philomena.Commissions` context.
+  Test-only commission builders. They persist schemas directly because the
+  production context intentionally exposes only actor-scoped APIs, whose
+  verified-link policy is unrelated to most fixtures using commission data.
   """
 
-  alias Philomena.Commissions
+  import Ecto.Query
+
+  alias Philomena.Commissions.Commission
+  alias Philomena.Commissions.Item
+  alias Philomena.Repo
 
   @doc """
   Creates an open commission sheet for `user`.
@@ -18,9 +23,10 @@ defmodule Philomena.CommissionsFixtures do
         open: true
       })
 
-    {:ok, commission} = Commissions.create_commission(user, attrs)
-
-    commission
+    user
+    |> Ecto.build_assoc(:commission)
+    |> Commission.changeset(attrs)
+    |> Repo.insert!()
   end
 
   @doc """
@@ -35,8 +41,23 @@ defmodule Philomena.CommissionsFixtures do
         base_price: 20
       })
 
-    {:ok, %{item: item}} = Commissions.create_item(commission, attrs)
+    Repo.transaction(fn ->
+      item =
+        commission
+        |> Ecto.build_assoc(:items)
+        |> Item.changeset(attrs)
+        |> Repo.insert!()
 
-    item
+      {1, _rows} =
+        Repo.update_all(
+          where(Commission, id: ^commission.id),
+          inc: [commission_items_count: 1]
+        )
+
+      item
+    end)
+    |> case do
+      {:ok, item} -> item
+    end
   end
 end

@@ -5,7 +5,7 @@ defmodule Philomena.Users.User do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Philomena.Schema.TagList
+  alias Philomena.Schema.Approval
 
   alias Philomena.Filters.Filter
   alias Philomena.ArtistLinks.ArtistLink
@@ -15,11 +15,15 @@ defmodule Philomena.Users.User do
   alias Philomena.Users.Settings
   alias Philomena.Commissions.Commission
   alias Philomena.Roles.Role
+  alias Philomena.Reports.Report
   alias Philomena.UserFingerprints.UserFingerprint
   alias Philomena.UserIps.UserIp
   alias Philomena.Bans
   alias Philomena.Donations.Donation
   alias Philomena.UserNameChanges.UserNameChange
+  alias Philomena.Tags.Tag
+
+  @type t :: %__MODULE__{}
 
   @derive {Phoenix.Param, key: :slug}
   @derive {Inspect, except: [:password]}
@@ -38,6 +42,8 @@ defmodule Philomena.Users.User do
     many_to_many :roles, Role, join_through: "users_roles", on_replace: :delete
     has_many :name_changes, UserNameChange
     has_one :settings, Settings, on_replace: :update
+    has_many :reports, Report, foreign_key: :reported_user_id
+    has_many :created_reports, Report, foreign_key: :user_id
 
     belongs_to :current_filter, Filter
     belongs_to :forced_filter, Filter
@@ -102,8 +108,9 @@ defmodule Philomena.Users.User do
     field :avatar_mime_type, :string, virtual: true
     field :uploaded_avatar, :string, virtual: true
     field :removed_avatar, :string, virtual: true
+    field :became_unapproved?, :boolean, virtual: true, default: false
 
-    # For mod stuff
+    # For authorization
     field :role_map, :any, virtual: true
 
     timestamps(inserted_at: :created_at, type: :utc_datetime)
@@ -117,12 +124,13 @@ defmodule Philomena.Users.User do
   could lead to unpredictable or insecure behaviour. Long passwords may
   also be very expensive to hash for certain algorithms.
   """
-  def registration_changeset(user, attrs) do
+  def registration_changeset(user, password_compromised_fn, attrs)
+      when is_function(password_compromised_fn, 1) do
     user
     |> cast(attrs, [:name, :email, :password])
     |> validate_name()
     |> validate_email()
-    |> validate_password()
+    |> validate_password(password_compromised_fn)
     |> put_api_key()
     |> put_slug()
     |> unique_constraints()
@@ -142,21 +150,42 @@ defmodule Philomena.Users.User do
   defp trim_name(name), do: String.trim(name)
 
   defp validate_email(changeset) do
+    # The unsafe_validate_unique is used to generate form errors
+    # when users generate an update token with an email that has
+    # already been taken. It is not used to prevent duplicate
+    # registrations - that is done with a real unique constraint.
+
     changeset
     |> validate_required([:email])
-    |> validate_format(:email, ~r/^[^\s]+@[^\s]+\.[^\s]+$/,
+    |> validate_format(:email, ~r/^[^@,;\s]+@[^@,;\s]+\.[^@,;\s]+$/,
       message: "must be valid (e.g., user@example.com)"
     )
     |> validate_length(:email, max: 160)
     |> unsafe_validate_unique(:email, Philomena.Repo)
   end
 
-  defp validate_password(changeset) do
+  defp validate_password(changeset, password_compromised_fn) do
     changeset
     |> validate_required([:password])
     |> validate_length(:password, min: 12, max: 80)
+    |> validate_compromised_password(password_compromised_fn)
     |> prepare_changes(&hash_password/1)
   end
+
+  defp validate_compromised_password(
+         %Ecto.Changeset{valid?: true} = changeset,
+         password_compromised_fn
+       ) do
+    validate_change(changeset, :password, fn :password, password ->
+      if password_compromised_fn.(password) do
+        [password: "has been compromised in a data breach"]
+      else
+        []
+      end
+    end)
+  end
+
+  defp validate_compromised_password(changeset, _password_compromised_fn), do: changeset
 
   defp hash_password(changeset) do
     password = get_change(changeset, :password)
@@ -184,11 +213,12 @@ defmodule Philomena.Users.User do
   @doc """
   A user changeset for changing the password.
   """
-  def password_changeset(user, attrs) do
+  def password_changeset(user, password_compromised_fn, attrs)
+      when is_function(password_compromised_fn, 1) do
     user
     |> cast(attrs, [:password])
     |> validate_confirmation(:password, message: "does not match password")
-    |> validate_password()
+    |> validate_password(password_compromised_fn)
   end
 
   @doc """
@@ -230,10 +260,13 @@ defmodule Philomena.Users.User do
   end
 
   def failed_attempt_changeset(user) do
-    if not is_integer(user.failed_attempts) or user.failed_attempts < 0 do
-      change(user, failed_attempts: 1)
+    failed_attempts = max(0, user.failed_attempts || 0) + 1
+    changeset = change(user, failed_attempts: failed_attempts)
+
+    if failed_attempts >= 10 do
+      lock_changeset(changeset)
     else
-      change(user, failed_attempts: user.failed_attempts + 1)
+      changeset
     end
   end
 
@@ -245,7 +278,7 @@ defmodule Philomena.Users.User do
     change(user, locked_at: nil, failed_attempts: 0)
   end
 
-  def changeset(user, attrs) do
+  def changeset(user, attrs \\ %{}) do
     cast(user, attrs, [])
   end
 
@@ -268,6 +301,12 @@ defmodule Philomena.Users.User do
     |> unique_constraints()
   end
 
+  def role_error_changeset(user) do
+    user
+    |> change()
+    |> add_error(:roles, "contains an invalid role")
+  end
+
   def filter_changeset(user, filter) do
     changeset = change(user)
     user = changeset.data
@@ -283,8 +322,20 @@ defmodule Philomena.Users.User do
   def settings_changeset(user, attrs) do
     user
     |> cast(attrs, [:watched_tag_list])
-    |> TagList.propagate_tag_list(:watched_tag_list, :watched_tag_ids)
     |> cast_assoc(:settings, with: &Settings.changeset(&1, &2, user))
+  end
+
+  @doc false
+  def watched_tag_names(attrs) do
+    %__MODULE__{}
+    |> cast(attrs, [:watched_tag_list])
+    |> get_field(:watched_tag_list)
+    |> Tag.parse_tag_list()
+  end
+
+  @doc false
+  def put_watched_tag_ids(changeset, watched_tag_ids) do
+    put_change(changeset, :watched_tag_ids, watched_tag_ids)
   end
 
   def description_changeset(user, attrs) do
@@ -296,7 +347,22 @@ defmodule Philomena.Users.User do
       :personal_title,
       ~r/\A((?!site|admin|moderator|assistant|developer|\p{C}).)*\z/iu
     )
+    |> maybe_put_description_approval(user)
   end
+
+  defp maybe_put_description_approval(%{valid?: true} = changeset, user) do
+    was_approved? =
+      Approval.approved?(user, user.description, :external_links) and
+        Approval.approved?(user, user.personal_title, :external_links)
+
+    approved? =
+      Approval.approved?(user, get_field(changeset, :description), :external_links) and
+        Approval.approved?(user, get_field(changeset, :personal_title), :external_links)
+
+    change(changeset, became_unapproved?: was_approved? and not approved?)
+  end
+
+  defp maybe_put_description_approval(changeset, _user), do: changeset
 
   def scratchpad_changeset(user, attrs) do
     user
@@ -348,13 +414,24 @@ defmodule Philomena.Users.User do
   end
 
   def reactivate_changeset(user) do
-    change(user, deleted_at: nil, deleted_by_user_id: nil)
+    changeset = change(user)
+
+    if get_field(changeset, :deleted_at) do
+      change(user, deleted_at: nil, deleted_by_user_id: nil)
+    else
+      add_error(changeset, :deleted_at, "is already active")
+    end
   end
 
   def deactivate_changeset(user, deactivator) do
-    now = DateTime.utc_now(:second)
+    changeset = change(user)
 
-    change(user, deleted_at: now, deleted_by_user_id: deactivator.id)
+    if get_field(changeset, :deleted_at) do
+      add_error(changeset, :deleted_at, "is already deactivated")
+    else
+      now = DateTime.utc_now(:second)
+      change(user, deleted_at: now, deleted_by_user_id: deactivator.id)
+    end
   end
 
   def api_key_changeset(user) do

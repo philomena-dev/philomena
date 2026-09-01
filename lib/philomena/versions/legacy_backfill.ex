@@ -16,8 +16,11 @@ defmodule Philomena.Versions.LegacyBackfill do
   application code begins serving edits, via
   `Philomena.Release.backfill_versions/0`.
 
-  Deprecated as of Release 1.4.0
-  TODO: remove in 2.1.0
+  This remains supported while deployed installations may still have the
+  `versions_legacy` table and `Philomena.Release.backfill_versions/0` remains a
+  release entry point. Remove it only in a dedicated schema-cleanup change after
+  that compatibility window is explicitly closed and deployed backfills have
+  been verified.
   """
 
   alias Philomena.Repo

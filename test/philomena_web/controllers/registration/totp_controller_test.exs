@@ -25,7 +25,7 @@ defmodule PhilomenaWeb.Registration.TotpControllerTest do
       conn = get(conn, ~p"/registrations/totp/edit")
 
       assert redirected_to(conn) == ~p"/registrations/totp/edit"
-      assert Users.get_user!(user.id).encrypted_otp_secret
+      assert Users.fetch_user_for_worker!(user.id).encrypted_otp_secret
     end
 
     test "renders the setup page once a secret exists", %{conn: conn} do
@@ -64,7 +64,7 @@ defmodule PhilomenaWeb.Registration.TotpControllerTest do
 
       assert redirected_to(conn) == ~p"/registrations/totp/edit"
 
-      user = Users.get_user!(user.id)
+      user = Users.fetch_user_for_worker!(user.id)
       assert user.otp_required_for_login
       assert length(user.otp_backup_codes) == 10
     end
@@ -81,7 +81,7 @@ defmodule PhilomenaWeb.Registration.TotpControllerTest do
         })
 
       assert html_response(conn, 200) =~ "data:image/png;base64,"
-      refute Users.get_user!(user.id).otp_required_for_login
+      refute Users.fetch_user_for_worker!(user.id).otp_required_for_login
     end
 
     test "re-renders on an invalid TOTP code", %{conn: conn, user: user} do
@@ -99,7 +99,7 @@ defmodule PhilomenaWeb.Registration.TotpControllerTest do
         })
 
       assert html_response(conn, 200) =~ "data:image/png;base64,"
-      refute Users.get_user!(user.id).otp_required_for_login
+      refute Users.fetch_user_for_worker!(user.id).otp_required_for_login
     end
   end
 
@@ -118,7 +118,7 @@ defmodule PhilomenaWeb.Registration.TotpControllerTest do
 
       assert redirected_to(conn) == ~p"/registrations/totp/edit"
 
-      user = Users.get_user!(user.id)
+      user = Users.fetch_user_for_worker!(user.id)
       refute user.otp_required_for_login
       assert user.otp_backup_codes == []
       refute user.encrypted_otp_secret

@@ -12,12 +12,12 @@ defmodule PhilomenaWeb.Router do
     plug :put_secure_browser_headers
     plug :fetch_fingerprint
     plug :fetch_current_user
+    plug PhilomenaWeb.EnsureUserEnabledPlug
+    plug PhilomenaWeb.UserAttributionPlug
     plug PhilomenaWeb.ContentSecurityPolicyPlug
     plug PhilomenaWeb.CurrentFilterPlug
     plug PhilomenaWeb.ImageFilterPlug
     plug PhilomenaWeb.PaginationPlug
-    plug PhilomenaWeb.EnsureUserEnabledPlug
-    plug PhilomenaWeb.CurrentBanPlug
     plug PhilomenaWeb.NotificationCountPlug
     plug PhilomenaWeb.SiteNoticePlug
     plug PhilomenaWeb.ForumListPlug
@@ -27,8 +27,10 @@ defmodule PhilomenaWeb.Router do
   end
 
   pipeline :api do
+    plug :fetch_fingerprint
     plug PhilomenaWeb.ApiTokenPlug
     plug PhilomenaWeb.EnsureUserEnabledPlug
+    plug PhilomenaWeb.UserAttributionPlug
     plug PhilomenaWeb.CurrentFilterPlug
     plug PhilomenaWeb.FilterIdPlug
     plug PhilomenaWeb.ImageFilterPlug
@@ -51,10 +53,6 @@ defmodule PhilomenaWeb.Router do
     plug PhilomenaWeb.TorPlug
   end
 
-  pipeline :ensure_not_banned do
-    plug PhilomenaWeb.FilterBannedUsersPlug
-  end
-
   scope "/", PhilomenaWeb do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
 
@@ -73,25 +71,15 @@ defmodule PhilomenaWeb.Router do
   scope "/", PhilomenaWeb do
     pipe_through [
       :browser,
-      :ensure_not_banned,
       :ensure_tor_authorized,
       :redirect_if_user_is_authenticated
     ]
 
-    resources "/reactivations", ReactivationController, only: [:show, :create]
     resources "/registrations", RegistrationController, only: [:new, :create], singleton: true
-  end
-
-  scope "/", PhilomenaWeb do
-    pipe_through [
-      :browser,
-      :ensure_tor_authorized,
-      :redirect_if_user_is_authenticated
-    ]
-
-    resources "/passwords", PasswordController, only: [:new, :create, :edit, :update]
     resources "/confirmations", ConfirmationController, only: [:new, :create]
+    resources "/passwords", PasswordController, only: [:new, :create, :edit, :update]
     resources "/unlocks", UnlockController, only: [:new, :create, :show]
+    resources "/reactivations", ReactivationController, only: [:show, :create]
   end
 
   scope "/", PhilomenaWeb do
@@ -100,7 +88,7 @@ defmodule PhilomenaWeb.Router do
       :ensure_tor_authorized
     ]
 
-    resources "/confirmations", ConfirmationController, only: [:show]
+    resources "/confirmations", ConfirmationController, only: [:show, :update]
   end
 
   scope "/", PhilomenaWeb do
@@ -124,7 +112,7 @@ defmodule PhilomenaWeb.Router do
   end
 
   scope "/api/v1/rss", PhilomenaWeb.Api.Rss, as: :api_rss do
-    pipe_through [:accepts_rss, :api, :require_authenticated_user]
+    pipe_through [:accepts_rss, :api]
     resources "/watched", WatchedController, only: [:index]
   end
 
@@ -300,6 +288,10 @@ defmodule PhilomenaWeb.Router do
       resources "/ip_history", Profile.IpHistoryController, only: [:index]
       resources "/fp_history", Profile.FpHistoryController, only: [:index]
       resources "/aliases", Profile.AliasController, only: [:index]
+
+      resources "/tag_changes/revert", Profile.TagChange.RevertController,
+        only: [:create],
+        singleton: true
     end
 
     scope "/filters", Filter, as: :filter do
@@ -339,10 +331,20 @@ defmodule PhilomenaWeb.Router do
 
     resources "/ip_profiles", IpProfileController, only: [:show] do
       resources "/source_changes", IpProfile.SourceChangeController, only: [:index]
+      resources "/tag_changes", IpProfile.TagChangeController, only: [:index]
+
+      resources "/tag_changes/revert", IpProfile.TagChange.RevertController,
+        only: [:create],
+        singleton: true
     end
 
     resources "/fingerprint_profiles", FingerprintProfileController, only: [:show] do
       resources "/source_changes", FingerprintProfile.SourceChangeController, only: [:index]
+      resources "/tag_changes", FingerprintProfile.TagChangeController, only: [:index]
+
+      resources "/tag_changes/revert", FingerprintProfile.TagChange.RevertController,
+        only: [:create],
+        singleton: true
     end
 
     resources "/moderation_logs", ModerationLogController, only: [:index]
@@ -449,11 +451,6 @@ defmodule PhilomenaWeb.Router do
       only: [:create],
       singleton: true
 
-    resources "/tag_changes/full_revert", TagChange.FullRevertController,
-      as: :tag_change_full_revert,
-      only: [:create],
-      singleton: true
-
     resources "/pages", PageController, only: [:index, :new, :create, :edit, :update]
     resources "/channels", ChannelController, only: [:new, :create, :edit, :update, :delete]
     resources "/rules", RuleController, only: [:new, :create, :edit, :update]
@@ -482,6 +479,7 @@ defmodule PhilomenaWeb.Router do
       resources "/tags", Image.TagController, only: [:update], singleton: true
       resources "/sources", Image.SourceController, only: [:update], singleton: true
       resources "/source_changes", Image.SourceChangeController, only: [:index]
+      resources "/tag_changes", Image.TagChangeController, only: [:index]
       resources "/description", Image.DescriptionController, only: [:update], singleton: true
       resources "/navigate", Image.NavigateController, only: [:index]
       resources "/reports", Image.ReportController, only: [:new, :create]
@@ -500,7 +498,9 @@ defmodule PhilomenaWeb.Router do
 
     resources "/themes", ThemeController, only: [:index]
 
-    resources "/tags", TagController, only: [:index, :show]
+    resources "/tags", TagController, only: [:index, :show] do
+      resources "/tag_changes", Tag.TagChangeController, only: [:index]
+    end
 
     resources "/tag_changes", TagChangeController, only: [:index, :delete]
 
@@ -534,6 +534,7 @@ defmodule PhilomenaWeb.Router do
       resources "/reports", Profile.ReportController, only: [:new, :create]
       resources "/commission", Profile.CommissionController, only: [:show], singleton: true
       resources "/source_changes", Profile.SourceChangeController, only: [:index]
+      resources "/tag_changes", Profile.TagChangeController, only: [:index]
     end
 
     scope "/posts", Post, as: :post do

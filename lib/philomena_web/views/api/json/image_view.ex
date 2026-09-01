@@ -1,5 +1,6 @@
 defmodule PhilomenaWeb.Api.Json.ImageView do
   use PhilomenaWeb, :view
+  alias Philomena.Images
   alias PhilomenaWeb.ImageView
 
   def render("index.json", %{images: images, interactions: interactions, total: total} = assigns) do
@@ -47,7 +48,7 @@ defmodule PhilomenaWeb.Api.Json.ImageView do
   def render("image.json", %{conn: conn, image: %{hidden_from_users: false} = image}) do
     result = render_one(image, PhilomenaWeb.Api.Json.ImageView, "image.json", %{image: image})
 
-    Map.put(result, :spoilered, ImageView.filter_or_spoiler_hits?(conn, image))
+    Map.put(result, :spoilered, Images.filter_or_spoiler_hits?(image, conn.assigns.image_filter))
   end
 
   def render("image.json", %{image: %{hidden_from_users: false} = image}) do

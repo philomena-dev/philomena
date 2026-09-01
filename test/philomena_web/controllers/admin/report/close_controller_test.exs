@@ -47,19 +47,12 @@ defmodule PhilomenaWeb.Admin.Report.CloseControllerTest do
   describe "POST /admin/reports/:report_id/close (create) failure paths" do
     setup [:register_and_log_in_moderator]
 
-    # NOTE: an unknown report id takes Canary's not-found path on :create
-    # (authorization fails against the nil resource) - the authorization
-    # flash + redirect to /, not a 404.
     test "redirects for an unknown report id", %{conn: conn} do
       conn = post(conn, ~p"/admin/reports/#{0}/close")
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
-    # NOTE: a non-integer report id short-circuits to NotFoundPlug via the
-    # central IntegerId guard before Canary authorizes, so the flash is the
-    # not-found message rather than the "You can't access that page." an unknown
-    # integer id gets.
     test "redirects with the not-found flash for a non-integer report id", %{conn: conn} do
       conn = post(conn, ~p"/admin/reports/not-an-integer/close")
       assert redirected_to(conn) == "/"
