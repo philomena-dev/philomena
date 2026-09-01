@@ -51,7 +51,7 @@ defmodule Philomena.Release do
 
   def verify_artist_links do
     start_app()
-    Philomena.ArtistLinks.automatic_verify!()
+    Philomena.ArtistLinks.run_automatic_verification!()
   end
 
   def update_stats do
@@ -74,9 +74,14 @@ defmodule Philomena.Release do
     Philomena.Tags.cleanup!()
   end
 
+  def replace_aliases_in_implied_tags do
+    start_app()
+    Philomena.Tags.replace_aliases_in_implied_tags!()
+  end
+
   def convert_reports do
     start_app()
-    Philomena.Reports.convert_reports!()
+    Philomena.Reports.LegacyConverter.convert_reports!()
   end
 
   def backfill_versions do

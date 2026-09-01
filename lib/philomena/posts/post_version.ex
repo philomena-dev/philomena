@@ -4,6 +4,8 @@ defmodule Philomena.Posts.PostVersion do
   alias Philomena.Posts.Post
   alias Philomena.Users.User
 
+  @type t :: %__MODULE__{}
+
   schema "post_versions" do
     belongs_to :post, Post
     belongs_to :user, User

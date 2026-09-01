@@ -1,4 +1,12 @@
 defmodule Philomena.Comments.Query do
+  @moduledoc """
+  Compiles the user-facing comment search language.
+  """
+
+  import Philomena.Authorization, only: [authorize: 3]
+
+  alias Philomena.Attribution.Actor
+  alias Philomena.Comments.Comment
   alias PhilomenaQuery.Parse.Parser
   alias Philomena.Tags.Tag
 
@@ -51,21 +59,38 @@ defmodule Philomena.Comments.Query do
     |> Parser.parse(query_string, context)
   end
 
-  def compile(query_string, opts \\ []) do
-    user = Keyword.get(opts, :user)
+  defp fields_for(nil), do: anonymous_fields()
 
-    case user do
-      nil ->
-        parse(anonymous_fields(), %{user: nil}, query_string)
-
-      %{role: role} when role in ~W(user assistant) ->
-        parse(user_fields(), %{user: user}, query_string)
-
-      %{role: role} when role in ~W(moderator admin) ->
-        parse(moderator_fields(), %{user: user}, query_string)
-
-      _ ->
-        raise ArgumentError, "Unknown user role."
+  defp fields_for(%Actor{} = actor) do
+    case authorize(actor, :search_sensitive, Comment) do
+      :ok -> moderator_fields()
+      {:error, :unauthorized} -> user_fields()
     end
+  end
+
+  @doc """
+  Compiles `query_string` using the fields available to `opts[:actor]`.
+
+  Anonymous callers receive public fields, signed-in callers receive the `my`
+  transform, and actors authorized for sensitive comment search receive
+  moderation metadata fields as well.
+
+  ## Examples
+
+      iex> compile("body:hello", actor: actor)
+      {:ok, %{match: %{body: %{query: "hello", analyzer: "fulltext_analyzer"}}}}
+
+      iex> compile("ip:192.0.2.1", actor: moderator_actor)
+      {:ok, %{term: %{ip: "192.0.2.1"}}}
+
+  """
+  @spec compile(String.t() | nil, keyword()) :: {:ok, map()} | {:error, String.t()}
+  def compile(query_string, opts \\ []) do
+    actor = Keyword.get(opts, :actor)
+    user = if actor, do: actor.user
+
+    actor
+    |> fields_for()
+    |> parse(%{user: user}, query_string)
   end
 end

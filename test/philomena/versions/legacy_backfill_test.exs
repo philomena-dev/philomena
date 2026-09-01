@@ -13,6 +13,7 @@ defmodule Philomena.Versions.LegacyBackfillTest do
 
   use Philomena.DataCase, async: true
 
+  import Philomena.AttributionFixtures, only: [actor: 1]
   import Philomena.CommentsFixtures
   import Philomena.ForumsFixtures
   import Philomena.ImagesFixtures
@@ -26,6 +27,11 @@ defmodule Philomena.Versions.LegacyBackfillTest do
   alias Philomena.Posts.PostVersion
   alias Philomena.Versions
   alias Philomena.Versions.LegacyBackfill
+
+  defp update_post(post, actor, attrs) do
+    post = Repo.preload(post, topic: :forum)
+    Posts.update_post(actor, post.topic.forum.short_name, post.topic.slug, post.id, attrs)
+  end
 
   # Insert a paper_trail-shaped row into versions_legacy. `object` is a JSON
   # string (or nil for a 'create' event), `whodunnit` is a string id (or nil),
@@ -118,7 +124,7 @@ defmodule Philomena.Versions.LegacyBackfillTest do
 
       # Four rows: the synthesized initial (author, oldest object body, nil
       # reason), then each legacy row shifted forward to take the next row's
-      # object body — the newest taking the live post's current state. Each
+      # object body - the newest taking the live post's current state. Each
       # shifted row keeps its own legacy whodunnit.
       assert post_rows(post) == [
                {"body v0", nil, author.id},
@@ -336,12 +342,16 @@ defmodule Philomena.Versions.LegacyBackfillTest do
     test "raises when a target table already contains rows" do
       forum = forum_fixture()
       author = confirmed_user_fixture()
-      editor = confirmed_user_fixture()
       topic = topic_fixture(forum, author, %{"posts" => %{"0" => %{"body" => "original"}}})
       [post] = topic.posts
 
       # A real edit populates post_versions through the normal path.
-      {:ok, _} = Posts.update_post(post, editor, %{"body" => "edited", "edit_reason" => "x"})
+      {:ok, _} =
+        update_post(post, actor(author), %{
+          "body" => "edited",
+          "edit_reason" => "x"
+        })
+
       assert Repo.aggregate(PostVersion, :count) > 0
 
       assert_raise RuntimeError, ~r/post_versions already contains/, fn ->
@@ -350,7 +360,7 @@ defmodule Philomena.Versions.LegacyBackfillTest do
     end
   end
 
-  describe "load_post_versions/1 after backfill" do
+  describe "for_post/1 after backfill" do
     test "reproduces the legacy edit history as display entries" do
       {post, _author} = seed_post()
       u1 = confirmed_user_fixture()
@@ -389,7 +399,7 @@ defmodule Philomena.Versions.LegacyBackfillTest do
       assert :ok = LegacyBackfill.run!()
 
       entries =
-        Versions.load_post_versions(post)
+        Versions.for_post(post)
         |> Enum.map(&{&1.body, &1.previous_body, &1.edit_reason})
 
       # Newest-first, each entry pairs an after-edit body with the next-older

@@ -28,6 +28,16 @@ defmodule PhilomenaWeb.Image.ReportingControllerTest do
       refute response =~ "You must"
     end
 
+    test "rejects a banned user with the same prerequisite as submission", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_banned_user(%{conn: conn})
+      image = image_fixture()
+
+      conn = get(conn, ~p"/images/#{image}/reporting")
+
+      assert redirected_to(conn) == "/"
+      assert Flash.get(conn.assigns.flash, :error) =~ "You are currently banned"
+    end
+
     test "redirects to / for a hidden image as anonymous", %{conn: conn} do
       image = image_fixture(hidden_from_users: true)
 
@@ -41,7 +51,7 @@ defmodule PhilomenaWeb.Image.ReportingControllerTest do
       conn = get(conn, ~p"/images/999999999/reporting")
 
       assert redirected_to(conn) == "/"
-      assert Flash.get(conn.assigns.flash, :error) =~ "You can't access that page."
+      assert Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 end

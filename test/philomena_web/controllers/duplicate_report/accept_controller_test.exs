@@ -54,15 +54,13 @@ defmodule PhilomenaWeb.DuplicateReport.AcceptControllerTest do
       assert source.duplicate_id == target.id
     end
 
-    test "an unknown report id takes the not-authorized redirect", %{conn: conn} do
+    test "an unknown report id takes the not-found redirect", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      # NOTE: load_and_authorize_resource authorizes a nil resource for a
-      # moderator (no rule matches), so an unknown id redirects rather than 404s.
       conn = post(conn, ~p"/duplicate_reports/#{123_456_789}/accept")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "can't access"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
     test "a non-integer report id redirects with the not-found flash", %{conn: conn} do

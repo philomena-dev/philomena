@@ -9,14 +9,10 @@ defmodule PhilomenaWeb.ReportView do
   alias Philomena.Posts.Post
   alias Philomena.Users.User
   alias Philomena.Reports.Report
-  alias Philomena.Rules
-
   import Ecto.Changeset
 
-  def report_categories do
-    Rules.list_reportable_rules()
-    |> Enum.map(&{"#{&1.name}: #{&1.short_description}", &1.id})
-  end
+  def report_categories(rules),
+    do: Enum.map(rules, &{"#{&1.name}: #{&1.short_description}", &1.id})
 
   def image?(changeset), do: not is_nil(get_field(changeset, :image_id))
   def conversation?(changeset), do: not is_nil(get_field(changeset, :conversation_id))

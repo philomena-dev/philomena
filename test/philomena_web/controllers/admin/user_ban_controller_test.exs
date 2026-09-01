@@ -73,7 +73,8 @@ defmodule PhilomenaWeb.Admin.UserBanControllerTest do
   describe "GET /admin/user_bans/new" do
     test "rejects a regular user", %{conn: conn} do
       %{conn: conn} = register_and_log_in_user(%{conn: conn})
-      conn = get(conn, ~p"/admin/user_bans/new")
+      target = confirmed_user_fixture()
+      conn = get(conn, ~p"/admin/user_bans/new?#{[user_id: target.id]}")
       assert redirected_to(conn) == "/"
     end
 

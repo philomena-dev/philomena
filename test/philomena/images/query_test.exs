@@ -47,4 +47,19 @@ defmodule Philomena.Images.QueryTest do
       assert {:error, _} = Query.compile("my:watched", user: nil)
     end
   end
+
+  describe "compile_with_tag_names/2" do
+    test "collects unique tags from nested positive and negative clauses" do
+      assert {:ok, %{query: query, tag_names: names}} =
+               Query.compile_with_tag_names("safe AND (cute OR -artist:Example) AND safe")
+
+      assert is_map(query)
+      assert Enum.sort(names) == ["artist:example", "cute", "safe"]
+    end
+
+    test "returns the normal parser error for malformed input" do
+      assert {:error, message} = Query.compile_with_tag_names("width.gte:abc")
+      assert is_binary(message)
+    end
+  end
 end

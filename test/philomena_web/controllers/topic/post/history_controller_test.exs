@@ -1,6 +1,7 @@
 defmodule PhilomenaWeb.Topic.Post.HistoryControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
+  import Philomena.AttributionFixtures, only: [actor: 1]
   import Philomena.ForumsFixtures
   import Philomena.TopicsFixtures
   import Philomena.UsersFixtures
@@ -18,7 +19,7 @@ defmodule PhilomenaWeb.Topic.Post.HistoryControllerTest do
       [post] = topic.posts
 
       {:ok, _} =
-        Posts.update_post(post, author, %{
+        Posts.update_post(actor(author), forum.short_name, topic.slug, post.id, %{
           "body" => "Original post body plus an edit",
           "edit_reason" => "typo fix"
         })
@@ -67,7 +68,9 @@ defmodule PhilomenaWeb.Topic.Post.HistoryControllerTest do
       conn = get(conn, ~p"/forums/nonexistent/topics/nonexistent/posts/1/history")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Couldn't find what you were looking for!"
     end
   end
 end

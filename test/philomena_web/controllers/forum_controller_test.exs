@@ -31,9 +31,9 @@ defmodule PhilomenaWeb.ForumControllerTest do
     test "renders an empty index when the user can see no forums", %{conn: conn} do
       _staff = forum_fixture(name: "Staff Lounge", access_level: "staff")
 
-      # NOTE: the empty ForumListPlug assign is now handled - Canary no longer
-      # probes Enum.at(resources, 0).__struct__ on the empty list, so a user
-      # who can see zero forums gets an empty index instead of a 500.
+      # NOTE: an empty forum list renders cleanly - nothing probes the first
+      # element of the loaded list, so a user who can see zero forums gets an
+      # empty index rather than a 500.
       conn = get(conn, ~p"/forums")
       response = html_response(conn, 200)
 
@@ -57,11 +57,13 @@ defmodule PhilomenaWeb.ForumControllerTest do
     test "redirects to / for an unknown short name", %{conn: conn} do
       # NOTE: an unknown forum is a 302 redirect with a flash, not a 404 page
       # (unlike the JSON API, which returns a bare 404) - and the flash is the
-      # *authorization* message, not the not-found one.
+      # not-found message.
       conn = get(conn, ~p"/forums/nonexistent")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Couldn't find what you were looking for!"
     end
 
     test "redirects to / for a restricted forum", %{conn: conn} do
