@@ -103,6 +103,26 @@ defmodule PhilomenaWeb.PageControllerTest do
       assert response =~ "All <em>about</em> this test site."
     end
 
+    test "renders the edit link only for static-page managers", %{conn: conn} do
+      page = static_page_fixture(user_fixture(), %{title: "Managed Page"})
+
+      plain_response =
+        html_response(get(log_in_user(conn, moderator_user_fixture()), ~p"/pages/#{page}"), 200)
+
+      refute plain_response =~ ~p"/pages/#{page}/edit"
+
+      role_response =
+        html_response(get(log_in_role_moderator(conn, "StaticPage"), ~p"/pages/#{page}"), 200)
+
+      assert role_response =~ "Edit"
+      assert role_response =~ ~p"/pages/#{page}/edit"
+
+      admin_response =
+        html_response(get(log_in_user(conn, admin_user_fixture()), ~p"/pages/#{page}"), 200)
+
+      assert admin_response =~ ~p"/pages/#{page}/edit"
+    end
+
     test "redirects to / for an unknown slug", %{conn: conn} do
       conn = get(conn, ~p"/pages/nonexistent-page")
 

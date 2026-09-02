@@ -143,6 +143,43 @@ defmodule PhilomenaWeb.Profile.ArtistLinkControllerTest do
       assert response =~ link.uri
     end
 
+    test "renders artist-link management controls only for link moderators", %{conn: conn} do
+      artist = confirmed_user_fixture()
+      link = artist_link_fixture(artist)
+
+      owner_response =
+        html_response(
+          get(log_in_user(conn, artist), ~p"/profiles/#{artist}/artist_links/#{link}"),
+          200
+        )
+
+      refute owner_response =~ ~p"/profiles/#{artist}/artist_links/#{link}/edit"
+      refute owner_response =~ ~p"/admin/artist_links/#{link}/verification"
+
+      assistant = role_assistant_fixture("ArtistLink")
+
+      assistant_conn =
+        get(log_in_user(conn, assistant), ~p"/profiles/#{artist}/artist_links/#{link}")
+
+      assistant_response = html_response(assistant_conn, 200)
+
+      refute assistant_response =~ ~p"/profiles/#{artist}/artist_links/#{link}/edit"
+      refute assistant_response =~ ~p"/admin/artist_links/#{link}/verification"
+      refute assistant_response =~ ~p"/admin/artist_links/#{link}/reject"
+
+      moderator_response =
+        html_response(
+          get(
+            log_in_user(conn, moderator_user_fixture()),
+            ~p"/profiles/#{artist}/artist_links/#{link}"
+          ),
+          200
+        )
+
+      assert moderator_response =~ ~p"/profiles/#{artist}/artist_links/#{link}/edit"
+      assert moderator_response =~ ~p"/admin/artist_links/#{link}/verification"
+    end
+
     test "renders another user's link for a moderator", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       artist = confirmed_user_fixture()
