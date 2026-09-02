@@ -51,6 +51,39 @@ defmodule PhilomenaWeb.Profile.CommissionControllerTest do
       assert html_response(conn, 200) =~ "Showing Commission - Derpibooru"
     end
 
+    test "renders commission edit controls only to the owner or a moderator", %{conn: conn} do
+      artist = confirmed_user_fixture()
+      commission = commission_fixture(artist)
+      item = commission_item_fixture(commission)
+
+      owner_response =
+        html_response(get(log_in_user(conn, artist), ~p"/profiles/#{artist}/commission"), 200)
+
+      assert owner_response =~ "Edit this listing"
+      assert owner_response =~ "Delete this listing"
+      assert owner_response =~ "Edit item"
+      assert owner_response =~ ~p"/profiles/#{artist}/commission/items/#{item}/edit"
+
+      other_response =
+        html_response(
+          get(log_in_user(conn, confirmed_user_fixture()), ~p"/profiles/#{artist}/commission"),
+          200
+        )
+
+      refute other_response =~ "Edit this listing"
+      refute other_response =~ "Delete this listing"
+      refute other_response =~ "Edit item"
+
+      moderator_response =
+        html_response(
+          get(log_in_user(conn, moderator_user_fixture()), ~p"/profiles/#{artist}/commission"),
+          200
+        )
+
+      assert moderator_response =~ "Edit this listing"
+      assert moderator_response =~ "Edit item"
+    end
+
     test "redirects to / for a user without a commission", %{conn: conn} do
       user = confirmed_user_fixture()
 

@@ -12,6 +12,7 @@ defmodule PhilomenaWeb.ImageControllerTest do
   alias Philomena.Images.Image
   alias Philomena.Tags.Tag
   alias Philomena.Repo
+  alias Philomena.Roles.Role
 
   setup do
     Search.clear_index!(Image)
@@ -19,6 +20,13 @@ defmodule PhilomenaWeb.ImageControllerTest do
     # (TagView.lookup_quick_tags/1) the first time it is built in a test run.
     Search.clear_index!(Tag)
     :ok
+  end
+
+  defp assistant_with_image_role do
+    assistant = Philomena.UsersFixtures.assistant_user_fixture()
+    role = Repo.insert!(%Role{name: "moderator", resource_type: "Image"})
+    Repo.insert_all("users_roles", [%{user_id: assistant.id, role_id: role.id}])
+    assistant
   end
 
   describe "GET /images" do
@@ -100,6 +108,75 @@ defmodule PhilomenaWeb.ImageControllerTest do
       assert html_response(conn, 200) =~ "##{image.id} - safe - Derpibooru"
     end
 
+    test "renders an embedded thumbnail through the image target", %{conn: conn} do
+      target = image_fixture()
+      image = image_fixture(description: ">>#{target.id}t")
+
+      response = html_response(get(conn, ~p"/images/#{image}"), 200)
+
+      assert response =~ ~s(data-image-id="#{target.id}")
+    end
+
+    test "renders description, source, and tag editing for an image owner", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+
+      image =
+        image_fixture(
+          user_id: user.id,
+          description: "Owner description",
+          sources: ["https://example.com/source"]
+        )
+
+      response = html_response(get(conn, ~p"/images/#{image}"), 200)
+
+      assert response =~ ~s(id="edit-description")
+      assert response =~ ~s(id="edit-source")
+      assert response =~ ~s(id="edit-tags")
+      assert response =~ "Save sources"
+      assert response =~ "Save tags"
+    end
+
+    test "an Image assistant role map enables moderation and metadata controls", %{conn: conn} do
+      image =
+        image_fixture(
+          approved: false,
+          tag_editing_allowed: false,
+          description_editing_allowed: false,
+          sources: ["https://example.com/source"],
+          ip: %Postgrex.INET{address: {192, 0, 2, 50}, netmask: 32},
+          fingerprint: "image-assistant-fingerprint"
+        )
+
+      plain_assistant = Philomena.UsersFixtures.assistant_user_fixture()
+
+      plain_response =
+        html_response(get(log_in_user(conn, plain_assistant), ~p"/images/#{image}"), 200)
+
+      refute plain_response =~ "Manage"
+      refute plain_response =~ ~p"/images/#{image}/approve"
+      refute plain_response =~ "Save sources"
+      refute plain_response =~ "Save tags"
+      refute plain_response =~ ~s(id="edit-description")
+      refute plain_response =~ "192.0.2.50"
+      refute plain_response =~ "image-assistant-fingerprint"
+
+      role_response =
+        html_response(
+          get(log_in_user(conn, assistant_with_image_role()), ~p"/images/#{image}"),
+          200
+        )
+
+      assert role_response =~ "Manage"
+      assert role_response =~ "Replace"
+      assert role_response =~ "Approve image"
+      assert role_response =~ "Wipe"
+      assert role_response =~ ~s(id="edit-description")
+      assert role_response =~ "Save sources"
+      assert role_response =~ "Save tags"
+      refute role_response =~ "192.0.2.50"
+      refute role_response =~ "image-assistant-fingerprint"
+    end
+
     test "does not render mutation controls for a banned viewer", %{conn: conn} do
       %{conn: conn} = register_and_log_in_banned_user(%{conn: conn})
       image = image_fixture()
@@ -145,6 +222,31 @@ defmodule PhilomenaWeb.ImageControllerTest do
       response = html_response(conn, 200)
       assert response =~ "This image has been deleted"
       assert response =~ "Done by:"
+      assert response =~ ~s(id="image_options_area")
+      assert response =~ "data-uris="
+      refute response =~ "Destroy image"
+    end
+
+    test "an Image-admin role map moderator gets the destroy affordance", %{conn: conn} do
+      image = image_fixture(hidden_from_users: true)
+      conn = log_in_role_moderator(conn, "Image")
+
+      response = html_response(get(conn, ~p"/images/#{image}"), 200)
+
+      assert response =~ "Done by:"
+      assert response =~ "Destroy image"
+      assert response =~ ~p"/images/#{image}/destroy"
+    end
+
+    test "regular viewers do not receive hidden image media or moderation tools", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+      image = image_fixture(hidden_from_users: true)
+
+      response = html_response(get(conn, ~p"/images/#{image}"), 200)
+
+      refute response =~ "Done by:"
+      refute response =~ ~s(id="image_options_area")
+      refute response =~ "data-uris="
     end
 
     test "redirects a merged duplicate to its target", %{conn: conn} do

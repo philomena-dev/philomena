@@ -251,4 +251,21 @@ defmodule PhilomenaWeb.ConnCase do
 
     :ok
   end
+
+  @doc """
+  Helper to set up the conn with global assigns set by the application shell.
+  """
+  def viewer_conn(conn, user) do
+    conn
+    |> Plug.Conn.assign(:current_user, user)
+    |> Plug.Conn.assign(:image_filter, %Philomena.Filters.ImageFilter{
+      query: %{match_all: %{}},
+      display_query: %{match_none: %{}},
+      display_tag_ids: []
+    })
+    |> Phoenix.ConnTest.init_test_session(%{})
+    |> PhilomenaWeb.Fingerprint.fetch_fingerprint([])
+    |> PhilomenaWeb.UserAttributionPlug.call([])
+    |> PhilomenaWeb.AdminCountersPlug.call([])
+  end
 end

@@ -27,13 +27,17 @@ defmodule PhilomenaWeb.TagChangeControllerTest do
     :ok
   end
 
-  defp tag_change_fixture!(user, added_tags \\ "added test tag, other added tag") do
+  defp tag_change_fixture!(
+         user,
+         added_tags \\ "added test tag, other added tag",
+         actor_opts \\ []
+       ) do
     image = image_fixture()
 
     # The tag changeset requires at least 3 tags, so the update keeps the
     # fixture's "safe" tag and adds two more.
     {:ok, _} =
-      Images.update_image_tags(actor(user), image.id, %{
+      Images.update_image_tags(actor(user, actor_opts), image.id, %{
         "old_tag_input" => "safe",
         "tag_input" => "safe, #{added_tags}"
       })
@@ -175,6 +179,25 @@ defmodule PhilomenaWeb.TagChangeControllerTest do
 
       assert response =~ "filtered marker tag"
       refute response =~ "unrelated marker tag"
+    end
+
+    test "discloses tag-change identity metadata only to authorized viewers", %{conn: conn} do
+      user = confirmed_user_fixture()
+
+      tag_change_fixture!(user, "identity marker tag, second tag",
+        ip: %Postgrex.INET{address: {198, 51, 100, 25}, netmask: 32},
+        fingerprint: "ctagchange"
+      )
+
+      anonymous_response = html_response(get(conn, ~p"/tag_changes"), 200)
+      refute anonymous_response =~ "198.51.100.25"
+      refute anonymous_response =~ "ctagchange"
+
+      moderator_response =
+        html_response(get(log_in_user(conn, moderator_user_fixture()), ~p"/tag_changes"), 200)
+
+      assert moderator_response =~ "198.51.100.25"
+      assert moderator_response =~ "ctagcha"
     end
 
     test "tcq composes with an image route as AND", %{conn: conn} do
