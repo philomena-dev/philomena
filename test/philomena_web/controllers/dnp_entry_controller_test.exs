@@ -77,6 +77,69 @@ defmodule PhilomenaWeb.DnpEntryControllerTest do
       assert response =~ "DNP Listing for Tag"
       assert response =~ "test-shown-artist"
       assert response =~ "Test shown conditions"
+      assert response =~ "Test shown reason"
+      refute response =~ "Feedback:"
+      refute response =~ "Status:"
+    end
+
+    test "renders moderation affordances and feedback for moderators", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+      tag = tag_fixture(name: "artist:test-moderation-artist")
+
+      entry =
+        dnp_entry_fixture(confirmed_user_fixture(), tag, %{
+          "instructions" => "Test moderation instructions",
+          "feedback" => "Test moderation feedback"
+        })
+
+      response = html_response(get(conn, ~p"/dnp/#{entry}"), 200)
+
+      assert response =~ ~p"/dnp/#{entry}/edit"
+      assert response =~ "Test DNP reason"
+      assert response =~ "Test moderation instructions"
+      assert response =~ "Test moderation feedback"
+      assert response =~ "Status:"
+      assert response =~ "Claim"
+      assert response =~ "Approve"
+      assert response =~ "Close"
+      assert response =~ ~p"/admin/dnp_entries/#{entry}/transition?#{[state: "listed"]}"
+    end
+
+    test "renders private feedback to the requesting user without moderation controls",
+         %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      tag = tag_fixture(name: "artist:test-requester-details-artist")
+
+      entry =
+        dnp_entry_fixture(user, tag, %{
+          "instructions" => "Requester instructions",
+          "feedback" => "Requester feedback"
+        })
+
+      response = html_response(get(conn, ~p"/dnp/#{entry}"), 200)
+
+      assert response =~ "Test DNP reason"
+      assert response =~ "Requester instructions"
+      assert response =~ "Requester feedback"
+      assert response =~ "Status:"
+      refute response =~ ~p"/dnp/#{entry}/edit"
+      refute response =~ "Approve"
+    end
+
+    test "hides a listed entry's reason when requested", %{conn: conn} do
+      tag = tag_fixture(name: "artist:test-hidden-reason-artist")
+
+      entry =
+        dnp_entry_fixture(confirmed_user_fixture(), tag, %{
+          "reason" => "Secret DNP reason",
+          "hide_reason" => true,
+          state: "listed"
+        })
+
+      response = html_response(get(conn, ~p"/dnp/#{entry}"), 200)
+
+      refute response =~ "Secret DNP reason"
+      refute response =~ "Reason:"
     end
 
     test "redirects to / for a requested entry as anonymous", %{conn: conn} do

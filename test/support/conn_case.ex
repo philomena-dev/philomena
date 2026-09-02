@@ -224,4 +224,21 @@ defmodule PhilomenaWeb.ConnCase do
     n = System.unique_integer([:positive])
     %{conn | remote_ip: {10, rem(div(n, 65536), 256), rem(div(n, 256), 256), rem(n, 256)}}
   end
+
+  @doc """
+  Helper to set up the conn with global assigns set by the application shell.
+  """
+  def viewer_conn(conn, user) do
+    conn
+    |> Plug.Conn.assign(:current_user, user)
+    |> Plug.Conn.assign(:image_filter, %Philomena.Filters.ImageFilter{
+      query: %{match_all: %{}},
+      display_query: %{match_none: %{}},
+      display_tag_ids: []
+    })
+    |> Phoenix.ConnTest.init_test_session(%{})
+    |> PhilomenaWeb.Fingerprint.fetch_fingerprint([])
+    |> PhilomenaWeb.UserAttributionPlug.call([])
+    |> PhilomenaWeb.AdminCountersPlug.call([])
+  end
 end
