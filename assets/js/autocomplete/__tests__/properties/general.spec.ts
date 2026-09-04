@@ -2,20 +2,20 @@ import { autocompleteTest } from '../context.ts';
 
 autocompleteTest('should only work on known query fields', async ({ ctx, expect }) => {
   // First, testing just an empty name: this should not give any properties.
-  await ctx.setInput('a');
+  await ctx.setInput('b');
   expect(ctx.snapUi()).toMatchInlineSnapshot(`
     {
-      "input": "a<>",
+      "input": "b<>",
       "suggestions": [],
     }
   `);
 
   // Next trying to match something for unknown name: this should not to give anything as well.
   await ctx.setName('unknown');
-  await ctx.setInput('a');
+  await ctx.setInput('b');
   expect(ctx.snapUi()).toMatchInlineSnapshot(`
     {
-      "input": "a<>",
+      "input": "b<>",
       "suggestions": [],
     }
   `);
