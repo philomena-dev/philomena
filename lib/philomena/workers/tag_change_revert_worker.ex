@@ -1,4 +1,6 @@
 defmodule Philomena.TagChangeRevertWorker do
+  use Oban.Worker, queue: :indexing, max_attempts: 5
+
   @moduledoc """
   Reverts every tag change made by a user, IP, or fingerprint, batching by
   image so each image's tag history is reverted in a single operation.
@@ -7,6 +9,9 @@ defmodule Philomena.TagChangeRevertWorker do
   alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
   import Ecto.Query
+
+  @impl Oban.Worker
+  def perform(%Oban.Job{args: %{"args" => args}}), do: apply(__MODULE__, :perform, args)
 
   def perform(%{"user_id" => user_id, "attributes" => attributes}) do
     TagChange

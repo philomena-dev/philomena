@@ -1,6 +1,6 @@
 defmodule Philomena.BackgroundJobsTest do
   use Philomena.DataCase, async: false
-  use Patch
+  import Ecto.Query
 
   import Philomena.AttributionFixtures
   import Philomena.ImagesFixtures
@@ -29,17 +29,39 @@ defmodule Philomena.BackgroundJobsTest do
   alias Philomena.Users
   alias Philomena.Users.User
 
-  defp assert_enqueued(queue, worker, arguments, count \\ 1) do
-    call = {:enqueue, [Exq, queue, worker, arguments]}
-    assert Enum.count(history(Exq), &(&1 == call)) == count
+  setup do
+    baseline_id = Repo.one(from job in Oban.Job, select: max(job.id)) || 0
+    Process.put(:oban_test_baseline_id, baseline_id)
+    :ok
   end
+
+  defp assert_enqueued(queue, worker, arguments, count \\ 1) do
+    baseline_id = Process.get(:oban_test_baseline_id)
+
+    jobs =
+      from(job in Oban.Job,
+        where:
+          job.queue == ^queue and job.worker == ^inspect(worker) and
+            job.id > ^baseline_id,
+        select: job.args
+      )
+
+    expected = %{"args" => stringify_keys(arguments)}
+    assert Enum.count(Repo.all(jobs), &(&1 == expected)) >= count
+  end
+
+  defp stringify_keys(value) when is_list(value), do: Enum.map(value, &stringify_keys/1)
+
+  defp stringify_keys(value) when is_map(value) do
+    Map.new(value, fn {key, value} -> {to_string(key), stringify_keys(value)} end)
+  end
+
+  defp stringify_keys(value), do: value
 
   describe "search indexing jobs" do
     test "comments enqueue the selected id column and values" do
       comment = %Comment{id: 11}
       image = %Image{id: 12}
-      spy(Exq)
-
       assert Comments.reindex_comment(comment) == comment
       assert Comments.reindex_comments_on_image(image) == image
       assert Comments.reindex_comments_on_images([12, 13]) == [12, 13]
@@ -51,8 +73,6 @@ defmodule Philomena.BackgroundJobsTest do
 
     test "filters enqueue their id" do
       filter = %Filter{id: 21}
-      spy(Exq)
-
       assert Filters.reindex_filter(filter) == filter
 
       assert_enqueued("indexing", Philomena.IndexWorker, ["Filters", "id", [21]])
@@ -60,8 +80,6 @@ defmodule Philomena.BackgroundJobsTest do
 
     test "galleries enqueue one or many ids and skip an empty batch" do
       gallery = %Gallery{id: 31}
-      spy(Exq)
-
       assert Galleries.reindex_gallery(gallery) == gallery
       assert Galleries.reindex_galleries([31, 32]) == [31, 32]
       assert Galleries.reindex_galleries([]) == []
@@ -72,8 +90,6 @@ defmodule Philomena.BackgroundJobsTest do
 
     test "images enqueue one or many ids" do
       image = %Image{id: 41}
-      spy(Exq)
-
       assert Images.reindex_image(image) == image
       assert Images.reindex_images([41, 42]) == [41, 42]
 
@@ -84,8 +100,6 @@ defmodule Philomena.BackgroundJobsTest do
     test "posts enqueue a post id or a topic id" do
       post = %Post{id: 51}
       topic = %Topic{id: 52}
-      spy(Exq)
-
       assert Posts.reindex_post(post) == post
       assert Posts.reindex_posts_in_topic(topic) == :ok
 
@@ -98,7 +112,6 @@ defmodule Philomena.BackgroundJobsTest do
       tags = "safe, background base one, background base two"
       image = image_fixture(tags: tags)
       reset_tag_change_limits(attribution(user))
-      spy(Exq)
 
       assert {:ok, _image} =
                Images.update_image_tags(actor(user), image.id, %{
@@ -118,8 +131,6 @@ defmodule Philomena.BackgroundJobsTest do
     test "tags enqueue a batch of ids" do
       tag = %Tag{id: 71}
       other_tag = %Tag{id: 72}
-      spy(Exq)
-
       assert Tags.reindex_tags([tag, other_tag]) == [tag, other_tag]
 
       assert_enqueued("indexing", Philomena.IndexWorker, ["Tags", "id", [71, 72]])
@@ -127,8 +138,6 @@ defmodule Philomena.BackgroundJobsTest do
 
     test "users enqueue their id" do
       user = %User{id: 81}
-      spy(Exq)
-
       assert Users.reindex_user(user) == user
 
       assert_enqueued("indexing", Philomena.IndexWorker, ["Users", "id", [81]])
@@ -142,8 +151,6 @@ defmodule Philomena.BackgroundJobsTest do
       video = image_fixture(image_mime_type: "video/webm", image_format: "webm")
       image_id = image.id
       video_id = video.id
-      spy(Exq)
-
       assert {:ok, repaired_image} = Images.create_image_repair(actor(moderator), image.id)
       assert {:ok, repaired_video} = Images.create_image_repair(actor(moderator), video.id)
       assert repaired_image.id == image.id
@@ -161,8 +168,6 @@ defmodule Philomena.BackgroundJobsTest do
       expected_files =
         Thumbnailer.thumbnail_urls(image, hidden_key) ++ Thumbnailer.thumbnail_urls(image, nil)
 
-      spy(Exq)
-
       assert {:ok, _image} = Images.create_image_repair(actor(moderator), image.id)
 
       assert_enqueued("indexing", Philomena.ImagePurgeWorker, [expected_files])
@@ -178,8 +183,6 @@ defmodule Philomena.BackgroundJobsTest do
       target_id = target.id
       delete_tag_id = delete_tag.id
       alias_tag_id = alias_tag.id
-      spy(Exq)
-
       assert {:ok, %Tag{id: ^delete_tag_id}} = Tags.delete_tag(actor(admin), delete_tag.slug)
 
       assert {:ok, aliased} =
@@ -204,8 +207,6 @@ defmodule Philomena.BackgroundJobsTest do
       admin = admin_user_fixture()
       target = user_fixture(name: "background target")
       target_id = target.id
-      spy(Exq)
-
       assert {:ok, %User{id: ^target_id}} = Users.delete_user_downvotes(actor(admin), target.slug)
       assert {:ok, %User{id: ^target_id}} = Users.delete_user_votes(actor(admin), target.slug)
       assert {:ok, %User{id: ^target_id}} = Users.create_user_wipe(actor(admin), target.slug)
@@ -243,8 +244,6 @@ defmodule Philomena.BackgroundJobsTest do
         batch_size: 100
       }
 
-      spy(Exq)
-
       assert {:ok, %User{id: ^target_id}} =
                TagChanges.create_user_tag_change_revert(moderator_actor, target.slug)
 
@@ -275,7 +274,6 @@ defmodule Philomena.BackgroundJobsTest do
       moderator = moderator_user_fixture()
       report = Philomena.ReportsFixtures.report_fixture(reporter, %{}, image_id: image.id)
       report_id = report.id
-      spy(Exq)
 
       assert {:ok, %Report{id: ^report_id}} =
                Reports.create_report_close(actor(moderator), report_id)
@@ -288,7 +286,6 @@ defmodule Philomena.BackgroundJobsTest do
       reporter = confirmed_user_fixture()
       moderator = moderator_user_fixture()
       report = Philomena.ReportsFixtures.report_fixture(reporter, %{}, image_id: image.id)
-      spy(Exq)
 
       assert {:ok, %{reports: {1, [report_id]}}} =
                Multi.new()

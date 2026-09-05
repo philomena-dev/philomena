@@ -1,4 +1,6 @@
 defmodule Philomena.IndexWorker do
+  use Oban.Worker, queue: :indexing, max_attempts: 5
+
   @modules %{
     "Comments" => Philomena.Comments,
     "Galleries" => Philomena.Galleries,
@@ -10,6 +12,9 @@ defmodule Philomena.IndexWorker do
     "TagChanges" => Philomena.TagChanges,
     "Users" => Philomena.Users
   }
+
+  @impl Oban.Worker
+  def perform(%Oban.Job{args: %{"args" => args}}), do: apply(__MODULE__, :perform, args)
 
   # Perform the queued index. Context function looks like the following:
   #

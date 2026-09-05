@@ -84,14 +84,14 @@ defmodule Philomena.Tags do
   defp load_tag_for_action(_actor, _action, _slug, _preloads), do: {:error, :not_found}
 
   defp reindex_tag_images(%Tag{} = tag) do
-    Exq.enqueue(Exq, "indexing", TagReindexWorker, [tag.id])
+    Philomena.JobQueue.enqueue(TagReindexWorker, "indexing", [tag.id])
     tag
   end
 
   defp reindex_tag_ids([]), do: []
 
   defp reindex_tag_ids(tag_ids) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Tags", "id", tag_ids])
+    Philomena.JobQueue.enqueue(IndexWorker, "indexing", ["Tags", "id", tag_ids])
     tag_ids
   end
 
@@ -1041,7 +1041,7 @@ defmodule Philomena.Tags do
         "Deleted tag '#{tag.name}'"
       )
       |> Multi.on_commit(fn _changes ->
-        Exq.enqueue(Exq, "indexing", TagDeleteWorker, [tag.id])
+        Philomena.JobQueue.enqueue(TagDeleteWorker, "indexing", [tag.id])
       end)
       |> Multi.transact()
       |> case do
@@ -1127,7 +1127,7 @@ defmodule Philomena.Tags do
         }
       end)
       |> Multi.on_commit(fn %{tags: {source_tag, target_tag}} ->
-        Exq.enqueue(Exq, "indexing", TagAliasWorker, [source_tag.id, target_tag.id])
+        Philomena.JobQueue.enqueue(TagAliasWorker, "indexing", [source_tag.id, target_tag.id])
       end)
       |> Multi.transact()
       |> case do
@@ -1657,7 +1657,7 @@ defmodule Philomena.Tags do
   """
   @spec reindex_tags([Tag.t()]) :: [Tag.t()]
   def reindex_tags(tags) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Tags", "id", Enum.map(tags, & &1.id)])
+    Philomena.JobQueue.enqueue(IndexWorker, "indexing", ["Tags", "id", Enum.map(tags, & &1.id)])
     tags
   end
 

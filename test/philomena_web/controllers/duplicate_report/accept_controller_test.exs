@@ -3,7 +3,7 @@ defmodule PhilomenaWeb.DuplicateReport.AcceptControllerTest do
 
   # Accepting a report merges the source image into the target: the merge
   # runs synchronously (S3 ops go through the ex_aws stub, reindexing is a
-  # dead Exq enqueue).
+  # dead Oban enqueue).
 
   import Philomena.ImagesFixtures
   import Philomena.DuplicateReportsFixtures

@@ -2,7 +2,7 @@ defmodule Philomena.TagChangeRevertWorkerTest do
   use Philomena.DataCase, async: true
 
   # The worker runs synchronously here; only its reindex side effects are
-  # dead Exq enqueues, so the tests stay Postgres-only.
+  # dead Oban enqueues, so the tests stay Postgres-only.
 
   import Philomena.AttributionFixtures
   import Philomena.ImagesFixtures

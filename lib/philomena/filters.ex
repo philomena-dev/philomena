@@ -65,7 +65,7 @@ defmodule Philomena.Filters do
   defp reindex_filter_ids([]), do: []
 
   defp reindex_filter_ids(filter_ids) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Filters", "id", filter_ids])
+    Philomena.JobQueue.enqueue(IndexWorker, "indexing", ["Filters", "id", filter_ids])
     filter_ids
   end
 
@@ -954,7 +954,7 @@ defmodule Philomena.Filters do
   """
   @spec reindex_filter(Filter.t()) :: Filter.t()
   def reindex_filter(%Filter{} = filter) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Filters", "id", [filter.id]])
+    Philomena.JobQueue.enqueue(IndexWorker, "indexing", ["Filters", "id", [filter.id]])
 
     filter
   end

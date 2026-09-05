@@ -16,6 +16,8 @@ defmodule Philomena.DataCase do
 
   using do
     quote do
+      use Oban.Testing, repo: Philomena.Repo
+
       alias Philomena.Repo
 
       import Ecto
