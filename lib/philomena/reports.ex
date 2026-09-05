@@ -20,7 +20,7 @@ defmodule Philomena.Reports do
   alias Philomena.Galleries.Gallery
   alias Philomena.Images
   alias Philomena.Images.Image
-  alias Philomena.IndexWorker
+  alias Philomena.Workers.IndexJob
   alias Philomena.Loader
   alias Philomena.ModerationLogs
   alias Philomena.ModerationLogs.Paths
@@ -164,14 +164,12 @@ defmodule Philomena.Reports do
   def reindex_reports([]), do: :ok
 
   def reindex_reports(report_ids) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Reports", "id", report_ids])
+    IndexJob.enqueue("Reports", :id, report_ids)
     :ok
   end
 
   defp put_reindex_report(%Multi{} = multi, report_step \\ :report) do
-    Multi.on_commit(multi, fn %{^report_step => report} ->
-      Exq.enqueue(Exq, "indexing", IndexWorker, ["Reports", "id", [report.id]])
-    end)
+    IndexJob.put_enqueue(multi, "Reports", :id, fn %{^report_step => report} -> [report.id] end)
   end
 
   @doc """
@@ -612,8 +610,8 @@ defmodule Philomena.Reports do
   def put_close_reports(%Multi{} = multi, step, closing_user, target) do
     multi
     |> Multi.update_all(step, fn _ -> close_report_query(closing_user, target) end, [])
-    |> Multi.on_commit(fn %{^step => {_count, report_ids}} ->
-      reindex_reports(report_ids)
+    |> IndexJob.put_enqueue("Reports", :id, fn %{^step => {_count, report_ids}} ->
+      report_ids
     end)
   end
 

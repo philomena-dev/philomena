@@ -592,15 +592,16 @@ defmodule Philomena.TagChangesTest do
       {_image, tag_change} = tag_change!(user)
       {_image, other_change} = tag_change!(confirmed_user_fixture())
       wipe_ip = %Postgrex.INET{address: {127, 0, 1, 1}, netmask: 32}
-      spy(Exq)
 
       assert TagChanges.wipe_user_attribution!(user.id, wipe_ip, "ffff") == :ok
 
       assert %TagChange{ip: ^wipe_ip, fingerprint: "ffff"} = Repo.reload!(tag_change)
       refute Repo.reload!(other_change).fingerprint == "ffff"
 
-      reindex = [Exq, "indexing", Philomena.IndexWorker, ["TagChanges", "id", [tag_change.id]]]
-      assert {:enqueue, reindex} in history(Exq)
+      assert_enqueued(
+        worker: Philomena.Workers.IndexJob,
+        args: %{module: "TagChanges", column: "id", condition: [tag_change.id]}
+      )
     end
   end
 end

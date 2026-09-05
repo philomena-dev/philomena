@@ -16,7 +16,7 @@ defmodule PhilomenaQuery.SearchHelpers do
     * clear the indexes they read in `setup` with
       `PhilomenaQuery.Search.clear_index!/1`,
     * index their fixtures explicitly (fixture inserts only enqueue dead
-      Exq jobs) with `reindex_all!/1` before querying.
+      Oban jobs) with `reindex_all!/1` before querying.
 
   ## Example
 

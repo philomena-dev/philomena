@@ -38,13 +38,14 @@ defmodule Philomena.Reports.LegacyConverterTest do
     unknown = report_fixture("Legacy", "Rule #42: Gone")
     structured = report_fixture("Rule #0", "Other: Already converted")
 
-    spy(Exq)
-
     assert LegacyConverter.convert_reports!() == :ok
 
     reindexed = [multiline.id, explained.id, system.id, blank.id]
-    reindex = [Exq, "indexing", Philomena.IndexWorker, ["Reports", "id", reindexed]]
-    assert {:enqueue, reindex} in history(Exq)
+
+    assert_enqueued(
+      worker: Philomena.Workers.IndexJob,
+      args: %{module: "Reports", column: "id", condition: reindexed}
+    )
 
     assert converted(multiline) == {rule.id, "Insults\nin two lines"}
     assert converted(explained) == {other.id, "See the description"}
