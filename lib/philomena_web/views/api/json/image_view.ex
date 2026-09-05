@@ -79,6 +79,7 @@ defmodule PhilomenaWeb.Api.Json.ImageView do
       downvotes: image.downvotes_count,
       faves: image.faves_count,
       hides: image.hides_count,
+      subscriptions: image.subscriptions_count,
       comment_count: image.comments_count,
       tag_count: length(image.tags),
       description: image.description,
