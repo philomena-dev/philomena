@@ -140,9 +140,11 @@ defmodule Philomena.TagChanges do
     }
 
     Multi.on_commit(multi, fn _changes ->
-      Philomena.JobQueue.enqueue(TagChangeRevertWorker, "indexing", [
+      Philomena.JobQueue.enqueue(
+        TagChangeRevertWorker,
+        "indexing",
         Map.put(target, :attributes, attributes)
-      ])
+      )
     end)
   end
 
@@ -457,7 +459,11 @@ defmodule Philomena.TagChanges do
       {:ok, {added_count, removed_count}}
     end)
     |> Multi.on_commit(fn %{tag_change: tag_change} ->
-      Philomena.JobQueue.enqueue(IndexWorker, "indexing", ["TagChanges", "id", [tag_change.id]])
+      Philomena.JobQueue.enqueue(IndexWorker, "indexing", %{
+        module: "TagChanges",
+        column: "id",
+        condition: [tag_change.id]
+      })
     end)
   end
 
@@ -809,7 +815,12 @@ defmodule Philomena.TagChanges do
   """
   @spec reindex_tag_changes([integer()]) :: [integer()]
   def reindex_tag_changes(ids) do
-    Philomena.JobQueue.enqueue(IndexWorker, "indexing", ["TagChanges", "id", ids])
+    Philomena.JobQueue.enqueue(IndexWorker, "indexing", %{
+      module: "TagChanges",
+      column: "id",
+      condition: ids
+    })
+
     ids
   end
 

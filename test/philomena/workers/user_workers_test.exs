@@ -33,7 +33,10 @@ defmodule Philomena.UserWorkersTest do
     assert {:ok, _image} = Images.create_image_vote(actor(user), downvoted.id, %{up: false})
     assert {:ok, _image} = Images.create_image_fave(actor(user), faved.id)
 
-    assert :ok = UserUnvoteWorker.perform(user.id, true)
+    assert :ok =
+             UserUnvoteWorker.perform(%Oban.Job{
+               args: %{"user_id" => user.id, "votes_and_faves_too?" => true}
+             })
 
     refute Repo.get_by(ImageVote, user_id: user.id, image_id: downvoted.id)
     refute Repo.get_by(ImageVote, user_id: user.id, image_id: faved.id)
@@ -56,8 +59,7 @@ defmodule Philomena.UserWorkersTest do
         fingerprint: "worker-fingerprint"
       )
 
-    assert %User{id: user_id} = UserWipeWorker.perform(user.id)
-    assert user_id == user.id
+    assert :ok = UserWipeWorker.perform(%Oban.Job{args: %{"user_id" => user.id}})
 
     wiped_user = Repo.reload!(user)
     assert wiped_user.email =~ ~r/^deactivated[0-9a-f]{32}@example\.com$/
@@ -82,7 +84,10 @@ defmodule Philomena.UserWorkersTest do
       })
       |> Repo.update!()
 
-    assert :ok = UserEraseWorker.perform(user.id, moderator.id)
+    assert :ok =
+             UserEraseWorker.perform(%Oban.Job{
+               args: %{"user_id" => user.id, "moderator_id" => moderator.id}
+             })
 
     erased = Repo.reload!(user)
     assert erased.description in [nil, ""]
@@ -118,7 +123,10 @@ defmodule Philomena.UserWorkersTest do
       added: false
     )
 
-    assert :ok = UserEraseWorker.perform(user.id, moderator.id)
+    assert :ok =
+             UserEraseWorker.perform(%Oban.Job{
+               args: %{"user_id" => user.id, "moderator_id" => moderator.id}
+             })
 
     assert Repo.reload!(added_image) |> Repo.preload(:sources) |> Map.fetch!(:sources) == []
 

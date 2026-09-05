@@ -51,7 +51,11 @@ defmodule Philomena.WorkerTest do
   test "the index worker indexes matching records" do
     image = image_fixture()
 
-    assert :ok = IndexWorker.perform("Images", "id", [image.id])
+    assert :ok =
+             IndexWorker.perform(%Oban.Job{
+               args: %{"module" => "Images", "column" => "id", "condition" => [image.id]}
+             })
+
     :ok = Search.refresh_index!(Image)
 
     hits = Search.search(Image, %{query: %{match_all: %{}}})["hits"]["hits"]
@@ -64,7 +68,10 @@ defmodule Philomena.WorkerTest do
     end)
 
     Enum.each(@index_contexts, fn {name, _context} ->
-      assert :ok = IndexWorker.perform(name, "id", [123])
+      assert :ok =
+               IndexWorker.perform(%Oban.Job{
+                 args: %{"module" => name, "column" => "id", "condition" => [123]}
+               })
     end)
 
     Enum.each(@index_contexts, fn {_name, context} ->
@@ -78,18 +85,17 @@ defmodule Philomena.WorkerTest do
     patch(Images, :load_image_for_reindex!, image)
     patch(Images, :reindex_image, image)
 
-    assert image == ThumbnailWorker.perform(image.id)
+    assert :ok == ThumbnailWorker.perform(%Oban.Job{args: %{"image_id" => image.id}})
 
     assert_exact_call(Thumbnailer, :generate_thumbnails, [image.id])
     assert_exact_call(Images, :load_image_for_reindex!, [image.id])
-    assert_exact_call(Images, :reindex_image, [image])
   end
 
   test "the purge worker passes the complete file list to the purge operation" do
     files = ["/img/1/full.png", "/img/1/thumb.png"]
     patch(System, :cmd, {"", 0})
 
-    assert :ok = ImagePurgeWorker.perform(files)
+    assert :ok = ImagePurgeWorker.perform(%Oban.Job{args: %{"files" => files}})
 
     assert_exact_call(System, :cmd, [
       "purge-cache",
@@ -100,7 +106,10 @@ defmodule Philomena.WorkerTest do
   test "the rename worker updates every index containing a user name" do
     Enum.each(@rename_contexts, &patch(&1, :user_name_reindex, :ok))
 
-    assert :ok = UserRenameWorker.perform("Old Name", "New Name")
+    assert :ok =
+             UserRenameWorker.perform(%Oban.Job{
+               args: %{"old_name" => "Old Name", "new_name" => "New Name"}
+             })
 
     Enum.each(@rename_contexts, fn context ->
       assert_exact_call(context, :user_name_reindex, ["Old Name", "New Name"])

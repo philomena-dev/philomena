@@ -13,9 +13,6 @@ defmodule Philomena.IndexWorker do
     "Users" => Philomena.Users
   }
 
-  @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"args" => args}}), do: apply(__MODULE__, :perform, args)
-
   # Perform the queued index. Context function looks like the following:
   #
   #     def perform_reindex(column, condition) do
@@ -25,7 +22,10 @@ defmodule Philomena.IndexWorker do
   #       |> Search.reindex(Image)
   #     end
   #
-  def perform(module, column, condition) do
+  @impl Oban.Worker
+  def perform(%Oban.Job{
+        args: %{"module" => module, "column" => column, "condition" => condition}
+      }) do
     @modules[module].perform_reindex(String.to_existing_atom(column), condition)
   end
 end

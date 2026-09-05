@@ -11,21 +11,21 @@ defmodule Philomena.TagChangeRevertWorker do
   import Ecto.Query
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"args" => args}}), do: apply(__MODULE__, :perform, args)
+  def perform(job)
 
-  def perform(%{"user_id" => user_id, "attributes" => attributes}) do
+  def perform(%Oban.Job{args: %{"user_id" => user_id, "attributes" => attributes}}) do
     TagChange
     |> where(user_id: ^user_id)
     |> revert_all(attributes)
   end
 
-  def perform(%{"ip" => ip, "attributes" => attributes}) do
+  def perform(%Oban.Job{args: %{"ip" => ip, "attributes" => attributes}}) do
     TagChange
     |> where(ip: ^ip)
     |> revert_all(attributes)
   end
 
-  def perform(%{"fingerprint" => fp, "attributes" => attributes}) do
+  def perform(%Oban.Job{args: %{"fingerprint" => fp, "attributes" => attributes}}) do
     TagChange
     |> where(fingerprint: ^fp)
     |> revert_all(attributes)
@@ -34,10 +34,7 @@ defmodule Philomena.TagChangeRevertWorker do
   defp revert_all(queryable, attributes) do
     attributes = cast_ip(atomify_keys(attributes))
 
-    case TagChanges.revert_all_for_worker(queryable, attributes) do
-      :ok -> :ok
-      {:error, reason} -> raise "tag change batch revert failed: #{inspect(reason)}"
-    end
+    TagChanges.revert_all_for_worker(queryable, attributes)
   end
 
   defp atomify_keys(map) do

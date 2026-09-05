@@ -16,7 +16,6 @@ defmodule Philomena.Users.UserWipe do
   alias Philomena.UserIps
   alias Philomena.UserFingerprints
   alias Philomena.Users
-  alias Philomena.Users.User
 
   @wipe_ip %Postgrex.INET{address: {127, 0, 1, 1}, netmask: 32}
   @wipe_fp "ffff"
@@ -30,9 +29,10 @@ defmodule Philomena.Users.UserWipe do
   ## Examples
 
       iex> UserWipe.perform(user.id)
-      %User{}
+      :ok
+
   """
-  @spec perform(integer()) :: User.t()
+  @spec perform(integer()) :: :ok
   def perform(user_id) do
     user = Users.fetch_user_for_worker!(user_id)
 
@@ -49,5 +49,7 @@ defmodule Philomena.Users.UserWipe do
     Users.replace_email_for_wipe!(user.id, "deactivated#{random_hex}@example.com")
 
     Users.reindex_user(user)
+
+    :ok
   end
 end
