@@ -17,4 +17,9 @@ defmodule PhilomenaWeb.FrontendAssets do
   def vite_websocket_origin(%Plug.Conn{host: host}) do
     URI.to_string(%URI{scheme: "ws", host: host, port: @vite_port})
   end
+
+  @spec sentry_loader_script_url() :: String.t()
+  def sentry_loader_script_url do
+    Application.fetch_env!(:philomena, :sentry_loader_script_url)
+  end
 end
