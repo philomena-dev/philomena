@@ -942,7 +942,7 @@ defmodule Philomena.Galleries do
   """
   @spec reindex_gallery(Gallery.t()) :: Gallery.t()
   def reindex_gallery(%Gallery{} = gallery) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Galleries", "id", [gallery.id]])
+    Philomena.JobQueue.enqueue(IndexWorker, "indexing", ["Galleries", "id", [gallery.id]])
 
     gallery
   end
@@ -960,7 +960,7 @@ defmodule Philomena.Galleries do
   def reindex_galleries([]), do: []
 
   def reindex_galleries(gallery_ids) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Galleries", "id", gallery_ids])
+    Philomena.JobQueue.enqueue(IndexWorker, "indexing", ["Galleries", "id", gallery_ids])
 
     gallery_ids
   end

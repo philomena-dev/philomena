@@ -148,12 +148,12 @@ defmodule Philomena.Reports do
   end
 
   defp reindex_closed_reports(report_ids) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Reports", "id", report_ids])
+    Philomena.JobQueue.enqueue(IndexWorker, "indexing", ["Reports", "id", report_ids])
   end
 
   defp put_reindex_report(%Multi{} = multi, report_step \\ :report) do
     Multi.on_commit(multi, fn %{^report_step => report} ->
-      Exq.enqueue(Exq, "indexing", IndexWorker, ["Reports", "id", [report.id]])
+      Philomena.JobQueue.enqueue(IndexWorker, "indexing", ["Reports", "id", [report.id]])
     end)
   end
 

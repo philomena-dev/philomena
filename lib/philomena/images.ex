@@ -523,7 +523,7 @@ defmodule Philomena.Images do
   end
 
   defp enqueue_image_repair(image) do
-    Exq.enqueue(Exq, queue(image.image_mime_type), ThumbnailWorker, [image.id])
+    Philomena.JobQueue.enqueue(ThumbnailWorker, queue(image.image_mime_type), [image.id])
 
     image
   end
@@ -540,7 +540,7 @@ defmodule Philomena.Images do
           Thumbnailer.thumbnail_urls(image, nil)
       end
 
-    Exq.enqueue(Exq, "indexing", ImagePurgeWorker, [files])
+    Philomena.JobQueue.enqueue(ImagePurgeWorker, "indexing", [files])
   end
 
   ## Bulk operations
@@ -3425,7 +3425,7 @@ defmodule Philomena.Images do
   """
   @spec reindex_image(Image.t()) :: Image.t()
   def reindex_image(%Image{} = image) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Images", "id", [image.id]])
+    Philomena.JobQueue.enqueue(IndexWorker, "indexing", ["Images", "id", [image.id]])
 
     image
   end
@@ -3443,7 +3443,7 @@ defmodule Philomena.Images do
   """
   @spec reindex_images([integer()]) :: [integer()]
   def reindex_images(image_ids) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Images", "id", image_ids])
+    Philomena.JobQueue.enqueue(IndexWorker, "indexing", ["Images", "id", image_ids])
 
     image_ids
   end
