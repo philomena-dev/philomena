@@ -2,6 +2,7 @@ defmodule PhilomenaMedia.Processors.Png do
   @moduledoc false
 
   alias PhilomenaMedia.Intensities
+  alias PhilomenaMedia.Analyzers
   alias PhilomenaMedia.Analyzers.Result
   alias PhilomenaMedia.Remote
   alias PhilomenaMedia.Processors.Processor
@@ -17,9 +18,7 @@ defmodule PhilomenaMedia.Processors.Png do
 
   @spec process(Result.t(), Path.t(), Processors.version_list()) :: Processors.edit_script()
   def process(analysis, file, versions) do
-    animated? = analysis.animated?
-
-    stripped = strip(file, animated?)
+    {stripped, animated?} = strip(file, analysis.animated?)
 
     {:ok, intensities} = Intensities.file(stripped)
 
@@ -55,8 +54,36 @@ defmodule PhilomenaMedia.Processors.Png do
     intensities
   end
 
-  defp strip(file, true = _animated?), do: file
-  defp strip(file, _animated?), do: Strip.strip(file, ".png")
+  @spec strip(Path.t(), boolean()) :: {Path.t(), boolean()}
+  defp strip(file, false = animated?), do: {Strip.strip(file, ".png"), animated?}
+
+  defp strip(file, _animated?) do
+    stripped = Briefly.create!(extname: ".png")
+
+    # Transcode animated PNG to normalize the format
+    {_output, 0} =
+      Remote.cmd("ffmpeg", [
+        "-loglevel",
+        "0",
+        "-y",
+        "-i",
+        file,
+        "-plays",
+        "0",
+        "-f",
+        "apng",
+        stripped
+      ])
+
+    analysis = Analyzers.Png.analyze(stripped)
+
+    if analysis.animated? do
+      {stripped, analysis.animated?}
+    else
+      # If not considered animated after normalization, perform strip
+      {Strip.strip(stripped, ".png"), analysis.animated?}
+    end
+  end
 
   # Sobelow misidentifies removing the .bak file
   # sobelow_skip ["Traversal.FileModule"]
