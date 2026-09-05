@@ -13,6 +13,15 @@ defmodule Philomena.IndexWorker do
     "Users" => Philomena.Users
   }
 
+  @spec enqueue(String.t(), atom() | String.t(), [integer()]) :: :ok
+  def enqueue(module, column, condition) when is_binary(module) and is_list(condition) do
+    Philomena.JobQueue.enqueue(__MODULE__, %{
+      module: module,
+      column: to_string(column),
+      condition: condition
+    })
+  end
+
   # Perform the queued index. Context function looks like the following:
   #
   #     def perform_reindex(column, condition) do
