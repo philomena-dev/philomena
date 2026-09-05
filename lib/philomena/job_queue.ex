@@ -6,10 +6,11 @@ defmodule Philomena.JobQueue do
   worker modules and remain self-documenting when inspected in Oban.
   """
 
-  @doc "Enqueues a worker with arguments on the requested queue."
-  @spec enqueue(module(), String.t() | atom(), map()) :: :ok
-  def enqueue(worker, queue, args) do
-    worker.new(args, queue: queue)
+  @doc "Enqueues a worker with arguments and optional Oban options."
+  @spec enqueue(module(), map(), keyword()) :: :ok
+  def enqueue(worker, args, opts \\ []) do
+    args
+    |> worker.new(opts)
     |> Oban.insert!()
 
     :ok
