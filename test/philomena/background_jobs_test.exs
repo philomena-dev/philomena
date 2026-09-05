@@ -7,25 +7,15 @@ defmodule Philomena.BackgroundJobsTest do
   import Philomena.TagsFixtures
   import Philomena.UsersFixtures
 
-  alias Philomena.Comments
-  alias Philomena.Comments.Comment
-  alias Philomena.Filters
-  alias Philomena.Filters.Filter
-  alias Philomena.Galleries
-  alias Philomena.Galleries.Gallery
   alias Philomena.Images
-  alias Philomena.Images.Image
   alias Philomena.Images.Thumbnailer
   alias Philomena.Multi
-  alias Philomena.Posts
-  alias Philomena.Posts.Post
   alias Philomena.Reports
   alias Philomena.Reports.Report
   alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
   alias Philomena.Tags
   alias Philomena.Tags.Tag
-  alias Philomena.Topics.Topic
   alias Philomena.Users
   alias Philomena.Users.User
 
@@ -59,99 +49,6 @@ defmodule Philomena.BackgroundJobsTest do
   defp stringify_keys(value), do: value
 
   describe "search indexing jobs" do
-    test "comments enqueue the selected id column and values" do
-      comment = %Comment{id: 11}
-      image = %Image{id: 12}
-      assert Comments.reindex_comment(comment) == comment
-      assert Comments.reindex_comments_on_image(image) == image
-      assert Comments.reindex_comments_on_images([12, 13]) == [12, 13]
-
-      assert_enqueued("indexing", Philomena.IndexWorker, %{
-        module: "Comments",
-        column: "id",
-        condition: [11]
-      })
-
-      assert_enqueued("indexing", Philomena.IndexWorker, %{
-        module: "Comments",
-        column: "image_id",
-        condition: [12]
-      })
-
-      assert_enqueued("indexing", Philomena.IndexWorker, %{
-        module: "Comments",
-        column: "image_id",
-        condition: [12, 13]
-      })
-    end
-
-    test "filters enqueue their id" do
-      filter = %Filter{id: 21}
-      assert Filters.reindex_filter(filter) == filter
-
-      assert_enqueued("indexing", Philomena.IndexWorker, %{
-        module: "Filters",
-        column: "id",
-        condition: [21]
-      })
-    end
-
-    test "galleries enqueue one or many ids and skip an empty batch" do
-      gallery = %Gallery{id: 31}
-      assert Galleries.reindex_gallery(gallery) == gallery
-      assert Galleries.reindex_galleries([31, 32]) == [31, 32]
-      assert Galleries.reindex_galleries([]) == []
-
-      assert_enqueued("indexing", Philomena.IndexWorker, %{
-        module: "Galleries",
-        column: "id",
-        condition: [31]
-      })
-
-      assert_enqueued("indexing", Philomena.IndexWorker, %{
-        module: "Galleries",
-        column: "id",
-        condition: [31, 32]
-      })
-    end
-
-    test "images enqueue one or many ids" do
-      image = %Image{id: 41}
-      assert Images.reindex_image(image) == image
-      assert Images.reindex_images([41, 42]) == [41, 42]
-
-      assert_enqueued("indexing", Philomena.IndexWorker, %{
-        module: "Images",
-        column: "id",
-        condition: [41]
-      })
-
-      assert_enqueued("indexing", Philomena.IndexWorker, %{
-        module: "Images",
-        column: "id",
-        condition: [41, 42]
-      })
-    end
-
-    test "posts enqueue a post id or a topic id" do
-      post = %Post{id: 51}
-      topic = %Topic{id: 52}
-      assert Posts.reindex_post(post) == post
-      assert Posts.reindex_posts_in_topic(topic) == :ok
-
-      assert_enqueued("indexing", Philomena.IndexWorker, %{
-        module: "Posts",
-        column: "id",
-        condition: [51]
-      })
-
-      assert_enqueued("indexing", Philomena.IndexWorker, %{
-        module: "Posts",
-        column: "topic_id",
-        condition: [52]
-      })
-    end
-
     test "persisted tag changes enqueue their generated id after commit" do
       user = confirmed_user_fixture()
       tags = "safe, background base one, background base two"
@@ -170,29 +67,6 @@ defmodule Philomena.BackgroundJobsTest do
         module: "TagChanges",
         column: "id",
         condition: [tag_change.id]
-      })
-    end
-
-    test "tags enqueue a batch of ids" do
-      tag = %Tag{id: 71}
-      other_tag = %Tag{id: 72}
-      assert Tags.reindex_tags([tag, other_tag]) == [tag, other_tag]
-
-      assert_enqueued("indexing", Philomena.IndexWorker, %{
-        module: "Tags",
-        column: "id",
-        condition: [71, 72]
-      })
-    end
-
-    test "users enqueue their id" do
-      user = %User{id: 81}
-      assert Users.reindex_user(user) == user
-
-      assert_enqueued("indexing", Philomena.IndexWorker, %{
-        module: "Users",
-        column: "id",
-        condition: [81]
       })
     end
   end

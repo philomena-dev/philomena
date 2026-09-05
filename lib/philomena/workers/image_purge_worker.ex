@@ -2,10 +2,19 @@ defmodule Philomena.ImagePurgeWorker do
   use Oban.Worker, queue: :indexing, max_attempts: 5
 
   alias Philomena.Images
+  alias Philomena.Multi
 
-  @spec enqueue([String.t()]) :: :ok
-  def enqueue(files) when is_list(files) do
-    Philomena.JobQueue.enqueue(__MODULE__, %{files: files})
+  @spec put_enqueue(Multi.t(), (Multi.changes() -> [String.t()])) :: Multi.t()
+  def put_enqueue(%Multi{} = multi, files) when is_function(files, 1) do
+    Philomena.JobQueue.put_enqueue(multi, __MODULE__, fn changes ->
+      %{files: files.(changes)}
+    end)
+  end
+
+  @spec enqueue([String.t()]) :: any()
+  def enqueue(files) do
+    # Legacy variation for thumbnailer.
+    Philomena.JobQueue.insert(__MODULE__, %{files: files})
   end
 
   @impl Oban.Worker
