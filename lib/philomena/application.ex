@@ -7,6 +7,7 @@ defmodule Philomena.Application do
 
   def start(_type, _args) do
     configure_logging()
+    configure_tracing()
 
     # List all child processes to be supervised
     children = [
@@ -66,6 +67,12 @@ defmodule Philomena.Application do
     do: String.to_atom(Base.encode16(:crypto.strong_rand_bytes(6)))
 
   defp valid_node_name(node), do: node
+
+  defp configure_tracing do
+    OpentelemetryBandit.setup()
+    OpentelemetryEcto.setup([:philomena, :repo])
+    OpentelemetryPhoenix.setup(adapter: :bandit)
+  end
 
   defp configure_logging() do
     # Log filtering design is borrowed from the Rust's `tracing` observability framework.
