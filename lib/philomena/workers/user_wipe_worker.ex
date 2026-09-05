@@ -4,9 +4,7 @@ defmodule Philomena.UserWipeWorker do
   alias Philomena.Users.UserWipe
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"args" => args}}), do: apply(__MODULE__, :perform, args)
-
-  def perform(user_id) do
+  def perform(%Oban.Job{args: %{"user_id" => user_id}}) do
     UserWipe.perform(user_id)
   end
 end

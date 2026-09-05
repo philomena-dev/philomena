@@ -4,9 +4,7 @@ defmodule Philomena.TagReindexWorker do
   alias Philomena.Tags
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"args" => args}}), do: apply(__MODULE__, :perform, args)
-
-  def perform(tag_id) do
+  def perform(%Oban.Job{args: %{"tag_id" => tag_id}}) do
     Tags.perform_reindex_images(tag_id)
   end
 end
