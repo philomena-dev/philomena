@@ -24,16 +24,16 @@ defmodule Philomena.Tags do
   alias Philomena.Images.Search, as: ImageSearch
   alias Philomena.Images.Search.Scope
   alias Philomena.Images.Tagging
-  alias Philomena.IndexWorker
+  alias Philomena.Workers.IndexJob
   alias Philomena.Interactions
   alias Philomena.Loader
   alias Philomena.ModerationLogs
   alias Philomena.ModerationLogs.Paths
   alias Philomena.Multi
   alias Philomena.Repo
-  alias Philomena.TagAliasWorker
-  alias Philomena.TagDeleteWorker
-  alias Philomena.TagReindexWorker
+  alias Philomena.Workers.TagAliasJob
+  alias Philomena.Workers.TagDeleteJob
+  alias Philomena.Workers.TagReindexJob
   alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
   alias Philomena.TagChanges.TagChangeTag
@@ -202,7 +202,7 @@ defmodule Philomena.Tags do
 
     multi
     |> Multi.insert_all(:new_tags, Tag, insert_rows, insert_options)
-    |> IndexWorker.put_enqueue("Tags", :id, fn %{new_tags: {_count, new_tags}} ->
+    |> IndexJob.put_enqueue("Tags", :id, fn %{new_tags: {_count, new_tags}} ->
       Enum.map(new_tags, & &1.id)
     end)
   end
@@ -893,10 +893,10 @@ defmodule Philomena.Tags do
         Paths.tag_path(tag),
         "Updated details on tag '#{tag.name}'"
       )
-      |> IndexWorker.put_enqueue("Tags", :id, fn %{tag: updated_tag} -> [updated_tag.id] end)
+      |> IndexJob.put_enqueue("Tags", :id, fn %{tag: updated_tag} -> [updated_tag.id] end)
       |> Multi.merge(fn %{tag: updated_tag} ->
         if updated_tag.category != tag.category do
-          TagReindexWorker.put_enqueue(Multi.new(), updated_tag.id)
+          TagReindexJob.put_enqueue(Multi.new(), updated_tag.id)
         else
           Multi.new()
         end
@@ -1027,7 +1027,7 @@ defmodule Philomena.Tags do
         Paths.tag_path(tag),
         "Deleted tag '#{tag.name}'"
       )
-      |> TagDeleteWorker.put_enqueue(tag.id)
+      |> TagDeleteJob.put_enqueue(tag.id)
       |> Multi.transact()
       |> case do
         {:ok, _changes} ->
@@ -1111,7 +1111,7 @@ defmodule Philomena.Tags do
           "Aliased tag '#{source_tag.name}' into '#{target_tag.name}'"
         }
       end)
-      |> TagAliasWorker.put_enqueue(
+      |> TagAliasJob.put_enqueue(
         fn %{tags: {source_tag, _target_tag}} -> source_tag.id end,
         fn %{tags: {_source_tag, target_tag}} -> target_tag.id end
       )
@@ -1148,8 +1148,8 @@ defmodule Philomena.Tags do
     with :ok <- verify_write_access(actor),
          {:ok, tag} <- load_tag_for_action(actor, :reindex, slug, @alias_preloads) do
       Multi.new()
-      |> TagReindexWorker.put_enqueue(tag.id)
-      |> IndexWorker.put_enqueue("Tags", :id, [tag.id])
+      |> TagReindexJob.put_enqueue(tag.id)
+      |> IndexJob.put_enqueue("Tags", :id, [tag.id])
       |> Multi.transact()
       |> case do
         {:ok, _changes} -> {:ok, tag}
@@ -1195,9 +1195,9 @@ defmodule Philomena.Tags do
         "Dealiased tag '#{tag.name}'"
       )
       |> Multi.merge(fn %{locked_tag: %{aliased_tag: former_alias}} ->
-        TagReindexWorker.put_enqueue(Multi.new(), former_alias.id)
+        TagReindexJob.put_enqueue(Multi.new(), former_alias.id)
       end)
-      |> IndexWorker.put_enqueue("Tags", :id, fn
+      |> IndexJob.put_enqueue("Tags", :id, fn
         %{tag: tag, locked_tag: %{aliased_tag: former_alias}} ->
           [tag.id, former_alias.id]
       end)
@@ -1262,7 +1262,7 @@ defmodule Philomena.Tags do
     |> Multi.run(:image_tag_counts_tag_ids, fn repo, %{^image_step => image} ->
       {:ok, update_image_count_changes(repo, image)}
     end)
-    |> IndexWorker.put_enqueue("Tags", :id, fn %{image_tag_counts_tag_ids: tag_ids} -> tag_ids end)
+    |> IndexJob.put_enqueue("Tags", :id, fn %{image_tag_counts_tag_ids: tag_ids} -> tag_ids end)
   end
 
   @doc """
@@ -1282,7 +1282,7 @@ defmodule Philomena.Tags do
     Multi.run(multi, step, fn repo, changes ->
       {:ok, update_image_counts(repo, diff, tag_ids_callback.(changes))}
     end)
-    |> IndexWorker.put_enqueue("Tags", :id, tag_ids_callback)
+    |> IndexJob.put_enqueue("Tags", :id, tag_ids_callback)
   end
 
   @doc """
@@ -1352,7 +1352,7 @@ defmodule Philomena.Tags do
 
         {:ok, Enum.map(rows, & &1.id)}
     end)
-    |> IndexWorker.put_enqueue("Tags", :id, fn %{batch_tag_counts: tag_ids} -> tag_ids end)
+    |> IndexJob.put_enqueue("Tags", :id, fn %{batch_tag_counts: tag_ids} -> tag_ids end)
   end
 
   @doc """
@@ -1510,8 +1510,8 @@ defmodule Philomena.Tags do
         end,
         []
       )
-      |> TagReindexWorker.put_enqueue(target_tag.id)
-      |> IndexWorker.put_enqueue("Tags", :id, [tag.id, target_tag.id])
+      |> TagReindexJob.put_enqueue(target_tag.id)
+      |> IndexJob.put_enqueue("Tags", :id, [tag.id, target_tag.id])
       |> Multi.transact()
       |> case do
         {:ok, _changes} ->
@@ -1557,7 +1557,7 @@ defmodule Philomena.Tags do
       end,
       []
     )
-    |> IndexWorker.put_enqueue("Tags", :id, [tag.id])
+    |> IndexJob.put_enqueue("Tags", :id, [tag.id])
     |> Multi.transact_with_automatic_retry(isolation: :serializable)
 
     # Then, reindex.

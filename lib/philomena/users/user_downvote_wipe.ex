@@ -3,7 +3,7 @@ defmodule Philomena.Users.UserDownvoteWipe do
   Performs the asynchronous vote/favorite cleanup owned by the Users context.
 
   The public entry point accepts only a trusted persisted user ID and is called
-  by `Philomena.UserUnvoteWorker` after an authorized Users service enqueues it.
+  by `Philomena.Workers.UserUnvoteJob` after an authorized Users service enqueues it.
   """
 
   import Ecto.Query

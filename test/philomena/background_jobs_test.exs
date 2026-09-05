@@ -63,7 +63,7 @@ defmodule Philomena.BackgroundJobsTest do
 
       tag_change = Repo.get_by!(TagChange, image_id: image.id)
 
-      assert_enqueued("indexing", Philomena.IndexWorker, %{
+      assert_enqueued("indexing", Philomena.Workers.IndexJob, %{
         module: "TagChanges",
         column: "id",
         condition: [tag_change.id]
@@ -83,8 +83,8 @@ defmodule Philomena.BackgroundJobsTest do
       assert repaired_image.id == image.id
       assert repaired_video.id == video.id
 
-      assert_enqueued("images", Philomena.ThumbnailWorker, %{image_id: image_id})
-      assert_enqueued("videos", Philomena.ThumbnailWorker, %{image_id: video_id})
+      assert_enqueued("images", Philomena.Workers.ThumbnailJob, %{image_id: image_id})
+      assert_enqueued("videos", Philomena.Workers.ThumbnailJob, %{image_id: video_id})
     end
 
     test "purges every visible and hidden thumbnail path" do
@@ -97,7 +97,7 @@ defmodule Philomena.BackgroundJobsTest do
 
       assert {:ok, _image} = Images.create_image_repair(actor(moderator), image.id)
 
-      assert_enqueued("indexing", Philomena.ImagePurgeWorker, %{files: expected_files})
+      assert_enqueued("indexing", Philomena.Workers.ImagePurgeJob, %{files: expected_files})
     end
   end
 
@@ -122,16 +122,16 @@ defmodule Philomena.BackgroundJobsTest do
       assert {:ok, %Tag{id: ^target_id}} =
                Tags.create_tag_reindex(actor(admin), target.slug)
 
-      assert_enqueued("indexing", Philomena.TagDeleteWorker, %{tag_id: delete_tag_id})
+      assert_enqueued("indexing", Philomena.Workers.TagDeleteJob, %{tag_id: delete_tag_id})
 
-      assert_enqueued("indexing", Philomena.TagAliasWorker, %{
+      assert_enqueued("indexing", Philomena.Workers.TagAliasJob, %{
         tag_id: alias_tag_id,
         target_tag_id: target_id
       })
 
-      assert_enqueued("indexing", Philomena.TagReindexWorker, %{tag_id: target_id}, 2)
+      assert_enqueued("indexing", Philomena.Workers.TagReindexJob, %{tag_id: target_id}, 2)
 
-      assert_enqueued("indexing", Philomena.IndexWorker, %{
+      assert_enqueued("indexing", Philomena.Workers.IndexJob, %{
         module: "Tags",
         column: "id",
         condition: [target_id]
@@ -148,24 +148,24 @@ defmodule Philomena.BackgroundJobsTest do
       assert {:ok, %User{id: ^target_id}} = Users.delete_user_votes(actor(admin), target.slug)
       assert {:ok, %User{id: ^target_id}} = Users.create_user_wipe(actor(admin), target.slug)
 
-      assert_enqueued("indexing", Philomena.UserUnvoteWorker, %{
+      assert_enqueued("indexing", Philomena.Workers.UserUnvoteJob, %{
         user_id: target_id,
         votes_and_faves_too?: false
       })
 
-      assert_enqueued("indexing", Philomena.UserUnvoteWorker, %{
+      assert_enqueued("indexing", Philomena.Workers.UserUnvoteJob, %{
         user_id: target_id,
         votes_and_faves_too?: true
       })
 
-      assert_enqueued("indexing", Philomena.UserWipeWorker, %{user_id: target_id})
+      assert_enqueued("indexing", Philomena.Workers.UserWipeJob, %{user_id: target_id})
 
       old_name = admin.name
       assert {:ok, renamed_admin} = Users.update_name(actor(admin), %{"name" => "renamed admin"})
       new_name = renamed_admin.name
       admin_id = renamed_admin.id
 
-      assert_enqueued("indexing", Philomena.UserRenameWorker, %{
+      assert_enqueued("indexing", Philomena.Workers.UserRenameJob, %{
         old_name: old_name,
         new_name: new_name
       })
@@ -173,12 +173,12 @@ defmodule Philomena.BackgroundJobsTest do
       assert {:ok, erased} = Users.create_user_erase(actor(renamed_admin), target.slug)
       erased_id = erased.id
 
-      assert_enqueued("indexing", Philomena.UserEraseWorker, %{
+      assert_enqueued("indexing", Philomena.Workers.UserEraseJob, %{
         user_id: target_id,
         moderator_id: admin_id
       })
 
-      assert_enqueued("indexing", Philomena.IndexWorker, %{
+      assert_enqueued("indexing", Philomena.Workers.IndexJob, %{
         module: "Users",
         column: "id",
         condition: [erased_id]
@@ -209,17 +209,17 @@ defmodule Philomena.BackgroundJobsTest do
       assert {:ok, "c1774"} =
                TagChanges.create_fingerprint_tag_change_revert(moderator_actor, "c1774")
 
-      assert_enqueued("indexing", Philomena.TagChangeRevertWorker, %{
+      assert_enqueued("indexing", Philomena.Workers.TagChangeRevertJob, %{
         user_id: target_id,
         attributes: attributes
       })
 
-      assert_enqueued("indexing", Philomena.TagChangeRevertWorker, %{
+      assert_enqueued("indexing", Philomena.Workers.TagChangeRevertJob, %{
         ip: "203.0.113.9",
         attributes: attributes
       })
 
-      assert_enqueued("indexing", Philomena.TagChangeRevertWorker, %{
+      assert_enqueued("indexing", Philomena.Workers.TagChangeRevertJob, %{
         fingerprint: "c1774",
         attributes: attributes
       })
@@ -237,7 +237,7 @@ defmodule Philomena.BackgroundJobsTest do
       assert {:ok, %Report{id: ^report_id}} =
                Reports.create_report_close(actor(moderator), report_id)
 
-      assert_enqueued("indexing", Philomena.IndexWorker, %{
+      assert_enqueued("indexing", Philomena.Workers.IndexJob, %{
         module: "Reports",
         column: "id",
         condition: [report_id]
@@ -257,7 +257,7 @@ defmodule Philomena.BackgroundJobsTest do
 
       assert report_id == report.id
 
-      assert_enqueued("indexing", Philomena.IndexWorker, %{
+      assert_enqueued("indexing", Philomena.Workers.IndexJob, %{
         module: "Reports",
         column: "id",
         condition: [report_id]

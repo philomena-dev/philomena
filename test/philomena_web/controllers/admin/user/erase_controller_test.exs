@@ -2,8 +2,8 @@ defmodule PhilomenaWeb.Admin.User.EraseControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
   # Postgres-only. Users.erase_user/2 synchronously deactivates and renames
-  # the account, then enqueues UserEraseWorker for the rest (a dead Oban
-  # enqueue in test); the rename also enqueues (dead) UserRenameWorker. So
+  # the account, then enqueues UserEraseJob for the rest (a dead Oban
+  # enqueue in test); the rename also enqueues (dead) UserRenameJob. So
   # the deactivation and rename are observable, but the deeper deletion is
   # not.
 

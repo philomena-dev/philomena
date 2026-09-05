@@ -6,12 +6,12 @@ defmodule Philomena.WorkerTest do
 
   import Philomena.ImagesFixtures
 
-  alias Philomena.ImagePurgeWorker
+  alias Philomena.Workers.ImagePurgeJob
   alias Philomena.Images.Image
   alias Philomena.Images.Thumbnailer
-  alias Philomena.IndexWorker
-  alias Philomena.ThumbnailWorker
-  alias Philomena.UserRenameWorker
+  alias Philomena.Workers.IndexJob
+  alias Philomena.Workers.ThumbnailJob
+  alias Philomena.Workers.UserRenameJob
   alias PhilomenaQuery.Search
 
   @index_contexts [
@@ -51,7 +51,7 @@ defmodule Philomena.WorkerTest do
     image = image_fixture()
 
     assert :ok =
-             IndexWorker.perform(%Oban.Job{
+             IndexJob.perform(%Oban.Job{
                args: %{"module" => "Images", "column" => "id", "condition" => [image.id]}
              })
 
@@ -68,7 +68,7 @@ defmodule Philomena.WorkerTest do
 
     Enum.each(@index_contexts, fn {name, _context} ->
       assert :ok =
-               IndexWorker.perform(%Oban.Job{
+               IndexJob.perform(%Oban.Job{
                  args: %{"module" => name, "column" => "id", "condition" => [123]}
                })
     end)
@@ -81,7 +81,7 @@ defmodule Philomena.WorkerTest do
   test "the thumbnail worker generates media and broadcasts completion" do
     patch(Thumbnailer, :generate_thumbnails, :ok)
 
-    assert :ok == ThumbnailWorker.perform(%Oban.Job{args: %{"image_id" => 321}})
+    assert :ok == ThumbnailJob.perform(%Oban.Job{args: %{"image_id" => 321}})
 
     assert_exact_call(Thumbnailer, :generate_thumbnails, [321])
   end
@@ -90,7 +90,7 @@ defmodule Philomena.WorkerTest do
     files = ["/img/1/full.png", "/img/1/thumb.png"]
     patch(System, :cmd, {"", 0})
 
-    assert :ok = ImagePurgeWorker.perform(%Oban.Job{args: %{"files" => files}})
+    assert :ok = ImagePurgeJob.perform(%Oban.Job{args: %{"files" => files}})
 
     assert_exact_call(System, :cmd, [
       "purge-cache",
@@ -102,7 +102,7 @@ defmodule Philomena.WorkerTest do
     Enum.each(@rename_contexts, &patch(&1, :user_name_reindex, :ok))
 
     assert :ok =
-             UserRenameWorker.perform(%Oban.Job{
+             UserRenameJob.perform(%Oban.Job{
                args: %{"old_name" => "Old Name", "new_name" => "New Name"}
              })
 

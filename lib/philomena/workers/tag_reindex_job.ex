@@ -1,4 +1,4 @@
-defmodule Philomena.TagDeleteWorker do
+defmodule Philomena.Workers.TagReindexJob do
   use Oban.Worker, queue: :indexing, max_attempts: 5
 
   alias Philomena.Tags
@@ -11,6 +11,6 @@ defmodule Philomena.TagDeleteWorker do
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"tag_id" => tag_id}}) do
-    Tags.perform_delete(tag_id)
+    Tags.perform_reindex_images(tag_id)
   end
 end

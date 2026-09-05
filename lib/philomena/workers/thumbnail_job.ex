@@ -1,4 +1,4 @@
-defmodule Philomena.ThumbnailWorker do
+defmodule Philomena.Workers.ThumbnailJob do
   use Oban.Worker, queue: :images, max_attempts: 5
 
   alias Philomena.Images.Thumbnailer

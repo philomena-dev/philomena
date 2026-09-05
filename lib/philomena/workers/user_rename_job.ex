@@ -1,4 +1,4 @@
-defmodule Philomena.UserRenameWorker do
+defmodule Philomena.Workers.UserRenameJob do
   use Oban.Worker, queue: :indexing, max_attempts: 5
 
   alias Philomena.Users

@@ -19,7 +19,7 @@ defmodule Philomena.Comments do
   alias Philomena.Filters.Filter
   alias Philomena.Images
   alias Philomena.Images.Image
-  alias Philomena.IndexWorker
+  alias Philomena.Workers.IndexJob
   alias Philomena.IntegerId
   alias Philomena.Loader
   alias Philomena.ModerationLogs
@@ -83,7 +83,7 @@ defmodule Philomena.Comments do
   end
 
   defp put_reindex_comment(%Multi{} = multi, step \\ :comment) do
-    IndexWorker.put_enqueue(multi, "Comments", :id, fn %{^step => comment} -> [comment.id] end)
+    IndexJob.put_enqueue(multi, "Comments", :id, fn %{^step => comment} -> [comment.id] end)
   end
 
   defp put_approval_report(%Multi{} = multi) do

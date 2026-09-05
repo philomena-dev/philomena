@@ -4,7 +4,7 @@ defmodule Philomena.Users.UserWipe do
   the Users context.
 
   The public entry point accepts only a trusted persisted user ID and is called
-  by `Philomena.UserWipeWorker` after an authorized Users service enqueues it.
+  by `Philomena.Workers.UserWipeJob` after an authorized Users service enqueues it.
   """
 
   alias Philomena.Comments

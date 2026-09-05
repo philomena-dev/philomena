@@ -52,12 +52,12 @@ defmodule Philomena.Users do
   alias Philomena.Filters.Filter
   alias Philomena.ModerationLogs
   alias Philomena.ModerationLogs.Paths
-  alias Philomena.IndexWorker
+  alias Philomena.Workers.IndexJob
   alias Philomena.Loader
-  alias Philomena.UserEraseWorker
-  alias Philomena.UserRenameWorker
-  alias Philomena.UserUnvoteWorker
-  alias Philomena.UserWipeWorker
+  alias Philomena.Workers.UserEraseJob
+  alias Philomena.Workers.UserRenameJob
+  alias Philomena.Workers.UserUnvoteJob
+  alias Philomena.Workers.UserWipeJob
 
   ## Shared locators
 
@@ -233,26 +233,26 @@ defmodule Philomena.Users do
   ## Transactional jobs
 
   defp put_reindex_user(multi) do
-    IndexWorker.put_enqueue(multi, "Users", :id, fn %{user: user} -> [user.id] end)
+    IndexJob.put_enqueue(multi, "Users", :id, fn %{user: user} -> [user.id] end)
   end
 
   defp put_wipe_user_votes_job(multi, [{:upvotes_and_faves?, upvotes_and_faves?}]) do
-    UserUnvoteWorker.put_enqueue(multi, fn %{user: user} -> user.id end, upvotes_and_faves?)
+    UserUnvoteJob.put_enqueue(multi, fn %{user: user} -> user.id end, upvotes_and_faves?)
   end
 
   defp put_wipe_user_job(multi) do
-    UserWipeWorker.put_enqueue(multi, fn %{user: user} -> user.id end)
+    UserWipeJob.put_enqueue(multi, fn %{user: user} -> user.id end)
   end
 
   defp put_rename_user_job(multi) do
-    UserRenameWorker.put_enqueue(multi, fn
+    UserRenameJob.put_enqueue(multi, fn
       %{locked_user: %{name: old_name}, user: %{name: new_name}} ->
         {old_name, new_name}
     end)
   end
 
   defp put_erase_user_job(multi, %User{} = target, %Actor{} = actor) do
-    UserEraseWorker.put_enqueue(multi, target.id, actor.user.id)
+    UserEraseJob.put_enqueue(multi, target.id, actor.user.id)
   end
 
   ## Public reads
@@ -2699,7 +2699,7 @@ defmodule Philomena.Users do
       when is_integer(user_id) and is_atom(field) and is_integer(amount) do
     multi
     |> Multi.update_all(step, where(User, id: ^user_id), inc: [{field, amount}])
-    |> IndexWorker.put_enqueue("Users", :id, [user_id])
+    |> IndexJob.put_enqueue("Users", :id, [user_id])
   end
 
   @doc group: "Cross-context helpers"
@@ -2715,7 +2715,7 @@ defmodule Philomena.Users do
       when is_list(user_ids) and is_atom(field) and is_integer(amount) do
     multi
     |> Multi.update_all(step, where(User, [user], user.id in ^user_ids), inc: [{field, amount}])
-    |> IndexWorker.put_enqueue("Users", :id, user_ids)
+    |> IndexJob.put_enqueue("Users", :id, user_ids)
   end
 
   @doc group: "Cross-context helpers"

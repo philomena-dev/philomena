@@ -1,4 +1,4 @@
-defmodule Philomena.TagChangeRevertWorkerTest do
+defmodule Philomena.Workers.TagChangeRevertJobTest do
   use Philomena.DataCase, async: true
 
   # The worker runs synchronously here; only its reindex side effects are
@@ -9,7 +9,7 @@ defmodule Philomena.TagChangeRevertWorkerTest do
   import Philomena.UsersFixtures
 
   alias Philomena.Images
-  alias Philomena.TagChangeRevertWorker
+  alias Philomena.Workers.TagChangeRevertJob
   alias Philomena.TagChanges.TagChange
 
   # Images validate a 3-tag minimum, so every input keeps these on top of
@@ -38,7 +38,7 @@ defmodule Philomena.TagChangeRevertWorkerTest do
   end
 
   defp full_revert!(user, batch_size) do
-    TagChangeRevertWorker.perform(%Oban.Job{
+    TagChangeRevertJob.perform(%Oban.Job{
       args: %{
         "user_id" => user.id,
         "attributes" => %{

@@ -3,7 +3,7 @@ defmodule PhilomenaWeb.Image.FileControllerTest do
 
   # `Images.update_image_file/3` drives the media pipeline synchronously
   # (analyze, persist to the stubbed S3, enqueue the dead
-  # ThumbnailWorker/reindex jobs), with no spawned upload process, so this
+  # ThumbnailJob/reindex jobs), with no spawned upload process, so this
   # file stays `async: true`.
 
   import Philomena.ImagesFixtures
