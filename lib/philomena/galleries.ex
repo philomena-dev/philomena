@@ -36,7 +36,7 @@ defmodule Philomena.Galleries do
   alias Philomena.Galleries.QueryForm
   alias Philomena.Galleries.ReorderForm
   alias Philomena.Galleries
-  alias Philomena.IndexWorker
+  alias Philomena.Workers.IndexJob
   alias Philomena.Interactions
   alias Philomena.Notifications
   alias Philomena.Images
@@ -68,7 +68,7 @@ defmodule Philomena.Galleries do
   end
 
   defp put_reindex_gallery(%Multi{} = multi, step \\ :gallery) do
-    IndexWorker.put_enqueue(multi, "Galleries", :id, fn %{^step => gallery} -> [gallery.id] end)
+    IndexJob.put_enqueue(multi, "Galleries", :id, fn %{^step => gallery} -> [gallery.id] end)
   end
 
   defp cleanup_gallery(%Gallery{} = gallery) do
@@ -88,7 +88,7 @@ defmodule Philomena.Galleries do
         end,
         []
       )
-      |> IndexWorker.put_enqueue("Images", :id, fn %{interactions: {_count, image_ids}} ->
+      |> IndexJob.put_enqueue("Images", :id, fn %{interactions: {_count, image_ids}} ->
         image_ids
       end)
       |> Multi.transact()
@@ -115,7 +115,7 @@ defmodule Philomena.Galleries do
     |> Reports.put_close_reports(:reports, closing_user, gallery_id: gallery.id)
     |> Multi.delete(:gallery, fn %{locked_gallery: gallery} -> gallery end)
     |> Multi.on_commit(fn %{gallery: gallery} -> unindex_gallery(gallery) end)
-    |> IndexWorker.put_enqueue("Images", :id, fn %{interactions: {_, image_ids}} -> image_ids end)
+    |> IndexJob.put_enqueue("Images", :id, fn %{interactions: {_, image_ids}} -> image_ids end)
     |> Multi.transact()
     |> case do
       {:ok, %{gallery: %Gallery{} = gallery}} ->
@@ -750,7 +750,7 @@ defmodule Philomena.Galleries do
       |> Multi.run(:reorder, fn _repo, %{locked_gallery: gallery, reorder_form: reorder_form} ->
         persist_reorder_positions(gallery, reorder_form.image_ids)
       end)
-      |> IndexWorker.put_enqueue("Images", :id, fn %{reorder_form: reorder_form} ->
+      |> IndexJob.put_enqueue("Images", :id, fn %{reorder_form: reorder_form} ->
         reorder_form.image_ids
       end)
       |> Multi.transact()
@@ -856,7 +856,7 @@ defmodule Philomena.Galleries do
     multi
     |> Multi.update_all(:galleries, galleries, [])
     |> Multi.delete_all(:gallery_interactions, where(Interaction, image_id: ^image.id), [])
-    |> IndexWorker.put_enqueue("Galleries", :id, fn %{galleries: {_, gallery_ids}} ->
+    |> IndexJob.put_enqueue("Galleries", :id, fn %{galleries: {_, gallery_ids}} ->
       gallery_ids
     end)
   end
@@ -900,7 +900,7 @@ defmodule Philomena.Galleries do
 
       {:ok, {count, gallery_ids}}
     end)
-    |> IndexWorker.put_enqueue("Galleries", :id, fn
+    |> IndexJob.put_enqueue("Galleries", :id, fn
       %{
         migrated_gallery_interactions: {_, migrated_gallery_ids},
         galleries: {_, removed_gallery_ids}

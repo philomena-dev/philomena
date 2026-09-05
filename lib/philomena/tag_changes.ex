@@ -9,14 +9,14 @@ defmodule Philomena.TagChanges do
   alias Philomena.Attribution.Actor
   alias Philomena.Images
   alias Philomena.Images.Image
-  alias Philomena.IndexWorker
+  alias Philomena.Workers.IndexJob
   alias Philomena.IntegerId
   alias Philomena.Loader
   alias Philomena.ModerationLogs
   alias Philomena.ModerationLogs.Paths
   alias Philomena.Multi
   alias Philomena.Repo
-  alias Philomena.TagChangeRevertWorker
+  alias Philomena.Workers.TagChangeRevertJob
   alias Philomena.TagChanges.QueryBuilder
   alias Philomena.TagChanges.QueryForm
   alias Philomena.TagChanges.RevertForm
@@ -139,7 +139,7 @@ defmodule Philomena.TagChanges do
       batch_size: 100
     }
 
-    TagChangeRevertWorker.put_enqueue(multi, target, attributes)
+    TagChangeRevertJob.put_enqueue(multi, target, attributes)
   end
 
   @doc """
@@ -452,7 +452,7 @@ defmodule Philomena.TagChanges do
 
       {:ok, {added_count, removed_count}}
     end)
-    |> IndexWorker.put_enqueue("TagChanges", :id, fn %{tag_change: tag_change} ->
+    |> IndexJob.put_enqueue("TagChanges", :id, fn %{tag_change: tag_change} ->
       [tag_change.id]
     end)
   end
@@ -707,7 +707,7 @@ defmodule Philomena.TagChanges do
       select(query, [tag_change_tag], tag_change_tag.tag_change_id)
     )
     |> Multi.delete_all(step, query)
-    |> IndexWorker.put_enqueue("TagChanges", :id, fn %{^tag_change_ids_step => tag_change_ids} ->
+    |> IndexJob.put_enqueue("TagChanges", :id, fn %{^tag_change_ids_step => tag_change_ids} ->
       tag_change_ids
     end)
   end
@@ -774,7 +774,7 @@ defmodule Philomena.TagChanges do
 
         {:ok, tag_change_ids}
     end)
-    |> IndexWorker.put_enqueue("TagChanges", :id, fn %{batch_tag_changes: tag_change_ids} ->
+    |> IndexJob.put_enqueue("TagChanges", :id, fn %{batch_tag_changes: tag_change_ids} ->
       tag_change_ids
     end)
   end

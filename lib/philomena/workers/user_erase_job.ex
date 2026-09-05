@@ -1,4 +1,4 @@
-defmodule Philomena.UserEraseWorker do
+defmodule Philomena.Workers.UserEraseJob do
   use Oban.Worker, queue: :indexing, max_attempts: 5
 
   alias Philomena.Users.Eraser

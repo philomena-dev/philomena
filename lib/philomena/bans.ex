@@ -29,7 +29,7 @@ defmodule Philomena.Bans do
   alias Philomena.Bans.UserQueryForm
   alias Philomena.ModerationLogs
   alias Philomena.Multi
-  alias Philomena.IndexWorker
+  alias Philomena.Workers.IndexJob
   alias Philomena.UserIps
   alias Philomena.Users
 
@@ -554,7 +554,7 @@ defmodule Philomena.Bans do
           |> repo.insert()
       end
     end)
-    |> IndexWorker.put_enqueue("Users", :id, [target.id])
+    |> IndexJob.put_enqueue("Users", :id, [target.id])
   end
 
   @doc """

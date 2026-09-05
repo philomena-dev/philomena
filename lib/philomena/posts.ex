@@ -23,7 +23,7 @@ defmodule Philomena.Posts do
   alias Philomena.Users.User
   alias Philomena.Posts.{Post, PostVersion}
   alias Philomena.Posts
-  alias Philomena.IndexWorker
+  alias Philomena.Workers.IndexJob
   alias Philomena.Forums
   alias Philomena.Forums.Forum
   alias Philomena.Forums.Visibility
@@ -63,7 +63,7 @@ defmodule Philomena.Posts do
   defp broadcast_post_creation(result), do: result
 
   defp put_reindex_post(%Multi{} = multi, step \\ :post) do
-    IndexWorker.put_enqueue(multi, "Posts", :id, fn %{^step => post} -> [post.id] end)
+    IndexJob.put_enqueue(multi, "Posts", :id, fn %{^step => post} -> [post.id] end)
   end
 
   @doc """
@@ -80,7 +80,7 @@ defmodule Philomena.Posts do
   """
   @spec put_reindex_posts_in_topic(Multi.t(), Multi.name()) :: Multi.t()
   def put_reindex_posts_in_topic(%Multi{} = multi, step \\ :topic) do
-    IndexWorker.put_enqueue(multi, "Posts", :topic_id, fn %{^step => topic} -> [topic.id] end)
+    IndexJob.put_enqueue(multi, "Posts", :topic_id, fn %{^step => topic} -> [topic.id] end)
   end
 
   @doc """

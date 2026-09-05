@@ -1,4 +1,4 @@
-defmodule Philomena.TagChangeRevertWorker do
+defmodule Philomena.Workers.TagChangeRevertJob do
   use Oban.Worker, queue: :indexing, max_attempts: 5
 
   @moduledoc """
