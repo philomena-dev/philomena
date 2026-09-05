@@ -224,7 +224,7 @@ defmodule PhilomenaWeb.TagControllerTest do
       assert redirected_to(conn) == "/"
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Tag queued for deletion"
 
-      # NOTE: delete_tag only enqueues a (dead) TagDeleteWorker, so the row is
+      # NOTE: delete_tag only enqueues a (dead) TagDeleteJob, so the row is
       # still present synchronously.
       assert Repo.get(Tag, tag.id)
     end

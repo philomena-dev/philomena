@@ -1,4 +1,4 @@
-defmodule Philomena.IndexWorker do
+defmodule Philomena.Workers.IndexJob do
   use Oban.Worker, queue: :indexing, max_attempts: 5
 
   alias Philomena.Multi

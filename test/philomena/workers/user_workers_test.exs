@@ -15,11 +15,11 @@ defmodule Philomena.UserWorkersTest do
   alias Philomena.ImageVotes.ImageVote
   alias Philomena.Repo
   alias Philomena.SourceChanges.SourceChange
-  alias Philomena.UserEraseWorker
+  alias Philomena.Workers.UserEraseJob
   alias Philomena.UserFingerprints.UserFingerprint
   alias Philomena.UserIps.UserIp
-  alias Philomena.UserUnvoteWorker
-  alias Philomena.UserWipeWorker
+  alias Philomena.Workers.UserUnvoteJob
+  alias Philomena.Workers.UserWipeJob
   alias Philomena.Users.User
   alias Philomena.Users.UserDownvoteWipe
 
@@ -34,7 +34,7 @@ defmodule Philomena.UserWorkersTest do
     assert {:ok, _image} = Images.create_image_fave(actor(user), faved.id)
 
     assert :ok =
-             UserUnvoteWorker.perform(%Oban.Job{
+             UserUnvoteJob.perform(%Oban.Job{
                args: %{"user_id" => user.id, "votes_and_faves_too?" => true}
              })
 
@@ -59,7 +59,7 @@ defmodule Philomena.UserWorkersTest do
         fingerprint: "worker-fingerprint"
       )
 
-    assert :ok = UserWipeWorker.perform(%Oban.Job{args: %{"user_id" => user.id}})
+    assert :ok = UserWipeJob.perform(%Oban.Job{args: %{"user_id" => user.id}})
 
     wiped_user = Repo.reload!(user)
     assert wiped_user.email =~ ~r/^deactivated[0-9a-f]{32}@example\.com$/
@@ -85,7 +85,7 @@ defmodule Philomena.UserWorkersTest do
       |> Repo.update!()
 
     assert :ok =
-             UserEraseWorker.perform(%Oban.Job{
+             UserEraseJob.perform(%Oban.Job{
                args: %{"user_id" => user.id, "moderator_id" => moderator.id}
              })
 
@@ -124,7 +124,7 @@ defmodule Philomena.UserWorkersTest do
     )
 
     assert :ok =
-             UserEraseWorker.perform(%Oban.Job{
+             UserEraseJob.perform(%Oban.Job{
                args: %{"user_id" => user.id, "moderator_id" => moderator.id}
              })
 

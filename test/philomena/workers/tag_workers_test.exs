@@ -10,8 +10,8 @@ defmodule Philomena.TagWorkersTest do
 
   alias Philomena.Repo
   alias Philomena.ArtistLinks.ArtistLink
-  alias Philomena.TagAliasWorker
-  alias Philomena.TagDeleteWorker
+  alias Philomena.Workers.TagAliasJob
+  alias Philomena.Workers.TagDeleteJob
   alias Philomena.TagChanges.TagChange
   alias Philomena.TagChanges.TagChangeTag
   alias Philomena.Tags.Tag
@@ -35,7 +35,7 @@ defmodule Philomena.TagWorkersTest do
     |> Repo.update!()
 
     assert :ok =
-             TagAliasWorker.perform(%Oban.Job{
+             TagAliasJob.perform(%Oban.Job{
                args: %{"tag_id" => source.id, "target_tag_id" => target.id}
              })
 
@@ -58,7 +58,7 @@ defmodule Philomena.TagWorkersTest do
     |> Repo.update!()
 
     assert :ok =
-             TagAliasWorker.perform(%Oban.Job{
+             TagAliasJob.perform(%Oban.Job{
                args: %{"tag_id" => source.id, "target_tag_id" => target.id}
              })
 
@@ -79,7 +79,7 @@ defmodule Philomena.TagWorkersTest do
     |> Repo.update!()
 
     assert :ok =
-             TagAliasWorker.perform(%Oban.Job{
+             TagAliasJob.perform(%Oban.Job{
                args: %{"tag_id" => source.id, "target_tag_id" => target.id}
              })
 
@@ -116,7 +116,7 @@ defmodule Philomena.TagWorkersTest do
     tag = tag_fixture(name: "worker delete tag")
     image = image_fixture(tags: "safe, #{tag.name}")
 
-    assert :ok = TagDeleteWorker.perform(%Oban.Job{args: %{"tag_id" => tag.id}})
+    assert :ok = TagDeleteJob.perform(%Oban.Job{args: %{"tag_id" => tag.id}})
 
     assert Repo.get(Tag, tag.id) == nil
     refute tag.id in tag_ids(image)
@@ -144,7 +144,7 @@ defmodule Philomena.TagWorkersTest do
 
     assert Repo.get_by(TagChangeTag, tag_change_id: tag_change.id, tag_id: tag.id)
 
-    assert :ok = TagDeleteWorker.perform(%Oban.Job{args: %{"tag_id" => tag.id}})
+    assert :ok = TagDeleteJob.perform(%Oban.Job{args: %{"tag_id" => tag.id}})
 
     refute Repo.get_by(TagChangeTag, tag_change_id: tag_change.id, tag_id: tag.id)
     refute Repo.get(TagChange, tag_change.id)

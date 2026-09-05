@@ -18,8 +18,8 @@ defmodule Philomena.Images do
   alias Philomena.Repo
 
   alias PhilomenaQuery.Search
-  alias Philomena.ThumbnailWorker
-  alias Philomena.ImagePurgeWorker
+  alias Philomena.Workers.ThumbnailJob
+  alias Philomena.Workers.ImagePurgeJob
   alias Philomena.DuplicateReports
   alias Philomena.DnpEntries
   alias Philomena.Images.Image
@@ -37,7 +37,7 @@ defmodule Philomena.Images do
   alias Philomena.Images.Subscription
   alias Philomena.Images
   alias Philomena.IntegerId
-  alias Philomena.IndexWorker
+  alias Philomena.Workers.IndexJob
   alias Philomena.Loader
   alias Philomena.RateLimiter
   alias Philomena.Attribution.Actor
@@ -212,9 +212,9 @@ defmodule Philomena.Images do
         Thumbnailer.hide_thumbnails(image, image.hidden_image_key)
       end)
     end)
-    |> IndexWorker.put_enqueue("Images", :id, fn %{image: image} -> [image.id] end)
-    |> IndexWorker.put_enqueue("Comments", :image_id, fn %{image: image} -> [image.id] end)
-    |> ImagePurgeWorker.put_enqueue(fn %{image: image} ->
+    |> IndexJob.put_enqueue("Images", :id, fn %{image: image} -> [image.id] end)
+    |> IndexJob.put_enqueue("Comments", :image_id, fn %{image: image} -> [image.id] end)
+    |> ImagePurgeJob.put_enqueue(fn %{image: image} ->
       Thumbnailer.thumbnail_urls(image, image.hidden_image_key) ++
         Thumbnailer.thumbnail_urls(image, nil)
     end)
@@ -338,7 +338,7 @@ defmodule Philomena.Images do
     |> Tags.put_image_tag_count_changes()
     |> UserStatistics.put_increment(actor.user, :metadata_updates_count)
     |> put_reindex_image(:image)
-    |> IndexWorker.put_enqueue("Comments", :image_id, fn %{image: image} -> [image.id] end)
+    |> IndexJob.put_enqueue("Comments", :image_id, fn %{image: image} -> [image.id] end)
     |> Multi.on_commit(fn %{image: %{added_tags: added, removed_tags: removed} = image} ->
       image = Repo.preload(image, [:user, :sources, tags: :aliases])
       broadcast_tag_update(image, added, removed)
@@ -526,7 +526,7 @@ defmodule Philomena.Images do
 
   defp queue_image_repair(image) do
     Multi.new()
-    |> ThumbnailWorker.put_enqueue(image.id, image.image_mime_type)
+    |> ThumbnailJob.put_enqueue(image.id, image.image_mime_type)
     |> Multi.transact()
 
     image
@@ -542,7 +542,7 @@ defmodule Philomena.Images do
       end
 
     Multi.new()
-    |> ImagePurgeWorker.put_enqueue(fn _ -> files end)
+    |> ImagePurgeJob.put_enqueue(fn _ -> files end)
     |> Multi.transact()
   end
 
@@ -631,8 +631,8 @@ defmodule Philomena.Images do
     end)
     |> TagChanges.put_batch_tag_changes(:inserted_taggings, :deleted_taggings, attributes)
     |> Tags.put_batch_image_count_changes(:inserted_taggings, :deleted_taggings, :visible_images)
-    |> IndexWorker.put_enqueue("Images", :id, fn %{locked_image_ids: image_ids} -> image_ids end)
-    |> IndexWorker.put_enqueue("Comments", :image_id, fn %{locked_image_ids: image_ids} ->
+    |> IndexJob.put_enqueue("Images", :id, fn %{locked_image_ids: image_ids} -> image_ids end)
+    |> IndexJob.put_enqueue("Comments", :image_id, fn %{locked_image_ids: image_ids} ->
       image_ids
     end)
   end
@@ -695,8 +695,8 @@ defmodule Philomena.Images do
         {:ok, batch_tag_pairs(image_ids, added_tags, removed_tags)}
     end)
     |> put_perform_batch_update(attributes)
-    |> IndexWorker.put_enqueue("Images", :id, fn %{locked_image_ids: image_ids} -> image_ids end)
-    |> IndexWorker.put_enqueue("Comments", :image_id, fn %{locked_image_ids: image_ids} ->
+    |> IndexJob.put_enqueue("Images", :id, fn %{locked_image_ids: image_ids} -> image_ids end)
+    |> IndexJob.put_enqueue("Comments", :image_id, fn %{locked_image_ids: image_ids} ->
       image_ids
     end)
     |> Multi.on_commit(fn
@@ -1257,8 +1257,8 @@ defmodule Philomena.Images do
     |> Multi.run(:notification, fn _repo, _changes ->
       Notifications.broadcast_image_merge(image, duplicate_of_image)
     end)
-    |> IndexWorker.put_enqueue("Images", :id, [duplicate_of_image.id])
-    |> IndexWorker.put_enqueue("Comments", :image_id, [duplicate_of_image.id])
+    |> IndexJob.put_enqueue("Images", :id, [duplicate_of_image.id])
+    |> IndexJob.put_enqueue("Comments", :image_id, [duplicate_of_image.id])
     |> Multi.on_commit(fn result -> broadcast_image_merge(result.image, duplicate_of_image) end)
   end
 
@@ -1348,7 +1348,7 @@ defmodule Philomena.Images do
 
       {:ok, count}
     end)
-    |> IndexWorker.put_enqueue("Images", :id, [image_id])
+    |> IndexJob.put_enqueue("Images", :id, [image_id])
   end
 
   @doc group: "Cross-context transaction helpers"
@@ -1365,7 +1365,7 @@ defmodule Philomena.Images do
     multi
     |> Multi.all(image_ids_step, image_ids_query)
     |> Multi.delete_all(step, query)
-    |> IndexWorker.put_enqueue("Images", :id, fn %{^image_ids_step => image_ids} -> image_ids end)
+    |> IndexJob.put_enqueue("Images", :id, fn %{^image_ids_step => image_ids} -> image_ids end)
   end
 
   @doc group: "Cross-context transaction helpers"
@@ -1381,7 +1381,7 @@ defmodule Philomena.Images do
       on_conflict: :nothing,
       returning: [:image_id, :tag_id]
     )
-    |> IndexWorker.put_enqueue("Images", :id, fn %{^step => {_count, taggings}} ->
+    |> IndexJob.put_enqueue("Images", :id, fn %{^step => {_count, taggings}} ->
       Enum.map(taggings, & &1.image_id)
     end)
   end
@@ -1396,7 +1396,7 @@ defmodule Philomena.Images do
       on_conflict: :nothing,
       returning: [:image_id, :tag_id]
     )
-    |> IndexWorker.put_enqueue("Images", :id, fn %{^image_ids_step => image_ids} -> image_ids end)
+    |> IndexJob.put_enqueue("Images", :id, fn %{^image_ids_step => image_ids} -> image_ids end)
   end
 
   @doc group: "Cross-context transaction helpers"
@@ -1428,7 +1428,7 @@ defmodule Philomena.Images do
     |> Multi.run(:copied_tag_ids, fn _repo, %{target_taggings: {_count, taggings}} ->
       {:ok, Enum.map(taggings, & &1.tag_id)}
     end)
-    |> IndexWorker.put_enqueue("Images", :id, [target.id])
+    |> IndexJob.put_enqueue("Images", :id, [target.id])
   end
 
   @doc group: "Forms and uploads"
@@ -2002,8 +2002,8 @@ defmodule Philomena.Images do
         Paths.image_path(image),
         "Repaired image #{image.id}"
       )
-      |> ThumbnailWorker.put_enqueue(image.id, image.image_mime_type)
-      |> ImagePurgeWorker.put_enqueue(fn _changes ->
+      |> ThumbnailJob.put_enqueue(image.id, image.image_mime_type)
+      |> ImagePurgeJob.put_enqueue(fn _changes ->
         Thumbnailer.thumbnail_urls(image, image.hidden_image_key) ++
           Thumbnailer.thumbnail_urls(image, nil)
       end)
@@ -2113,7 +2113,7 @@ defmodule Philomena.Images do
         1
       )
       |> put_reindex_image(:image)
-      |> IndexWorker.put_enqueue("Comments", :image_id, fn %{image: image} -> [image.id] end)
+      |> IndexJob.put_enqueue("Comments", :image_id, fn %{image: image} -> [image.id] end)
       |> ModerationLogs.put_log(:moderation_log, actor, fn %{image: image} ->
         {"Image.Delete:delete", Paths.image_path(image), "Restored image #{image.id}"}
       end)
@@ -2174,7 +2174,7 @@ defmodule Philomena.Images do
           "Deleted #{vote_type} by #{user.name} on image #{image.id}"
         }
       end)
-      |> IndexWorker.put_enqueue("Images", :id, [image.id])
+      |> IndexJob.put_enqueue("Images", :id, [image.id])
       |> Multi.transact()
       |> case do
         {:ok, _changes} -> {:ok, image}
@@ -2989,7 +2989,7 @@ defmodule Philomena.Images do
   defp update_thumbnail_metadata!(%Image{}, changeset) do
     Multi.new()
     |> Multi.update(:image, changeset)
-    |> IndexWorker.put_enqueue("Images", :id, fn %{image: image} -> [image.id] end)
+    |> IndexJob.put_enqueue("Images", :id, fn %{image: image} -> [image.id] end)
     |> Multi.transact()
     |> case do
       {:ok, %{image: %Image{} = image}} ->
@@ -3399,7 +3399,7 @@ defmodule Philomena.Images do
   """
   @spec put_reindex_image(Multi.t(), Ecto.Multi.name()) :: Multi.t()
   def put_reindex_image(%Multi{} = multi, step) do
-    IndexWorker.put_enqueue(multi, "Images", :id, fn %{^step => image} -> [image.id] end)
+    IndexJob.put_enqueue(multi, "Images", :id, fn %{^step => image} -> [image.id] end)
   end
 
   @doc group: "Search indexing"

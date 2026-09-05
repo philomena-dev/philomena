@@ -1,4 +1,4 @@
-defmodule Philomena.ImagePurgeWorker do
+defmodule Philomena.Workers.ImagePurgeJob do
   use Oban.Worker, queue: :indexing, max_attempts: 5
 
   alias Philomena.Images

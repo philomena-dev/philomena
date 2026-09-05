@@ -1,7 +1,7 @@
 defmodule PhilomenaWeb.Admin.User.VoteControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Postgres-only. The actual vote/fave wipe is performed by UserUnvoteWorker,
+  # Postgres-only. The actual vote/fave wipe is performed by UserUnvoteJob,
   # which is only enqueued (a dead Oban enqueue in test), so only the
   # flash/redirect and the synchronous moderation_log insert are observable
   # here.
@@ -50,7 +50,7 @@ defmodule PhilomenaWeb.Admin.User.VoteControllerTest do
   describe "DELETE /admin/users/:user_id/votes as a plain moderator" do
     setup [:register_and_log_in_moderator]
 
-    # NOTE: the wipe is performed by an (unconsumed) UserUnvoteWorker enqueue, so
+    # NOTE: the wipe is performed by an (unconsumed) UserUnvoteJob enqueue, so
     # there is no observable side effect to assert absent - the denial redirect +
     # flash is the pin.
     test "is denied to a plain moderator", %{conn: conn} do
