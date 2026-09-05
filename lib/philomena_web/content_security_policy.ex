@@ -85,6 +85,7 @@ defmodule PhilomenaWeb.ContentSecurityPolicy do
     @base_policy
     |> maybe_media_origin(Application.get_env(:philomena, :cdn_host))
     |> maybe_media_origin(Application.get_env(:philomena, :camo_host))
+    |> maybe_sentry(Config.sentry_enabled?())
     |> maybe_vite_hmr(conn, Config.vite_hmr?())
     |> merge_policy(additions)
   end
@@ -154,6 +155,31 @@ defmodule PhilomenaWeb.ContentSecurityPolicy do
     end
   end
 
+  defp maybe_media_origin(policy, origin) when origin in [nil, ""],
+    do: policy
+
+  defp maybe_media_origin(policy, origin) do
+    origin = URI.to_string(%URI{scheme: "https", host: origin})
+
+    merge_policy(policy, %{
+      img_src: [origin],
+      media_src: [origin]
+    })
+  end
+
+  defp maybe_sentry(policy, false),
+    do: policy
+
+  defp maybe_sentry(policy, true) do
+    script_src = Application.fetch_env!(:philomena, :sentry_loader_script_src)
+    connect_src = Application.fetch_env!(:philomena, :sentry_loader_connect_src)
+
+    merge_policy(policy, %{
+      script_src: [script_src],
+      connect_src: [connect_src]
+    })
+  end
+
   defp maybe_vite_hmr(policy, _conn, false),
     do: policy
 
@@ -165,18 +191,6 @@ defmodule PhilomenaWeb.ContentSecurityPolicy do
       script_src: [origin],
       connect_src: [origin, websocket_origin],
       style_sources: ["'unsafe-inline'"]
-    })
-  end
-
-  defp maybe_media_origin(policy, origin) when origin in [nil, ""],
-    do: policy
-
-  defp maybe_media_origin(policy, origin) do
-    origin = URI.to_string(%URI{scheme: "https", host: origin})
-
-    merge_policy(policy, %{
-      img_src: [origin],
-      media_src: [origin]
     })
   end
 end

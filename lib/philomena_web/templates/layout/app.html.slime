@@ -21,6 +21,8 @@ html lang="en"
     link rel="search" type="application/opensearchdescription+xml" title="Derpibooru" href="/opensearch.xml"
     = csrf_meta_tag()
 
+    = if sentry_enabled?() do
+      script src=sentry_loader_script_url() crossorigin="anonymous"
     = if vite_hmr?() do
       script type="module" src=vite_asset_url(@conn, "/@vite/client")
       script type="module" src=vite_asset_url(@conn, "/js/app.ts")

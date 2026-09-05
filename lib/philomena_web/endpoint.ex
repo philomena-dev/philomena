@@ -32,6 +32,8 @@ defmodule PhilomenaWeb.Endpoint do
     pass: ["*/*"],
     json_decoder: Phoenix.json_library()
 
+  plug Sentry.PlugContext
+
   plug Plug.MethodOverride
   plug Plug.Head
 

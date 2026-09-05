@@ -115,6 +115,34 @@ if config_env() != :test do
     queue_interval: 20_000
 end
 
+sentry_dsn = System.get_env("SENTRY_DSN")
+
+if not is_nil(sentry_dsn) do
+  config :sentry,
+    dsn: sentry_dsn,
+    environment_name: config_env(),
+    enable_source_code_context: true,
+    root_source_code_paths: [app_dir]
+
+  loader_script_url = System.fetch_env!("SENTRY_LOADER_SCRIPT_URL")
+
+  loader_script_src =
+    loader_script_url
+    |> URI.parse()
+    |> then(&%URI{scheme: &1.scheme, host: &1.host, port: &1.port})
+
+  loader_connect_src =
+    sentry_dsn
+    |> URI.parse()
+    |> then(&%URI{scheme: &1.scheme, host: &1.host, port: &1.port})
+
+  config :philomena,
+    sentry_enabled: true,
+    sentry_loader_script_url: loader_script_url,
+    sentry_loader_script_src: to_string(loader_script_src),
+    sentry_loader_connect_src: to_string(loader_connect_src)
+end
+
 if config_env() == :prod do
   # Production mailer config
   config :philomena, Philomena.Mailer,
