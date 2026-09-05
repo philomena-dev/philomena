@@ -238,25 +238,25 @@ defmodule Philomena.Users do
 
   defp put_wipe_user_votes_job(multi, [{:upvotes_and_faves?, upvotes_and_faves?}]) do
     Multi.on_commit(multi, fn %{user: user} ->
-      Exq.enqueue(Exq, "indexing", UserUnvoteWorker, [user.id, upvotes_and_faves?])
+      Philomena.JobQueue.enqueue(UserUnvoteWorker, "indexing", [user.id, upvotes_and_faves?])
     end)
   end
 
   defp put_wipe_user_job(multi) do
     Multi.on_commit(multi, fn %{user: user} ->
-      Exq.enqueue(Exq, "indexing", UserWipeWorker, [user.id])
+      Philomena.JobQueue.enqueue(UserWipeWorker, "indexing", [user.id])
     end)
   end
 
   defp put_rename_user_job(multi, [{:old_name, old_name}]) do
     Multi.on_commit(multi, fn %{user: user} ->
-      Exq.enqueue(Exq, "indexing", UserRenameWorker, [old_name, user.name])
+      Philomena.JobQueue.enqueue(UserRenameWorker, "indexing", [old_name, user.name])
     end)
   end
 
   defp put_erase_user_job(multi, %Actor{} = actor) do
     Multi.on_commit(multi, fn %{user: user} ->
-      Exq.enqueue(Exq, "indexing", UserEraseWorker, [user.id, actor.user.id])
+      Philomena.JobQueue.enqueue(UserEraseWorker, "indexing", [user.id, actor.user.id])
     end)
   end
 
@@ -2768,7 +2768,7 @@ defmodule Philomena.Users do
   """
   @spec reindex_user(User.t()) :: User.t()
   def reindex_user(%User{} = user) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Users", "id", [user.id]])
+    Philomena.JobQueue.enqueue(IndexWorker, "indexing", ["Users", "id", [user.id]])
 
     user
   end
@@ -2786,7 +2786,7 @@ defmodule Philomena.Users do
   """
   @spec reindex_user_ids(list(integer())) :: list(integer())
   def reindex_user_ids(user_ids) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Users", "id", user_ids])
+    Philomena.JobQueue.enqueue(IndexWorker, "indexing", ["Users", "id", user_ids])
 
     user_ids
   end

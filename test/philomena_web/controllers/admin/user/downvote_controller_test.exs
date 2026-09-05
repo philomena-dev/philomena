@@ -2,7 +2,7 @@ defmodule PhilomenaWeb.Admin.User.DownvoteControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
   # Postgres-only. The actual downvote wipe is performed by UserUnvoteWorker,
-  # which is only enqueued (a dead Exq enqueue in test), so only the
+  # which is only enqueued (a dead Oban enqueue in test), so only the
   # flash/redirect and the synchronous moderation_log insert are observable
   # here.
 

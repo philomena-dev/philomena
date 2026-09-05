@@ -15,11 +15,11 @@ defmodule Philomena.Application do
 
       # Search write-target tracking, so document writes fan out to both
       # indices during a search index migration. Must start before anything
-      # which writes documents (the endpoint and the Exq workers).
+      # which writes documents (the endpoint and the Oban workers).
       {PhilomenaQuery.Search.WriteTargets, []},
 
       # Background queueing system
-      Philomena.ExqSupervisor,
+      {Oban, Application.fetch_env!(:philomena, Oban)},
 
       # Mailer
       {Task.Supervisor, name: Philomena.AsyncEmailSupervisor},

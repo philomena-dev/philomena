@@ -24,10 +24,10 @@ config :philomena,
   search_target_poll_interval_ms: 5_000,
   search_migration_settle_ms: 15_000
 
-config :exq,
-  max_retries: 5,
-  scheduler_enable: true,
-  start_on_application: false
+config :philomena, Oban,
+  repo: Philomena.Repo,
+  plugins: [Oban.Pruner],
+  queues: [videos: 2, images: 4, indexing: 12, notifications: 2]
 
 # Configures the endpoint
 config :philomena, PhilomenaWeb.Endpoint,

@@ -115,7 +115,7 @@ defmodule Philomena.Images.Thumbnailer do
     full = "full.#{image.image_format}"
     upload_file(image, new_file, full)
 
-    Exq.enqueue(Exq, "indexing", ImagePurgeWorker, [
+    Philomena.JobQueue.enqueue(ImagePurgeWorker, "indexing", [
       Path.join(image_url_base(image, nil), full)
     ])
   end

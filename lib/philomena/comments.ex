@@ -839,7 +839,7 @@ defmodule Philomena.Comments do
   """
   @spec reindex_comment(Comment.t()) :: Comment.t()
   def reindex_comment(%Comment{} = comment) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Comments", "id", [comment.id]])
+    Philomena.JobQueue.enqueue(IndexWorker, "indexing", ["Comments", "id", [comment.id]])
     comment
   end
 
@@ -854,7 +854,7 @@ defmodule Philomena.Comments do
   """
   @spec reindex_comments_on_image(Image.t()) :: Image.t()
   def reindex_comments_on_image(%Image{} = image) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Comments", "image_id", [image.id]])
+    Philomena.JobQueue.enqueue(IndexWorker, "indexing", ["Comments", "image_id", [image.id]])
     image
   end
 
@@ -869,7 +869,7 @@ defmodule Philomena.Comments do
   """
   @spec reindex_comments_on_images([integer()]) :: [integer()]
   def reindex_comments_on_images(image_ids) when is_list(image_ids) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Comments", "image_id", image_ids])
+    Philomena.JobQueue.enqueue(IndexWorker, "indexing", ["Comments", "image_id", image_ids])
     image_ids
   end
 
