@@ -841,11 +841,7 @@ defmodule Philomena.Posts do
   """
   @spec reindex_post(Post.t()) :: Post.t()
   def reindex_post(%Post{} = post) do
-    Philomena.JobQueue.enqueue(IndexWorker, "indexing", %{
-      module: "Posts",
-      column: "id",
-      condition: [post.id]
-    })
+    IndexWorker.enqueue("Posts", :id, [post.id])
 
     post
   end
@@ -865,11 +861,7 @@ defmodule Philomena.Posts do
   """
   @spec reindex_posts_in_topic(Topic.t()) :: :ok
   def reindex_posts_in_topic(%Topic{} = topic) do
-    Philomena.JobQueue.enqueue(IndexWorker, "indexing", %{
-      module: "Posts",
-      column: "topic_id",
-      condition: [topic.id]
-    })
+    IndexWorker.enqueue("Posts", :topic_id, [topic.id])
 
     :ok
   end

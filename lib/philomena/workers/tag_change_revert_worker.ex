@@ -10,6 +10,11 @@ defmodule Philomena.TagChangeRevertWorker do
   alias Philomena.TagChanges.TagChange
   import Ecto.Query
 
+  @spec enqueue(map(), map()) :: :ok
+  def enqueue(target, attributes) when is_map(target) and is_map(attributes) do
+    Philomena.JobQueue.enqueue(__MODULE__, Map.put(target, :attributes, attributes))
+  end
+
   @impl Oban.Worker
   def perform(job)
 

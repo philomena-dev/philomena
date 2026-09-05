@@ -3,6 +3,11 @@ defmodule Philomena.TagDeleteWorker do
 
   alias Philomena.Tags
 
+  @spec enqueue(integer()) :: :ok
+  def enqueue(tag_id) do
+    Philomena.JobQueue.enqueue(__MODULE__, %{tag_id: tag_id})
+  end
+
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"tag_id" => tag_id}}) do
     Tags.perform_delete(tag_id)
