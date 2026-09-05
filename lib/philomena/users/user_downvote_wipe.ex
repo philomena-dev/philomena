@@ -10,6 +10,7 @@ defmodule Philomena.Users.UserDownvoteWipe do
 
   alias PhilomenaQuery.Search
   alias Philomena.Users
+  alias Philomena.Users.User
   alias Philomena.Images.Image
   alias Philomena.Images
   alias Philomena.ImageVotes
@@ -47,18 +48,18 @@ defmodule Philomena.Users.UserDownvoteWipe do
 
     {count, image_ids} = ImageVotes.delete_user_votes!(user.id, false)
     Images.decrement_vote_counters!(image_ids, false)
-    Users.increment_counter(Repo, user.id, :image_votes_count, -count)
+    Repo.update_all(where(User, id: ^user.id), inc: [image_votes_count: -count])
     reindex(image_ids)
 
     if upvotes_and_faves_too do
       {count, image_ids} = ImageVotes.delete_user_votes!(user.id, true)
       Images.decrement_vote_counters!(image_ids, true)
-      Users.increment_counter(Repo, user.id, :image_votes_count, -count)
+      Repo.update_all(where(User, id: ^user.id), inc: [image_votes_count: -count])
       reindex(image_ids)
 
       {count, image_ids} = ImageFaves.delete_user_faves!(user.id)
       Images.decrement_fave_counters!(image_ids)
-      Users.increment_counter(Repo, user.id, :image_faves_count, -count)
+      Repo.update_all(where(User, id: ^user.id), inc: [image_faves_count: -count])
       reindex(image_ids)
     end
 

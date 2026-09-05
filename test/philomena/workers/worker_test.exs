@@ -7,7 +7,6 @@ defmodule Philomena.WorkerTest do
   import Philomena.ImagesFixtures
 
   alias Philomena.ImagePurgeWorker
-  alias Philomena.Images
   alias Philomena.Images.Image
   alias Philomena.Images.Thumbnailer
   alias Philomena.IndexWorker
@@ -79,16 +78,12 @@ defmodule Philomena.WorkerTest do
     end)
   end
 
-  test "the thumbnail worker generates media, broadcasts completion, and reindexes" do
-    image = %Image{id: 321}
+  test "the thumbnail worker generates media and broadcasts completion" do
     patch(Thumbnailer, :generate_thumbnails, :ok)
-    patch(Images, :load_image_for_reindex!, image)
-    patch(Images, :reindex_image, image)
 
-    assert :ok == ThumbnailWorker.perform(%Oban.Job{args: %{"image_id" => image.id}})
+    assert :ok == ThumbnailWorker.perform(%Oban.Job{args: %{"image_id" => 321}})
 
-    assert_exact_call(Thumbnailer, :generate_thumbnails, [image.id])
-    assert_exact_call(Images, :load_image_for_reindex!, [image.id])
+    assert_exact_call(Thumbnailer, :generate_thumbnails, [321])
   end
 
   test "the purge worker passes the complete file list to the purge operation" do

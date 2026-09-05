@@ -147,14 +147,8 @@ defmodule Philomena.Reports do
       ]
   end
 
-  defp reindex_closed_reports(report_ids) do
-    IndexWorker.enqueue("Reports", :id, report_ids)
-  end
-
   defp put_reindex_report(%Multi{} = multi, report_step \\ :report) do
-    Multi.on_commit(multi, fn %{^report_step => report} ->
-      IndexWorker.enqueue("Reports", :id, [report.id])
-    end)
+    IndexWorker.put_enqueue(multi, "Reports", :id, fn %{^report_step => report} -> [report.id] end)
   end
 
   @doc """
@@ -594,8 +588,8 @@ defmodule Philomena.Reports do
   def put_close_reports(%Multi{} = multi, step, closing_user, target) do
     multi
     |> Multi.update_all(step, fn _ -> close_report_query(closing_user, target) end, [])
-    |> Multi.on_commit(fn %{^step => {_count, report_ids}} ->
-      reindex_closed_reports(report_ids)
+    |> IndexWorker.put_enqueue("Reports", :id, fn %{^step => {_count, report_ids}} ->
+      report_ids
     end)
   end
 

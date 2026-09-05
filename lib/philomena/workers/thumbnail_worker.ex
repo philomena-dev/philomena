@@ -2,11 +2,13 @@ defmodule Philomena.ThumbnailWorker do
   use Oban.Worker, queue: :images, max_attempts: 5
 
   alias Philomena.Images.Thumbnailer
-  alias Philomena.Images
+  alias Philomena.Multi
 
-  @spec enqueue(integer(), String.t()) :: :ok
-  def enqueue(image_id, image_mime_type) do
-    Philomena.JobQueue.enqueue(__MODULE__, %{image_id: image_id}, queue: queue(image_mime_type))
+  @spec put_enqueue(Multi.t(), integer(), String.t()) :: Multi.t()
+  def put_enqueue(%Multi{} = multi, image_id, image_mime_type) do
+    Philomena.JobQueue.put_enqueue(multi, __MODULE__, %{image_id: image_id},
+      queue: queue(image_mime_type)
+    )
   end
 
   defp queue("video/webm"), do: :videos
@@ -21,10 +23,6 @@ defmodule Philomena.ThumbnailWorker do
       "image:process",
       %{image_id: image_id}
     )
-
-    image_id
-    |> Images.load_image_for_reindex!()
-    |> Images.reindex_image()
 
     :ok
   end
