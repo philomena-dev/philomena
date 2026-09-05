@@ -8,11 +8,15 @@ defmodule Philomena.TagChangeRevertWorker do
 
   alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
+  alias Philomena.Multi
   import Ecto.Query
 
-  @spec enqueue(map(), map()) :: :ok
-  def enqueue(target, attributes) when is_map(target) and is_map(attributes) do
-    Philomena.JobQueue.enqueue(__MODULE__, Map.put(target, :attributes, attributes))
+  @spec put_enqueue(Multi.t(), map(), map()) :: Multi.t()
+  def put_enqueue(%Multi{} = multi, target, attributes)
+      when is_map(target) and is_map(attributes) do
+    args = Map.put(target, :attributes, attributes)
+
+    Philomena.JobQueue.put_enqueue(multi, __MODULE__, args)
   end
 
   @impl Oban.Worker

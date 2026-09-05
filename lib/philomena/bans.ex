@@ -29,6 +29,7 @@ defmodule Philomena.Bans do
   alias Philomena.Bans.UserQueryForm
   alias Philomena.ModerationLogs
   alias Philomena.Multi
+  alias Philomena.IndexWorker
   alias Philomena.UserIps
   alias Philomena.Users
 
@@ -553,9 +554,7 @@ defmodule Philomena.Bans do
           |> repo.insert()
       end
     end)
-    |> Multi.on_commit(fn _changes ->
-      Users.reindex_user(%Users.User{id: target.id})
-    end)
+    |> IndexWorker.put_enqueue("Users", :id, [target.id])
   end
 
   @doc """

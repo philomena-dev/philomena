@@ -63,14 +63,14 @@ defmodule Philomena.Posts do
   defp broadcast_post_creation(result), do: result
 
   defp put_reindex_post(%Multi{} = multi, step \\ :post) do
-    Multi.on_commit(multi, fn %{^step => post} -> reindex_post(post) end)
+    IndexWorker.put_enqueue(multi, "Posts", :id, fn %{^step => post} -> [post.id] end)
   end
 
   @doc """
-  Adds an `on_commit` step that reindexes all posts in a topic.
+  Adds a transactional indexing job for all posts in a topic.
 
   `step` names the transaction result containing the topic and defaults to
-  `:topic`. Indexing runs only after the transaction commits.
+  `:topic`. The indexing job is inserted with the transaction.
 
   ## Examples
 
@@ -80,7 +80,7 @@ defmodule Philomena.Posts do
   """
   @spec put_reindex_posts_in_topic(Multi.t(), Multi.name()) :: Multi.t()
   def put_reindex_posts_in_topic(%Multi{} = multi, step \\ :topic) do
-    Multi.on_commit(multi, fn %{^step => topic} -> reindex_posts_in_topic(topic) end)
+    IndexWorker.put_enqueue(multi, "Posts", :topic_id, fn %{^step => topic} -> [topic.id] end)
   end
 
   @doc """
@@ -827,43 +827,6 @@ defmodule Philomena.Posts do
     data = Posts.SearchIndex.user_name_update_by_query(old_name, new_name)
 
     Search.update_by_query(Post, data.query, data.set_replacements, data.replacements)
-  end
-
-  @doc """
-  Queues a single post for search index updates.
-  Returns the post struct unchanged, for use in a pipeline.
-
-  ## Examples
-
-      iex> reindex_post(post)
-      %Post{}
-
-  """
-  @spec reindex_post(Post.t()) :: Post.t()
-  def reindex_post(%Post{} = post) do
-    IndexWorker.enqueue("Posts", :id, [post.id])
-
-    post
-  end
-
-  @doc """
-  Queues every post in the given topic for search index updates.
-
-  Used when a topic's visibility changes: a post's indexed `hidden_from_users`
-  reflects its topic's hidden state (see `Philomena.Posts.SearchIndex`), so
-  hiding or unhiding a topic must refresh all of its posts.
-
-  ## Examples
-
-      iex> reindex_posts_in_topic(topic_id)
-      :ok
-
-  """
-  @spec reindex_posts_in_topic(Topic.t()) :: :ok
-  def reindex_posts_in_topic(%Topic{} = topic) do
-    IndexWorker.enqueue("Posts", :topic_id, [topic.id])
-
-    :ok
   end
 
   @doc """

@@ -1,6 +1,8 @@
 defmodule Philomena.IndexWorker do
   use Oban.Worker, queue: :indexing, max_attempts: 5
 
+  alias Philomena.Multi
+
   @modules %{
     "Comments" => Philomena.Comments,
     "Galleries" => Philomena.Galleries,
@@ -13,13 +15,18 @@ defmodule Philomena.IndexWorker do
     "Users" => Philomena.Users
   }
 
-  @spec enqueue(String.t(), atom() | String.t(), [integer()]) :: :ok
-  def enqueue(module, column, condition) when is_binary(module) and is_list(condition) do
-    Philomena.JobQueue.enqueue(__MODULE__, %{
-      module: module,
-      column: to_string(column),
-      condition: condition
-    })
+  @spec put_enqueue(Multi.t(), String.t(), atom(), [integer()] | (Multi.changes() -> [integer()])) ::
+          Multi.t()
+  def put_enqueue(%Multi{} = multi, module, column, condition) do
+    Philomena.JobQueue.put_enqueue(multi, __MODULE__, fn changes ->
+      condition = if is_function(condition, 1), do: condition.(changes), else: condition
+
+      %{
+        module: module,
+        column: to_string(column),
+        condition: condition
+      }
+    end)
   end
 
   # Perform the queued index. Context function looks like the following:

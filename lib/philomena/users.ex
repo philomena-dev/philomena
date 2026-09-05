@@ -230,34 +230,29 @@ defmodule Philomena.Users do
     end)
   end
 
-  ## Post-commit hooks
+  ## Transactional jobs
 
   defp put_reindex_user(multi) do
-    Multi.on_commit(multi, fn %{user: user} -> reindex_user(user) end)
+    IndexWorker.put_enqueue(multi, "Users", :id, fn %{user: user} -> [user.id] end)
   end
 
   defp put_wipe_user_votes_job(multi, [{:upvotes_and_faves?, upvotes_and_faves?}]) do
-    Multi.on_commit(multi, fn %{user: user} ->
-      UserUnvoteWorker.enqueue(user.id, upvotes_and_faves?)
-    end)
+    UserUnvoteWorker.put_enqueue(multi, fn %{user: user} -> user.id end, upvotes_and_faves?)
   end
 
   defp put_wipe_user_job(multi) do
-    Multi.on_commit(multi, fn %{user: user} ->
-      UserWipeWorker.enqueue(user.id)
+    UserWipeWorker.put_enqueue(multi, fn %{user: user} -> user.id end)
+  end
+
+  defp put_rename_user_job(multi) do
+    UserRenameWorker.put_enqueue(multi, fn
+      %{locked_user: %{name: old_name}, user: %{name: new_name}} ->
+        {old_name, new_name}
     end)
   end
 
-  defp put_rename_user_job(multi, [{:old_name, old_name}]) do
-    Multi.on_commit(multi, fn %{user: user} ->
-      UserRenameWorker.enqueue(old_name, user.name)
-    end)
-  end
-
-  defp put_erase_user_job(multi, %Actor{} = actor) do
-    Multi.on_commit(multi, fn %{user: user} ->
-      UserEraseWorker.enqueue(user.id, actor.user.id)
-    end)
+  defp put_erase_user_job(multi, %User{} = target, %Actor{} = actor) do
+    UserEraseWorker.put_enqueue(multi, target.id, actor.user.id)
   end
 
   ## Public reads
@@ -1744,12 +1739,9 @@ defmodule Philomena.Users do
           {:ok, User.t()} | {:error, :ban | :unauthorized | Ecto.Changeset.t()}
   def update_name(%Actor{user: user} = actor, user_params) do
     with :ok <- verify_write_access(actor) do
-      old_name = user.name
-
       Multi.new()
       |> Multi.lock_one(:locked_user, user_lock_query(user))
       |> Multi.run(:authorize, fn _repo, %{locked_user: user} ->
-        # credo:disable-for-next-line
         with :ok <- authorize(user, :change_username, user) do
           {:ok, nil}
         end
@@ -1759,7 +1751,7 @@ defmodule Philomena.Users do
       end)
       |> UserNameChanges.record_rename(:name_change, user)
       |> put_reindex_user()
-      |> put_rename_user_job(old_name: old_name)
+      |> put_rename_user_job()
       |> Multi.transact()
       |> case do
         {:ok, %{user: %User{} = user}} ->
@@ -2192,7 +2184,7 @@ defmodule Philomena.Users do
         {"Admin.User.Erase:create", Paths.profile_path(user), "Erased #{original_name}"}
       end)
       |> put_reindex_user()
-      |> put_erase_user_job(actor)
+      |> put_erase_user_job(user, actor)
       |> Multi.transact()
       |> case do
         {:ok, %{user: %User{} = user}} ->
@@ -2699,27 +2691,31 @@ defmodule Philomena.Users do
 
   @doc group: "Cross-context helpers"
   @doc """
-  Increments one lifetime counter on a user through the supplied repository.
-
-  The return value is the normal `update_all/3` row count.
+  Increments one lifetime counter on a user within `multi` and queues the
+  resulting user index update in the same transaction.
   """
-  @spec increment_counter(module(), integer(), atom(), integer()) :: {non_neg_integer(), nil}
-  def increment_counter(repo, user_id, field, amount)
+  @spec put_increment_counter(Multi.t(), Multi.name(), integer(), atom(), integer()) :: Multi.t()
+  def put_increment_counter(%Multi{} = multi, step, user_id, field, amount)
       when is_integer(user_id) and is_atom(field) and is_integer(amount) do
-    repo.update_all(where(User, id: ^user_id), inc: [{field, amount}])
+    multi
+    |> Multi.update_all(step, where(User, id: ^user_id), inc: [{field, amount}])
+    |> IndexWorker.put_enqueue("Users", :id, [user_id])
   end
 
   @doc group: "Cross-context helpers"
   @doc """
-  Increments one lifetime counter for each supplied user through the supplied
-  repository.
-
-  The return value is the normal `update_all/3` row count.
+  Increments one lifetime counter for each supplied user within `multi` and
+  queues the resulting user index updates in the same transaction.
   """
-  @spec increment_counters(module(), [integer()], atom(), integer()) :: {non_neg_integer(), nil}
-  def increment_counters(repo, user_ids, field, amount)
+  @spec put_increment_counters(Multi.t(), Multi.name(), [integer()], atom(), integer()) ::
+          Multi.t()
+  def put_increment_counters(%Multi{} = multi, _step, [], _field, _amount), do: multi
+
+  def put_increment_counters(%Multi{} = multi, step, user_ids, field, amount)
       when is_list(user_ids) and is_atom(field) and is_integer(amount) do
-    repo.update_all(where(User, [user], user.id in ^user_ids), inc: [{field, amount}])
+    multi
+    |> Multi.update_all(step, where(User, [user], user.id in ^user_ids), inc: [{field, amount}])
+    |> IndexWorker.put_enqueue("Users", :id, user_ids)
   end
 
   @doc group: "Cross-context helpers"
@@ -2755,42 +2751,6 @@ defmodule Philomena.Users do
     Users.user_name_reindex(old_name, new_name)
 
     :ok
-  end
-
-  @doc group: "Background jobs"
-  @doc """
-  Queues a single user for search index updates.
-  Returns the user struct unchanged, for use in a pipeline.
-
-  ## Examples
-
-      iex> reindex_user(user)
-      %User{}
-
-  """
-  @spec reindex_user(User.t()) :: User.t()
-  def reindex_user(%User{} = user) do
-    IndexWorker.enqueue("Users", :id, [user.id])
-
-    user
-  end
-
-  @doc group: "Background jobs"
-  @doc """
-  Queues a list of user IDs for search index updates.
-  Returns the list unchanged, for use in a pipeline.
-
-  ## Examples
-
-      iex> reindex_user_ids([1, 2, 3])
-      [1, 2, 3]
-
-  """
-  @spec reindex_user_ids(list(integer())) :: list(integer())
-  def reindex_user_ids(user_ids) do
-    IndexWorker.enqueue("Users", :id, user_ids)
-
-    user_ids
   end
 
   @doc group: "Background jobs"

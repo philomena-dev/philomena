@@ -3,10 +3,14 @@ defmodule Philomena.UserEraseWorker do
 
   alias Philomena.Users.Eraser
   alias Philomena.Users
+  alias Philomena.Multi
 
-  @spec enqueue(integer(), integer()) :: :ok
-  def enqueue(user_id, moderator_id) do
-    Philomena.JobQueue.enqueue(__MODULE__, %{user_id: user_id, moderator_id: moderator_id})
+  @spec put_enqueue(Multi.t(), integer(), integer()) :: Multi.t()
+  def put_enqueue(%Multi{} = multi, user_id, moderator_id) do
+    Philomena.JobQueue.put_enqueue(multi, __MODULE__, %{
+      user_id: user_id,
+      moderator_id: moderator_id
+    })
   end
 
   @impl Oban.Worker

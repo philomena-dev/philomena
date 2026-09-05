@@ -48,7 +48,7 @@ defmodule Philomena.Users.UserWipe do
     UserFingerprints.delete_for_user!(user.id)
     Users.replace_email_for_wipe!(user.id, "deactivated#{random_hex}@example.com")
 
-    Users.reindex_user(user)
+    Users.perform_reindex(:id, [user.id])
 
     :ok
   end
