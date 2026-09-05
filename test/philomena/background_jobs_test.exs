@@ -46,7 +46,7 @@ defmodule Philomena.BackgroundJobsTest do
         select: job.args
       )
 
-    expected = %{"args" => stringify_keys(arguments)}
+    expected = stringify_keys(arguments)
     assert Enum.count(Repo.all(jobs), &(&1 == expected)) >= count
   end
 
@@ -66,16 +66,34 @@ defmodule Philomena.BackgroundJobsTest do
       assert Comments.reindex_comments_on_image(image) == image
       assert Comments.reindex_comments_on_images([12, 13]) == [12, 13]
 
-      assert_enqueued("indexing", Philomena.IndexWorker, ["Comments", "id", [11]])
-      assert_enqueued("indexing", Philomena.IndexWorker, ["Comments", "image_id", [12]])
-      assert_enqueued("indexing", Philomena.IndexWorker, ["Comments", "image_id", [12, 13]])
+      assert_enqueued("indexing", Philomena.IndexWorker, %{
+        module: "Comments",
+        column: "id",
+        condition: [11]
+      })
+
+      assert_enqueued("indexing", Philomena.IndexWorker, %{
+        module: "Comments",
+        column: "image_id",
+        condition: [12]
+      })
+
+      assert_enqueued("indexing", Philomena.IndexWorker, %{
+        module: "Comments",
+        column: "image_id",
+        condition: [12, 13]
+      })
     end
 
     test "filters enqueue their id" do
       filter = %Filter{id: 21}
       assert Filters.reindex_filter(filter) == filter
 
-      assert_enqueued("indexing", Philomena.IndexWorker, ["Filters", "id", [21]])
+      assert_enqueued("indexing", Philomena.IndexWorker, %{
+        module: "Filters",
+        column: "id",
+        condition: [21]
+      })
     end
 
     test "galleries enqueue one or many ids and skip an empty batch" do
@@ -84,8 +102,17 @@ defmodule Philomena.BackgroundJobsTest do
       assert Galleries.reindex_galleries([31, 32]) == [31, 32]
       assert Galleries.reindex_galleries([]) == []
 
-      assert_enqueued("indexing", Philomena.IndexWorker, ["Galleries", "id", [31]])
-      assert_enqueued("indexing", Philomena.IndexWorker, ["Galleries", "id", [31, 32]])
+      assert_enqueued("indexing", Philomena.IndexWorker, %{
+        module: "Galleries",
+        column: "id",
+        condition: [31]
+      })
+
+      assert_enqueued("indexing", Philomena.IndexWorker, %{
+        module: "Galleries",
+        column: "id",
+        condition: [31, 32]
+      })
     end
 
     test "images enqueue one or many ids" do
@@ -93,8 +120,17 @@ defmodule Philomena.BackgroundJobsTest do
       assert Images.reindex_image(image) == image
       assert Images.reindex_images([41, 42]) == [41, 42]
 
-      assert_enqueued("indexing", Philomena.IndexWorker, ["Images", "id", [41]])
-      assert_enqueued("indexing", Philomena.IndexWorker, ["Images", "id", [41, 42]])
+      assert_enqueued("indexing", Philomena.IndexWorker, %{
+        module: "Images",
+        column: "id",
+        condition: [41]
+      })
+
+      assert_enqueued("indexing", Philomena.IndexWorker, %{
+        module: "Images",
+        column: "id",
+        condition: [41, 42]
+      })
     end
 
     test "posts enqueue a post id or a topic id" do
@@ -103,8 +139,17 @@ defmodule Philomena.BackgroundJobsTest do
       assert Posts.reindex_post(post) == post
       assert Posts.reindex_posts_in_topic(topic) == :ok
 
-      assert_enqueued("indexing", Philomena.IndexWorker, ["Posts", "id", [51]])
-      assert_enqueued("indexing", Philomena.IndexWorker, ["Posts", "topic_id", [52]])
+      assert_enqueued("indexing", Philomena.IndexWorker, %{
+        module: "Posts",
+        column: "id",
+        condition: [51]
+      })
+
+      assert_enqueued("indexing", Philomena.IndexWorker, %{
+        module: "Posts",
+        column: "topic_id",
+        condition: [52]
+      })
     end
 
     test "persisted tag changes enqueue their generated id after commit" do
@@ -121,11 +166,11 @@ defmodule Philomena.BackgroundJobsTest do
 
       tag_change = Repo.get_by!(TagChange, image_id: image.id)
 
-      assert_enqueued("indexing", Philomena.IndexWorker, [
-        "TagChanges",
-        "id",
-        [tag_change.id]
-      ])
+      assert_enqueued("indexing", Philomena.IndexWorker, %{
+        module: "TagChanges",
+        column: "id",
+        condition: [tag_change.id]
+      })
     end
 
     test "tags enqueue a batch of ids" do
@@ -133,14 +178,22 @@ defmodule Philomena.BackgroundJobsTest do
       other_tag = %Tag{id: 72}
       assert Tags.reindex_tags([tag, other_tag]) == [tag, other_tag]
 
-      assert_enqueued("indexing", Philomena.IndexWorker, ["Tags", "id", [71, 72]])
+      assert_enqueued("indexing", Philomena.IndexWorker, %{
+        module: "Tags",
+        column: "id",
+        condition: [71, 72]
+      })
     end
 
     test "users enqueue their id" do
       user = %User{id: 81}
       assert Users.reindex_user(user) == user
 
-      assert_enqueued("indexing", Philomena.IndexWorker, ["Users", "id", [81]])
+      assert_enqueued("indexing", Philomena.IndexWorker, %{
+        module: "Users",
+        column: "id",
+        condition: [81]
+      })
     end
   end
 
@@ -156,8 +209,8 @@ defmodule Philomena.BackgroundJobsTest do
       assert repaired_image.id == image.id
       assert repaired_video.id == video.id
 
-      assert_enqueued("images", Philomena.ThumbnailWorker, [image_id])
-      assert_enqueued("videos", Philomena.ThumbnailWorker, [video_id])
+      assert_enqueued("images", Philomena.ThumbnailWorker, %{image_id: image_id})
+      assert_enqueued("videos", Philomena.ThumbnailWorker, %{image_id: video_id})
     end
 
     test "purges every visible and hidden thumbnail path" do
@@ -170,7 +223,7 @@ defmodule Philomena.BackgroundJobsTest do
 
       assert {:ok, _image} = Images.create_image_repair(actor(moderator), image.id)
 
-      assert_enqueued("indexing", Philomena.ImagePurgeWorker, [expected_files])
+      assert_enqueued("indexing", Philomena.ImagePurgeWorker, %{files: expected_files})
     end
   end
 
@@ -195,10 +248,20 @@ defmodule Philomena.BackgroundJobsTest do
       assert {:ok, %Tag{id: ^target_id}} =
                Tags.create_tag_reindex(actor(admin), target.slug)
 
-      assert_enqueued("indexing", Philomena.TagDeleteWorker, [delete_tag_id])
-      assert_enqueued("indexing", Philomena.TagAliasWorker, [alias_tag_id, target_id])
-      assert_enqueued("indexing", Philomena.TagReindexWorker, [target_id], 2)
-      assert_enqueued("indexing", Philomena.IndexWorker, ["Tags", "id", [target_id]])
+      assert_enqueued("indexing", Philomena.TagDeleteWorker, %{tag_id: delete_tag_id})
+
+      assert_enqueued("indexing", Philomena.TagAliasWorker, %{
+        tag_id: alias_tag_id,
+        target_tag_id: target_id
+      })
+
+      assert_enqueued("indexing", Philomena.TagReindexWorker, %{tag_id: target_id}, 2)
+
+      assert_enqueued("indexing", Philomena.IndexWorker, %{
+        module: "Tags",
+        column: "id",
+        condition: [target_id]
+      })
     end
   end
 
@@ -211,22 +274,41 @@ defmodule Philomena.BackgroundJobsTest do
       assert {:ok, %User{id: ^target_id}} = Users.delete_user_votes(actor(admin), target.slug)
       assert {:ok, %User{id: ^target_id}} = Users.create_user_wipe(actor(admin), target.slug)
 
-      assert_enqueued("indexing", Philomena.UserUnvoteWorker, [target_id, false])
-      assert_enqueued("indexing", Philomena.UserUnvoteWorker, [target_id, true])
-      assert_enqueued("indexing", Philomena.UserWipeWorker, [target_id])
+      assert_enqueued("indexing", Philomena.UserUnvoteWorker, %{
+        user_id: target_id,
+        votes_and_faves_too?: false
+      })
+
+      assert_enqueued("indexing", Philomena.UserUnvoteWorker, %{
+        user_id: target_id,
+        votes_and_faves_too?: true
+      })
+
+      assert_enqueued("indexing", Philomena.UserWipeWorker, %{user_id: target_id})
 
       old_name = admin.name
       assert {:ok, renamed_admin} = Users.update_name(actor(admin), %{"name" => "renamed admin"})
       new_name = renamed_admin.name
       admin_id = renamed_admin.id
 
-      assert_enqueued("indexing", Philomena.UserRenameWorker, [old_name, new_name])
+      assert_enqueued("indexing", Philomena.UserRenameWorker, %{
+        old_name: old_name,
+        new_name: new_name
+      })
 
       assert {:ok, erased} = Users.create_user_erase(actor(renamed_admin), target.slug)
       erased_id = erased.id
 
-      assert_enqueued("indexing", Philomena.UserEraseWorker, [target_id, admin_id])
-      assert_enqueued("indexing", Philomena.IndexWorker, ["Users", "id", [erased_id]])
+      assert_enqueued("indexing", Philomena.UserEraseWorker, %{
+        user_id: target_id,
+        moderator_id: admin_id
+      })
+
+      assert_enqueued("indexing", Philomena.IndexWorker, %{
+        module: "Users",
+        column: "id",
+        condition: [erased_id]
+      })
     end
   end
 
@@ -253,17 +335,20 @@ defmodule Philomena.BackgroundJobsTest do
       assert {:ok, "c1774"} =
                TagChanges.create_fingerprint_tag_change_revert(moderator_actor, "c1774")
 
-      assert_enqueued("indexing", Philomena.TagChangeRevertWorker, [
-        %{user_id: target_id, attributes: attributes}
-      ])
+      assert_enqueued("indexing", Philomena.TagChangeRevertWorker, %{
+        user_id: target_id,
+        attributes: attributes
+      })
 
-      assert_enqueued("indexing", Philomena.TagChangeRevertWorker, [
-        %{ip: "203.0.113.9", attributes: attributes}
-      ])
+      assert_enqueued("indexing", Philomena.TagChangeRevertWorker, %{
+        ip: "203.0.113.9",
+        attributes: attributes
+      })
 
-      assert_enqueued("indexing", Philomena.TagChangeRevertWorker, [
-        %{fingerprint: "c1774", attributes: attributes}
-      ])
+      assert_enqueued("indexing", Philomena.TagChangeRevertWorker, %{
+        fingerprint: "c1774",
+        attributes: attributes
+      })
     end
   end
 
@@ -278,7 +363,11 @@ defmodule Philomena.BackgroundJobsTest do
       assert {:ok, %Report{id: ^report_id}} =
                Reports.create_report_close(actor(moderator), report_id)
 
-      assert_enqueued("indexing", Philomena.IndexWorker, ["Reports", "id", [report_id]])
+      assert_enqueued("indexing", Philomena.IndexWorker, %{
+        module: "Reports",
+        column: "id",
+        condition: [report_id]
+      })
     end
 
     test "bulk report closure enqueues the returned id list" do
@@ -293,7 +382,12 @@ defmodule Philomena.BackgroundJobsTest do
                |> Multi.transact()
 
       assert report_id == report.id
-      assert_enqueued("indexing", Philomena.IndexWorker, ["Reports", "id", [report_id]])
+
+      assert_enqueued("indexing", Philomena.IndexWorker, %{
+        module: "Reports",
+        column: "id",
+        condition: [report_id]
+      })
     end
   end
 end

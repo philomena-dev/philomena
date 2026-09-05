@@ -4,9 +4,13 @@ defmodule Philomena.TagAliasWorker do
   alias Philomena.Tags
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"args" => args}}), do: apply(__MODULE__, :perform, args)
+  def perform(%Oban.Job{args: %{"tag_id" => tag_id, "target_tag_id" => target_tag_id}}) do
+    case Tags.perform_alias(tag_id, target_tag_id) do
+      {:error, :stale_target} ->
+        {:cancel, :stale_target}
 
-  def perform(tag_id, target_tag_id) do
-    Tags.perform_alias(tag_id, target_tag_id)
+      result ->
+        result
+    end
   end
 end

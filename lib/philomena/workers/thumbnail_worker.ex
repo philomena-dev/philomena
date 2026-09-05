@@ -5,9 +5,7 @@ defmodule Philomena.ThumbnailWorker do
   alias Philomena.Images
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"args" => args}}), do: apply(__MODULE__, :perform, args)
-
-  def perform(image_id) do
+  def perform(%Oban.Job{args: %{"image_id" => image_id}}) do
     Thumbnailer.generate_thumbnails(image_id)
 
     PhilomenaWeb.Endpoint.broadcast!(
@@ -19,5 +17,7 @@ defmodule Philomena.ThumbnailWorker do
     image_id
     |> Images.load_image_for_reindex!()
     |> Images.reindex_image()
+
+    :ok
   end
 end
