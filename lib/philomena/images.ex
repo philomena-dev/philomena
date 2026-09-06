@@ -695,10 +695,6 @@ defmodule Philomena.Images do
         {:ok, batch_tag_pairs(image_ids, added_tags, removed_tags)}
     end)
     |> put_perform_batch_update(attributes)
-    |> IndexJob.put_enqueue("Images", :id, fn %{locked_image_ids: image_ids} -> image_ids end)
-    |> IndexJob.put_enqueue("Comments", :image_id, fn %{locked_image_ids: image_ids} ->
-      image_ids
-    end)
     |> Multi.on_commit(fn
       %{
         locked_image_ids: image_ids,
