@@ -15,7 +15,8 @@ defmodule Philomena.UserNameChangesTest do
   defp record_name!(user) do
     {:ok, %{name_change: change}} =
       Multi.new()
-      |> UserNameChanges.record_rename(:name_change, user)
+      |> Multi.put(:locked_user, user)
+      |> UserNameChanges.put_record_rename(:name_change, :locked_user)
       |> Multi.transact()
 
     change
@@ -36,7 +37,8 @@ defmodule Philomena.UserNameChangesTest do
 
       assert {:error, :later_step, :forced, %{}} =
                Multi.new()
-               |> UserNameChanges.record_rename(:name_change, user)
+               |> Multi.put(:locked_user, user)
+               |> UserNameChanges.put_record_rename(:name_change, :locked_user)
                |> Multi.run(:later_step, fn _repo, _changes -> {:error, :forced} end)
                |> Multi.transact()
 

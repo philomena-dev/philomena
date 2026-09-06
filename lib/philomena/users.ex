@@ -1749,7 +1749,7 @@ defmodule Philomena.Users do
       |> Multi.update(:user, fn %{locked_user: user} ->
         User.name_changeset(user, user_params)
       end)
-      |> UserNameChanges.record_rename(:name_change, user)
+      |> UserNameChanges.put_record_rename(:name_change, :locked_user)
       |> put_reindex_user()
       |> put_rename_user_job()
       |> Multi.transact()
