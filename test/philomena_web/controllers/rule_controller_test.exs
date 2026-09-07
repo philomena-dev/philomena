@@ -5,6 +5,7 @@ defmodule PhilomenaWeb.RuleControllerTest do
   # actions (:new, :create, :edit, :update) are covered here.
 
   import Philomena.RulesFixtures
+  import Philomena.UsersFixtures
 
   alias Philomena.Rules.Rule
   alias Philomena.Rules.RuleVersion
@@ -63,6 +64,26 @@ defmodule PhilomenaWeb.RuleControllerTest do
       assert response =~ "Test Hidden Rule"
       assert response =~ "Test Internal Rule"
       assert response =~ "Create New Rule"
+    end
+
+    test "renders rule management affordances only to admins", %{conn: conn} do
+      rule = rule_fixture(%{name: "Rule Management Marker"})
+
+      anonymous_response = html_response(get(conn, ~p"/rules"), 200)
+      refute anonymous_response =~ ~p"/rules/#{rule}/edit"
+      refute anonymous_response =~ "Create New Rule"
+
+      moderator_response =
+        html_response(get(log_in_user(conn, moderator_user_fixture()), ~p"/rules"), 200)
+
+      refute moderator_response =~ ~p"/rules/#{rule}/edit"
+      refute moderator_response =~ "Create New Rule"
+
+      admin_response =
+        html_response(get(log_in_user(conn, admin_user_fixture()), ~p"/rules"), 200)
+
+      assert admin_response =~ ~p"/rules/#{rule}/edit"
+      assert admin_response =~ "Create New Rule"
     end
 
     test "renders an empty index when no rules exist", %{conn: conn} do

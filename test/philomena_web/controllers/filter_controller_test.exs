@@ -31,6 +31,16 @@ defmodule PhilomenaWeb.FilterControllerTest do
       assert response =~ filter.name
     end
 
+    test "renders the edit affordance for the user's own filter", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      filter = filter_fixture(user)
+
+      response = html_response(get(conn, ~p"/filters"), 200)
+
+      assert response =~ "Edit this filter"
+      assert response =~ ~p"/filters/#{filter}/edit"
+    end
+
     test "with fq searches the filter index", %{conn: conn} do
       Search.clear_index!(Filter)
       %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
@@ -98,6 +108,28 @@ defmodule PhilomenaWeb.FilterControllerTest do
       filter = filter_fixture(user)
 
       assert html_response(get(conn, ~p"/filters/#{filter}"), 200) =~ filter.name
+    end
+
+    test "renders edit and destroy affordances only for the filter owner", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      filter = filter_fixture(user)
+
+      response = html_response(get(conn, ~p"/filters/#{filter}"), 200)
+
+      assert response =~ "Edit this filter"
+      assert response =~ ~p"/filters/#{filter}/edit"
+      assert response =~ "Destroy this filter"
+
+      other_conn = build_conn()
+      other_user = confirmed_user_fixture()
+      other_conn = log_in_user(other_conn, other_user)
+      public_filter = filter_fixture(user, %{public: true})
+
+      response = html_response(get(other_conn, ~p"/filters/#{public_filter}"), 200)
+
+      refute response =~ "Edit this filter"
+      refute response =~ ~p"/filters/#{public_filter}/edit"
+      refute response =~ "Destroy this filter"
     end
 
     test "redirects with the not-found flash for an unknown filter", %{conn: conn} do

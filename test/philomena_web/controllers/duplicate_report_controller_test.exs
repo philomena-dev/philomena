@@ -32,6 +32,55 @@ defmodule PhilomenaWeb.DuplicateReportControllerTest do
       assert html_response(conn, 200)
     end
 
+    test "renders merge and state controls for DuplicateReport assistants", %{conn: conn} do
+      conn = log_in_user(conn, role_assistant_fixture("DuplicateReport"))
+      source = image_fixture()
+      target = image_fixture()
+      report = duplicate_report_fixture(source, target)
+
+      response = html_response(get(conn, ~p"/duplicate_reports"), 200)
+
+      assert response =~ "Keep Source"
+      assert response =~ "Keep Target"
+      assert response =~ "Claim"
+      assert response =~ "Reject"
+      assert response =~ ~p"/duplicate_reports/#{report}/accept_reverse"
+      assert response =~ ~p"/duplicate_reports/#{report}/accept"
+      assert response =~ ~p"/duplicate_reports/#{report}/claim"
+      assert response =~ ~p"/duplicate_reports/#{report}/reject"
+    end
+
+    test "hides merge and state controls from regular users", %{conn: conn} do
+      conn = log_in_user(conn, confirmed_user_fixture())
+      source = image_fixture()
+      target = image_fixture()
+      report = duplicate_report_fixture(source, target)
+
+      response = html_response(get(conn, ~p"/duplicate_reports"), 200)
+
+      refute response =~ "Keep Source"
+      refute response =~ "Keep Target"
+      refute response =~ ~p"/duplicate_reports/#{report}/claim"
+      refute response =~ ~p"/duplicate_reports/#{report}/reject"
+    end
+
+    test "renders modifier and reporter identities for DuplicateReport assistants", %{conn: conn} do
+      assistant = role_assistant_fixture("DuplicateReport", %{name: "Review Assistant"})
+      reporter = confirmed_user_fixture(%{name: "Report Submitter"})
+      source = image_fixture()
+      target = image_fixture()
+      report = duplicate_report_fixture(source, target, reporter)
+      conn = log_in_user(conn, assistant)
+
+      claim_conn = post(conn, ~p"/duplicate_reports/#{report}/claim")
+      assert redirected_to(claim_conn) == ~p"/duplicate_reports"
+
+      response = html_response(get(conn, ~p"/duplicate_reports"), 200)
+
+      assert response =~ "by Review Assistant"
+      assert response =~ "Report Submitter"
+    end
+
     test "the default view omits rejected/accepted reports", %{conn: conn} do
       conn = log_in_user(conn, moderator_user_fixture())
       source = image_fixture()

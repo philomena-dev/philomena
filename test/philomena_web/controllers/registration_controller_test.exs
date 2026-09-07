@@ -4,6 +4,8 @@ defmodule PhilomenaWeb.RegistrationControllerTest do
   import Philomena.BansFixtures
   import Philomena.UsersFixtures
 
+  alias Philomena.Repo
+
   @banned_fingerprint "d015c342859dde3"
 
   describe "GET /registrations/new" do
@@ -93,6 +95,21 @@ defmodule PhilomenaWeb.RegistrationControllerTest do
       conn = get(conn, ~p"/registrations/edit")
       response = html_response(conn, 200)
       assert response =~ "<h3>Deactivate Account</h3>"
+    end
+
+    test "renders the username-change link only while the account is eligible", %{
+      conn: conn,
+      user: user
+    } do
+      response = html_response(get(conn, ~p"/registrations/edit"), 200)
+      assert response =~ ~p"/registrations/name/edit"
+
+      user
+      |> Ecto.Changeset.change(last_renamed_at: DateTime.utc_now(:second))
+      |> Repo.update!()
+
+      response = html_response(get(conn, ~p"/registrations/edit"), 200)
+      refute response =~ ~p"/registrations/name/edit"
     end
 
     test "redirects if user is not logged in" do
