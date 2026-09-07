@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::Arc};
+use std::{assert_matches, collections::HashMap, sync::Arc};
 
 use crate::{domains, markdown::*};
 
@@ -271,6 +271,25 @@ fn auto_relative_links() {
             opts.extension.link_url_rewriter = Some(f.clone());
         },
     );
+}
+
+#[test]
+fn autolink_email_recursion() {
+    comrak::markdown_to_html(&"a@b.co ".repeat(30_000), &test_options());
+    assert_eq!(1, 1);
+}
+
+#[test]
+fn autolink_backtracking_pathological() {
+    let timeout = std::time::Duration::from_millis(100);
+    let (tx, rx) = std::sync::mpsc::channel();
+    let md = format!("http://a.b{}", ")".repeat(100_000));
+    std::thread::spawn(move || {
+        comrak::markdown_to_html(&md, &test_options());
+        tx.send(()).unwrap();
+    });
+
+    assert_matches!(rx.recv_timeout(timeout), Ok(_));
 }
 
 fn diff(old: &str, new: &str, expected: &str) {
