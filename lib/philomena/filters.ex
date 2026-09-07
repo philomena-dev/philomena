@@ -24,7 +24,7 @@ defmodule Philomena.Filters do
   alias Philomena.Users
   alias Philomena.Users.User
   alias PhilomenaQuery.Search
-  alias Philomena.IndexWorker
+  alias Philomena.Workers.IndexJob
 
   defp ensure_current_filter(%User{current_filter: current_filter} = user) do
     if current_filter do
@@ -59,14 +59,7 @@ defmodule Philomena.Filters do
   end
 
   defp put_reindex_filter(multi, step) do
-    Multi.on_commit(multi, fn %{^step => filter} -> reindex_filter(filter) end)
-  end
-
-  defp reindex_filter_ids([]), do: []
-
-  defp reindex_filter_ids(filter_ids) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Filters", "id", filter_ids])
-    filter_ids
+    IndexJob.put_enqueue(multi, "Filters", :id, fn %{^step => filter} -> [filter.id] end)
   end
 
   @doc """
@@ -921,8 +914,9 @@ defmodule Philomena.Filters do
     |> Multi.all(spoilered_ids_step, select(exclude(spoilered_filters, :update), [f], f.id))
     |> Multi.update_all(hidden_step, hidden_filters, [])
     |> Multi.update_all(spoilered_step, spoilered_filters, [])
-    |> Multi.on_commit(fn %{^hidden_ids_step => hidden_ids, ^spoilered_ids_step => spoilered_ids} ->
-      reindex_filter_ids(Enum.uniq(hidden_ids ++ spoilered_ids))
+    |> IndexJob.put_enqueue("Filters", :id, fn
+      %{^hidden_ids_step => hidden_ids, ^spoilered_ids_step => spoilered_ids} ->
+        Enum.uniq(hidden_ids ++ spoilered_ids)
     end)
   end
 
@@ -940,23 +934,6 @@ defmodule Philomena.Filters do
     data = Filters.SearchIndex.user_name_update_by_query(old_name, new_name)
 
     Search.update_by_query(Filter, data.query, data.set_replacements, data.replacements)
-  end
-
-  @doc """
-  Queues a single filter for search index updates.
-  Returns the filter struct unchanged, for use in a pipeline.
-
-  ## Examples
-
-      iex> reindex_filter(filter)
-      %Filter{}
-
-  """
-  @spec reindex_filter(Filter.t()) :: Filter.t()
-  def reindex_filter(%Filter{} = filter) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Filters", "id", [filter.id]])
-
-    filter
   end
 
   @doc """

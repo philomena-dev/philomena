@@ -9,14 +9,14 @@ defmodule Philomena.TagChanges do
   alias Philomena.Attribution.Actor
   alias Philomena.Images
   alias Philomena.Images.Image
-  alias Philomena.IndexWorker
+  alias Philomena.Workers.IndexJob
   alias Philomena.IntegerId
   alias Philomena.Loader
   alias Philomena.ModerationLogs
   alias Philomena.ModerationLogs.Paths
   alias Philomena.Multi
   alias Philomena.Repo
-  alias Philomena.TagChangeRevertWorker
+  alias Philomena.Workers.TagChangeRevertJob
   alias Philomena.TagChanges.QueryBuilder
   alias Philomena.TagChanges.QueryForm
   alias Philomena.TagChanges.RevertForm
@@ -139,11 +139,7 @@ defmodule Philomena.TagChanges do
       batch_size: 100
     }
 
-    Multi.on_commit(multi, fn _changes ->
-      Exq.enqueue(Exq, "indexing", TagChangeRevertWorker, [
-        Map.put(target, :attributes, attributes)
-      ])
-    end)
+    TagChangeRevertJob.put_enqueue(multi, target, attributes)
   end
 
   @doc """
@@ -456,8 +452,8 @@ defmodule Philomena.TagChanges do
 
       {:ok, {added_count, removed_count}}
     end)
-    |> Multi.on_commit(fn %{tag_change: tag_change} ->
-      Exq.enqueue(Exq, "indexing", IndexWorker, ["TagChanges", "id", [tag_change.id]])
+    |> IndexJob.put_enqueue("TagChanges", :id, fn %{tag_change: tag_change} ->
+      [tag_change.id]
     end)
   end
 
@@ -699,7 +695,7 @@ defmodule Philomena.TagChanges do
 
   @doc """
   Adds deletion of tag change tag join table rows represented by `query` to
-  `multi` and queues the affected tag changes after commit.
+  `multi` and queues the affected tag changes transactionally.
   """
   @spec put_delete_tag_change_tags(Multi.t(), Multi.name(), Ecto.Query.t()) :: Multi.t()
   def put_delete_tag_change_tags(%Multi{} = multi, step, %Ecto.Query{} = query) do
@@ -711,8 +707,8 @@ defmodule Philomena.TagChanges do
       select(query, [tag_change_tag], tag_change_tag.tag_change_id)
     )
     |> Multi.delete_all(step, query)
-    |> Multi.on_commit(fn %{^tag_change_ids_step => tag_change_ids} ->
-      reindex_tag_changes(tag_change_ids)
+    |> IndexJob.put_enqueue("TagChanges", :id, fn %{^tag_change_ids_step => tag_change_ids} ->
+      tag_change_ids
     end)
   end
 
@@ -720,7 +716,7 @@ defmodule Philomena.TagChanges do
   Records tag changes from inserted and deleted image tagging rows in `multi`.
 
   Images supplies the two prior Multi steps. This function generates the tag
-  changes and queues the affected rows after commit.
+  changes and queues the affected rows transactionally.
   """
   @spec put_batch_tag_changes(Multi.t(), Multi.name(), Multi.name(), map()) :: Multi.t()
   def put_batch_tag_changes(%Multi{} = multi, inserted_step, deleted_step, attributes) do
@@ -778,8 +774,8 @@ defmodule Philomena.TagChanges do
 
         {:ok, tag_change_ids}
     end)
-    |> Multi.on_commit(fn %{batch_tag_changes: tag_change_ids} ->
-      reindex_tag_changes(tag_change_ids)
+    |> IndexJob.put_enqueue("TagChanges", :id, fn %{batch_tag_changes: tag_change_ids} ->
+      tag_change_ids
     end)
   end
 
@@ -796,21 +792,6 @@ defmodule Philomena.TagChanges do
   def user_name_reindex(old_name, new_name) do
     data = SearchIndex.user_name_update_by_query(old_name, new_name)
     Search.update_by_query(TagChange, data.query, data.set_replacements, data.replacements)
-  end
-
-  @doc """
-  Queues every tag change for worker reindexing.
-
-  ## Examples
-
-      iex> reindex_tag_changes([12, 13])
-      [12, 13]
-
-  """
-  @spec reindex_tag_changes([integer()]) :: [integer()]
-  def reindex_tag_changes(ids) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["TagChanges", "id", ids])
-    ids
   end
 
   @doc """

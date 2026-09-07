@@ -1,8 +1,8 @@
 defmodule PhilomenaWeb.Admin.User.WipeControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Postgres-only. The actual PII wipe is performed by UserWipeWorker, which
-  # is only enqueued (a dead Exq enqueue in test), so only the flash/redirect
+  # Postgres-only. The actual PII wipe is performed by UserWipeJob, which
+  # is only enqueued (a dead Oban enqueue in test), so only the flash/redirect
   # and the synchronous moderation_log insert are observable here.
 
   import Philomena.UsersFixtures
@@ -52,7 +52,7 @@ defmodule PhilomenaWeb.Admin.User.WipeControllerTest do
   describe "POST /admin/users/:user_id/wipe as a plain moderator" do
     setup [:register_and_log_in_moderator]
 
-    # NOTE: the wipe is performed by an (unconsumed) UserWipeWorker enqueue, so
+    # NOTE: the wipe is performed by an (unconsumed) UserWipeJob enqueue, so
     # there is no observable side effect to assert absent - the denial redirect +
     # flash is the pin.
     test "is denied to a plain moderator", %{conn: conn} do

@@ -12,7 +12,7 @@ defmodule Philomena.Images.Thumbnailer do
   alias Philomena.DuplicateReports
   alias Philomena.ImageIntensities
   alias Philomena.Images
-  alias Philomena.ImagePurgeWorker
+  alias Philomena.Workers.ImagePurgeJob
   alias Philomena.Images.Image
   alias Philomena.Repo
 
@@ -115,9 +115,7 @@ defmodule Philomena.Images.Thumbnailer do
     full = "full.#{image.image_format}"
     upload_file(image, new_file, full)
 
-    Exq.enqueue(Exq, "indexing", ImagePurgeWorker, [
-      Path.join(image_url_base(image, nil), full)
-    ])
+    ImagePurgeJob.enqueue([Path.join(image_url_base(image, nil), full)])
   end
 
   defp apply_change(image, {:thumbnails, thumbnails}),

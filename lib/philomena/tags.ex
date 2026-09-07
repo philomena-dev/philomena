@@ -24,16 +24,16 @@ defmodule Philomena.Tags do
   alias Philomena.Images.Search, as: ImageSearch
   alias Philomena.Images.Search.Scope
   alias Philomena.Images.Tagging
-  alias Philomena.IndexWorker
+  alias Philomena.Workers.IndexJob
   alias Philomena.Interactions
   alias Philomena.Loader
   alias Philomena.ModerationLogs
   alias Philomena.ModerationLogs.Paths
   alias Philomena.Multi
   alias Philomena.Repo
-  alias Philomena.TagAliasWorker
-  alias Philomena.TagDeleteWorker
-  alias Philomena.TagReindexWorker
+  alias Philomena.Workers.TagAliasJob
+  alias Philomena.Workers.TagDeleteJob
+  alias Philomena.Workers.TagReindexJob
   alias Philomena.TagChanges
   alias Philomena.TagChanges.TagChange
   alias Philomena.TagChanges.TagChangeTag
@@ -82,18 +82,6 @@ defmodule Philomena.Tags do
   end
 
   defp load_tag_for_action(_actor, _action, _slug, _preloads), do: {:error, :not_found}
-
-  defp reindex_tag_images(%Tag{} = tag) do
-    Exq.enqueue(Exq, "indexing", TagReindexWorker, [tag.id])
-    tag
-  end
-
-  defp reindex_tag_ids([]), do: []
-
-  defp reindex_tag_ids(tag_ids) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Tags", "id", tag_ids])
-    tag_ids
-  end
 
   # Computes the search query that lists the tag's images. A tag whose name
   # compiles back to itself is used verbatim. Anything else is escaped so the
@@ -214,10 +202,8 @@ defmodule Philomena.Tags do
 
     multi
     |> Multi.insert_all(:new_tags, Tag, insert_rows, insert_options)
-    |> Multi.on_commit(fn %{new_tags: {_count, new_tags}} ->
-      if Enum.any?(new_tags) do
-        reindex_tags(new_tags)
-      end
+    |> IndexJob.put_enqueue("Tags", :id, fn %{new_tags: {_count, new_tags}} ->
+      Enum.map(new_tags, & &1.id)
     end)
   end
 
@@ -861,7 +847,8 @@ defmodule Philomena.Tags do
   Updates the tag named by `slug` on behalf of `actor`.
 
   Write access, `:update` authorization, the tag update, and its audit log share
-  one workflow. Search and affected-image reindexing run only after commit.
+  one workflow. Search and affected-image reindexing are enqueued in the same
+  transaction.
 
   ## Examples
 
@@ -906,13 +893,13 @@ defmodule Philomena.Tags do
         Paths.tag_path(tag),
         "Updated details on tag '#{tag.name}'"
       )
-      |> Multi.on_commit(fn %{tag: updated_tag} ->
-        # credo:disable-for-next-line
+      |> IndexJob.put_enqueue("Tags", :id, fn %{tag: updated_tag} -> [updated_tag.id] end)
+      |> Multi.merge(fn %{tag: updated_tag} ->
         if updated_tag.category != tag.category do
-          reindex_tag_images(updated_tag)
+          TagReindexJob.put_enqueue(Multi.new(), updated_tag.id)
+        else
+          Multi.new()
         end
-
-        reindex_tags([updated_tag])
       end)
       |> Multi.transact()
       |> case do
@@ -1040,9 +1027,7 @@ defmodule Philomena.Tags do
         Paths.tag_path(tag),
         "Deleted tag '#{tag.name}'"
       )
-      |> Multi.on_commit(fn _changes ->
-        Exq.enqueue(Exq, "indexing", TagDeleteWorker, [tag.id])
-      end)
+      |> TagDeleteJob.put_enqueue(tag.id)
       |> Multi.transact()
       |> case do
         {:ok, _changes} ->
@@ -1056,7 +1041,7 @@ defmodule Philomena.Tags do
 
   Write access, `:alias` authorization, the association migration, and its
   audit log share one transaction. Tagging migration and alias finalization
-  are queued after commit.
+  are queued transactionally.
 
   ## Examples
 
@@ -1126,9 +1111,10 @@ defmodule Philomena.Tags do
           "Aliased tag '#{source_tag.name}' into '#{target_tag.name}'"
         }
       end)
-      |> Multi.on_commit(fn %{tags: {source_tag, target_tag}} ->
-        Exq.enqueue(Exq, "indexing", TagAliasWorker, [source_tag.id, target_tag.id])
-      end)
+      |> TagAliasJob.put_enqueue(
+        fn %{tags: {source_tag, _target_tag}} -> source_tag.id end,
+        fn %{tags: {_source_tag, target_tag}} -> target_tag.id end
+      )
       |> Multi.transact()
       |> case do
         {:ok, %{tag: %Tag{} = source_tag}} ->
@@ -1161,18 +1147,23 @@ defmodule Philomena.Tags do
   def create_tag_reindex(%Actor{} = actor, slug) do
     with :ok <- verify_write_access(actor),
          {:ok, tag} <- load_tag_for_action(actor, :reindex, slug, @alias_preloads) do
-      reindex_tag_images(tag)
-      reindex_tags([tag])
-
-      {:ok, tag}
+      Multi.new()
+      |> TagReindexJob.put_enqueue(tag.id)
+      |> IndexJob.put_enqueue("Tags", :id, [tag.id])
+      |> Multi.transact()
+      |> case do
+        {:ok, _changes} -> {:ok, tag}
+        error -> error
+      end
     end
   end
 
   @doc """
   Removes the alias on the tag named by `slug`, on behalf of `actor`.
 
-  Write access, `:unalias` authorization, the relationship update, and the
-  audit log share one transaction. Image and tag reindexing runs after commit.
+  Write access, `:unalias` authorization, the relationship update, the
+  audit log, and enqueues for image and tag reindexing share one
+  transaction.
 
   ## Examples
 
@@ -1203,9 +1194,12 @@ defmodule Philomena.Tags do
         Paths.tag_path(tag),
         "Dealiased tag '#{tag.name}'"
       )
-      |> Multi.on_commit(fn %{locked_tag: %{aliased_tag: former_alias}, tag: tag} ->
-        reindex_tag_images(former_alias)
-        reindex_tags([tag, former_alias])
+      |> Multi.merge(fn %{locked_tag: %{aliased_tag: former_alias}} ->
+        TagReindexJob.put_enqueue(Multi.new(), former_alias.id)
+      end)
+      |> IndexJob.put_enqueue("Tags", :id, fn
+        %{tag: tag, locked_tag: %{aliased_tag: former_alias}} ->
+          [tag.id, former_alias.id]
       end)
       |> Multi.transact()
       |> case do
@@ -1253,8 +1247,8 @@ defmodule Philomena.Tags do
 
   `image_step` must resolve to an `%Image{}` with added and removed tag lists.
   Tags owns its image count update rule: hidden images do not contribute to tag
-  image counts. Counter updates are performed in ascending tag ID order and
-  affected tags are reindexed after the transaction commits.
+  image counts. Counter updates are performed in ascending tag ID order.
+  Affected tags have reindexing jobs enqueued in the same transaction.
 
   ## Examples
 
@@ -1268,9 +1262,7 @@ defmodule Philomena.Tags do
     |> Multi.run(:image_tag_counts_tag_ids, fn repo, %{^image_step => image} ->
       {:ok, update_image_count_changes(repo, image)}
     end)
-    |> Multi.on_commit(fn %{image_tag_counts_tag_ids: tag_ids} ->
-      reindex_tag_ids(tag_ids)
-    end)
+    |> IndexJob.put_enqueue("Tags", :id, fn %{image_tag_counts_tag_ids: tag_ids} -> tag_ids end)
   end
 
   @doc """
@@ -1290,9 +1282,7 @@ defmodule Philomena.Tags do
     Multi.run(multi, step, fn repo, changes ->
       {:ok, update_image_counts(repo, diff, tag_ids_callback.(changes))}
     end)
-    |> Multi.on_commit(fn changes ->
-      reindex_tag_ids(tag_ids_callback.(changes))
-    end)
+    |> IndexJob.put_enqueue("Tags", :id, tag_ids_callback)
   end
 
   @doc """
@@ -1300,7 +1290,7 @@ defmodule Philomena.Tags do
 
   Images supplies inserted and deleted tagging steps. This function
   updates image counts for visible images and queues every affected tag for
-  indexing after commit. `visible_image_step` must resolve to the images
+  indexing transactionally. `visible_image_step` must resolve to the images
   matching the `hidden_from_users == false` precondition.
   """
   @spec put_batch_image_count_changes(Multi.t(), Multi.name(), Multi.name(), Multi.name()) ::
@@ -1362,7 +1352,7 @@ defmodule Philomena.Tags do
 
         {:ok, Enum.map(rows, & &1.id)}
     end)
-    |> Multi.on_commit(fn %{batch_tag_counts: tag_ids} -> reindex_tag_ids(tag_ids) end)
+    |> IndexJob.put_enqueue("Tags", :id, fn %{batch_tag_counts: tag_ids} -> tag_ids end)
   end
 
   @doc """
@@ -1520,10 +1510,8 @@ defmodule Philomena.Tags do
         end,
         []
       )
-      |> Multi.on_commit(fn _changes ->
-        reindex_tag_images(target_tag)
-        reindex_tags([tag, target_tag])
-      end)
+      |> TagReindexJob.put_enqueue(target_tag.id)
+      |> IndexJob.put_enqueue("Tags", :id, [tag.id, target_tag.id])
       |> Multi.transact()
       |> case do
         {:ok, _changes} ->
@@ -1569,7 +1557,7 @@ defmodule Philomena.Tags do
       end,
       []
     )
-    |> Multi.on_commit(fn _changes -> reindex_tags([tag]) end)
+    |> IndexJob.put_enqueue("Tags", :id, [tag.id])
     |> Multi.transact_with_automatic_retry(isolation: :serializable)
 
     # Then, reindex.
@@ -1643,22 +1631,6 @@ defmodule Philomena.Tags do
 
         tag_ids
     end
-  end
-
-  @doc """
-  Queues a list of tags for search index updates.
-  Returns the list of tags unchanged, for use in a pipeline.
-
-  ## Examples
-
-      iex> reindex_tags([%Tag{}, %Tag{}, ...])
-      [%Tag{}, %Tag{}, ...]
-
-  """
-  @spec reindex_tags([Tag.t()]) :: [Tag.t()]
-  def reindex_tags(tags) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Tags", "id", Enum.map(tags, & &1.id)])
-    tags
   end
 
   @doc """
