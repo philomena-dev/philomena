@@ -52,8 +52,9 @@ defmodule PhilomenaWeb.Admin.Donation.UserControllerTest do
       assert response =~ donation.email
     end
 
-    # NOTE: :load_resource runs the not-found handler on :show, so an unknown
-    # slug redirects to / with the not-found flash rather than crashing.
+    # NOTE: the context authorizes the loaded record on :show; an unknown slug
+    # loads nil, the actor is authorized on it, so it returns not_found and
+    # redirects to / with the not-found flash rather than crashing.
     test "redirects for an unknown user slug", %{conn: conn} do
       conn = get(conn, ~p"/admin/donations/user/no-such-user")
       assert redirected_to(conn) == "/"

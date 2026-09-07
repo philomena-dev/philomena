@@ -19,7 +19,7 @@ defmodule PhilomenaWeb.Topic.MoveControllerTest do
          %{conn: conn, forum: forum, target_forum: target_forum, topic: topic} do
       conn =
         post(conn, ~p"/forums/#{forum}/topics/#{topic}/move", %{
-          "topic" => %{"target_forum_id" => to_string(target_forum.id)}
+          "topic" => %{"target_forum" => target_forum.short_name}
         })
 
       assert redirected_to(conn) == ~p"/sessions/new"
@@ -36,7 +36,7 @@ defmodule PhilomenaWeb.Topic.MoveControllerTest do
 
       conn =
         post(conn, ~p"/forums/#{forum}/topics/#{topic}/move", %{
-          "topic" => %{"target_forum_id" => to_string(target_forum.id)}
+          "topic" => %{"target_forum" => target_forum.short_name}
         })
 
       assert redirected_to(conn) == "/"
@@ -50,7 +50,7 @@ defmodule PhilomenaWeb.Topic.MoveControllerTest do
 
       conn =
         post(conn, ~p"/forums/#{forum}/topics/#{topic}/move", %{
-          "topic" => %{"target_forum_id" => to_string(target_forum.id)}
+          "topic" => %{"target_forum" => target_forum.short_name}
         })
 
       assert redirected_to(conn) == ~p"/forums/#{target_forum}/topics/#{topic}"
@@ -58,51 +58,31 @@ defmodule PhilomenaWeb.Topic.MoveControllerTest do
       assert Repo.reload!(topic).forum_id == target_forum.id
     end
 
-    # NOTE: move_changeset now declares the FK constraint and move_topic
-    # normalizes the Multi failure, so a nonexistent target forum redirects back
-    # to the topic with the failure flash instead of raising Ecto.ConstraintError.
-    test "moving to a nonexistent forum id redirects back with the failure flash",
+    test "moving to a nonexistent forum id redirects with the failure flash",
          %{conn: conn, forum: forum, topic: topic} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
       conn =
         post(conn, ~p"/forums/#{forum}/topics/#{topic}/move", %{
-          "topic" => %{"target_forum_id" => "999999999"}
+          "topic" => %{"target_forum" => "nonexistent-forum"}
         })
 
-      assert redirected_to(conn) == ~p"/forums/#{forum}/topics/#{topic}"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Unable to move the topic!"
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
       assert Repo.reload!(topic).forum_id == forum.id
     end
 
-    # NOTE: a request without the target_forum_id param now takes the fallback
-    # create/2 clause and redirects back with the failure flash rather than
+    # NOTE: a request without the target_forum param now takes the fallback
+    # create/2 clause and redirects with the failure flash rather than
     # raising ActionClauseError.
-    test "a request without the target_forum_id param redirects back with the failure flash",
+    test "a request without the target_forum param redirects with the failure flash",
          %{conn: conn, forum: forum, topic: topic} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
       conn = post(conn, ~p"/forums/#{forum}/topics/#{topic}/move", %{})
 
-      assert redirected_to(conn) == ~p"/forums/#{forum}/topics/#{topic}"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Unable to move the topic!"
-      assert Repo.reload!(topic).forum_id == forum.id
-    end
-
-    # NOTE: the target_forum_id is now parsed with IntegerId.parse, so a
-    # non-integer value redirects back with the failure flash rather than
-    # raising ArgumentError.
-    test "a non-integer target_forum_id redirects back with the failure flash",
-         %{conn: conn, forum: forum, topic: topic} do
-      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
-
-      conn =
-        post(conn, ~p"/forums/#{forum}/topics/#{topic}/move", %{
-          "topic" => %{"target_forum_id" => "not-a-number"}
-        })
-
-      assert redirected_to(conn) == ~p"/forums/#{forum}/topics/#{topic}"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Unable to move the topic!"
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
       assert Repo.reload!(topic).forum_id == forum.id
     end
 
@@ -112,7 +92,7 @@ defmodule PhilomenaWeb.Topic.MoveControllerTest do
 
       conn =
         post(conn, ~p"/forums/#{forum}/topics/nonexistent-topic/move", %{
-          "topic" => %{"target_forum_id" => to_string(target_forum.id)}
+          "topic" => %{"target_forum" => target_forum.short_name}
         })
 
       assert redirected_to(conn) == "/"

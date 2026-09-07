@@ -1,48 +1,41 @@
 defmodule PhilomenaWeb.DuplicateReport.ClaimController do
   use PhilomenaWeb, :controller
 
-  alias Philomena.DuplicateReports.DuplicateReport
   alias Philomena.DuplicateReports
 
-  plug PhilomenaWeb.CanaryMapPlug, create: :edit, delete: :edit
+  action_fallback PhilomenaWeb.FallbackController
 
-  plug :load_and_authorize_resource,
-    model: DuplicateReport,
-    id_name: "duplicate_report_id",
-    persisted: true
+  def create(conn, %{"duplicate_report_id" => id}) do
+    case DuplicateReports.create_duplicate_report_claim(conn.assigns.actor, id) do
+      {:ok, _report} ->
+        conn
+        |> put_flash(:info, "Successfully claimed report.")
+        |> redirect(to: ~p"/duplicate_reports")
 
-  def create(conn, _params) do
-    {:ok, report} =
-      DuplicateReports.claim_duplicate_report(
-        conn.assigns.duplicate_report,
-        conn.assigns.current_user
-      )
+      {:error, %Ecto.Changeset{}} ->
+        conn
+        |> put_flash(:error, "Failed to claim report.")
+        |> redirect(to: ~p"/duplicate_reports")
 
-    conn
-    |> put_flash(:info, "Successfully claimed report.")
-    |> moderation_log(details: &log_details/2, data: report)
-    |> redirect(to: ~p"/duplicate_reports")
+      error ->
+        error
+    end
   end
 
-  def delete(conn, _params) do
-    {:ok, _report} = DuplicateReports.unclaim_duplicate_report(conn.assigns.duplicate_report)
+  def delete(conn, %{"duplicate_report_id" => id}) do
+    case DuplicateReports.delete_duplicate_report_claim(conn.assigns.actor, id) do
+      {:ok, _report} ->
+        conn
+        |> put_flash(:info, "Successfully released report.")
+        |> redirect(to: ~p"/duplicate_reports")
 
-    conn
-    |> put_flash(:info, "Successfully released report.")
-    |> moderation_log(details: &log_details/2)
-    |> redirect(to: ~p"/duplicate_reports")
-  end
+      {:error, %Ecto.Changeset{}} ->
+        conn
+        |> put_flash(:error, "Failed to release report.")
+        |> redirect(to: ~p"/duplicate_reports")
 
-  defp log_details(action, _) do
-    body =
-      case action do
-        :create -> "Claimed a duplicate report"
-        :delete -> "Released a duplicate report"
-      end
-
-    %{
-      body: body,
-      subject_path: ~p"/duplicate_reports"
-    }
+      error ->
+        error
+    end
   end
 end

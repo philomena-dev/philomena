@@ -7,6 +7,12 @@ defmodule Philomena.ReportsFixtures do
   import Philomena.AttributionFixtures
 
   alias Philomena.Reports
+  alias Philomena.Comments.Comment
+  alias Philomena.Commissions.Commission
+  alias Philomena.Conversations.Conversation
+  alias Philomena.Posts.Post
+  alias Philomena.Repo
+  alias Philomena.Users.User
 
   @doc """
   Creates a report against the target named by `target`, a one-entry keyword
@@ -25,8 +31,34 @@ defmodule Philomena.ReportsFixtures do
       })
       |> Map.put_new_lazy("rule_id", fn -> Philomena.RulesFixtures.rule_fixture().id end)
 
-    {:ok, report} = Reports.create_report(attribution(user), attrs, target)
+    {:ok, report} = Reports.create_report(actor(user), target_locator(target), attrs)
 
     report
+  end
+
+  defp target_locator(image_id: id), do: {:image, id}
+  defp target_locator(gallery_id: id), do: {:gallery, id}
+
+  defp target_locator(reported_user_id: id) do
+    {:user, Repo.get!(User, id).slug}
+  end
+
+  defp target_locator(commission_id: id) do
+    commission = Repo.get!(Commission, id) |> Repo.preload(:user)
+    {:commission, commission.user.slug}
+  end
+
+  defp target_locator(conversation_id: id) do
+    {:conversation, Repo.get!(Conversation, id).slug}
+  end
+
+  defp target_locator(comment_id: id) do
+    comment = Repo.get!(Comment, id)
+    {:comment, comment.image_id, id}
+  end
+
+  defp target_locator(post_id: id) do
+    post = Repo.get!(Post, id) |> Repo.preload(topic: :forum)
+    {:post, post.topic.forum.short_name, post.topic.slug, id}
   end
 end

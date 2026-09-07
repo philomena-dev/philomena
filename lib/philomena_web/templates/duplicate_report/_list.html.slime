@@ -132,11 +132,11 @@
       .dr__status-options class=background_class
         => String.capitalize(report.state)
 
-        = if can?(@conn, :edit, report) and not is_nil(report.modifier) do
+        = if can?(@conn, :accept, report) and not is_nil(report.modifier) do
           ' by
           = report.modifier.name
 
-        = if can?(@conn, :edit, report) do
+        = if can?(@conn, :accept, report) do
           div
             = if report.state == "open" do
               a href=(~p"/duplicate_reports/#{report}/claim" <> "#report_options_#{report.id}") data-method="post"
@@ -155,7 +155,7 @@
           ' Reported
           => pretty_time(report.created_at)
 
-          = if can?(@conn, :edit, report) and report.user do
+          = if can?(@conn, :accept, report) and report.user do
             ' by
             =< link report.user.name, to: ~p"/profiles/#{report.user}"
 

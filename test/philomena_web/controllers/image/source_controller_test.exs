@@ -46,6 +46,26 @@ defmodule PhilomenaWeb.Image.SourceControllerTest do
     assert html_response(conn, 200) =~ "https://example.com/put-source"
   end
 
+  test "PATCH with an invalid source URL re-renders the existing image", %{conn: conn} do
+    %{conn: conn} = register_and_log_in_user(%{conn: conn})
+    image = image_fixture(sources: ["https://example.com/existing-source"])
+
+    conn =
+      patch(conn, ~p"/images/#{image}/sources", %{
+        "image" => %{
+          "old_sources" => %{},
+          "sources" => %{"0" => %{"source" => "not-a-url"}}
+        }
+      })
+
+    response = html_response(conn, 200)
+
+    assert response =~ "https://example.com/existing-source"
+    assert response =~ "not-a-url"
+    assert response =~ "has invalid format"
+    refute Repo.exists?(from sc in SourceChange, where: sc.image_id == ^image.id)
+  end
+
   test "PATCH anonymously updates the sources", %{conn: conn} do
     image = image_fixture()
 

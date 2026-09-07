@@ -54,9 +54,6 @@ defmodule PhilomenaWeb.Admin.DnpEntry.TransitionControllerTest do
   describe "POST /admin/dnp_entries/:dnp_entry_id/transition (create) failure paths" do
     setup [:register_and_log_in_moderator]
 
-    # NOTE: load_resource now uses required: true, so Canary's not_found handler
-    # runs on :create too - an unknown entry id redirects rather than crashing
-    # in transition_dnp_entry/3.
     test "redirects with the not-found flash for an unknown entry id", %{conn: conn} do
       conn = post(conn, ~p"/admin/dnp_entries/#{0}/transition", state: "claimed")
 
@@ -64,8 +61,6 @@ defmodule PhilomenaWeb.Admin.DnpEntry.TransitionControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
-    # NOTE: a non-integer entry id short-circuits to NotFoundPlug via the central
-    # IntegerId guard.
     test "redirects with the not-found flash for a non-integer entry id", %{conn: conn} do
       conn = post(conn, ~p"/admin/dnp_entries/not-an-integer/transition", state: "claimed")
 
@@ -73,16 +68,16 @@ defmodule PhilomenaWeb.Admin.DnpEntry.TransitionControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
-    # NOTE: a missing state param does not match the create/2 clause and
-    # raises Phoenix.ActionClauseError (a 500).
-    test "raises when the state param is missing", %{conn: conn} do
+    test "redirects with a validation flash when the state param is missing", %{conn: conn} do
       user = confirmed_user_fixture()
       tag = tag_fixture(name: "artist:transition-nostate")
       entry = dnp_entry_fixture(user, tag)
 
-      assert_raise Phoenix.ActionClauseError, fn ->
-        post(conn, ~p"/admin/dnp_entries/#{entry}/transition")
-      end
+      conn = post(conn, ~p"/admin/dnp_entries/#{entry}/transition")
+
+      assert redirected_to(conn) == ~p"/dnp/#{entry}"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Failed to update"
+      assert Repo.get(DnpEntry, entry.id).aasm_state == "requested"
     end
   end
 end

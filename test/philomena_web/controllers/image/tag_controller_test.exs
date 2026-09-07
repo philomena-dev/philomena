@@ -6,6 +6,7 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
   import Ecto.Query
   import Philomena.AttributionFixtures
   import Philomena.ImagesFixtures
+  import Philomena.TagsFixtures
 
   alias PhilomenaQuery.Search
   alias Philomena.TagChanges.Limits
@@ -35,12 +36,12 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
   end
 
   # Fills the user's Valkey tag bucket to the 50-change limit so the next
-  # multi-tag update trips Images.update_tags' check_limits step and takes the
+  # multi-tag update trips Images.update_image_tags' check_limits step and takes the
   # controller's rate-limited error branch. Registers cleanup of the counters
   # (they carry a 10-minute TTL and the SQL sandbox does not roll them back).
   defp fill_tag_bucket!(user) do
     ip = %Postgrex.INET{address: {127, 0, 0, 1}, netmask: 32}
-    :ok = Limits.update_tag_count_after_update(user, ip, 50)
+    :ok = Limits.record_action(user, ip, 50, 0)
     on_exit(fn -> reset_tag_change_limits(user: user, ip: ip) end)
   end
 
@@ -67,6 +68,49 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
              from tc in TagChange,
                where: tc.image_id == ^image.id and tc.user_id == ^user.id
            )
+  end
+
+  test "PATCH can remove an implied tag listed in old_tag_input", %{conn: conn} do
+    %{conn: conn} = register_and_log_in_user(%{conn: conn})
+    implied_tag = tag_fixture(name: "implied tag")
+    source_tag = tag_fixture(name: "source tag")
+
+    source_tag =
+      source_tag
+      |> Repo.preload(:implied_tags)
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:implied_tags, [implied_tag])
+      |> Repo.update!()
+
+    image = image_fixture(tags: "safe, #{source_tag.name}, #{implied_tag.name}")
+
+    conn =
+      patch(conn, ~p"/images/#{image}/tags", %{
+        "image" => %{
+          "old_tag_input" => "safe, #{source_tag.name}, #{implied_tag.name}",
+          "tag_input" => "safe, #{source_tag.name}, replacement tag"
+        }
+      })
+
+    assert html_response(conn, 200)
+    assert Enum.sort(tag_names(image)) == ["replacement tag", "safe", source_tag.name]
+  end
+
+  test "PATCH adds the oc tag for an oc-namespaced tag", %{conn: conn} do
+    %{conn: conn} = register_and_log_in_user(%{conn: conn})
+    oc_tag = tag_fixture(name: "oc")
+    image = image_fixture()
+
+    conn =
+      patch(conn, ~p"/images/#{image}/tags", %{
+        "image" => %{
+          "old_tag_input" => "safe",
+          "tag_input" => "safe, #{oc_tag.name}:test character"
+        }
+      })
+
+    assert html_response(conn, 200)
+    assert Enum.sort(tag_names(image)) == ["oc", "oc:test character", "safe"]
   end
 
   test "PUT behaves like PATCH", %{conn: conn} do

@@ -3,7 +3,7 @@ defmodule PhilomenaWeb.Api.Json.TagControllerTest do
 
   import Philomena.TagsFixtures
 
-  alias Philomena.Tags
+  alias Philomena.Repo
 
   describe "GET /api/v1/json/tags/:slug" do
     test "shows a tag by slug", %{conn: conn} do
@@ -52,7 +52,9 @@ defmodule PhilomenaWeb.Api.Json.TagControllerTest do
       tag = tag_fixture(name: "pegasus pony")
       target = tag_fixture(name: "pegasus")
 
-      {:ok, _tag} = Tags.alias_tag(tag, %{"target_tag" => target.name})
+      tag
+      |> Ecto.Changeset.change(aliased_tag_id: target.id)
+      |> Repo.update!()
 
       conn1 = get(conn, ~p"/api/v1/json/tags/#{tag}")
 

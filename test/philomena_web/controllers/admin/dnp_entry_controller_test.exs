@@ -63,7 +63,7 @@ defmodule PhilomenaWeb.Admin.DnpEntryControllerTest do
       conn = get(conn, ~p"/admin/dnp_entries")
       refute html_response(conn, 200) =~ ~p"/dnp/#{entry}"
 
-      conn = get(conn, ~p"/admin/dnp_entries?#{[states: ["listed"]]}")
+      conn = get(conn, ~p"/admin/dnp_entries?#{[eq: [states: ["listed"]]]}")
       assert html_response(conn, 200) =~ ~p"/dnp/#{entry}"
     end
 
@@ -76,7 +76,7 @@ defmodule PhilomenaWeb.Admin.DnpEntryControllerTest do
       other_tag = tag_fixture(name: "artist:dnp-eq-other")
       other_entry = dnp_entry_fixture(other_user, other_tag)
 
-      conn = get(conn, ~p"/admin/dnp_entries?#{[eq: "dnp-eq-match"]}")
+      conn = get(conn, ~p"/admin/dnp_entries?#{[eq: [text: "dnp-eq-match"]]}")
       response = html_response(conn, 200)
       assert response =~ ~p"/dnp/#{entry}"
       refute response =~ ~p"/dnp/#{other_entry}"
