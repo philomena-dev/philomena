@@ -5,6 +5,7 @@ defmodule PhilomenaWeb.Image.TamperControllerTest do
   import Philomena.ImagesFixtures
   import Philomena.UsersFixtures
 
+  alias Philomena.Multi
   alias Philomena.ImageVotes
   alias Philomena.ImageVotes.ImageVote
   alias Philomena.Repo
@@ -12,8 +13,9 @@ defmodule PhilomenaWeb.Image.TamperControllerTest do
   # Records `voter`'s (up/down) vote on `image` through the vote context.
   defp cast_vote(image, voter, up) do
     {:ok, _} =
-      ImageVotes.create_vote_transaction(image, voter, up)
-      |> Repo.transaction()
+      Multi.new()
+      |> ImageVotes.put_vote_for_loaded_image(image, voter, up)
+      |> Multi.transact()
 
     :ok
   end
@@ -83,8 +85,8 @@ defmodule PhilomenaWeb.Image.TamperControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Vote removed."
     end
 
-    # Failure path: an unknown user_id is loaded with load_resource, whose
-    # not-found handler fires here and redirects rather than crashing.
+    # Missing image locators resolve to not-found before authorization.
+    # redirecting rather than crashing.
     test "for an unknown user_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       image = image_fixture()
@@ -98,7 +100,7 @@ defmodule PhilomenaWeb.Image.TamperControllerTest do
     end
 
     # NOTE: a non-integer image_id short-circuits to NotFoundPlug via the central
-    # IntegerId guard before Canary authorizes.
+    # IntegerId guard before authorization runs.
     test "for a non-integer image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       voter = confirmed_user_fixture()

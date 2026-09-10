@@ -32,7 +32,7 @@ defmodule PhilomenaWeb.ReactivationControllerTest do
       conn = post(conn, ~p"/reactivations", %{"token" => token})
       assert redirected_to(conn) == ~p"/"
 
-      user = Users.get_user!(user.id)
+      user = Users.fetch_user_for_worker!(user.id)
       assert user.deleted_by_user_id == nil
 
       assert not (UserToken.user_and_contexts_query(user, ["reactivate"]) |> Repo.exists?())
@@ -47,7 +47,7 @@ defmodule PhilomenaWeb.ReactivationControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
                "If the token provided was valid, your account has been reactivated."
 
-      assert Users.get_user!(user.id).deleted_by_user_id
+      assert Users.fetch_user_for_worker!(user.id).deleted_by_user_id
     end
 
     test "raises without a token param", %{conn: conn} do

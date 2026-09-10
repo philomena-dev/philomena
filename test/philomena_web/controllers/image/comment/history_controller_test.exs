@@ -1,6 +1,7 @@
 defmodule PhilomenaWeb.Image.Comment.HistoryControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
+  import Philomena.AttributionFixtures, only: [actor: 1]
   import Philomena.CommentsFixtures
   import Philomena.ImagesFixtures
   import Philomena.UsersFixtures
@@ -14,7 +15,7 @@ defmodule PhilomenaWeb.Image.Comment.HistoryControllerTest do
       comment = comment_fixture(image, author, %{"body" => "Original comment body"})
 
       {:ok, _} =
-        Comments.update_comment(comment, author, %{
+        Comments.update_comment(actor(author), image.id, comment.id, %{
           "body" => "Original comment body plus an edit",
           "edit_reason" => "typo fix"
         })
@@ -61,7 +62,22 @@ defmodule PhilomenaWeb.Image.Comment.HistoryControllerTest do
       conn = get(conn, ~p"/images/999999999/comments/1/history")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Couldn't find what you were looking for!"
+    end
+
+    test "redirects to / when the route image does not own the comment", %{conn: conn} do
+      image = image_fixture()
+      other_image = image_fixture()
+      comment = comment_fixture(image)
+
+      conn = get(conn, ~p"/images/#{other_image}/comments/#{comment}/history")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Couldn't find what you were looking for!"
     end
   end
 end

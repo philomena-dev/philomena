@@ -38,13 +38,13 @@ defmodule PhilomenaWeb.NotificationControllerTest do
     {:ok, _} = Forums.create_subscription(forum, user)
     author = confirmed_user_fixture()
     topic = topic_fixture(forum, author)
-    {:ok, 1} = Notifications.create_forum_topic_notification(author, topic)
+    {:ok, 1} = Notifications.broadcast_forum_topic(author, topic)
 
     # image_comment: user watches an image, someone comments on it
     image = image_fixture()
     {:ok, _} = Images.create_subscription(image, user)
     comment = comment_fixture(image, author)
-    {:ok, 1} = Notifications.create_image_comment_notification(author, image, comment)
+    {:ok, 1} = Notifications.broadcast_image_comment(author, image, comment)
 
     response = html_response(get(conn, ~p"/notifications"), 200)
 
@@ -63,7 +63,7 @@ defmodule PhilomenaWeb.NotificationControllerTest do
     {:ok, _} = Forums.create_subscription(forum, recipient)
     author = confirmed_user_fixture()
     topic = topic_fixture(forum, author)
-    {:ok, 1} = Notifications.create_forum_topic_notification(author, topic)
+    {:ok, 1} = Notifications.broadcast_forum_topic(author, topic)
 
     response = html_response(get(conn, ~p"/notifications"), 200)
 

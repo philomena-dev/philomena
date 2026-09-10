@@ -37,8 +37,8 @@ defmodule PhilomenaWeb.Admin.User.ForceFilterControllerTest do
       assert html_response(conn, 200) =~ "Forcing filter for user"
     end
 
-    # NOTE: the verify_authorized plug guards :new too, so a plain moderator no
-    # longer even sees the force-filter form.
+    # NOTE: :new is authorized too, so a plain moderator does not even see the
+    # force-filter form.
     test "is denied to a plain moderator", %{conn: conn} do
       target = confirmed_user_fixture()
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
@@ -47,9 +47,9 @@ defmodule PhilomenaWeb.Admin.User.ForceFilterControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    # NOTE: load_resource now uses required: true, so Canary's not_found handler
-    # runs on :new too - an unknown slug redirects with the not-found flash
-    # rather than passing nil into Users.change_user/1.
+    # NOTE: the context authorizes the loaded record on :new; an unknown slug
+    # loads nil, the admin is authorized on it, so it redirects with the
+    # not-found flash rather than passing nil into Users.change_user/1.
     test "redirects with the not-found flash for an unknown slug", %{conn: conn} do
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
 
@@ -106,25 +106,21 @@ defmodule PhilomenaWeb.Admin.User.ForceFilterControllerTest do
       assert Repo.get(User, target.id).forced_filter_id == filter.id
     end
 
-    # NOTE: force_filter_changeset only casts forced_filter_id with a
-    # foreign_key_constraint; a nonexistent id fails the FK on update, returning
-    # {:error, changeset}, and the controller's `{:ok, user} = ...` match raises
-    # MatchError (no re-render branch) - the write action's failure path.
-    test "raises MatchError on a nonexistent forced_filter_id", %{conn: conn} do
+    test "re-renders a structured error for a nonexistent forced_filter_id", %{conn: conn} do
       target = confirmed_user_fixture()
 
-      assert_raise MatchError,
-                   ~r/no match of right hand side value:.*constraint_name: "users_forced_filter_id_fkey"/s,
-                   fn ->
-                     post(conn, ~p"/admin/users/#{target.slug}/force_filter", %{
-                       "user" => %{"forced_filter_id" => 2_147_483_647}
-                     })
-                   end
+      conn =
+        post(conn, ~p"/admin/users/#{target.slug}/force_filter", %{
+          "user" => %{"forced_filter_id" => 2_147_483_647}
+        })
+
+      assert html_response(conn, 200) =~ "does not exist"
+      refute Repo.get(User, target.id).forced_filter_id
     end
 
-    # NOTE: load_resource now uses required: true, so Canary's not_found handler
-    # runs on :create too - an unknown slug redirects with the not-found flash
-    # rather than passing nil into Users.force_filter/2.
+    # NOTE: the context authorizes the loaded record on :create; an unknown slug
+    # loads nil, the admin is authorized on it, so it redirects with the
+    # not-found flash rather than passing nil into Users.force_filter/2.
     test "redirects with the not-found flash for an unknown slug", %{conn: conn} do
       conn =
         post(conn, ~p"/admin/users/no-such-user/force_filter", %{
@@ -161,7 +157,12 @@ defmodule PhilomenaWeb.Admin.User.ForceFilterControllerTest do
     test "removes the forced filter and redirects to their profile", %{conn: conn} do
       target = confirmed_user_fixture()
       filter = filter_fixture(target)
-      {:ok, target} = Philomena.Users.force_filter(target, %{"forced_filter_id" => filter.id})
+
+      target =
+        target
+        |> User.force_filter_changeset(%{"forced_filter_id" => filter.id})
+        |> Repo.update!()
+
       assert target.forced_filter_id == filter.id
 
       conn = delete(conn, ~p"/admin/users/#{target.slug}/force_filter")
@@ -207,7 +208,11 @@ defmodule PhilomenaWeb.Admin.User.ForceFilterControllerTest do
     test "is denied to a plain moderator", %{conn: conn} do
       target = confirmed_user_fixture()
       filter = filter_fixture(target)
-      {:ok, target} = Philomena.Users.force_filter(target, %{"forced_filter_id" => filter.id})
+
+      target =
+        target
+        |> User.force_filter_changeset(%{"forced_filter_id" => filter.id})
+        |> Repo.update!()
 
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       conn = delete(conn, ~p"/admin/users/#{target.slug}/force_filter")

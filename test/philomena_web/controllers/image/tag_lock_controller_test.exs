@@ -2,6 +2,7 @@ defmodule PhilomenaWeb.Image.TagLockControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
   import Philomena.ImagesFixtures
+  import Philomena.TagsFixtures
 
   alias Philomena.Repo
 
@@ -56,17 +57,19 @@ defmodule PhilomenaWeb.Image.TagLockControllerTest do
       assert html_response(conn, 200) =~ "Editing locked tags on image ##{image.id}"
     end
 
-    test "for an unknown image_id redirects with the authorization flash", %{conn: conn} do
+    test "for an unknown image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
       conn = get(conn, ~p"/images/999999999/tag_lock")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
 
     # NOTE: a non-integer image_id short-circuits to NotFoundPlug via the central
-    # IntegerId guard before Canary authorizes, so the flash is the not-found
+    # IntegerId guard before authorization runs, so the flash is the not-found
     # message rather than the "You can't access that page." an unknown integer
     # id gets.
     test "for a non-integer image_id redirects with the not-found flash", %{conn: conn} do
@@ -123,17 +126,19 @@ defmodule PhilomenaWeb.Image.TagLockControllerTest do
       refute tags_editable?(image)
     end
 
-    test "for an unknown image_id redirects with the authorization flash", %{conn: conn} do
+    test "for an unknown image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
       conn = post(conn, ~p"/images/999999999/tag_lock")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
 
     # NOTE: a non-integer image_id short-circuits to NotFoundPlug via the central
-    # IntegerId guard before Canary authorizes, so the flash is the not-found
+    # IntegerId guard before authorization runs, so the flash is the not-found
     # message rather than the "You can't access that page." an unknown integer
     # id gets.
     test "for a non-integer image_id redirects with the not-found flash", %{conn: conn} do
@@ -172,6 +177,7 @@ defmodule PhilomenaWeb.Image.TagLockControllerTest do
     test "as a moderator updates the locked tag list", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       image = image_fixture()
+      tag_fixture(name: "solo")
 
       conn =
         put(conn, ~p"/images/#{image}/tag_lock", %{"image" => %{"tag_input" => "safe, solo"}})
@@ -187,6 +193,7 @@ defmodule PhilomenaWeb.Image.TagLockControllerTest do
     test "as an admin updates the locked tag list", %{conn: conn} do
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
       image = image_fixture()
+      tag_fixture(name: "solo")
 
       conn = put(conn, ~p"/images/#{image}/tag_lock", %{"image" => %{"tag_input" => "solo"}})
 
@@ -196,11 +203,12 @@ defmodule PhilomenaWeb.Image.TagLockControllerTest do
       assert locked_tag_names(image) == ["solo"]
     end
 
-    # NOTE: an empty tag_input clears the locked tag list (get_or_create_tags
-    # returns []); this is a success, not a validation error.
+    # NOTE: an empty tag_input clears the locked tag list; this is a success,
+    # not a validation error.
     test "an empty tag_input clears the locked tag list", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       image = image_fixture()
+      tag_fixture(name: "solo")
 
       # Lock some tags first.
       put(conn, ~p"/images/#{image}/tag_lock", %{"image" => %{"tag_input" => "safe, solo"}})
@@ -214,18 +222,20 @@ defmodule PhilomenaWeb.Image.TagLockControllerTest do
       assert locked_tag_names(image) == []
     end
 
-    test "for an unknown image_id redirects with the authorization flash", %{conn: conn} do
+    test "for an unknown image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
       conn =
         put(conn, ~p"/images/999999999/tag_lock", %{"image" => %{"tag_input" => "safe"}})
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
 
     # NOTE: a non-integer image_id short-circuits to NotFoundPlug via the central
-    # IntegerId guard before Canary authorizes, so the flash is the not-found
+    # IntegerId guard before authorization runs, so the flash is the not-found
     # message rather than the "You can't access that page." an unknown integer
     # id gets.
     test "for a non-integer image_id redirects with the not-found flash", %{conn: conn} do
@@ -282,17 +292,19 @@ defmodule PhilomenaWeb.Image.TagLockControllerTest do
       assert tags_editable?(image)
     end
 
-    test "for an unknown image_id redirects with the authorization flash", %{conn: conn} do
+    test "for an unknown image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
       conn = delete(conn, ~p"/images/999999999/tag_lock")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
 
     # NOTE: a non-integer image_id short-circuits to NotFoundPlug via the central
-    # IntegerId guard before Canary authorizes, so the flash is the not-found
+    # IntegerId guard before authorization runs, so the flash is the not-found
     # message rather than the "You can't access that page." an unknown integer
     # id gets.
     test "for a non-integer image_id redirects with the not-found flash", %{conn: conn} do

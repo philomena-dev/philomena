@@ -66,9 +66,9 @@ defmodule PhilomenaWeb.Admin.Badge.UserControllerTest do
   describe "GET /admin/badges/:badge_id/users unknown id" do
     setup [:register_and_log_in_admin]
 
-    # NOTE: load_resource now uses required: true, so Canary's not_found handler
-    # runs on the :index action too - an unknown badge_id redirects rather than
-    # dereferencing a nil badge.
+    # NOTE: the context authorizes the loaded badge on :index; an unknown
+    # badge_id loads nil, the admin is authorized on it, so it returns not_found
+    # and redirects rather than dereferencing a nil badge.
     test "redirects with a not-found flash for an unknown badge_id", %{conn: conn} do
       conn = get(conn, ~p"/admin/badges/#{2_000_000_000}/users")
 

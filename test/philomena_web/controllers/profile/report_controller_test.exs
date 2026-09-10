@@ -26,11 +26,13 @@ defmodule PhilomenaWeb.Profile.ReportControllerTest do
                "Reporting User - Derpibooru"
     end
 
-    test "redirects to / with the authorization flash for an unknown profile", %{conn: conn} do
+    test "redirects to / with the not-found flash for an unknown profile", %{conn: conn} do
       conn = get(conn, ~p"/profiles/nonexistent-user/reports/new")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
   end
 

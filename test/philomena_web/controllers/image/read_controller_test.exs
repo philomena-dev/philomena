@@ -25,7 +25,7 @@ defmodule PhilomenaWeb.Image.ReadControllerTest do
         {:ok, _} = Images.create_subscription(image, user)
         author = confirmed_user_fixture()
         comment = comment_fixture(image, author)
-        {:ok, 1} = Notifications.create_image_comment_notification(author, image, comment)
+        {:ok, 1} = Notifications.broadcast_image_comment(author, image, comment)
       end,
       notification?: fn ->
         Repo.exists?(
@@ -39,9 +39,9 @@ defmodule PhilomenaWeb.Image.ReadControllerTest do
   read_singleton_tests()
 
   test "POST for an unknown image redirects with the not-found flash", %{conn: conn} do
-    # NOTE: load_resource now uses required: true, so Canary runs its not-found
-    # handler on :create - an unknown image redirects instead of passing nil
-    # into clear_image_notification/2.
+    # NOTE: the context authorizes the loaded record on :create; id 999999999
+    # Missing image locators resolve to not-found before authorization.
+    # and redirects instead of passing nil into clear_image_notification/2.
     %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
     conn = post(conn, ~p"/images/999999999/read")

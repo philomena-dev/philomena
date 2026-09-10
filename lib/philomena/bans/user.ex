@@ -5,6 +5,8 @@ defmodule Philomena.Bans.User do
 
   alias Philomena.Users.User
 
+  @type t :: %__MODULE__{}
+
   schema "user_bans" do
     belongs_to :user, User
     belongs_to :banning_user, User
@@ -20,11 +22,11 @@ defmodule Philomena.Bans.User do
   end
 
   @doc false
-  def changeset(user_ban, attrs) do
+  def changeset(user_ban, attrs \\ %{}) do
     user_ban
     |> cast(attrs, [:reason, :note, :enabled, :override_ip_ban, :user_id, :valid_until])
     |> put_ban_id("U")
-    |> validate_required([:reason, :enabled, :user_id, :valid_until])
+    |> validate_required([:reason, :enabled, :valid_until])
     |> check_constraint(:valid_until, name: :user_ban_duration_must_be_valid)
   end
 end

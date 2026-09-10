@@ -33,17 +33,14 @@ defmodule PhilomenaWeb.Filter.CurrentControllerTest do
       assert conn.resp_cookies["filter_id"].value == Integer.to_string(filter.id)
     end
 
-    test "anonymous users are switched to the default filter for a private filter",
+    test "anonymous users are not authorized to switch to unowned private filters",
          %{conn: conn} do
       filter = filter_fixture(confirmed_user_fixture())
-      default = Filters.default_filter()
 
       conn = patch(conn, ~p"/filters/current?#{[id: filter.id]}")
 
-      assert Phoenix.Flash.get(conn.assigns.flash, :info) ==
-               "Switched to filter #{default.name}"
-
-      assert conn.resp_cookies["filter_id"].value == Integer.to_string(default.id)
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "You can't access that page."
     end
 
     test "logged-in users switch their account filter", %{conn: conn} do
@@ -63,7 +60,7 @@ defmodule PhilomenaWeb.Filter.CurrentControllerTest do
       refute Map.has_key?(conn.resp_cookies, "filter_id")
     end
 
-    test "logged-in users are switched to the default filter for a private filter",
+    test "logged-in users are not authorized to switch to an unowned private filter",
          %{conn: conn} do
       %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
       filter = filter_fixture(confirmed_user_fixture())
@@ -71,16 +68,16 @@ defmodule PhilomenaWeb.Filter.CurrentControllerTest do
 
       conn = patch(conn, ~p"/filters/current?#{[id: filter.id]}")
 
-      assert Phoenix.Flash.get(conn.assigns.flash, :info) ==
-               "Switched to filter #{default.name}"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "You can't access that page."
 
       assert Repo.get!(User, user.id).current_filter_id == default.id
     end
 
     test "an unknown filter id redirects with the not-found flash", %{conn: conn} do
-      # NOTE: unlike the :index/:create nil pass-through, load_resource runs
-      # its not_found_handler for :update actions, so this 404s instead of
-      # falling back to the default filter.
+      # NOTE: unlike the :index/:create nil pass-through, the :update action
+      # resolves an unknown filter id to not_found, so it redirects with the
+      # not-found flash instead of falling back to the default filter.
       conn = patch(conn, ~p"/filters/current?#{[id: 999_999_999]}")
 
       assert redirected_to(conn) == "/"
@@ -108,10 +105,30 @@ defmodule PhilomenaWeb.Filter.CurrentControllerTest do
       assert conn.resp_cookies["filter_id"].value == Integer.to_string(filter.id)
     end
 
-    test "crashes without an id parameter", %{conn: conn} do
-      assert_raise ArgumentError, ~r/nil given for :id\. Comparison with nil is forbidden/, fn ->
-        patch(conn, ~p"/filters/current")
-      end
+    test "without an id parameter explicitly switches to the default", %{conn: conn} do
+      default = Filters.default_filter()
+
+      conn = patch(conn, ~p"/filters/current")
+
+      assert redirected_to(conn) == "/"
+      assert conn.resp_cookies["filter_id"].value == Integer.to_string(default.id)
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) ==
+               "Switched to filter #{default.name}"
+    end
+
+    test "a banned user can still switch filters", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_banned_user(%{conn: conn})
+      filter = filter_fixture(user)
+
+      conn = patch(conn, ~p"/filters/current?#{[id: filter.id]}")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) ==
+               "Switched to filter #{filter.name}"
+
+      assert Repo.get!(User, user.id).current_filter_id == filter.id
     end
   end
 end

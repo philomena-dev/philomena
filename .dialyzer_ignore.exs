@@ -1,22 +1,4 @@
 [
   {"lib/philomena/adverts/restrictions.ex", :call_without_opaque},
-  {"lib/philomena/artist_links.ex", :call_without_opaque},
-  {"lib/philomena/bans.ex", :call_without_opaque},
-  {"lib/philomena/comments.ex", :call_without_opaque},
-  {"lib/philomena/commissions.ex", :call_without_opaque},
-  {"lib/philomena/conversations.ex", :call_without_opaque},
-  {"lib/philomena/duplicate_reports.ex", :call_without_opaque},
-  {"lib/philomena/galleries.ex", :call_without_opaque},
-  {"lib/philomena/image_faves.ex", :call_without_opaque},
-  {"lib/philomena/image_hides.ex", :call_without_opaque},
-  {"lib/philomena/image_votes.ex", :call_without_opaque},
-  {"lib/philomena/images.ex", :call_without_opaque},
-  {"lib/philomena/images/tag_validator.ex", :call_without_opaque},
-  {"lib/philomena/interactions.ex", :call_without_opaque},
-  {"lib/philomena/poll_votes.ex", :call_without_opaque},
-  {"lib/philomena/posts.ex", :call_without_opaque},
-  {"lib/philomena/static_pages.ex", :call_without_opaque},
-  {"lib/philomena/tags.ex", :call_without_opaque},
-  {"lib/philomena/topics.ex", :call_without_opaque},
-  {"lib/philomena/users.ex", :call_without_opaque}
+  {"lib/philomena/images/tag_validator.ex", :call_without_opaque}
 ]

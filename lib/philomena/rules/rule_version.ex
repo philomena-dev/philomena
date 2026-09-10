@@ -2,6 +2,8 @@ defmodule Philomena.Rules.RuleVersion do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @type t :: %__MODULE__{}
+
   alias Philomena.Rules.Rule
   alias Philomena.Users.User
 

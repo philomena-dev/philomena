@@ -95,12 +95,12 @@ defmodule PhilomenaWeb.Tag.ImageControllerTest do
       assert html_response(conn, 200) =~ "Update tag image"
     end
 
-    test "an unknown slug takes the not-authorized redirect", %{conn: conn} do
+    test "an unknown slug takes the not-found redirect", %{conn: conn} do
       conn = log_in_user(conn, moderator_user_fixture())
       conn = patch(conn, ~p"/tags/nonexistent-tag/image", %{"tag" => %{"image" => png_upload()}})
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "can't access"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 
@@ -132,12 +132,12 @@ defmodule PhilomenaWeb.Tag.ImageControllerTest do
       assert Repo.get!(Tag, tag.id).image == nil
     end
 
-    test "an unknown slug takes the not-authorized redirect", %{conn: conn} do
+    test "an unknown slug takes the not-found redirect", %{conn: conn} do
       conn = log_in_user(conn, moderator_user_fixture())
       conn = delete(conn, ~p"/tags/nonexistent-tag/image")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "can't access"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 end

@@ -37,6 +37,7 @@ defmodule PhilomenaWeb.ProfileControllerTest do
 
       assert response =~ "Test Profile User&#39;s profile - Derpibooru"
       assert response =~ "All <em>about</em> this test user."
+      assert response =~ "Source changes"
     end
 
     test "renders a profile for logged-in users", %{conn: conn} do
@@ -47,6 +48,18 @@ defmodule PhilomenaWeb.ProfileControllerTest do
       response = html_response(conn, 200)
 
       assert response =~ "Test Profile User&#39;s profile - Derpibooru"
+      assert response =~ "Source changes"
+    end
+
+    test "shows the source-history link to moderators", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+      user = confirmed_user_fixture(%{name: "Test Profile User"})
+
+      conn = get(conn, ~p"/profiles/#{user}")
+      response = html_response(conn, 200)
+
+      assert response =~ "Source changes"
+      assert response =~ ~p"/profiles/#{user}/source_changes"
     end
 
     test "shows recent uploads, comments, and posts", %{conn: conn} do
@@ -74,7 +87,24 @@ defmodule PhilomenaWeb.ProfileControllerTest do
       conn = get(conn, ~p"/profiles/nonexistent-user")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
+    end
+
+    test "redirects to / for a deactivated profile", %{conn: conn} do
+      user = confirmed_user_fixture()
+
+      user
+      |> Ecto.Changeset.change(deleted_at: DateTime.utc_now(:second))
+      |> Repo.update!()
+
+      conn = get(conn, ~p"/profiles/#{user}")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
   end
 end

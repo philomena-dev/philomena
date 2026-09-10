@@ -1,5 +1,4 @@
 defmodule PhilomenaWeb.TagChangeView do
-  alias Philomena.Slug
   alias Philomena.Tags.Tag
 
   use PhilomenaWeb, :view
@@ -9,8 +8,6 @@ defmodule PhilomenaWeb.TagChangeView do
     |> scope(conn, "tcq", :tcq)
     |> scope(conn, "sf", :sf)
     |> scope(conn, "sd", :sd)
-    |> scope(conn, "resource_type", :resource_type)
-    |> scope(conn, "resource_id", :resource_id)
   end
 
   defp scope(list, conn, key, key_atom) do
@@ -37,8 +34,8 @@ defmodule PhilomenaWeb.TagChangeView do
   def reverts_tag_changes?(conn),
     do: can?(conn, :revert, Philomena.TagChanges.TagChange)
 
-  def non_retained_tags(%{image: image, tags: tags}) do
-    tags
+  def non_retained_tags(%{image: image, tag_change_tags: tag_change_tags}) do
+    tag_change_tags
     |> Enum.filter(fn tct ->
       tct.added != Enum.any?(image.tags, &(&1.id == tct.tag.id))
     end)
@@ -57,18 +54,11 @@ defmodule PhilomenaWeb.TagChangeView do
   end
 
   def split_tags(tag_change) do
-    {added_tags, removed_tags} = Enum.split_with(tag_change.tags, & &1.added)
+    {added_tags, removed_tags} = Enum.split_with(tag_change.tag_change_tags, & &1.added)
 
     {
       added_tags |> Enum.map(& &1.tag) |> Tag.display_order(),
       removed_tags |> Enum.map(& &1.tag) |> Tag.display_order()
     }
   end
-
-  def link_to_resource("image", id), do: link("image ##{id}", to: ~p"/images/#{id}")
-  def link_to_resource("ip", ip), do: link(ip, to: ~p"/ip_profiles/#{ip}")
-  def link_to_resource("fingerprint", fp), do: link(fp, to: ~p"/fingerprint_profiles/#{fp}")
-  def link_to_resource("user", name), do: link(name, to: ~p"/profiles/#{Slug.slug(name)}")
-  def link_to_resource("tag", name), do: link("tag '#{name}'", to: ~p"/tags/#{Slug.slug(name)}")
-  def link_to_resource(_, _), do: ""
 end

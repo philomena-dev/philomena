@@ -24,7 +24,7 @@ defmodule PhilomenaWeb.Notification.CategoryControllerTest do
     {:ok, _} = Forums.create_subscription(forum, user)
     author = confirmed_user_fixture()
     topic = topic_fixture(forum, author)
-    {:ok, 1} = Notifications.create_forum_topic_notification(author, topic)
+    {:ok, 1} = Notifications.broadcast_forum_topic(author, topic)
 
     response = html_response(get(conn, ~p"/notifications/categories/forum_topic"), 200)
 
@@ -41,21 +41,14 @@ defmodule PhilomenaWeb.Notification.CategoryControllerTest do
     assert response =~ "You currently have no notifications of this category."
   end
 
-  test "GET with an unknown category id falls back to forum_post", %{conn: conn} do
-    # NOTE: the category parser defaults every unrecognized id to
-    # :forum_post rather than 404ing.
-    %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+  test "GET with an unknown category id follows the site's not-found response", %{conn: conn} do
+    %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
-    forum = forum_fixture()
-    author = confirmed_user_fixture()
-    topic = topic_fixture(forum, author)
-    {:ok, _} = Philomena.Topics.create_subscription(topic, user)
-    post = Philomena.PostsFixtures.post_fixture(topic, author)
-    {:ok, 1} = Notifications.create_forum_post_notification(author, topic, post)
+    conn = get(conn, ~p"/notifications/categories/bogus-category")
 
-    response = html_response(get(conn, ~p"/notifications/categories/bogus-category"), 200)
+    assert redirected_to(conn) == ~p"/"
 
-    assert response =~ "New replies in topics"
-    assert response =~ topic.title
+    assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+             "Couldn't find what you were looking for!"
   end
 end
