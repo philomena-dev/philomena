@@ -6,6 +6,7 @@ defmodule Philomena.AdvertsFixtures do
 
   alias Philomena.Adverts.Advert
   alias Philomena.Repo
+  alias PhilomenaMedia.Upload
 
   @doc """
   Creates an advert.
@@ -59,5 +60,13 @@ defmodule Philomena.AdvertsFixtures do
     {:ok, path} = Plug.Upload.random_file("advert-undersized-test")
     File.cp!(@undersized_png_fixture, path)
     %Plug.Upload{path: path, filename: "small.png", content_type: "image/png"}
+  end
+
+  def media_png_upload do
+    Upload.from_plug(png_upload())
+  end
+
+  def media_undersized_png_upload do
+    Upload.from_plug(undersized_png_upload())
   end
 end

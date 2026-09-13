@@ -57,13 +57,13 @@ defmodule PhilomenaWeb.DuplicateReport.AcceptReverseControllerTest do
       assert target.duplicate_id == source.id
     end
 
-    test "an unknown report id takes the not-authorized redirect", %{conn: conn} do
+    test "an unknown report id takes the not-found redirect", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
       conn = post(conn, ~p"/duplicate_reports/#{123_456_789}/accept_reverse")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "can't access"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
     test "a non-integer report id redirects with the not-found flash", %{conn: conn} do

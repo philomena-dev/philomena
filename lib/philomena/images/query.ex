@@ -1,9 +1,15 @@
 defmodule Philomena.Images.Query do
+  @moduledoc """
+  Compiles the image search language into OpenSearch query bodies and exposes
+  parser-owned metadata needed by image listings.
+  """
+
   alias PhilomenaQuery.Parse.Parser
   alias Philomena.Repo
   alias Philomena.Filters.Filter
   alias Philomena.Tags.Tag
   import Ecto.Query
+  import Philomena.Authorization, only: [authorize: 3]
 
   defp gallery_id_transform(_ctx, value) do
     case Integer.parse(value) do
@@ -21,7 +27,7 @@ defmodule Philomena.Images.Query do
   defp filter_id_transform(%{user: user} = ctx, value) do
     with {value, ""} <- Integer.parse(value),
          {:ok, filter} <- Map.fetch(ctx.filters, value),
-         true <- Canada.Can.can?(user, :show, filter) do
+         :ok <- authorize(user, :show, filter) do
       ctx = Map.merge(ctx, %{filter: true})
 
       {:ok,
@@ -223,11 +229,33 @@ defmodule Philomena.Images.Query do
   defp fields_for(%{role: role}) when role in ~W(moderator admin), do: moderator_fields()
   defp fields_for(_), do: raise(ArgumentError, "Unknown user role.")
 
+  @doc """
+  Compiles the image search language for the optional user context.
+
+  Returns the OpenSearch query body or a human-readable parser error.
+  """
+  @spec compile(String.t() | nil, Keyword.t()) :: {:ok, map()} | {:error, String.t()}
   def compile(query_string, opts \\ []) do
     user = Keyword.get(opts, :user)
     watch = Keyword.get(opts, :watch, false)
     filter = Keyword.get(opts, :filter, false)
 
     parse(fields_for(user), %{user: user, watch: watch, filter: filter}, query_string)
+  end
+
+  @doc """
+  Compiles an image query and returns the normalized tag names referenced by
+  its exact tag clauses alongside the query body.
+  """
+  @spec compile_with_tag_names(String.t() | nil, Keyword.t()) ::
+          {:ok, %{query: map(), tag_names: [String.t()]}} | {:error, String.t()}
+  def compile_with_tag_names(query_string, opts \\ []) do
+    with {:ok, query} <- compile(query_string, opts) do
+      {:ok,
+       %{
+         query: query,
+         tag_names: Parser.referenced_term_values(query, "tags")
+       }}
+    end
   end
 end

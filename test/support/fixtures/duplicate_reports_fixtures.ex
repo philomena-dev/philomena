@@ -5,6 +5,7 @@ defmodule Philomena.DuplicateReportsFixtures do
   """
 
   alias Philomena.DuplicateReports
+  alias Philomena.AttributionFixtures
 
   @doc """
   Creates an open duplicate report claiming `source` duplicates `target`.
@@ -17,7 +18,12 @@ defmodule Philomena.DuplicateReportsFixtures do
     attrs = Enum.into(attrs, %{"reason" => "These look identical"})
 
     {:ok, duplicate_report} =
-      DuplicateReports.create_duplicate_report(source, target, %{user: user}, attrs)
+      DuplicateReports.create_duplicate_report(
+        AttributionFixtures.actor(user),
+        source.id,
+        target.id,
+        attrs
+      )
 
     duplicate_report
   end

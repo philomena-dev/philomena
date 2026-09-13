@@ -3,7 +3,8 @@ defmodule Philomena.Repo.Migrations.NormalizeVersions do
 
   # Deliberately retain the old paper_trail versions table (renamed), in order
   # to retain the ability to rollback easily and verify the conversion.
-  # TODO: drop versions_legacy in a later cleanup migration
+  # Keep versions_legacy while Release.backfill_versions/0 supports deployed
+  # installations. Drop it only in a dedicated compatibility cleanup.
   def up do
     rename table(:versions), to: table(:versions_legacy)
 

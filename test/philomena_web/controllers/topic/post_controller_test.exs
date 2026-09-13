@@ -73,11 +73,14 @@ defmodule PhilomenaWeb.Topic.PostControllerTest do
          %{conn: conn, forum: forum, topic: topic} do
       %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
-      {:ok, _topic} =
-        Topics.lock_topic(
-          topic,
-          %{"lock_reason" => "Test lock"},
-          Philomena.UsersFixtures.moderator_user_fixture()
+      moderator = Philomena.UsersFixtures.moderator_user_fixture()
+
+      {:ok, {_forum, _topic}} =
+        Topics.create_topic_lock(
+          Philomena.AttributionFixtures.actor(moderator),
+          forum.short_name,
+          topic.slug,
+          %{"lock_reason" => "Test lock"}
         )
 
       conn =

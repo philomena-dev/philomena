@@ -1,11 +1,11 @@
 defmodule PhilomenaWeb.Profile.CommissionControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
+  import Philomena.ArtistLinksFixtures
   import Philomena.CommissionsFixtures
   import Philomena.TagsFixtures
   import Philomena.UsersFixtures
 
-  alias Philomena.ArtistLinks
   alias Philomena.Commissions.Commission
   alias Philomena.Repo
 
@@ -14,13 +14,7 @@ defmodule PhilomenaWeb.Profile.CommissionControllerTest do
   defp verify_artist_link!(user) do
     tag = tag_fixture(name: "artist:test-commission-artist-#{System.unique_integer([:positive])}")
 
-    {:ok, link} =
-      ArtistLinks.create_artist_link(user, %{
-        "tag_name" => tag.name,
-        "uri" => "https://example.com/gallery"
-      })
-
-    {:ok, _link} = ArtistLinks.verify_artist_link(link, user)
+    verified_artist_link_fixture(user, tag, %{"uri" => "https://example.com/gallery"})
     :ok
   end
 

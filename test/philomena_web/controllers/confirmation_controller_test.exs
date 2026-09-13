@@ -57,20 +57,37 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
   end
 
   describe "GET /confirmations/:id" do
-    test "confirms the given token once", %{conn: conn, user: user} do
+    test "renders the confirmation form without confirming the account", %{conn: conn, user: user} do
       token =
         extract_user_token(fn url ->
           Users.deliver_user_confirmation_instructions(user, url)
         end)
 
       conn = get(conn, ~p"/confirmations/#{token}")
+      response = html_response(conn, 200)
+
+      assert response =~ "<h1>Confirm account</h1>"
+      assert response =~ ~s(action="/confirmations/#{token}")
+      refute Users.fetch_user_for_worker!(user.id).confirmed_at
+      assert Repo.get_by!(Users.UserToken, user_id: user.id).context == "confirm"
+    end
+  end
+
+  describe "PUT /confirmations/:id" do
+    test "confirms the given token once", %{conn: conn, user: user} do
+      token =
+        extract_user_token(fn url ->
+          Users.deliver_user_confirmation_instructions(user, url)
+        end)
+
+      conn = put(conn, ~p"/confirmations/#{token}")
       assert redirected_to(conn) == "/"
       assert Flash.get(conn.assigns.flash, :info) =~ "Account confirmed successfully"
-      assert Users.get_user!(user.id).confirmed_at
+      assert Users.fetch_user_for_worker!(user.id).confirmed_at
       refute get_session(conn, :user_token)
       assert Repo.all(Users.UserToken) == []
 
-      conn = get(conn, ~p"/confirmations/#{token}")
+      conn = put(conn, ~p"/confirmations/#{token}")
       assert redirected_to(conn) == "/"
 
       assert Flash.get(conn.assigns.flash, :error) =~
@@ -78,13 +95,13 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
     end
 
     test "does not confirm email with invalid token", %{conn: conn, user: user} do
-      conn = get(conn, ~p"/confirmations/oops")
+      conn = put(conn, ~p"/confirmations/oops")
       assert redirected_to(conn) == "/"
 
       assert Flash.get(conn.assigns.flash, :error) =~
                "Confirmation link is invalid or it has expired"
 
-      refute Users.get_user!(user.id).confirmed_at
+      refute Users.fetch_user_for_worker!(user.id).confirmed_at
     end
   end
 
@@ -96,11 +113,10 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
     end
 
     # EnsureUserEnabledPlug exempts a merely-unconfirmed session on the
-    # confirmation-show path only, and the router moved GET /confirmations/:id
+    # confirmation path only, and the router moved /confirmations/:id
     # out of redirect_if_user_is_authenticated, so a logged-in unconfirmed user
-    # can follow their own link: the account is confirmed and they stay logged
-    # in.
-    test "GET /confirmations/:id confirms an unconfirmed logged-in user and keeps them logged in",
+    # can follow their own link and confirm the account while staying logged in.
+    test "GET /confirmations/:id renders the form for an unconfirmed logged-in user",
          %{conn: conn, user: user} do
       token =
         extract_user_token(fn url ->
@@ -109,10 +125,24 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
 
       conn = conn |> log_in_user(user) |> get(~p"/confirmations/#{token}")
 
+      assert html_response(conn, 200) =~ "<h1>Confirm account</h1>"
+      refute Users.fetch_user_for_worker!(user.id).confirmed_at
+      assert get_session(conn, :user_token)
+    end
+
+    test "PUT /confirmations/:id confirms an unconfirmed logged-in user and keeps them logged in",
+         %{conn: conn, user: user} do
+      token =
+        extract_user_token(fn url ->
+          Users.deliver_user_confirmation_instructions(user, url)
+        end)
+
+      conn = conn |> log_in_user(user) |> put(~p"/confirmations/#{token}")
+
       assert redirected_to(conn) == "/"
       assert Flash.get(conn.assigns.flash, :info) =~ "Account confirmed successfully."
       assert get_session(conn, :user_token)
-      assert Users.get_user!(user.id).confirmed_at
+      assert Users.fetch_user_for_worker!(user.id).confirmed_at
     end
 
     # A deactivated (deleted_at set) account is locked out everywhere,
@@ -132,24 +162,17 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
       assert redirected_to(conn) == "/"
       assert Flash.get(conn.assigns.flash, :error) =~ "Your account is not currently active."
       refute get_session(conn, :user_token)
-      refute Users.get_user!(user.id).confirmed_at
+      refute Users.fetch_user_for_worker!(user.id).confirmed_at
     end
 
-    # NOTE: GET /confirmations/:id is no longer guarded by
-    # redirect_if_user_is_authenticated, so a confirmed logged-in user now
-    # reaches the controller (previously it silently redirected to "/") and
-    # gets the invalid-link error while remaining logged in.
-    test "GET /confirmations/:id reaches the controller for a confirmed logged-in user",
+    test "PUT /confirmations/:id silently redirects confirmed users for invalid tokens",
          %{conn: conn} do
       %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
-      conn = get(conn, ~p"/confirmations/oops")
+      conn = put(conn, ~p"/confirmations/oops")
 
       assert redirected_to(conn) == "/"
-
-      assert Flash.get(conn.assigns.flash, :error) =~
-               "Confirmation link is invalid or it has expired"
-
+      refute Flash.get(conn.assigns.flash, :error)
       assert get_session(conn, :user_token)
     end
 

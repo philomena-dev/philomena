@@ -1,33 +1,19 @@
 defmodule PhilomenaWeb.Topic.Post.HistoryController do
   use PhilomenaWeb, :controller
 
-  alias Philomena.Versions
-  alias Philomena.Forums.Forum
   alias PhilomenaWeb.MarkdownRenderer
+  alias Philomena.Posts
 
-  plug PhilomenaWeb.CanaryMapPlug, index: :show
+  action_fallback PhilomenaWeb.FallbackController
 
-  plug :load_and_authorize_resource,
-    model: Forum,
-    id_name: "forum_id",
-    id_field: "short_name",
-    persisted: true
-
-  plug PhilomenaWeb.LoadTopicPlug
-  plug PhilomenaWeb.LoadPostPlug
-
-  def index(conn, _params) do
-    topic = conn.assigns.topic
-    post = conn.assigns.post
-
-    versions =
-      post
-      |> Versions.load_post_versions()
-      |> MarkdownRenderer.render_version_diffs()
-
-    render(conn, "index.html",
-      title: "Post History for Post #{post.id} - #{topic.title} - Forums",
-      versions: versions
-    )
+  def index(conn, %{"forum_id" => forum_id, "topic_id" => topic_id, "post_id" => post_id}) do
+    with {:ok, {topic, post, versions}} <-
+           Posts.list_post_history(conn.assigns.actor, forum_id, topic_id, post_id) do
+      render(conn, "index.html",
+        title: "Post History for Post #{post.id} - #{topic.title} - Forums",
+        post: post,
+        versions: MarkdownRenderer.render_version_diffs(versions)
+      )
+    end
   end
 end

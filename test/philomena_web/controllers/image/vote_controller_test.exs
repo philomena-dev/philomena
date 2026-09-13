@@ -3,8 +3,10 @@ defmodule PhilomenaWeb.Image.VoteControllerTest do
   use PhilomenaWeb.SingletonToggleTests
 
   import Ecto.Query
+  import Philomena.FiltersFixtures
   import Philomena.ImagesFixtures
 
+  alias Philomena.Multi
   alias Philomena.ImageVotes
   alias Philomena.ImageVotes.ImageVote
   alias Philomena.Repo
@@ -18,7 +20,10 @@ defmodule PhilomenaWeb.Image.VoteControllerTest do
   end
 
   defp upvote!(image, user) do
-    {:ok, _} = Repo.transaction(ImageVotes.create_vote_transaction(image, user, true))
+    {:ok, _} =
+      Multi.new()
+      |> ImageVotes.put_vote_for_loaded_image(image, user, true)
+      |> Multi.transact()
   end
 
   describe "POST /images/:image_id/vote" do
@@ -103,7 +108,7 @@ defmodule PhilomenaWeb.Image.VoteControllerTest do
 
       conn = post(conn, ~p"/images/#{image}/vote", %{})
 
-      assert json_response(conn, 400) == %{}
+      assert json_response(conn, 400) == %{"errors" => %{"up" => ["can't be blank"]}}
       refute vote(image, user)
     end
 
@@ -113,7 +118,7 @@ defmodule PhilomenaWeb.Image.VoteControllerTest do
 
       conn = post(conn, ~p"/images/#{image}/vote", %{"up" => "banana"})
 
-      assert json_response(conn, 400) == %{}
+      assert json_response(conn, 400) == %{"errors" => %{"up" => ["is invalid"]}}
       refute vote(image, user)
     end
 
@@ -131,6 +136,24 @@ defmodule PhilomenaWeb.Image.VoteControllerTest do
              }
 
       assert %ImageVote{up: false} = vote(image, user)
+    end
+
+    test "a forced-filter match redirects without recording a vote", %{conn: conn, user: user} do
+      image = image_fixture()
+      filter = system_filter_fixture(hidden_complex_str: "id:#{image.id}")
+
+      user
+      |> Ecto.Changeset.change(forced_filter_id: filter.id)
+      |> Repo.update!()
+
+      conn = post(conn, ~p"/images/#{image}/vote", %{"up" => true})
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "You have been blocked from performing this action on this image."
+
+      refute vote(image, user)
     end
   end
 

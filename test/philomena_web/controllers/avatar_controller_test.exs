@@ -48,7 +48,7 @@ defmodule PhilomenaWeb.AvatarControllerTest do
 
       # Only the avatar path column persists; the width/height/size/mime
       # fields on the schema are virtual and validation-only.
-      assert Users.get_user!(user.id).avatar =~ ~r/\.png$/
+      assert Users.fetch_user_for_worker!(user.id).avatar =~ ~r/\.png$/
     end
 
     test "re-renders the form without an avatar file", %{conn: conn, user: user} do
@@ -57,7 +57,7 @@ defmodule PhilomenaWeb.AvatarControllerTest do
       # NOTE: the failure branch re-renders edit.html without the :title
       # assign, so pin page content rather than the title.
       assert html_response(conn, 200) =~ "Your avatar"
-      refute Users.get_user!(user.id).avatar
+      refute Users.fetch_user_for_worker!(user.id).avatar
     end
 
     test "redirects anonymous users to the login page" do
@@ -74,7 +74,7 @@ defmodule PhilomenaWeb.AvatarControllerTest do
       conn = put(conn, ~p"/avatar", %{"user" => %{"avatar" => png_upload()}})
 
       assert redirected_to(conn) == ~p"/avatar/edit"
-      assert Users.get_user!(user.id).avatar
+      assert Users.fetch_user_for_worker!(user.id).avatar
     end
   end
 
@@ -96,7 +96,7 @@ defmodule PhilomenaWeb.AvatarControllerTest do
 
       assert redirected_to(conn) == ~p"/avatar/edit"
       assert Flash.get(conn.assigns.flash, :info) =~ "Successfully removed avatar."
-      refute Users.get_user!(user.id).avatar
+      refute Users.fetch_user_for_worker!(user.id).avatar
     end
 
     test "succeeds even when no avatar is set", %{conn: conn} do

@@ -14,7 +14,8 @@ defmodule Philomena.ImagesFixtures do
   alias Philomena.Images.Image
   alias Philomena.Images.Source
   alias Philomena.Repo
-  alias Philomena.Tags
+  alias Philomena.TagsFixtures
+  alias PhilomenaMedia.Upload
   alias PhilomenaMedia.Sha512
 
   @doc """
@@ -24,7 +25,7 @@ defmodule Philomena.ImagesFixtures do
   separately:
 
     * `tags:` a tag list string (default `"safe"`), created on demand via
-      `Tags.get_or_create_tags/1`
+      `TagsFixtures.tag_list_fixture/1`
     * `sources:` a list of source URL strings (default `[]`)
   """
   def image_fixture(attrs \\ %{}) do
@@ -59,7 +60,7 @@ defmodule Philomena.ImagesFixtures do
 
     %Image{}
     |> change(Map.merge(defaults, attrs))
-    |> put_assoc(:tags, Tags.get_or_create_tags(tag_input))
+    |> put_assoc(:tags, TagsFixtures.tag_list_fixture(tag_input))
     |> put_assoc(:sources, Enum.map(sources, &%Source{source: &1}))
     |> Repo.insert!()
   end
@@ -77,6 +78,10 @@ defmodule Philomena.ImagesFixtures do
     {:ok, path} = Plug.Upload.random_file("image-upload-test")
     File.cp!(@png_fixture, path)
     %Plug.Upload{path: path, content_type: "image/png", filename: "upload-test.png"}
+  end
+
+  def media_png_upload do
+    Upload.from_plug(png_upload())
   end
 
   @doc """
