@@ -161,8 +161,7 @@ defmodule Philomena.Forums.Visibility do
         %{term: %{destroyed_content: false}},
         %{
           bool: %{
-            should: availability_should(actor),
-            minimum_should_match: 1
+            should: availability_should(actor)
           }
         }
       ]
