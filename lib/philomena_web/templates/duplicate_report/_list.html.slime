@@ -1,8 +1,10 @@
-.grid.grid--dupe-report-list
-  p Source image
-  p Target image
-  p Diff
-  p Status/options
+table.dupe-report-list
+  thead
+    tr
+      th Source image
+      th Target image
+      th Diff
+      th Status/options
 
-  = for report <- @duplicate_reports do
-    = render PhilomenaWeb.DuplicateReportView, "_duplicate_report.html", report: report, conn: @conn
+  tbody
+    = render PhilomenaWeb.DuplicateReportView, "_duplicate_reports.html", duplicate_reports: @duplicate_reports, conn: @conn
