@@ -1,9 +1,16 @@
-.grid--dupe-report-list {
-  grid-template-rows: auto;
-  grid-template-columns: 200px [image-cell-1] 200px [image-cell-2] auto [diff] auto [status-options];
+.dupe-report-list--image {
+  width: 200px;
 }
 
-.grid--dupe-report-list__cell {
+.dupe-report-list--image-container {
+  width: 150px;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dupe-report-list__cell {
   padding: 0.5em 0.25em;
 }
 

@@ -3,7 +3,7 @@
  */
 
 import { assertNotNull } from './utils/assert';
-import { $, $$ } from './utils/dom';
+import { $, $$, makeEl } from './utils/dom';
 
 export function setupDupeReports() {
   const onion = $<SVGSVGElement>('.onion-skin__image');
@@ -12,6 +12,7 @@ export function setupDupeReports() {
 
   if (swipe) setupSwipe(swipe);
   if (onion && slider) setupOnionSkin(onion, slider);
+  document.addEventListener('fetchcomplete', mergeDuplicateReportTable);
 }
 
 function setupSwipe(swipe: SVGSVGElement) {
@@ -39,4 +40,24 @@ function setupOnionSkin(onion: SVGSVGElement, slider: HTMLInputElement) {
 
   setOpacity();
   slider.addEventListener('input', setOpacity);
+}
+
+function mergeDuplicateReportTable({ target, detail }: FetchcompleteEvent) {
+  if (!target.matches('.js-duplicate-report')) {
+    return;
+  }
+
+  const container = makeEl('template');
+
+  detail.text().then(text => {
+    container.innerHTML = text;
+
+    for (const child of container.content.children) {
+      if (!(child instanceof HTMLElement)) continue;
+
+      for (const updateTarget of document.querySelectorAll(`.${child.className}`)) {
+        updateTarget.outerHTML = child.outerHTML;
+      }
+    }
+  });
 }
