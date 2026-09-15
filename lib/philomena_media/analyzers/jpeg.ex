@@ -23,7 +23,7 @@ defmodule PhilomenaMedia.Analyzers.Jpeg do
   defp stats(file) do
     case Remote.cmd("mediastat", [file]) do
       {output, 0} ->
-        [_size, _frames, width, height, num, den] =
+        [_animated, _frames, width, height, num, den] =
           output
           |> String.trim()
           |> String.split(" ")
