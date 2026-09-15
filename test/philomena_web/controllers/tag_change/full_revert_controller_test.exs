@@ -1,4 +1,4 @@
-defmodule PhilomenaWeb.TagChange.FullRevertControllerTest do
+defmodule PhilomenaWeb.Profile.TagChange.RevertControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
   # full_revert only enqueues a (dead) TagChangeRevertWorker, so there is
@@ -6,10 +6,10 @@ defmodule PhilomenaWeb.TagChange.FullRevertControllerTest do
 
   import Philomena.UsersFixtures
 
-  describe "POST /tag_changes/full_revert" do
+  describe "POST /profiles/:profile_id/tag_changes/revert" do
     test "is rejected for anonymous users", %{conn: conn} do
       user = confirmed_user_fixture()
-      conn = post(conn, ~p"/tag_changes/full_revert", %{"user_id" => "#{user.id}"})
+      conn = post(conn, ~p"/profiles/#{user}/tag_changes/revert")
 
       assert redirected_to(conn) == ~p"/sessions/new"
     end
@@ -17,7 +17,7 @@ defmodule PhilomenaWeb.TagChange.FullRevertControllerTest do
     test "is rejected for regular users", %{conn: conn} do
       user = confirmed_user_fixture()
       conn = log_in_user(conn, confirmed_user_fixture())
-      conn = post(conn, ~p"/tag_changes/full_revert", %{"user_id" => "#{user.id}"})
+      conn = post(conn, ~p"/profiles/#{user}/tag_changes/revert")
 
       assert redirected_to(conn) == "/"
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "can't access"
@@ -26,7 +26,7 @@ defmodule PhilomenaWeb.TagChange.FullRevertControllerTest do
     test "a moderator enqueues a reversion for a user", %{conn: conn} do
       target = confirmed_user_fixture()
       conn = log_in_user(conn, moderator_user_fixture())
-      conn = post(conn, ~p"/tag_changes/full_revert", %{"user_id" => "#{target.id}"})
+      conn = post(conn, ~p"/profiles/#{target}/tag_changes/revert")
 
       assert redirected_to(conn) == "/"
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Reversion of tag changes enqueued"
@@ -34,7 +34,7 @@ defmodule PhilomenaWeb.TagChange.FullRevertControllerTest do
 
     test "a moderator enqueues a reversion for an ip", %{conn: conn} do
       conn = log_in_user(conn, moderator_user_fixture())
-      conn = post(conn, ~p"/tag_changes/full_revert", %{"ip" => "203.0.113.5"})
+      conn = post(conn, ~p"/ip_profiles/203.0.113.5/tag_changes/revert")
 
       assert redirected_to(conn) == "/"
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Reversion of tag changes enqueued"
@@ -42,21 +42,21 @@ defmodule PhilomenaWeb.TagChange.FullRevertControllerTest do
 
     test "a moderator enqueues a reversion for a fingerprint", %{conn: conn} do
       conn = log_in_user(conn, moderator_user_fixture())
-      conn = post(conn, ~p"/tag_changes/full_revert", %{"fingerprint" => "c1774e9294a"})
+      conn = post(conn, ~p"/fingerprint_profiles/c1774/tag_changes/revert")
 
       assert redirected_to(conn) == "/"
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Reversion of tag changes enqueued"
     end
 
-    test "a request with no target key redirects with the failure flash", %{conn: conn} do
-      # NOTE: a request naming none of user_id/ip/fingerprint now redirects to
-      # the referrer with the failure flash rather than raising CaseClauseError.
+    test "a malformed target redirects with the failure flash", %{conn: conn} do
       conn = log_in_user(conn, moderator_user_fixture())
 
-      conn = post(conn, ~p"/tag_changes/full_revert", %{"something" => "else"})
+      conn = post(conn, ~p"/ip_profiles/not-an-ip/tag_changes/revert")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Couldn't revert those tag changes!"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
   end
 end

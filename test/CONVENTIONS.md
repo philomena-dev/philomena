@@ -156,11 +156,12 @@ See `PhilomenaQuery.SearchHelpers` (`test/support/search_helpers.ex`) and
   names. No golden HTML files.
 - JSON bodies: assert the full decoded structure; pull unordered association
   lists out and compare them sorted, asserting the rest with `Map.delete/2`.
-- Give every by-id endpoint a non-integer-id test. An id that no row could
-  have is treated as a missing resource: JSON endpoints answer 404, HTML
-  endpoints redirect to `/` with the not-found flash. Note that on
-  `load_and_authorize_resource` routes an unknown _but valid_ id instead takes
-  the unauthorized path, so the two cases carry different flashes.
+- Give every by-id endpoint a non-integer-id test. An id that no `integer`
+  column could hold is treated as a missing resource: JSON endpoints answer
+  404, HTML endpoints redirect to `/` with the not-found flash. Note that a
+  well-formed _but unknown_ id is authorized as a `nil` load instead: an actor
+  whose grant does not cover `nil` takes the unauthorized path, so the two
+  cases can carry different flashes.
 
 ## Route coverage checklist
 

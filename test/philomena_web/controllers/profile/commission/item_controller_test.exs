@@ -38,17 +38,15 @@ defmodule PhilomenaWeb.Profile.Commission.ItemControllerTest do
       assert response =~ "New Item on Listing"
     end
 
-    test "redirects a moderator with the authorization flash", %{conn: conn} do
-      # NOTE: unlike Profile.CommissionController, :ensure_correct_user here
-      # has no moderator/admin bypass - items are strictly owner-only.
+    test "renders the form for a moderator", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       artist = confirmed_user_fixture()
       commission_fixture(artist)
 
-      conn = get(conn, ~p"/profiles/#{artist}/commission/items/new")
+      response = html_response(get(conn, ~p"/profiles/#{artist}/commission/items/new"), 200)
 
-      assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      assert response =~ "New Commission Item - Derpibooru"
+      assert response =~ "New Item on Listing"
     end
 
     test "redirects with the not-found flash when no commission exists", %{conn: conn} do
@@ -116,15 +114,17 @@ defmodule PhilomenaWeb.Profile.Commission.ItemControllerTest do
       assert response =~ "Edit Item on Listing"
     end
 
-    test "404s for an item belonging to another commission", %{conn: conn} do
+    test "redirects as not found for a wrong-commission item ID", %{conn: conn} do
       %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
       commission_fixture(user)
       other_commission = commission_fixture(confirmed_user_fixture())
       item = commission_item_fixture(other_commission)
 
-      assert_error_sent 404, fn ->
-        get(conn, ~p"/profiles/#{user}/commission/items/#{item}/edit")
-      end
+      conn = get(conn, ~p"/profiles/#{user}/commission/items/#{item}/edit")
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Couldn't find what you were looking for!"
     end
   end
 
@@ -157,6 +157,21 @@ defmodule PhilomenaWeb.Profile.Commission.ItemControllerTest do
       assert html_response(conn, 200) =~ "Edit Item on Listing"
       assert Repo.get!(Item, item.id).description == item.description
     end
+
+    test "does not update an item belonging to another commission", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      commission_fixture(user)
+      other_item = confirmed_user_fixture() |> commission_fixture() |> commission_item_fixture()
+
+      conn =
+        patch(conn, "/profiles/#{user.slug}/commission/items/#{other_item.id}", %{
+          "item" => %{"description" => "Cross-profile update"}
+        })
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
+      assert Repo.get!(Item, other_item.id).description == other_item.description
+    end
   end
 
   describe "DELETE /profiles/:profile_id/commission/items/:id" do
@@ -183,6 +198,18 @@ defmodule PhilomenaWeb.Profile.Commission.ItemControllerTest do
       assert redirected_to(conn) == "/"
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
       assert Repo.get(Item, item.id)
+    end
+
+    test "does not delete an item belonging to another commission", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      commission_fixture(user)
+      other_item = confirmed_user_fixture() |> commission_fixture() |> commission_item_fixture()
+
+      conn = delete(conn, "/profiles/#{user.slug}/commission/items/#{other_item.id}")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
+      assert Repo.get(Item, other_item.id)
     end
   end
 end

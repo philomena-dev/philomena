@@ -2,23 +2,14 @@ defmodule PhilomenaWeb.RuleController do
   use PhilomenaWeb, :controller
 
   alias Philomena.Rules
-  alias Philomena.Rules.Rule
   alias PhilomenaWeb.MarkdownRenderer
 
-  plug :load_and_authorize_resource,
-    model: Rule,
-    id_field: "position",
-    except: [:index]
-
-  plug :check_permission when action in [:show]
+  action_fallback PhilomenaWeb.FallbackController
 
   def index(conn, _params) do
     rules =
-      if Canada.Can.can?(conn.assigns.current_user, :edit, Rule) do
-        Rules.list_rules()
-      else
-        Rules.list_visible_rules()
-      end
+      conn.assigns.actor
+      |> Rules.list_rules_for()
       |> Enum.map(&render_rule(&1, conn))
 
     last_updated_at =
@@ -30,12 +21,13 @@ defmodule PhilomenaWeb.RuleController do
   end
 
   def new(conn, _params) do
-    changeset = Rules.change_rule(%Rule{})
-    render(conn, :new, changeset: changeset)
+    with {:ok, changeset} <- Rules.new_rule(conn.assigns.actor) do
+      render(conn, :new, changeset: changeset)
+    end
   end
 
   def create(conn, %{"rule" => rule_params}) do
-    case Rules.create_rule_with_version(rule_params, conn.assigns.current_user) do
+    case Rules.create_rule(conn.assigns.actor, rule_params) do
       {:ok, [rule, _version]} ->
         conn
         |> put_flash(:info, "Rule created successfully.")
@@ -43,40 +35,47 @@ defmodule PhilomenaWeb.RuleController do
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, :new, changeset: changeset)
+
+      {:error, _} = error ->
+        error
     end
   end
 
   def show(conn, %{"id" => id}) do
-    rule =
-      id
-      |> Rules.get_by_position!()
-      |> render_rule(conn)
+    case Rules.show_rule(conn.assigns.actor, id) do
+      {:ok, rule} ->
+        rule = render_rule(rule, conn)
 
-    versions =
-      rule
-      |> Rules.list_rule_versions()
-      |> generate_diff()
+        versions =
+          rule
+          |> Rules.list_rule_versions()
+          |> generate_diff()
 
-    render(conn, :show, rule: rule, versions: versions)
+        render(conn, :show, rule: rule, versions: versions)
+
+      {:error, _} = error ->
+        error
+    end
   end
 
   def edit(conn, %{"id" => id}) do
-    rule = Rules.get_by_position!(id)
-    changeset = Rules.change_rule(rule)
-    render(conn, :edit, rule: rule, changeset: changeset)
+    with {:ok, {rule, changeset}} <- Rules.edit_rule(conn.assigns.actor, id) do
+      render(conn, :edit, rule: rule, changeset: changeset)
+    end
   end
 
   def update(conn, %{"id" => id, "rule" => rule_params}) do
-    rule = Rules.get_by_position!(id)
-
-    case Rules.update_rule_with_version(rule, conn.assigns.current_user, rule_params) do
+    case Rules.update_rule(conn.assigns.actor, id, rule_params) do
       {:ok, [rule, _version]} ->
         conn
         |> put_flash(:info, "Rule updated successfully.")
         |> redirect(to: ~p"/rules/#{rule}")
 
-      {:error, %Ecto.Changeset{} = changeset} ->
+      {:error, {rule, %Ecto.Changeset{} = changeset}} ->
         render(conn, :edit, rule: rule, changeset: changeset)
+
+      {:error, _} = error ->
+        error
     end
   end
 
@@ -138,23 +137,5 @@ defmodule PhilomenaWeb.RuleController do
     |> elem(0)
     # Reverse back to have newest first
     |> Enum.reverse()
-  end
-
-  defp check_permission(conn, _opts) do
-    id = conn.params["id"]
-    rule = Rules.get_by_position!(id)
-
-    if rule.hidden or rule.internal do
-      if Canada.Can.can?(conn.assigns.current_user, :edit, rule) do
-        conn
-      else
-        conn
-        |> put_flash(:error, "You do not have permission to view that rule.")
-        |> redirect(to: ~p"/rules")
-        |> halt()
-      end
-    else
-      conn
-    end
   end
 end

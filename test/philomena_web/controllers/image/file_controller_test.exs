@@ -1,7 +1,7 @@
 defmodule PhilomenaWeb.Image.FileControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # `Images.update_file/2` drives the media pipeline synchronously
+  # `Images.update_image_file/3` drives the media pipeline synchronously
   # (analyze, persist to the stubbed S3, enqueue the dead
   # ThumbnailWorker/reindex jobs), with no spawned upload process, so this
   # file stays `async: true`.
@@ -41,7 +41,7 @@ defmodule PhilomenaWeb.Image.FileControllerTest do
       assert redirected_to(conn) == ~p"/images/#{image}"
       assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Successfully updated file."
 
-      # repair_image marks the image for reprocessing.
+      # create_image_repair marks the image for reprocessing.
       reloaded = Repo.reload!(image)
       assert reloaded.processed == false
       assert reloaded.thumbnails_generated == false
@@ -88,7 +88,7 @@ defmodule PhilomenaWeb.Image.FileControllerTest do
 
     # A file that matches a *different* image's fingerprint is still rejected as
     # a duplicate (image_changeset adds the "has already been uploaded" error),
-    # so update_file returns an error and the target image is left untouched -
+    # so update_image_file returns an error and the target image is left untouched -
     # its own fingerprint preserved.
     test "as a moderator replacing with a file already uploaded as another image fails", %{
       conn: conn
@@ -109,22 +109,31 @@ defmodule PhilomenaWeb.Image.FileControllerTest do
       assert reloaded.processed == true
     end
 
-    # verify_not_deleted halts before replacing a hidden image.
-    test "on a deleted image redirects with the deleted-image flash", %{conn: conn} do
+    test "as a moderator replaces a hidden image", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
-      image = image_fixture(hidden_from_users: true, deletion_reason: "Spam")
+
+      image =
+        image_fixture(
+          hidden_from_users: true,
+          hidden_image_key: "hidden-key",
+          deletion_reason: "Spam"
+        )
 
       conn = put(conn, ~p"/images/#{image}/file", %{"image" => %{"image" => png_upload()}})
 
       assert redirected_to(conn) == ~p"/images/#{image}"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Cannot replace a deleted image."
-      # The hash is untouched because the action never runs.
-      assert Repo.reload!(image).image_orig_sha512_hash != nil
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Successfully updated file."
+
+      reloaded = Repo.reload!(image)
+      assert reloaded.hidden_from_users
+      assert reloaded.processed == false
+      assert reloaded.thumbnails_generated == false
+      assert reloaded.image_orig_sha512_hash == png_upload_sha512()
     end
 
-    # update_file re-renders the "Failed to update file!" error branch on a
+    # update_image_file re-renders the "Failed to update file!" error branch on a
     # request with no file (image_changeset's validate_required(:image) fails).
-    # The action goes straight to update_file, so a failed replacement leaves
+    # The action goes straight to update_image_file, so a failed replacement leaves
     # the image untouched - crucially the dedup fingerprint is preserved.
     test "without a file redirects with the failure flash and preserves the hash", %{
       conn: conn
@@ -144,18 +153,20 @@ defmodule PhilomenaWeb.Image.FileControllerTest do
       assert reloaded.processed == true
     end
 
-    test "for an unknown image_id redirects with the authorization flash", %{conn: conn} do
+    test "for an unknown image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
       conn =
         put(conn, ~p"/images/999999999/file", %{"image" => %{"image" => png_upload()}})
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
 
     # NOTE: a non-integer image_id short-circuits to NotFoundPlug via the central
-    # IntegerId guard before Canary authorizes.
+    # IntegerId guard before authorization runs.
     test "for a non-integer image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 

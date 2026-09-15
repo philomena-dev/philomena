@@ -38,9 +38,9 @@ defmodule PhilomenaWeb.Admin.User.WipeControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "PII wipe queued"
     end
 
-    # NOTE: load_resource now uses required: true, so Canary's not_found handler
-    # runs on :create too - an unknown slug redirects with the not-found flash
-    # rather than dereferencing a nil user.
+    # NOTE: the context authorizes the loaded record on :create; an unknown slug
+    # loads nil, the admin is authorized on it, so it redirects with the
+    # not-found flash rather than dereferencing a nil user.
     test "redirects with the not-found flash for an unknown slug", %{conn: conn} do
       conn = post(conn, ~p"/admin/users/no-such-user/wipe")
 

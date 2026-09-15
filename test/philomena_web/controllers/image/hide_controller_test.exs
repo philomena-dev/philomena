@@ -8,9 +8,9 @@ defmodule PhilomenaWeb.Image.HideControllerTest do
   import Ecto.Query
   import Philomena.ImagesFixtures
 
+  alias Philomena.Multi
   alias Philomena.ImageHides
   alias Philomena.ImageHides.ImageHide
-  alias Philomena.Images
   alias Philomena.Repo
 
   defp interaction_path(image_id), do: ~p"/images/#{image_id}/hide"
@@ -22,7 +22,10 @@ defmodule PhilomenaWeb.Image.HideControllerTest do
   end
 
   defp hide!(image, user) do
-    {:ok, _} = Repo.transaction(ImageHides.create_hide_transaction(image, user))
+    {:ok, _} =
+      Multi.new()
+      |> ImageHides.put_hide_for_loaded_image(image, user)
+      |> Multi.transact()
   end
 
   describe "POST /images/:image_id/hide" do
@@ -42,7 +45,7 @@ defmodule PhilomenaWeb.Image.HideControllerTest do
              }
 
       assert hide(image, user)
-      assert Images.get_image!(image.id).hides_count == 1
+      assert Repo.reload!(image).hides_count == 1
     end
 
     test "when already hidden stays hidden", %{conn: conn, user: user} do
@@ -59,7 +62,7 @@ defmodule PhilomenaWeb.Image.HideControllerTest do
              }
 
       assert hide(image, user)
-      assert Images.get_image!(image.id).hides_count == 1
+      assert Repo.reload!(image).hides_count == 1
     end
   end
 
@@ -80,7 +83,7 @@ defmodule PhilomenaWeb.Image.HideControllerTest do
              }
 
       refute hide(image, user)
-      assert Images.get_image!(image.id).hides_count == 0
+      assert Repo.reload!(image).hides_count == 0
     end
 
     test "with no existing hide still returns 200 interaction data", %{conn: conn} do

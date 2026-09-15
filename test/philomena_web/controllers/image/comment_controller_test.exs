@@ -3,6 +3,7 @@ defmodule PhilomenaWeb.Image.CommentControllerTest do
 
   import Ecto.Query
   import Philomena.CommentsFixtures
+  import Philomena.FiltersFixtures
   import Philomena.ImagesFixtures
   import Philomena.UsersFixtures
 
@@ -34,7 +35,9 @@ defmodule PhilomenaWeb.Image.CommentControllerTest do
       conn = get(conn, ~p"/images/999999999/comments")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Couldn't find what you were looking for!"
     end
   end
 
@@ -52,7 +55,7 @@ defmodule PhilomenaWeb.Image.CommentControllerTest do
 
     test "redirects to / for a comment on a hidden image", %{conn: conn} do
       image = image_fixture(hidden_from_users: true)
-      comment = comment_fixture(image)
+      comment = comment_fixture(image, moderator_user_fixture())
 
       conn = get(conn, ~p"/images/#{image}/comments/#{comment}")
 
@@ -64,6 +67,19 @@ defmodule PhilomenaWeb.Image.CommentControllerTest do
       image = image_fixture()
 
       conn = get(conn, ~p"/images/#{image}/comments/999999999")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Couldn't find what you were looking for!"
+    end
+
+    test "redirects to / when the route image does not own the comment", %{conn: conn} do
+      image = image_fixture()
+      other_image = image_fixture()
+      comment = comment_fixture(image)
+
+      conn = get(conn, ~p"/images/#{other_image}/comments/#{comment}")
 
       assert redirected_to(conn) == "/"
 
@@ -148,6 +164,28 @@ defmodule PhilomenaWeb.Image.CommentControllerTest do
       assert redirected_to(conn) == "/"
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You are currently banned"
     end
+
+    test "a forced-filter match redirects without creating a comment", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      image = image_fixture()
+      filter = system_filter_fixture(hidden_complex_str: "id:#{image.id}")
+
+      user
+      |> Ecto.Changeset.change(forced_filter_id: filter.id)
+      |> Repo.update!()
+
+      conn =
+        post(conn, ~p"/images/#{image}/comments", %{
+          "comment" => %{"body" => "Should not appear"}
+        })
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "You have been blocked from performing this action on this image."
+
+      assert Repo.aggregate(Comment, :count) == 0
+    end
   end
 
   describe "GET /images/:image_id/comments/:id/edit" do
@@ -183,6 +221,20 @@ defmodule PhilomenaWeb.Image.CommentControllerTest do
 
       assert redirected_to(conn) == "/"
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+    end
+
+    test "the author cannot edit through a different route image", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      image = image_fixture()
+      other_image = image_fixture()
+      comment = comment_fixture(image, user)
+
+      conn = get(conn, ~p"/images/#{other_image}/comments/#{comment}/edit")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Couldn't find what you were looking for!"
     end
   end
 
@@ -262,6 +314,25 @@ defmodule PhilomenaWeb.Image.CommentControllerTest do
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
                "Couldn't find what you were looking for!"
+    end
+
+    test "does not update a comment through a different route image", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      image = image_fixture()
+      other_image = image_fixture()
+      comment = comment_fixture(image, user, %{"body" => "Original"})
+
+      conn =
+        patch(conn, ~p"/images/#{other_image}/comments/#{comment}", %{
+          "comment" => %{"body" => "Changed"}
+        })
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Couldn't find what you were looking for!"
+
+      assert Repo.reload!(comment).body == "Original"
     end
   end
 end

@@ -46,7 +46,9 @@ defmodule PhilomenaWeb.TopicControllerTest do
       conn = get(conn, ~p"/forums/nonexistent-forum/topics/#{topic}")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Couldn't find what you were looking for!"
     end
 
     test "redirects to / for a hidden topic viewed anonymously", %{
@@ -120,7 +122,9 @@ defmodule PhilomenaWeb.TopicControllerTest do
       conn = get(conn, ~p"/forums/nonexistent-forum/topics/new")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
   end
 

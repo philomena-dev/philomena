@@ -69,9 +69,9 @@ defmodule PhilomenaWeb.Tag.DetailControllerTest do
     test "redirects with the not-found flash for an unknown tag as moderator", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      # NOTE: load_resource now uses required: true, so Canary runs its
-      # not-found handler on this :index action - an unknown slug redirects
-      # instead of dereferencing a nil tag.
+      # NOTE: the context authorizes the loaded tag on this :index action; an
+      # unknown slug loads nil, the moderator is authorized on it, so it
+      # redirects instead of dereferencing a nil tag.
       conn = get(conn, ~p"/tags/nonexistent-tag/details")
 
       assert redirected_to(conn) == "/"

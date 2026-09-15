@@ -10,7 +10,6 @@ defmodule PhilomenaWeb.GalleryControllerTest do
 
   alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
-  alias Philomena.Galleries
   alias Philomena.Galleries.Gallery
   alias Philomena.Images.Image
 
@@ -60,7 +59,7 @@ defmodule PhilomenaWeb.GalleryControllerTest do
       gallery = gallery_fixture(user, title: "Test Shown Gallery")
       image = image_fixture()
 
-      {:ok, _} = Galleries.add_image_to_gallery(gallery, image)
+      gallery_image_fixture(gallery, image)
       SearchHelpers.reindex_all!(Image)
 
       conn = get(conn, ~p"/galleries/#{gallery}")
@@ -95,7 +94,7 @@ defmodule PhilomenaWeb.GalleryControllerTest do
       conn = get(conn, ~p"/galleries/999999999")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You can't access that page."
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 
@@ -212,13 +211,13 @@ defmodule PhilomenaWeb.GalleryControllerTest do
       assert response =~ "Editing Gallery - Derpibooru"
     end
 
-    test "redirects to / with the authorization flash for an unknown id", %{conn: conn} do
+    test "redirects to / with the not-found flash for an unknown id", %{conn: conn} do
       %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
       conn = get(conn, ~p"/galleries/999999999/edit")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 

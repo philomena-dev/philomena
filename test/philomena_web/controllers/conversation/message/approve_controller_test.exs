@@ -68,7 +68,7 @@ defmodule PhilomenaWeb.Conversation.Message.ApproveControllerTest do
       assert Repo.reload!(message).approved
     end
 
-    test "approving an already-approved message is idempotent", %{conn: conn} do
+    test "approving an already-approved still succeeds", %{conn: conn} do
       from = confirmed_user_fixture()
       to = confirmed_user_fixture()
       conversation = conversation_fixture(from, to)
@@ -81,21 +81,23 @@ defmodule PhilomenaWeb.Conversation.Message.ApproveControllerTest do
       conn = post(conn, ~p"/conversations/#{conversation}/messages/#{message}/approve")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Conversation message approved."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) ==
+               "Conversation message has already been approved."
+
       assert Repo.reload!(message).approved
     end
 
-    # Failure path: an unknown message_id is loaded as nil and authorized
-    # against the ability rules, where the moderator has no matching rule,
-    # so it takes the not-authorized redirect rather than a not-found one.
-    test "for an unknown message_id redirects with the authorization flash", %{conn: conn} do
+    test "for an unknown message_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       conversation = conversation_fixture(confirmed_user_fixture(), confirmed_user_fixture())
 
       conn = post(conn, ~p"/conversations/#{conversation}/messages/999999999/approve")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
 
     # NOTE: a non-integer message_id short-circuits to NotFoundPlug via the
@@ -105,6 +107,20 @@ defmodule PhilomenaWeb.Conversation.Message.ApproveControllerTest do
       conversation = conversation_fixture(confirmed_user_fixture(), confirmed_user_fixture())
 
       conn = post(conn, ~p"/conversations/#{conversation}/messages/not-a-number/approve")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
+    end
+
+    test "for a message belonging to another conversation redirects as not found", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+      conversation = conversation_fixture(confirmed_user_fixture(), confirmed_user_fixture())
+      other = conversation_fixture(confirmed_user_fixture(), confirmed_user_fixture())
+      message = message_fixture(other, other.from)
+
+      conn = post(conn, ~p"/conversations/#{conversation}/messages/#{message}/approve")
 
       assert redirected_to(conn) == "/"
 

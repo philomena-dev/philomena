@@ -4,7 +4,8 @@ defmodule Philomena.DnpEntriesFixtures do
   entities via the `Philomena.DnpEntries` context.
   """
 
-  alias Philomena.DnpEntries
+  alias Philomena.DnpEntries.DnpEntry
+  alias Philomena.Repo
 
   @doc """
   Creates a DNP entry for `tag`, requested by `user`. Starts out in the
@@ -26,15 +27,19 @@ defmodule Philomena.DnpEntriesFixtures do
         "conditions" => "Test DNP conditions"
       })
 
-    {:ok, dnp_entry} = DnpEntries.create_dnp_entry(user, [tag], attrs)
+    dnp_entry =
+      %DnpEntry{}
+      |> DnpEntry.creation_changeset(attrs, user, [tag.id])
+      |> Repo.insert!()
 
     case state do
       nil ->
         dnp_entry
 
       state ->
-        {:ok, dnp_entry} = DnpEntries.transition_dnp_entry(dnp_entry, user, state)
         dnp_entry
+        |> DnpEntry.transition_changeset(user, state)
+        |> Repo.update!()
     end
   end
 end

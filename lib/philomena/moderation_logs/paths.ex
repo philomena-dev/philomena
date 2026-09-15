@@ -2,21 +2,19 @@ defmodule Philomena.ModerationLogs.Paths do
   @moduledoc """
   Builders for moderation-log `subject_path` strings.
 
-  The values are data, not verified routes: `subject_path` is stored in the
-  `moderation_logs` table and rendered by the mod-log UI as an opaque `href`.
-  We deliberately give up compile-time route verification for them; they are
-  simple, stable paths.
+  The values are plain data: each `subject_path` is stored as an opaque string
+  in the `moderation_logs` table. Nothing verifies that they resolve to
+  anything; they are simple, stable paths.
 
   ## Encoding
 
-  `~p` runs each interpolated dynamic segment through `Phoenix.Param.to_param/1`
-  and then `URI.encode(segment, &URI.char_unreserved?/1)`.
-  Slugs (`Philomena.Slug.slug/1`) can contain characters that are *not*
-  URI-unreserved - notably `+` (from spaces) and other escaped punctuation runs
-  like `-dot-`, `-fwslash-` - so those bytes must be percent-encoded to stay
-  identical to `~p`. `encode_segment/1` below matches Phoenix exactly.
-  Integer ids and forum short names (`~r/\\A[a-z]+\\z/`) pass through unchanged,
-  but are encoded the same way for uniformity.
+  Each dynamic segment runs through `Phoenix.Param.to_param/1` and then
+  `URI.encode(segment, &URI.char_unreserved?/1)`. Slugs
+  (`Philomena.Slug.slug/1`) can contain characters that are *not* URI-unreserved
+  - notably `+` (from spaces) and escaped punctuation runs like `-dot-`,
+  `-fwslash-` - so those bytes are percent-encoded. Integer ids and forum short
+  names (`~r/\\A[a-z]+\\z/`) pass through unchanged, but are encoded the same way
+  for uniformity.
   """
 
   alias Philomena.Images.Image
@@ -25,6 +23,7 @@ defmodule Philomena.ModerationLogs.Paths do
   alias Philomena.Forums.Forum
   alias Philomena.Topics.Topic
   alias Philomena.Posts.Post
+  alias Philomena.Reports.Report
   alias Philomena.DnpEntries.DnpEntry
   alias Philomena.ArtistLinks.ArtistLink
 
@@ -83,6 +82,14 @@ defmodule Philomena.ModerationLogs.Paths do
   def dnp_entry_path(%DnpEntry{id: id}), do: "/dnp/" <> encode_segment(id)
 
   @doc """
+  Path to a report in the staff review interface, e.g. `/admin/reports/123`.
+
+  Accepts a report or an already parsed report ID.
+  """
+  def admin_report_path(%Report{id: id}), do: admin_report_path(id)
+  def admin_report_path(id) when is_integer(id), do: "/admin/reports/" <> encode_segment(id)
+
+  @doc """
   Path to an artist link on a user's profile, e.g.
   `/profiles/somebody/artist_links/123`.
 
@@ -111,9 +118,9 @@ defmodule Philomena.ModerationLogs.Paths do
     "/fingerprint_profiles/" <> encode_segment(fingerprint)
   end
 
-  # Mirrors Phoenix.VerifiedRoutes segment encoding: `Phoenix.Param.to_param/1`
-  # followed by `URI.encode(&URI.char_unreserved?/1)`. `to_string/1` is
-  # equivalent to `to_param` for the integer ids and binary slugs used here.
+  # Percent-encodes a path segment: `to_string/1` (equivalent to
+  # `Phoenix.Param.to_param/1` for the integer ids and binary slugs used here)
+  # followed by `URI.encode(&URI.char_unreserved?/1)`.
   @spec encode_segment(term()) :: String.t()
   defp encode_segment(segment) do
     segment

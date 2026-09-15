@@ -1,30 +1,21 @@
 defmodule PhilomenaWeb.Page.HistoryController do
   use PhilomenaWeb, :controller
 
-  alias Philomena.StaticPages.StaticPage
-  alias Philomena.StaticPages.Version
-  alias Philomena.Repo
   alias PhilomenaWeb.MarkdownRenderer
-  import Ecto.Query
+  alias Philomena.StaticPages
 
-  plug :load_resource, model: StaticPage, id_name: "page_id", id_field: "slug", required: true
+  action_fallback PhilomenaWeb.FallbackController
 
-  def index(conn, _params) do
-    page = conn.assigns.static_page
-
-    versions =
-      Version
-      |> where(static_page_id: ^page.id)
-      |> preload(:user)
-      |> order_by(desc: :created_at, desc: :id)
-      |> Repo.all()
-      |> generate_differences()
-
-    render(conn, "index.html",
-      title: "Revision History for Page `#{page.title}'",
-      layout_class: "layout--wide",
-      versions: versions
-    )
+  def index(conn, %{"page_id" => slug}) do
+    with {:ok, {page, versions}} <-
+           StaticPages.list_page_history(conn.assigns.actor, slug) do
+      render(conn, "index.html",
+        title: "Revision History for Page `#{page.title}'",
+        layout_class: "layout--wide",
+        static_page: page,
+        versions: generate_differences(versions)
+      )
+    end
   end
 
   # Versions store the body as it was after each edit, so a version's diff is

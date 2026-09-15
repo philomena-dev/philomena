@@ -49,21 +49,25 @@ defmodule PhilomenaWeb.Api.Json.PostControllerTest do
       assert author =~ ~r/\ABackground Pony #[0-9A-F]{4}\z/
     end
 
-    test "nulls out the body of a hidden post but stays 200", %{conn: conn} do
+    test "returns 404 for a hidden post", %{conn: conn} do
       user = confirmed_user_fixture()
       moderator = moderator_user_fixture()
       forum = forum_fixture()
       topic = topic_fixture(forum)
       post = post_fixture(topic, user, %{"body" => "Rule-breaking post"})
 
-      {:ok, _} = Posts.hide_post(post, %{"deletion_reason" => "spam"}, moderator)
+      {:ok, _} =
+        Posts.create_post_hide(
+          Philomena.AttributionFixtures.actor(moderator),
+          forum.short_name,
+          topic.slug,
+          post.id,
+          %{"deletion_reason" => "spam"}
+        )
 
       conn = get(conn, ~p"/api/v1/json/posts/#{post.id}")
 
-      assert %{"post" => %{"body" => nil, "edited_at" => nil, "author" => author}} =
-               json_response(conn, 200)
-
-      assert author == user.name
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
     test "returns 404 for a destroyed post", %{conn: conn} do
@@ -71,7 +75,22 @@ defmodule PhilomenaWeb.Api.Json.PostControllerTest do
       topic = topic_fixture(forum)
       post = post_fixture(topic, nil)
 
-      {:ok, _} = Posts.destroy_post(post)
+      {:ok, _} =
+        Posts.create_post_hide(
+          Philomena.AttributionFixtures.actor(moderator_user_fixture()),
+          forum.short_name,
+          topic.slug,
+          post.id,
+          %{deletion_reason: "Spam"}
+        )
+
+      {:ok, _} =
+        Posts.create_post_delete(
+          Philomena.AttributionFixtures.actor(moderator_user_fixture()),
+          forum.short_name,
+          topic.slug,
+          post.id
+        )
 
       conn = get(conn, ~p"/api/v1/json/posts/#{post.id}")
 
@@ -84,7 +103,13 @@ defmodule PhilomenaWeb.Api.Json.PostControllerTest do
       topic = topic_fixture(forum)
       post = post_fixture(topic, nil)
 
-      {:ok, _} = Topics.hide_topic(topic, "spam", moderator)
+      {:ok, {_forum, _topic}} =
+        Topics.create_topic_hide(
+          Philomena.AttributionFixtures.actor(moderator),
+          forum.short_name,
+          topic.slug,
+          %{"deletion_reason" => "spam"}
+        )
 
       conn = get(conn, ~p"/api/v1/json/posts/#{post.id}")
 
@@ -94,7 +119,7 @@ defmodule PhilomenaWeb.Api.Json.PostControllerTest do
     test "returns 404 for a post in a restricted forum", %{conn: conn} do
       forum = forum_fixture(access_level: "staff")
       topic = topic_fixture(forum)
-      post = post_fixture(topic, nil)
+      post = post_fixture(topic, moderator_user_fixture())
 
       conn = get(conn, ~p"/api/v1/json/posts/#{post.id}")
 
@@ -107,12 +132,9 @@ defmodule PhilomenaWeb.Api.Json.PostControllerTest do
       assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
-    test "raises for a non-integer id", %{conn: conn} do
-      # NOTE: the id is interpolated into the query without casting, so a
-      # non-integer id becomes a 500 rather than a 404.
-      assert_raise Ecto.Query.CastError, fn ->
-        get(conn, ~p"/api/v1/json/posts/not-a-number")
-      end
+    test "returns 404 for a non-integer id", %{conn: conn} do
+      conn = get(conn, ~p"/api/v1/json/posts/not-a-number")
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
   end
 end

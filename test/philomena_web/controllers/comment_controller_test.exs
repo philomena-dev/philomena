@@ -5,6 +5,7 @@ defmodule PhilomenaWeb.CommentControllerTest do
 
   import Philomena.CommentsFixtures
   import Philomena.ImagesFixtures
+  import Philomena.UsersFixtures
 
   alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
@@ -48,7 +49,10 @@ defmodule PhilomenaWeb.CommentControllerTest do
 
     test "does not show comments on hidden images to anonymous users", %{conn: conn} do
       image = image_fixture(hidden_from_users: true)
-      _comment = comment_fixture(image, nil, %{"body" => "Test orphaned comment body"})
+
+      _comment =
+        comment_fixture(image, moderator_user_fixture(), %{"body" => "Test orphaned comment body"})
+
       SearchHelpers.reindex_all!(Comment)
 
       conn = get(conn, ~p"/comments")

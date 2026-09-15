@@ -9,7 +9,6 @@ defmodule PhilomenaWeb.Gallery.ImageControllerTest do
   import Philomena.ImagesFixtures
   import Philomena.UsersFixtures
 
-  alias Philomena.Galleries
   alias Philomena.Galleries.Interaction
   alias Philomena.Repo
 
@@ -43,26 +42,26 @@ defmodule PhilomenaWeb.Gallery.ImageControllerTest do
       assert Repo.reload!(gallery).image_count == 1
     end
 
-    test "responds 400 when the image is already in the gallery", %{conn: conn} do
+    test "responds conflict when the image is already in the gallery", %{conn: conn} do
       %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
       gallery = gallery_fixture(user)
       image = image_fixture()
-      {:ok, _} = Galleries.add_image_to_gallery(gallery, image)
+      gallery_image_fixture(gallery, image)
 
       conn = post(conn, ~p"/galleries/#{gallery}/images", %{"image_id" => to_string(image.id)})
 
-      assert json_response(conn, 400) == %{}
+      assert json_response(conn, 409) == %{}
       assert Repo.reload!(gallery).image_count == 1
     end
 
-    test "redirects with the authorization flash for an unknown image id", %{conn: conn} do
+    test "redirects with the not-found flash for an unknown image id", %{conn: conn} do
       %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
       gallery = gallery_fixture(user)
 
       conn = post(conn, ~p"/galleries/#{gallery}/images", %{"image_id" => "999999999"})
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
     test "redirects other users with the authorization flash", %{conn: conn} do
@@ -92,7 +91,7 @@ defmodule PhilomenaWeb.Gallery.ImageControllerTest do
       %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
       gallery = gallery_fixture(user)
       image = image_fixture()
-      {:ok, _} = Galleries.add_image_to_gallery(gallery, image)
+      gallery_image_fixture(gallery, image)
 
       conn =
         delete(conn, ~p"/galleries/#{gallery}/images", %{"image_id" => to_string(image.id)})
@@ -107,8 +106,7 @@ defmodule PhilomenaWeb.Gallery.ImageControllerTest do
       assert Repo.reload!(gallery).image_count == 0
     end
 
-    test "responds 200 when the image is not in the gallery", %{conn: conn} do
-      # the delete_all simply removes zero rows and decrements the count by 0
+    test "responds bad request when the image is not in the gallery", %{conn: conn} do
       %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
       gallery = gallery_fixture(user)
       image = image_fixture()
@@ -116,7 +114,8 @@ defmodule PhilomenaWeb.Gallery.ImageControllerTest do
       conn =
         delete(conn, ~p"/galleries/#{gallery}/images", %{"image_id" => to_string(image.id)})
 
-      assert json_response(conn, 200) == %{}
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
       assert Repo.reload!(gallery).image_count == 0
     end
 
@@ -125,7 +124,7 @@ defmodule PhilomenaWeb.Gallery.ImageControllerTest do
       owner = confirmed_user_fixture()
       gallery = gallery_fixture(owner)
       image = image_fixture()
-      {:ok, _} = Galleries.add_image_to_gallery(gallery, image)
+      gallery_image_fixture(gallery, image)
 
       conn =
         delete(conn, ~p"/galleries/#{gallery}/images", %{"image_id" => to_string(image.id)})

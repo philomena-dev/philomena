@@ -10,6 +10,7 @@ defmodule Philomena.TagChangeRevertWorkerTest do
 
   alias Philomena.Images
   alias Philomena.TagChangeRevertWorker
+  alias Philomena.TagChanges.TagChange
 
   # Images validate a 3-tag minimum, so every input keeps these on top of
   # whatever tag the test adds or removes.
@@ -23,16 +24,17 @@ defmodule Philomena.TagChangeRevertWorkerTest do
   end
 
   defp change_tags!(image, user, old_input, new_input) do
-    # Force-reload :tags so successive edits diff against the current state,
-    # as a controller-loaded image would; update_tags's own preload no-ops on
-    # an already-loaded association.
-    image = Repo.preload(image, [:tags], force: true)
+    # These tests arrange history rather than exercise the write rate limits.
+    arrangement_actor = actor(%{user | bypass_rate_limits: true})
 
-    {:ok, _} =
-      Images.update_tags(image, attribution(user), %{
-        "old_tag_input" => old_input,
-        "tag_input" => new_input
-      })
+    assert {:ok, result} =
+             Images.update_image_tags(
+               arrangement_actor,
+               image.id,
+               %{"old_tag_input" => old_input, "tag_input" => new_input}
+             )
+
+    assert result.image.id == image.id
   end
 
   defp full_revert!(user, batch_size) do
@@ -54,17 +56,26 @@ defmodule Philomena.TagChangeRevertWorkerTest do
     |> Enum.map(& &1.name)
   end
 
+  defp tag_change_count(image) do
+    Repo.aggregate(from(tag_change in TagChange, where: tag_change.image_id == ^image.id), :count)
+  end
+
   test "a full revert removes tags the user added", %{user: user} do
     image_a = image_fixture(tags: @base_tags)
     image_b = image_fixture(tags: @base_tags)
     change_tags!(image_a, user, @base_tags, "#{@base_tags}, vandal tag")
     change_tags!(image_b, user, @base_tags, "#{@base_tags}, vandal tag")
 
+    assert tag_change_count(image_a) == 1
+    assert tag_change_count(image_b) == 1
+
     # batch_size 1 forces the two images into separate batches.
     full_revert!(user, 1)
 
     refute "vandal tag" in image_tag_names(image_a)
     refute "vandal tag" in image_tag_names(image_b)
+    assert tag_change_count(image_a) == 2
+    assert tag_change_count(image_b) == 2
   end
 
   test "a full revert restores tags the user removed", %{user: user} do
@@ -129,6 +140,8 @@ defmodule Philomena.TagChangeRevertWorkerTest do
     refute "vandal one" in names_b
     refute "vandal two" in names_b
     assert "safe" in names_b
+    assert tag_change_count(image_a) == 2
+    assert tag_change_count(image_b) == 4
   end
 
   test "a self-canceled remove/add pair does not strip the tag", %{user: user} do
