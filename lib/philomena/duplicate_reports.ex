@@ -11,10 +11,28 @@ defmodule Philomena.DuplicateReports do
 
   alias Philomena.DuplicateReports.DuplicateReport
   alias Philomena.DuplicateReports.SearchQuery
+  alias Philomena.DuplicateReports.QueryBuilder
+  alias Philomena.DuplicateReports.QueryForm
   alias Philomena.DuplicateReports.Uploader
   alias Philomena.ImageIntensities.ImageIntensity
   alias Philomena.Images.Image
   alias Philomena.Images
+
+  def list_duplicate_reports(pagination, params) do
+    with {:ok, query, query_form} <- QueryBuilder.build_query(params) do
+      duplicate_reports =
+        query
+        |> preload([
+          :user,
+          :modifier,
+          image: [:user, :sources, tags: :aliases],
+          duplicate_of_image: [:user, :sources, tags: :aliases]
+        ])
+        |> Repo.paginate(pagination)
+
+      {:ok, duplicate_reports, QueryForm.changeset(query_form)}
+    end
+  end
 
   @doc """
   Generates automated duplicate reports for an image based on perceptual matching.
