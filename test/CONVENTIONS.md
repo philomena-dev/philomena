@@ -59,8 +59,8 @@ One test per auth level that can reach the action:
 - Attribution-taking contexts (topics, posts, comments, reports) use
   `Philomena.AttributionFixtures.attribution/1`; pass a user or `nil` for
   anonymous. Attrs for these fixtures are string-keyed, controller-style.
-- Context functions that enqueue Exq jobs are safe: test config consumes no
-  queues, so nothing reaches OpenSearch.
+- Context functions that enqueue Exq jobs are safe: test config uses Exq's
+  in-memory fake queue, so jobs neither reach Valkey nor OpenSearch.
 
 ## Singleton toggle controllers (phase 3)
 
