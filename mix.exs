@@ -17,7 +17,12 @@ defmodule Philomena.MixProject do
         plt_add_apps: [:ex_unit, :mix]
       ],
       docs: [formatters: ["html"]],
-      listeners: [Phoenix.CodeReloader]
+      listeners: [Phoenix.CodeReloader],
+      releases: [
+        philomena: [
+          applications: [opentelemetry: :temporary]
+        ]
+      ]
     ]
   end
 
@@ -74,6 +79,15 @@ defmodule Philomena.MixProject do
       {:ex_aws_s3, "~> 2.5"},
       {:sweet_xml, "~> 0.7"},
       {:inet_cidr, "~> 1.0"},
+
+      # Tracing
+      {:opentelemetry, "~> 1.7"},
+      {:opentelemetry_api, "~> 1.5"},
+      {:opentelemetry_bandit, "~> 0.3"},
+      {:opentelemetry_ecto, "~> 1.2"},
+      {:opentelemetry_exporter, "~> 1.10"},
+      {:opentelemetry_phoenix, "~> 2.0"},
+      {:sentry, "~> 13.0"},
 
       # SMTP
       {:swoosh, "~> 1.19"},
