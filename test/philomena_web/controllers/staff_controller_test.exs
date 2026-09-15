@@ -25,22 +25,19 @@ defmodule PhilomenaWeb.StaffControllerTest do
       refute response =~ "Test Regular User"
     end
 
-    test "does not list staff who hide their default role", %{conn: conn} do
+    test "lists staff who hide their default role", %{conn: conn} do
       admin =
-        admin_user_fixture(%{name: "Test Hidden Admin"})
+        admin_user_fixture(%{name: "Test Admin"})
         |> Ecto.Changeset.change(hide_default_role: true)
         |> Repo.update!()
 
       conn = get(conn, ~p"/staff")
       response = html_response(conn, 200)
 
-      # NOTE: a hidden-role staff member with no secondary role matches none
-      # of the categories (Others requires a secondary role), so they vanish
-      # from the page entirely.
-      refute response =~ admin.name
+      assert response =~ admin.name
     end
 
-    test "categorizes non-admin staff by secondary role", %{conn: conn} do
+    test "categorizes staff by secondary role", %{conn: conn} do
       developer =
         moderator_user_fixture(%{name: "Test Site Developer"})
         |> Ecto.Changeset.change(secondary_role: "Site Developer")

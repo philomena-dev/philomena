@@ -71,8 +71,7 @@ defmodule PhilomenaWeb.Image.DestroyControllerTest do
       assert Repo.reload!(image).image == nil
     end
 
-    # verify_deleted halts when the image is not currently hidden.
-    test "on a non-deleted image redirects with the not-deleted flash", %{conn: conn} do
+    test "on a non-deleted image redirects with an error flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
       image = image_fixture()
 
@@ -81,24 +80,26 @@ defmodule PhilomenaWeb.Image.DestroyControllerTest do
       assert redirected_to(conn) == ~p"/images/#{image}"
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
-               "Cannot destroy a non-deleted image!"
+               "Failed to destroy image."
 
       assert Repo.reload!(image).image != nil
     end
 
-    # Failure path: an unknown image_id is authorized against a nil resource,
+    # Missing image locators resolve to not-found before authorization.
     # for which the role_map moderator has no matching rule.
-    test "for an unknown image_id redirects with the authorization flash", %{conn: conn} do
+    test "for an unknown image_id redirects with the not-found flash", %{conn: conn} do
       conn = log_in_role_moderator(conn, "Image")
 
       conn = post(conn, ~p"/images/999999999/destroy")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
 
     # NOTE: a non-integer image_id short-circuits to NotFoundPlug via the central
-    # IntegerId guard before Canary authorizes.
+    # IntegerId guard before authorization runs.
     test "for a non-integer image_id redirects with the not-found flash", %{conn: conn} do
       conn = log_in_role_moderator(conn, "Image")
 

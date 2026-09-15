@@ -36,8 +36,23 @@ defmodule Philomena.Schema.Approval do
         user,
         check
       ) do
-    change(changeset, approved: approved?(user, body, check))
+    was_approved? = fetch_field!(changeset, :approved)
+    approved? = approved?(user, body, check)
+
+    change(
+      changeset,
+      approved: approved?,
+      became_unapproved?: was_approved? and not approved?
+    )
   end
 
   def maybe_put_approval(changeset, _user, _check), do: changeset
+
+  def approve_changeset(changeset) do
+    if get_field(changeset, :approved) do
+      add_error(changeset, :approved, "is already approved")
+    else
+      change(changeset, approved: true)
+    end
+  end
 end

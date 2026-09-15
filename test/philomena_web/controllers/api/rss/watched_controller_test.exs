@@ -56,12 +56,13 @@ defmodule PhilomenaWeb.Api.Rss.WatchedControllerTest do
       refute response =~ "<item>"
     end
 
-    test "redirects an anonymous request to the HTML login page", %{conn: conn} do
-      # NOTE: an unauthenticated request gets the browser-style login
+    test "redirects an anonymous request with the authorization flash", %{conn: conn} do
+      # NOTE: an unauthenticated request gets the browser-style
       # redirect, not a 401.
       conn = get(conn, ~p"/api/v1/rss/watched")
 
-      assert redirected_to(conn) == ~p"/sessions/new"
+      assert redirected_to(conn) == ~p"/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You can't access"
     end
   end
 end

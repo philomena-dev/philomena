@@ -13,7 +13,7 @@ defmodule PhilomenaWeb.SettingController do
     changeset =
       %{user | settings: assign_theme(user.settings)}
       |> TagList.assign_tag_list(:watched_tag_ids, :watched_tag_list)
-      |> Users.change_user()
+      |> Users.settings_changeset()
 
     render(conn, "edit.html", title: "Editing Settings", changeset: changeset)
   end
@@ -98,8 +98,8 @@ defmodule PhilomenaWeb.SettingController do
 
   defp maybe_update_user(conn, nil, _user_params), do: {:ok, conn}
 
-  defp maybe_update_user(conn, user, user_params) do
-    case Users.update_settings(user, determine_theme(user_params)) do
+  defp maybe_update_user(conn, _user, user_params) do
+    case Users.update_settings(conn.assigns.actor, determine_theme(user_params)) do
       {:ok, _user} ->
         {:ok, conn}
 

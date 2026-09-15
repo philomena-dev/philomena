@@ -4,6 +4,9 @@ defmodule Philomena.ForumsFixtures do
   entities via the `Philomena.Forums` context.
   """
 
+  import Philomena.AttributionFixtures
+  import Philomena.UsersFixtures
+
   alias Philomena.Forums
 
   @doc """
@@ -23,7 +26,7 @@ defmodule Philomena.ForumsFixtures do
   end
 
   def forum_fixture(attrs \\ %{}) do
-    {:ok, forum} =
+    attrs =
       attrs
       |> Enum.into(%{
         name: "Test Forum",
@@ -31,7 +34,8 @@ defmodule Philomena.ForumsFixtures do
         description: "A forum for testing",
         access_level: "normal"
       })
-      |> Forums.create_forum()
+
+    {:ok, forum} = Forums.create_forum(actor(admin_user_fixture()), attrs)
 
     forum
   end

@@ -88,6 +88,7 @@ defmodule Philomena.MixProject do
       {:credo_envvar, "~> 0.1", only: [:dev, :test], runtime: false},
       {:credo_naming, "~> 2.1", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.38", only: [:dev], runtime: false},
+      {:patch, "~> 0.16", only: [:dev, :test]},
 
       # Security checks
       {:sobelow, "~> 0.14", only: [:dev, :test], runtime: true},
@@ -97,7 +98,7 @@ defmodule Philomena.MixProject do
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
 
       # Authorization
-      {:canary, "~> 1.2"}
+      {:canada, "~> 2.0"}
     ]
   end
 

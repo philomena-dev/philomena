@@ -17,7 +17,7 @@ defmodule PhilomenaWeb.FingerprintProfileControllerTest do
     test "redirects a regular user with the authorization flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
-      conn = get(conn, ~p"/fingerprint_profiles/#{"abc123"}")
+      conn = get(conn, ~p"/fingerprint_profiles/#{"d015c342859dde3"}")
 
       assert redirected_to(conn) == "/"
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
@@ -26,23 +26,31 @@ defmodule PhilomenaWeb.FingerprintProfileControllerTest do
     test "renders the profile and lists users seen on the fingerprint", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       user = confirmed_user_fixture()
-      user_fingerprint_fixture(user, "abc123")
+      user_fingerprint_fixture(user, "d015c342859dde3")
 
-      response = html_response(get(conn, ~p"/fingerprint_profiles/#{"abc123"}"), 200)
+      response =
+        html_response(get(conn, ~p"/fingerprint_profiles/#{"d015c342859dde3"}"), 200)
 
-      assert response =~ "abc123&#39;s fingerprint profile"
+      assert response =~ "d015c342859dde3&#39;s fingerprint profile"
       assert response =~ user.name
     end
 
-    # NOTE: unlike the IP profile, the fingerprint is used directly as a string
-    # (no `EctoNetwork.INET.cast`), so any value - including one with no
-    # activity - renders a 200 rather than crashing.
-    test "renders an empty profile for a fingerprint with no activity", %{conn: conn} do
+    test "renders an empty profile for a valid fingerprint with no activity", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
-      response = html_response(get(conn, ~p"/fingerprint_profiles/#{"no-such-fp"}"), 200)
+      response =
+        html_response(get(conn, ~p"/fingerprint_profiles/#{"d11111111111111"}"), 200)
 
-      assert response =~ "no-such-fp&#39;s fingerprint profile"
+      assert response =~ "d11111111111111&#39;s fingerprint profile"
+    end
+
+    test "redirects with a not-found flash for an invalid fingerprint", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+
+      conn = get(conn, ~p"/fingerprint_profiles/#{"not-a-fingerprint"}")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 end

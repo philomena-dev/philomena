@@ -17,11 +17,11 @@ defmodule PhilomenaWeb.ChannelControllerTest do
 
   defp fetched_channel_fixture(attrs) do
     # A channel only appears in the index once the fetcher has stamped
-    # last_fetched_at; update_channel_state is the changeset the fetcher
+    # last_fetched_at; update_fetch_state is the changeset the fetcher
     # uses (update_channel only casts type and short_name).
     {:ok, channel} =
       channel_fixture()
-      |> Channels.update_channel_state(Map.put(attrs, "last_fetched_at", DateTime.utc_now()))
+      |> Channels.update_fetch_state(Map.put(attrs, "last_fetched_at", DateTime.utc_now()))
 
     channel
   end
@@ -47,7 +47,7 @@ defmodule PhilomenaWeb.ChannelControllerTest do
 
     test "does not list channels that have never been fetched", %{conn: conn} do
       {:ok, _unfetched} =
-        Channels.update_channel_state(channel_fixture(), %{"title" => "Test Unfetched Stream"})
+        Channels.update_fetch_state(channel_fixture(), %{"title" => "Test Unfetched Stream"})
 
       conn = get(conn, ~p"/channels")
       response = html_response(conn, 200)
@@ -102,7 +102,7 @@ defmodule PhilomenaWeb.ChannelControllerTest do
       conn = get(conn, ~p"/channels/999999")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You can't access that page."
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 
@@ -267,7 +267,7 @@ defmodule PhilomenaWeb.ChannelControllerTest do
 
     # NOTE: update_channel casts only :type and :short_name (via
     # Channel.changeset); the fetcher-managed fields (title, nsfw, is_live,
-    # viewers, thumbnail_url, last_fetched_at) go through update_channel_state
+    # viewers, thumbnail_url, last_fetched_at) go through update_fetch_state
     # and are silently ignored here.
     test "ignores fetcher-managed fields in the update", %{conn: conn} do
       channel = fetched_channel_fixture(%{"title" => "Original Title"})

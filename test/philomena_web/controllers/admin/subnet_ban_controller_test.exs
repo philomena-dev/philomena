@@ -64,15 +64,11 @@ defmodule PhilomenaWeb.Admin.SubnetBanControllerTest do
       assert response =~ ban.generated_ban_id
     end
 
-    # NOTE: an unparsable address now redirects to the index with a flash rather
-    # than raising MatchError.
-    test "redirects with a flash on an invalid ip in the ip branch", %{conn: conn} do
+    test "renders an inline error on an invalid ip in the ip branch", %{conn: conn} do
       conn = get(conn, ~p"/admin/subnet_bans?#{[ip: "not-an-ip"]}")
 
-      assert redirected_to(conn) == ~p"/admin/subnet_bans"
-
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
-               "`not-an-ip' is not a valid IP address or CIDR range."
+      response = html_response(conn, 200)
+      assert response =~ "Ip is invalid"
     end
   end
 
@@ -92,21 +88,10 @@ defmodule PhilomenaWeb.Admin.SubnetBanControllerTest do
     test "prefills the form when a specification is supplied", %{conn: conn} do
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
       conn = get(conn, ~p"/admin/subnet_bans/new?#{[specification: "203.0.113.0/24"]}")
-      assert html_response(conn, 200) =~ "New Subnet Ban"
-    end
-
-    # NOTE: an invalid specification now renders a blank form (200) with a flash
-    # rather than raising MatchError.
-    test "renders a blank form with a flash on an invalid specification", %{conn: conn} do
-      %{conn: conn} = register_and_log_in_admin(%{conn: conn})
-
-      conn = get(conn, ~p"/admin/subnet_bans/new?#{[specification: "not-an-ip"]}")
 
       response = html_response(conn, 200)
       assert response =~ "New Subnet Ban"
-
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
-               "`not-an-ip' is not a valid IP address or CIDR range."
+      assert response =~ "203.0.113.0/24"
     end
   end
 
@@ -173,6 +158,22 @@ defmodule PhilomenaWeb.Admin.SubnetBanControllerTest do
 
       assert html_response(conn, 200) =~ "New Subnet Ban"
       refute Repo.exists?(SubnetBan)
+    end
+
+    test "renders an inline error on an invalid specification", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_admin(%{conn: conn})
+
+      conn =
+        post(conn, ~p"/admin/subnet_bans", %{
+          "subnet" => %{
+            "specification" => "not-an-ip",
+            "valid_until" => "5 years from now"
+          }
+        })
+
+      response = html_response(conn, 200)
+      assert response =~ "New Subnet Ban"
+      assert response =~ "Specification is invalid"
     end
   end
 

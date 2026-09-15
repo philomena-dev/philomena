@@ -1,4 +1,6 @@
 defmodule Philomena.Tags.SearchIndex do
+  @moduledoc false
+
   @behaviour PhilomenaQuery.Search.Index
 
   @impl true

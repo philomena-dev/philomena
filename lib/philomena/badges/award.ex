@@ -5,6 +5,8 @@ defmodule Philomena.Badges.Award do
   alias Philomena.Badges.Badge
   alias Philomena.Users.User
 
+  @type t :: %__MODULE__{}
+
   schema "badge_awards" do
     belongs_to :user, User
     belongs_to :awarded_by, User
@@ -19,7 +21,7 @@ defmodule Philomena.Badges.Award do
   end
 
   @doc false
-  def changeset(badge_award, attrs) do
+  def changeset(badge_award, attrs \\ %{}) do
     badge_award
     |> cast(attrs, [:badge_id, :label, :reason, :badge_name])
     |> put_awarded_on()

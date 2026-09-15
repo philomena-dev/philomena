@@ -25,8 +25,8 @@ defmodule PhilomenaWeb.SingletonToggleTests do
       defp anonymous_path, do: ~p"/images/1/subscription"
 
   `require_authenticated_user` runs in the router pipeline and halts before
-  the controller - and therefore before any `load_resource`/`LoadTopicPlug`
-  runs - so the ids in that path need not exist, and the anonymous tests
+  the controller - and therefore before the context loads or authorizes any
+  record - so the ids in that path need not exist, and the anonymous tests
   build no fixtures at all. They only ever assert the login redirect.
 
   ### Subscription controllers (`*.SubscriptionController`)
@@ -241,21 +241,20 @@ defmodule PhilomenaWeb.SingletonToggleTests do
           assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You are currently banned."
         end
 
-        test "an unknown image redirects to / with the authorization flash", %{conn: conn} do
-          # Canary sends the nil resource down the unauthorized path
+        test "an unknown image redirects to / with the not-found flash", %{conn: conn} do
           %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
           conn = post(conn, interaction_path(999_999_999))
 
           assert redirected_to(conn) == "/"
-          assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+          assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+                   "Couldn't find what you were looking for!"
         end
 
         test "a non-integer image id redirects to / with the not-found flash", %{conn: conn} do
-          # the central IntegerId guard short-circuits a non-integer id to
-          # NotFoundPlug before Canary authorizes, so the flash is the
-          # not-found message rather than the "You can't access that page." an
-          # unknown integer id gets
+          # The member loader normalizes malformed and missing ids alike before
+          # authorization runs.
           %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
           conn = post(conn, interaction_path("not-a-number"))

@@ -69,7 +69,7 @@
 
   = if display_mod_tools? do
     .block__tab.hidden data-tab="replace"
-      = form_for @changeset, ~p"/images/#{@image}/file", [method: "put", multipart: true], fn f ->
+      = form_for @file_changeset, ~p"/images/#{@image}/file", [method: "put", multipart: true], fn f ->
         #js-image-upload-previews
         p Upload a file from your computer
         .field
@@ -95,13 +95,13 @@
           em No mod notes present
 
       = if not @image.hidden_from_users do
-        = form_for @changeset, ~p"/images/#{@image}/delete", [method: "post"], fn f ->
+        = form_for @hide_changeset, ~p"/images/#{@image}/delete", [method: "post"], fn f ->
           = label f, :deletion_reason, "Deletion reason (cannot be empty)"
           .field.field--inline
             = text_input f, :deletion_reason, class: "input input--wide", placeholder: "Rule violation", required: true
             = submit "Delete", class: "button button--state-danger button--separate-left"
       - else
-        = form_for @changeset, ~p"/images/#{@image}/delete", [method: "put"], fn f ->
+        = form_for @hide_changeset, ~p"/images/#{@image}/delete", [method: "put"], fn f ->
           = label f, :deletion_reason, "Deletion reason (cannot be empty)"
           .field.field--inline
             = text_input f, :deletion_reason, class: "input input--wide", placeholder: "Rule violation", required: true
@@ -109,18 +109,18 @@
 
       .flex.flex--spaced-out.flex--wrap
         = if not @image.hidden_from_users do
-          = form_for @changeset, ~p"/images/#{@image}/feature", [method: "post"], fn _f ->
+          = form_for @feature_changeset, ~p"/images/#{@image}/feature", [method: "post"], fn _f ->
             .field
               p Marks the image as featured
               = submit "Feature", data: [confirm: "Are you really, really sure?"], class: "button button--state-success"
         - else
           = button_to "Restore", ~p"/images/#{@image}/delete", method: "delete", class: "button button--state-success"
 
-        = form_for @changeset, ~p"/images/#{@image}/repair", [method: "post"], fn _f ->
+        = form_for @repair_changeset, ~p"/images/#{@image}/repair", [method: "post"], fn _f ->
           .field
             = submit "Repair", class: "button button--state-success"
 
-        = form_for @changeset, ~p"/images/#{@image}/hash", [method: "delete"], fn _f ->
+        = form_for @hash_changeset, ~p"/images/#{@image}/hash", [method: "delete"], fn _f ->
           .field
             p Allows reuploading the image
             .flex.flex--end-bunched

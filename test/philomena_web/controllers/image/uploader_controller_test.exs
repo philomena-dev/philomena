@@ -18,8 +18,8 @@ defmodule PhilomenaWeb.Image.UploaderControllerTest do
       assert redirected_to(conn) == ~p"/sessions/new"
     end
 
-    # NOTE: verify_authorized checks `:show, :ip_address`, which a regular
-    # user lacks, so they get the authorization redirect.
+    # NOTE: the context authorizes `:show, :identity_metadata`, which a regular user
+    # lacks, so they get the authorization redirect.
     test "rejects a regular user", %{conn: conn} do
       %{conn: conn} = register_and_log_in_user(%{conn: conn})
       image = image_fixture()
@@ -90,21 +90,18 @@ defmodule PhilomenaWeb.Image.UploaderControllerTest do
       assert uploader_id(image) == original.id
     end
 
-    # NOTE: a request without the `image` param takes the fallback update/2
-    # clause, which also answers 300 with the failure flash.
-    test "a missing image param answers 300 with the failure flash", %{conn: conn} do
+    test "a missing image param raises", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       image = image_fixture()
 
-      conn = put(conn, ~p"/images/#{image}/uploader", %{})
-
-      assert response(conn, 300) == ""
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Failed to update uploader!"
+      assert_raise Ecto.CastError, fn ->
+        put(conn, ~p"/images/#{image}/uploader", %{})
+      end
     end
 
-    # NOTE: unlike the load_and_authorize_resource controllers, this one loads
-    # with plain load_resource, and Canary's not_found_handler runs on :update,
-    # so an unknown id redirects rather than crashing.
+    # NOTE: the context authorizes the loaded image on :update; an unknown
+    # Missing image locators resolve to not-found before authorization.
+    # returns not_found - an unknown id redirects rather than crashing.
     test "for an unknown image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 

@@ -42,6 +42,18 @@ defmodule PhilomenaWeb.Filter.SpoilerTypeControllerTest do
     assert Repo.get!(Settings, user.id).spoiler_type == "off"
   end
 
+  test "banned users can change their spoiler type", %{conn: conn} do
+    %{conn: conn, user: user} = register_and_log_in_banned_user(%{conn: conn})
+
+    conn =
+      patch(conn, ~p"/filters/spoiler_type", %{
+        "settings" => %{"spoiler_type" => "click"}
+      })
+
+    assert redirected_to(conn) == "/"
+    assert Repo.get!(Settings, user.id).spoiler_type == "click"
+  end
+
   test "PATCH with an invalid spoiler type redirects with the failure flash", %{conn: conn} do
     # NOTE: an invalid spoiler_type now redirects to the referrer with the
     # failure flash rather than raising MatchError.

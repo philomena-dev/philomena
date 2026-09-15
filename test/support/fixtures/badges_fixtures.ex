@@ -4,9 +4,10 @@ defmodule Philomena.BadgesFixtures do
   entities via the `Philomena.Badges` context.
   """
 
-  alias Philomena.Badges
+  alias Philomena.Badges.Award
   alias Philomena.Badges.Badge
   alias Philomena.Repo
+  alias PhilomenaMedia.Upload
 
   def unique_badge_title, do: "Test Badge #{System.unique_integer([:positive])}"
 
@@ -31,10 +32,9 @@ defmodule Philomena.BadgesFixtures do
   def badge_award_fixture(creator, user, badge \\ nil, attrs \\ %{}) do
     badge = badge || badge_fixture()
 
-    {:ok, award} =
-      Badges.create_badge_award(creator, user, Enum.into(attrs, %{badge_id: badge.id}))
-
-    award
+    %Award{awarded_by_id: creator.id, user_id: user.id}
+    |> Award.changeset(Enum.into(attrs, %{badge_id: badge.id}))
+    |> Repo.insert!()
   end
 
   @svg_fixture Path.absname("test/support/fixtures/files/badge-test.svg")
@@ -49,5 +49,9 @@ defmodule Philomena.BadgesFixtures do
     {:ok, path} = Plug.Upload.random_file("badge-upload-test")
     File.cp!(@svg_fixture, path)
     %Plug.Upload{path: path, filename: "badge.svg", content_type: "image/svg+xml"}
+  end
+
+  def media_svg_upload do
+    Upload.from_plug(svg_upload())
   end
 end
