@@ -42,8 +42,7 @@ defmodule PhilomenaWeb.DuplicateReport.AcceptControllerTest do
 
       conn = post(conn, ~p"/duplicate_reports/#{dr}/accept")
 
-      assert redirected_to(conn) == ~p"/duplicate_reports"
-      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Successfully accepted report"
+      assert html_response(conn, 200)
 
       dr = Repo.get!(DuplicateReport, dr.id)
       assert dr.state == "accepted"

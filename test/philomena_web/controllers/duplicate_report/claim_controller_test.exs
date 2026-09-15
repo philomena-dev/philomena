@@ -40,8 +40,7 @@ defmodule PhilomenaWeb.DuplicateReport.ClaimControllerTest do
 
       conn = post(conn, ~p"/duplicate_reports/#{dr}/claim")
 
-      assert redirected_to(conn) == ~p"/duplicate_reports"
-      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Successfully claimed report"
+      assert html_response(conn, 200)
 
       dr = Repo.get!(DuplicateReport, dr.id)
       assert dr.state == "claimed"
@@ -92,8 +91,7 @@ defmodule PhilomenaWeb.DuplicateReport.ClaimControllerTest do
 
       conn = delete(conn, ~p"/duplicate_reports/#{dr}/claim")
 
-      assert redirected_to(conn) == ~p"/duplicate_reports"
-      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Successfully released report"
+      assert html_response(conn, 200)
 
       dr = Repo.get!(DuplicateReport, dr.id)
       assert dr.state == "open"

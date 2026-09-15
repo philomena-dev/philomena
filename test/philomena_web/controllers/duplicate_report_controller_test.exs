@@ -49,7 +49,7 @@ defmodule PhilomenaWeb.DuplicateReportControllerTest do
       # report is hidden unless ?states[] asks for it explicitly.
       refute response =~ ~p"/images/#{source}"
 
-      conn = get(conn, ~p"/duplicate_reports?#{[states: ["rejected"]]}")
+      conn = get(conn, ~p"/duplicate_reports?#{[dq: [states: ["rejected"]]]}")
       assert html_response(conn, 200) =~ ~p"/images/#{source}"
     end
 
@@ -60,7 +60,7 @@ defmodule PhilomenaWeb.DuplicateReportControllerTest do
 
       # NOTE: index filters the requested states against a fixed allowlist; a
       # bogus state leaves an empty list, so no reports render at all.
-      conn = get(conn, ~p"/duplicate_reports?#{[states: ["bogus"]]}")
+      conn = get(conn, ~p"/duplicate_reports?#{[dq: [states: ["bogus"]]]}")
       response = html_response(conn, 200)
 
       assert response =~ "Duplicate Reports - Derpibooru"

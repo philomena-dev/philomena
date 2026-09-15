@@ -5,7 +5,6 @@
   {"lib/philomena/comments.ex", :call_without_opaque},
   {"lib/philomena/commissions.ex", :call_without_opaque},
   {"lib/philomena/conversations.ex", :call_without_opaque},
-  {"lib/philomena/duplicate_reports.ex", :call_without_opaque},
   {"lib/philomena/galleries.ex", :call_without_opaque},
   {"lib/philomena/image_faves.ex", :call_without_opaque},
   {"lib/philomena/image_hides.ex", :call_without_opaque},
