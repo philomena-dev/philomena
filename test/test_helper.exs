@@ -11,6 +11,10 @@ ExUnit.start()
 # controller tests are harmlessly dropped.
 Supervisor.terminate_child(Philomena.Supervisor, Philomena.Adverts.Server)
 
+# Use Exq's in-memory fake queue in tests. This keeps enqueue side effects
+# observable to tests without writing jobs to the shared Valkey instance.
+{:ok, _exq_mock} = Exq.Mock.start_link(mode: :fake)
+
 # Create every searchable index once, with the current mappings. Tests get
 # per-test isolation from PhilomenaQuery.Search.clear_index!/1, which only
 # deletes documents - dropping and recreating an index costs ~95 ms and used to

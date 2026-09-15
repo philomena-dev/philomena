@@ -21,6 +21,12 @@ config :philomena,
   pwned_passwords: false,
   captcha: false
 
+# Keep test enqueues in memory. The application still exercises the same
+# enqueue calls, but the test suite cannot fill the shared development Valkey
+# instance with jobs that reference the test database.
+config :exq,
+  queue_adapter: Exq.Adapters.Queue.Mock
+
 # Namespace OpenSearch indexes so test runs cannot touch dev data on the
 # shared cluster. Search-backed tests recreate their index in setup; see
 # test/CONVENTIONS.md.
