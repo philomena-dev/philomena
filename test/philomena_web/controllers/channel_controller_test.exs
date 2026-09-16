@@ -87,6 +87,43 @@ defmodule PhilomenaWeb.ChannelControllerTest do
       assert response =~ "Test Matching Stream"
       refute response =~ "Unrelated Broadcast"
     end
+
+    test "does not render management controls for anonymous viewers", %{conn: conn} do
+      channel = fetched_channel_fixture(%{"title" => "Public Stream"})
+
+      conn = get(conn, ~p"/channels")
+      response = html_response(conn, 200)
+
+      assert response =~ channel.title
+      refute response =~ ~p"/channels/#{channel}/edit"
+      refute response =~ "Are you really, really sure?"
+      refute response =~ ~p"/channels/new"
+    end
+
+    test "renders management controls for a moderator", %{conn: conn} do
+      channel = fetched_channel_fixture(%{"title" => "Moderator Stream"})
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+
+      conn = get(conn, ~p"/channels")
+      response = html_response(conn, 200)
+
+      assert response =~ ~p"/channels/#{channel}/edit"
+      assert response =~ "Are you really, really sure?"
+      assert response =~ ~p"/channels/new"
+    end
+
+    test "does not render management controls for a regular user", %{conn: conn} do
+      channel = fetched_channel_fixture(%{"title" => "User Stream"})
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+
+      conn = get(conn, ~p"/channels")
+      response = html_response(conn, 200)
+
+      assert response =~ channel.title
+      refute response =~ ~p"/channels/#{channel}/edit"
+      refute response =~ "Are you really, really sure?"
+      refute response =~ ~p"/channels/new"
+    end
   end
 
   describe "GET /channels/:id" do
