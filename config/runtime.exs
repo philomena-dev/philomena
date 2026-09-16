@@ -58,18 +58,9 @@ json_config =
 config :philomena,
   config: json_config
 
-config :exq,
-  host: System.get_env("REDIS_HOST", "localhost"),
-  queues: [
-    {"videos", 2},
-    {"images", 4},
-    {"indexing", 12},
-    {"notifications", 2}
-  ]
-
 if is_nil(System.get_env("START_WORKER")) do
   # Make queueing available but don't process any jobs
-  config :exq, queues: []
+  config :philomena, Oban, queues: false
 end
 
 # S3/Object store config

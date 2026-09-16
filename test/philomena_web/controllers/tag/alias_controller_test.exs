@@ -4,7 +4,7 @@ defmodule PhilomenaWeb.Tag.AliasControllerTest do
   # All three actions authorize :alias on the tag, which a *plain*
   # moderator lacks (they only have :edit), so only an admin or a Tag-admin
   # role_map moderator can reach them. The actual alias/unalias work is a
-  # dead Exq enqueue; only the synchronous aliased_tag_id write on :update
+  # dead Oban enqueue; only the synchronous aliased_tag_id write on :update
   # is observable. Tags are slug-keyed.
 
   import Philomena.TagsFixtures

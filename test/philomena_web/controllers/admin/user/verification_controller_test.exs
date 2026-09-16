@@ -1,7 +1,7 @@
 defmodule PhilomenaWeb.Admin.User.VerificationControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Postgres-only: reindex is a dead Exq enqueue, moderation_log/2 is a
+  # Postgres-only: reindex is a dead Oban enqueue, moderation_log/2 is a
   # synchronous insert.
 
   import Philomena.UsersFixtures

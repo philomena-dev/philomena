@@ -9,10 +9,16 @@ defmodule Philomena.UserStatisticsTest do
   alias Philomena.UserStatistics
   alias Philomena.UserStatistics.UserStatistic
 
+  defp transact_increment(user_or_id, statistic, amount \\ 1) do
+    Multi.new()
+    |> UserStatistics.put_increment(user_or_id, statistic, amount)
+    |> Multi.transact()
+  end
+
   test "increments a loaded user's lifetime and current UTC-day counters" do
     user = confirmed_user_fixture()
 
-    assert UserStatistics.increment(user, :images_count) == {:ok, nil}
+    assert {:ok, _changes} = transact_increment(user, :images_count)
 
     assert Repo.get!(User, user.id).images_count == 1
 
@@ -25,44 +31,47 @@ defmodule Philomena.UserStatisticsTest do
   test "accepts an ID and negative amounts" do
     user = confirmed_user_fixture()
 
-    assert UserStatistics.increment(user.id, :comments_count, 4) == {:ok, nil}
-    assert UserStatistics.increment(user.id, :comments_count, -2) == {:ok, nil}
+    assert {:ok, _changes} = transact_increment(user.id, :comments_count, 4)
+    assert {:ok, _changes} = transact_increment(user.id, :comments_count, -2)
 
     assert Repo.get!(User, user.id).comments_count == 2
     assert Repo.get_by!(UserStatistic, user_id: user.id).comments_count == 2
   end
 
   test "nil users are a no-op for anonymous activity" do
-    assert UserStatistics.increment(nil, :comments_count) == {:ok, nil}
+    assert {:ok, _changes} = transact_increment(nil, :comments_count)
     assert Repo.aggregate(UserStatistic, :count) == 0
   end
 
   test "a missing user ID is not-found and creates no daily row" do
-    assert UserStatistics.increment(2_000_000_000, :posts_count) == {:error, :not_found}
+    assert {:error, _step, :not_found, _changes} =
+             transact_increment(2_000_000_000, :posts_count)
+
     assert Repo.aggregate(UserStatistic, :count) == 0
   end
 
-  test "unknown keys and non-integer amounts do not match the service API" do
+  test "unknown keys and non-integer amounts do not match the transactional API" do
     user = confirmed_user_fixture()
 
     assert_raise FunctionClauseError, fn ->
       # credo:disable-for-next-line Credo.Check.Refactor.Apply
-      apply(UserStatistics, :increment, [user, :email, 1])
+      apply(UserStatistics, :put_increment, [Multi.new(), user, :email, 1])
     end
 
     assert_raise FunctionClauseError, fn ->
       # credo:disable-for-next-line Credo.Check.Refactor.Apply
-      apply(UserStatistics, :increment, [user, :images_count, 1.5])
+      apply(UserStatistics, :put_increment, [Multi.new(), user, :images_count, 1.5])
     end
   end
 
   test "an owning transaction rollback restores both counters" do
     user = confirmed_user_fixture()
 
-    assert Repo.transact(fn ->
-             assert UserStatistics.increment(user, :topics_count) == {:ok, nil}
-             {:error, :forced_rollback}
-           end) == {:error, :forced_rollback}
+    assert {:error, :rollback, :forced_rollback, _changes} =
+             Multi.new()
+             |> UserStatistics.put_increment(user, :topics_count)
+             |> Multi.run(:rollback, fn _repo, _changes -> {:error, :forced_rollback} end)
+             |> Multi.transact()
 
     assert Repo.get!(User, user.id).topics_count == 0
     refute Repo.get_by(UserStatistic, user_id: user.id)
@@ -98,11 +107,12 @@ defmodule Philomena.UserStatisticsTest do
 
   test "daily rows cascade on user deletion and deleted IDs are not-found" do
     user = confirmed_user_fixture()
-    assert UserStatistics.increment(user, :posts_count) == {:ok, nil}
+    assert {:ok, _changes} = transact_increment(user, :posts_count)
 
     Repo.delete!(user)
 
     refute Repo.get_by(UserStatistic, user_id: user.id)
-    assert UserStatistics.increment(user.id, :posts_count) == {:error, :not_found}
+
+    assert {:error, _step, :not_found, _changes} = transact_increment(user.id, :posts_count)
   end
 end

@@ -6,13 +6,12 @@ defmodule Philomena.WorkerTest do
 
   import Philomena.ImagesFixtures
 
-  alias Philomena.ImagePurgeWorker
-  alias Philomena.Images
+  alias Philomena.Workers.ImagePurgeJob
   alias Philomena.Images.Image
   alias Philomena.Images.Thumbnailer
-  alias Philomena.IndexWorker
-  alias Philomena.ThumbnailWorker
-  alias Philomena.UserRenameWorker
+  alias Philomena.Workers.IndexJob
+  alias Philomena.Workers.ThumbnailJob
+  alias Philomena.Workers.UserRenameJob
   alias PhilomenaQuery.Search
 
   @index_contexts [
@@ -51,7 +50,11 @@ defmodule Philomena.WorkerTest do
   test "the index worker indexes matching records" do
     image = image_fixture()
 
-    assert :ok = IndexWorker.perform("Images", "id", [image.id])
+    assert :ok =
+             IndexJob.perform(%Oban.Job{
+               args: %{"module" => "Images", "column" => "id", "condition" => [image.id]}
+             })
+
     :ok = Search.refresh_index!(Image)
 
     hits = Search.search(Image, %{query: %{match_all: %{}}})["hits"]["hits"]
@@ -64,7 +67,10 @@ defmodule Philomena.WorkerTest do
     end)
 
     Enum.each(@index_contexts, fn {name, _context} ->
-      assert :ok = IndexWorker.perform(name, "id", [123])
+      assert :ok =
+               IndexJob.perform(%Oban.Job{
+                 args: %{"module" => name, "column" => "id", "condition" => [123]}
+               })
     end)
 
     Enum.each(@index_contexts, fn {_name, context} ->
@@ -72,24 +78,19 @@ defmodule Philomena.WorkerTest do
     end)
   end
 
-  test "the thumbnail worker generates media, broadcasts completion, and reindexes" do
-    image = %Image{id: 321}
+  test "the thumbnail worker generates media and broadcasts completion" do
     patch(Thumbnailer, :generate_thumbnails, :ok)
-    patch(Images, :load_image_for_reindex!, image)
-    patch(Images, :reindex_image, image)
 
-    assert image == ThumbnailWorker.perform(image.id)
+    assert :ok == ThumbnailJob.perform(%Oban.Job{args: %{"image_id" => 321}})
 
-    assert_exact_call(Thumbnailer, :generate_thumbnails, [image.id])
-    assert_exact_call(Images, :load_image_for_reindex!, [image.id])
-    assert_exact_call(Images, :reindex_image, [image])
+    assert_exact_call(Thumbnailer, :generate_thumbnails, [321])
   end
 
   test "the purge worker passes the complete file list to the purge operation" do
     files = ["/img/1/full.png", "/img/1/thumb.png"]
     patch(System, :cmd, {"", 0})
 
-    assert :ok = ImagePurgeWorker.perform(files)
+    assert :ok = ImagePurgeJob.perform(%Oban.Job{args: %{"files" => files}})
 
     assert_exact_call(System, :cmd, [
       "purge-cache",
@@ -100,7 +101,10 @@ defmodule Philomena.WorkerTest do
   test "the rename worker updates every index containing a user name" do
     Enum.each(@rename_contexts, &patch(&1, :user_name_reindex, :ok))
 
-    assert :ok = UserRenameWorker.perform("Old Name", "New Name")
+    assert :ok =
+             UserRenameJob.perform(%Oban.Job{
+               args: %{"old_name" => "Old Name", "new_name" => "New Name"}
+             })
 
     Enum.each(@rename_contexts, fn context ->
       assert_exact_call(context, :user_name_reindex, ["Old Name", "New Name"])

@@ -7,7 +7,6 @@ defmodule Philomena.UserStatistics do
   """
 
   alias Philomena.Multi
-  alias Philomena.Repo
   alias Philomena.Users
   alias Philomena.Users.User
   alias Philomena.UserStatistics.UserStatistic
@@ -32,58 +31,12 @@ defmodule Philomena.UserStatistics do
           | :posts_count
           | :topics_count
 
-  defp persist_increment(user_id, statistic, amount) do
-    day = Date.utc_today()
-
-    Repo.transact(fn ->
-      case Users.increment_counter(Repo, user_id, statistic, amount) do
-        {1, nil} ->
-          Repo.insert(
-            Map.put(%UserStatistic{day: day, user_id: user_id}, statistic, amount),
-            on_conflict: [inc: [{statistic, amount}]],
-            conflict_target: [:day, :user_id]
-          )
-
-        {0, nil} ->
-          {:error, :not_found}
-      end
-    end)
-  end
-
-  defp reindex_result({:ok, %UserStatistic{}}, user_id) do
-    Users.reindex_user(%User{id: user_id})
-    {:ok, nil}
-  end
-
-  defp reindex_result(error, _user_id), do: error
-
-  defp persist_bulk_increment(repo, user_ids, statistic, amount) do
-    case Users.increment_counters(repo, user_ids, statistic, amount) do
-      {count, nil} when count == length(user_ids) ->
-        entries =
-          Enum.map(user_ids, fn user_id ->
-            %{day: Date.utc_today(), user_id: user_id}
-            |> Map.put(statistic, amount)
-          end)
-
-        repo.insert_all(UserStatistic, entries,
-          on_conflict: [inc: [{statistic, amount}]],
-          conflict_target: [:day, :user_id]
-        )
-
-        {:ok, nil}
-
-      _ ->
-        {:error, :not_found}
-    end
-  end
-
   @doc """
   Adds an atomic statistic increment to `multi`.
 
   The Multi updates both the user's lifetime counter and current UTC-daily
   counter. Passing `nil` leaves the Multi unchanged, which supports anonymous
-  activity. After the transaction commits, it reindexes the user.
+  activity. The user reindex job is inserted with the transaction.
 
   ## Example
 
@@ -118,12 +71,20 @@ defmodule Philomena.UserStatistics do
 
   def put_increment(multi, user_id, statistic, amount)
       when is_integer(user_id) and statistic in @permitted_actions and is_integer(amount) do
+    counter_step = {:put_increment_counter, make_ref()}
+
     multi
-    |> Multi.run({:put_increment, make_ref()}, fn _repo, _changes ->
-      persist_increment(user_id, statistic, amount)
-    end)
-    |> Multi.on_commit(fn _changes ->
-      Users.reindex_user(%User{id: user_id})
+    |> Users.put_increment_counter(counter_step, user_id, statistic, amount)
+    |> Multi.run({:put_increment, make_ref()}, fn repo, %{^counter_step => {count, nil}} ->
+      if count == 1 do
+        repo.insert(
+          Map.put(%UserStatistic{day: Date.utc_today(), user_id: user_id}, statistic, amount),
+          on_conflict: [inc: [{statistic, amount}]],
+          conflict_target: [:day, :user_id]
+        )
+      else
+        {:error, :not_found}
+      end
     end)
   end
 
@@ -163,53 +124,27 @@ defmodule Philomena.UserStatistics do
       end)
       |> Enum.uniq()
 
+    counter_step = {:put_bulk_increment_counter, make_ref()}
+
     multi
-    |> Multi.run({:put_bulk_increment, make_ref()}, fn repo, _changes ->
-      persist_bulk_increment(repo, user_ids, statistic, amount)
+    |> Users.put_increment_counters(counter_step, user_ids, statistic, amount)
+    |> Multi.run({:put_bulk_increment, make_ref()}, fn repo, %{^counter_step => {count, nil}} ->
+      if count == length(user_ids) do
+        entries =
+          Enum.map(user_ids, fn user_id ->
+            %{day: Date.utc_today(), user_id: user_id}
+            |> Map.put(statistic, amount)
+          end)
+
+        repo.insert_all(UserStatistic, entries,
+          on_conflict: [inc: [{statistic, amount}]],
+          conflict_target: [:day, :user_id]
+        )
+
+        {:ok, nil}
+      else
+        {:error, :not_found}
+      end
     end)
-    |> Multi.on_commit(fn _changes -> Users.reindex_user_ids(user_ids) end)
-  end
-
-  @doc """
-  Atomically increments one lifetime and UTC-daily statistic for `user_or_id`.
-
-  A `nil` user is an intentional no-op for anonymous activity. A missing user
-  ID is `{:error, :not_found}`. Negative amounts decrement both counters.
-  Unknown statistic keys and non-integer amounts do not match this API.
-
-  The database increments join an ambient transaction when called from an
-  `Ecto.Multi` callback, so an owning action rollback also rolls them back. A
-  successful call enqueues a user reindex; that queue side effect is best-effort
-  and is not part of the database transaction.
-
-  ## Examples
-
-      iex> increment(user, :images_count)
-      {:ok, nil}
-
-      iex> increment(user.id, :images_count, -1)
-      {:ok, nil}
-
-      iex> increment(nil, :comments_count)
-      {:ok, nil}
-
-  """
-  @spec increment(User.t() | integer() | nil, statistic(), integer()) ::
-          {:ok, nil} | {:error, :not_found | Ecto.Changeset.t()}
-  def increment(user_or_id, statistic, amount \\ 1)
-
-  def increment(nil, statistic, amount)
-      when statistic in @permitted_actions and is_integer(amount),
-      do: {:ok, nil}
-
-  def increment(%User{} = user, statistic, amount)
-      when statistic in @permitted_actions and is_integer(amount),
-      do: increment(user.id, statistic, amount)
-
-  def increment(user_id, statistic, amount)
-      when is_integer(user_id) and statistic in @permitted_actions and is_integer(amount) do
-    user_id
-    |> persist_increment(statistic, amount)
-    |> reindex_result(user_id)
   end
 end
