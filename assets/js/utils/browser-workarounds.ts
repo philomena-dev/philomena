@@ -10,12 +10,12 @@ export function needsChromiumJpegNormalization() {
 
 export async function replaceFilterImageHrefIfNeeded(element: SVGFEImageElement) {
   if (!element.href.baseVal.endsWith('.jpg')) return;
-  element.href.baseVal = await rasterizeToDataURL(element.href.baseVal);
+  element.href.baseVal = await rasterizeToBlobURL(element.href.baseVal);
 }
 
-async function rasterizeToDataURL(source: string) {
+async function rasterizeToBlobURL(source: string) {
   const image = await loadCORSImage(source);
-  return rasterizeCanvas(image);
+  return await rasterizeCanvas(image);
 }
 
 function loadCORSImage(source: string): Promise<HTMLImageElement> {
@@ -29,7 +29,7 @@ function loadCORSImage(source: string): Promise<HTMLImageElement> {
   });
 }
 
-function rasterizeCanvas(image: HTMLImageElement): string {
+function rasterizeCanvas(image: HTMLImageElement): Promise<string> {
   const canvas = document.createElement('canvas');
   canvas.width = image.naturalWidth;
   canvas.height = image.naturalHeight;
@@ -38,5 +38,9 @@ function rasterizeCanvas(image: HTMLImageElement): string {
   const context = assertNotNull(canvas.getContext('2d', { willReadFrequently: true }));
   context.drawImage(image, 0, 0);
 
-  return canvas.toDataURL('image/png');
+  return new Promise(resolve => {
+    canvas.toBlob(blob => {
+      resolve(URL.createObjectURL(assertNotNull(blob)));
+    }, 'image/png');
+  });
 }

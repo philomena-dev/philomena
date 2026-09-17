@@ -83,9 +83,9 @@ describe('replaceFilterImageHrefIfNeeded', () => {
     const getContext = vi
       .spyOn(HTMLCanvasElement.prototype, 'getContext')
       .mockReturnValue({ drawImage } as unknown as CanvasRenderingContext2D);
-    const toDataURL = vi
-      .spyOn(HTMLCanvasElement.prototype, 'toDataURL')
-      .mockReturnValue('data:image/png;base64,normalized');
+    const toBlob = vi.spyOn(HTMLCanvasElement.prototype, 'toBlob').mockImplementation((callback, _type) => {
+      callback(new Blob());
+    });
     const srcSetter = vi.spyOn(image, 'src', 'set');
     const corsSetter = vi.spyOn(image, 'crossOrigin', 'set');
 
@@ -104,8 +104,8 @@ describe('replaceFilterImageHrefIfNeeded', () => {
     expect(canvas.width).toBe(640);
     expect(canvas.height).toBe(480);
     expect(drawImage).toHaveBeenCalledWith(image, 0, 0);
-    expect(toDataURL).toHaveBeenCalledWith('image/png');
-    expect(element.href.baseVal).toBe('data:image/png;base64,normalized');
+    expect(toBlob).toHaveBeenCalledWith(expect.any(Function), 'image/png');
+    expect(element.href.baseVal).toMatch(/^blob:/);
   });
 
   it('rejects failed image loads without changing the href', async () => {
