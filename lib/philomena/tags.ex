@@ -660,7 +660,8 @@ defmodule Philomena.Tags do
           {:aliased_to, tag}
 
         _tag ->
-          {images, _tags} = ImageSearch.query(actor, scope, %{term: %{"tags" => tag.name}})
+          sort = ImageSearch.scope_sort(scope)
+          {images, _tags} = ImageSearch.query(actor, scope, sort, %{term: %{"tags" => tag.name}})
           images = ImageSearch.execute(images)
 
           {:ok,
