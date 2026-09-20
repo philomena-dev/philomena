@@ -242,7 +242,9 @@ defmodule Philomena.Images.Image do
       :image_size,
       :image_width,
       :image_height,
-      :image_aspect_ratio
+      :image_aspect_ratio,
+      :image_is_animated,
+      :image_duration
     ])
     |> change(thumbnails_generated: true, duplication_checked: true)
   end
@@ -254,7 +256,9 @@ defmodule Philomena.Images.Image do
       :image_size,
       :image_width,
       :image_height,
-      :image_aspect_ratio
+      :image_aspect_ratio,
+      :image_is_animated,
+      :image_duration
     ])
     |> change(processed: true)
   end
