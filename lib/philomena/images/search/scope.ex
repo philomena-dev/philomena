@@ -14,22 +14,27 @@ defmodule Philomena.Images.Search.Scope do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Philomena.Images.Search.SortField
+  import Philomena.Images.Search.Cursor
+
   @type t :: %__MODULE__{
           filter: map(),
           pagination: PhilomenaQuery.Search.pagination_params()
         }
+
+  @primary_key false
 
   embedded_schema do
     field :filter, :map, virtual: true
     field :pagination, :map, virtual: true
 
     field :q, :string
-    field :sf, :string
-    field :sd, :string
-    field :sort, {:array, :string}
+    field :sf, SortField, default: {:field, :first_seen_at}
+    field :sd, Ecto.Enum, values: [:asc, :desc], default: :desc
+    field :sort, {:array, :any}
     field :del, :string
     field :hidden, :boolean
-    field :rel, :string
+    field :rel, Ecto.Enum, values: [:prev, :next], default: :next
   end
 
   @spec new(map(), PhilomenaQuery.Search.pagination_params(), map()) :: t()
@@ -43,6 +48,7 @@ defmodule Philomena.Images.Search.Scope do
 
     scope
     |> cast(attrs, [:q, :sf, :sd, :sort, :del, :hidden, :rel])
+    |> cast_cursor(:sf, :sort)
     |> then(&keep_valid(scope, &1))
     |> apply_action!(:create)
   end

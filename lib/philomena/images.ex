@@ -100,8 +100,7 @@ defmodule Philomena.Images do
     )
   end
 
-  defp custom_ordering?(%{sf: sf}) when sf not in [nil, "id", "first_seen_at"], do: true
-  defp custom_ordering?(_scope), do: false
+  defp custom_ordering?(%{sf: sf}), do: sf not in [:id, {:field, :first_seen_at}]
 
   defp maybe_jump_to_last_page(
          %Actor{
@@ -802,8 +801,9 @@ defmodule Philomena.Images do
           {:ok, %{images: Scrivener.Page.t(), tags: [Tag.t()]}} | {:error, String.t()}
   def query_images(%Actor{} = actor, scope, opts \\ []) do
     with :ok <- authorize(actor, :index, Image),
+         sort = ImageSearch.scope_sort(scope),
          {:ok, {definition, tags}} <-
-           ImageSearch.search_string(actor, scope, scope.q) do
+           ImageSearch.search_string(actor, scope, sort, scope.q) do
       preload = Keyword.get(opts, :preload, [:sources, tags: :aliases])
       hits = Keyword.get(opts, :hits, custom_ordering?(scope))
 
@@ -851,7 +851,8 @@ defmodule Philomena.Images do
           {:ok, Scrivener.Page.t()} | {:error, :unauthorized | String.t()}
   def list_watched_images(%Actor{} = actor, scope) do
     with :ok <- authorize(actor, :index_watched, Image),
-         {:ok, {definition, _tags}} <- ImageSearch.search_string(actor, scope, "my:watched") do
+         sort = ImageSearch.scope_sort(scope),
+         {:ok, {definition, _tags}} <- ImageSearch.search_string(actor, scope, sort, "my:watched") do
       {:ok, ImageSearch.execute(definition)}
     end
   end
@@ -994,7 +995,7 @@ defmodule Philomena.Images do
   @doc group: "Browsing and discovery"
   @doc """
   Returns the 1-based page number on which the image `image_id`
-  names appears when all images are listed by descending id, on behalf of
+  names appears when all images are listed by the default sort, on behalf of
   `actor`.
 
   Loading and authorization follow `find_consecutive_image/3`.
@@ -1012,7 +1013,13 @@ defmodule Philomena.Images do
       pagination = %{scope.pagination | page_number: 1}
 
       {definition, _tags} =
-        ImageSearch.query(actor, scope, %{range: %{id: %{gt: image.id}}}, pagination: pagination)
+        ImageSearch.query(
+          actor,
+          scope,
+          ImageSearch.default_sort(),
+          %{range: %{id: %{gt: image.id}}},
+          pagination: pagination
+        )
 
       images = ImageSearch.execute(definition, preload: [])
 
@@ -1079,8 +1086,8 @@ defmodule Philomena.Images do
         ImageSearch.query(
           actor,
           scope,
+          ImageSearch.relevance_sort(),
           query,
-          sorts: &%{query: &1, sorts: [%{_score: :desc}]},
           pagination: %{scope.pagination | page_number: 1}
         )
 
@@ -1111,9 +1118,9 @@ defmodule Philomena.Images do
            ImageSearch.search_string(
              actor,
              scope,
+             ImageSearch.random_sort(),
              scope.q || "*",
-             pagination: %{page_size: 1},
-             sorts: &ImageSearch.parse_sort(%{"sf" => "random"}, &1)
+             pagination: %{page_size: 1}
            ) do
       definition
       |> ImageSearch.execute(preload: [])

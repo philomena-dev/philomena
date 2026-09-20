@@ -24,37 +24,9 @@ defmodule Philomena.Images.Search do
   import Ecto.Query
   import Philomena.Authorization, only: [authorize: 3]
 
-  @allowed_sort_fields ~W(
-    id
-    updated_at
-    first_seen_at
-    aspect_ratio
-    faves
-    downvotes
-    upvotes
-    width
-    height
-    score
-    comment_count
-    tag_count
-    wilson_score
-    pixels
-    size
-    duration
-    hides
-  )
-
-  @order_for_dir %{
-    "next" => %{"asc" => "asc", "desc" => "desc"},
-    "prev" => %{"asc" => "desc", "desc" => "asc"}
-  }
-
   @type definition :: Search.search_definition()
   @type query_result :: {definition(), [Tag.t()]}
-  @type option ::
-          {:pagination, map()}
-          | {:sorts, (map() -> %{query: map(), sorts: list()})}
-          | {:tag_names, [String.t()]}
+  @type option :: {:pagination, map()} | {:tag_names, [String.t()]}
 
   @doc """
   Builds the default image listing query for the viewer.
@@ -78,7 +50,7 @@ defmodule Philomena.Images.Search do
         },
         else: %{match_all: %{}}
 
-    query(actor, scope, body, options)
+    query(actor, scope, default_sort(), body, options)
   end
 
   @doc """
@@ -87,13 +59,19 @@ defmodule Philomena.Images.Search do
   Returns `{:ok, {definition, tags}}`, or the compiler's `{:error, msg}` for
   a malformed query.
   """
-  @spec search_string(Actor.t(), Scope.t(), String.t() | nil, [option()]) ::
+  @spec search_string(Actor.t(), Scope.t(), term(), String.t() | nil, [option()]) ::
           {:ok, query_result()} | {:error, String.t()}
   # sobelow_skip ["SQL.Query"]
-  def search_string(actor, scope, search_string, options \\ []) do
+  def search_string(
+        %Actor{} = actor,
+        %Scope{} = scope,
+        sort,
+        search_string,
+        options \\ []
+      ) do
     case Query.compile_with_tag_names(search_string, user: actor.user) do
       {:ok, %{query: tree, tag_names: tag_names}} ->
-        {:ok, query(actor, scope, tree, Keyword.put(options, :tag_names, tag_names))}
+        {:ok, query(actor, scope, sort, tree, Keyword.put(options, :tag_names, tag_names))}
 
       {:error, _message} = error ->
         error
@@ -101,23 +79,18 @@ defmodule Philomena.Images.Search do
   end
 
   @doc """
-  Builds a query definition from an already-compiled query body.
+  Builds a query definition from an already-compiled query body and sort.
 
-  Options: `:pagination` overrides the scope's window; `:sorts` replaces the
-  parameter-driven sort with a custom `body -> %{query:, sorts:}` function.
+  The `:pagination` option overrides the scope's window.
 
   Returns `{definition, tags}`.
   """
-  @spec query(Actor.t(), Scope.t(), map(), [option()]) :: query_result()
-  def query(actor, scope, body, options \\ []) do
+  @spec query(Actor.t(), Scope.t(), term(), map(), [option()]) :: query_result()
+  def query(%Actor{} = actor, %Scope{} = scope, sort, body, options \\ []) do
     pagination = Keyword.get(options, :pagination, scope.pagination)
-    sorts = Keyword.get(options, :sorts, &parse_sort(scope, &1))
-
     tags = options |> Keyword.get(:tag_names, []) |> load_tags()
-
     filters = create_filters(actor, scope)
-
-    %{query: query, sorts: sort} = sorts.(body)
+    {query, sort} = compile_sort(sort, body)
 
     definition =
       Search.search_definition(
@@ -157,25 +130,43 @@ defmodule Philomena.Images.Search do
   end
 
   @doc """
-  Maps the "sf"/"sd" parameters onto a sort order for `query_body`.
-
-  Unlisted or missing fields sort by `first_seen_at`; `random`/`random:seed`
-  wrap the query in a seeded `function_score`; `gallery_id:n` sorts by the
-  image's position in that gallery.
-
-  Returns `%{query:, sorts:}`.
+  Returns the default sort. Used when no sort is explicitly specified.
   """
-  @spec parse_sort(map(), map()) :: %{query: map(), sorts: list()}
-  def parse_sort(%Scope{} = scope, query_body) do
-    sd = parse_sd(%{"sd" => scope.sd})
-
-    parse_sf(%{"sf" => scope.sf}, sd, query_body)
+  @spec default_sort() :: term()
+  def default_sort do
+    {{:field, :first_seen_at}, :desc}
   end
 
-  def parse_sort(params, query_body) when is_map(params) do
-    sd = parse_sd(params)
+  @doc """
+  Returns a random sort.
+  """
+  @spec random_sort() :: term()
+  def random_sort do
+    {{:random, :rand.uniform(4_294_967_296)}, :desc}
+  end
 
-    parse_sf(params, sd, query_body)
+  @doc """
+  Returns the sort for a gallery's images in position order.
+  """
+  @spec gallery_sort(integer(), :asc | :desc) :: term()
+  def gallery_sort(gallery_id, direction) do
+    {{:gallery, gallery_id}, direction}
+  end
+
+  @doc """
+  Returns a sort in search relevance order.
+  """
+  @spec relevance_sort() :: term()
+  def relevance_sort() do
+    {{:field, :_score}, :desc}
+  end
+
+  @doc """
+  Returns the exact sort provided by the search scope.
+  """
+  @spec scope_sort(Scope.t()) :: term()
+  def scope_sort(%Scope{sf: sf, sd: sd}) do
+    {sf, sd}
   end
 
   @doc """
@@ -183,47 +174,39 @@ defmodule Philomena.Images.Search do
   describe, for prev/next navigation.
 
   `compiled_query` is the compiled body of the listing's search query;
-  `scope.rel` selects the direction and `scope.sort`
-  carries the sort cursor of the current image, when present.
+  `scope.rel` selects the direction and `scope.sort` carries the sort cursor
+  of the current image, when present.
 
-  Returns the `{image, hit}` pair for the neighbouring image, or `nil` at
-  the end of the sequence.
+  Returns the `{image, hit}` pair for the neighboring image, or `nil`
+  when an error occurred or the end of the sequence was reached.
   """
   @spec find_consecutive(Actor.t(), Scope.t(), Image.t(), map()) :: {Image.t(), map()} | nil
-  def find_consecutive(actor, scope, image, compiled_query) do
-    sf = scope.sf || "first_seen_at"
+  def find_consecutive(%Actor{} = actor, %Scope{} = scope, %Image{} = image, compiled_query) do
+    scope = apply_reverse_navigation(scope)
 
-    %{query: compiled_query, sorts: sorts} = parse_sort(scope, compiled_query)
-
-    sorts =
-      sorts
-      |> Enum.flat_map(&Enum.to_list/1)
-      |> Enum.map(&apply_direction(&1, scope.rel))
-
-    search_after =
-      scope.sort
-      |> permit_list()
-      |> Enum.flat_map(&permit_value/1)
-      |> default_cursors(sf, image)
-
-    maybe_search_after(
-      Image,
-      %{
-        query: %{
+    consecutive =
+      with {:ok, cursor} <- cursor_or_default(image, scope.sf, scope.sort) do
+        query = %{
           bool: %{
             must: compiled_query,
             must_not: [%{term: %{id: image.id}} | create_filters(actor, scope)]
           }
-        },
-        sort: sorts,
-        search_after: search_after
-      },
-      %{page_size: 1},
-      Image,
-      length(sorts) == length(search_after)
-    )
-    |> Enum.to_list()
-    |> case do
+        }
+
+        {query, sorts} = compile_sort(scope_sort(scope), query)
+
+        Image
+        |> Search.search_definition(
+          %{query: query, sort: sorts, search_after: cursor},
+          %{page_size: 1}
+        )
+        |> Search.search_records_with_hits(Image)
+        |> Enum.to_list()
+      else
+        _ -> []
+      end
+
+    case consecutive do
       [] -> nil
       [next_image] -> next_image
     end
@@ -307,108 +290,77 @@ defmodule Philomena.Images.Search do
     |> Tag.display_order()
   end
 
-  defp parse_sd(%{"sd" => sd}) when sd in ~W(asc desc), do: sd
-  defp parse_sd(_params), do: "desc"
+  # Navigation
 
-  defp parse_sf(%{"sf" => sf}, sd, query) when sf == "id" do
-    %{query: query, sorts: [%{"id" => sd}]}
-  end
-
-  defp parse_sf(%{"sf" => sf}, sd, query) when sf in @allowed_sort_fields do
-    %{query: query, sorts: [%{sf => sd}, %{"id" => sd}]}
-  end
-
-  defp parse_sf(%{"sf" => "_score"}, sd, query) do
-    %{query: query, sorts: [%{"_score" => sd}, %{"id" => sd}]}
-  end
-
-  defp parse_sf(%{"sf" => "random"}, sd, query) do
-    random_query(:rand.uniform(4_294_967_296), sd, query)
-  end
-
-  defp parse_sf(%{"sf" => <<"random:", seed::binary>>}, sd, query) do
-    case Integer.parse(seed) do
-      {seed, _rest} ->
-        random_query(seed, sd, query)
-
-      _ ->
-        random_query(:rand.uniform(4_294_967_296), sd, query)
+  defp apply_reverse_navigation(%Scope{} = scope) do
+    if scope.rel == :prev do
+      case scope.sd do
+        :asc -> %{scope | sd: :desc}
+        :desc -> %{scope | sd: :asc}
+      end
+    else
+      scope
     end
   end
 
-  defp parse_sf(%{"sf" => <<"gallery_id:", gallery::binary>>}, sd, query) do
-    case Integer.parse(gallery) do
-      {gallery, _rest} ->
-        %{
-          query: query,
-          sorts: [
+  defp cursor_or_default(%Image{} = image, sf, sort) do
+    if sort do
+      {:ok, sort}
+    else
+      default_cursor(sf, image)
+    end
+  end
+
+  defp default_cursor(:id, %Image{id: id}) do
+    {:ok, [id]}
+  end
+
+  defp default_cursor({:field, :first_seen_at}, %Image{first_seen_at: first_seen_at, id: id}) do
+    {:ok, [DateTime.to_unix(first_seen_at, :millisecond), id]}
+  end
+
+  defp default_cursor(_sort, _image), do: :error
+
+  # Sorting
+
+  defp compile_sort({sf, sd} = _sort, query) do
+    case sf do
+      :id ->
+        {query, [%{id: sd}]}
+
+      {:field, field} ->
+        {query, [%{field => sd}, %{id: sd}]}
+
+      {:random, seed} ->
+        {
+          %{
+            function_score: %{
+              query: query,
+              random_score: %{seed: seed, field: :id},
+              boost_mode: :replace
+            }
+          },
+          [%{_score: sd}, %{id: sd}]
+        }
+
+      {:gallery, gallery_id} ->
+        {
+          query,
+          [
             %{
               "galleries.position" => %{
                 order: sd,
                 nested: %{
                   path: :galleries,
                   filter: %{
-                    term: %{"galleries.id" => gallery}
+                    term: %{"galleries.id" => gallery_id}
                   }
                 }
               }
             },
-            %{"id" => "desc"}
+            %{id: sd}
           ]
         }
-
-      _ ->
-        %{query: query, sorts: []}
     end
   end
-
-  defp parse_sf(_params, sd, query) do
-    %{query: query, sorts: [%{"first_seen_at" => sd}, %{"id" => sd}]}
-  end
-
-  defp random_query(seed, sd, query) do
-    %{
-      query: %{
-        function_score: %{
-          query: query,
-          random_score: %{seed: seed, field: :id},
-          boost_mode: :replace
-        }
-      },
-      sorts: [%{"_score" => sd}, %{"id" => sd}]
-    }
-  end
-
-  defp maybe_search_after(module, body, options, queryable, true) do
-    module
-    |> Search.search_definition(body, options)
-    |> Search.search_records_with_hits(queryable)
-  end
-
-  defp maybe_search_after(_module, _body, _options, _queryable, _false) do
-    []
-  end
-
-  defp default_cursors([], "id", image), do: [image.id]
-
-  defp default_cursors([], "first_seen_at", image),
-    do: [image.first_seen_at |> DateTime.to_unix(:millisecond), image.id]
-
-  defp default_cursors(list, _sf, _image), do: list
-
-  defp apply_direction({"galleries.position", sort_body}, rel) do
-    sort_body = update_in(sort_body.order, fn direction -> @order_for_dir[rel][direction] end)
-
-    %{"galleries.position" => sort_body}
-  end
-
-  defp apply_direction({field, direction}, rel) do
-    %{field => @order_for_dir[rel][direction]}
-  end
-
-  defp permit_list(value) when is_list(value), do: value
-  defp permit_list(_value), do: []
-
-  defp permit_value(value) when is_binary(value) or is_number(value), do: [value]
-  defp permit_value(_value), do: []
 end

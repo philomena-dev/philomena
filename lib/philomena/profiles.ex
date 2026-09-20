@@ -49,12 +49,20 @@ defmodule Philomena.Profiles do
 
   defp assemble_profile_page(actor, scope, current_filter, user) do
     {:ok, {recent_uploads_def, _tags}} =
-      ImageSearch.search_string(actor, scope, "uploader_id:#{user.id}",
+      ImageSearch.search_string(
+        actor,
+        scope,
+        ImageSearch.default_sort(),
+        "uploader_id:#{user.id}",
         pagination: %{page_number: 1, page_size: 4}
       )
 
     {:ok, {recent_faves_def, _tags}} =
-      ImageSearch.search_string(actor, scope, "faved_by_id:#{user.id}",
+      ImageSearch.search_string(
+        actor,
+        scope,
+        ImageSearch.default_sort(),
+        "faved_by_id:#{user.id}",
         pagination: %{page_number: 1, page_size: 4}
       )
 
@@ -154,7 +162,11 @@ defmodule Philomena.Profiles do
 
   defp recent_artwork_definition(actor, scope, tags) do
     {definition, _tags} =
-      ImageSearch.query(actor, scope, %{terms: %{tag_ids: Enum.map(tags, & &1.id)}},
+      ImageSearch.query(
+        actor,
+        scope,
+        ImageSearch.default_sort(),
+        %{terms: %{tag_ids: Enum.map(tags, & &1.id)}},
         pagination: %{page_number: 1, page_size: 4}
       )
 
