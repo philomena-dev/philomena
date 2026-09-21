@@ -226,33 +226,6 @@ defmodule PhilomenaWeb.ConnCase do
   end
 
   @doc """
-  Waits for the background upload process spawned by a successful image
-  `:create` to exit.
-
-  A successful `:create` has `Philomena.Images.create_image/2` spawn an
-  unsupervised upload process that writes to the Repo. Its sandbox allowance
-  dies with the test process, so wait for it to exit before the test ends;
-  otherwise it retries with `OwnershipError` every 5s for the rest of the
-  suite. The endpoint call runs in the test process, so the upload process is
-  our direct child.
-  """
-  def await_async_upload do
-    test_pid = self()
-
-    for pid <- Process.list(), Process.info(pid, :parent) == {:parent, test_pid} do
-      ref = Process.monitor(pid)
-
-      receive do
-        {:DOWN, ^ref, :process, ^pid, _reason} -> :ok
-      after
-        5_000 -> raise "async upload process #{inspect(pid)} did not exit"
-      end
-    end
-
-    :ok
-  end
-
-  @doc """
   Helper to set up the conn with global assigns set by the application shell.
   """
   def viewer_conn(conn, user) do

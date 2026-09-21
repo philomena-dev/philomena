@@ -3,6 +3,7 @@ defmodule PhilomenaWeb.ImageControllerTest do
 
   @moduletag :search
 
+  import Philomena.AsyncUpload
   import Philomena.CommentsFixtures
   import Philomena.ImagesFixtures
   import Philomena.UsersFixtures
@@ -13,6 +14,10 @@ defmodule PhilomenaWeb.ImageControllerTest do
   alias Philomena.Tags.Tag
   alias Philomena.Repo
   alias Philomena.Roles.Role
+
+  setup_all do
+    allow_async_uploads()
+  end
 
   setup do
     Search.clear_index!(Image)
