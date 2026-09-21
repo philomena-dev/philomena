@@ -16,6 +16,7 @@ defmodule Philomena.Comments do
   alias Philomena.Attribution.Actor
   alias Philomena.Comments
   alias Philomena.Comments.{Comment, CommentHistory, Query, Visibility}
+  alias Philomena.Events
   alias Philomena.Filters.Filter
   alias Philomena.Images
   alias Philomena.Images.Image
@@ -49,14 +50,12 @@ defmodule Philomena.Comments do
     Notifications.broadcast_image_comment(comment.user, image, comment)
   end
 
-  defp broadcast_comment(event, %Comment{} = comment) do
-    PhilomenaWeb.Endpoint.broadcast!(
-      "firehose",
-      event,
-      PhilomenaWeb.Api.Json.CommentView.render("show.json", %{comment: comment})
-    )
+  defp broadcast_comment_create(%Comment{} = comment) do
+    Events.broadcast(%Events.CommentCreate{comment: comment})
+  end
 
-    comment
+  defp broadcast_comment_update(%Comment{} = comment) do
+    Events.broadcast(%Events.CommentUpdate{comment: comment})
   end
 
   defp load_direction(%User{settings: %{comments_newest_first: false}}), do: :asc
@@ -400,7 +399,7 @@ defmodule Philomena.Comments do
       |> Multi.transact()
       |> case do
         {:ok, %{comment: %Comment{} = comment}} ->
-          broadcast_comment("comment:create", comment)
+          broadcast_comment_create(comment)
           {:ok, comment}
 
         {:error, :action_reservation, :rate_limited, _changes} ->
@@ -524,8 +523,7 @@ defmodule Philomena.Comments do
       |> Multi.transact()
       |> case do
         {:ok, %{comment: %Comment{} = comment}} ->
-          broadcast_comment("comment:update", comment)
-
+          broadcast_comment_update(comment)
           {:ok, {image, comment}}
 
         {:error, :comment, %Ecto.Changeset{} = changeset, _changes} ->

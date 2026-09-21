@@ -4,7 +4,7 @@ defmodule Philomena.ImagesTest do
   import Ecto.Query
 
   alias Ecto.Adapters.SQL.Sandbox
-  alias Phoenix.Socket.Broadcast
+  alias Philomena.Events
   alias Philomena.Multi
   alias Philomena.ImageFaves
   alias Philomena.ImageFaves.ImageFave
@@ -29,7 +29,6 @@ defmodule Philomena.ImagesTest do
   alias Philomena.Tags.Tag
   alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
-  alias PhilomenaWeb.Endpoint
 
   import Philomena.GalleriesFixtures
   import Philomena.FiltersFixtures
@@ -332,6 +331,25 @@ defmodule Philomena.ImagesTest do
   end
 
   describe "merge_image/4 target updates" do
+    test "broadcasts the merged image and its target after commit" do
+      moderator = user_fixture()
+      source = image_fixture()
+      target = image_fixture()
+      :ok = Events.subscribe_events()
+      source_id = source.id
+      target_id = target.id
+
+      assert {:ok, _result} =
+               Multi.new()
+               |> Images.put_merge_image(source, target, moderator)
+               |> Multi.transact()
+
+      assert_receive %Events.ImageMerge{
+        image: %Image{id: ^source_id},
+        duplicate_of_image: %Image{id: ^target_id}
+      }
+    end
+
     test "combines the source image's sources into the target image" do
       moderator = user_fixture()
       source = image_fixture(sources: ["https://example.com/source"])
@@ -2606,20 +2624,21 @@ defmodule Philomena.ImagesTest do
     test "broadcasts the description and rendered image after persistence" do
       uploader = confirmed_user_fixture()
       image = image_fixture(user_id: uploader.id, description: "Old")
-      :ok = Endpoint.subscribe("firehose")
+      :ok = Events.subscribe_events()
+      image_id = image.id
 
       assert {:ok, {_image, "Old"}} =
                Images.update_image_description(actor(uploader), image.id, %{
                  "description" => "New"
                })
 
-      assert_receive %Broadcast{
-        event: "image:description_update",
-        payload: %{image_id: image_id, added: "New", removed: "Old"}
+      assert_receive %Events.ImageDescriptionUpdate{
+        image_id: ^image_id,
+        new_description: "New",
+        old_description: "Old"
       }
 
-      assert image_id == image.id
-      assert_receive %Broadcast{event: "image:update"}
+      assert_receive %Events.ImageUpdate{image: %Image{id: ^image_id}}
     end
 
     test "the uploader edits its own image, persisting the new description" do
@@ -3847,7 +3866,8 @@ defmodule Philomena.ImagesTest do
     test "broadcasts source and rendered image updates after persistence" do
       user = confirmed_user_fixture()
       image = image_fixture()
-      :ok = Endpoint.subscribe("firehose")
+      :ok = Events.subscribe_events()
+      image_id = image.id
 
       assert {:ok, _result} =
                Images.update_image_sources(
@@ -3856,13 +3876,13 @@ defmodule Philomena.ImagesTest do
                  add_source_attrs("https://example.test/source")
                )
 
-      assert_receive %Broadcast{
-        event: "image:source_update",
-        payload: %{image_id: image_id}
+      assert_receive %Events.ImageSourceUpdate{
+        image_id: ^image_id,
+        added_sources: ["https://example.test/source"],
+        removed_sources: []
       }
 
-      assert image_id == image.id
-      assert_receive %Broadcast{event: "image:update"}
+      assert_receive %Events.ImageUpdate{image: %Image{id: ^image_id}}
     end
 
     test "a signed-in actor adds a source, recording an attributed change and bumping stats" do
@@ -4081,7 +4101,8 @@ defmodule Philomena.ImagesTest do
     test "broadcasts tag and rendered image updates after persistence" do
       user = confirmed_user_fixture()
       image = image_fixture()
-      :ok = Endpoint.subscribe("firehose")
+      :ok = Events.subscribe_events()
+      image_id = image.id
 
       assert {:ok, _result} =
                Images.update_image_tags(
@@ -4090,14 +4111,14 @@ defmodule Philomena.ImagesTest do
                  tag_attrs("safe", "safe, broadcast tag, another broadcast tag")
                )
 
-      assert_receive %Broadcast{
-        event: "image:tag_update",
-        payload: %{image_id: image_id, added: added}
+      assert_receive %Events.ImageTagUpdate{
+        image_id: ^image_id,
+        added_tag_names: added,
+        removed_tag_names: []
       }
 
-      assert image_id == image.id
       assert Enum.sort(added) == ["another broadcast tag", "broadcast tag"]
-      assert_receive %Broadcast{event: "image:update"}
+      assert_receive %Events.ImageUpdate{image: %Image{id: ^image_id}}
     end
 
     test "a signed-in actor changes tags, recording an attributed change and bumping stats" do
@@ -4675,7 +4696,7 @@ defmodule Philomena.ImagesTest do
   describe "create_image/3" do
     test "a normal actor uploads an image and the row exists" do
       actor = actor(confirmed_user_fixture())
-      :ok = Endpoint.subscribe("firehose")
+      :ok = Events.subscribe_events()
 
       assert {:ok, %{image: %Image{} = image, upload_pid: pid}} =
                Images.create_image(
@@ -4692,12 +4713,8 @@ defmodule Philomena.ImagesTest do
       assert Repo.get(Image, image.id)
       assert source_urls(image) == []
 
-      assert_receive %Broadcast{
-        event: "image:create",
-        payload: %{image: %{id: image_id}}
-      }
-
-      assert image_id == image.id
+      image_id = image.id
+      assert_receive %Events.ImageCreate{image: %Image{id: ^image_id}}
       await_async_upload()
     end
 
@@ -4913,17 +4930,17 @@ defmodule Philomena.ImagesTest do
       assert result == %{succeeded: 1, failed: 0}
       assert "batchadd" in image_tag_names(image)
 
-      :ok = Endpoint.subscribe("firehose")
+      :ok = Events.subscribe_events()
+      image_id = image.id
 
       assert {:ok, _result} =
                Images.update_batch_tags(actor, %{tag_list: "-batchadd", image_ids: [image.id]})
 
-      assert_receive %Broadcast{
-        event: "image:batch_tag_update",
-        payload: %{image_ids: [image_id], added: [], removed: ["batchadd"]}
+      assert_receive %Events.ImageBatchUpdate{
+        image_ids: [^image_id],
+        added_tag_names: [],
+        removed_tag_names: ["batchadd"]
       }
-
-      assert image_id == image.id
 
       log = Repo.one!(from log in ModerationLog, order_by: [desc: log.id], limit: 1)
       assert log.user_id == admin.id
@@ -5029,7 +5046,7 @@ defmodule Philomena.ImagesTest do
     test "processes image IDs in chunks of 1,000" do
       actor = actor(admin_user_fixture())
       tag_fixture(%{name: "batchadd"})
-      :ok = Endpoint.subscribe("firehose")
+      :ok = Events.subscribe_events()
 
       image_ids = Enum.to_list(2_000_000_000..2_000_001_000)
 
@@ -5038,8 +5055,18 @@ defmodule Philomena.ImagesTest do
 
       assert result == %{succeeded: 0, failed: 1_001}
       assert moderation_log_count() == 2
-      assert_receive %Broadcast{event: "image:batch_tag_update", payload: %{image_ids: []}}
-      assert_receive %Broadcast{event: "image:batch_tag_update", payload: %{image_ids: []}}
+
+      assert_receive %Events.ImageBatchUpdate{
+        image_ids: [],
+        added_tag_names: ["batchadd"],
+        removed_tag_names: []
+      }
+
+      assert_receive %Events.ImageBatchUpdate{
+        image_ids: [],
+        added_tag_names: ["batchadd"],
+        removed_tag_names: []
+      }
     end
 
     test "a non-castable id returns the form changeset" do

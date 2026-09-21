@@ -2,6 +2,7 @@ defmodule Philomena.Workers.ThumbnailJob do
   use Oban.Worker, queue: :images, max_attempts: 5
 
   alias Philomena.Images.Thumbnailer
+  alias Philomena.Events
   alias Philomena.Multi
 
   @spec put_enqueue(Multi.t(), integer(), String.t()) :: Multi.t()
@@ -18,11 +19,7 @@ defmodule Philomena.Workers.ThumbnailJob do
   def perform(%Oban.Job{args: %{"image_id" => image_id}}) do
     Thumbnailer.generate_thumbnails(image_id)
 
-    PhilomenaWeb.Endpoint.broadcast!(
-      "firehose",
-      "image:process",
-      %{image_id: image_id}
-    )
+    Events.broadcast(%Events.ImageProcess{image_id: image_id})
 
     :ok
   end
