@@ -1019,7 +1019,9 @@ defmodule Philomena.CommentsTest do
     test "a valid anonymous fingerprinted actor creates a comment with no author",
          %{image: image} do
       assert {:ok, %Comment{} = comment} =
-               Comments.create_comment(actor(nil), image.id, %{"body" => "An anonymous comment"})
+               Comments.create_comment(actor(nil, ip: random_ip()), image.id, %{
+                 "body" => "An anonymous comment"
+               })
 
       assert comment.user_id == nil
       assert comment.body == "An anonymous comment"
