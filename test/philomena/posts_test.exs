@@ -21,12 +21,14 @@ defmodule Philomena.PostsTest do
   import Philomena.UsersFixtures
 
   alias Philomena.ModerationLogs.ModerationLog
+  alias Philomena.Events
   alias Philomena.Posts
   alias Philomena.Posts.Post
   alias Philomena.Posts.PostVersion
   alias Philomena.Reports.Report
   alias Philomena.Forums.Forum
   alias Philomena.Repo
+  alias Philomena.Topics.Topic
   alias Philomena.Users.User
 
   # A truthy ban value in the shape production passes (the result of
@@ -108,6 +110,13 @@ defmodule Philomena.PostsTest do
   defp destroy_post(actor, post_id) do
     {forum_slug, topic_slug} = route_parent(post_id)
     Posts.create_post_delete(actor, forum_slug, topic_slug, post_id)
+  end
+
+  defp with_subscription(callback) when is_function(callback, 0) do
+    :ok = Events.subscribe_events()
+    callback.()
+  after
+    :ok = Events.unsubscribe_events()
   end
 
   describe "communication visibility" do
@@ -1130,6 +1139,49 @@ defmodule Philomena.PostsTest do
                %{"body" => "Edited"}
              ) ==
                {:error, :not_found}
+    end
+  end
+
+  describe "event publication" do
+    test "create_post/4 broadcasts the created post with its topic and public forum",
+         %{forum: forum, topic: topic} do
+      with_subscription(fn ->
+        assert {:ok, %Post{} = post} =
+                 Posts.create_post(
+                   actor(confirmed_user_fixture()),
+                   forum.short_name,
+                   topic.slug,
+                   %{"body" => "Broadcast reply"}
+                 )
+
+        post_id = post.id
+        topic_id = topic.id
+        forum_id = forum.id
+
+        assert_receive %Events.PostCreate{
+          post: %Post{id: ^post_id},
+          topic: %{id: ^topic_id},
+          forum: %Forum{id: ^forum_id}
+        }
+      end)
+    end
+
+    test "create_post/4 does not broadcast for a staff-only forum" do
+      forum = forum_fixture(access_level: "staff")
+      topic = topic_fixture(forum)
+      topic_id = topic.id
+
+      with_subscription(fn ->
+        assert {:ok, %Post{}} =
+                 Posts.create_post(
+                   actor(moderator_user_fixture()),
+                   forum.short_name,
+                   topic.slug,
+                   %{"body" => "Non-broadcasted reply"}
+                 )
+
+        refute_receive %Events.PostCreate{topic: %Topic{id: ^topic_id}}
+      end)
     end
   end
 end

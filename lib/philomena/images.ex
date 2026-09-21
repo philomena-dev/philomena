@@ -16,6 +16,7 @@ defmodule Philomena.Images do
 
   alias Philomena.Multi
   alias Philomena.Repo
+  alias Philomena.Events
 
   alias PhilomenaQuery.Search
   alias Philomena.Workers.ThumbnailJob
@@ -65,8 +66,6 @@ defmodule Philomena.Images do
   alias Philomena.SourceChanges.SourceChange
   alias Philomena.Users
   alias Philomena.Users.User
-  alias PhilomenaWeb.Api.Json.ImageView
-  alias PhilomenaWeb.Endpoint
   alias PhilomenaQuery.Batch
 
   @source_update_window 5
@@ -119,76 +118,53 @@ defmodule Philomena.Images do
   ## Event broadcasting
 
   defp broadcast_image_create(image) do
-    Endpoint.broadcast!(
-      "firehose",
-      "image:create",
-      ImageView.render("show.json", %{image: image, interactions: []})
-    )
+    Events.broadcast(%Events.ImageCreate{image: image})
   end
 
   defp broadcast_image_update(image) do
-    Endpoint.broadcast!(
-      "firehose",
-      "image:update",
-      ImageView.render("show.json", %{image: image, interactions: []})
-    )
+    Events.broadcast(%Events.ImageUpdate{image: image})
   end
 
   defp broadcast_description_update(image, old_description) do
-    Endpoint.broadcast!(
-      "firehose",
-      "image:description_update",
-      %{image_id: image.id, added: image.description, removed: old_description}
-    )
+    Events.broadcast(%Events.ImageDescriptionUpdate{
+      image_id: image.id,
+      new_description: image.description,
+      old_description: old_description
+    })
 
     broadcast_image_update(image)
   end
 
   defp broadcast_source_update(image, added, removed) do
-    Endpoint.broadcast!(
-      "firehose",
-      "image:source_update",
-      %{image_id: image.id, added: [added], removed: [removed]}
-    )
+    Events.broadcast(%Events.ImageSourceUpdate{
+      image_id: image.id,
+      added_sources: added,
+      removed_sources: removed
+    })
 
     broadcast_image_update(image)
   end
 
   defp broadcast_tag_update(image, added, removed) do
-    Endpoint.broadcast!(
-      "firehose",
-      "image:tag_update",
-      %{
-        image_id: image.id,
-        added: Enum.map(added, & &1.name),
-        removed: Enum.map(removed, & &1.name)
-      }
-    )
+    Events.broadcast(%Events.ImageTagUpdate{
+      image_id: image.id,
+      added_tag_names: Enum.map(added, & &1.name),
+      removed_tag_names: Enum.map(removed, & &1.name)
+    })
 
     broadcast_image_update(image)
   end
 
   defp broadcast_image_merge(image, duplicate_of_image) do
-    Endpoint.broadcast!(
-      "firehose",
-      "image:merge",
-      %{
-        image: ImageView.render("image.json", %{image: image}),
-        duplicate_of_image: ImageView.render("image.json", %{image: duplicate_of_image})
-      }
-    )
+    Events.broadcast(%Events.ImageMerge{image: image, duplicate_of_image: duplicate_of_image})
   end
 
   defp broadcast_batch_update(image_ids, added_tags, removed_tags) do
-    Endpoint.broadcast!(
-      "firehose",
-      "image:batch_tag_update",
-      %{
-        image_ids: image_ids,
-        added: Enum.map(added_tags, & &1.name),
-        removed: Enum.map(removed_tags, & &1.name)
-      }
-    )
+    Events.broadcast(%Events.ImageBatchUpdate{
+      image_ids: image_ids,
+      added_tag_names: Enum.map(added_tags, & &1.name),
+      removed_tag_names: Enum.map(removed_tags, & &1.name)
+    })
   end
 
   ## Moderation and lifecycle

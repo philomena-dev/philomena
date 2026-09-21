@@ -46,7 +46,8 @@ defmodule Philomena.Application do
       Philomena.UserIps.Server,
 
       # Start the endpoint when the application starts
-      PhilomenaWeb.Endpoint
+      PhilomenaWeb.Endpoint,
+      PhilomenaWeb.FirehosePublisher
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

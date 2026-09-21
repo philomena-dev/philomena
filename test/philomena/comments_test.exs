@@ -24,6 +24,7 @@ defmodule Philomena.CommentsTest do
   import Philomena.UsersFixtures
 
   alias Philomena.Comments
+  alias Philomena.Events
   alias Philomena.Filters.Filter
   alias Philomena.Repo
   alias Philomena.Comments.{Comment, CommentHistory, CommentVersion}
@@ -1720,6 +1721,41 @@ defmodule Philomena.CommentsTest do
 
       assert Comments.last_comment_page(actor(moderator_user_fixture()), image, page_size: 1) ==
                2
+    end
+  end
+
+  describe "event publication" do
+    setup do
+      %{image: image_fixture()}
+    end
+
+    test "create_comment/3 broadcasts the created comment", %{image: image} do
+      :ok = Events.subscribe_events()
+
+      assert {:ok, %Comment{} = comment} =
+               Comments.create_comment(actor(confirmed_user_fixture()), image.id, %{
+                 "body" => "Broadcast comment"
+               })
+
+      comment_id = comment.id
+      assert_receive %Events.CommentCreate{comment: %Comment{id: ^comment_id}}
+    end
+
+    test "update_comment/4 broadcasts the updated comment", %{image: image} do
+      author = confirmed_user_fixture()
+      comment = comment_fixture(image, author)
+      :ok = Events.subscribe_events()
+
+      assert {:ok, {_image, %Comment{} = updated}} =
+               Comments.update_comment(actor(author), image.id, comment.id, %{
+                 "body" => "Broadcast updated comment"
+               })
+
+      comment_id = updated.id
+
+      assert_receive %Events.CommentUpdate{
+        comment: %Comment{id: ^comment_id, body: "Broadcast updated comment"}
+      }
     end
   end
 end
