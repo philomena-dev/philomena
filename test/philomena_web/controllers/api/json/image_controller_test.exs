@@ -4,6 +4,7 @@ defmodule PhilomenaWeb.Api.Json.ImageControllerTest do
   # sandbox connection in shared mode, which ConnCase enables for sync tests.
   use PhilomenaWeb.ConnCase, async: false
 
+  import Philomena.AsyncUpload
   import Philomena.ImagesFixtures
   import Philomena.UsersFixtures
 
@@ -13,6 +14,10 @@ defmodule PhilomenaWeb.Api.Json.ImageControllerTest do
   alias Philomena.Repo
 
   @png_fixture Path.absname("test/support/fixtures/files/upload-test.png")
+
+  setup_all do
+    allow_async_uploads()
+  end
 
   describe "GET /api/v1/json/images/:id" do
     test "shows an image with the full representation set", %{conn: conn} do
