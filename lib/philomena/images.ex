@@ -401,8 +401,8 @@ defmodule Philomena.Images do
   defp sources_for_edit(sources), do: sources
 
   defp async_upload(image, upload) do
-    linked_pid =
-      spawn(fn ->
+    {:ok, upload_pid} =
+      Task.Supervisor.start_child(Philomena.ImageUploadSupervisor, fn ->
         # Make sure task will finish before VM exit
         Process.flag(:trap_exit, true)
 
@@ -416,12 +416,12 @@ defmodule Philomena.Images do
       end)
 
     # Give the upload to the linked process
-    Plug.Upload.give_away(upload.path, linked_pid, self())
+    Plug.Upload.give_away(upload.path, upload_pid, self())
 
     # Free up the linked process
-    send(linked_pid, :ready)
+    send(upload_pid, :ready)
 
-    linked_pid
+    :ok
   end
 
   defp try_upload(image, retry_count) when retry_count < 100 do
@@ -1477,14 +1477,14 @@ defmodule Philomena.Images do
   ## Examples
 
       iex> create_image(actor, %{"tag_input" => "safe"}, upload)
-      {:ok, %{image: %Image{}, upload_pid: pid}}
+      {:ok, %Image{}}
 
       iex> create_image(banned_actor, params, upload)
       {:error, :ban}
 
   """
   @spec create_image(Actor.t(), map() | nil, PhilomenaMedia.Upload.t() | nil) ::
-          {:ok, image_upload()}
+          {:ok, Image.t()}
           | {:error, :ban | :unauthorized | :rate_limited | Ecto.Changeset.t()}
   def create_image(%Actor{user: user} = actor, params, upload) do
     with :ok <- verify_write_access(actor),
@@ -1536,17 +1536,13 @@ defmodule Philomena.Images do
       |> Multi.transact_with_automatic_retry()
       |> case do
         {:ok, %{image: %Image{} = image}} ->
-          upload_pid = async_upload(image, upload)
+          :ok = async_upload(image, upload)
 
           image = Repo.preload(image, tags: :aliases)
 
           broadcast_image_create(image)
 
-          # Return the upload PID along with the created image so that the caller
-          # can control the lifecycle of the upload if needed. It's useful, for
-          # example for the seeding process to know when to delete the temp file
-          # used for uploading.
-          {:ok, %{image: image, upload_pid: upload_pid}}
+          {:ok, image}
 
         {:error, :action_reservation, :rate_limited, _changes} ->
           {:error, :rate_limited}
@@ -1559,16 +1555,6 @@ defmodule Philomena.Images do
       end
     end
   end
-
-  @typedoc """
-  Result of the `upload_image/3` function. The image was created in the DB but an
-  upload process could still be running in the background with its PID given in the
-  `upload_pid` field.
-  """
-  @type image_upload :: %{
-          image: %Image{},
-          upload_pid: pid
-        }
 
   @doc group: "Moderation and lifecycle"
   @doc """

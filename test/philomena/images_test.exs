@@ -1,9 +1,11 @@
 defmodule Philomena.ImagesTest do
-  use Philomena.DataCase, async: true
+  # async: false - successful image uploads spawn an upload process
+  # (Images.async_upload/2) that hits the Repo; it is only allowed on the
+  # sandbox connection in shared mode, which is enabled for sync tests.
+  use Philomena.DataCase, async: false
 
   import Ecto.Query
 
-  alias Ecto.Adapters.SQL.Sandbox
   alias Philomena.Events
   alias Philomena.Multi
   alias Philomena.ImageFaves
@@ -30,6 +32,7 @@ defmodule Philomena.ImagesTest do
   alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
 
+  import Philomena.AsyncUpload
   import Philomena.GalleriesFixtures
   import Philomena.FiltersFixtures
   import Philomena.ImagesFixtures
@@ -4357,26 +4360,6 @@ defmodule Philomena.ImagesTest do
     |> DateTime.truncate(:second)
   end
 
-  # Waits for the background upload process a successful upload spawns to exit.
-  # It shares the test process's sandbox connection, so letting it outlive the
-  # test leaves it retrying against a dead owner. The spawned process is our
-  # direct child.
-  defp await_async_upload do
-    test_pid = self()
-
-    for pid <- Process.list(), Process.info(pid, :parent) == {:parent, test_pid} do
-      ref = Process.monitor(pid)
-
-      receive do
-        {:DOWN, ^ref, :process, ^pid, _reason} -> :ok
-      after
-        5_000 -> raise "async upload process #{inspect(pid)} did not exit"
-      end
-    end
-
-    :ok
-  end
-
   describe "show_image/2" do
     test "an anonymous viewer loads a visible image with zero change counts" do
       image = image_fixture()
@@ -4694,21 +4677,20 @@ defmodule Philomena.ImagesTest do
   end
 
   describe "create_image/3" do
+    setup do
+      allow_async_uploads()
+    end
+
     test "a normal actor uploads an image and the row exists" do
       actor = actor(confirmed_user_fixture())
       :ok = Events.subscribe_events()
 
-      assert {:ok, %{image: %Image{} = image, upload_pid: pid}} =
+      assert {:ok, %Image{} = image} =
                Images.create_image(
                  actor,
                  %{"tag_input" => "safe, solo, pony"},
                  media_png_upload()
                )
-
-      # The background upload process finishes the persist/repair work against
-      # the Repo; in an async case it owns no sandbox connection, so grant it the
-      # test's before awaiting its exit.
-      Sandbox.allow(Repo, self(), pid)
 
       assert Repo.get(Image, image.id)
       assert source_urls(image) == []
@@ -4722,7 +4704,7 @@ defmodule Philomena.ImagesTest do
       actor = actor(confirmed_user_fixture())
       sources = ["https://example.com/first", "https://example.com/second"]
 
-      assert {:ok, %{image: image, upload_pid: pid}} =
+      assert {:ok, image} =
                Images.create_image(
                  actor,
                  %{
@@ -4737,7 +4719,6 @@ defmodule Philomena.ImagesTest do
                  media_png_upload()
                )
 
-      Sandbox.allow(Repo, self(), pid)
       assert source_urls(image) == Enum.sort(sources)
       await_async_upload()
     end
@@ -4745,7 +4726,7 @@ defmodule Philomena.ImagesTest do
     test "ignores blank source rows during upload" do
       actor = actor(confirmed_user_fixture())
 
-      assert {:ok, %{image: image, upload_pid: pid}} =
+      assert {:ok, image} =
                Images.create_image(
                  actor,
                  %{
@@ -4759,7 +4740,6 @@ defmodule Philomena.ImagesTest do
                  media_png_upload()
                )
 
-      Sandbox.allow(Repo, self(), pid)
       assert source_urls(image) == ["https://example.com/source"]
       await_async_upload()
     end
@@ -4790,7 +4770,7 @@ defmodule Philomena.ImagesTest do
       |> Ecto.Changeset.change(images_count: 4)
       |> Repo.update!()
 
-      assert {:ok, %{image: image, upload_pid: pid}} =
+      assert {:ok, image} =
                Images.create_image(
                  actor(user),
                  %{"tag_input" => "safe, solo, pony"},
@@ -4805,7 +4785,6 @@ defmodule Philomena.ImagesTest do
 
       assert user_id == user.id
 
-      Sandbox.allow(Repo, self(), pid)
       await_async_upload()
     end
 
@@ -4847,7 +4826,7 @@ defmodule Philomena.ImagesTest do
       actor = actor(confirmed_user_fixture())
       track_rate_limit(actor, :image_create)
 
-      assert {:ok, %{image: %Image{}, upload_pid: pid}} =
+      assert {:ok, %Image{}} =
                Images.create_image(
                  actor,
                  %{"tag_input" => "safe, solo, pony"},
@@ -4857,9 +4836,6 @@ defmodule Philomena.ImagesTest do
       # Recording happens synchronously once create_image succeeds.
       assert rate_limit_count(actor, :image_create) == "1"
 
-      # Let the background upload process finish against the test's sandbox
-      # connection before the test exits.
-      Sandbox.allow(Repo, self(), pid)
       await_async_upload()
     end
 
