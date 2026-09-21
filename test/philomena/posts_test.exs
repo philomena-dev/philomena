@@ -826,7 +826,7 @@ defmodule Philomena.PostsTest do
       # and reaches the public forum/topic create; the engine records the post
       # with a nil user (anonymous attribution).
       assert {:ok, %Post{} = post} =
-               Posts.create_post(actor(nil), forum.short_name, topic.slug, %{
+               Posts.create_post(actor(nil, ip: random_ip()), forum.short_name, topic.slug, %{
                  "body" => "An anonymous reply"
                })
 
