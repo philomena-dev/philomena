@@ -102,8 +102,11 @@ defmodule PhilomenaMedia.GifPreview do
     concat_filter =
       "#{concat_input_pads} concat=n=#{num_images}, settb=1/#{target_framerate}, setpts=N [concat]"
 
+    scale_flags =
+      "width=#{target_width}:height=#{target_height}:sws_flags=lanczos+accurate_rnd"
+
     scale_filter =
-      "[concat] scale=width=#{target_width}:height=#{target_height},setsar=1 [scale]"
+      "[concat] scale=#{scale_flags},setsar=1 [scale]"
 
     split_filter = "[scale] split [s0][s1]"
 
