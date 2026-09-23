@@ -3,10 +3,17 @@
  */
 
 import { assertNotNull } from './utils/assert';
+import { needsChromiumJpegNormalization, replaceFilterImageHrefIfNeeded } from './utils/browser-workarounds';
 import { $, $$, makeEl } from './utils/dom';
 import { normalizedKeyboardKey, keys } from './utils/keyboard';
 
 export function setupDupeReports() {
+  const diffImageSource = $<SVGFEImageElement>('feImage#source');
+  const diffImageTarget = $<SVGFEImageElement>('feImage#target');
+  if (diffImageSource && diffImageTarget) {
+    setupBrowserWorkarounds(diffImageSource, diffImageTarget);
+  }
+
   const onion = $<SVGSVGElement>('.onion-skin__image');
   const slider = $<HTMLInputElement>('.onion-skin__slider');
   const swipe = $<SVGSVGElement>('.swipe__image');
@@ -17,6 +24,12 @@ export function setupDupeReports() {
   setupKeyBindings();
 
   document.addEventListener('fetchcomplete', mergeDuplicateReportTable);
+}
+
+function setupBrowserWorkarounds(source: SVGFEImageElement, target: SVGFEImageElement) {
+  if (!needsChromiumJpegNormalization()) return;
+  replaceFilterImageHrefIfNeeded(source);
+  replaceFilterImageHrefIfNeeded(target);
 }
 
 function setupSwipe(swipe: SVGSVGElement) {
