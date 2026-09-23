@@ -1,5 +1,4 @@
 use std::collections::HashSet;
-use std::os::unix::process::ExitStatusExt;
 
 use mediaproc::{CommandReply, ExecuteCommandError, FileMap, PERMITTED_PROGRAMS};
 use tokio::process::Command;
@@ -54,7 +53,7 @@ pub async fn execute_command(
     }
 
     let reply = CommandReply {
-        status: output.status.into_raw() as u8,
+        status: output.status.code().unwrap_or(255) as u8,
         stdout: output.stdout,
         stderr: output.stderr,
     };

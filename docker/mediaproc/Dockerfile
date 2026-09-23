@@ -40,7 +40,7 @@ RUN cd /tmp \
         --enable-decoder=aac,apng,av1,gif,h264,hevc,jpeg2000,jpegxl,libaom-av1,libdav1d,libvorbis,libvpx_vp8,libvpx_vp9,mp3,mjpeg,opus,png,vorbis,vp8,vp9,webvtt \
         --enable-demuxer=apng,gif,image2,image_gif_pipe,image_jpeg_pipe,image_png_pipe,image_webp_pipe,matroska,mjpeg,mjpeg_2000,mov,webm \
         --enable-encoder=aac,apng,gif,jpegxl,libmp3lame,libaom-av1,libvorbis,libopus,libvpx_vp8,libvpx_vp9,libx265,libx264,opus,mjpeg,png,vorbis,webvtt \
-        --enable-filter=concat,palettegen,paletteuse,scale,setpts,setsar,settb,split,trim \
+        --enable-filter=aresample,concat,palettegen,paletteuse,scale,setpts,setsar,settb,split,trim \
         --enable-libaom \
         --enable-libjxl \
         --enable-libdav1d \
