@@ -7,6 +7,7 @@ defmodule Philomena.WorkerTest do
   import Philomena.ImagesFixtures
 
   alias Philomena.Workers.ImagePurgeJob
+  alias Philomena.Events
   alias Philomena.Images.Image
   alias Philomena.Images.Thumbnailer
   alias Philomena.Workers.IndexJob
@@ -80,10 +81,12 @@ defmodule Philomena.WorkerTest do
 
   test "the thumbnail worker generates media and broadcasts completion" do
     patch(Thumbnailer, :generate_thumbnails, :ok)
+    :ok = Events.subscribe_events()
 
     assert :ok == ThumbnailJob.perform(%Oban.Job{args: %{"image_id" => 321}})
 
     assert_exact_call(Thumbnailer, :generate_thumbnails, [321])
+    assert_receive %Events.ImageProcess{image_id: 321}
   end
 
   test "the purge worker passes the complete file list to the purge operation" do

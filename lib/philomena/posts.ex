@@ -12,6 +12,7 @@ defmodule Philomena.Posts do
 
   alias Philomena.Multi
   alias Philomena.Repo
+  alias Philomena.Events
 
   alias PhilomenaQuery.Search
   alias Philomena.Topics.Topic
@@ -50,17 +51,15 @@ defmodule Philomena.Posts do
     Notifications.broadcast_forum_post(post.user, topic, post)
   end
 
-  defp broadcast_post_creation(%{forum: %{access_level: "normal"}} = result) do
-    PhilomenaWeb.Endpoint.broadcast!(
-      "firehose",
-      "post:create",
-      PhilomenaWeb.Api.Json.Forum.Topic.PostView.render("firehose.json", result)
-    )
-
-    result
+  defp broadcast_post_creation(%{forum: forum, topic: topic, post: post}) do
+    if forum.access_level == "normal" do
+      Events.broadcast(%Events.PostCreate{
+        forum: forum,
+        topic: topic,
+        post: post
+      })
+    end
   end
-
-  defp broadcast_post_creation(result), do: result
 
   defp put_reindex_post(%Multi{} = multi, step \\ :post) do
     IndexJob.put_enqueue(multi, "Posts", :id, fn %{^step => post} -> [post.id] end)
