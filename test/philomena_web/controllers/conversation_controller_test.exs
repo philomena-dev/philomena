@@ -75,6 +75,45 @@ defmodule PhilomenaWeb.ConversationControllerTest do
     assert Repo.reload!(conversation).to_read
   end
 
+  test "pending messages disclose their body only to the sender or an approver", %{conn: conn} do
+    sender = confirmed_user_fixture(%{name: "Pending Sender"})
+    recipient = confirmed_user_fixture(%{name: "Pending Recipient"})
+    conversation = conversation_fixture(sender, recipient)
+    message = message_fixture(conversation, sender, %{"body" => "Private pending body"})
+
+    Repo.update!(Ecto.Changeset.change(message, approved: false))
+
+    sender_response =
+      html_response(get(log_in_user(conn, sender), ~p"/conversations/#{conversation}"), 200)
+
+    assert sender_response =~ "pending approval from a staff member"
+    assert sender_response =~ "Private pending body"
+
+    refute sender_response =~
+             ~p"/conversations/#{conversation}/messages/#{message}/approve"
+
+    recipient_response =
+      html_response(get(log_in_user(conn, recipient), ~p"/conversations/#{conversation}"), 200)
+
+    refute recipient_response =~ "Private pending body"
+
+    refute recipient_response =~
+             ~p"/conversations/#{conversation}/messages/#{message}/approve"
+
+    moderator_response =
+      html_response(
+        get(log_in_user(conn, moderator_user_fixture()), ~p"/conversations/#{conversation}"),
+        200
+      )
+
+    assert moderator_response =~ "Private pending body"
+
+    assert moderator_response =~
+             ~p"/conversations/#{conversation}/messages/#{message}/approve"
+
+    assert moderator_response =~ "Approve"
+  end
+
   test "GET /conversations/:id as a non-participant moderator renders the conversation",
        %{conn: conn} do
     %{conn: conn} = register_and_log_in_moderator(%{conn: conn})

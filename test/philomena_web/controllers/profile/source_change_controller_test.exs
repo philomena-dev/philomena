@@ -7,11 +7,11 @@ defmodule PhilomenaWeb.Profile.SourceChangeControllerTest do
 
   alias Philomena.Images
 
-  defp source_change!(user, source) do
+  defp source_change!(user, source, actor_opts \\ []) do
     image = image_fixture()
 
     {:ok, _} =
-      Images.update_image_sources(actor(user), image.id, %{
+      Images.update_image_sources(actor(user, actor_opts), image.id, %{
         "old_sources" => %{},
         "sources" => %{"0" => %{"source" => source}}
       })
@@ -86,6 +86,45 @@ defmodule PhilomenaWeb.Profile.SourceChangeControllerTest do
 
       assert redirected_to(conn) == "/"
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Invalid source change filter."
+    end
+
+    test "discloses source-change identity metadata only to authorized viewers", %{conn: conn} do
+      user = confirmed_user_fixture()
+
+      source_change!(user, "https://example.com/identity-source",
+        ip: %Postgrex.INET{address: {198, 51, 100, 24}, netmask: 32},
+        fingerprint: "csourcechange"
+      )
+
+      anonymous_response =
+        html_response(get(conn, ~p"/profiles/#{user}/source_changes"), 200)
+
+      refute anonymous_response =~ "198.51.100.24"
+      refute anonymous_response =~ "csourcechange"
+
+      regular_response =
+        html_response(
+          get(
+            log_in_user(conn, confirmed_user_fixture()),
+            ~p"/profiles/#{user}/source_changes"
+          ),
+          200
+        )
+
+      refute regular_response =~ "198.51.100.24"
+      refute regular_response =~ "csourcechange"
+
+      moderator_response =
+        html_response(
+          get(
+            log_in_user(conn, moderator_user_fixture()),
+            ~p"/profiles/#{user}/source_changes"
+          ),
+          200
+        )
+
+      assert moderator_response =~ "198.51.100.24"
+      assert moderator_response =~ "csource"
     end
   end
 end
