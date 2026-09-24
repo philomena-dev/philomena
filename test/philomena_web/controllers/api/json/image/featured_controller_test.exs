@@ -6,8 +6,13 @@ defmodule PhilomenaWeb.Api.Json.Image.FeaturedControllerTest do
   import Philomena.UsersFixtures
 
   alias Philomena.ImageFeatures.ImageFeature
-  alias Philomena.Images
   alias Philomena.Repo
+
+  defp feature!(user, image) do
+    %ImageFeature{user_id: user.id, image_id: image.id}
+    |> ImageFeature.changeset(%{})
+    |> Repo.insert!()
+  end
 
   describe "GET /api/v1/json/images/featured" do
     test "shows the most recently featured image", %{conn: conn} do
@@ -15,7 +20,7 @@ defmodule PhilomenaWeb.Api.Json.Image.FeaturedControllerTest do
       old_image = image_fixture()
       new_image = image_fixture()
 
-      {:ok, _} = Images.feature_image(admin, old_image)
+      feature!(admin, old_image)
 
       # Backdate the first feature so the ordering is unambiguous.
       Repo.update_all(
@@ -23,7 +28,7 @@ defmodule PhilomenaWeb.Api.Json.Image.FeaturedControllerTest do
         set: [created_at: DateTime.add(DateTime.utc_now(:second), -3600)]
       )
 
-      {:ok, _} = Images.feature_image(admin, new_image)
+      feature!(admin, new_image)
 
       conn = get(conn, ~p"/api/v1/json/images/featured")
 
@@ -36,14 +41,14 @@ defmodule PhilomenaWeb.Api.Json.Image.FeaturedControllerTest do
       visible = image_fixture()
       hidden = image_fixture(hidden_from_users: true)
 
-      {:ok, _} = Images.feature_image(admin, visible)
+      feature!(admin, visible)
 
       Repo.update_all(
         where(ImageFeature, image_id: ^visible.id),
         set: [created_at: DateTime.add(DateTime.utc_now(:second), -3600)]
       )
 
-      {:ok, _} = Images.feature_image(admin, hidden)
+      feature!(admin, hidden)
 
       conn = get(conn, ~p"/api/v1/json/images/featured")
 

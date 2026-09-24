@@ -47,6 +47,18 @@ defmodule PhilomenaWeb.Api.Json.Search.ReverseControllerTest do
       assert json_response(conn, 200) == %{"images" => [], "interactions" => [], "total" => 0}
     end
 
+    test "excludes hidden matching images", %{conn: conn} do
+      hidden = image_fixture(hidden_from_users: true)
+      insert_intensities(hidden, @png_intensity)
+
+      conn =
+        post(conn, ~p"/api/v1/json/search/reverse", %{
+          "image" => %{"image" => png_upload()}
+        })
+
+      assert json_response(conn, 200) == %{"images" => [], "interactions" => [], "total" => 0}
+    end
+
     test "returns empty results instead of an error for an invalid limit", %{conn: conn} do
       image = image_fixture()
       insert_intensities(image, @png_intensity)

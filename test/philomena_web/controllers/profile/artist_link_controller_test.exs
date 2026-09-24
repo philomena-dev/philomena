@@ -4,7 +4,6 @@ defmodule PhilomenaWeb.Profile.ArtistLinkControllerTest do
   import Philomena.TagsFixtures
   import Philomena.UsersFixtures
 
-  alias Philomena.ArtistLinks
   alias Philomena.ArtistLinks.ArtistLink
   alias Philomena.Repo
 
@@ -13,13 +12,7 @@ defmodule PhilomenaWeb.Profile.ArtistLinkControllerTest do
   end
 
   defp artist_link_fixture(user) do
-    {:ok, link} =
-      ArtistLinks.create_artist_link(user, %{
-        "tag_name" => artist_tag_fixture().name,
-        "uri" => "https://example.com/gallery-#{System.unique_integer([:positive])}"
-      })
-
-    link
+    Philomena.ArtistLinksFixtures.artist_link_fixture(user, artist_tag_fixture())
   end
 
   describe "GET /profiles/:profile_id/artist_links" do

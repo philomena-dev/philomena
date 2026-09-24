@@ -1,14 +1,9 @@
-- route = fn p -> ~p"/tag_changes?#{p}" end
+- route = @pagination_route
 - pagination = render PhilomenaWeb.PaginationView, "_pagination.html", page: @tag_changes, route: route, conn: @conn, params: scope(@conn)
 
-= if @resource_type != nil and @resource_id != nil do
-  h1
-    ' Showing tag changes for
-    = link_to_resource(@resource_type, @resource_id)
-- else
-  h1 Tag Changes
+h1 = @title
 
-= form_for :tag_changes, ~p"/tag_changes", [method: "get", class: "hform hform__text", enforce_utf8: false], fn f ->
+= form_for :tag_changes, @path, [method: "get", class: "hform hform__text", enforce_utf8: false], fn f ->
   .field
     = text_input f, :tcq, name: :tcq, value: @conn.params["tcq"],
       class: "input hform__text",
@@ -96,9 +91,9 @@
                   = for tag <- removed_tags do
                     div class=non_retained_class(non_retained, tag)
                       = render PhilomenaWeb.TagView, "_tag.html", tag: tag, conn: @conn
-          = if reverts_tag_changes?(@conn) or can?(@conn, :show, :ip_address) do
+          = if reverts_tag_changes?(@conn) or can?(@conn, :show, :identity_metadata) do
             .tag__change-tools
-              = if can?(@conn, :show, :ip_address) do
+              = if can?(@conn, :show, :identity_metadata) do
                 => link_to_ip @conn, tag_change.ip
                 => link_to_fingerprint @conn, tag_change.fingerprint
 

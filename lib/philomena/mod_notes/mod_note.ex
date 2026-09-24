@@ -10,6 +10,8 @@ defmodule Philomena.ModNotes.ModNote do
   # note; all are NULL on an orphaned note whose target was deleted.
   @target_columns [:user_id, :report_id, :dnp_entry_id]
 
+  @type t :: %__MODULE__{}
+
   schema "mod_notes" do
     belongs_to :moderator, User
 
@@ -36,7 +38,7 @@ defmodule Philomena.ModNotes.ModNote do
   end
 
   @doc false
-  def changeset(mod_note, attrs) do
+  def changeset(mod_note, attrs \\ %{}) do
     mod_note
     |> cast(attrs, [:body])
     |> validate_required([:body])

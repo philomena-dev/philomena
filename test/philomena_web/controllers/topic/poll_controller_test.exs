@@ -46,11 +46,9 @@ defmodule PhilomenaWeb.Topic.PollControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    # PollController now maps edit/update to :show via CanaryMapPlug before
-    # load_and_authorize_resource, so the Forum is authorized against :show
-    # (which moderators have) rather than the raw :edit. The later
-    # verify_authorized plug gates on :hide of the topic, also a moderator
-    # capability, so moderators can now render the edit form.
+    # The context loads the topic (show_hidden: false) and authorizes :hide of
+    # the topic, both moderator capabilities - so a moderator renders the poll
+    # edit form even though the route action is :edit.
     test "renders the edit form for a moderator", %{conn: conn, forum: forum, topic: topic} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 

@@ -40,7 +40,12 @@ defmodule PhilomenaWeb.ConversationControllerTest do
   test "GET /conversations does not list conversations the user has hidden", %{conn: conn} do
     %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
     hidden = conversation_fixture(confirmed_user_fixture(), user)
-    {:ok, _} = Philomena.Conversations.mark_conversation_hidden(hidden, user)
+
+    {:ok, _} =
+      Philomena.Conversations.update_conversation_hide(
+        Philomena.AttributionFixtures.actor(user),
+        hidden.slug
+      )
 
     response = html_response(get(conn, ~p"/conversations"), 200)
 
@@ -91,15 +96,25 @@ defmodule PhilomenaWeb.ConversationControllerTest do
     assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
   end
 
-  test "GET /conversations/:id for an unknown slug redirects to / with the authorization flash",
+  test "GET /conversations/:id for an unknown slug redirects with the not-found flash",
        %{conn: conn} do
-    # Canary sends the nil resource down the unauthorized path
     %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
     conn = get(conn, ~p"/conversations/unknown-slug")
 
     assert redirected_to(conn) == "/"
-    assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+    assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+             "Couldn't find what you were looking for!"
+  end
+
+  test "GET /conversations with a malformed partner filter renders an empty index", %{conn: conn} do
+    %{conn: conn} = register_and_log_in_user(%{conn: conn})
+
+    response = html_response(get(conn, ~p"/conversations?#{[with: "not-a-number"]}"), 200)
+
+    assert response =~ "My Conversations"
+    assert response =~ "Invalid conversation filter."
   end
 
   test "POST /conversations creates the conversation and first message", %{conn: conn} do
@@ -141,6 +156,14 @@ defmodule PhilomenaWeb.ConversationControllerTest do
     response = html_response(conn, 200)
     assert response =~ "New Conversation"
     assert Repo.aggregate(from(c in Conversation, where: c.from_id == ^user.id), :count) == 0
+  end
+
+  test "POST /conversations with non-map params raises", %{conn: conn} do
+    %{conn: conn} = register_and_log_in_user(%{conn: conn})
+
+    assert_raise Ecto.CastError, fn ->
+      post(conn, ~p"/conversations", %{"conversation" => "invalid"})
+    end
   end
 
   test "POST /conversations as a banned user redirects with the ban flash", %{conn: conn} do

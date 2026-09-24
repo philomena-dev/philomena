@@ -11,7 +11,7 @@ defmodule PhilomenaWeb.Profile.SourceChangeControllerTest do
     image = image_fixture()
 
     {:ok, _} =
-      Images.update_sources(image, attribution(user), %{
+      Images.update_image_sources(actor(user), image.id, %{
         "old_sources" => %{},
         "sources" => %{"0" => %{"source" => source}}
       })
@@ -20,7 +20,16 @@ defmodule PhilomenaWeb.Profile.SourceChangeControllerTest do
   end
 
   describe "GET /profiles/:profile_id/source_changes" do
-    test "lists a user's source changes for anonymous users", %{conn: conn} do
+    test "allows anonymous viewers for a real profile", %{conn: conn} do
+      user = confirmed_user_fixture()
+
+      conn = get(conn, ~p"/profiles/#{user}/source_changes")
+
+      assert html_response(conn, 200)
+    end
+
+    test "lists a user's source changes for moderators", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       user = confirmed_user_fixture()
       source_change!(user, "https://example.com/profile-source")
 
@@ -33,6 +42,7 @@ defmodule PhilomenaWeb.Profile.SourceChangeControllerTest do
     end
 
     test "renders with no source changes", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       user = confirmed_user_fixture()
 
       conn = get(conn, ~p"/profiles/#{user}/source_changes")
@@ -41,6 +51,7 @@ defmodule PhilomenaWeb.Profile.SourceChangeControllerTest do
     end
 
     test "filters to removals with added=0", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       user = confirmed_user_fixture()
       source_change!(user, "https://example.com/added-source")
 
@@ -51,11 +62,30 @@ defmodule PhilomenaWeb.Profile.SourceChangeControllerTest do
       refute response =~ "https://example.com/added-source"
     end
 
-    test "redirects to / for an unknown profile", %{conn: conn} do
+    test "allows a regular user for a real profile", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+      user = confirmed_user_fixture()
+
+      conn = get(conn, ~p"/profiles/#{user}/source_changes")
+
+      assert html_response(conn, 200)
+    end
+
+    test "uses the not-found response for an unknown profile", %{conn: conn} do
       conn = get(conn, ~p"/profiles/nonexistent-user/source_changes")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You can't access that page."
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
+    end
+
+    test "redirects with an error flash for an invalid filter", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+      user = confirmed_user_fixture()
+
+      conn = get(conn, ~p"/profiles/#{user}/source_changes?added=invalid")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Invalid source change filter."
     end
   end
 end

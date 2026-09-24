@@ -6,14 +6,20 @@ defmodule PhilomenaWeb.Image.FavoriteControllerTest do
 
   alias Philomena.ImageFaves
   alias Philomena.ImageVotes
-  alias Philomena.Repo
+  alias Philomena.Multi
 
   defp fave!(image, user) do
-    {:ok, _} = Repo.transaction(ImageFaves.create_fave_transaction(image, user))
+    {:ok, _} =
+      Multi.new()
+      |> ImageFaves.put_fave_for_loaded_image(image, user)
+      |> Multi.transact()
   end
 
   defp upvote!(image, user) do
-    {:ok, _} = Repo.transaction(ImageVotes.create_vote_transaction(image, user, true))
+    {:ok, _} =
+      Multi.new()
+      |> ImageVotes.put_vote_for_loaded_image(image, user, true)
+      |> Multi.transact()
   end
 
   describe "GET /images/:image_id/favorites" do
@@ -67,7 +73,9 @@ defmodule PhilomenaWeb.Image.FavoriteControllerTest do
       conn = get(conn, ~p"/images/999999999/favorites")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Couldn't find what you were looking for!"
     end
   end
 end

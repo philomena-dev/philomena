@@ -2,6 +2,7 @@ defmodule PhilomenaWeb.Page.HistoryControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
   import Philomena.StaticPagesFixtures
+  import Philomena.AttributionFixtures, only: [actor: 1]
   import Philomena.UsersFixtures
 
   alias Philomena.StaticPages
@@ -9,11 +10,11 @@ defmodule PhilomenaWeb.Page.HistoryControllerTest do
   describe "GET /pages/:page_id/history" do
     test "renders the revision history for anonymous users", %{conn: conn} do
       creator = user_fixture()
-      editor = user_fixture()
+      editor = admin_user_fixture()
       page = static_page_fixture(creator, %{body: "The original text"})
 
-      {:ok, _} =
-        StaticPages.update_static_page(page, editor, %{
+      {:ok, _page} =
+        StaticPages.update_page(actor(editor), page.slug, %{
           title: page.title,
           slug: page.slug,
           body: "The updated text"
@@ -61,9 +62,6 @@ defmodule PhilomenaWeb.Page.HistoryControllerTest do
     end
 
     test "redirects with the not-found flash for an unknown slug", %{conn: conn} do
-      # NOTE: load_resource now uses required: true, so Canary runs its
-      # not-found handler on this :index action - an unknown slug redirects
-      # instead of dereferencing a nil page.
       conn = get(conn, ~p"/pages/nonexistent-page/history")
 
       assert redirected_to(conn) == "/"

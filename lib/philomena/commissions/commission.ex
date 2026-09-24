@@ -5,11 +5,15 @@ defmodule Philomena.Commissions.Commission do
   alias Philomena.Commissions.Item
   alias Philomena.Images.Image
   alias Philomena.Users.User
+  alias Philomena.Reports.Report
+
+  @type t :: %__MODULE__{}
 
   schema "commissions" do
     belongs_to :user, User
     belongs_to :sheet_image, Image
-    has_many :items, Item
+    has_many :items, Item, preload_order: [asc: :base_price, asc: :id]
+    has_many :reports, Report
 
     field :open, :boolean
     field :categories, {:array, :string}, default: []
@@ -23,7 +27,7 @@ defmodule Philomena.Commissions.Commission do
   end
 
   @doc false
-  def changeset(commission, attrs) do
+  def changeset(commission, attrs \\ %{}) do
     commission
     |> cast(attrs, [
       :information,
@@ -41,6 +45,7 @@ defmodule Philomena.Commissions.Commission do
     |> validate_length(:will_create, max: 1000, count: :bytes)
     |> validate_length(:will_not_create, max: 1000, count: :bytes)
     |> validate_subset(:categories, Keyword.values(categories()))
+    |> unique_constraint(:user_id, name: :index_commissions_on_user_id)
   end
 
   defp drop_blank_categories(changeset) do

@@ -25,6 +25,7 @@ defmodule Philomena.ModerationLogs.PathsTest do
   alias Philomena.Forums.Forum
   alias Philomena.Topics.Topic
   alias Philomena.Posts.Post
+  alias Philomena.Reports.Report
   alias Philomena.DnpEntries.DnpEntry
   alias Philomena.ArtistLinks.ArtistLink
 
@@ -113,6 +114,14 @@ defmodule Philomena.ModerationLogs.PathsTest do
       dnp_entry = %DnpEntry{id: 789}
       assert Paths.dnp_entry_path(dnp_entry) == ~p"/dnp/#{dnp_entry}"
       assert Paths.dnp_entry_path(dnp_entry) == "/dnp/789"
+    end
+  end
+
+  describe "admin_report_path/1" do
+    test "matches ~p for a report and a raw integer id" do
+      report = %Report{id: 321}
+      assert Paths.admin_report_path(report) == ~p"/admin/reports/#{report}"
+      assert Paths.admin_report_path(321) == "/admin/reports/321"
     end
   end
 

@@ -53,26 +53,20 @@ defmodule PhilomenaWeb.Tag.ReindexControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Tag reindex started"
     end
 
-    test "an unknown slug is the not-authorized redirect for a role_map moderator", %{
+    test "an unknown slug is the not-found redirect for a role_map moderator", %{
       conn: conn
     } do
-      # NOTE: a role-mod fails authorization on the nil resource (no rule
-      # matches nil), so Canary's unauthorized handler fires - "can't access".
-      # An admin passes authorization and instead hits the not-found handler
-      # (see the next test), so the same unknown slug yields a different flash
-      # depending on role.
       conn = log_in_role_moderator(conn, "Tag")
       conn = post(conn, ~p"/tags/nonexistent-tag/reindex")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "can't access"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
     test "an unknown slug is the not-found redirect for an admin", %{conn: conn} do
-      # NOTE: can?(admin, _, nil) is true, so an admin sails past the nil
-      # authorization - but load_and_authorize_resource has persisted: true, so
-      # Canary's not_found_handler fires on the nil resource before create/2
-      # runs. The admin gets a clean "Couldn't find" redirect, NOT a 500.
+      # NOTE: can?(admin, _, nil) is true, so an admin is authorized on the nil
+      # load and the context returns not_found before create/2 runs. The admin
+      # gets a clean "Couldn't find" redirect, NOT a 500.
       conn = log_in_user(conn, admin_user_fixture())
       conn = post(conn, ~p"/tags/nonexistent-tag/reindex")
 

@@ -53,9 +53,7 @@ defmodule PhilomenaWeb.Admin.ArtistLinkControllerTest do
       assert response =~ user.name
     end
 
-    # NOTE: the default index only lists links in the unverified/link_verified/
-    # contacted states - a verified link is hidden unless ?all is passed.
-    test "hides a verified link by default but shows it with ?all", %{conn: conn} do
+    test "hides a verified link by default but shows it when selected", %{conn: conn} do
       user = confirmed_user_fixture()
       tag = tag_fixture(name: "artist:index-verified")
       link = verified_artist_link_fixture(user, tag)
@@ -63,11 +61,11 @@ defmodule PhilomenaWeb.Admin.ArtistLinkControllerTest do
       conn = get(conn, ~p"/admin/artist_links")
       refute html_response(conn, 200) =~ link.uri
 
-      conn = get(conn, ~p"/admin/artist_links?#{[all: "true"]}")
+      conn = get(conn, ~p"/admin/artist_links?#{[lq: [states: ~w(verified)]]}")
       assert html_response(conn, 200) =~ link.uri
     end
 
-    test "filters by user name or uri with lq", %{conn: conn} do
+    test "filters by user name or uri with text", %{conn: conn} do
       user = confirmed_user_fixture()
       tag = tag_fixture(name: "artist:index-lq")
       link = artist_link_fixture(user, tag)
@@ -76,7 +74,7 @@ defmodule PhilomenaWeb.Admin.ArtistLinkControllerTest do
       other_tag = tag_fixture(name: "artist:index-lq-other")
       other_link = artist_link_fixture(other, other_tag)
 
-      conn = get(conn, ~p"/admin/artist_links?#{[lq: user.name]}")
+      conn = get(conn, ~p"/admin/artist_links?#{[lq: [text: user.name]]}")
       response = html_response(conn, 200)
       assert response =~ link.uri
       refute response =~ other_link.uri

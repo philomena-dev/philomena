@@ -54,13 +54,13 @@ defmodule PhilomenaWeb.Filter.PublicControllerTest do
       refute Repo.get!(Filter, filter.id).public
     end
 
-    test "redirects with the authorization flash for an unknown filter", %{conn: conn} do
+    test "redirects with the not-found flash for an unknown filter", %{conn: conn} do
       %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
       conn = post(conn, ~p"/filters/999999999/public")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 end

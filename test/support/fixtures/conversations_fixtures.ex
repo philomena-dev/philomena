@@ -1,10 +1,14 @@
 defmodule Philomena.ConversationsFixtures do
   @moduledoc """
-  This module defines test helpers for creating
-  entities via the `Philomena.Conversations` context.
+  Test-only conversation builders. They persist schemas directly because the
+  production context intentionally exposes only actor-scoped request APIs.
   """
 
-  alias Philomena.Conversations
+  alias Philomena.Conversations.Conversation
+  alias Philomena.Conversations.Message
+  alias Philomena.Multi
+  alias Philomena.Repo
+  alias Philomena.Reports
 
   def unique_conversation_title, do: "Test Conversation #{System.unique_integer([:positive])}"
 
@@ -25,7 +29,12 @@ defmodule Philomena.ConversationsFixtures do
         "messages" => %{"0" => %{"body" => "Test message body"}}
       })
 
-    {:ok, conversation} = Conversations.create_conversation(from, attrs)
+    conversation =
+      %Conversation{recipient: to.name}
+      |> Conversation.creation_changeset(from, to, attrs)
+      |> Repo.insert!()
+
+    report_non_approved_message(List.first(conversation.messages))
 
     conversation
   end
@@ -36,8 +45,39 @@ defmodule Philomena.ConversationsFixtures do
   def message_fixture(conversation, user, attrs \\ %{}) do
     attrs = Enum.into(attrs, %{"body" => "Test reply body"})
 
-    {:ok, message} = Conversations.create_message(conversation, user, attrs)
+    {:ok, message} =
+      Repo.transaction(fn ->
+        message =
+          conversation
+          |> Ecto.build_assoc(:messages)
+          |> Message.creation_changeset(attrs, user)
+          |> Repo.insert!()
+
+        conversation
+        |> Conversation.new_message_changeset()
+        |> Repo.update!()
+
+        message
+      end)
+
+    report_non_approved_message(message)
 
     message
+  end
+
+  defp report_non_approved_message(nil), do: :ok
+  defp report_non_approved_message(%Message{approved: true}), do: :ok
+
+  defp report_non_approved_message(%Message{} = message) do
+    Multi.new()
+    |> Reports.put_create_system_report(
+      "Approval",
+      "PM contains externally-embedded images",
+      :conversation_id,
+      message.conversation_id
+    )
+    |> Multi.transact()
+
+    :ok
   end
 end

@@ -2,6 +2,7 @@ defmodule Philomena.Reports.Report do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Philomena.Attribution.Actor
   alias Philomena.Users.User
   alias Philomena.Rules.Rule
   alias Philomena.Images.Image
@@ -22,6 +23,8 @@ defmodule Philomena.Reports.Report do
     :conversation_id,
     :gallery_id
   ]
+
+  @type t :: %__MODULE__{}
 
   schema "reports" do
     belongs_to :user, User
@@ -69,7 +72,7 @@ defmodule Philomena.Reports.Report do
   end
 
   @doc false
-  def changeset(report, attrs) do
+  def changeset(report, attrs \\ %{}) do
     report
     |> cast(attrs, [])
     |> validate_required([])
@@ -82,18 +85,19 @@ defmodule Philomena.Reports.Report do
     |> validate_required([:reason])
   end
 
-  # Ensure that the report is not currently claimed before
-  # attempting to claim
   def claim_changeset(report, user) do
     change(report)
-    |> validate_inclusion(:admin_id, [])
+    |> validate_open()
+    |> validate_unclaimed()
     |> put_change(:admin_id, user.id)
     |> put_change(:open, true)
     |> put_change(:state, "in_progress")
   end
 
-  def unclaim_changeset(report) do
+  def unclaim_changeset(report, _user) do
     change(report)
+    |> validate_open()
+    |> validate_claimed()
     |> put_change(:admin_id, nil)
     |> put_change(:open, true)
     |> put_change(:state, "open")
@@ -101,19 +105,44 @@ defmodule Philomena.Reports.Report do
 
   def close_changeset(report, user) do
     change(report)
+    |> validate_open()
     |> put_change(:admin_id, user.id)
     |> put_change(:open, false)
     |> put_change(:state, "closed")
   end
 
+  defp validate_open(changeset) do
+    if get_field(changeset, :open) do
+      changeset
+    else
+      add_error(changeset, :state, "must be open")
+    end
+  end
+
+  defp validate_claimed(changeset) do
+    if is_nil(get_field(changeset, :admin_id)) do
+      add_error(changeset, :admin_id, "was not claimed")
+    else
+      changeset
+    end
+  end
+
+  defp validate_unclaimed(changeset) do
+    if is_nil(get_field(changeset, :admin_id)) do
+      changeset
+    else
+      add_error(changeset, :admin_id, "has already been claimed")
+    end
+  end
+
   @doc false
-  def creation_changeset(report, attrs, attribution, rule) do
+  def creation_changeset(report, attrs, %Actor{} = actor, rule) do
     report
     |> cast(attrs, [:reason, :user_agent])
     |> put_assoc(:rule, rule)
     |> validate_length(:reason, max: 10_000, count: :bytes)
     |> validate_length(:user_agent, max: 1000, count: :bytes)
-    |> change(attribution)
+    |> change(Actor.to_changes(actor))
     |> validate_required([
       :reason,
       :ip,
@@ -123,10 +152,31 @@ defmodule Philomena.Reports.Report do
     |> validate_target()
   end
 
-  def user_creation_changeset(report, attrs, attribution, rule) do
+  def system_creation_changeset(report, attrs, %Actor{} = actor, %Rule{} = rule) do
     report
-    |> creation_changeset(attrs, attribution, rule)
+    |> creation_changeset(attrs, actor, rule)
+    |> change(system: true)
+  end
+
+  def user_creation_changeset(report, attrs, %Actor{} = actor, %Rule{} = rule) do
+    report
+    |> creation_changeset(attrs, actor, rule)
     |> validate_rule()
+  end
+
+  @doc false
+  def fetch_rule_id(attrs) do
+    %__MODULE__{}
+    |> cast(attrs, [:rule_id])
+    |> validate_required(:rule_id)
+    |> apply_action(:create)
+    |> case do
+      {:ok, %{rule_id: rule_id}} ->
+        {:ok, rule_id}
+
+      _ ->
+        {:error, :not_found}
+    end
   end
 
   # A report must reference exactly one target on creation.

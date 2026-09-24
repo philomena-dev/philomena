@@ -5,6 +5,8 @@ defmodule Philomena.GalleriesFixtures do
   """
 
   alias Philomena.Galleries
+  alias Philomena.Repo
+  alias Philomena.Users.User
 
   def unique_gallery_title, do: "Test Gallery #{System.unique_integer([:positive])}"
 
@@ -20,8 +22,24 @@ defmodule Philomena.GalleriesFixtures do
       |> Enum.into(%{title: unique_gallery_title()})
       |> Map.put_new_lazy(:thumbnail_id, fn -> Philomena.ImagesFixtures.image_fixture().id end)
 
-    {:ok, gallery} = Galleries.create_gallery(user, attrs)
+    {:ok, gallery} = Galleries.create_gallery(Philomena.AttributionFixtures.actor(user), attrs)
 
     gallery
+  end
+
+  @doc """
+  Adds `image` to `gallery` through the owner-authorized context boundary.
+  """
+  def gallery_image_fixture(gallery, image) do
+    user = Repo.get!(User, gallery.user_id)
+
+    {:ok, result} =
+      Galleries.create_gallery_image(
+        Philomena.AttributionFixtures.actor(user),
+        gallery.id,
+        image.id
+      )
+
+    result
   end
 end

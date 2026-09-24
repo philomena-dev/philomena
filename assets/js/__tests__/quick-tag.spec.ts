@@ -151,7 +151,7 @@ describe('Batch tagging', () => {
     });
 
     it('should return to normal state on successful submission', () => {
-      fetchMock.mockResponse('{"failed":[]}');
+      fetchMock.mockResponse('{"failed":0}');
       submitButton.click();
 
       expect(fetch).toHaveBeenCalledOnce();
@@ -163,7 +163,7 @@ describe('Batch tagging', () => {
     });
 
     it('should show error on failed submission', () => {
-      fetchMock.mockResponse('{"failed":[0,1]}');
+      fetchMock.mockResponse('{"failed":2}');
       submitButton.click();
 
       const spy = vi.spyOn(window, 'alert').mockImplementation(() => {});

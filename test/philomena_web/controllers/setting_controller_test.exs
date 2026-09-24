@@ -72,6 +72,18 @@ defmodule PhilomenaWeb.SettingControllerTest do
       assert Repo.get!(Settings, user.id).theme == "dark-green"
     end
 
+    test "banned users can update their settings", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_banned_user(%{conn: conn})
+
+      conn =
+        patch(conn, ~p"/settings", %{
+          "user" => %{"settings" => %{"images_per_page" => "30"}}
+        })
+
+      assert redirected_to(conn) == ~p"/settings/edit"
+      assert Repo.get!(Settings, user.id).images_per_page == 30
+    end
+
     test "falls back to dark-blue when only one theme component is submitted", %{conn: conn} do
       %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
 

@@ -4,8 +4,11 @@ defmodule Philomena.Galleries.Gallery do
 
   alias Philomena.Images.Image
   alias Philomena.Users.User
+  alias Philomena.Reports.Report
   alias Philomena.Galleries.Interaction
   alias Philomena.Galleries.Subscription
+
+  @type t :: %__MODULE__{}
 
   schema "galleries" do
     belongs_to :thumbnail, Image, source: :thumbnail_id
@@ -13,6 +16,7 @@ defmodule Philomena.Galleries.Gallery do
     has_many :interactions, Interaction
     has_many :subscriptions, Subscription
     has_many :subscribers, through: [:subscriptions, :user]
+    has_many :reports, Report
 
     field :title, :string
     field :spoiler_warning, :string, default: ""
@@ -25,7 +29,7 @@ defmodule Philomena.Galleries.Gallery do
   end
 
   @doc false
-  def changeset(gallery, attrs) do
+  def changeset(gallery, attrs \\ %{}) do
     gallery
     |> cast(attrs, [
       :thumbnail_id,
@@ -40,6 +44,23 @@ defmodule Philomena.Galleries.Gallery do
     |> validate_length(:spoiler_warning, max: 20, count: :bytes)
     |> validate_length(:description, max: 10_000, count: :bytes)
     |> foreign_key_constraint(:thumbnail_id, name: :fk_rails_792181eb40)
+  end
+
+  @doc false
+  def add_image_changeset(%__MODULE__{} = gallery) do
+    change(gallery, image_count: gallery.image_count + 1)
+  end
+
+  @doc false
+  def remove_image_changeset(%__MODULE__{} = gallery) do
+    change(gallery, image_count: gallery.image_count - 1)
+  end
+
+  @doc false
+  def add_duplicate_image_error(%__MODULE__{} = gallery) do
+    gallery
+    |> changeset()
+    |> add_error(:interactions, "image is already in this gallery")
   end
 
   @doc false

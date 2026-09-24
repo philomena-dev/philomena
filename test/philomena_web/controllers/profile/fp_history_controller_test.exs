@@ -37,7 +37,7 @@ defmodule PhilomenaWeb.Profile.FpHistoryControllerTest do
 
       response = html_response(get(conn, ~p"/profiles/#{subject}/fp_history"), 200)
 
-      assert response =~ "FP History for"
+      assert response =~ "Fingerprint History for"
       assert response =~ subject.name
       assert response =~ alias_user.name
     end
@@ -48,19 +48,19 @@ defmodule PhilomenaWeb.Profile.FpHistoryControllerTest do
 
       response = html_response(get(conn, ~p"/profiles/#{subject}/fp_history"), 200)
 
-      assert response =~ "FP History for"
+      assert response =~ "Fingerprint History for"
       assert response =~ subject.name
     end
 
-    # NOTE: same `load_and_authorize_resource` `:index` shape as ip_history -
-    # an unknown slug takes the not-authorized redirect, not the not-found one.
-    test "redirects an unknown profile slug with the authorization flash", %{conn: conn} do
+    test "redirects an unknown profile slug with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
       conn = get(conn, ~p"/profiles/#{"nonexistent-slug"}/fp_history")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
   end
 end

@@ -89,8 +89,11 @@ defmodule PhilomenaWeb.RuleControllerTest do
     test "renders an AST pretty diff of a rule's edited description", %{conn: conn} do
       rule = rule_fixture(%{name: "Test Rule: diff", description: "The original rule text"})
 
+      actor =
+        Philomena.AttributionFixtures.actor(Philomena.UsersFixtures.admin_user_fixture())
+
       {:ok, _} =
-        Philomena.Rules.update_rule_with_version(rule, nil, %{
+        Philomena.Rules.update_rule(actor, rule.position, %{
           "description" => "The updated rule text"
         })
 
@@ -109,18 +112,13 @@ defmodule PhilomenaWeb.RuleControllerTest do
       assert response =~ "rule text</td>"
     end
 
-    test "redirects to /rules for a hidden rule as anonymous", %{conn: conn} do
+    test "rejects a hidden rule as unauthorized for an anonymous viewer", %{conn: conn} do
       rule = rule_fixture(%{name: "Test Hidden Rule", hidden: true})
 
-      # NOTE: hidden/internal rules pass Canary (any %Rule{} is :show-able)
-      # and are caught by the controller's own check_permission plug, which
-      # redirects to /rules - not to / like most unauthorized pages.
       conn = get(conn, ~p"/rules/#{rule}")
 
-      assert redirected_to(conn) == ~p"/rules"
-
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
-               "You do not have permission to view that rule."
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
     test "renders a hidden rule for admins", %{conn: conn} do
@@ -133,16 +131,13 @@ defmodule PhilomenaWeb.RuleControllerTest do
       assert response =~ "Test Hidden Rule"
     end
 
-    test "redirects to / for an unknown position", %{conn: conn} do
+    test "redirects with not-found for an unknown position", %{conn: conn} do
       conn = get(conn, ~p"/rules/999999")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You can't access that page."
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
-    # NOTE: a non-integer position short-circuits to NotFoundPlug via the central
-    # IntegerId guard, so the flash is the not-found message rather than the
-    # "You can't access that page." an unknown integer position gets.
     test "redirects to / with the not-found flash for a non-integer position", %{conn: conn} do
       conn = get(conn, ~p"/rules/not-a-position")
 

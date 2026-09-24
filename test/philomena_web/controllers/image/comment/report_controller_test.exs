@@ -34,6 +34,31 @@ defmodule PhilomenaWeb.Image.Comment.ReportControllerTest do
              "Couldn't find what you were looking for!"
   end
 
+  test "GET and POST reject a comment through a different route image", %{conn: conn} do
+    %{conn: conn} = register_and_log_in_user(%{conn: conn})
+    image = image_fixture()
+    other_image = image_fixture()
+    comment = comment_fixture(image)
+    rule = rule_fixture()
+
+    get_conn = get(conn, ~p"/images/#{other_image}/comments/#{comment}/reports/new")
+    assert redirected_to(get_conn) == "/"
+
+    post_conn =
+      conn
+      |> recycle()
+      |> post(~p"/images/#{other_image}/comments/#{comment}/reports", %{
+        "report" => %{
+          "reason" => "Wrong parent",
+          "rule_id" => rule.id,
+          "user_agent" => "Test Browser/1.0"
+        }
+      })
+
+    assert redirected_to(post_conn) == "/"
+    assert Repo.aggregate(Report, :count) == 0
+  end
+
   test "POST as a logged-in user creates the report and redirects to /reports", %{conn: conn} do
     %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
     image = image_fixture()

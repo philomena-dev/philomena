@@ -49,7 +49,12 @@ defmodule PhilomenaWeb.Conversation.HideControllerTest do
        %{conn: conn} do
     %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
     conversation = conversation_fixture(confirmed_user_fixture(), user)
-    {:ok, _} = Conversations.mark_conversation_hidden(conversation, user)
+
+    {:ok, _} =
+      Conversations.update_conversation_hide(
+        Philomena.AttributionFixtures.actor(user),
+        conversation.slug
+      )
 
     conn = delete(conn, ~p"/conversations/#{conversation}/hide")
 
@@ -69,14 +74,15 @@ defmodule PhilomenaWeb.Conversation.HideControllerTest do
     assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
   end
 
-  test "POST for an unknown conversation redirects to / with the authorization flash",
+  test "POST for an unknown conversation redirects with the not-found flash",
        %{conn: conn} do
-    # Canary sends the nil resource down the unauthorized path
     %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
     conn = post(conn, ~p"/conversations/unknown-slug/hide")
 
     assert redirected_to(conn) == "/"
-    assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+    assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+             "Couldn't find what you were looking for!"
   end
 end

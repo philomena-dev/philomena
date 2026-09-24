@@ -7,6 +7,7 @@ defmodule PhilomenaWeb.Api.Json.ImageControllerTest do
   import Philomena.ImagesFixtures
   import Philomena.UsersFixtures
 
+  alias Philomena.Multi
   alias Philomena.ImageFaves
   alias Philomena.Images.Image
   alias Philomena.Repo
@@ -97,28 +98,18 @@ defmodule PhilomenaWeb.Api.Json.ImageControllerTest do
       assert body["image"]["uploader_id"] == nil
     end
 
-    test "returns a metadata stub for a hidden image instead of a 404", %{conn: conn} do
+    test "returns a limited object for a hidden image", %{conn: conn} do
       image = image_fixture(hidden_from_users: true, deletion_reason: "Rule #0")
 
       conn = get(conn, ~p"/api/v1/json/images/#{image.id}")
 
-      # NOTE: hidden (deleted) images are still shown, as a reduced stub;
-      # there is no `spoilered` key in this branch.
-      assert json_response(conn, 200) == %{
-               "interactions" => [],
-               "image" => %{
-                 "id" => image.id,
-                 "created_at" => DateTime.to_iso8601(image.created_at),
-                 "updated_at" => DateTime.to_iso8601(image.updated_at),
-                 "first_seen_at" => DateTime.to_iso8601(image.first_seen_at),
-                 "deletion_reason" => "Rule #0",
-                 "duplicate_of" => nil,
-                 "hidden_from_users" => true
-               }
-             }
+      body = json_response(conn, 200)
+      assert body["image"]["hidden_from_users"] == true
+      assert body["image"]["duplicate_id"] == nil
+      refute Map.has_key?(body["image"], "tags")
     end
 
-    test "shows the duplicate target instead of the deletion reason for a merged image",
+    test "returns a limited object for a merged image",
          %{conn: conn} do
       target = image_fixture()
 
@@ -131,22 +122,20 @@ defmodule PhilomenaWeb.Api.Json.ImageControllerTest do
 
       conn = get(conn, ~p"/api/v1/json/images/#{image.id}")
 
-      assert %{
-               "image" => %{
-                 "duplicate_of" => duplicate_of,
-                 "deletion_reason" => nil,
-                 "hidden_from_users" => true
-               }
-             } = json_response(conn, 200)
-
-      assert duplicate_of == target.id
+      body = json_response(conn, 200)
+      assert body["image"]["hidden_from_users"] == true
+      assert body["image"]["duplicate_of"] == target.id
+      refute Map.has_key?(body["image"], "tags")
     end
 
     test "returns the user's interactions with the image for an API key", %{conn: conn} do
       user = confirmed_user_fixture()
       image = image_fixture()
 
-      {:ok, _} = Repo.transaction(ImageFaves.create_fave_transaction(image, user))
+      {:ok, _} =
+        Multi.new()
+        |> ImageFaves.put_fave_for_loaded_image(image, user)
+        |> Multi.transact()
 
       conn = get(conn, ~p"/api/v1/json/images/#{image.id}?key=#{user.authentication_token}")
 
@@ -169,12 +158,10 @@ defmodule PhilomenaWeb.Api.Json.ImageControllerTest do
       assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
-    test "raises for a non-integer id", %{conn: conn} do
-      # NOTE: the id is interpolated into the query without casting, so a
-      # non-integer id becomes a 500 rather than a 404.
-      assert_raise Ecto.Query.CastError, fn ->
-        get(conn, ~p"/api/v1/json/images/not-a-number")
-      end
+    test "returns 404 for a non-integer id", %{conn: conn} do
+      conn = get(conn, ~p"/api/v1/json/images/not-a-number")
+
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
   end
 

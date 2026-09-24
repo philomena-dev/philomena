@@ -93,7 +93,7 @@ defmodule PhilomenaWeb.Tag.AliasControllerTest do
       assert Repo.get!(Tag, tag.id).aliased_tag_id == target.id
     end
 
-    test "aliasing into an unknown target re-renders the form with errors", %{conn: conn} do
+    test "aliasing into an unknown target redirects with an error", %{conn: conn} do
       # NOTE: a nonexistent target tag makes alias_changeset fail
       # validate_required(:aliased_tag), so the controller re-renders edit.html
       # at 200 - a genuine error branch.
@@ -102,11 +102,8 @@ defmodule PhilomenaWeb.Tag.AliasControllerTest do
 
       conn = patch(conn, ~p"/tags/#{tag}/alias", %{"tag" => %{"target_tag" => "no such tag"}})
 
-      # NOTE: the error-branch re-render doesn't pass a title assign, so pin the
-      # form heading and the validation-error alert instead.
-      response = html_response(conn, 200)
-      assert response =~ "Aliasing tag"
-      assert response =~ "something went wrong"
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
       assert Repo.get!(Tag, tag.id).aliased_tag_id == nil
     end
   end
@@ -121,7 +118,7 @@ defmodule PhilomenaWeb.Tag.AliasControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "can't access"
     end
 
-    test "an admin queues a dealias", %{conn: conn} do
+    test "an admin dealiases the tag", %{conn: conn} do
       target = tag_fixture(name: "target tag dealias")
 
       tag =
@@ -133,27 +130,24 @@ defmodule PhilomenaWeb.Tag.AliasControllerTest do
       conn = delete(conn, ~p"/tags/#{tag}/alias")
 
       assert redirected_to(conn) == ~p"/tags/#{tag}"
-      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Tag dealias queued"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Tag dealias successful"
+      assert Repo.get!(Tag, tag.id).aliased_tag_id == nil
     end
 
-    test "an unknown slug is the not-authorized redirect for a role_map moderator", %{
+    test "an unknown slug is the not-found redirect for a role_map moderator", %{
       conn: conn
     } do
-      # NOTE: a role-mod fails authorization on the nil resource, so the
-      # unauthorized handler fires - "can't access". An admin passes
-      # authorization and hits the not-found handler instead (next test).
       conn = log_in_role_moderator(conn, "Tag")
       conn = delete(conn, ~p"/tags/nonexistent-tag/alias")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "can't access"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
     test "an unknown slug is the not-found redirect for an admin", %{conn: conn} do
-      # NOTE: can?(admin, _, nil) is true, but load_and_authorize_resource has
-      # persisted: true, so Canary's not_found_handler fires on the nil
-      # resource before delete/2 runs - a clean "Couldn't find" redirect, NOT
-      # a crash.
+      # NOTE: can?(admin, _, nil) is true, so the admin is authorized on the
+      # nil load and the context returns not_found before delete/2 runs - a
+      # clean "Couldn't find" redirect, NOT a crash.
       conn = log_in_user(conn, admin_user_fixture())
       conn = delete(conn, ~p"/tags/nonexistent-tag/alias")
 

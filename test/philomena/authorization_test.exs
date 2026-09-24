@@ -91,4 +91,62 @@ defmodule Philomena.AuthorizationTest do
       assert Authorization.authorize(nil, :show, image) == :ok
     end
   end
+
+  describe "authorize/3 with an Attribution.Actor" do
+    # The struct's user alone decides permissions; the IP and fingerprint
+    # attribute the action but grant nothing.
+    import Philomena.AttributionFixtures, only: [actor: 0, actor: 1]
+
+    test "resolves to the wrapped moderator", %{moderator: moderator} do
+      assert Authorization.authorize(actor(moderator), :edit, %Tag{}) == :ok
+    end
+
+    test "resolves to the wrapped regular user", %{user: user} do
+      assert Authorization.authorize(actor(user), :edit, %Tag{}) == {:error, :unauthorized}
+    end
+
+    test "an actor with no user is an anonymous visitor" do
+      assert Authorization.authorize(actor(), :edit, %Tag{}) == {:error, :unauthorized}
+    end
+  end
+
+  # A truthy ban value in the shape production passes (the result of
+  # Philomena.Bans.find/3); only its presence matters to the verifiers.
+  @ban %{
+    reason: "Rule #0",
+    valid_until: ~U[3000-01-01 00:00:00Z],
+    generated_ban_id: "U123456",
+    type: "User"
+  }
+
+  describe "verify_write_access/1" do
+    import Philomena.AttributionFixtures, only: [actor: 0, actor: 1, actor: 2]
+
+    test "passes an anonymous actor with a fingerprint and no ban" do
+      assert Authorization.verify_write_access(actor()) == :ok
+    end
+
+    test "passes a signed-in actor with a fingerprint and no ban", %{user: user} do
+      assert Authorization.verify_write_access(actor(user)) == :ok
+    end
+
+    test "rejects an actor carrying an active ban" do
+      assert Authorization.verify_write_access(actor(nil, ban: @ban)) == {:error, :ban}
+    end
+
+    test "the ban wins over a missing fingerprint" do
+      actor = actor(nil, ban: @ban, fingerprint: nil)
+      assert Authorization.verify_write_access(actor) == {:error, :ban}
+    end
+
+    test "rejects an unbanned actor with no fingerprint" do
+      assert Authorization.verify_write_access(actor(nil, fingerprint: nil)) ==
+               {:error, :unauthorized}
+    end
+
+    test "the fingerprint rule ignores sign-in state", %{user: user} do
+      assert Authorization.verify_write_access(actor(user, fingerprint: nil)) ==
+               {:error, :unauthorized}
+    end
+  end
 end

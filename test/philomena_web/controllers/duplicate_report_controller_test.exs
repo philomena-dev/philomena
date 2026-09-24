@@ -1,9 +1,8 @@
 defmodule PhilomenaWeb.DuplicateReportControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # The :index/:show/:create actions live in the public (Tor-authorized)
-  # scope with no Canary gate, so any visitor can reach them; the
-  # accept/reject/claim moderation children are tested separately.
+  # Show and create are public. The index is a staff review surface and is
+  # authorized by the context even though its route lives in the public scope.
 
   import Philomena.ImagesFixtures
   import Philomena.UsersFixtures
@@ -13,7 +12,8 @@ defmodule PhilomenaWeb.DuplicateReportControllerTest do
   alias Philomena.Repo
 
   describe "GET /duplicate_reports" do
-    test "lists open/claimed reports for anonymous users", %{conn: conn} do
+    test "lists open/claimed reports for moderators", %{conn: conn} do
+      conn = log_in_user(conn, moderator_user_fixture())
       source = image_fixture()
       target = image_fixture()
       dr = duplicate_report_fixture(source, target)
@@ -27,13 +27,13 @@ defmodule PhilomenaWeb.DuplicateReportControllerTest do
       _ = dr
     end
 
-    test "renders with no reports", %{conn: conn} do
+    test "permits anonymous users", %{conn: conn} do
       conn = get(conn, ~p"/duplicate_reports")
-
-      assert html_response(conn, 200) =~ "Duplicate Reports - Derpibooru"
+      assert html_response(conn, 200)
     end
 
     test "the default view omits rejected/accepted reports", %{conn: conn} do
+      conn = log_in_user(conn, moderator_user_fixture())
       source = image_fixture()
       target = image_fixture()
       dr = duplicate_report_fixture(source, target)
@@ -54,6 +54,7 @@ defmodule PhilomenaWeb.DuplicateReportControllerTest do
     end
 
     test "an unrecognized state param falls back to nothing matching", %{conn: conn} do
+      conn = log_in_user(conn, moderator_user_fixture())
       source = image_fixture()
       target = image_fixture()
       duplicate_report_fixture(source, target)
@@ -141,6 +142,24 @@ defmodule PhilomenaWeb.DuplicateReportControllerTest do
       assert dr.user_id == user.id
     end
 
+    test "a banned user is rejected before submission", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_banned_user(%{conn: conn})
+      source = image_fixture()
+      target = image_fixture()
+
+      conn =
+        post(conn, ~p"/duplicate_reports", %{
+          "duplicate_report" => %{
+            "image_id" => source.id,
+            "duplicate_of_image_id" => target.id
+          }
+        })
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You are currently banned"
+      refute Repo.exists?(DuplicateReport)
+    end
+
     test "reporting an image as a duplicate of itself fails validation", %{conn: conn} do
       source = image_fixture()
 
@@ -175,9 +194,7 @@ defmodule PhilomenaWeb.DuplicateReportControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
-    # NOTE: a valid source with an unknown duplicate_of_image_id redirects back
-    # to the source image with the submission-failure flash.
-    test "an unknown target image id redirects to the source with the failure flash",
+    test "an unknown target image id redirects with the not-found flash",
          %{conn: conn} do
       source = image_fixture()
 
@@ -189,8 +206,8 @@ defmodule PhilomenaWeb.DuplicateReportControllerTest do
           }
         })
 
-      assert redirected_to(conn) == ~p"/images/#{source}"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Failed to submit duplicate report"
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
       refute Repo.exists?(DuplicateReport)
     end
 

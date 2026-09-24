@@ -127,6 +127,18 @@ defmodule PhilomenaWeb.Profile.AwardControllerTest do
                "Couldn't find what you were looking for!"
     end
 
+    test "redirects with not-found when the award belongs to another profile", %{conn: conn} do
+      %{conn: conn, user: mod} = register_and_log_in_moderator(%{conn: conn})
+      owner = confirmed_user_fixture()
+      other = confirmed_user_fixture()
+      award = badge_award_fixture(mod, owner)
+
+      conn = get(conn, ~p"/profiles/#{other}/awards/#{award}/edit")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
+    end
+
     test "redirects a regular user with the authorization flash", %{conn: conn} do
       %{conn: conn, user: mod} = register_and_log_in_moderator(%{conn: conn})
       other = confirmed_user_fixture()
@@ -203,6 +215,21 @@ defmodule PhilomenaWeb.Profile.AwardControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
                "Couldn't find what you were looking for!"
     end
+
+    test "does not update an award through another profile", %{conn: conn} do
+      %{conn: conn, user: mod} = register_and_log_in_moderator(%{conn: conn})
+      owner = confirmed_user_fixture()
+      other = confirmed_user_fixture()
+      award = badge_award_fixture(mod, owner, nil, %{label: "Before"})
+
+      conn =
+        patch(conn, ~p"/profiles/#{other}/awards/#{award}", %{
+          "award" => %{"label" => "After"}
+        })
+
+      assert redirected_to(conn) == "/"
+      assert Repo.get!(Award, award.id).label == "Before"
+    end
   end
 
   describe "DELETE /profiles/:profile_id/awards/:id" do
@@ -231,6 +258,18 @@ defmodule PhilomenaWeb.Profile.AwardControllerTest do
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
                "Couldn't find what you were looking for!"
+    end
+
+    test "does not revoke an award through another profile", %{conn: conn} do
+      %{conn: conn, user: mod} = register_and_log_in_moderator(%{conn: conn})
+      owner = confirmed_user_fixture()
+      other = confirmed_user_fixture()
+      award = badge_award_fixture(mod, owner)
+
+      conn = delete(conn, ~p"/profiles/#{other}/awards/#{award}")
+
+      assert redirected_to(conn) == "/"
+      assert Repo.get(Award, award.id)
     end
 
     test "redirects a regular user with the authorization flash", %{conn: conn} do

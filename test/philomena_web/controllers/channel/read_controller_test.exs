@@ -21,7 +21,7 @@ defmodule PhilomenaWeb.Channel.ReadControllerTest do
       path: ~p"/channels/#{channel}/read",
       arrange!: fn ->
         {:ok, _} = Channels.create_subscription(channel, user)
-        {:ok, 1} = Notifications.create_channel_live_notification(channel)
+        {:ok, 1} = Notifications.broadcast_channel_live(channel)
       end,
       notification?: fn ->
         Repo.exists?(
@@ -35,9 +35,8 @@ defmodule PhilomenaWeb.Channel.ReadControllerTest do
   read_singleton_tests()
 
   test "POST for an unknown channel redirects with the not-found flash", %{conn: conn} do
-    # NOTE: load_resource now uses required: true, so Canary runs its not-found
-    # handler on :create - an unknown channel redirects instead of passing nil
-    # into clear_channel_notification/2.
+    # The shared loader rejects the missing row before the named :mark_read
+    # authorization is attempted.
     %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
     conn = post(conn, ~p"/channels/999999999/read")

@@ -14,6 +14,13 @@ defmodule PhilomenaWeb.IpProfile.SourceChangeControllerTest do
                "You must log in to access this page."
     end
 
+    test "the route's login requirement runs before malformed IP validation", %{conn: conn} do
+      conn = get(conn, ~p"/ip_profiles/#{"not-an-ip"}/source_changes")
+
+      assert redirected_to(conn) == ~p"/sessions/new"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You must log in"
+    end
+
     test "redirects a regular user with the authorization flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
@@ -52,6 +59,15 @@ defmodule PhilomenaWeb.IpProfile.SourceChangeControllerTest do
 
       assert redirected_to(conn) == "/"
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
+    end
+
+    test "redirects with an error flash for an invalid filter", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+
+      conn = get(conn, ~p"/ip_profiles/#{"203.0.113.1"}/source_changes?added=invalid")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Invalid source change filter."
     end
   end
 end

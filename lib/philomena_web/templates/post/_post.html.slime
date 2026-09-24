@@ -75,7 +75,7 @@ article.block.communication id="post_#{@post.id}"
 
         - true ->
 
-      = if can?(@conn, :show, :ip_address) do
+      = if can?(@conn, :show, :identity_metadata) do
         .communication__info
           =<> link_to_ip(@conn, @post.ip)
         .communication__info

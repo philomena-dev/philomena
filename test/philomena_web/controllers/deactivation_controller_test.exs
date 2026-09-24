@@ -20,7 +20,7 @@ defmodule PhilomenaWeb.DeactivationControllerTest do
       conn = get(conn, ~p"/registrations/edit")
       assert redirected_to(conn) == ~p"/sessions/new"
 
-      user = Users.get_user!(user.id)
+      user = Users.fetch_user_for_worker!(user.id)
       assert user.deleted_by_user_id == user.id
     end
   end

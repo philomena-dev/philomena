@@ -42,10 +42,9 @@ defmodule PhilomenaWeb.Admin.User.EraseControllerTest do
       assert html_response(conn, 200) =~ "Erase user"
     end
 
-    # NOTE: the prevent_deleting_nonexistent_users guard catches the nil the
-    # load_resource plug assigns for an unknown slug (before any not_found
-    # handler would apply on :new), redirecting to the user index with a custom
-    # flash instead of crashing.
+    # NOTE: the prevent_deleting_nonexistent_users guard catches the nil loaded
+    # for an unknown slug (before context authorization would apply on :new),
+    # redirecting to the user index with a custom flash instead of crashing.
     test "redirects an unknown slug to the user index", %{conn: conn} do
       conn = get(conn, ~p"/admin/users/no-such-user/erase/new")
       assert redirected_to(conn) == ~p"/admin/users"

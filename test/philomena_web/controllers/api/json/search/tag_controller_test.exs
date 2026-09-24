@@ -76,7 +76,7 @@ defmodule PhilomenaWeb.Api.Json.Search.TagControllerTest do
     test "returns 400 with a JSON error for an unparsable query", %{conn: conn} do
       conn = get(conn, ~p"/api/v1/json/search/tags?q=)")
 
-      assert json_response(conn, 400) == %{"error" => "Imbalanced parentheses."}
+      assert json_response(conn, 400) == %{"error" => "is invalid: Imbalanced parentheses."}
     end
   end
 end

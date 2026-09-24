@@ -35,7 +35,9 @@ defmodule PhilomenaWeb.Api.Json.Search.PostControllerTest do
       assert author == user.name
     end
 
-    test "excludes hidden posts and posts in restricted forums", %{conn: conn} do
+    test "excludes hidden posts and posts in restricted forums for anonymous actors", %{
+      conn: conn
+    } do
       moderator = moderator_user_fixture()
       forum = forum_fixture()
       staff_forum = forum_fixture(access_level: "staff")
@@ -45,7 +47,16 @@ defmodule PhilomenaWeb.Api.Json.Search.PostControllerTest do
         topic_fixture(staff_forum, nil, %{"posts" => %{"0" => %{"body" => "chartreuse vicuna"}}})
 
       hidden = post_fixture(topic, nil, %{"body" => "chartreuse guanaco"})
-      {:ok, _} = Posts.hide_post(hidden, %{"deletion_reason" => "spam"}, moderator)
+
+      {:ok, _} =
+        Posts.create_post_hide(
+          Philomena.AttributionFixtures.actor(moderator),
+          forum.short_name,
+          topic.slug,
+          hidden.id,
+          %{"deletion_reason" => "spam"}
+        )
+
       SearchHelpers.reindex_all!(Post)
 
       conn = get(conn, ~p"/api/v1/json/search/posts?q=chartreuse")
@@ -54,12 +65,42 @@ defmodule PhilomenaWeb.Api.Json.Search.PostControllerTest do
                json_response(conn, 200)
     end
 
+    test "allows moderators to search posts in restricted forums", %{conn: conn} do
+      moderator = moderator_user_fixture()
+      staff_forum = forum_fixture(access_level: "staff")
+
+      post =
+        staff_forum
+        |> topic_fixture()
+        |> post_fixture(admin_user_fixture(), %{"body" => "chartreuse vicuna"})
+
+      SearchHelpers.reindex_all!(Post)
+
+      conn =
+        get(
+          conn,
+          ~p"/api/v1/json/search/posts?q=chartreuse&key=#{moderator.authentication_token}"
+        )
+
+      assert %{"total" => 1, "posts" => [%{"id" => id, "body" => "chartreuse vicuna"}]} =
+               json_response(conn, 200)
+
+      assert id == post.id
+    end
+
     test "excludes a matched post whose topic is hidden", %{conn: conn} do
       moderator = moderator_user_fixture()
       forum = forum_fixture()
       topic = topic_fixture(forum, nil, %{"posts" => %{"0" => %{"body" => "chartreuse okapi"}}})
 
-      {:ok, _} = Topics.hide_topic(topic, "spam", moderator)
+      {:ok, {_forum, _topic}} =
+        Topics.create_topic_hide(
+          Philomena.AttributionFixtures.actor(moderator),
+          forum.short_name,
+          topic.slug,
+          %{"deletion_reason" => "spam"}
+        )
+
       SearchHelpers.reindex_all!(Post)
 
       conn = get(conn, ~p"/api/v1/json/search/posts?q=chartreuse")
@@ -78,7 +119,14 @@ defmodule PhilomenaWeb.Api.Json.Search.PostControllerTest do
       topic = topic_fixture(forum, nil, %{"posts" => %{"0" => %{"body" => "chartreuse okapi"}}})
 
       # Hiding the topic and reindexing folds its posts to hidden, excluding them.
-      {:ok, hidden_topic} = Topics.hide_topic(topic, "spam", moderator)
+      {:ok, {_forum, hidden_topic}} =
+        Topics.create_topic_hide(
+          Philomena.AttributionFixtures.actor(moderator),
+          forum.short_name,
+          topic.slug,
+          %{"deletion_reason" => "spam"}
+        )
+
       SearchHelpers.reindex_all!(Post)
 
       conn = get(conn, ~p"/api/v1/json/search/posts?q=chartreuse")
@@ -87,7 +135,13 @@ defmodule PhilomenaWeb.Api.Json.Search.PostControllerTest do
       # Unhiding it (which enqueues a topic-wide post reindex in production; here
       # we drive the reindex explicitly) folds the posts back to visible, so the
       # post is searchable again with its real body.
-      {:ok, _} = Topics.unhide_topic(hidden_topic)
+      {:ok, {_forum, _topic}} =
+        Topics.delete_topic_hide(
+          Philomena.AttributionFixtures.actor(moderator),
+          forum.short_name,
+          hidden_topic.slug
+        )
+
       SearchHelpers.reindex_all!(Post)
 
       conn = get(conn, ~p"/api/v1/json/search/posts?q=chartreuse")

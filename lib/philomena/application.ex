@@ -37,12 +37,15 @@ defmodule Philomena.Application do
          ]
        ]},
 
-      # Advert update batching
+      # Updating certain high-traffic counters on every action is unnecessary
+      # and creates a large volume of dead database rows. These server modules
+      # collect updates asynchronously and submit periodic batches of updates
+      # to the database, reducing churn.
       Philomena.Adverts.Server,
+      Philomena.UserFingerprints.Server,
+      Philomena.UserIps.Server,
 
       # Start the endpoint when the application starts
-      PhilomenaWeb.UserFingerprintUpdater,
-      PhilomenaWeb.UserIpUpdater,
       PhilomenaWeb.Endpoint
     ]
 

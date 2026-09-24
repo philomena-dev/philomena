@@ -44,9 +44,9 @@ defmodule PhilomenaWeb.Admin.User.VerificationControllerTest do
       assert Repo.get(User, target.id).verified
     end
 
-    # NOTE: load_resource now uses required: true, so Canary's not_found handler
-    # runs on :create too - an unknown slug redirects with the not-found flash
-    # rather than passing nil into Users.verify_user/1.
+    # NOTE: the context authorizes the loaded record on :create; an unknown slug
+    # loads nil, the actor is authorized on it, so it redirects with the
+    # not-found flash rather than passing nil into Users.verify_user/1.
     test "redirects with the not-found flash for an unknown slug", %{conn: conn} do
       conn = post(conn, ~p"/admin/users/no-such-user/verification")
 

@@ -79,6 +79,29 @@ defmodule PhilomenaWeb.Search.ReverseControllerTest do
       assert html_response(conn, 200) =~ ~p"/images/#{match}"
     end
 
+    test "filters hidden matches by image visibility", %{conn: conn} do
+      visible = image_fixture()
+      insert_intensities(visible, @png_intensity)
+
+      hidden = image_fixture(hidden_from_users: true)
+      insert_intensities(hidden, @png_intensity)
+
+      conn = post(conn, ~p"/search/reverse", %{"image" => %{"image" => png_upload()}})
+      response = html_response(conn, 200)
+
+      assert response =~ ~p"/images/#{visible}"
+      refute response =~ ~p"/images/#{hidden}"
+
+      %{conn: moderator_conn} = register_and_log_in_moderator(%{conn: build_conn()})
+
+      moderator_conn =
+        post(moderator_conn, ~p"/search/reverse", %{
+          "image" => %{"image" => png_upload()}
+        })
+
+      assert html_response(moderator_conn, 200) =~ ~p"/images/#{hidden}"
+    end
+
     test "renders the plain form when no image is submitted", %{conn: conn} do
       # NOTE: ScraperCachePlug injects an empty "image" params map, so a submit
       # with no upload takes the third create/2 clause and renders the form

@@ -1,6 +1,7 @@
 defmodule PhilomenaWeb.Api.Json.CommentControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
+  import Philomena.AttributionFixtures
   import Philomena.CommentsFixtures
   import Philomena.ImagesFixtures
   import Philomena.UsersFixtures
@@ -56,46 +57,89 @@ defmodule PhilomenaWeb.Api.Json.CommentControllerTest do
       assert author =~ ~r/\ABackground Pony #[0-9A-F]{4}\z/
     end
 
-    test "nulls out the body of a hidden comment but stays 200", %{conn: conn} do
+    test "returns 403 for a hidden comment", %{conn: conn} do
       user = confirmed_user_fixture()
       moderator = moderator_user_fixture()
       image = image_fixture()
       comment = comment_fixture(image, user, %{"body" => "Rule-breaking comment"})
 
-      {:ok, _} = Comments.hide_comment(comment, %{"deletion_reason" => "spam"}, moderator)
-
-      conn = get(conn, ~p"/api/v1/json/comments/#{comment.id}")
-
-      assert %{
-               "comment" => %{
-                 "body" => nil,
-                 "edited_at" => nil,
-                 "edit_reason" => nil,
-                 "author" => author
-               }
-             } = json_response(conn, 200)
-
-      assert author == user.name
-    end
-
-    test "returns 404 for a destroyed comment", %{conn: conn} do
-      image = image_fixture()
-      comment = comment_fixture(image, nil)
-
-      {:ok, _} = Comments.destroy_comment(comment)
-
-      conn = get(conn, ~p"/api/v1/json/comments/#{comment.id}")
-
-      assert json_response(conn, 404) == %{"error" => "Not found"}
-    end
-
-    test "returns 403 for a comment on a hidden image", %{conn: conn} do
-      image = image_fixture(hidden_from_users: true)
-      comment = comment_fixture(image, nil)
+      {:ok, _} =
+        Comments.create_comment_hide(actor(moderator), image.id, comment.id, %{
+          "deletion_reason" => "spam"
+        })
 
       conn = get(conn, ~p"/api/v1/json/comments/#{comment.id}")
 
       assert response(conn, 403) == ""
+    end
+
+    test "a moderator API key reads a hidden comment with redacted content", %{conn: conn} do
+      moderator = moderator_user_fixture()
+      image = image_fixture()
+      comment = comment_fixture(image, confirmed_user_fixture(), %{"body" => "Hidden body"})
+
+      {:ok, _} =
+        Comments.create_comment_hide(actor(moderator), image.id, comment.id, %{
+          "deletion_reason" => "spam"
+        })
+
+      conn =
+        get(
+          conn,
+          ~p"/api/v1/json/comments/#{comment.id}?key=#{moderator.authentication_token}"
+        )
+
+      assert %{"comment" => %{"id" => id, "body" => nil}} = json_response(conn, 200)
+      assert id == comment.id
+    end
+
+    test "returns 403 for a destroyed comment", %{conn: conn} do
+      image = image_fixture()
+      comment = comment_fixture(image, nil)
+
+      {:ok, _} =
+        Comments.create_comment_hide(actor(admin_user_fixture()), image.id, comment.id, %{
+          "deletion_reason" => "spam"
+        })
+
+      {:ok, _} = Comments.create_comment_delete(actor(admin_user_fixture()), image.id, comment.id)
+
+      conn = get(conn, ~p"/api/v1/json/comments/#{comment.id}")
+
+      assert response(conn, 403) == ""
+    end
+
+    test "returns 403 for a comment on a hidden image", %{conn: conn} do
+      image = image_fixture(hidden_from_users: true)
+      comment = comment_fixture(image, moderator_user_fixture())
+
+      conn = get(conn, ~p"/api/v1/json/comments/#{comment.id}")
+
+      assert response(conn, 403) == ""
+    end
+
+    test "a moderator API key reads a hidden image comment with fully redacted metadata",
+         %{conn: conn} do
+      moderator = moderator_user_fixture()
+      image = image_fixture(hidden_from_users: true)
+      comment = comment_fixture(image, moderator, %{"body" => "Hidden image body"})
+
+      conn =
+        get(
+          conn,
+          ~p"/api/v1/json/comments/#{comment.id}?key=#{moderator.authentication_token}"
+        )
+
+      assert %{
+               "comment" => %{
+                 "id" => id,
+                 "body" => nil,
+                 "author" => nil,
+                 "created_at" => nil
+               }
+             } = json_response(conn, 200)
+
+      assert id == comment.id
     end
 
     test "returns 404 for an unknown id", %{conn: conn} do
@@ -104,12 +148,9 @@ defmodule PhilomenaWeb.Api.Json.CommentControllerTest do
       assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
-    test "raises for a non-integer id", %{conn: conn} do
-      # NOTE: the id is interpolated into the query without casting, so a
-      # non-integer id becomes a 500 rather than a 404.
-      assert_raise Ecto.Query.CastError, fn ->
-        get(conn, ~p"/api/v1/json/comments/not-a-number")
-      end
+    test "returns 404 for a non-integer id", %{conn: conn} do
+      conn = get(conn, ~p"/api/v1/json/comments/not-a-number")
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
   end
 end

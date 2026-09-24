@@ -32,14 +32,16 @@ defmodule PhilomenaWeb.Topic.SubscriptionControllerTest do
 
   subscription_toggle_tests()
 
-  test "POST for an unknown forum redirects to / with the authorization flash",
+  test "POST for an unknown forum redirects to / with the not-found flash",
        %{conn: conn} do
     %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
     conn = post(conn, ~p"/forums/nonexistent/topics/some-topic/subscription")
 
     assert redirected_to(conn) == "/"
-    assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+    assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+             "Couldn't find what you were looking for!"
   end
 
   test "POST for an unknown topic redirects to / with the not-found flash", %{conn: conn} do
@@ -56,13 +58,21 @@ defmodule PhilomenaWeb.Topic.SubscriptionControllerTest do
 
   test "a hidden topic cannot be subscribed to but can be unsubscribed from",
        %{conn: conn} do
-    # NOTE: LoadTopicPlug passes show_hidden: true for :delete only, so the
-    # two actions diverge on hidden topics
+    # NOTE: the context's show_forum_topic passes show_hidden: true for
+    # unsubscribe (:delete) only, so the two actions diverge on hidden topics
     %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
     forum = forum_fixture()
     topic = topic_fixture(forum)
     {:ok, _} = Topics.create_subscription(topic, user)
-    {:ok, topic} = Topics.hide_topic(topic, "test hiding", moderator_user_fixture())
+    moderator = moderator_user_fixture()
+
+    {:ok, {_forum, topic}} =
+      Topics.create_topic_hide(
+        Philomena.AttributionFixtures.actor(moderator),
+        forum.short_name,
+        topic.slug,
+        %{"deletion_reason" => "test hiding"}
+      )
 
     conn2 = post(conn, ~p"/forums/#{forum}/topics/#{topic}/subscription")
     assert redirected_to(conn2) == "/"

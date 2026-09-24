@@ -1,17 +1,14 @@
 defmodule Philomena.Adverts.Server do
   @moduledoc """
-  Advert impression and click aggregator.
-
-  Updating the impression count for adverts and clicks on every pageload is unnecessary
-  and slows down requests. This module collects the adverts and clicks and submits a batch
-  of updates to the database after every 10 seconds asynchronously, reducing the amount of
-  work to be done.
+  Batches advert click and impression updates and submits them to the database
+  every 10 seconds.
   """
 
   use GenServer
-  alias Philomena.Adverts.Recorder
+  alias Philomena.Adverts
 
-  @type advert_id :: integer()
+  @timeout 0
+  @flush_interval to_timeout(second: 10)
 
   @doc """
   Starts the GenServer.
@@ -31,7 +28,7 @@ defmodule Philomena.Adverts.Server do
       :ok
 
   """
-  @spec record_impression(advert_id()) :: :ok
+  @spec record_impression(integer()) :: :ok
   def record_impression(advert_id) do
     GenServer.cast(__MODULE__, {:impressions, advert_id})
   end
@@ -45,15 +42,10 @@ defmodule Philomena.Adverts.Server do
       :ok
 
   """
-  @spec record_click(advert_id()) :: :ok
+  @spec record_click(integer()) :: :ok
   def record_click(advert_id) do
     GenServer.cast(__MODULE__, {:clicks, advert_id})
   end
-
-  # Used to force the GenServer to immediately sleep when no
-  # messages are available.
-  @timeout 0
-  @sleep :timer.seconds(10)
 
   @impl true
   @doc false
@@ -75,13 +67,10 @@ defmodule Philomena.Adverts.Server do
   @doc false
   def handle_info(:timeout, state) do
     # Process all updates from state now
-    Recorder.run(state)
+    Adverts.record_counters(state)
 
-    # Sleep for the specified delay
-    :timer.sleep(@sleep)
-
-    # Return to GenServer event loop
-    {:noreply, initial_state(), @timeout}
+    # Return to GenServer event loop and wait for the next flush interval.
+    {:noreply, initial_state(), @flush_interval}
   end
 
   defp increment_counter(map, advert_id) do

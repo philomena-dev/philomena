@@ -87,11 +87,11 @@ defmodule PhilomenaWeb.TagControllerTest do
                ~s|This tag ("test aliased tag") has been aliased into the tag "test target tag".|
     end
 
-    test "redirects to / for an unknown slug", %{conn: conn} do
+    test "redirects to / with not-found for an unknown slug", %{conn: conn} do
       conn = get(conn, ~p"/tags/nonexistent-tag")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You can't access that page."
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 
@@ -165,24 +165,19 @@ defmodule PhilomenaWeb.TagControllerTest do
       assert Repo.get!(Tag, tag.id).short_description == "short desc"
     end
 
-    test "an unknown slug is the not-authorized redirect for a moderator", %{conn: conn} do
-      # NOTE: update_tag's changeset has no required fields, so there is no
-      # reachable validation failure; the failure surface is the unknown slug.
-      # A moderator fails authorization on the nil resource, so the
-      # unauthorized handler fires - "can't access".
+    test "an unknown slug is the not-found redirect for a moderator", %{conn: conn} do
       conn = log_in_user(conn, moderator_user_fixture())
       conn = put(conn, ~p"/tags/nonexistent-tag", %{"tag" => %{"category" => "character"}})
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "can't access"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
 
     test "an unknown slug is the not-found redirect for an admin", %{conn: conn} do
-      # NOTE: can?(admin, _, nil) is true, but load_and_authorize_resource has
-      # persisted: true, so Canary's not_found_handler fires on the nil
-      # resource before update/2 runs - a clean "Couldn't find" redirect, NOT
-      # a crash. Same different-flash-by-role split as the tag alias/reindex
-      # children.
+      # NOTE: can?(admin, _, nil) is true, so the admin is authorized on the
+      # nil load and the context returns not_found before update/2 runs - a
+      # clean "Couldn't find" redirect, NOT a crash. Same
+      # different-flash-by-role split as the tag alias/reindex children.
       conn = log_in_user(conn, admin_user_fixture())
       conn = put(conn, ~p"/tags/nonexistent-tag", %{"tag" => %{"category" => "character"}})
 
@@ -245,9 +240,8 @@ defmodule PhilomenaWeb.TagControllerTest do
 
     test "an unknown slug is the not-found redirect for an admin", %{conn: conn} do
       # NOTE: the delete_tag failure surface is the unknown slug; an admin
-      # passes authorization on the nil resource but Canary's not_found_handler
-      # (persisted: true) fires before delete/2 - a clean "Couldn't find"
-      # redirect, not a crash.
+      # passes authorization on the nil load, so the context returns not_found
+      # before delete/2 - a clean "Couldn't find" redirect, not a crash.
       conn = log_in_user(conn, admin_user_fixture())
       conn = delete(conn, ~p"/tags/nonexistent-tag")
 

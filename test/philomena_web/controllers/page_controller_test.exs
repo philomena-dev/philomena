@@ -44,7 +44,7 @@ defmodule PhilomenaWeb.PageControllerTest do
     test "redirects to / for regular users", %{conn: conn} do
       %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
-      # NOTE: Canary authorizes :index against the StaticPage module, which
+      # NOTE: the context authorizes :index against the StaticPage module, which
       # only staff ability rules match - the pages index is staff-only even
       # though individual pages are public.
       conn = get(conn, ~p"/pages")
@@ -107,7 +107,7 @@ defmodule PhilomenaWeb.PageControllerTest do
       conn = get(conn, ~p"/pages/nonexistent-page")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You can't access that page."
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 
@@ -250,10 +250,6 @@ defmodule PhilomenaWeb.PageControllerTest do
     end
 
     test "redirects with a not-found flash on an unknown slug for an admin", %{conn: conn} do
-      # NOTE: :edit is a Canary member action, so its not-found handler runs
-      # before the controller even without `persisted: true`. An admin (for
-      # whom can?(admin, _, nil) is true) sails past authorization and takes
-      # the not-found branch rather than crashing on change_static_page(nil).
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
 
       conn = get(conn, ~p"/pages/no-such-slug/edit")

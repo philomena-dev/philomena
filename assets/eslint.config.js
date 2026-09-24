@@ -24,7 +24,9 @@ export default tsEslint.config(
       'block-scoped-var': 2,
       camelcase: [
         2,
-        { allow: ['camo_url', 'spoiler_image_uri', 'image_ids', 'image_id', 'user_id', 'interaction_type'] },
+        {
+          allow: ['camo_url', 'spoiler_image_uri', 'image_ids', 'image_id', 'user_id', 'interaction_type', 'tag_list'],
+        },
       ],
       'class-methods-use-this': 0,
       complexity: 0,

@@ -11,9 +11,8 @@ defmodule Philomena.AutocompleteFixtures do
   Inserts an autocomplete row with the given binary `content`.
 
   `Autocomplete.generate_autocomplete!/0` builds a real binary from the tag
-  table but does not return the row; controller tests only need a row present
-  whose bytes they can compare against, so this inserts one directly the way
-  the changeset would.
+  table; controller tests only need a row present whose bytes they can compare
+  against, so this inserts one directly the way the changeset would.
   """
   def autocomplete_fixture(content \\ <<0, 1, 2, 3>>) do
     %Autocomplete{}

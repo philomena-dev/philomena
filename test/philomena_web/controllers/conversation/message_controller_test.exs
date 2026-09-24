@@ -1,11 +1,19 @@
 defmodule PhilomenaWeb.Conversation.MessageControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
+  import Ecto.Query
   import Philomena.ConversationsFixtures
   import Philomena.UsersFixtures
 
-  alias Philomena.Conversations
+  alias Philomena.Conversations.Message
   alias Philomena.Repo
+
+  defp message_count(conversation) do
+    Repo.aggregate(
+      from(message in Message, where: message.conversation_id == ^conversation.id),
+      :count
+    )
+  end
 
   test "anonymous POST redirects to the login page", %{conn: conn} do
     conn = post(conn, ~p"/conversations/dummy-slug/messages", %{})
@@ -30,7 +38,7 @@ defmodule PhilomenaWeb.Conversation.MessageControllerTest do
     assert redirected_to(conn) == ~p"/conversations/#{conversation}?#{[page: 1]}"
     assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Message successfully sent."
 
-    assert Conversations.count_messages(conversation) == 2
+    assert message_count(conversation) == 2
 
     # a new message marks both sides unread again
     conversation = Repo.reload!(conversation)
@@ -38,7 +46,7 @@ defmodule PhilomenaWeb.Conversation.MessageControllerTest do
     refute conversation.to_read
   end
 
-  test "POST with an empty body redirects back with an error flash", %{conn: conn} do
+  test "POST with an empty body re-renders the conversation with errors", %{conn: conn} do
     %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
     conversation = conversation_fixture(confirmed_user_fixture(), user)
 
@@ -47,12 +55,10 @@ defmodule PhilomenaWeb.Conversation.MessageControllerTest do
         "message" => %{"body" => ""}
       })
 
-    assert redirected_to(conn) == ~p"/conversations/#{conversation}"
-
-    assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
-             "There was an error posting your message"
-
-    assert Conversations.count_messages(conversation) == 1
+    response = html_response(conn, 200)
+    assert response =~ conversation.title
+    assert response =~ "can&#39;t be blank"
+    assert message_count(conversation) == 1
   end
 
   test "POST as a non-participant moderator creates the message", %{conn: conn} do
@@ -67,7 +73,7 @@ defmodule PhilomenaWeb.Conversation.MessageControllerTest do
       })
 
     assert redirected_to(conn) == ~p"/conversations/#{conversation}?#{[page: 1]}"
-    assert Conversations.count_messages(conversation) == 2
+    assert message_count(conversation) == 2
   end
 
   test "POST as a non-participant redirects to / with the authorization flash", %{conn: conn} do
@@ -81,12 +87,11 @@ defmodule PhilomenaWeb.Conversation.MessageControllerTest do
 
     assert redirected_to(conn) == "/"
     assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
-    assert Conversations.count_messages(conversation) == 1
+    assert message_count(conversation) == 1
   end
 
-  test "POST for an unknown conversation redirects to / with the authorization flash",
+  test "POST for an unknown conversation redirects with the not-found flash",
        %{conn: conn} do
-    # Canary sends the nil resource down the unauthorized path
     %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
     conn =
@@ -95,7 +100,9 @@ defmodule PhilomenaWeb.Conversation.MessageControllerTest do
       })
 
     assert redirected_to(conn) == "/"
-    assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+    assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+             "Couldn't find what you were looking for!"
   end
 
   test "POST as a banned user redirects with the ban flash", %{conn: conn} do
