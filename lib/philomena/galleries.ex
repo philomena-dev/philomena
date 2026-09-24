@@ -194,13 +194,13 @@ defmodule Philomena.Galleries do
     {:ok, nil}
   end
 
-  defp image_sort_direction(%{order_position_asc: true}), do: "asc"
-  defp image_sort_direction(_gallery), do: "desc"
+  defp image_sort_direction(%{order_position_asc: true}), do: :asc
+  defp image_sort_direction(_gallery), do: :desc
 
-  defp put_query(list, name, actor, scope, query, pagination) do
+  defp put_query(list, name, {actor, scope, sort, query}, pagination) do
     if pagination.page_number > 0 do
       {:ok, {definition, _tags}} =
-        ImageSearch.search_string(actor, scope, query, pagination: pagination)
+        ImageSearch.search_string(actor, scope, sort, query, pagination: pagination)
 
       Keyword.put(list, name, {definition, preload(Image, [:sources, tags: :aliases])})
     else
@@ -210,7 +210,8 @@ defmodule Philomena.Galleries do
 
   defp reorder_window(%Actor{} = actor, %Scope{} = scope, %Gallery{} = gallery) do
     query = "gallery_id:#{gallery.id}"
-    scope = %{scope | sf: query, sd: image_sort_direction(gallery)}
+    sort = ImageSearch.gallery_sort(gallery.id, image_sort_direction(gallery))
+    params = {actor, scope, sort, query}
 
     limit = scope.pagination.page_size
     offset = (scope.pagination.page_number - 1) * limit
@@ -219,9 +220,9 @@ defmodule Philomena.Galleries do
     # with an empty page is inserted if no search was performed.
 
     []
-    |> put_query(:images, actor, scope, query, scope.pagination)
-    |> put_query(:leading, actor, scope, query, %{page_number: offset - 1, page_size: 1})
-    |> put_query(:trailing, actor, scope, query, %{page_number: offset + limit, page_size: 1})
+    |> put_query(:images, params, scope.pagination)
+    |> put_query(:leading, params, %{page_number: offset - 1, page_size: 1})
+    |> put_query(:trailing, params, %{page_number: offset + limit, page_size: 1})
     |> Search.msearch_records_with_hits()
     |> Map.put_new(:leading, %Scrivener.Page{})
   end

@@ -59,6 +59,10 @@ defmodule Philomena.Images.SearchTest do
     )
   end
 
+  defp sort do
+    Search.scope_sort(scope())
+  end
+
   defp result_ids(definition) do
     definition
     |> Search.execute()
@@ -130,7 +134,7 @@ defmodule Philomena.Images.SearchTest do
       image = image_fixture(hidden_from_users: true)
       SearchHelpers.reindex_all!(Image)
 
-      {definition, _tags} = Search.query(actor(), scope(), %{match_all: %{}})
+      {definition, _tags} = Search.query(actor(), scope(), sort(), %{match_all: %{}})
 
       refute image.id in result_ids(definition)
     end
@@ -143,7 +147,7 @@ defmodule Philomena.Images.SearchTest do
       SearchHelpers.reindex_all!(Image)
 
       {definition, _tags} =
-        Search.query(actor(), scope(params: %{"del" => "1"}), %{match_all: %{}})
+        Search.query(actor(), scope(params: %{"del" => "1"}), sort(), %{match_all: %{}})
 
       refute image.id in result_ids(definition)
     end
@@ -155,7 +159,7 @@ defmodule Philomena.Images.SearchTest do
       image = image_fixture(hidden_from_users: true)
       SearchHelpers.reindex_all!(Image)
 
-      {definition, _tags} = Search.query(actor(admin), scope(), %{match_all: %{}})
+      {definition, _tags} = Search.query(actor(admin), scope(), sort(), %{match_all: %{}})
 
       refute image.id in result_ids(definition)
     end
@@ -167,7 +171,7 @@ defmodule Philomena.Images.SearchTest do
       SearchHelpers.reindex_all!(Image)
 
       {definition, _tags} =
-        Search.query(actor(admin), scope(params: %{"del" => "1"}), %{match_all: %{}})
+        Search.query(actor(admin), scope(params: %{"del" => "1"}), sort(), %{match_all: %{}})
 
       ids = result_ids(definition)
       assert hidden.id in ids
@@ -181,7 +185,7 @@ defmodule Philomena.Images.SearchTest do
       SearchHelpers.reindex_all!(Image)
 
       {definition, _tags} =
-        Search.query(actor(admin), scope(params: %{"del" => "only"}), %{match_all: %{}})
+        Search.query(actor(admin), scope(params: %{"del" => "only"}), sort(), %{match_all: %{}})
 
       ids = result_ids(definition)
       assert hidden.id in ids
@@ -199,7 +203,7 @@ defmodule Philomena.Images.SearchTest do
       SearchHelpers.reindex_all!(Image)
 
       {definition, _tags} =
-        Search.query(actor(admin), scope(params: %{"del" => "deleted"}), %{match_all: %{}})
+        Search.query(actor(admin), scope(params: %{"del" => "deleted"}), sort(), %{match_all: %{}})
 
       ids = result_ids(definition)
       assert hidden_non_dupe.id in ids
@@ -213,7 +217,7 @@ defmodule Philomena.Images.SearchTest do
       SearchHelpers.reindex_all!(Image)
 
       {definition, _tags} =
-        Search.query(actor(moderator), scope(params: %{"del" => "1"}), %{match_all: %{}})
+        Search.query(actor(moderator), scope(params: %{"del" => "1"}), sort(), %{match_all: %{}})
 
       assert image.id in result_ids(definition)
     end
@@ -226,7 +230,9 @@ defmodule Philomena.Images.SearchTest do
       SearchHelpers.reindex_all!(Image)
 
       {definition, _tags} =
-        Search.query(actor(moderator), scope(params: %{"del" => "only"}), %{match_all: %{}})
+        Search.query(actor(moderator), scope(params: %{"del" => "only"}), sort(), %{
+          match_all: %{}
+        })
 
       ids = result_ids(definition)
       assert hidden.id in ids
@@ -239,7 +245,7 @@ defmodule Philomena.Images.SearchTest do
       SearchHelpers.reindex_all!(Image)
 
       {definition, _tags} =
-        Search.query(actor(admin), scope(params: %{"del" => "1"}), %{match_all: %{}})
+        Search.query(actor(admin), scope(params: %{"del" => "1"}), sort(), %{match_all: %{}})
 
       refute image.id in result_ids(definition)
     end
@@ -252,7 +258,7 @@ defmodule Philomena.Images.SearchTest do
       hides_image!(image, user)
       SearchHelpers.reindex_all!(Image)
 
-      {definition, _tags} = Search.query(actor(user), scope(), %{match_all: %{}})
+      {definition, _tags} = Search.query(actor(user), scope(), sort(), %{match_all: %{}})
 
       refute image.id in result_ids(definition)
     end
@@ -264,7 +270,7 @@ defmodule Philomena.Images.SearchTest do
       SearchHelpers.reindex_all!(Image)
 
       {definition, _tags} =
-        Search.query(actor(user), scope(params: %{"hidden" => "1"}), %{match_all: %{}})
+        Search.query(actor(user), scope(params: %{"hidden" => "1"}), sort(), %{match_all: %{}})
 
       assert image.id in result_ids(definition)
     end
@@ -272,7 +278,7 @@ defmodule Philomena.Images.SearchTest do
 
   describe "search_string/3" do
     test "returns {:ok, {definition, tags}} for a valid query naming no tag" do
-      assert {:ok, {definition, tags}} = Search.search_string(actor(), scope(), "*")
+      assert {:ok, {definition, tags}} = Search.search_string(actor(), scope(), sort(), "*")
 
       assert is_map(definition)
       assert tags == []
@@ -281,7 +287,7 @@ defmodule Philomena.Images.SearchTest do
     test "returns the raw Tag record a single-tag query names" do
       _image = image_fixture(tags: "safe")
 
-      assert {:ok, {_definition, tags}} = Search.search_string(actor(), scope(), "safe")
+      assert {:ok, {_definition, tags}} = Search.search_string(actor(), scope(), sort(), "safe")
 
       assert [%Tag{} = tag] = tags
       assert tag.name == "safe"
@@ -290,76 +296,74 @@ defmodule Philomena.Images.SearchTest do
     end
 
     test "returns {:error, msg} for a malformed query" do
-      assert {:error, msg} = Search.search_string(actor(), scope(), "width.gte:abc")
+      assert {:error, msg} = Search.search_string(actor(), scope(), sort(), "width.gte:abc")
       assert is_binary(msg)
     end
   end
 
-  describe "parse_sort/2" do
+  describe "scope sort parsing" do
     @query %{match_all: %{}}
 
+    defp query(params) do
+      scope = scope(params: params)
+      sort = Search.scope_sort(scope)
+      {definition, _tags} = Search.query(actor(), scope, sort, @query)
+      definition.body
+    end
+
     test "an allowed field sorts by that field and then id" do
-      assert %{query: @query, sorts: [%{"score" => "desc"}, %{"id" => "desc"}]} =
-               Search.parse_sort(%{"sf" => "score"}, @query)
+      assert %{sort: [%{score: :desc}, %{id: :desc}]} = query(%{sf: "score"})
     end
 
     test "the sd parameter selects the direction" do
-      assert %{sorts: [%{"score" => "asc"}, %{"id" => "asc"}]} =
-               Search.parse_sort(%{"sf" => "score", "sd" => "asc"}, @query)
+      assert %{sort: [%{score: :asc}, %{id: :asc}]} = query(%{sf: "score", sd: "asc"})
     end
 
     test "the id field sorts by id alone" do
-      assert %{query: @query, sorts: [%{"id" => "desc"}]} =
-               Search.parse_sort(%{"sf" => "id"}, @query)
+      assert %{sort: [%{id: :desc}]} = query(%{sf: "id"})
     end
 
     test "an unknown field falls back to first_seen_at" do
-      assert %{sorts: [%{"first_seen_at" => "desc"}, %{"id" => "desc"}]} =
-               Search.parse_sort(%{"sf" => "bogus"}, @query)
+      assert %{sort: [%{first_seen_at: :desc}, %{id: :desc}]} = query(%{sf: "bogus"})
     end
 
     test "a missing field falls back to first_seen_at" do
-      assert %{sorts: [%{"first_seen_at" => "desc"}, %{"id" => "desc"}]} =
-               Search.parse_sort(%{}, @query)
+      assert %{sort: [%{first_seen_at: :desc}, %{id: :desc}]} = query(%{})
     end
 
     test "random:seed wraps the query in a seeded function_score" do
-      result = Search.parse_sort(%{"sf" => "random:12345"}, @query)
+      result = query(%{sf: "random:12345"})
 
       assert %{
                function_score: %{
-                 query: @query,
                  random_score: %{seed: 12_345, field: :id},
                  boost_mode: :replace
                }
-             } = result.query
+             } = result.query.bool.must
 
-      assert result.sorts == [%{"_score" => "desc"}, %{"id" => "desc"}]
+      assert result.sort == [%{_score: :desc}, %{id: :desc}]
     end
 
     test "random:seed is deterministic for a fixed seed" do
-      assert Search.parse_sort(%{"sf" => "random:42"}, @query) ==
-               Search.parse_sort(%{"sf" => "random:42"}, @query)
+      assert query(%{sf: "random:42"}) == query(%{sf: "random:42"})
     end
 
     test "gallery_id:n produces a nested gallery-position sort" do
       assert %{
-               query: @query,
-               sorts: [
+               sort: [
                  %{
                    "galleries.position" => %{
-                     order: "desc",
+                     order: :desc,
                      nested: %{path: :galleries, filter: %{term: %{"galleries.id" => 7}}}
                    }
                  },
-                 %{"id" => "desc"}
+                 %{id: :desc}
                ]
-             } = Search.parse_sort(%{"sf" => "gallery_id:7"}, @query)
+             } = query(%{sf: "gallery_id:7"})
     end
 
-    test "an invalid gallery id yields empty sorts" do
-      assert %{query: @query, sorts: []} =
-               Search.parse_sort(%{"sf" => "gallery_id:abc"}, @query)
+    test "an invalid gallery id falls back to the default sort" do
+      assert %{sort: [%{first_seen_at: :desc}, %{id: :desc}]} = query(%{sf: "gallery_id:abc"})
     end
   end
 
@@ -400,8 +404,9 @@ defmodule Philomena.Images.SearchTest do
     test "uses a provided cursor for a non-default sort with tied sort values", %{
       compiled: compiled
     } do
-      sort_scope = scope(params: %{"sf" => "score", "sd" => "desc"})
-      {definition, _tags} = Search.query(actor(), sort_scope, %{match_all: %{}})
+      scope = scope(params: %{"sf" => "score", "sd" => "desc"})
+      sort = Search.scope_sort(scope)
+      {definition, _tags} = Search.query(actor(), scope, sort, %{match_all: %{}})
 
       %{entries: [{first, first_hit}, {second, second_hit} | _]} =
         Search.execute(definition, hits: true)
@@ -426,10 +431,48 @@ defmodule Philomena.Images.SearchTest do
       assert scope.pagination == @pagination
     end
 
-    test "casts the search_after sort cursor as a string array" do
+    test "casts a valid sort cursor for id" do
+      scope = Scope.new(%{match_all: %{}}, @pagination, %{"sf" => "id", "sort" => ["123"]})
+
+      assert scope.sort == [123]
+    end
+
+    test "rejects an invalid sort cursor for id" do
+      scope = Scope.new(%{match_all: %{}}, @pagination, %{"sf" => "id", "sort" => ["3.14"]})
+
+      assert scope.sort == nil
+    end
+
+    test "casts a valid sort cursor for first_seen_at" do
       scope = Scope.new(%{match_all: %{}}, @pagination, %{"sort" => ["123", "456"]})
 
-      assert scope.sort == ["123", "456"]
+      assert scope.sort == [123, 456]
+    end
+
+    test "rejects an invalid sort cursor for first_seen_at" do
+      scope = Scope.new(%{match_all: %{}}, @pagination, %{"sort" => ["123"]})
+
+      assert scope.sort == nil
+    end
+
+    test "casts a valid sort cursor for wilson_score" do
+      scope =
+        Scope.new(%{match_all: %{}}, @pagination, %{
+          "sf" => "wilson_score",
+          "sort" => ["3.14", "159"]
+        })
+
+      assert scope.sort == [3.14, 159]
+    end
+
+    test "rejects an invalid sort cursor for wilson_score" do
+      scope =
+        Scope.new(%{match_all: %{}}, @pagination, %{
+          "sf" => "wilson_score",
+          "sort" => ["abcd", "159"]
+        })
+
+      assert scope.sort == nil
     end
 
     test "defaults params and pagination" do
