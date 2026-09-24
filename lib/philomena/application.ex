@@ -24,6 +24,9 @@ defmodule Philomena.Application do
       # Mailer
       {Task.Supervisor, name: Philomena.AsyncEmailSupervisor},
 
+      # Image upload processing
+      {Task.Supervisor, name: Philomena.ImageUploadSupervisor},
+
       # Starts a worker by calling: Philomena.Worker.start_link(arg)
       # {Philomena.Worker, arg},
       {Redix, name: :redix, host: Application.get_env(:philomena, :redis_host)},
