@@ -32,15 +32,15 @@ defmodule Philomena.UserNameChanges do
 
   ## Examples
 
-      iex> record_rename(Multi.new(), :name_change, user)
+      iex> record_rename(Multi.new(), :name_change, :locked_user)
       %Multi{}
 
   """
-  @spec record_rename(Multi.t(), Multi.name(), User.t()) :: Multi.t()
-  def record_rename(%Multi{} = multi, step, %User{} = user) do
-    changeset = UserNameChange.changeset(%UserNameChange{user_id: user.id}, user.name)
-
-    Multi.insert(multi, step, changeset)
+  @spec put_record_rename(Multi.t(), Multi.name(), Multi.name()) :: Multi.t()
+  def put_record_rename(%Multi{} = multi, step, locked_user_step) do
+    Multi.insert(multi, step, fn %{^locked_user_step => user} ->
+      UserNameChange.changeset(%UserNameChange{user_id: user.id}, user.name)
+    end)
   end
 
   @doc """

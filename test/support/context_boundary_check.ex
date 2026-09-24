@@ -12,7 +12,6 @@ defmodule Philomena.ContextBoundaryCheck do
     Philomena.Application,
     Philomena.Attribution,
     Philomena.Config,
-    Philomena.ExqSupervisor,
     Philomena.IntegerId,
     Philomena.Mailer,
     Philomena.Maintenance,

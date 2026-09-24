@@ -36,7 +36,7 @@ defmodule Philomena.Galleries do
   alias Philomena.Galleries.QueryForm
   alias Philomena.Galleries.ReorderForm
   alias Philomena.Galleries
-  alias Philomena.IndexWorker
+  alias Philomena.Workers.IndexJob
   alias Philomena.Interactions
   alias Philomena.Notifications
   alias Philomena.Images
@@ -68,7 +68,7 @@ defmodule Philomena.Galleries do
   end
 
   defp put_reindex_gallery(%Multi{} = multi, step \\ :gallery) do
-    Multi.on_commit(multi, fn %{^step => gallery} -> reindex_gallery(gallery) end)
+    IndexJob.put_enqueue(multi, "Galleries", :id, fn %{^step => gallery} -> [gallery.id] end)
   end
 
   defp cleanup_gallery(%Gallery{} = gallery) do
@@ -88,8 +88,8 @@ defmodule Philomena.Galleries do
         end,
         []
       )
-      |> Multi.on_commit(fn %{interactions: {_count, image_ids}} ->
-        Images.reindex_images(image_ids)
+      |> IndexJob.put_enqueue("Images", :id, fn %{interactions: {_count, image_ids}} ->
+        image_ids
       end)
       |> Multi.transact()
     end)
@@ -115,7 +115,7 @@ defmodule Philomena.Galleries do
     |> Reports.put_close_reports(:reports, closing_user, gallery_id: gallery.id)
     |> Multi.delete(:gallery, fn %{locked_gallery: gallery} -> gallery end)
     |> Multi.on_commit(fn %{gallery: gallery} -> unindex_gallery(gallery) end)
-    |> Multi.on_commit(fn %{interactions: {_, image_ids}} -> Images.reindex_images(image_ids) end)
+    |> IndexJob.put_enqueue("Images", :id, fn %{interactions: {_, image_ids}} -> image_ids end)
     |> Multi.transact()
     |> case do
       {:ok, %{gallery: %Gallery{} = gallery}} ->
@@ -750,8 +750,8 @@ defmodule Philomena.Galleries do
       |> Multi.run(:reorder, fn _repo, %{locked_gallery: gallery, reorder_form: reorder_form} ->
         persist_reorder_positions(gallery, reorder_form.image_ids)
       end)
-      |> Multi.on_commit(fn %{reorder_form: reorder_form} ->
-        Images.reindex_images(reorder_form.image_ids)
+      |> IndexJob.put_enqueue("Images", :id, fn %{reorder_form: reorder_form} ->
+        reorder_form.image_ids
       end)
       |> Multi.transact()
       |> case do
@@ -843,7 +843,7 @@ defmodule Philomena.Galleries do
   counters and interaction rows therefore change atomically in the caller's
   transaction.
 
-  Affected galleries are reindexed after the transaction commits.
+  A job to reindex affected galleries is enqueued in the same transaction.
   """
   @spec put_remove_image_interactions(Multi.t(), Image.t()) :: Multi.t()
   def put_remove_image_interactions(%Multi{} = multi, %Image{} = image) do
@@ -856,7 +856,9 @@ defmodule Philomena.Galleries do
     multi
     |> Multi.update_all(:galleries, galleries, [])
     |> Multi.delete_all(:gallery_interactions, where(Interaction, image_id: ^image.id), [])
-    |> Multi.on_commit(fn %{galleries: {_, gallery_ids}} -> reindex_galleries(gallery_ids) end)
+    |> IndexJob.put_enqueue("Galleries", :id, fn %{galleries: {_, gallery_ids}} ->
+      gallery_ids
+    end)
   end
 
   @doc """
@@ -866,7 +868,7 @@ defmodule Philomena.Galleries do
   affected gallery counters are adjusted. Image merge workflows must hold both
   image locks before composing this operation.
 
-  Affected galleries are reindexed after the transaction commits.
+  A jobs to reindex affected galleries is enqueued in the same transaction.
   """
   @spec put_migrate_image_interactions(Multi.t(), Image.t(), Image.t()) :: Multi.t()
   def put_migrate_image_interactions(%Multi{} = multi, %Image{} = source, %Image{} = target) do
@@ -898,11 +900,12 @@ defmodule Philomena.Galleries do
 
       {:ok, {count, gallery_ids}}
     end)
-    |> Multi.on_commit(fn %{
-                            migrated_gallery_interactions: {_, migrated_gallery_ids},
-                            galleries: {_, removed_gallery_ids}
-                          } ->
-      reindex_galleries(Enum.uniq(migrated_gallery_ids ++ removed_gallery_ids))
+    |> IndexJob.put_enqueue("Galleries", :id, fn
+      %{
+        migrated_gallery_interactions: {_, migrated_gallery_ids},
+        galleries: {_, removed_gallery_ids}
+      } ->
+        Enum.uniq(migrated_gallery_ids ++ removed_gallery_ids)
     end)
   end
 
@@ -927,42 +930,6 @@ defmodule Philomena.Galleries do
     data = Galleries.SearchIndex.user_name_update_by_query(old_name, new_name)
 
     Search.update_by_query(Gallery, data.query, data.set_replacements, data.replacements)
-  end
-
-  @doc """
-  Queues a gallery for reindexing.
-
-  Adds the gallery to the indexing queue to update its search index.
-
-  ## Examples
-
-      iex> reindex_gallery(gallery)
-      %Gallery{}
-
-  """
-  @spec reindex_gallery(Gallery.t()) :: Gallery.t()
-  def reindex_gallery(%Gallery{} = gallery) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Galleries", "id", [gallery.id]])
-
-    gallery
-  end
-
-  @doc """
-  Queues multiple galleries for reindexing by their ids.
-
-  ## Examples
-
-      iex> reindex_galleries([1, 2, 3])
-      [1, 2, 3]
-
-  """
-  @spec reindex_galleries([integer()]) :: [integer()]
-  def reindex_galleries([]), do: []
-
-  def reindex_galleries(gallery_ids) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Galleries", "id", gallery_ids])
-
-    gallery_ids
   end
 
   @doc """
