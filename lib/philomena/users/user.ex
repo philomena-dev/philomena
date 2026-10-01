@@ -573,6 +573,7 @@ defmodule Philomena.Users.User do
   defp unique_constraints(changeset) do
     changeset
     |> unique_constraint(:name, name: :index_users_on_name)
+    |> unique_constraint(:name, name: :index_users_on_lower_name)
     |> unique_constraint(:slug, name: :index_users_on_slug)
     |> unique_constraint(:email, name: :index_users_on_email)
     |> unique_constraint(:authentication_token, name: :index_users_on_authentication_token)

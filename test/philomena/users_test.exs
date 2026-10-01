@@ -95,6 +95,18 @@ defmodule Philomena.UsersTest do
   # role.
   defp user_admin_moderator, do: role_moderator_fixture("User")
 
+  # A syntactically valid watch query: `count` tag terms joined with `||`.
+  defp watch_query(count) do
+    Enum.map_join(1..count, " || ", &"watched_term_#{&1}")
+  end
+
+  # A valid watch query longer than the 10,000-byte settings cap.
+  defp over_cap_watch_query do
+    query = watch_query(700)
+    true = byte_size(query) > 10_000
+    query
+  end
+
   # The most recently written moderation log row.
   defp last_moderation_log do
     ModerationLog |> order_by(desc: :id) |> limit(1) |> Repo.one()
@@ -270,6 +282,29 @@ defmodule Philomena.UsersTest do
         })
 
       assert "has already been taken" in errors_on(changeset).email
+    end
+
+    test "rejects a name that differs from an existing name only by letter case" do
+      %{name: name} = user_fixture(%{name: "CaseName#{System.unique_integer([:positive])}"})
+
+      for variant <- [String.downcase(name), String.upcase(name)] do
+        email = unique_user_email()
+
+        assert {:error, %Ecto.Changeset{} = changeset} =
+                 Users.create_registration(actor(), %{
+                   name: variant,
+                   email: email,
+                   password: valid_user_password()
+                 })
+
+        assert %{name: ["has already been taken"]} = errors_on(changeset)
+
+        assert {_message, [constraint: :unique, constraint_name: "index_users_on_lower_name"]} =
+                 changeset.errors[:name]
+
+        refute Repo.get_by(User, email: email)
+        refute Repo.get_by(User, name: variant)
+      end
     end
 
     test "registers users with a hashed password" do
@@ -817,6 +852,93 @@ defmodule Philomena.UsersTest do
     end
   end
 
+  describe "update_settings/2" do
+    for field <- ~w(watched_images_query_str watched_images_exclude_str) do
+      test "rejects a valid #{field} over 10,000 bytes and leaves it unchanged" do
+        user = confirmed_user_fixture()
+        field = unquote(field)
+        query = over_cap_watch_query()
+        before = Map.fetch!(Repo.get!(Settings, user.id), String.to_existing_atom(field))
+
+        # The value compiles as a watch query, so length is its only fault.
+        assert {:ok, _} =
+                 Philomena.Images.Query.compile(query,
+                   user: Repo.preload(user, :settings),
+                   watch: true
+                 )
+
+        assert {:error, %Ecto.Changeset{} = changeset} =
+                 Users.update_settings(actor(user), %{"settings" => %{field => query}})
+
+        assert errors_on(changeset).settings == %{
+                 String.to_existing_atom(field) => ["should be at most 10000 byte(s)"]
+               }
+
+        assert Map.fetch!(Repo.get!(Settings, user.id), String.to_existing_atom(field)) ==
+                 before
+      end
+    end
+
+    test "saves a valid watch query longer than 255 characters" do
+      user = confirmed_user_fixture()
+
+      query =
+        "(safe || suggestive) AND score.gte:100 AND -" <>
+          "(#{watch_query(20)}) AND created_at.gte:3 years ago"
+
+      assert String.length(query) > 300
+      assert byte_size(query) < 10_000
+
+      assert {:ok, %User{}} =
+               Users.update_settings(actor(user), %{
+                 "settings" => %{
+                   "watched_images_query_str" => query,
+                   "watched_images_exclude_str" => query
+                 }
+               })
+
+      settings = Repo.get!(Settings, user.id)
+      assert settings.watched_images_query_str == query
+      assert settings.watched_images_exclude_str == query
+    end
+
+    test "a stored over-cap query does not block resubmitting it with another change" do
+      user = confirmed_user_fixture()
+      query = over_cap_watch_query()
+
+      {1, _} =
+        Settings
+        |> where(user_id: ^user.id)
+        |> Repo.update_all(set: [watched_images_query_str: query])
+
+      assert {:ok, %User{}} =
+               Users.update_settings(actor(user), %{
+                 "settings" => %{"images_per_page" => "30", "watched_images_query_str" => query}
+               })
+
+      settings = Repo.get!(Settings, user.id)
+      assert settings.images_per_page == 30
+      assert settings.watched_images_query_str == query
+    end
+
+    test "a stored over-cap query does not block a change that omits it" do
+      user = confirmed_user_fixture()
+      query = over_cap_watch_query()
+
+      {1, _} =
+        Settings
+        |> where(user_id: ^user.id)
+        |> Repo.update_all(set: [watched_images_exclude_str: query])
+
+      assert {:ok, %User{}} =
+               Users.update_settings(actor(user), %{"settings" => %{"images_per_page" => "30"}})
+
+      settings = Repo.get!(Settings, user.id)
+      assert settings.images_per_page == 30
+      assert settings.watched_images_exclude_str == query
+    end
+  end
+
   describe "edit_profile_description/2" do
     test "the profile owner may edit their own description" do
       user = confirmed_user_fixture()
@@ -1210,6 +1332,38 @@ defmodule Philomena.UsersTest do
 
       assert %{name: ["can't be blank"]} = errors_on(changeset)
     end
+
+    test "a case variant of another user's name is a rejected changeset" do
+      %{name: taken} = user_fixture(%{name: "TakenName#{System.unique_integer([:positive])}"})
+      user = renameable_user()
+
+      assert {:error, %Ecto.Changeset{} = changeset} =
+               Users.update_name(actor(user), %{"name" => String.upcase(taken)})
+
+      assert %{name: ["has already been taken"]} = errors_on(changeset)
+
+      stored = Users.fetch_user_for_worker!(user.id)
+      assert stored.name == user.name
+      assert stored.slug == user.slug
+
+      refute Repo.get_by(Philomena.UserNameChanges.UserNameChange, user_id: user.id)
+    end
+
+    test "changing only the letter case of the user's own name succeeds" do
+      name = "OwnName#{System.unique_integer([:positive])}"
+      user = Users.fetch_user_for_worker!(confirmed_user_fixture(%{name: name}).id)
+      recased = String.upcase(name)
+
+      assert {:ok, %User{} = updated} = Users.update_name(actor(user), %{"name" => recased})
+      assert updated.name == recased
+      assert updated.slug == recased
+
+      stored = Users.fetch_user_for_worker!(user.id)
+      assert stored.name == recased
+      assert stored.slug == recased
+
+      assert Repo.get_by(Philomena.UserNameChanges.UserNameChange, user_id: user.id, name: name)
+    end
   end
 
   describe "edit_avatar/1" do
@@ -1555,6 +1709,24 @@ defmodule Philomena.UsersTest do
 
       assert is_list(changeset.data.roles)
       assert Users.fetch_user_for_worker!(target.id).role == "user"
+    end
+
+    test "a case variant of another user's name is a rejected changeset" do
+      %{name: taken} = managed_target("TakenName#{System.unique_integer([:positive])}")
+      target = managed_target()
+
+      assert {:error, %AdminUserForm{changeset: changeset}} =
+               Users.update_user(actor(admin_user_fixture()), target.slug, %{
+                 "name" => String.downcase(taken),
+                 "email" => target.email,
+                 "role" => target.role
+               })
+
+      assert %{name: ["has already been taken"]} = errors_on(changeset)
+
+      stored = Users.fetch_user_for_worker!(target.id)
+      assert stored.name == target.name
+      assert stored.slug == target.slug
     end
 
     test "assigns existing role IDs and rejects malformed or missing role IDs" do

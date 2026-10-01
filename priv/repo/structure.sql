@@ -2,10 +2,10 @@
 -- PostgreSQL database dump
 --
 
-\restrict O6OYrjIYDwvGhgBIGh2SR1j95V8aVnMGs9WcuKijctXbT5ypaF3nbIkiah3iFpk
+\restrict iIwhWzMVL1AnNJeup0JluyJGI3BEWbDJrHsMGO7h6lkVKtIwfF6RzrkZlphId3r
 
 -- Dumped from database version 18.4
--- Dumped by pg_dump version 18.4
+-- Dumped by pg_dump version 18.6
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -727,7 +727,7 @@ CREATE TABLE public.galleries (
     spoiler_warning character varying DEFAULT ''::character varying NOT NULL,
     description character varying DEFAULT ''::character varying NOT NULL,
     thumbnail_id integer NOT NULL,
-    user_id integer NOT NULL,
+    user_id integer CONSTRAINT galleries_creator_id_not_null NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     image_count integer DEFAULT 0 NOT NULL,
@@ -2125,8 +2125,8 @@ CREATE TABLE public.user_settings (
     watch_on_upload boolean DEFAULT true NOT NULL,
     messages_newest_first boolean DEFAULT false NOT NULL,
     no_spoilered_in_watched boolean DEFAULT false NOT NULL,
-    watched_images_query_str character varying(255) DEFAULT ''::character varying NOT NULL,
-    watched_images_exclude_str character varying(255) DEFAULT ''::character varying NOT NULL,
+    watched_images_query_str text DEFAULT ''::text NOT NULL,
+    watched_images_exclude_str text DEFAULT ''::text NOT NULL,
     use_centered_layout boolean DEFAULT true NOT NULL,
     hide_vote_counts boolean DEFAULT false NOT NULL,
     delay_home_images boolean DEFAULT true NOT NULL,
@@ -2145,12 +2145,12 @@ CREATE TABLE public.user_settings (
 CREATE TABLE public.user_statistics (
     user_id integer NOT NULL,
     day date NOT NULL,
-    images_count integer DEFAULT 0 NOT NULL,
-    image_votes_count integer DEFAULT 0 NOT NULL,
-    comments_count integer DEFAULT 0 NOT NULL,
-    metadata_updates_count integer DEFAULT 0 NOT NULL,
-    image_faves_count integer DEFAULT 0 NOT NULL,
-    posts_count integer DEFAULT 0 NOT NULL,
+    images_count integer DEFAULT 0 CONSTRAINT user_statistics_uploads_not_null NOT NULL,
+    image_votes_count integer DEFAULT 0 CONSTRAINT user_statistics_votes_cast_not_null NOT NULL,
+    comments_count integer DEFAULT 0 CONSTRAINT user_statistics_comments_posted_not_null NOT NULL,
+    metadata_updates_count integer DEFAULT 0 CONSTRAINT user_statistics_metadata_updates_not_null NOT NULL,
+    image_faves_count integer DEFAULT 0 CONSTRAINT user_statistics_images_favourited_not_null NOT NULL,
+    posts_count integer DEFAULT 0 CONSTRAINT user_statistics_forum_posts_not_null NOT NULL,
     topics_count integer DEFAULT 0 NOT NULL
 );
 
@@ -2260,8 +2260,8 @@ CREATE TABLE public.users (
     no_spoilered_in_watched boolean DEFAULT false NOT NULL,
     watched_images_query_str character varying DEFAULT ''::character varying NOT NULL,
     watched_images_exclude_str character varying DEFAULT ''::character varying NOT NULL,
-    posts_count integer DEFAULT 0 NOT NULL,
-    topics_count integer DEFAULT 0 NOT NULL,
+    posts_count integer DEFAULT 0 CONSTRAINT users_forum_posts_count_not_null NOT NULL,
+    topics_count integer DEFAULT 0 CONSTRAINT users_topic_count_not_null NOT NULL,
     recent_filter_ids integer[] DEFAULT '{}'::integer[] NOT NULL,
     watched_tag_ids integer[] DEFAULT '{}'::integer[] NOT NULL,
     deleted_by_user_id integer,
@@ -2269,11 +2269,11 @@ CREATE TABLE public.users (
     failed_attempts integer,
     unlock_token character varying,
     locked_at timestamp without time zone,
-    images_count integer DEFAULT 0 NOT NULL,
-    image_votes_count integer DEFAULT 0 NOT NULL,
-    comments_count integer DEFAULT 0 NOT NULL,
+    images_count integer DEFAULT 0 CONSTRAINT users_uploads_count_not_null NOT NULL,
+    image_votes_count integer DEFAULT 0 CONSTRAINT users_votes_cast_count_not_null NOT NULL,
+    comments_count integer DEFAULT 0 CONSTRAINT users_comments_posted_count_not_null NOT NULL,
     metadata_updates_count integer DEFAULT 0 NOT NULL,
-    image_faves_count integer DEFAULT 0 NOT NULL,
+    image_faves_count integer DEFAULT 0 CONSTRAINT users_images_favourited_count_not_null NOT NULL,
     use_centered_layout boolean DEFAULT true NOT NULL,
     secondary_role character varying,
     hide_default_role boolean DEFAULT false NOT NULL,
@@ -4511,6 +4511,13 @@ CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
 
 
 --
+-- Name: index_users_on_lower_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_users_on_lower_name ON public.users USING btree (lower((name)::text));
+
+
+--
 -- Name: index_users_on_name; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -4774,6 +4781,20 @@ CREATE INDEX topics_forum_id_last_replied_to_at_id_index ON public.topics USING 
 --
 
 CREATE INDEX topics_forum_id_sticky_last_replied_to_at_id_index ON public.topics USING btree (forum_id, sticky DESC, last_replied_to_at DESC, id DESC);
+
+
+--
+-- Name: unique_users_name_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX unique_users_name_index ON public.users USING btree (name);
+
+
+--
+-- Name: unique_users_slug_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX unique_users_slug_index ON public.users USING btree (slug);
 
 
 --
@@ -5952,7 +5973,7 @@ ALTER TABLE ONLY public.users
 -- PostgreSQL database dump complete
 --
 
-\unrestrict O6OYrjIYDwvGhgBIGh2SR1j95V8aVnMGs9WcuKijctXbT5ypaF3nbIkiah3iFpk
+\unrestrict iIwhWzMVL1AnNJeup0JluyJGI3BEWbDJrHsMGO7h6lkVKtIwfF6RzrkZlphId3r
 
 INSERT INTO public."schema_migrations" (version) VALUES (20200503002523);
 INSERT INTO public."schema_migrations" (version) VALUES (20200607000511);
@@ -5986,6 +6007,7 @@ INSERT INTO public."schema_migrations" (version) VALUES (20250502110018);
 INSERT INTO public."schema_migrations" (version) VALUES (20250507183410);
 INSERT INTO public."schema_migrations" (version) VALUES (20250617121030);
 INSERT INTO public."schema_migrations" (version) VALUES (20250617122513);
+INSERT INTO public."schema_migrations" (version) VALUES (20250921082812);
 INSERT INTO public."schema_migrations" (version) VALUES (20251103173014);
 INSERT INTO public."schema_migrations" (version) VALUES (20260716190444);
 INSERT INTO public."schema_migrations" (version) VALUES (20260717000000);
@@ -5998,3 +6020,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20260719123611);
 INSERT INTO public."schema_migrations" (version) VALUES (20260806180557);
 INSERT INTO public."schema_migrations" (version) VALUES (20260810212302);
 INSERT INTO public."schema_migrations" (version) VALUES (20260831235832);
+INSERT INTO public."schema_migrations" (version) VALUES (20261001000000);
