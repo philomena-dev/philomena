@@ -24,6 +24,7 @@ defmodule Philomena.TopicsTest do
   import Philomena.UsersFixtures
 
   alias Philomena.ModerationLogs.ModerationLog
+  alias Philomena.Events
   alias Philomena.Notifications
   alias Philomena.Notifications.ForumPostNotification
   alias Philomena.Posts.Post
@@ -127,6 +128,13 @@ defmodule Philomena.TopicsTest do
   end
 
   defp moderation_log_count, do: Repo.aggregate(ModerationLog, :count)
+
+  defp with_subscription(callback) when is_function(callback, 0) do
+    :ok = Events.subscribe_events()
+    callback.()
+  after
+    :ok = Events.unsubscribe_events()
+  end
 
   describe "create_topic_subscription/3" do
     test "a regular user subscribes to a visible topic and the row is created" do
@@ -1481,6 +1489,47 @@ defmodule Philomena.TopicsTest do
                "nonexistent-topic",
                %{"title" => "New Title"}
              ) == {:error, :not_found}
+    end
+  end
+
+  describe "event publication" do
+    test "create_topic/3 broadcasts the initial post with its topic and public forum" do
+      forum = forum_fixture()
+
+      with_subscription(fn ->
+        assert {:ok, %{topic: topic, post: post}} =
+                 Topics.create_topic(
+                   actor(confirmed_user_fixture()),
+                   forum.short_name,
+                   @valid_topic_params
+                 )
+
+        post_id = post.id
+        topic_id = topic.id
+        forum_id = forum.id
+
+        assert_receive %Events.PostCreate{
+          post: %Post{id: ^post_id},
+          topic: %Topic{id: ^topic_id},
+          forum: %{id: ^forum_id}
+        }
+      end)
+    end
+
+    test "create_topic/3 does not broadcast for a staff-only forum" do
+      forum = forum_fixture(access_level: "staff")
+
+      with_subscription(fn ->
+        assert {:ok, %{topic: topic}} =
+                 Topics.create_topic(
+                   actor(moderator_user_fixture()),
+                   forum.short_name,
+                   @valid_topic_params
+                 )
+
+        topic_id = topic.id
+        refute_receive %Events.PostCreate{topic: %Topic{id: ^topic_id}}
+      end)
     end
   end
 end

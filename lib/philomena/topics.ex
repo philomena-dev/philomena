@@ -12,6 +12,7 @@ defmodule Philomena.Topics do
 
   alias Philomena.Multi
   alias Philomena.Repo
+  alias Philomena.Events
 
   alias Philomena.Topics.{MoveForm, Topic, TopicPage}
   alias Philomena.Forums
@@ -38,17 +39,15 @@ defmodule Philomena.Topics do
     on_delete: :clear_topic_notification,
     id_name: :topic_id
 
-  defp broadcast_topic_creation(%{forum: %{access_level: "normal"}} = result) do
-    PhilomenaWeb.Endpoint.broadcast!(
-      "firehose",
-      "post:create",
-      PhilomenaWeb.Api.Json.Forum.Topic.PostView.render("firehose.json", result)
-    )
-
-    result
+  defp broadcast_topic_creation(%{forum: forum, topic: topic, post: post}) do
+    if forum.access_level == "normal" do
+      Events.broadcast(%Events.PostCreate{
+        forum: forum,
+        topic: topic,
+        post: post
+      })
+    end
   end
-
-  defp broadcast_topic_creation(result), do: result
 
   defp notify_topic(_repo, %{topic: topic}) do
     Notifications.broadcast_forum_topic(topic.user, topic)
@@ -390,8 +389,8 @@ defmodule Philomena.Topics do
       |> case do
         {:ok, %{locked_forum: %Forum{} = forum, topic: %Topic{} = topic}} ->
           result = %{topic: topic, forum: forum, post: hd(topic.posts)}
-
-          {:ok, broadcast_topic_creation(result)}
+          broadcast_topic_creation(result)
+          {:ok, result}
 
         {:error, :action_reservation, :rate_limited, _changes} ->
           {:error, :rate_limited}
