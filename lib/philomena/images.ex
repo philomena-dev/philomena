@@ -44,6 +44,26 @@ defmodule Philomena.Images do
     on_delete: :clear_image_notification,
     id_name: :image_id
 
+  def create_subscription(object, user) do
+    result = super(object, user)
+
+    if match?({:ok, _}, result) do
+      Image |> where(id: ^object.id) |> Repo.update_all(inc: [subscriptions_count: 1])
+    end
+
+    result
+  end
+
+  def delete_subscription(object, user) do
+    result = super(object, user)
+
+    if match?({:ok, _}, result) do
+      Image |> where(id: ^object.id) |> Repo.update_all(inc: [subscriptions_count: -1])
+    end
+
+    result
+  end
+
   @doc """
   Gets a single image.
 

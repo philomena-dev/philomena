@@ -17,6 +17,7 @@ defmodule PhilomenaWeb.ImageSorter do
     size
     duration
     hides
+    subscriptions
   )
 
   def parse_sort(params, query) do
