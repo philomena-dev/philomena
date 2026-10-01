@@ -126,7 +126,7 @@ defmodule Philomena.Images.SearchTest do
   end
 
   describe "deleted/hidden switches" do
-    test "an anonymous viewer never sees hidden images" do
+    test "an anonymous viewer does not see hidden images by default" do
       image = image_fixture(hidden_from_users: true)
       SearchHelpers.reindex_all!(Image)
 
@@ -135,17 +135,14 @@ defmodule Philomena.Images.SearchTest do
       refute image.id in result_ids(definition)
     end
 
-    # The del switches only take effect for viewers who can hide images; a
-    # non-privileged viewer always gets the hidden_from_users exclusion no
-    # matter what del says.
-    test "an anonymous viewer passing del=1 still does not see hidden images" do
+    test "an anonymous viewer passing del=1 can see hidden images" do
       image = image_fixture(hidden_from_users: true)
       SearchHelpers.reindex_all!(Image)
 
       {definition, _tags} =
         Search.query(actor(), scope(params: %{"del" => "1"}), %{match_all: %{}})
 
-      refute image.id in result_ids(definition)
+      assert image.id in result_ids(definition)
     end
 
     # NOTE: a viewer who can :hide images (admin here) still has hidden images

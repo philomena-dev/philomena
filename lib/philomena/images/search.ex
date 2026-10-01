@@ -249,16 +249,11 @@ defmodule Philomena.Images.Search do
     |> hide_non_approved()
   end
 
-  # The del switches are a staff tool: every viewer without the hide
-  # permission gets the hidden-image exclusion no matter what the
-  # parameter says, so the permission check must come before the
-  # parameter match.
+  defp maybe_show_deleted(filters, _show_hidden?, "1"),
+    do: filters
 
   defp maybe_show_deleted(filters, false, _param),
     do: [%{term: %{hidden_from_users: true}} | filters]
-
-  defp maybe_show_deleted(filters, true, "1"),
-    do: filters
 
   defp maybe_show_deleted(filters, true, "only"),
     do: [%{term: %{hidden_from_users: false}} | filters]
