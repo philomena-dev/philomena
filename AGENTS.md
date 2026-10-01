@@ -54,7 +54,7 @@ types, and testing style.
 ### Frontend (in `assets/`)
 
 - `npm run test` / `npm run test:watch` — vitest with coverage
-- `npm run lint` — eslint + stylelint
+- `npm run lint` — oxlint + stylelint
 - `npm run build` — typecheck (tsc) + vite build
 
 ### Rust (in `native/philomena/`)
