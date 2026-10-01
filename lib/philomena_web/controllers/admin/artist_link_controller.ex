@@ -9,7 +9,7 @@ defmodule PhilomenaWeb.Admin.ArtistLinkController do
     with {:ok, artist_links, changeset} <-
            ArtistLinks.list_admin_artist_links(
              conn.assigns.actor,
-             params["lq"] || %{},
+             query_param(params, "lq"),
              conn.assigns.scrivener
            ) do
       render(conn, "index.html",

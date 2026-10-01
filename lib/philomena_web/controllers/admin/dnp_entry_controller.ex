@@ -10,7 +10,7 @@ defmodule PhilomenaWeb.Admin.DnpEntryController do
     with {:ok, dnp_entries, changeset} <-
            DnpEntries.list_admin_dnp_entries(
              conn.assigns.actor,
-             params["eq"] || %{},
+             query_param(params, "eq"),
              conn.assigns.scrivener
            ) do
       bodies =

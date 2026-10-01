@@ -20,6 +20,16 @@ defmodule PhilomenaWeb.GalleryControllerTest do
   end
 
   describe "GET /galleries" do
+    test "an empty gallery parameter uses the default gallery query", %{conn: conn} do
+      user = confirmed_user_fixture()
+      gallery = gallery_fixture(user, title: "Test Empty Query Gallery")
+      SearchHelpers.reindex_all!(Gallery)
+
+      conn = get(conn, ~p"/galleries?gallery=")
+
+      assert html_response(conn, 200) =~ ~p"/galleries/#{gallery.id}"
+    end
+
     test "lists galleries for anonymous users", %{conn: conn} do
       user = confirmed_user_fixture()
       gallery = gallery_fixture(user, title: "Test Listed Gallery")

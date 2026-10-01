@@ -10,7 +10,7 @@ defmodule PhilomenaWeb.GalleryController do
   def index(conn, params) do
     case Galleries.list_galleries(
            conn.assigns.actor,
-           params["gallery"] || %{},
+           query_param(params, "gallery"),
            conn.assigns.pagination
          ) do
       {:ok, galleries, changeset} ->

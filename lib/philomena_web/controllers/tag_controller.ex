@@ -10,7 +10,7 @@ defmodule PhilomenaWeb.TagController do
   def index(conn, params) do
     pagination = Map.put(conn.assigns.pagination, :page_size, 250)
 
-    case Tags.query_tags(conn.assigns.actor, %{"query" => params["tq"] || "*"}, pagination) do
+    case Tags.query_tags(conn.assigns.actor, %{query: params["tq"] || "*"}, pagination) do
       {:ok, tags, _changeset} ->
         render(conn, "index.html", title: "Tags", tags: tags)
 

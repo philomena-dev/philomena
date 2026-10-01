@@ -35,6 +35,16 @@ defmodule PhilomenaWeb.Admin.ArtistLinkControllerTest do
   describe "GET /admin/artist_links (index) content" do
     setup [:register_and_log_in_admin]
 
+    test "an empty lq parameter uses the default artist link query", %{conn: conn} do
+      user = confirmed_user_fixture()
+      tag = tag_fixture(name: "artist:index-empty-query")
+      link = artist_link_fixture(user, tag)
+
+      conn = get(conn, ~p"/admin/artist_links?lq=")
+
+      assert html_response(conn, 200) =~ link.uri
+    end
+
     test "renders the empty index", %{conn: conn} do
       conn = get(conn, ~p"/admin/artist_links")
       response = html_response(conn, 200)

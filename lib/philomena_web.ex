@@ -28,6 +28,7 @@ defmodule PhilomenaWeb do
       use Gettext, backend: PhilomenaWeb.Gettext
 
       import Plug.Conn
+      import PhilomenaWeb.QueryParam
 
       unquote(verified_routes())
     end

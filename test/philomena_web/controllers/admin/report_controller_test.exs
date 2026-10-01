@@ -68,6 +68,15 @@ defmodule PhilomenaWeb.Admin.ReportControllerTest do
   describe "GET /admin/reports (index) content" do
     setup [:register_and_log_in_admin]
 
+    test "an empty rq parameter uses the default report query", %{conn: conn} do
+      report = open_report_fixture()
+      SearchHelpers.reindex_all!(Report)
+
+      conn = get(conn, ~p"/admin/reports?rq=")
+
+      assert html_response(conn, 200) =~ report.reason
+    end
+
     test "renders the empty index", %{conn: conn} do
       conn = get(conn, ~p"/admin/reports")
       response = html_response(conn, 200)

@@ -48,6 +48,15 @@ defmodule PhilomenaWeb.Admin.UserControllerTest do
   describe "GET /admin/users (index) content" do
     setup [:register_and_log_in_admin]
 
+    test "an empty uq parameter uses the default user query", %{conn: conn} do
+      target = confirmed_user_fixture()
+      SearchHelpers.reindex_all!(User)
+
+      conn = get(conn, ~p"/admin/users?uq=")
+
+      assert html_response(conn, 200) =~ target.name
+    end
+
     test "lists a user in the default (\"*\") view", %{conn: conn} do
       target = confirmed_user_fixture()
       SearchHelpers.reindex_all!(User)

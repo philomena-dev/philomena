@@ -12,6 +12,17 @@ defmodule PhilomenaWeb.DuplicateReportControllerTest do
   alias Philomena.Repo
 
   describe "GET /duplicate_reports" do
+    test "an empty dq parameter uses the default report query", %{conn: conn} do
+      conn = log_in_user(conn, moderator_user_fixture())
+      source = image_fixture()
+      target = image_fixture()
+      duplicate_report_fixture(source, target)
+
+      conn = get(conn, ~p"/duplicate_reports?dq=")
+
+      assert html_response(conn, 200) =~ ~p"/images/#{source}"
+    end
+
     test "lists open/claimed reports for moderators", %{conn: conn} do
       conn = log_in_user(conn, moderator_user_fixture())
       source = image_fixture()
