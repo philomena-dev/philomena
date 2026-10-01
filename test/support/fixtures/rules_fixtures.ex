@@ -5,9 +5,11 @@ defmodule Philomena.RulesFixtures do
   """
 
   alias Philomena.Rules
+  alias Philomena.AttributionFixtures
+  alias Philomena.UsersFixtures
 
   @doc """
-  Creates a rule (with its initial system-attributed version).
+  Creates a rule with an initial version.
 
   Positions are unique because rules derive `Phoenix.Param` from
   `:position`, so duplicate positions would make routes ambiguous.
@@ -21,7 +23,8 @@ defmodule Philomena.RulesFixtures do
         position: unique
       })
 
-    {:ok, [rule, _version]} = Rules.create_rule_with_version(attrs, nil)
+    actor = AttributionFixtures.actor(UsersFixtures.admin_user_fixture())
+    {:ok, [rule, _version]} = Rules.create_rule(actor, attrs)
 
     rule
   end

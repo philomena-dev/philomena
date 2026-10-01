@@ -1,4 +1,8 @@
 defmodule Philomena.TagChanges.Query do
+  @moduledoc false
+
+  import Philomena.Authorization, only: [authorize: 3]
+
   alias PhilomenaQuery.Parse.Parser
 
   defp user_my_transform(%{user: %{id: id}}, "changes"),
@@ -43,14 +47,18 @@ defmodule Philomena.TagChanges.Query do
     |> Parser.parse(query_string, context)
   end
 
-  defp fields_for(nil), do: anonymous_fields()
-  defp fields_for(%{role: role}) when role in ~W(user assistant), do: user_fields()
-  defp fields_for(%{role: role}) when role in ~W(moderator admin), do: moderator_fields()
-  defp fields_for(_), do: raise(ArgumentError, "Unknown user role.")
-
   def compile(query_string, opts \\ []) do
     user = Keyword.get(opts, :user)
 
-    parse(fields_for(user), %{user: user}, query_string)
+    cond do
+      not is_nil(user) and authorize(user, :show, :identity_metadata) == :ok ->
+        parse(moderator_fields(), %{user: user}, query_string)
+
+      not is_nil(user) ->
+        parse(user_fields(), %{user: user}, query_string)
+
+      true ->
+        parse(anonymous_fields(), %{}, query_string)
+    end
   end
 end

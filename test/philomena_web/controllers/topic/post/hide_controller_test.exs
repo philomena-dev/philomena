@@ -21,11 +21,16 @@ defmodule PhilomenaWeb.Topic.Post.HideControllerTest do
   end
 
   defp hidden_post(post) do
+    post = Philomena.Repo.preload(post, topic: :forum)
+    moderator = Philomena.UsersFixtures.moderator_user_fixture()
+
     {:ok, post} =
-      Posts.hide_post(
-        post,
-        %{"deletion_reason" => "Spam"},
-        Philomena.UsersFixtures.moderator_user_fixture()
+      Posts.create_post_hide(
+        Philomena.AttributionFixtures.actor(moderator),
+        post.topic.forum.short_name,
+        post.topic.slug,
+        post.id,
+        %{"deletion_reason" => "Spam"}
       )
 
     post
@@ -74,7 +79,7 @@ defmodule PhilomenaWeb.Topic.Post.HideControllerTest do
       assert post.deletion_reason == "Rule violation"
     end
 
-    # Failure path: hide_changeset requires deletion_reason. hide_post now
+    # Failure path: hide_changeset requires deletion_reason. create_post_hide now
     # normalizes its Multi failure to {:error, changeset}, so a blank reason
     # redirects back with the "Unable to delete post!" flash instead of raising.
     test "with a blank deletion reason redirects back with the failure flash",
@@ -91,7 +96,7 @@ defmodule PhilomenaWeb.Topic.Post.HideControllerTest do
       refute Repo.reload!(post).hidden_from_users
     end
 
-    test "for an unknown post_id redirects with the authorization flash",
+    test "for an unknown post_id redirects with the not-found flash",
          %{conn: conn, forum: forum, topic: topic} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
@@ -101,7 +106,9 @@ defmodule PhilomenaWeb.Topic.Post.HideControllerTest do
         })
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
 
     # NOTE: a non-integer post_id short-circuits to NotFoundPlug via the central

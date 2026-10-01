@@ -26,7 +26,7 @@ defmodule PhilomenaWeb.Topic.ReadControllerTest do
         {:ok, _} = Topics.create_subscription(topic, user)
         author = confirmed_user_fixture()
         post = hd(topic.posts)
-        {:ok, 1} = Notifications.create_forum_post_notification(author, topic, post)
+        {:ok, 1} = Notifications.broadcast_forum_post(author, topic, post)
       end,
       notification?: fn ->
         Repo.exists?(
@@ -52,13 +52,21 @@ defmodule PhilomenaWeb.Topic.ReadControllerTest do
   end
 
   test "POST for a hidden topic still clears the notification", %{conn: conn} do
-    # LoadTopicPlug passes show_hidden: true here, so hidden topics can be
-    # marked read
+    # the context loads the topic with show_hidden: true here, so hidden topics
+    # can be marked read
     %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
     forum = forum_fixture()
     topic = topic_fixture(forum)
     {:ok, _} = Topics.create_subscription(topic, user)
-    {:ok, topic} = Topics.hide_topic(topic, "test hiding", moderator_user_fixture())
+    moderator = moderator_user_fixture()
+
+    {:ok, {_forum, topic}} =
+      Topics.create_topic_hide(
+        Philomena.AttributionFixtures.actor(moderator),
+        forum.short_name,
+        topic.slug,
+        %{"deletion_reason" => "test hiding"}
+      )
 
     conn = post(conn, ~p"/forums/#{forum}/topics/#{topic}/read")
 

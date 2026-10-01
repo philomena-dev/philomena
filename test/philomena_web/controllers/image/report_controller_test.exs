@@ -25,12 +25,14 @@ defmodule PhilomenaWeb.Image.ReportControllerTest do
     assert response =~ "Reporting Image - Derpibooru"
   end
 
-  test "GET new for an unknown image redirects to / with the authorization flash",
+  test "GET new for an unknown image redirects to / with the not-found flash",
        %{conn: conn} do
     conn = get(conn, ~p"/images/999999999/reports/new")
 
     assert redirected_to(conn) == "/"
-    assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+    assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+             "Couldn't find what you were looking for!"
   end
 
   test "POST as a logged-in user creates the report and redirects to /reports", %{conn: conn} do

@@ -7,13 +7,24 @@ defmodule PhilomenaWeb.Topic.Post.DeleteControllerTest do
   import Philomena.ForumsFixtures
   import Philomena.PostsFixtures
   import Philomena.TopicsFixtures
+  import Philomena.UsersFixtures
 
+  alias Philomena.Posts
   alias Philomena.Repo
 
   setup do
     forum = forum_fixture()
     topic = topic_fixture(forum)
     post = post_fixture(topic, nil, %{"body" => "Original post body"})
+
+    {:ok, post} =
+      Posts.create_post_hide(
+        Philomena.AttributionFixtures.actor(moderator_user_fixture()),
+        forum.short_name,
+        topic.slug,
+        post.id,
+        %{deletion_reason: "Spam"}
+      )
 
     %{forum: forum, topic: topic, post: post}
   end
@@ -57,17 +68,19 @@ defmodule PhilomenaWeb.Topic.Post.DeleteControllerTest do
     end
 
     # Failure path: destroy_changeset never fails, so the only reachable failure
-    # surface is an unknown post - load_and_authorize_resource authorizes the
-    # nil resource, which no moderator rule matches, so it redirects with the
+    # surface is an unknown post - the context authorizes the nil load, which no
+    # moderator rule matches, so it returns unauthorized and redirects with the
     # authorization flash.
-    test "for an unknown post_id redirects with the authorization flash",
+    test "for an unknown post_id redirects with the not-found flash",
          %{conn: conn, forum: forum, topic: topic} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
       conn = post(conn, ~p"/forums/#{forum}/topics/#{topic}/posts/999999999/delete")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
 
     # NOTE: a non-integer post_id short-circuits to NotFoundPlug via the central

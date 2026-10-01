@@ -1,10 +1,7 @@
 defmodule PhilomenaWeb.Api.Json.OembedController do
   use PhilomenaWeb, :controller
 
-  alias Philomena.Images.Image
-  alias PhilomenaWeb.IntegerId
-  alias Philomena.Repo
-  import Ecto.Query
+  alias Philomena.Images
   import PhilomenaWeb.Api.Json.NotFound
 
   # CDN image URLs always embed the image id directly after a
@@ -30,10 +27,10 @@ defmodule PhilomenaWeb.Api.Json.OembedController do
 
   # A URL with no path at all (e.g. `https://example.com`) parses to a nil path.
   defp try_oembed(%{path: path}, conn) when is_binary(path) do
-    path
-    |> extract_image_id()
-    |> load_image()
-    |> oembed_image(conn)
+    case Images.show_api_image(conn.assigns.actor, extract_image_id(path)) do
+      {:ok, %{hidden_from_users: false} = image} -> render(conn, "show.json", image: image)
+      _error -> not_found(conn)
+    end
   end
 
   defp try_oembed(_parsed, conn), do: not_found(conn)
@@ -57,22 +54,4 @@ defmodule PhilomenaWeb.Api.Json.OembedController do
         end
     end
   end
-
-  defp load_image(nil), do: nil
-
-  defp load_image(id) do
-    case IntegerId.parse(id) do
-      {:ok, id} ->
-        Image
-        |> where(id: ^id, hidden_from_users: false)
-        |> preload([:user, :sources, tags: :aliases])
-        |> Repo.one()
-
-      :error ->
-        nil
-    end
-  end
-
-  defp oembed_image(nil, conn), do: not_found(conn)
-  defp oembed_image(image, conn), do: render(conn, "show.json", image: image)
 end

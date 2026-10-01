@@ -29,11 +29,6 @@ config :exq,
   scheduler_enable: true,
   start_on_application: false
 
-config :canary,
-  repo: Philomena.Repo,
-  unauthorized_handler: {PhilomenaWeb.NotAuthorizedPlug, :call},
-  not_found_handler: {PhilomenaWeb.NotFoundPlug, :call}
-
 # Configures the endpoint
 config :philomena, PhilomenaWeb.Endpoint,
   adapter: Bandit.PhoenixAdapter,

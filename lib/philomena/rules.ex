@@ -1,37 +1,30 @@
 defmodule Philomena.Rules do
   @moduledoc """
-  The Rules context.
+  Rule publication, version history, and authorized rule administration.
+
+  Public rule routes use the stable position as their locator. Locator parsing,
+  lookup, and authorization share the same missing-before-forbidden contract as
+  ID-based contexts.
   """
 
   import Ecto.Query, warn: false
+  import Philomena.Authorization, only: [authorize: 3, verify_write_access: 1]
+
+  alias Philomena.IntegerId
+  alias Philomena.Authorization
+  alias Philomena.Loader
   alias Philomena.Repo
 
+  alias Philomena.Attribution.Actor
   alias Philomena.Rules.Rule
   alias Philomena.Rules.RuleVersion
   alias Philomena.Users.User
 
-  @doc """
-  Returns the list of rules.
-
-  ## Examples
-
-      iex> list_rules()
-      [%Rule{}, ...]
-
-  """
-  def list_rules do
+  defp list_rules do
     Repo.all(from r in Rule, order_by: [asc: r.position])
   end
 
-  @doc """
-  Returns the list of visible rules.
-
-  ## Examples
-
-      iex> list_visible_rules()
-      [%Rule{}, ...]
-  """
-  def list_visible_rules do
+  defp list_visible_rules do
     Repo.all(
       from r in Rule,
         where: r.hidden == false and r.internal == false,
@@ -48,6 +41,7 @@ defmodule Philomena.Rules do
       [%Rule{name: "Rule #0", ...}, ...]
 
   """
+  @spec list_reportable_rules() :: [Rule.t()]
   def list_reportable_rules do
     Repo.all(
       from r in Rule,
@@ -61,46 +55,36 @@ defmodule Philomena.Rules do
 
   ## Examples
 
-      iex> find_rule(123)
-      %Rule{}
+      iex> fetch_rule(123)
+      {:ok, %Rule{}}
 
-      iex> find_rule(456)
-      nil
+      iex> fetch_rule(456)
+      {:error, not_found}
 
   """
-  def find_rule(id), do: Repo.get(Rule, id)
+  @spec fetch_rule(Loader.integer_id()) :: {:ok, Rule.t()} | {:error, :not_found}
+  def fetch_rule(id) do
+    Loader.fetch(Rule, id)
+  end
 
   @doc """
-  Gets a single rule by its position.
-
-  Raises `Ecto.NoResultsError` if the Rule does not exist.
+  Loads a rule by its name.
 
   ## Examples
 
-      iex> get_by_position!(0)
-      %Rule{name: "Rule #0", position: 0, ...}
+      iex> fetch_rule_by_name("Rule #0")
+      {:ok, %Rule{name: "Rule #0", ...}}
 
-      iex> get_by_position!(99999)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_by_position!(position), do: Repo.get_by!(Rule, position: position)
-
-  @doc """
-  Gets a single rule by its name.
-
-  Raises `Ecto.NoResultsError` if the Rule does not exist.
-
-  ## Examples
-
-      iex> get_by_name!("Rule #0")
-      %Rule{name: "Rule #0", ...}
-
-      iex> get_by_name!("Nonexistent Rule")
-      ** (Ecto.NoResultsError)
+      iex> fetch_rule_by_name("Nonexistent Rule")
+      {:error, :not_found}
 
   """
-  def get_by_name!(name), do: Repo.get_by!(Rule, name: name)
+  @spec fetch_rule_by_name(String.t()) :: Loader.fetch_result(Rule.t())
+  def fetch_rule_by_name(name) do
+    Rule
+    |> where(name: ^name)
+    |> Loader.one()
+  end
 
   @doc """
   Returns a list of all rule versions for a given rule.
@@ -111,6 +95,7 @@ defmodule Philomena.Rules do
       [%RuleVersion{...}, ...]
 
   """
+  @spec list_rule_versions(Rule.t()) :: [RuleVersion.t()]
   def list_rule_versions(%Rule{} = rule) do
     Repo.all(
       from rv in RuleVersion,
@@ -138,74 +123,184 @@ defmodule Philomena.Rules do
     create_rule_version(rule, %User{id: nil})
   end
 
-  defp create_rule(attrs) do
+  defp insert_rule(attrs) do
     %Rule{}
     |> Rule.changeset(attrs)
     |> Repo.insert()
   end
 
-  @doc """
-  Creates a rule and stores the initial version attributed to a user.
-
-  If the user is nil, then it is assumed to be a system action.
-
-  ## Examples
-
-      iex> create_rule_with_version(%{name: "Rule #0", ...}, user)
-      {:ok, [%Rule{}, %RuleVersion{}]}
-
-      iex> create_rule_with_version(%{bad_field: bad_value, ...}, user)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_rule_with_version(attrs, user) do
+  defp create_rule_with_version(attrs, user) do
     Repo.transact(fn ->
-      with {:ok, rule} <- create_rule(attrs),
+      with {:ok, rule} <- insert_rule(attrs),
            {:ok, rule_version} <- create_rule_version(rule, user) do
         {:ok, [rule, rule_version]}
       end
     end)
   end
 
-  defp update_rule(%Rule{} = rule, attrs) do
+  defp save_rule(%Rule{} = rule, attrs) do
     rule
     |> Rule.changeset(attrs)
     |> Repo.update()
   end
 
-  @doc """
-  Updates a rule and stores the new version attributed to a user.
-
-  If the user is nil, then it is assumed to be a system edit.
-
-  ## Examples
-
-      iex> update_rule_with_version(rule, user, %{field: new_value})
-      {:ok, [%Rule{}, %RuleVersion{}]}
-
-      iex> update_rule_with_version(rule, user, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_rule_with_version(%Rule{} = rule, user, attrs) do
+  defp update_rule_with_version(%Rule{} = rule, user, attrs) do
     Repo.transact(fn ->
-      with {:ok, updated_rule} <- update_rule(rule, attrs),
+      with {:ok, updated_rule} <- save_rule(rule, attrs),
            {:ok, rule_version} <- create_rule_version(updated_rule, user) do
         {:ok, [updated_rule, rule_version]}
       end
     end)
   end
 
+  # Returns an `%Ecto.Changeset{}` for tracking rule changes.
+  defp change_rule(%Rule{} = rule, attrs \\ %{}) do
+    Rule.changeset(rule, attrs)
+  end
+
+  defp load_authorized_rule(actor, position, action) do
+    with {:ok, position} <- Loader.parse_id(position) do
+      Rule
+      |> where(position: ^position)
+      |> Loader.one_and_authorize(actor, action)
+    end
+  end
+
   @doc """
-  Returns an `%Ecto.Changeset{}` for tracking rule changes.
+  Returns the rules `actor` may see, ordered by position.
+
+  A viewer who may edit rules sees every rule; everyone else sees only the
+  visible (non-hidden, non-internal) rules.
+  """
+  @spec list_rules_for(Actor.t()) :: [Rule.t()]
+  def list_rules_for(%Actor{} = actor) do
+    case authorize(actor, :edit, Rule) do
+      :ok -> list_rules()
+      {:error, :unauthorized} -> list_visible_rules()
+    end
+  end
+
+  @doc """
+  Loads the rule at `position` for `actor` to be shown.
+
+  A malformed or absent position is not found for every actor. A real hidden or
+  internal rule is unauthorized unless the actor has rule-edit permission.
 
   ## Examples
 
-      iex> change_rule(rule)
-      %Ecto.Changeset{data: %Rule{}}
+      iex> show_rule(actor, "1")
+      {:ok, %Rule{}}
+
+      iex> show_rule(actor, "not-a-position")
+      {:error, :not_found}
+  """
+  @spec show_rule(Actor.t(), IntegerId.integer_id()) ::
+          {:ok, Rule.t()} | {:error, :not_found | :unauthorized}
+  def show_rule(%Actor{} = actor, position) do
+    load_authorized_rule(actor, position, :show)
+  end
+
+  @doc """
+  Prepares a new rule on behalf of `actor`.
+
+  Verifies write access and authorizes `:new` before returning the changeset.
+
+  ## Examples
+
+      iex> new_rule(admin_actor)
+      {:ok, %Ecto.Changeset{}}
+
+      iex> new_rule(user_actor)
+      {:error, :unauthorized}
+  """
+  @spec new_rule(Actor.t()) ::
+          {:ok, Ecto.Changeset.t()} | Authorization.write_error()
+  def new_rule(%Actor{} = actor) do
+    with :ok <- verify_write_access(actor),
+         :ok <- authorize(actor, :new, Rule) do
+      {:ok, change_rule(%Rule{})}
+    end
+  end
+
+  @doc """
+  Creates a rule (with its initial version) on behalf of `actor` from `attrs`.
+
+  Verifies write access and authorizes `:create`. The rule and its initial
+  version are inserted in one transaction.
+
+  ## Examples
+
+      iex> create_rule(admin_actor, %{name: "Rule #1", position: 1})
+      {:ok, [%Rule{}, %RuleVersion{}]}
+
+      iex> create_rule(user_actor, %{name: "Rule #1", position: 1})
+      {:error, :unauthorized}
 
   """
-  def change_rule(%Rule{} = rule, attrs \\ %{}) do
-    Rule.changeset(rule, attrs)
+  @spec create_rule(Actor.t(), map()) ::
+          {:ok, [Rule.t() | RuleVersion.t()]}
+          | {:error, Ecto.Changeset.t()}
+          | Authorization.write_error()
+  def create_rule(%Actor{} = actor, attrs) do
+    with :ok <- verify_write_access(actor),
+         :ok <- authorize(actor, :create, Rule) do
+      create_rule_with_version(attrs, actor.user)
+    end
+  end
+
+  @doc """
+  Loads the rule at `position` for `actor` to edit.
+
+  Verifies write access before safely loading the position and authorizing
+  `:edit` on the real rule.
+
+  ## Examples
+
+      iex> edit_rule(admin_actor, "1")
+      {:ok, {%Rule{}, %Ecto.Changeset{}}}
+
+      iex> edit_rule(admin_actor, "missing")
+      {:error, :not_found}
+
+  """
+  @spec edit_rule(Actor.t(), IntegerId.integer_id()) ::
+          {:ok, {Rule.t(), Ecto.Changeset.t()}}
+          | {:error, Authorization.write_error_reason() | :not_found}
+  def edit_rule(%Actor{} = actor, position) do
+    with :ok <- verify_write_access(actor),
+         {:ok, rule} <- load_authorized_rule(actor, position, :edit) do
+      {:ok, {rule, change_rule(rule)}}
+    end
+  end
+
+  @doc """
+  Updates the rule at `position` (with a new version), on behalf of `actor`, from
+  `attrs`.
+
+  Verifies write access before safely loading the position and authorizing
+  `:update`. The update and its version are stored in one transaction. A
+  validation failure carries the original rule for form rendering.
+
+  ## Examples
+
+      iex> update_rule(admin_actor, "1", %{title: "Be excellent"})
+      {:ok, [%Rule{}, %RuleVersion{}]}
+
+      iex> update_rule(admin_actor, "1", %{name: ""})
+      {:error, {%Rule{}, %Ecto.Changeset{}}}
+
+  """
+  @spec update_rule(Actor.t(), IntegerId.integer_id(), map()) ::
+          {:ok, [Rule.t() | RuleVersion.t()]}
+          | {:error, {Rule.t(), Ecto.Changeset.t()}}
+          | {:error, Authorization.write_error_reason() | :not_found}
+  def update_rule(%Actor{} = actor, position, attrs) do
+    with :ok <- verify_write_access(actor),
+         {:ok, rule} <- load_authorized_rule(actor, position, :update) do
+      case update_rule_with_version(rule, actor.user, attrs) do
+        {:ok, [updated_rule, rule_version]} -> {:ok, [updated_rule, rule_version]}
+        {:error, changeset} -> {:error, {rule, changeset}}
+      end
+    end
   end
 end

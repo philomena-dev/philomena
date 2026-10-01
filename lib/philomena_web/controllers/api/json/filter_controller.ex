@@ -1,33 +1,18 @@
 defmodule PhilomenaWeb.Api.Json.FilterController do
   use PhilomenaWeb, :controller
 
-  alias Philomena.Filters.Filter
-  alias PhilomenaWeb.IntegerId
-  alias Philomena.Repo
-  import Ecto.Query
+  alias Philomena.Filters
   import PhilomenaWeb.Api.Json.NotFound
 
   def show(conn, %{"id" => id}) do
-    user = conn.assigns.current_user
-    filter = load_filter(id)
+    case Filters.show_filter(conn.assigns.actor, id) do
+      {:ok, filter} ->
+        render(conn, "show.json", filter: filter)
 
-    if Canada.Can.can?(user, :show, filter) do
-      render(conn, "show.json", filter: filter)
-    else
-      not_found(conn)
-    end
-  end
-
-  defp load_filter(id) do
-    case IntegerId.parse(id) do
-      {:ok, id} ->
-        Filter
-        |> where(id: ^id)
-        |> preload(:user)
-        |> Repo.one()
-
-      :error ->
-        nil
+      # A filter the viewer may not see and a missing filter answer with the
+      # same uniform 404.
+      {:error, _not_found_or_unauthorized} ->
+        not_found(conn)
     end
   end
 end

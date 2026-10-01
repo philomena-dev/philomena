@@ -3,8 +3,10 @@ defmodule PhilomenaWeb.Image.FaveControllerTest do
   use PhilomenaWeb.SingletonToggleTests
 
   import Ecto.Query
+  import Philomena.FiltersFixtures
   import Philomena.ImagesFixtures
 
+  alias Philomena.Multi
   alias Philomena.ImageFaves
   alias Philomena.ImageFaves.ImageFave
   alias Philomena.ImageVotes
@@ -24,7 +26,10 @@ defmodule PhilomenaWeb.Image.FaveControllerTest do
   end
 
   defp fave!(image, user) do
-    {:ok, _} = Repo.transaction(ImageFaves.create_fave_transaction(image, user))
+    {:ok, _} =
+      Multi.new()
+      |> ImageFaves.put_fave_for_loaded_image(image, user)
+      |> Multi.transact()
   end
 
   describe "POST /images/:image_id/fave" do
@@ -51,7 +56,11 @@ defmodule PhilomenaWeb.Image.FaveControllerTest do
     test "when the user had downvoted, replaces the downvote with an upvote",
          %{conn: conn, user: user} do
       image = image_fixture()
-      {:ok, _} = Repo.transaction(ImageVotes.create_vote_transaction(image, user, false))
+
+      {:ok, _} =
+        Multi.new()
+        |> ImageVotes.put_vote_for_loaded_image(image, user, false)
+        |> Multi.transact()
 
       conn = post(conn, ~p"/images/#{image}/fave")
 
@@ -64,6 +73,25 @@ defmodule PhilomenaWeb.Image.FaveControllerTest do
 
       assert %ImageVote{up: true} = vote(image, user)
     end
+
+    test "a forced-filter match redirects without recording a fave", %{conn: conn, user: user} do
+      image = image_fixture()
+      filter = system_filter_fixture(hidden_complex_str: "id:#{image.id}")
+
+      user
+      |> Ecto.Changeset.change(forced_filter_id: filter.id)
+      |> Repo.update!()
+
+      conn = post(conn, ~p"/images/#{image}/fave")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "You have been blocked from performing this action on this image."
+
+      refute fave(image, user)
+      refute vote(image, user)
+    end
   end
 
   describe "DELETE /images/:image_id/fave" do
@@ -72,7 +100,11 @@ defmodule PhilomenaWeb.Image.FaveControllerTest do
     test "removes the fave but keeps the implicit upvote", %{conn: conn, user: user} do
       image = image_fixture()
       fave!(image, user)
-      {:ok, _} = Repo.transaction(ImageVotes.create_vote_transaction(image, user, true))
+
+      {:ok, _} =
+        Multi.new()
+        |> ImageVotes.put_vote_for_loaded_image(image, user, true)
+        |> Multi.transact()
 
       conn = delete(conn, ~p"/images/#{image}/fave")
 

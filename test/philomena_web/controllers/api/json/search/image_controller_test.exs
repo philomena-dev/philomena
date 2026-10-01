@@ -6,9 +6,9 @@ defmodule PhilomenaWeb.Api.Json.Search.ImageControllerTest do
   import Philomena.ImagesFixtures
   import Philomena.UsersFixtures
 
+  alias Philomena.Multi
   alias Philomena.ImageFaves
   alias Philomena.Images.Image
-  alias Philomena.Repo
   alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
 
@@ -70,7 +70,12 @@ defmodule PhilomenaWeb.Api.Json.Search.ImageControllerTest do
     test "returns the user's interactions for an API key", %{conn: conn} do
       user = confirmed_user_fixture()
       image = image_fixture()
-      {:ok, _} = Repo.transaction(ImageFaves.create_fave_transaction(image, user))
+
+      {:ok, _} =
+        Multi.new()
+        |> ImageFaves.put_fave_for_loaded_image(image, user)
+        |> Multi.transact()
+
       SearchHelpers.reindex_all!(Image)
 
       conn =

@@ -62,7 +62,7 @@ defmodule PhilomenaWeb.Session.TotpControllerTest do
 
       assert redirected_to(conn) == "/"
       assert get_session(conn, :totp_token)
-      assert Users.get_user!(user.id).consumed_timestep == String.to_integer(token)
+      assert Users.fetch_user_for_worker!(user.id).consumed_timestep == String.to_integer(token)
 
       # The session now passes :ensure_totp routes.
       conn = get(conn, ~p"/registrations/edit")
@@ -93,7 +93,7 @@ defmodule PhilomenaWeb.Session.TotpControllerTest do
 
       assert redirected_to(conn) == "/"
       assert get_session(conn, :totp_token)
-      assert length(Users.get_user!(user.id).otp_backup_codes) == 9
+      assert length(Users.fetch_user_for_worker!(user.id).otp_backup_codes) == 9
     end
 
     test "rejects an invalid token and logs the user out", %{conn: conn} do

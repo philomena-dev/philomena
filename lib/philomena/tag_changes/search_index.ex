@@ -1,4 +1,6 @@
 defmodule Philomena.TagChanges.SearchIndex do
+  @moduledoc false
+
   @behaviour PhilomenaQuery.Search.Index
 
   @impl true
@@ -57,7 +59,7 @@ defmodule Philomena.TagChanges.SearchIndex do
            tag_change.image.user_id == tag_change.user_id and
            tag_change.image.anonymous)
 
-    {added_tags, removed_tags} = Enum.split_with(tag_change.tags, & &1.added)
+    {added_tags, removed_tags} = Enum.split_with(tag_change.tag_change_tags, & &1.added)
 
     %{
       id: tag_change.id,
@@ -73,13 +75,13 @@ defmodule Philomena.TagChanges.SearchIndex do
       ip: to_string(tag_change.ip),
       fingerprint: tag_change.fingerprint,
       created_at: tag_change.created_at,
-      tag: tags_to_name_list(tag_change.tags),
+      tag: tags_to_name_list(tag_change.tag_change_tags),
       added_tag: tags_to_name_list(added_tags),
       removed_tag: tags_to_name_list(removed_tags),
-      tag_id: tags_to_id_list(tag_change.tags),
+      tag_id: tags_to_id_list(tag_change.tag_change_tags),
       added_tag_id: tags_to_id_list(added_tags),
       removed_tag_id: tags_to_id_list(removed_tags),
-      tag_count: length(tag_change.tags),
+      tag_count: length(tag_change.tag_change_tags),
       added_tag_count: length(added_tags),
       removed_tag_count: length(removed_tags)
     }

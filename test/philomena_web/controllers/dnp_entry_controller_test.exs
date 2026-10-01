@@ -2,24 +2,17 @@ defmodule PhilomenaWeb.DnpEntryControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
   import Ecto.Query
+  import Philomena.ArtistLinksFixtures
   import Philomena.DnpEntriesFixtures
   import Philomena.TagsFixtures
   import Philomena.UsersFixtures
 
-  alias Philomena.ArtistLinks
   alias Philomena.DnpEntries.DnpEntry
   alias Philomena.Repo
 
-  # The DNP form only offers tags from the user's verified artist links
-  # (the :set_tags plug rejects users without any)
+  # The DNP form only offers regular users tags from verified artist links.
   defp verify_artist_link!(user, tag) do
-    {:ok, link} =
-      ArtistLinks.create_artist_link(user, %{
-        "tag_name" => tag.name,
-        "uri" => "https://example.com/gallery"
-      })
-
-    {:ok, _link} = ArtistLinks.verify_artist_link(link, user)
+    verified_artist_link_fixture(user, tag, %{"uri" => "https://example.com/gallery"})
     :ok
   end
 
@@ -112,7 +105,7 @@ defmodule PhilomenaWeb.DnpEntryControllerTest do
       conn = get(conn, ~p"/dnp/999999")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "You can't access that page."
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 
@@ -254,19 +247,16 @@ defmodule PhilomenaWeb.DnpEntryControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    test "redirects a moderator without a tag_id param with the authorization flash",
-         %{conn: conn} do
-      # NOTE: the :set_tags plug offers moderators the ?tag_id= tag, but
-      # falls back to their own linked tags without it - a moderator with no
-      # verified artist link of their own cannot open the edit form bare
+    test "renders the current tag for a moderator without a tag_id param", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       tag = tag_fixture(name: "artist:test-mod-bare-artist")
       entry = dnp_entry_fixture(confirmed_user_fixture(), tag)
 
       conn = get(conn, ~p"/dnp/#{entry}/edit")
+      response = html_response(conn, 200)
 
-      assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      assert response =~ "Editing DNP Listing - Derpibooru"
+      assert response =~ "test-mod-bare-artist"
     end
 
     test "renders the form for a moderator with a tag_id param", %{conn: conn} do

@@ -14,9 +14,16 @@ defmodule PhilomenaWeb.Topic.HideControllerTest do
     %{forum: forum, topic: topic}
   end
 
-  defp hidden_topic(topic) do
-    {:ok, topic} =
-      Topics.hide_topic(topic, "Spam", Philomena.UsersFixtures.moderator_user_fixture())
+  defp hidden_topic(forum, topic) do
+    moderator = Philomena.UsersFixtures.moderator_user_fixture()
+
+    {:ok, {_forum, topic}} =
+      Topics.create_topic_hide(
+        Philomena.AttributionFixtures.actor(moderator),
+        forum.short_name,
+        topic.slug,
+        %{"deletion_reason" => "Spam"}
+      )
 
     topic
   end
@@ -64,7 +71,7 @@ defmodule PhilomenaWeb.Topic.HideControllerTest do
       assert topic.deleted_by_id == user.id
     end
 
-    # Failure path: hide_changeset requires deletion_reason. hide_topic now
+    # Failure path: hide_changeset requires deletion_reason. create_topic_hide now
     # normalizes its Multi failure to {:error, changeset}, so a blank reason
     # redirects back with the "Unable to delete the topic!" flash instead of
     # raising CaseClauseError.
@@ -101,7 +108,7 @@ defmodule PhilomenaWeb.Topic.HideControllerTest do
 
   describe "DELETE /forums/:forum_id/topics/:topic_id/hide" do
     test "redirects anonymous users to the login page", %{conn: conn, forum: forum, topic: topic} do
-      topic = hidden_topic(topic)
+      topic = hidden_topic(forum, topic)
 
       conn = delete(conn, ~p"/forums/#{forum}/topics/#{topic}/hide")
 
@@ -109,12 +116,12 @@ defmodule PhilomenaWeb.Topic.HideControllerTest do
       assert Repo.reload!(topic).hidden_from_users
     end
 
-    # A regular user cannot even load a hidden topic (LoadTopicPlug rejects it
-    # before the authorize_resource :hide check), so the not-authorized redirect
-    # comes from the load plug.
+    # A regular user cannot even load a hidden topic - the context's topic load
+    # rejects it (show_hidden: false) before the :hide authorization, so the
+    # not-authorized result comes from the load-visibility step.
     test "rejects a regular user with the authorization flash",
          %{conn: conn, forum: forum, topic: topic} do
-      topic = hidden_topic(topic)
+      topic = hidden_topic(forum, topic)
       %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
       conn = delete(conn, ~p"/forums/#{forum}/topics/#{topic}/hide")
@@ -125,7 +132,7 @@ defmodule PhilomenaWeb.Topic.HideControllerTest do
     end
 
     test "as a moderator restores the topic", %{conn: conn, forum: forum, topic: topic} do
-      topic = hidden_topic(topic)
+      topic = hidden_topic(forum, topic)
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
       conn = delete(conn, ~p"/forums/#{forum}/topics/#{topic}/hide")

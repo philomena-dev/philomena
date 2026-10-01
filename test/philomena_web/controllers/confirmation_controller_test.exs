@@ -68,7 +68,7 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
 
       assert response =~ "<h1>Confirm account</h1>"
       assert response =~ ~s(action="/confirmations/#{token}")
-      refute Repo.reload!(user).confirmed_at
+      refute Users.fetch_user_for_worker!(user.id).confirmed_at
       assert Repo.get_by!(Users.UserToken, user_id: user.id).context == "confirm"
     end
   end
@@ -83,7 +83,7 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
       conn = put(conn, ~p"/confirmations/#{token}")
       assert redirected_to(conn) == "/"
       assert Flash.get(conn.assigns.flash, :info) =~ "Account confirmed successfully"
-      assert Users.get_user!(user.id).confirmed_at
+      assert Users.fetch_user_for_worker!(user.id).confirmed_at
       refute get_session(conn, :user_token)
       assert Repo.all(Users.UserToken) == []
 
@@ -101,7 +101,7 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
       assert Flash.get(conn.assigns.flash, :error) =~
                "Confirmation link is invalid or it has expired"
 
-      refute Users.get_user!(user.id).confirmed_at
+      refute Users.fetch_user_for_worker!(user.id).confirmed_at
     end
   end
 
@@ -126,7 +126,7 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
       conn = conn |> log_in_user(user) |> get(~p"/confirmations/#{token}")
 
       assert html_response(conn, 200) =~ "<h1>Confirm account</h1>"
-      refute Repo.reload!(user).confirmed_at
+      refute Users.fetch_user_for_worker!(user.id).confirmed_at
       assert get_session(conn, :user_token)
     end
 
@@ -142,7 +142,7 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
       assert redirected_to(conn) == "/"
       assert Flash.get(conn.assigns.flash, :info) =~ "Account confirmed successfully."
       assert get_session(conn, :user_token)
-      assert Users.get_user!(user.id).confirmed_at
+      assert Users.fetch_user_for_worker!(user.id).confirmed_at
     end
 
     # A deactivated (deleted_at set) account is locked out everywhere,
@@ -162,7 +162,7 @@ defmodule PhilomenaWeb.ConfirmationControllerTest do
       assert redirected_to(conn) == "/"
       assert Flash.get(conn.assigns.flash, :error) =~ "Your account is not currently active."
       refute get_session(conn, :user_token)
-      refute Users.get_user!(user.id).confirmed_at
+      refute Users.fetch_user_for_worker!(user.id).confirmed_at
     end
 
     test "PUT /confirmations/:id silently redirects confirmed users for invalid tokens",

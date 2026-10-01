@@ -91,9 +91,9 @@ defmodule PhilomenaWeb.CommissionControllerTest do
     end
 
     test "renders an empty result set on invalid search parameters", %{conn: conn} do
-      # NOTE: an invalid search now renders an empty Scrivener page (200) with an
-      # error changeset rather than crashing the pagination partial on a bare
-      # list.
+      # NOTE: an invalid search now renders an empty page (200) with an
+      # error changeset rather than crashing the pagination partial on a
+      # bare list.
       conn = get(conn, ~p"/commissions?#{[commission: [price_min: "not-a-price"]]}")
       response = html_response(conn, 200)
 

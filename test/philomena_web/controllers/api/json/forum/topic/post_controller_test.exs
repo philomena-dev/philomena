@@ -27,29 +27,66 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostControllerTest do
       assert reply_id == reply.id
     end
 
-    test "includes hidden posts with a null body", %{conn: conn} do
+    test "does not exclude hidden posts", %{conn: conn} do
       user = confirmed_user_fixture()
       moderator = moderator_user_fixture()
       forum = forum_fixture()
       topic = topic_fixture(forum, user)
       reply = post_fixture(topic, user, %{"body" => "Rule-breaking reply"})
 
-      {:ok, _} = Posts.hide_post(reply, %{"deletion_reason" => "spam"}, moderator)
+      {:ok, _} =
+        Posts.create_post_hide(
+          Philomena.AttributionFixtures.actor(moderator),
+          forum.short_name,
+          topic.slug,
+          reply.id,
+          %{"deletion_reason" => "spam"}
+        )
 
       conn = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts")
 
-      # NOTE: hidden posts are not filtered from the index; they render with
-      # a null body.
-      assert %{"posts" => [_first, hidden], "total" => 2} = json_response(conn, 200)
-      assert %{"body" => nil, "id" => hidden_id} = hidden
-      assert hidden_id == reply.id
+      assert %{"posts" => [first, second], "total" => 2} = json_response(conn, 200)
+      refute first["id"] == reply.id
+      refute first["body"] == nil
+      assert second["id"] == reply.id
+      assert second["body"] == nil
+    end
+
+    test "includes hidden posts for moderators", %{conn: conn} do
+      moderator = moderator_user_fixture()
+      forum = forum_fixture()
+      topic = topic_fixture(forum)
+      reply = post_fixture(topic, nil, %{"body" => "Rule-breaking reply"})
+
+      {:ok, _} =
+        Posts.create_post_hide(
+          Philomena.AttributionFixtures.actor(moderator),
+          forum.short_name,
+          topic.slug,
+          reply.id,
+          %{"deletion_reason" => "spam"}
+        )
+
+      conn =
+        get(
+          conn,
+          ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts?key=#{moderator.authentication_token}"
+        )
+
+      assert %{"posts" => posts, "total" => 2} = json_response(conn, 200)
+      assert Enum.any?(posts, &(&1["id"] == reply.id))
     end
 
     test "paginates in windows of 25 by topic position by default", %{conn: conn} do
       user = confirmed_user_fixture()
       forum = forum_fixture()
       topic = topic_fixture(forum, user)
-      for n <- 1..25, do: post_fixture(topic, user, %{"body" => "Reply number #{n}"})
+
+      for n <- 1..25,
+          do:
+            post_fixture(topic, confirmed_user_fixture(), %{
+              "body" => "Reply number #{n}"
+            })
 
       conn2 = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts?page=2")
 
@@ -95,16 +132,16 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostControllerTest do
       assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
-    test "returns an empty list for a page past the last post", %{conn: conn} do
+    test "returns no results for a page past the last post", %{conn: conn} do
       forum = forum_fixture()
       topic = topic_fixture(forum)
 
-      # NOTE: a page past the end now returns an empty list with the topic's
-      # post_count as the total, rather than crashing on hd([]).
+      # Scrivener clamps an out-of-range page to the final valid page.
+      # The database-backed pagination used for topics does not.
       conn = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts?page=2")
 
       total = Repo.reload!(topic).post_count
-      assert json_response(conn, 200) == %{"posts" => [], "total" => total}
+      assert %{"posts" => [], "total" => ^total} = json_response(conn, 200)
     end
   end
 
@@ -141,7 +178,22 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostControllerTest do
       topic = topic_fixture(forum)
       post = post_fixture(topic, nil)
 
-      {:ok, _} = Posts.destroy_post(post)
+      {:ok, _} =
+        Posts.create_post_hide(
+          Philomena.AttributionFixtures.actor(moderator_user_fixture()),
+          forum.short_name,
+          topic.slug,
+          post.id,
+          %{deletion_reason: "Spam"}
+        )
+
+      {:ok, _} =
+        Posts.create_post_delete(
+          Philomena.AttributionFixtures.actor(moderator_user_fixture()),
+          forum.short_name,
+          topic.slug,
+          post.id
+        )
 
       conn = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts/#{post.id}")
 
@@ -154,7 +206,13 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostControllerTest do
       topic = topic_fixture(forum)
       post = post_fixture(topic, nil)
 
-      {:ok, _} = Topics.hide_topic(topic, "spam", moderator)
+      {:ok, {_forum, _topic}} =
+        Topics.create_topic_hide(
+          Philomena.AttributionFixtures.actor(moderator),
+          forum.short_name,
+          topic.slug,
+          %{"deletion_reason" => "spam"}
+        )
 
       conn = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts/#{post.id}")
 
@@ -175,7 +233,7 @@ defmodule PhilomenaWeb.Api.Json.Forum.Topic.PostControllerTest do
     test "returns 404 for a post in a restricted forum", %{conn: conn} do
       forum = forum_fixture(access_level: "staff")
       topic = topic_fixture(forum)
-      post = post_fixture(topic, nil)
+      post = post_fixture(topic, moderator_user_fixture())
 
       conn = get(conn, ~p"/api/v1/json/forums/#{forum}/topics/#{topic}/posts/#{post.id}")
 

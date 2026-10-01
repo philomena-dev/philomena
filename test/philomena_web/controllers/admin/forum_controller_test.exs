@@ -160,8 +160,9 @@ defmodule PhilomenaWeb.Admin.ForumControllerTest do
     # NOTE: Forums are loaded by `short_name` (id_field), a string column, so
     # an unknown/non-integer short name never casts - it just misses (no
     # Ecto.Query.CastError, unlike the integer-id badge/advert routes).
-    # Canary's plain load_resource runs its not_found handler for :edit here,
-    # so a missing short name redirects with the not-found flash.
+    # The context authorizes the loaded forum (nil for a missing short name),
+    # the admin is authorized on the nil load, so :edit redirects with the
+    # not-found flash.
     test "redirects with a not-found flash on an unknown short_name for :edit", %{conn: conn} do
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
       conn = get(conn, ~p"/admin/forums/does-not-exist/edit")
@@ -200,9 +201,9 @@ defmodule PhilomenaWeb.Admin.ForumControllerTest do
       assert Repo.get(Forum, forum.id).name == "Test Forum"
     end
 
-    # NOTE: For the :update action Canary's plain load_resource DOES run its
-    # not_found handler on a missing resource, so an unknown short name
-    # redirects with the not-found flash (unlike :edit above, which crashes).
+    # NOTE: the context authorizes the loaded forum on :update; a missing short
+    # name loads nil, the admin is authorized on it, so an unknown short name
+    # redirects with the not-found flash (like :edit above).
     test "redirects with a not-found flash on an unknown short_name for :update", %{conn: conn} do
       %{conn: conn} = register_and_log_in_admin(%{conn: conn})
       conn = patch(conn, ~p"/admin/forums/does-not-exist", %{"forum" => %{"name" => "x"}})

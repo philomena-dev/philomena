@@ -47,9 +47,9 @@ defmodule PhilomenaWeb.Admin.User.ActivationControllerTest do
       assert Repo.get(User, target.id).deleted_at == nil
     end
 
-    # NOTE: load_resource now uses required: true, so Canary's not_found handler
-    # runs on :create too - an unknown slug redirects with the not-found flash
-    # rather than passing nil into Users.reactivate_user/1.
+    # NOTE: the context authorizes the loaded record on :create; an unknown slug
+    # loads nil, the admin is authorized on it, so it redirects with the
+    # not-found flash rather than passing nil into Users.reactivate_user/1.
     test "redirects with the not-found flash for an unknown slug", %{conn: conn} do
       conn = post(conn, ~p"/admin/users/no-such-user/activation")
 
@@ -121,9 +121,9 @@ defmodule PhilomenaWeb.Admin.User.ActivationControllerTest do
       assert reloaded.deleted_by_user_id == admin.id
     end
 
-    # NOTE: unlike the :create sibling above, Canary's not_found handler DOES
-    # run on this :delete action, so an unknown slug redirects to "/" with the
-    # generic not-found flash instead of crashing.
+    # NOTE: an unknown slug loads nil and the admin is authorized on it, so this
+    # :delete action returns not_found - a redirect to "/" with the generic
+    # not-found flash instead of crashing.
     test "redirects for an unknown slug", %{conn: conn} do
       conn = delete(conn, ~p"/admin/users/no-such-user/activation")
       assert redirected_to(conn) == "/"

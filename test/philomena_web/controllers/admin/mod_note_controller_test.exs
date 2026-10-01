@@ -104,14 +104,13 @@ defmodule PhilomenaWeb.Admin.ModNoteControllerTest do
       assert html_response(conn, 200) =~ "New mod note for"
     end
 
-    # NOTE: new/2 now accepts a bare request and renders a blank form (200)
-    # rather than raising ActionClauseError.
-    test "renders a blank form without target params", %{conn: conn} do
+    test "redirects to / with a not-found flash with no id", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
       conn = get(conn, ~p"/admin/mod_notes/new")
 
-      assert html_response(conn, 200) =~ "New mod note for"
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 

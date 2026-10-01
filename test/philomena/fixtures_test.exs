@@ -55,11 +55,12 @@ defmodule Philomena.FixturesTest do
       assert reply.body == "A reply"
     end
 
-    test "creates an anonymous-attribution topic" do
+    test "creates an anonymously displayed topic" do
       forum = ForumsFixtures.forum_fixture()
 
       topic = TopicsFixtures.topic_fixture(forum)
-      assert topic.user_id == nil
+      assert topic.user_id
+      assert topic.anonymous
     end
   end
 

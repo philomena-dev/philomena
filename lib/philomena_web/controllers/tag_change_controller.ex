@@ -2,52 +2,45 @@ defmodule PhilomenaWeb.TagChangeController do
   use PhilomenaWeb, :controller
 
   alias Philomena.TagChanges
-  alias Philomena.TagChanges.TagChange
+  alias Philomena.TagChanges.TagChangePage
 
-  plug :load_and_authorize_resource,
-    model: TagChange,
-    only: [:delete],
-    preload: [:user, :image, tags: [:tag]]
+  action_fallback PhilomenaWeb.FallbackController
 
   def index(conn, params) do
-    tag_changes =
-      TagChanges.load(
-        conn.assigns.current_user,
-        params,
-        conn.assigns.pagination
-      )
-
-    render(conn, "index.html",
-      title: "Tag Changes",
-      tag_changes: tag_changes,
-      resource_type: params["resource_type"],
-      resource_id: params["resource_id"]
-    )
-  end
-
-  def delete(conn, params) do
-    case TagChanges.delete_tag_change(conn.assigns.tag_change) do
-      {:ok, tag_change} ->
-        conn
-        |> put_flash(:info, "Successfully deleted tag change from history.")
-        |> moderation_log(
-          details: &log_details/2,
-          data: tag_change
+    case TagChanges.list_tag_changes(conn.assigns.actor, params, conn.assigns.pagination) do
+      {:ok, %TagChangePage{} = page, changeset} ->
+        render(conn, "index.html",
+          title: "Tag Changes",
+          path: ~p"/tag_changes",
+          pagination_route: fn query -> ~p"/tag_changes?#{query}" end,
+          tag_changes: page.tag_changes,
+          changeset: changeset
         )
-        |> redirect(to: params["redirect"])
 
-      _ ->
+      {:error, %Ecto.Changeset{}} ->
         conn
-        |> put_flash(:error, "Failed to delete tag change from history.")
-        |> redirect(to: params["redirect"])
+        |> put_flash(:error, "Invalid tag change query.")
+        |> redirect(to: "/tag_changes")
+
+      error ->
+        error
     end
   end
 
-  defp log_details(_action, %{user: %{name: name}, image: image, tags: tags}) do
-    %{
-      body:
-        "Deleted tag change by #{name} containing #{length(tags)} tags on image #{image.id} from history",
-      subject_path: ~p"/images/#{image}"
-    }
+  def delete(conn, params) do
+    case TagChanges.delete_tag_change(conn.assigns.actor, params["id"]) do
+      {:ok, _tag_change} ->
+        conn
+        |> put_flash(:info, "Successfully deleted tag change from history.")
+        |> redirect(to: params["redirect"])
+
+      {:error, %Ecto.Changeset{}} ->
+        conn
+        |> put_flash(:error, "Failed to delete tag change from history.")
+        |> redirect(to: params["redirect"])
+
+      {:error, _} = error ->
+        error
+    end
   end
 end

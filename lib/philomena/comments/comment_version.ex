@@ -4,6 +4,8 @@ defmodule Philomena.Comments.CommentVersion do
   alias Philomena.Comments.Comment
   alias Philomena.Users.User
 
+  @type t :: %__MODULE__{}
+
   schema "comment_versions" do
     belongs_to :comment, Comment
     belongs_to :user, User

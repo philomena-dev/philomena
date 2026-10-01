@@ -21,6 +21,24 @@ defmodule PhilomenaWeb.FallbackControllerTest do
     |> assign(:ajax?, ajax?)
   end
 
+  # A conn with a session initialised and the `:referrer` assign populated the
+  # way `PhilomenaWeb.ReferrerPlug` does - from the Referer header, or "/" when
+  # that header is absent.
+  defp conn_with_referer(referer) do
+    conn =
+      build_conn()
+      |> Plug.Test.init_test_session(%{})
+      |> Phoenix.Controller.fetch_flash([])
+
+    conn =
+      case referer do
+        nil -> conn
+        value -> put_req_header(conn, "referer", value)
+      end
+
+    PhilomenaWeb.ReferrerPlug.call(conn, [])
+  end
+
   describe "call/2 with {:error, :unauthorized}" do
     test "AJAX request gets a bare 403 with the not-authorized message" do
       conn = FallbackController.call(conn_with_ajax(true), {:error, :unauthorized})
@@ -54,6 +72,24 @@ defmodule PhilomenaWeb.FallbackControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
                "Couldn't find what you were looking for!"
 
+      assert conn.halted
+    end
+  end
+
+  describe "call/2 with {:error, :ban}" do
+    test "redirects to / with the banned flash when no referer header is present" do
+      conn = FallbackController.call(conn_with_referer(nil), {:error, :ban})
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You are currently banned."
+      assert conn.halted
+    end
+
+    test "redirects to the referer when one is set" do
+      conn = FallbackController.call(conn_with_referer("/forums/dis"), {:error, :ban})
+
+      assert redirected_to(conn) == "/forums/dis"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You are currently banned."
       assert conn.halted
     end
   end

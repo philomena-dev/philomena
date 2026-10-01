@@ -44,7 +44,7 @@ defmodule PhilomenaWeb.Filter.SpoilerControllerTest do
   test "POST spoilers the tag on the user's own current filter", %{conn: conn} do
     %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
     filter = filter_fixture(user)
-    {:ok, _} = Users.update_filter(user, filter)
+    {:ok, _} = Users.set_current_filter(user, filter)
     tag = tag_fixture()
 
     path = ~p"/filters/spoiler?#{[tag: tag.slug]}"
@@ -57,9 +57,11 @@ defmodule PhilomenaWeb.Filter.SpoilerControllerTest do
   test "DELETE unspoilers the tag on the user's own current filter", %{conn: conn} do
     %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
     filter = filter_fixture(user)
-    {:ok, _} = Users.update_filter(user, filter)
+    {:ok, _} = Users.set_current_filter(user, filter)
     tag = tag_fixture()
-    {:ok, _} = Filters.spoiler_tag(filter, tag)
+
+    {:ok, _} =
+      Filters.create_filter_spoiler(Philomena.AttributionFixtures.actor(user), filter, tag.slug)
 
     path = ~p"/filters/spoiler?#{[tag: tag.slug]}"
     conn = delete(conn, path)
@@ -69,11 +71,10 @@ defmodule PhilomenaWeb.Filter.SpoilerControllerTest do
   end
 
   test "POST for an unknown tag redirects with the not-found flash", %{conn: conn} do
-    # NOTE: load_resource now uses required: true, so Canary runs its not-found
-    # handler on :create - an unknown slug redirects instead of passing nil
-    # into Filters.spoiler_tag/2.
+    # The context authorizes the current filter before safely loading the tag,
+    # so an unknown slug returns the normalized not-found result.
     %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
-    {:ok, _} = Users.update_filter(user, filter_fixture(user))
+    {:ok, _} = Users.set_current_filter(user, filter_fixture(user))
 
     conn = post(conn, ~p"/filters/spoiler?tag=unknown-slug")
 

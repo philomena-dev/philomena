@@ -50,7 +50,7 @@ defmodule PhilomenaWeb.Registration.NameControllerTest do
 
       conn = patch(conn, ~p"/registrations/name", %{"user" => %{"name" => new_name}})
 
-      updated = Users.get_user!(user.id)
+      updated = Users.fetch_user_for_worker!(user.id)
       assert updated.name == new_name
       assert redirected_to(conn) == ~p"/profiles/#{updated}"
       assert Flash.get(conn.assigns.flash, :info) =~ "Name successfully updated."
@@ -65,7 +65,7 @@ defmodule PhilomenaWeb.Registration.NameControllerTest do
       conn = patch(conn, ~p"/registrations/name", %{"user" => %{"name" => too_long}})
 
       assert html_response(conn, 200) =~ "Oops, something went wrong!"
-      assert Users.get_user!(user.id).name == user.name
+      assert Users.fetch_user_for_worker!(user.id).name == user.name
     end
 
     test "re-renders on an empty name", %{conn: conn, user: user} do
@@ -74,7 +74,7 @@ defmodule PhilomenaWeb.Registration.NameControllerTest do
       conn = patch(conn, ~p"/registrations/name", %{"user" => %{"name" => ""}})
 
       assert html_response(conn, 200) =~ "Oops, something went wrong!"
-      assert Users.get_user!(user.id).name == user.name
+      assert Users.fetch_user_for_worker!(user.id).name == user.name
     end
 
     test "rejects a second rename within the window", %{conn: conn, user: user} do
@@ -85,7 +85,7 @@ defmodule PhilomenaWeb.Registration.NameControllerTest do
       conn = patch(conn, ~p"/registrations/name", %{"user" => %{"name" => "another_name"}})
       assert redirected_to(conn) == "/"
       assert Flash.get(conn.assigns.flash, :error) =~ "You can't access that page."
-      assert Users.get_user!(user.id).name == user.name
+      assert Users.fetch_user_for_worker!(user.id).name == user.name
     end
 
     test "redirects anonymous users to the login page" do
@@ -103,7 +103,7 @@ defmodule PhilomenaWeb.Registration.NameControllerTest do
 
       conn = put(conn, ~p"/registrations/name", %{"user" => %{"name" => new_name}})
 
-      updated = Users.get_user!(user.id)
+      updated = Users.fetch_user_for_worker!(user.id)
       assert updated.name == new_name
       assert redirected_to(conn) == ~p"/profiles/#{updated}"
     end

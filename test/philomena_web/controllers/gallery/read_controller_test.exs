@@ -22,7 +22,7 @@ defmodule PhilomenaWeb.Gallery.ReadControllerTest do
       path: ~p"/galleries/#{gallery}/read",
       arrange!: fn ->
         {:ok, _} = Galleries.create_subscription(gallery, user)
-        {:ok, 1} = Notifications.create_gallery_image_notification(gallery)
+        {:ok, 1} = Notifications.broadcast_gallery_image(gallery)
       end,
       notification?: fn ->
         Repo.exists?(
@@ -36,9 +36,10 @@ defmodule PhilomenaWeb.Gallery.ReadControllerTest do
   read_singleton_tests()
 
   test "POST for an unknown gallery redirects with the not-found flash", %{conn: conn} do
-    # NOTE: load_resource now uses required: true, so Canary runs its not-found
-    # handler on :create - an unknown gallery redirects instead of passing nil
-    # into clear_gallery_notification/2.
+    # NOTE: the context authorizes the loaded record before checking existence;
+    # id 999999999 loads nil, authorization passes on the nil load, so :create
+    # returns not_found and redirects instead of passing nil into
+    # clear_gallery_notification/2.
     %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
     conn = post(conn, ~p"/galleries/999999999/read")

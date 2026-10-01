@@ -3,7 +3,10 @@ defmodule PhilomenaWeb.ActivityControllerTest do
 
   @moduletag :search
 
+  import Philomena.AttributionFixtures
+  import Philomena.ChannelsFixtures
   import Philomena.CommentsFixtures
+  import Philomena.FiltersFixtures
   import Philomena.ForumsFixtures
   import Philomena.ImagesFixtures
   import Philomena.TopicsFixtures
@@ -12,8 +15,11 @@ defmodule PhilomenaWeb.ActivityControllerTest do
   alias PhilomenaQuery.Search
   alias PhilomenaQuery.SearchHelpers
   alias Philomena.Comments.Comment
-  alias Philomena.Images
+  alias Philomena.Filters
+  alias Philomena.ImageFeatures.ImageFeature
   alias Philomena.Images.Image
+  alias Philomena.Repo
+  alias Philomena.Users
 
   setup do
     Search.clear_index!(Image)
@@ -48,7 +54,10 @@ defmodule PhilomenaWeb.ActivityControllerTest do
     test "shows the featured image", %{conn: conn} do
       user = confirmed_user_fixture()
       image = image_fixture(created_at: hours_ago(1))
-      {:ok, _feature} = Images.feature_image(user, image)
+
+      %ImageFeature{user_id: user.id, image_id: image.id}
+      |> ImageFeature.changeset(%{})
+      |> Repo.insert!()
 
       SearchHelpers.reindex_all!(Image)
 
@@ -69,6 +78,36 @@ defmodule PhilomenaWeb.ActivityControllerTest do
 
       assert response =~ "Homepage - Derpibooru"
       assert response =~ ~p"/images/#{image.id}"
+    end
+
+    test "applies the logged-in user's active filter", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      image = image_fixture(created_at: hours_ago(1))
+      [tag | _rest] = image.tags
+      filter = filter_fixture(user)
+      {:ok, filter} = Filters.create_filter_hide(actor(user), filter, tag.slug)
+      {:ok, _user} = Users.set_current_filter(user, filter)
+      SearchHelpers.reindex_all!(Image)
+
+      response = html_response(get(conn, ~p"/"), 200)
+
+      refute response =~ ~p"/images/#{image.id}"
+    end
+
+    test "the NSFW channel cookie controls the stream strip", %{conn: conn} do
+      channel =
+        listed_channel_fixture(%{}, %{nsfw: true, title: "Private stream test channel"})
+
+      hidden_response = html_response(get(conn, ~p"/"), 200)
+      refute hidden_response =~ channel.title
+
+      visible_response =
+        conn
+        |> put_req_cookie("chan_nsfw", "true")
+        |> get(~p"/")
+        |> html_response(200)
+
+      assert visible_response =~ channel.title
     end
   end
 

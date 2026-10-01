@@ -13,7 +13,7 @@ defmodule Philomena.SiteNoticesFixtures do
   def site_notice_fixture(attrs \\ %{}) do
     {:ok, notice} =
       SiteNotices.create_site_notice(
-        Philomena.UsersFixtures.admin_user_fixture(),
+        Philomena.AttributionFixtures.actor(Philomena.UsersFixtures.admin_user_fixture()),
         Enum.into(attrs, %{
           "title" => "Scheduled maintenance",
           "text" => "The site will be down.",

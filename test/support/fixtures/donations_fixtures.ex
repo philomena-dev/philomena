@@ -5,6 +5,8 @@ defmodule Philomena.DonationsFixtures do
   """
 
   alias Philomena.Donations
+  alias Philomena.AttributionFixtures
+  alias Philomena.UsersFixtures
 
   @doc """
   Creates a donation, optionally attributed to `user` (the schema allows a
@@ -22,7 +24,8 @@ defmodule Philomena.DonationsFixtures do
       })
       |> maybe_put_user(user)
 
-    {:ok, donation} = Donations.create_donation(attrs)
+    actor = AttributionFixtures.actor(UsersFixtures.admin_user_fixture())
+    {:ok, donation} = Donations.create_donation(actor, attrs)
     donation
   end
 

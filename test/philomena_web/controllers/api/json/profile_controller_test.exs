@@ -85,12 +85,10 @@ defmodule PhilomenaWeb.Api.Json.ProfileControllerTest do
       assert json_response(conn, 404) == %{"error" => "Not found"}
     end
 
-    test "raises for a non-integer id", %{conn: conn} do
-      # NOTE: the id is interpolated into the query without casting, so a
-      # non-integer id becomes a 500 rather than a 404.
-      assert_raise Ecto.Query.CastError, fn ->
-        get(conn, ~p"/api/v1/json/profiles/not-a-number")
-      end
+    test "returns 404 for a non-integer id", %{conn: conn} do
+      conn = get(conn, ~p"/api/v1/json/profiles/not-a-number")
+
+      assert json_response(conn, 404) == %{"error" => "Not found"}
     end
   end
 end

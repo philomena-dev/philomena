@@ -3,17 +3,20 @@ defmodule PhilomenaWeb.Filter.SpoilerTypeController do
 
   alias Philomena.Users
 
-  plug PhilomenaWeb.RequireUserPlug
+  action_fallback PhilomenaWeb.FallbackController
 
   def update(conn, %{"settings" => settings_params}) when is_map(settings_params) do
-    case Users.update_spoiler_type(conn.assigns.current_user, settings_params) do
+    case Users.update_spoiler_type(conn.assigns.actor, settings_params) do
       {:ok, settings} ->
         conn
         |> put_flash(:info, "Changed spoiler type to #{settings.spoiler_type}")
         |> redirect(external: conn.assigns.referrer)
 
-      {:error, _changeset} ->
+      {:error, %Ecto.Changeset{}} ->
         update_failed(conn)
+
+      error ->
+        error
     end
   end
 

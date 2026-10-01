@@ -37,10 +37,7 @@
 
       ul.profile-top__options__column
         li = link("Favorites", to: ~p"/search?#{[q: "faved_by_id:#{@user.id}"]}")
-        = if @conn.assigns.current_user && @conn.assigns.current_user.role in ~W(moderator admin) do
-          li = link("Tag changes", to: ~p"/tag_changes?#{[tcq: "true_user_id:#{@user.id}", resource_type: "user", resource_id: @user.name]}")
-        - else
-          li = link("Tag changes", to: ~p"/tag_changes?#{[tcq: "user_id:#{@user.id}", resource_type: "user", resource_id: @user.name]}")
+        li = link("Tag changes", to: ~p"/profiles/#{@user}/tag_changes")
         li = link("Source changes", to: ~p"/profiles/#{@user}/source_changes")
 
 = if can_index_user?(@conn) do
@@ -139,7 +136,7 @@
 
       = render PhilomenaWeb.ProfileView, "_about_me.html", user: @user, about_me: @about_me, conn: @conn
 
-    = if can_read_mod_notes?(@conn) and not hide_staff_tools?(@conn) do
+    = if can_read_mod_notes?(@conn, @user) and not hide_staff_tools?(@conn) do
       .block
         .block__header.flex.flex--no-wrap
           a.flex__grow href=~p"/admin/mod_notes?#{[user_id: @user.id]}" Mod Notes
@@ -161,7 +158,7 @@
         a.block__header--single-item href=~p"/profiles/#{@user}/scratchpad/edit" Moderation Scratchpad
         .block__content.profile-about
           = @scratchpad
-    = if can_see_user_name_changes?(@conn) and not hide_staff_tools?(@conn) and Enum.any?(@name_changes) do
+    = if can_see_user_name_changes?(@conn, @user) and not hide_staff_tools?(@conn) and Enum.any?(@name_changes) do
       .block
         .block__header
           span.block__header__title Name History

@@ -4,12 +4,15 @@ defmodule PhilomenaWeb.Image.Comment.ApproveControllerTest do
   import Philomena.CommentsFixtures
   import Philomena.ImagesFixtures
   import Philomena.UsersFixtures
+  import Philomena.RulesFixtures
 
   alias Philomena.Repo
 
   # A comment whose body contains an external link, posted by an untrusted
   # (freshly-registered) user, is withheld from approval.
   defp unapproved_comment(image) do
+    _rule = rule_fixture(name: "Approval")
+
     comment =
       comment_fixture(image, confirmed_user_fixture(), %{
         "body" => "buy now at https://spam.example/"
@@ -74,22 +77,24 @@ defmodule PhilomenaWeb.Image.Comment.ApproveControllerTest do
 
       conn = post(conn, ~p"/images/#{image}/comments/#{comment}/approve")
 
-      assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Comment has been approved."
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) == "Comment has already been approved."
       assert Repo.reload!(comment).approved
     end
 
-    test "for an unknown comment_id redirects with the authorization flash", %{conn: conn} do
+    test "for an unknown comment_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       image = image_fixture()
 
       conn = post(conn, ~p"/images/#{image}/comments/999999999/approve")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Couldn't find what you were looking for!"
     end
 
     # NOTE: a non-integer comment_id short-circuits to NotFoundPlug via the
-    # central IntegerId guard before Canary authorizes.
+    # central IntegerId guard before authorization runs.
     test "for a non-integer comment_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       image = image_fixture()
@@ -100,6 +105,18 @@ defmodule PhilomenaWeb.Image.Comment.ApproveControllerTest do
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
                "Couldn't find what you were looking for!"
+    end
+
+    test "does not approve a comment through a different route image", %{conn: conn} do
+      image = image_fixture()
+      other_image = image_fixture()
+      comment = unapproved_comment(image)
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+
+      conn = post(conn, ~p"/images/#{other_image}/comments/#{comment}/approve")
+
+      assert redirected_to(conn) == "/"
+      refute Repo.reload!(comment).approved
     end
   end
 end

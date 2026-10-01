@@ -33,6 +33,17 @@ defmodule PhilomenaWeb.AdvertControllerTest do
                "Couldn't find what you were looking for!"
     end
 
+    test "redirects to / for a disabled advert", %{conn: conn} do
+      advert = advert_fixture(%{live: false})
+
+      conn = get(conn, ~p"/adverts/#{advert}")
+
+      assert redirected_to(conn) == "/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
+               "Couldn't find what you were looking for!"
+    end
+
     test "redirects with the not-found flash for a non-integer advert id", %{conn: conn} do
       conn = get(conn, ~p"/adverts/not-a-number")
 

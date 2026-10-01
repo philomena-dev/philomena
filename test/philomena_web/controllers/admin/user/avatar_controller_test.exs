@@ -1,7 +1,7 @@
 defmodule PhilomenaWeb.Admin.User.AvatarControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # Postgres-only: the S3 delete in Users.remove_avatar/1 goes through the
+  # Postgres-only: the S3 delete in Users.delete_avatar/1 goes through the
   # stubbed ex_aws client and the reindex is a dead Exq enqueue;
   # moderation_log/2 is a synchronous insert.
 
@@ -54,8 +54,9 @@ defmodule PhilomenaWeb.Admin.User.AvatarControllerTest do
       assert Repo.get(User, target.id).avatar == nil
     end
 
-    # NOTE: :delete runs Canary's not_found handler, so an unknown slug
-    # redirects to "/" with the not-found flash instead of crashing.
+    # NOTE: an unknown slug loads nil and the actor is authorized on it, so
+    # :delete returns not_found - a redirect to "/" with the not-found flash
+    # instead of crashing.
     test "redirects for an unknown slug", %{conn: conn} do
       conn = delete(conn, ~p"/admin/users/no-such-user/avatar")
       assert redirected_to(conn) == "/"

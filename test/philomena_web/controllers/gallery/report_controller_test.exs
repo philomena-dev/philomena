@@ -28,11 +28,11 @@ defmodule PhilomenaWeb.Gallery.ReportControllerTest do
       assert response =~ "Reporting Gallery - Derpibooru"
     end
 
-    test "redirects to / with the authorization flash for an unknown gallery", %{conn: conn} do
+    test "redirects to / with the not-found flash for an unknown gallery", %{conn: conn} do
       conn = get(conn, ~p"/galleries/999999999/reports/new")
 
       assert redirected_to(conn) == "/"
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
   end
 

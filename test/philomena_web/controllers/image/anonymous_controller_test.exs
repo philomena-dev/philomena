@@ -17,8 +17,8 @@ defmodule PhilomenaWeb.Image.AnonymousControllerTest do
       refute anonymous?(image)
     end
 
-    # NOTE: this controller's verify_authorized checks `:show, :ip_address`,
-    # which a regular user lacks, so they get the authorization redirect.
+    # NOTE: the context authorizes `:show, :identity_metadata`, which a regular user
+    # lacks, so they get the authorization redirect.
     test "rejects a regular user", %{conn: conn} do
       %{conn: conn} = register_and_log_in_user(%{conn: conn})
       image = image_fixture(anonymous: false)
@@ -51,9 +51,9 @@ defmodule PhilomenaWeb.Image.AnonymousControllerTest do
       assert anonymous?(image)
     end
 
-    # NOTE: the load_resource now uses required: true, so Canary's
-    # not_found_handler runs on :create too - an unknown id redirects rather
-    # than crashing in update_anonymous.
+    # Missing image locators resolve to not-found before authorization.
+    # authorized on it, so :create returns not_found - an unknown id redirects
+    # rather than crashing in update_image_anonymous.
     test "for an unknown image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 
@@ -121,8 +121,9 @@ defmodule PhilomenaWeb.Image.AnonymousControllerTest do
       refute anonymous?(image)
     end
 
-    # NOTE: unlike :create, Canary's not_found_handler runs on the :delete
-    # load_resource, so an unknown id redirects rather than crashing.
+    # Missing image locators resolve to not-found before authorization.
+    # authorized on it, so :delete returns not_found - an unknown id redirects
+    # rather than crashing.
     test "for an unknown image_id redirects with the not-found flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
 

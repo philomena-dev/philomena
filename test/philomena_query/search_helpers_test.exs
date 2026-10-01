@@ -34,6 +34,23 @@ defmodule PhilomenaQuery.SearchHelpersTest do
     assert hit["_id"] == to_string(image.id)
   end
 
+  test "multi-search results retain query names" do
+    image = image_fixture()
+    SearchHelpers.reindex_all!(Image)
+
+    definition = Search.search_definition(Image, %{query: %{match_all: %{}}})
+
+    assert %{documents: raw_result} = Search.msearch(documents: definition)
+    assert [%{"_id" => id}] = raw_result["hits"]["hits"]
+    assert id == to_string(image.id)
+
+    assert %{records: page} =
+             Search.msearch_records(records: {definition, Image})
+
+    assert [%Image{id: id}] = page.entries
+    assert id == image.id
+  end
+
   test "Search.clear_index!/1 leaves the index empty" do
     results = Search.search(Image, %{query: %{match_all: %{}}})
 

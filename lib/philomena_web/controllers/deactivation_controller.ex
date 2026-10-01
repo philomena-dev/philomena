@@ -8,12 +8,9 @@ defmodule PhilomenaWeb.DeactivationController do
   end
 
   def delete(conn, _params) do
-    user = conn.assigns.current_user
-
-    Users.deactivate_user(user)
-    Users.deliver_user_reactivation_instructions(user, &url(~p"/reactivations/#{&1}"))
-    UserAuth.log_out_user(conn)
-
-    conn |> redirect(to: "/")
+    with {:ok, _user} <-
+           Users.delete_deactivation(conn.assigns.actor, &url(~p"/reactivations/#{&1}")) do
+      UserAuth.log_out_user(conn)
+    end
   end
 end

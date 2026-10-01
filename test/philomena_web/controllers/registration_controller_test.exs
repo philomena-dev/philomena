@@ -1,7 +1,10 @@
 defmodule PhilomenaWeb.RegistrationControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
+  import Philomena.BansFixtures
   import Philomena.UsersFixtures
+
+  @banned_fingerprint "d015c342859dde3"
 
   describe "GET /registrations/new" do
     test "renders registration page", %{conn: conn} do
@@ -14,6 +17,18 @@ defmodule PhilomenaWeb.RegistrationControllerTest do
         conn |> log_in_user(confirmed_user_fixture()) |> get(~p"/registrations/new")
 
       assert redirected_to(conn) == "/"
+    end
+
+    test "rejects a banned actor", %{conn: conn} do
+      fingerprint_ban_fixture(%{"fingerprint" => @banned_fingerprint})
+
+      conn =
+        conn
+        |> put_req_cookie("_ses", @banned_fingerprint)
+        |> get(~p"/registrations/new")
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You are currently banned."
     end
   end
 
@@ -43,6 +58,25 @@ defmodule PhilomenaWeb.RegistrationControllerTest do
       response = html_response(conn, 200)
       assert response =~ "must be valid (e.g., user@example.com)"
       assert response =~ "should be at least 12 character"
+    end
+
+    test "rejects a banned actor", %{conn: conn} do
+      fingerprint_ban_fixture(%{"fingerprint" => @banned_fingerprint})
+      email = unique_user_email()
+
+      conn =
+        conn
+        |> put_req_cookie("_ses", @banned_fingerprint)
+        |> post(~p"/registrations", %{
+          "user" => %{
+            "name" => email,
+            "email" => email,
+            "password" => valid_user_password()
+          }
+        })
+
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You are currently banned."
     end
   end
 

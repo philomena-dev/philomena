@@ -34,7 +34,7 @@ defmodule PhilomenaWeb.Notification.UnreadControllerTest do
     {:ok, _} = Forums.create_subscription(forum, user)
     author = confirmed_user_fixture()
     topic = topic_fixture(forum, author)
-    {:ok, 1} = Notifications.create_forum_topic_notification(author, topic)
+    {:ok, 1} = Notifications.broadcast_forum_topic(author, topic)
 
     _conversation = conversation_fixture(confirmed_user_fixture(), user)
 

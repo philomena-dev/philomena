@@ -47,7 +47,7 @@ defmodule PhilomenaWeb.Filter.HideControllerTest do
   test "POST hides the tag on the user's own current filter", %{conn: conn} do
     %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
     filter = filter_fixture(user)
-    {:ok, _} = Users.update_filter(user, filter)
+    {:ok, _} = Users.set_current_filter(user, filter)
     tag = tag_fixture()
 
     path = ~p"/filters/hide?#{[tag: tag.slug]}"
@@ -60,9 +60,11 @@ defmodule PhilomenaWeb.Filter.HideControllerTest do
   test "DELETE unhides the tag on the user's own current filter", %{conn: conn} do
     %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
     filter = filter_fixture(user)
-    {:ok, _} = Users.update_filter(user, filter)
+    {:ok, _} = Users.set_current_filter(user, filter)
     tag = tag_fixture()
-    {:ok, _} = Filters.hide_tag(filter, tag)
+
+    {:ok, _} =
+      Filters.create_filter_hide(Philomena.AttributionFixtures.actor(user), filter, tag.slug)
 
     path = ~p"/filters/hide?#{[tag: tag.slug]}"
     conn = delete(conn, path)
@@ -72,11 +74,10 @@ defmodule PhilomenaWeb.Filter.HideControllerTest do
   end
 
   test "POST for an unknown tag redirects with the not-found flash", %{conn: conn} do
-    # NOTE: load_resource now uses required: true, so Canary runs its not-found
-    # handler on :create - an unknown slug redirects instead of passing nil
-    # into Filters.hide_tag/2.
+    # The context authorizes the current filter before safely loading the tag,
+    # so an unknown slug returns the normalized not-found result.
     %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
-    {:ok, _} = Users.update_filter(user, filter_fixture(user))
+    {:ok, _} = Users.set_current_filter(user, filter_fixture(user))
 
     conn = post(conn, ~p"/filters/hide?tag=unknown-slug")
 
