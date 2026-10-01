@@ -127,13 +127,13 @@ describe('Draggable Utilities', () => {
         expect(mockEvent.dataTransfer?.dropEffect).toEqual('move');
       });
 
-      it('should cancel event when no data transfer is available', () => {
+      it('should cancel event if the event has no dataTransfer property', () => {
         initDraggables();
 
-        const mockEvent = createDragEvent('dragover', { dataTransfer: null });
+        const mockEvent = createDragEvent('dragover');
+        delete (mockEvent as Record<keyof typeof mockEvent, unknown>).dataTransfer;
 
-        fireEvent(mockDraggable, mockEvent);
-
+        expect(() => fireEvent(mockDraggable, mockEvent)).not.toThrow();
         expect(mockEvent.defaultPrevented).toBe(true);
       });
     });

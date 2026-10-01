@@ -9,7 +9,7 @@ defmodule PhilomenaWeb.DuplicateReportController do
     with {:ok, duplicate_reports, changeset} <-
            DuplicateReports.list_duplicate_reports(
              conn.assigns.actor,
-             params["dq"] || %{},
+             query_param(params, "dq"),
              conn.assigns.scrivener
            ) do
       render(conn, "index.html",

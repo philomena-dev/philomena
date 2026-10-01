@@ -9,7 +9,7 @@ defmodule PhilomenaWeb.Admin.ReportController do
   def index(conn, params) do
     case Reports.list_reports(
            conn.assigns.actor,
-           params["rq"] || %{},
+           query_param(params, "rq"),
            conn.assigns.pagination
          ) do
       {:ok, page, query_changeset} ->

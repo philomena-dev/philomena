@@ -29,6 +29,15 @@ defmodule PhilomenaWeb.CommissionControllerTest do
   end
 
   describe "GET /commissions" do
+    test "an empty commission parameter uses the default directory query", %{conn: conn} do
+      user = recently_active_user_fixture(%{name: "Test Empty Query Artist"})
+      listed_commission_fixture(user)
+
+      conn = get(conn, ~p"/commissions?commission=")
+
+      assert html_response(conn, 200) =~ "Test Empty Query Artist"
+    end
+
     test "renders listed commissions for anonymous users", %{conn: conn} do
       user = recently_active_user_fixture(%{name: "Test Commission Artist"})
 

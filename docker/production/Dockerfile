@@ -1,11 +1,11 @@
 # We need to grab "psql" from the Postgres image for database setup
-FROM postgres:18.4-alpine AS pg
+FROM postgres:18.6-alpine AS pg
 
 #
 # Step 1: Build Philomena release
 #
 
-FROM elixir:1.20.1-alpine AS builder
+FROM elixir:1.20.4-alpine AS builder
 
 WORKDIR /tmp/philomena
 

@@ -8,6 +8,7 @@ defmodule PhilomenaWeb.TagControllerTest do
 
   @moduletag :search
 
+  import Philomena.ChannelsFixtures
   import Philomena.ImagesFixtures
   import Philomena.TagsFixtures
   import Philomena.UsersFixtures
@@ -93,6 +94,23 @@ defmodule PhilomenaWeb.TagControllerTest do
       assert redirected_to(conn) == "/"
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Couldn't find"
     end
+
+    test "renders channel edit affordances only to channel moderators", %{conn: conn} do
+      tag = tag_fixture(name: "artist:tag-channel-affordance")
+
+      channel =
+        listed_channel_fixture(%{"artist_tag" => tag.name}, %{title: "Tagged Stream"})
+
+      anonymous_response = html_response(get(conn, ~p"/tags/#{tag}"), 200)
+      assert anonymous_response =~ "Tagged Stream"
+      refute anonymous_response =~ ~p"/channels/#{channel}/edit"
+
+      moderator_response =
+        html_response(get(log_in_user(conn, moderator_user_fixture()), ~p"/tags/#{tag}"), 200)
+
+      assert moderator_response =~ "Tagged Stream"
+      assert moderator_response =~ ~p"/channels/#{channel}/edit"
+    end
   end
 
   describe "GET /tags/:slug/edit" do
@@ -118,6 +136,34 @@ defmodule PhilomenaWeb.TagControllerTest do
       conn = get(conn, ~p"/tags/#{tag}/edit")
 
       assert html_response(conn, 200) =~ "Editing Tag"
+    end
+
+    test "renders alias-management affordances only to tag managers", %{conn: conn} do
+      tag = tag_fixture()
+
+      moderator_response =
+        html_response(
+          get(log_in_user(conn, moderator_user_fixture()), ~p"/tags/#{tag}/edit"),
+          200
+        )
+
+      refute moderator_response =~ ~p"/tags/#{tag}/alias/edit"
+      refute moderator_response =~ "Tag Processing"
+
+      admin_response =
+        html_response(get(log_in_user(conn, admin_user_fixture()), ~p"/tags/#{tag}/edit"), 200)
+
+      assert admin_response =~ ~p"/tags/#{tag}/alias/edit"
+      assert admin_response =~ "Tag Processing"
+
+      role_response =
+        html_response(
+          get(log_in_role_moderator(conn, "Tag"), ~p"/tags/#{tag}/edit"),
+          200
+        )
+
+      assert role_response =~ ~p"/tags/#{tag}/alias/edit"
+      assert role_response =~ "Tag Processing"
     end
   end
 

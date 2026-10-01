@@ -100,8 +100,7 @@ defmodule Philomena.Images do
     )
   end
 
-  defp custom_ordering?(%{sf: sf}) when sf not in [nil, "id", "first_seen_at"], do: true
-  defp custom_ordering?(_scope), do: false
+  defp custom_ordering?(%{sf: sf}), do: sf not in [:id, {:field, :first_seen_at}]
 
   defp maybe_jump_to_last_page(
          %Actor{
@@ -424,8 +423,8 @@ defmodule Philomena.Images do
   defp sources_for_edit(sources), do: sources
 
   defp async_upload(image, upload) do
-    linked_pid =
-      spawn(fn ->
+    {:ok, upload_pid} =
+      Task.Supervisor.start_child(Philomena.ImageUploadSupervisor, fn ->
         # Make sure task will finish before VM exit
         Process.flag(:trap_exit, true)
 
@@ -439,12 +438,12 @@ defmodule Philomena.Images do
       end)
 
     # Give the upload to the linked process
-    Plug.Upload.give_away(upload.path, linked_pid, self())
+    Plug.Upload.give_away(upload.path, upload_pid, self())
 
     # Free up the linked process
-    send(linked_pid, :ready)
+    send(upload_pid, :ready)
 
-    linked_pid
+    :ok
   end
 
   defp try_upload(image, retry_count) when retry_count < 100 do
@@ -799,8 +798,9 @@ defmodule Philomena.Images do
           {:ok, %{images: Scrivener.Page.t(), tags: [Tag.t()]}} | {:error, String.t()}
   def query_images(%Actor{} = actor, scope, opts \\ []) do
     with :ok <- authorize(actor, :index, Image),
+         sort = ImageSearch.scope_sort(scope),
          {:ok, {definition, tags}} <-
-           ImageSearch.search_string(actor, scope, scope.q) do
+           ImageSearch.search_string(actor, scope, sort, scope.q) do
       preload = Keyword.get(opts, :preload, [:sources, tags: :aliases])
       hits = Keyword.get(opts, :hits, custom_ordering?(scope))
 
@@ -848,7 +848,8 @@ defmodule Philomena.Images do
           {:ok, Scrivener.Page.t()} | {:error, :unauthorized | String.t()}
   def list_watched_images(%Actor{} = actor, scope) do
     with :ok <- authorize(actor, :index_watched, Image),
-         {:ok, {definition, _tags}} <- ImageSearch.search_string(actor, scope, "my:watched") do
+         sort = ImageSearch.scope_sort(scope),
+         {:ok, {definition, _tags}} <- ImageSearch.search_string(actor, scope, sort, "my:watched") do
       {:ok, ImageSearch.execute(definition)}
     end
   end
@@ -991,7 +992,7 @@ defmodule Philomena.Images do
   @doc group: "Browsing and discovery"
   @doc """
   Returns the 1-based page number on which the image `image_id`
-  names appears when all images are listed by descending id, on behalf of
+  names appears when all images are listed by the default sort, on behalf of
   `actor`.
 
   Loading and authorization follow `find_consecutive_image/3`.
@@ -1009,7 +1010,13 @@ defmodule Philomena.Images do
       pagination = %{scope.pagination | page_number: 1}
 
       {definition, _tags} =
-        ImageSearch.query(actor, scope, %{range: %{id: %{gt: image.id}}}, pagination: pagination)
+        ImageSearch.query(
+          actor,
+          scope,
+          ImageSearch.default_sort(),
+          %{range: %{id: %{gt: image.id}}},
+          pagination: pagination
+        )
 
       images = ImageSearch.execute(definition, preload: [])
 
@@ -1076,8 +1083,8 @@ defmodule Philomena.Images do
         ImageSearch.query(
           actor,
           scope,
+          ImageSearch.relevance_sort(),
           query,
-          sorts: &%{query: &1, sorts: [%{_score: :desc}]},
           pagination: %{scope.pagination | page_number: 1}
         )
 
@@ -1108,9 +1115,9 @@ defmodule Philomena.Images do
            ImageSearch.search_string(
              actor,
              scope,
+             ImageSearch.random_sort(),
              scope.q || "*",
-             pagination: %{page_size: 1},
-             sorts: &ImageSearch.parse_sort(%{"sf" => "random"}, &1)
+             pagination: %{page_size: 1}
            ) do
       definition
       |> ImageSearch.execute(preload: [])
@@ -1497,14 +1504,14 @@ defmodule Philomena.Images do
   ## Examples
 
       iex> create_image(actor, %{"tag_input" => "safe"}, upload)
-      {:ok, %{image: %Image{}, upload_pid: pid}}
+      {:ok, %Image{}}
 
       iex> create_image(banned_actor, params, upload)
       {:error, :ban}
 
   """
   @spec create_image(Actor.t(), map() | nil, PhilomenaMedia.Upload.t() | nil) ::
-          {:ok, image_upload()}
+          {:ok, Image.t()}
           | {:error, :ban | :unauthorized | :rate_limited | Ecto.Changeset.t()}
   def create_image(%Actor{user: user} = actor, params, upload) do
     with :ok <- verify_write_access(actor),
@@ -1556,17 +1563,13 @@ defmodule Philomena.Images do
       |> Multi.transact_with_automatic_retry()
       |> case do
         {:ok, %{image: %Image{} = image}} ->
-          upload_pid = async_upload(image, upload)
+          :ok = async_upload(image, upload)
 
           image = Repo.preload(image, tags: :aliases)
 
           broadcast_image_create(image)
 
-          # Return the upload PID along with the created image so that the caller
-          # can control the lifecycle of the upload if needed. It's useful, for
-          # example for the seeding process to know when to delete the temp file
-          # used for uploading.
-          {:ok, %{image: image, upload_pid: upload_pid}}
+          {:ok, image}
 
         {:error, :action_reservation, :rate_limited, _changes} ->
           {:error, :rate_limited}
@@ -1579,16 +1582,6 @@ defmodule Philomena.Images do
       end
     end
   end
-
-  @typedoc """
-  Result of the `upload_image/3` function. The image was created in the DB but an
-  upload process could still be running in the background with its PID given in the
-  `upload_pid` field.
-  """
-  @type image_upload :: %{
-          image: %Image{},
-          upload_pid: pid
-        }
 
   @doc group: "Moderation and lifecycle"
   @doc """

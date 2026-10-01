@@ -20,6 +20,16 @@ defmodule PhilomenaWeb.GalleryControllerTest do
   end
 
   describe "GET /galleries" do
+    test "an empty gallery parameter uses the default gallery query", %{conn: conn} do
+      user = confirmed_user_fixture()
+      gallery = gallery_fixture(user, title: "Test Empty Query Gallery")
+      SearchHelpers.reindex_all!(Gallery)
+
+      conn = get(conn, ~p"/galleries?gallery=")
+
+      assert html_response(conn, 200) =~ ~p"/galleries/#{gallery.id}"
+    end
+
     test "lists galleries for anonymous users", %{conn: conn} do
       user = confirmed_user_fixture()
       gallery = gallery_fixture(user, title: "Test Listed Gallery")
@@ -88,6 +98,44 @@ defmodule PhilomenaWeb.GalleryControllerTest do
       conn = get(conn, ~p"/galleries/#{gallery}")
 
       assert html_response(conn, 200) =~ "Showing Gallery - Derpibooru"
+    end
+
+    test "renders management controls for the gallery owner", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      gallery = gallery_fixture(user)
+
+      response = html_response(get(conn, ~p"/galleries/#{gallery}"), 200)
+
+      assert response =~ ~p"/galleries/#{gallery}/edit"
+      assert response =~ "Rearrange"
+      assert response =~ "Save"
+      assert response =~ ~p"/galleries/#{gallery}/order"
+      assert response =~ "Delete"
+      assert response =~ ~p"/galleries/#{gallery}"
+    end
+
+    test "hides management controls from another user", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+      gallery = gallery_fixture(confirmed_user_fixture())
+
+      response = html_response(get(conn, ~p"/galleries/#{gallery}"), 200)
+
+      refute response =~ ~p"/galleries/#{gallery}/edit"
+      refute response =~ "Rearrange"
+      refute response =~ "Save"
+      refute response =~ ~p"/galleries/#{gallery}/order"
+      refute response =~ "Delete"
+    end
+
+    test "renders management controls for a moderator", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
+      gallery = gallery_fixture(confirmed_user_fixture())
+
+      response = html_response(get(conn, ~p"/galleries/#{gallery}"), 200)
+
+      assert response =~ ~p"/galleries/#{gallery}/edit"
+      assert response =~ "Rearrange"
+      assert response =~ "Delete"
     end
 
     test "redirects to / for an unknown id", %{conn: conn} do

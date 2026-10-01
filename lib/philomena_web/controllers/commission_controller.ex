@@ -9,7 +9,7 @@ defmodule PhilomenaWeb.CommissionController do
     with {:ok, directory} <-
            Commissions.list_commissions(
              conn.assigns.actor,
-             params["commission"] || %{},
+             query_param(params, "commission"),
              conn.assigns.scrivener
            ) do
       conn

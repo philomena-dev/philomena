@@ -35,6 +35,16 @@ defmodule PhilomenaWeb.Admin.DnpEntryControllerTest do
   describe "GET /admin/dnp_entries (index) content" do
     setup [:register_and_log_in_admin]
 
+    test "an empty eq parameter uses the default DNP entry query", %{conn: conn} do
+      user = confirmed_user_fixture()
+      tag = tag_fixture(name: "artist:dnp-empty-query")
+      entry = dnp_entry_fixture(user, tag)
+
+      conn = get(conn, ~p"/admin/dnp_entries?eq=")
+
+      assert html_response(conn, 200) =~ ~p"/dnp/#{entry}"
+    end
+
     test "renders the empty index", %{conn: conn} do
       conn = get(conn, ~p"/admin/dnp_entries")
       response = html_response(conn, 200)

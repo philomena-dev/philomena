@@ -391,13 +391,14 @@ defmodule Philomena.Users do
   """
   @spec staff_categories() :: %{atom() => [User.t()]}
   def staff_categories do
-    users =
+    staff =
       User
-      |> where([u], u.role in ["admin", "moderator", "assistant"])
+      |> where([u], u.role != "user")
       |> order_by(asc: :name)
       |> Repo.all()
 
-    {others, staff} = Enum.split_with(users, & &1.hide_default_role)
+    {admins, staff} =
+      Enum.split_with(staff, &(&1.role == "admin" and not &1.hide_default_role))
 
     {developers, staff} =
       Enum.split_with(staff, &(&1.secondary_role in ["Site Developer", "Devops"]))
@@ -405,8 +406,10 @@ defmodule Philomena.Users do
     {public_relations, staff} =
       Enum.split_with(staff, &(&1.secondary_role == "Public Relations"))
 
+    {others, staff} = Enum.split_with(staff, & &1.hide_default_role)
+
     %{
-      administrators: Enum.filter(staff, &(&1.role == "admin")),
+      administrators: admins,
       moderators: Enum.filter(staff, &(&1.role == "moderator")),
       assistants: Enum.filter(staff, &(&1.role == "assistant")),
       developers: developers,

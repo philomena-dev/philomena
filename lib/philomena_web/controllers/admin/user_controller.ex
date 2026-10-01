@@ -7,7 +7,7 @@ defmodule PhilomenaWeb.Admin.UserController do
   action_fallback PhilomenaWeb.FallbackController
 
   def index(conn, params) do
-    case Users.query_users(conn.assigns.actor, params["uq"] || %{}, conn.assigns.pagination) do
+    case Users.query_users(conn.assigns.actor, query_param(params, "uq"), conn.assigns.pagination) do
       {:ok, users, changeset} ->
         render(conn, "index.html",
           title: "Admin - Users",
