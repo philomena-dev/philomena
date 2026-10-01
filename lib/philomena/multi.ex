@@ -764,14 +764,16 @@ defmodule Philomena.Multi do
 
   The callback receives the transaction changes and runs only after a
   successful transaction. There is no ordering guarantee of post-commit
-  callback execution. Use this for side effects that must occur after
-  transaction completion, like object storage or indexing.
+  callback execution. Use this only for side effects that deliberately occur
+  after transaction completion.
+
+  The return value of the callback is ignored.
 
   ## Example
 
       Multi.new()
       |> Multi.run(:user, fn _repo, _changes -> {:ok, user} end)
-      |> Multi.on_commit(fn %{user: user} -> Users.reindex_user(user) end)
+      |> Multi.on_commit(fn _changes -> :ok end)
       |> Multi.transact()
 
   """
@@ -785,6 +787,16 @@ defmodule Philomena.Multi do
 
   The callback receives the changes from the failed transaction. This is useful
   for compensating external reservations made by a `Multi.run/3` step.
+
+  The return value of the callback is ignored.
+
+  ## Example
+
+      Multi.new()
+      |> Multi.run(:user, fn _repo, _changes -> {:error, changeset} end)
+      |> Multi.on_rollback(fn _changes -> :ok end)
+      |> Multi.transact()
+
   """
   @spec on_rollback(t(), (Ecto.Multi.changes() -> any())) :: t()
   def on_rollback(%__MODULE__{} = multi, callback) when is_function(callback, 1) do

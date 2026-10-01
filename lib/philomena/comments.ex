@@ -19,7 +19,7 @@ defmodule Philomena.Comments do
   alias Philomena.Filters.Filter
   alias Philomena.Images
   alias Philomena.Images.Image
-  alias Philomena.IndexWorker
+  alias Philomena.Workers.IndexJob
   alias Philomena.IntegerId
   alias Philomena.Loader
   alias Philomena.ModerationLogs
@@ -83,7 +83,7 @@ defmodule Philomena.Comments do
   end
 
   defp put_reindex_comment(%Multi{} = multi, step \\ :comment) do
-    Multi.on_commit(multi, fn %{^step => comment} -> reindex_comment(comment) end)
+    IndexJob.put_enqueue(multi, "Comments", :id, fn %{^step => comment} -> [comment.id] end)
   end
 
   defp put_approval_report(%Multi{} = multi) do
@@ -354,8 +354,9 @@ defmodule Philomena.Comments do
   Write access, image commenting permission, the Images-owned forced-filter
   prerequisite, and the 15-second creation limit are checked before insertion.
   The transaction updates the image count, notification, and subscription state.
-  Indexing, statistics/reporting, rate tracking, and the firehose broadcast run
-  after commit. The image is returned for the caller to reuse.
+  Indexing, statistics/reporting, and rate tracking are committed with the
+  write; the firehose broadcast runs after commit. The image is returned for
+  the caller to reuse.
 
   ## Examples
 
@@ -477,7 +478,8 @@ defmodule Philomena.Comments do
 
   Write access is checked before image authorization, forced-filter enforcement,
   and comment authorization. A successful transaction records the prior version
-  Reporting, indexing, and the firehose broadcast run after commit. Validation
+  Reporting and indexing are committed with the write; the firehose broadcast
+  runs after commit. Validation
   returns the changeset preserving the loaded comment and image. On success,
   the image is returned for the caller to reuse.
 
@@ -826,51 +828,6 @@ defmodule Philomena.Comments do
   def user_name_reindex(old_name, new_name) do
     data = Comments.SearchIndex.user_name_update_by_query(old_name, new_name)
     Search.update_by_query(Comment, data.query, data.set_replacements, data.replacements)
-  end
-
-  @doc """
-  Queues one comment for search indexing and returns it unchanged.
-
-  ## Examples
-
-      iex> reindex_comment(comment)
-      %Comment{}
-
-  """
-  @spec reindex_comment(Comment.t()) :: Comment.t()
-  def reindex_comment(%Comment{} = comment) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Comments", "id", [comment.id]])
-    comment
-  end
-
-  @doc """
-  Queues every comment on `image` for indexing and returns the image unchanged.
-
-  ## Examples
-
-      iex> reindex_comments_on_image(image)
-      %Image{}
-
-  """
-  @spec reindex_comments_on_image(Image.t()) :: Image.t()
-  def reindex_comments_on_image(%Image{} = image) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Comments", "image_id", [image.id]])
-    image
-  end
-
-  @doc """
-  Queues comments on the given image IDs for reindexing and returns the list unchanged.
-
-  ## Examples
-
-      iex> reindex_comments_on_images([1, 2, 3])
-      [1, 2, 3]
-
-  """
-  @spec reindex_comments_on_images([integer()]) :: [integer()]
-  def reindex_comments_on_images(image_ids) when is_list(image_ids) do
-    Exq.enqueue(Exq, "indexing", IndexWorker, ["Comments", "image_id", image_ids])
-    image_ids
   end
 
   @doc """
