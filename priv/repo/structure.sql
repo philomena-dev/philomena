@@ -2240,7 +2240,7 @@ CREATE TABLE public.users (
     role character varying DEFAULT 'user'::character varying NOT NULL,
     avatar character varying,
     spoiler_type character varying DEFAULT 'static'::character varying NOT NULL,
-    theme character varying DEFAULT 'dark-purple'::character varying NOT NULL,
+    theme character varying DEFAULT 'dark-blue'::character varying NOT NULL,
     images_per_page integer DEFAULT 15 NOT NULL,
     show_large_thumbnails boolean DEFAULT true NOT NULL,
     show_sidebar_and_watched_images boolean DEFAULT true NOT NULL,
@@ -2298,7 +2298,7 @@ CREATE TABLE public.users (
     verified boolean DEFAULT false,
     delay_home_images boolean DEFAULT true,
     staff_delay_home_images boolean DEFAULT false,
-    borderless_tags boolean DEFAULT true,
+    borderless_tags boolean DEFAULT false,
     rounded_tags boolean DEFAULT false
 );
 
