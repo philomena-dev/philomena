@@ -3,7 +3,7 @@ defmodule Philomena.Repo.Migrations.FixVariousCounters do
 
   def change do
     alter table(:user_statistics) do
-      add :topics, :integer, default: 0, null: false
+      add :topics_count, :integer, default: 0, null: false
     end
 
     rename table(:user_statistics), :forum_posts, to: :posts_count

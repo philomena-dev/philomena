@@ -25,8 +25,8 @@ defmodule Philomena.Repo.Migrations.CreateUserSettings do
       add :watch_on_upload, :boolean, null: false, default: true
       add :messages_newest_first, :boolean, null: false, default: false
       add :no_spoilered_in_watched, :boolean, null: false, default: false
-      add :watched_images_query_str, :string, null: false, default: ""
-      add :watched_images_exclude_str, :string, null: false, default: ""
+      add :watched_images_query_str, :text, null: false, default: ""
+      add :watched_images_exclude_str, :text, null: false, default: ""
       add :use_centered_layout, :boolean, null: false, default: true
       add :hide_vote_counts, :boolean, null: false, default: false
       add :delay_home_images, :boolean, null: false, default: true
