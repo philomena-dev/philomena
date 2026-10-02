@@ -9,6 +9,10 @@
 	}
 
 	servers {
+		# This server is meant to sit behind another reverse proxy. Without
+		# trusting it, the headers below are ignored and every visitor appears
+		# to come from the address of that proxy.
+		trusted_proxies static {$TRUSTED_PROXIES:private_ranges}
 		client_ip_headers CF-Connecting-IP X-Forwarded-For
 	}
 }
