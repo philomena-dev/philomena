@@ -49,6 +49,8 @@ const keysMapping = {
 const literalKeysMapping = {
   ',': 'Comma',
   '.': 'Period',
+  // Because its keyCode is 188, it was interpreted as `Comma` in real browsers (not in Vite tests, though)
+  '<': 'LessThan',
 } as const;
 
 type keysAsEnum<Obj extends Record<string, string>> = Record<Obj[keyof Obj], string>;
