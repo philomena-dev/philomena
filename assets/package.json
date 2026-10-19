@@ -10,28 +10,28 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@csstools/postcss-relative-color-syntax": "^4.0.13",
-    "@fortawesome/fontawesome-free": "^7.3.0",
+    "@csstools/postcss-relative-color-syntax": "^4.0.15",
+    "@fortawesome/fontawesome-free": "^7.3.1",
     "@types/postcss-mixins": "^9.0.6",
-    "@types/web": "^0.0.357",
+    "@types/web": "^0.0.359",
     "autoprefixer": "^10.6.1",
     "cross-env": "^10.1.0",
     "normalize.css": "^8.0.1",
     "postcss-mixins": "^12.1.2",
     "postcss-simple-vars": "^7.0.1",
     "typescript": "^7.0.2",
-    "vite": "^7.3.6"
+    "vite": "^7.3.7"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",
-    "@types/node": "^24.13.2",
-    "@vitest/coverage-v8": "^5.0.2",
+    "@types/node": "^24.19.2",
+    "@vitest/coverage-v8": "^5.0.5",
     "jsdom": "^29.1.1",
-    "oxlint": "^1.86.0",
+    "oxlint": "^1.89.0",
     "stylelint": "^16.26.1",
     "stylelint-config-standard": "^39.0.1",
-    "vitest": "^5.0.2",
+    "vitest": "^5.0.5",
     "vitest-fetch-mock": "^0.4.5"
   }
 }
