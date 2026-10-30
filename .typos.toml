@@ -15,3 +15,7 @@ extend-ignore-re = [
   "\\\\restrict.*",
   "\\\\unrestrict.*"
 ]
+
+[default.extend-words]
+# Template class names
+togglable = "togglable"

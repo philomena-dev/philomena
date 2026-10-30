@@ -436,6 +436,8 @@ defmodule Philomena.Users do
       true
 
   """
+  # The Pwned Passwords range API is keyed by SHA-1 prefixes.
+  # sobelow_skip ["Crypto.WeakHash"]
   @spec password_compromised?(String.t()) :: boolean()
   def password_compromised?(password) when is_binary(password) do
     if Application.get_env(:philomena, :pwned_passwords) == false do

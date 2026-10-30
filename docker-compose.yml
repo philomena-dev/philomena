@@ -86,7 +86,7 @@ services:
         hard: 65536
 
   valkey:
-    image: valkey/valkey:9.1.2-alpine
+    image: valkey/valkey:9.1.3-alpine
     attach: false
 
   files:

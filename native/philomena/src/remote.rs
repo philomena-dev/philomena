@@ -4,7 +4,6 @@ use rustler::types::atom::{error, ok};
 use rustler::{Encoder, Env, NifStruct, OwnedBinary, Term, atoms};
 
 atoms! {
-    nil,
     command_reply,
     mime_reply,
 }
@@ -17,14 +16,8 @@ struct CommandReply_<'a> {
     status: u8,
 }
 
-fn binary_or_nil<'a>(env: Env<'a>, data: Vec<u8>) -> Term<'a> {
-    match OwnedBinary::new(data.len()) {
-        Some(mut binary) => {
-            binary.copy_from_slice(&data);
-            binary.release(env).to_term(env)
-        }
-        None => nil().to_term(env),
-    }
+fn binary<'a>(env: Env<'a>, data: &[u8]) -> Term<'a> {
+    OwnedBinary::from_slice(data).release(env).to_term(env)
 }
 
 pub async fn process_command(
@@ -74,8 +67,8 @@ pub fn with_env<'a>(env: Env<'a>, r: CommandReply) -> Term<'a> {
     (
         command_reply(),
         CommandReply_ {
-            stdout: binary_or_nil(env, r.stdout),
-            stderr: binary_or_nil(env, r.stderr),
+            stdout: binary(env, &r.stdout),
+            stderr: binary(env, &r.stderr),
             status: r.status,
         },
     )

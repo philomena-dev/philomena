@@ -17,14 +17,14 @@ members = [
 
 [dependencies]
 base64 = "0.23"
-comrak = { git = "https://github.com/philomena-dev/comrak", branch = "philomena-0.56.0", default-features = false }
+comrak = { git = "https://github.com/philomena-dev/comrak", branch = "philomena-0.59.0", default-features = false }
 http = "1.5"
 jemallocator = { version = "0.5", features = ["disable_initial_exec_tls"] }
 mediaproc = { path = "./mediaproc" }
 regex = "1.13"
 ring = "0.17"
-rustler = "0.38"
-similar = { version = "2.7", features = ["inline", "unicode"] }
+rustler = "0.39"
+similar = { version = "3.2", features = ["inline", "unicode"] }
 tokio = { version = "1.54", features = ["full"] }
 url = "2.5"
-zip = { version = "5.1", features = ["deflate"], default-features = false }
+zip = { version = "9.1", features = ["deflate"], default-features = false }

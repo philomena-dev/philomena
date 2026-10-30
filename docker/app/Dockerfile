@@ -1,4 +1,4 @@
-FROM elixir:1.20.4-alpine
+FROM elixir:1.20.5-alpine
 
 ARG CONTAINER_WORKSPACE=/srv/philomena
 

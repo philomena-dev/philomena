@@ -2,6 +2,7 @@ import { fireEvent, waitFor } from '@testing-library/dom';
 import { assertType } from '../utils/assert';
 import '../ujs';
 import { fetchMock } from '../../test/fetch-mock';
+import { mockLocationReload } from '../../test/mock-location-reload';
 import { $$ } from '../utils/dom';
 
 const mockEndpoint = 'http://localhost/endpoint';
@@ -117,35 +118,7 @@ describe('Remote utilities', () => {
   });
 
   describe('form[data-remote]', () => {
-    // https://www.benmvp.com/blog/mocking-window-location-methods-jest-jsdom/
-    let oldWindowLocation: Location;
-
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    beforeAll(() => {
-      oldWindowLocation = window.location;
-      delete (window as any).location;
-
-      (window as any).location = Object.defineProperties(
-        {},
-        {
-          ...Object.getOwnPropertyDescriptors(oldWindowLocation),
-          reload: {
-            configurable: true,
-            value: vi.fn(),
-          },
-        },
-      );
-    });
-
-    beforeEach(() => {
-      (window.location.reload as any).mockReset();
-    });
-    /* eslint-enable @typescript-eslint/no-explicit-any */
-
-    afterAll(() => {
-      // restore window.location to the jsdom Location object
-      window.location.href = oldWindowLocation.href;
-    });
+    mockLocationReload();
 
     const configureForm = () => {
       const form = document.createElement('form');

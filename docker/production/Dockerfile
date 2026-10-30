@@ -5,7 +5,7 @@ FROM postgres:18.6-alpine AS pg
 # Step 1: Build Philomena release
 #
 
-FROM elixir:1.20.4-alpine AS builder
+FROM elixir:1.20.5-alpine AS builder
 
 WORKDIR /tmp/philomena
 

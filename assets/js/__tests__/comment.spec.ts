@@ -1,5 +1,6 @@
 import { fireEvent, waitFor } from '@testing-library/dom';
 import { fixEventListeners } from '../../test/fix-event-listeners';
+import { mockLocationReload } from '../../test/mock-location-reload';
 import { $ } from '../utils/dom';
 
 vi.mock('../utils/requests', () => ({
@@ -19,25 +20,7 @@ import { filterNode } from '../imagesclientside';
 import { timeAgo } from '../timeago';
 import { setupComments } from '../comment';
 
-// Make window.location.reload spy-able (same approach as ujs.spec.ts)
-let oldWindowLocation: Location;
-beforeAll(() => {
-  oldWindowLocation = window.location;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  delete (window as any).location;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (window as any).location = Object.defineProperties(
-    {},
-    {
-      ...Object.getOwnPropertyDescriptors(oldWindowLocation),
-      reload: { configurable: true, value: vi.fn() },
-    },
-  );
-});
-
-afterAll(() => {
-  window.location.href = oldWindowLocation.href;
-});
+mockLocationReload();
 
 fixEventListeners(document);
 
