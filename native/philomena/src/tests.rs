@@ -439,3 +439,15 @@ fn diff_matches_lines_across_crlf_and_lf_revisions() {
         ),
     );
 }
+
+#[test]
+fn nif_api() {
+    assert_eq!(
+        to_html("*Hello world*", Default::default()),
+        "<div class=\"paragraph\"><em>Hello world</em></div>\n"
+    );
+    assert_eq!(
+        to_html_unsafe("<b>Hello world</b>", Default::default()),
+        "<div class=\"paragraph\"><b>Hello world</b></div>\n"
+    );
+}
