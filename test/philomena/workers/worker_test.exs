@@ -8,6 +8,7 @@ defmodule Philomena.WorkerTest do
 
   alias Philomena.ImagePurgeWorker
   alias Philomena.Images
+  alias Philomena.Events
   alias Philomena.Images.Image
   alias Philomena.Images.Thumbnailer
   alias Philomena.IndexWorker
@@ -77,12 +78,14 @@ defmodule Philomena.WorkerTest do
     patch(Thumbnailer, :generate_thumbnails, :ok)
     patch(Images, :load_image_for_reindex!, image)
     patch(Images, :reindex_image, image)
+    :ok = Events.subscribe_events()
 
-    assert image == ThumbnailWorker.perform(image.id)
+    image = ThumbnailWorker.perform(image.id)
 
     assert_exact_call(Thumbnailer, :generate_thumbnails, [image.id])
     assert_exact_call(Images, :load_image_for_reindex!, [image.id])
     assert_exact_call(Images, :reindex_image, [image])
+    assert_receive %Events.ImageProcess{image_id: 321}
   end
 
   test "the purge worker passes the complete file list to the purge operation" do
