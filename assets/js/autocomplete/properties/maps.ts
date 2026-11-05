@@ -115,15 +115,21 @@ const commentSearchProperties = new Map<string, PropertyTypeOrValues>([
 
 const forumSearchProperties = new Map<string, PropertyTypeOrValues>([
   ['author', literalProperty],
+  ['author_id', literalProperty],
   ['body', literalProperty],
   ['created_at', dateProperty],
+  ['deleted_by_user', literalProperty],
+  ['deleted_by_user_id', literalProperty],
+  ['deletion_reason', literalProperty],
+  ['destroyed_content', literalProperty],
   ['id', numericProperty],
   ['my', ['posts']],
   ['subject', literalProperty],
   ['topic_id', literalProperty],
   ['topic_position', numericProperty],
+  ['true_author', literalProperty],
+  ['true_author_id', literalProperty],
   ['updated_at', dateProperty],
-  ['user_id', literalProperty],
   ['forum', literalProperty],
 ]);
 
@@ -237,6 +243,7 @@ export const moderationPropertiesSet = new Set<string>([
   'deleted_by_user',
   'deleted_by_user_id',
   'deletion_reason',
+  'destroyed_content',
   'downvoted_by',
   'downvoted_by_id',
   'fingerprint',
