@@ -117,15 +117,20 @@ const commentSearchProperties = new Map<string, PropertyTypeOrValues>([
 ]);
 
 const forumSearchProperties = new Map<string, PropertyTypeOrValues>([
+  ['anonymous', booleanPropertyValues],
   ['author', literalProperty],
   ['author_id', literalProperty],
   ['body', literalProperty],
   ['created_at', dateProperty],
+  ['deleted', booleanPropertyValues],
   ['deleted_by_user', literalProperty],
   ['deleted_by_user_id', literalProperty],
   ['deletion_reason', literalProperty],
   ['destroyed_content', literalProperty],
+  ['fingerprint', literalProperty],
+  ['forum_id', literalProperty],
   ['id', numericProperty],
+  ['ip', literalProperty],
   ['my', ['posts']],
   ['subject', literalProperty],
   ['topic_id', literalProperty],
