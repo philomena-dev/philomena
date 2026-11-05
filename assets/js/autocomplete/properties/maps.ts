@@ -40,7 +40,7 @@ const imageSearchProperties = new Map<string, PropertyTypeOrValues>([
   ['id', numericProperty],
   ['ip', literalProperty],
   ['mime_type', literalProperty],
-  ['my', ['faves', 'hidden', 'subs', 'uploads', 'upvotes', 'watched']],
+  ['my', ['downvotes', 'faves', 'hidden', 'subs', 'uploads', 'upvotes', 'watched']],
   ['oc_tag_count', numericProperty],
   ['orig_sha512_hash', literalProperty],
   ['orig_size', numericProperty],
