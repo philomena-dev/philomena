@@ -156,6 +156,42 @@ const tagChangesSearchProperties = new Map<string, PropertyTypeOrValues>([
   ['user_id', literalProperty],
 ]);
 
+const userSearchProperties = new Map<string, PropertyTypeOrValues>([
+  ['banned_until', dateProperty],
+  ['comments_posted_count', numericProperty],
+  ['confirmed', booleanPropertyValues],
+  ['confirmed_at', dateProperty],
+  ['created_at', dateProperty],
+  ['current_filter_id', numericProperty],
+  ['custom_avatar', booleanPropertyValues],
+  ['deleted', booleanPropertyValues],
+  ['deleted_at', dateProperty],
+  ['deleted_by_user', literalProperty],
+  ['deleted_by_user_id', numericProperty],
+  ['description', literalProperty],
+  ['email', literalProperty],
+  ['forced_filter_id', numericProperty],
+  ['forum_posts_count', numericProperty],
+  ['id', numericProperty],
+  ['images_count', numericProperty],
+  ['images_favourited_count', numericProperty],
+  ['last_renamed_at', dateProperty],
+  ['locked', booleanPropertyValues],
+  ['locked_at', dateProperty],
+  ['metadata_updates_count', numericProperty],
+  ['name', literalProperty],
+  ['names', literalProperty],
+  ['otp_required_for_login', booleanPropertyValues],
+  ['personal_title', literalProperty],
+  ['role', ['admin', 'assistant', 'moderator', 'user']],
+  ['scratchpad', literalProperty],
+  ['slug', literalProperty],
+  ['topics_count', numericProperty],
+  ['updated_at', dateProperty],
+  ['verified', booleanPropertyValues],
+  ['votes_cast_count', numericProperty],
+]);
+
 const rangeOperators = ['gt', 'gte', 'lt', 'lte'];
 
 export const propertyTypeOperators = new Map<symbol, string[]>([
@@ -170,6 +206,7 @@ export const searchTypeToPropertiesMap = new Map<string, Map<string, PropertyTyp
   ['rq[query]', reportSearchProperties],
   ['tq', tagSearchProperties],
   ['tcq', tagChangesSearchProperties],
+  ['uq[query]', userSearchProperties],
   ['q', imageSearchProperties],
 ]);
 
