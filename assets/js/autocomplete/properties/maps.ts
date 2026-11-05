@@ -192,7 +192,7 @@ const tagChangesSearchProperties = new Map<string, PropertyTypeOrValues>([
 
 const userSearchProperties = new Map<string, PropertyTypeOrValues>([
   ['banned_until', dateProperty],
-  ['comments_posted_count', numericProperty],
+  ['comments_count', numericProperty],
   ['confirmed', booleanPropertyValues],
   ['confirmed_at', dateProperty],
   ['created_at', dateProperty],
@@ -205,10 +205,10 @@ const userSearchProperties = new Map<string, PropertyTypeOrValues>([
   ['description', literalProperty],
   ['email', literalProperty],
   ['forced_filter_id', numericProperty],
-  ['forum_posts_count', numericProperty],
   ['id', numericProperty],
+  ['image_faves_count', numericProperty],
+  ['image_votes_count', numericProperty],
   ['images_count', numericProperty],
-  ['images_favourited_count', numericProperty],
   ['last_renamed_at', dateProperty],
   ['locked', booleanPropertyValues],
   ['locked_at', dateProperty],
@@ -217,13 +217,12 @@ const userSearchProperties = new Map<string, PropertyTypeOrValues>([
   ['names', literalProperty],
   ['otp_required_for_login', booleanPropertyValues],
   ['personal_title', literalProperty],
+  ['posts_count', numericProperty],
   ['role', ['admin', 'assistant', 'moderator', 'user']],
   ['scratchpad', literalProperty],
   ['slug', literalProperty],
   ['topics_count', numericProperty],
-  ['updated_at', dateProperty],
   ['verified', booleanPropertyValues],
-  ['votes_cast_count', numericProperty],
 ]);
 
 const rangeOperators = ['gt', 'gte', 'lt', 'lte'];
