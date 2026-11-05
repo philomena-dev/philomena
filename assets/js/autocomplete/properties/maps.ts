@@ -170,15 +170,24 @@ const reportSearchProperties = new Map<string, PropertyTypeOrValues>([
 const tagChangesSearchProperties = new Map<string, PropertyTypeOrValues>([
   ['added_tag', tagProperty],
   ['added_tag_count', numericProperty],
+  ['added_tag_id', literalProperty],
   ['anonymous', booleanPropertyValues],
   ['created_at', dateProperty],
+  ['fingerprint', literalProperty],
+  ['id', numericProperty],
+  ['image_id', literalProperty],
+  ['ip', literalProperty],
   ['my', ['changes']],
   ['removed_tag', tagProperty],
   ['removed_tag_count', numericProperty],
+  ['removed_tag_id', literalProperty],
   ['tag', tagProperty],
   ['tag_count', numericProperty],
+  ['tag_id', literalProperty],
   ['user', literalProperty],
   ['user_id', literalProperty],
+  ['true_user', literalProperty],
+  ['true_user_id', literalProperty],
 ]);
 
 const userSearchProperties = new Map<string, PropertyTypeOrValues>([
@@ -257,6 +266,8 @@ export const moderationPropertiesSet = new Set<string>([
   'true_author_id',
   'true_uploader',
   'true_uploader_id',
+  'true_user',
+  'true_user_id',
   'upvoted_by',
   'upvoted_by_id',
 ]);
