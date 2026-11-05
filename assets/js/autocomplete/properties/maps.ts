@@ -90,13 +90,27 @@ const tagSearchProperties = new Map<string, PropertyTypeOrValues>([
 ]);
 
 const commentSearchProperties = new Map<string, PropertyTypeOrValues>([
+  ['anonymous', booleanPropertyValues],
+  ['approved', booleanPropertyValues],
   ['author', literalProperty],
+  ['author_id', literalProperty],
   ['body', literalProperty],
   ['created_at', dateProperty],
+  ['deleted', booleanPropertyValues],
+  ['deleted_by_user', literalProperty],
+  ['deleted_by_user_id', literalProperty],
+  ['deletion_reason', literalProperty],
+  ['fingerprint', literalProperty],
   ['id', numericProperty],
+  ['ip', literalProperty],
   ['image_id', literalProperty],
+  ['image.approved', booleanPropertyValues],
+  ['image.deleted', booleanPropertyValues],
+  ['image.tags', tagProperty],
   ['my', ['comments']],
-  ['user_id', literalProperty],
+  ['updated_at', dateProperty],
+  ['true_author', literalProperty],
+  ['true_author_id', literalProperty],
 ]);
 
 const forumSearchProperties = new Map<string, PropertyTypeOrValues>([
@@ -218,6 +232,7 @@ export const searchTypeToPropertiesMap = new Map<string, Map<string, PropertyTyp
 // Properties described in this set should only be displayed to the staff members.
 export const moderationPropertiesSet = new Set<string>([
   'anonymous',
+  'approved',
   'deleted',
   'deleted_by_user',
   'deleted_by_user_id',
@@ -228,7 +243,11 @@ export const moderationPropertiesSet = new Set<string>([
   'hidden_by',
   'hidden_by_id',
   'ip',
+  'image.approved',
+  'image.deleted',
   'scratchpad',
+  'true_author',
+  'true_author_id',
   'true_uploader',
   'true_uploader_id',
   'upvoted_by',
