@@ -142,6 +142,20 @@ const reportSearchProperties = new Map<string, PropertyTypeOrValues>([
   ['user_id', numericProperty],
 ]);
 
+const tagChangesSearchProperties = new Map<string, PropertyTypeOrValues>([
+  ['added_tag', tagProperty],
+  ['added_tag_count', numericProperty],
+  ['anonymous', booleanPropertyValues],
+  ['created_at', dateProperty],
+  ['my', ['changes']],
+  ['removed_tag', tagProperty],
+  ['removed_tag_count', numericProperty],
+  ['tag', tagProperty],
+  ['tag_count', numericProperty],
+  ['user', literalProperty],
+  ['user_id', literalProperty],
+]);
+
 const rangeOperators = ['gt', 'gte', 'lt', 'lte'];
 
 export const propertyTypeOperators = new Map<symbol, string[]>([
@@ -155,6 +169,7 @@ export const searchTypeToPropertiesMap = new Map<string, Map<string, PropertyTyp
   ['pq', forumSearchProperties],
   ['rq', reportSearchProperties],
   ['tq', tagSearchProperties],
+  ['tcq', tagChangesSearchProperties],
   ['q', imageSearchProperties],
 ]);
 
