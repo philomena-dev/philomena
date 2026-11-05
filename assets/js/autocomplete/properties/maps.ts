@@ -127,17 +127,20 @@ const filterSearchProperties = new Map<string, PropertyTypeOrValues>([
 
 const reportSearchProperties = new Map<string, PropertyTypeOrValues>([
   ['admin', literalProperty],
-  ['admin_id', numericProperty],
+  ['admin_id', literalProperty],
   ['created_at', dateProperty],
   ['fingerprint', literalProperty],
   ['id', literalProperty],
   ['image_id', literalProperty],
   ['ip', literalProperty],
   ['open', booleanPropertyValues],
+  ['related_user_ids', literalProperty],
+  ['related_users', literalProperty],
   ['reason', literalProperty],
-  ['reportable_id', numericProperty],
+  ['reportable_id', literalProperty],
   ['reportable_type', ['Comment', 'Commission', 'Conversation', 'Gallery', 'Image', 'Post', 'User']],
   ['state', ['open', 'in_progress', 'closed']],
+  ['system', booleanPropertyValues],
   ['user', literalProperty],
   ['user_id', numericProperty],
 ]);
