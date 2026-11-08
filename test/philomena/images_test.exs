@@ -200,9 +200,6 @@ defmodule Philomena.ImagesTest do
     |> Enum.sort()
   end
 
-  defp image_reindex(image),
-    do: [Exq, "indexing", Philomena.IndexWorker, ["Images", "id", [image.id]]]
-
   defp tag_attrs(old_tag_input, tag_input) do
     %{"old_tag_input" => old_tag_input, "tag_input" => tag_input}
   end
@@ -1231,14 +1228,17 @@ defmodule Philomena.ImagesTest do
       # subscribing is not staff-gated.
       user = confirmed_user_fixture()
       image = image_fixture()
-      spy(Exq)
 
       assert {:ok, subscribed} =
                Images.create_image_subscription(actor(user), to_string(image.id))
 
       assert subscribed.id == image.id
       assert Images.subscribed?(image, user)
-      assert {:enqueue, image_reindex(image)} in history(Exq)
+
+      assert_enqueued(
+        worker: Philomena.Workers.IndexJob,
+        args: %{module: "Images", column: "id", condition: [image.id]}
+      )
     end
 
     test "a moderator subscribes to a visible image" do
@@ -1321,14 +1321,17 @@ defmodule Philomena.ImagesTest do
       image = image_fixture()
       {:ok, _} = Images.create_subscription(image, user)
       assert Images.subscribed?(image, user)
-      spy(Exq)
 
       assert {:ok, unsubscribed} =
                Images.delete_image_subscription(actor(user), to_string(image.id))
 
       assert unsubscribed.id == image.id
       refute Images.subscribed?(image, user)
-      assert {:enqueue, image_reindex(image)} in history(Exq)
+
+      assert_enqueued(
+        worker: Philomena.Workers.IndexJob,
+        args: %{module: "Images", column: "id", condition: [image.id]}
+      )
     end
 
     test "unsubscribing with no existing subscription still succeeds" do
@@ -1402,12 +1405,13 @@ defmodule Philomena.ImagesTest do
   describe "create_image_approve/2" do
     test "queues the image's comments for reindexing with the approved image" do
       image = image_fixture(approved: false)
-      spy(Exq)
 
       assert {:ok, _} = Images.create_image_approve(actor(moderator_user_fixture()), image.id)
 
-      reindex = [Exq, "indexing", Philomena.IndexWorker, ["Comments", "image_id", [image.id]]]
-      assert {:enqueue, reindex} in history(Exq)
+      assert_enqueued(
+        worker: Philomena.Workers.IndexJob,
+        args: %{module: "Comments", column: "image_id", condition: [image.id]}
+      )
     end
 
     test "a moderator approves an unapproved image and gets the image" do

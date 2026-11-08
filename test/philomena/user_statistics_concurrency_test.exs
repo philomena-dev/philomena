@@ -3,6 +3,7 @@ defmodule Philomena.UserStatisticsConcurrencyTest do
 
   import Philomena.UsersFixtures
 
+  alias Philomena.Multi
   alias Philomena.Repo
   alias Philomena.UserStatistics
   alias Philomena.UserStatistics.UserStatistic
@@ -14,11 +15,15 @@ defmodule Philomena.UserStatisticsConcurrencyTest do
     results =
       concurrently(
         for _ <- 1..8 do
-          fn -> UserStatistics.increment(user.id, :image_votes_count) end
+          fn ->
+            Multi.new()
+            |> UserStatistics.put_increment(user.id, :image_votes_count)
+            |> Multi.transact()
+          end
         end
       )
 
-    assert results == List.duplicate({:ok, nil}, 8)
+    assert Enum.all?(results, &match?({:ok, _}, &1))
     assert Repo.get!(User, user.id).image_votes_count == 8
     assert Repo.get_by!(UserStatistic, user_id: user.id).image_votes_count == 8
   end

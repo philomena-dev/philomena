@@ -69,10 +69,8 @@ defmodule Philomena.MixProject do
       {:remote_ip, "~> 1.2"},
       {:briefly, "~> 0.5"},
       {:req, "~> 0.7.4"},
-      {:exq, "~> 0.21"},
-      # nimble_options 1.2 rejects the `password: nil` that Exq always passes
-      # to Redix when Redis has no password. Hold 1.1 until Exq/Redix handle it.
-      {:nimble_options, "~> 1.1.1"},
+      {:elixir_uuid, "~> 1.2"},
+      {:oban, "~> 2.18"},
       {:ex_aws, "~> 2.6"},
       {:ex_aws_s3, "~> 2.5"},
       {:sweet_xml, "~> 0.7"},

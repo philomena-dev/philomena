@@ -1,7 +1,7 @@
 defmodule PhilomenaWeb.Profile.TagChange.RevertControllerTest do
   use PhilomenaWeb.ConnCase, async: true
 
-  # full_revert only enqueues a (dead) TagChangeRevertWorker, so there is
+  # full_revert only enqueues a (dead) TagChangeRevertJob, so there is
   # nothing to observe beyond the flash and redirect.
 
   import Philomena.UsersFixtures

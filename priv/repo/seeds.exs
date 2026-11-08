@@ -23,9 +23,9 @@ alias Philomena.{
 }
 
 alias PhilomenaQuery.Search
+alias Philomena.Filters
 alias Philomena.Users
 alias Philomena.Tags
-alias Philomena.Filters
 import Ecto.Query
 
 IO.puts("---- Creating search indices")
@@ -62,13 +62,6 @@ for filter_def <- resources["system_filters"] do
     }
   )
   |> Repo.insert(on_conflict: :nothing)
-  |> case do
-    {:ok, filter} ->
-      Filters.reindex_filter(filter)
-
-    {:error, changeset} ->
-      IO.inspect(changeset.errors)
-  end
 end
 
 IO.puts("---- Generating forums")
@@ -149,6 +142,7 @@ for rule_def <- resources["rules"] do
 end
 
 IO.puts("---- Indexing content")
+Search.reindex(Filter |> preload(^Filters.indexing_preloads()), Filter)
 Search.reindex(Tag |> preload(^Tags.indexing_preloads()), Tag)
 
 IO.puts("---- Done.")
