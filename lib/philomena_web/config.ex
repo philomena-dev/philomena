@@ -5,4 +5,5 @@ defmodule PhilomenaWeb.Config do
 
   def vite_hmr?, do: Application.get_env(:philomena, :vite_reload, false)
   def csp_relax_on_error?, do: Application.get_env(:philomena, :csp_relax_on_error, false)
+  def sentry_enabled?, do: Application.get_env(:philomena, :sentry_enabled, false)
 end
