@@ -142,7 +142,4 @@ else
   if config_env() == :dev do
     config :philomena, Philomena.Mailer, adapter: Swoosh.Adapters.Local
   end
-
-  # Use this to debug slime templates
-  # config :slime, :keep_lines, true
 end

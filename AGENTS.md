@@ -67,7 +67,7 @@ types, and testing style.
 
 ## Architecture
 
-Phoenix 1.8 server-rendered MVC — **no LiveView**. Views/templates use `phoenix_view` with Slime templates (`lib/philomena_web/templates/**/*.html.slime`); `phoenix_html` is pinned to 3.x for Slime compatibility.
+Phoenix 1.8 server-rendered MVC with **no LiveView** pages: views use `phoenix_view` with HEEx templates (`lib/philomena_web/templates/**/*.html.heex`), and `phoenix_live_view` is only there for the HEEx engine and formatter. `phoenix_html` stays on 3.x because templates use its `form_for`/`link` helpers. `mix format` runs `Phoenix.LiveView.HTMLFormatter`, which adds line breaks inside `<%= if %>`/`for` blocks and around block-level tags; elements whose rendered whitespace matters carry `phx-no-format`.
 
 Four Elixir app namespaces under `lib/`:
 

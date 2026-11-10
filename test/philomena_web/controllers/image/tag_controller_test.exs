@@ -15,7 +15,7 @@ defmodule PhilomenaWeb.Image.TagControllerTest do
   alias Philomena.Repo
 
   setup do
-    # The successful update actions re-render the image's _tags.html.slime
+    # The successful update actions re-render the image's _tags.html.heex
     # partial, whose quick tag table queries the tags index
     # (TagView.lookup_quick_tags/1). Without the index the render 500s.
     Search.clear_index!(Tag)

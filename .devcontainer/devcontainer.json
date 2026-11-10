@@ -56,8 +56,8 @@
         // Caddyfile LSP
         "matthewpi.caddyfile-support",
 
-        // `.slime` syntax highlighting
-        "xolan.slime",
+        // `.heex` syntax highlighting
+        "phoenixframework.phoenix",
 
         // `.js`, `.ts` linter
         "oxc.oxc-vscode",
