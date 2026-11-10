@@ -5,7 +5,7 @@
     input_name = input_name(@poll)
     require_answer? = require_answer?(@poll) %>
     <label :for={option <- @poll.options} class="poll-form__options__label"><input
-      class="button--separate-right"
+      class="me-md"
       name={input_name}
       required={require_answer?}
       type={input_type}
@@ -15,5 +15,5 @@
   <div class="poll-form__status">
     <p>Voting ends {pretty_time(@poll.active_until)}</p>
   </div>
-  <button class="button button--state-success"><i class="fa fa-check"></i> Vote</button>
+  <button class="button button-success"><i class="fa fa-check"></i> Vote</button>
 <% end %>

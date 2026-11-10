@@ -13,7 +13,7 @@
       <%= inputs_for f, :sources, [skip_hidden: true], fn fs -> %>
         <div class="field js-image-source field--inline flex-nowrap items-center">{text_input fs, :source, class: "input flex-1 js-source-url", placeholder: "Source URL"}{error_tag fs, :source}<label class="input--separate-left flex-none items-center"><a class="js-source-remove" href="#" phx-no-format><i class="fa fa-trash"></i> Delete </a></label></div>
       <% end %>
-      <div class="field"><button class="button js-image-add-source" type="button"><i class="fa fa-plus"></i> Add source</button>{submit "Save sources", class: "button button--separate-left"}<button class="button button--separate-left" data-click-hide="#source-form" data-click-show="#image-source" type="reset">Cancel</button></div>
+      <div class="field"><button class="button js-image-add-source" type="button"><i class="fa fa-plus"></i> Add source</button>{submit "Save sources", class: "button ms-md"}<button class="button ms-md" data-click-hide="#source-form" data-click-show="#image-source" type="reset">Cancel</button></div>
       {render PhilomenaWeb.CaptchaView, "_captcha.html", name: "source", conn: @conn}
     <% else %>
       <p>You can't edit the source on this image. </p>
@@ -24,9 +24,9 @@
       <span class="block-header-title"><i class="fas fa-link"></i>
         <%= if !has_sources || length(@image.sources) == 1 do %>Source <% else %>Sources <% end %></span>
       <div class="block-header-actions">
-        <%= if @changeset do %><a accessKey="s" class="button button--inline" data-click-focus=".js-image-source" data-click-hide="#image-source" data-click-show="#source-form" id="edit-source" title="Edit source"><i class="fas fa-edit"></i><%= if has_sources do %>Add/Edit <% else %>Add <% end %></a><% end %>
-        <%= if @source_change_count > 0 do %><a class="button button--link button--inline" href={~p"/images/#{@image}/source_changes"} title="Source history"><i class="fa fa-history"></i> <span class="hidden-below-md">History</span> ({@source_change_count})</a><% end %>
-        <%= if can?(@conn, :hide, @image) and not hide_staff_tools?(@conn) do %><a class="button button--state-danger button--inline" data-confirm="Are you really, really sure?" data-method="delete" href={~p"/images/#{@image}/source_history"} title="Wipe sources"><i class="fas fa-eraser"></i> Wipe</a><% end %>
+        <%= if @changeset do %><a accessKey="s" data-click-focus=".js-image-source" data-click-hide="#image-source" data-click-show="#source-form" id="edit-source" title="Edit source"><i class="fas fa-edit"></i> <%= if has_sources do %>Add/Edit<% else %>Add<% end %></a><% end %>
+        <%= if @source_change_count > 0 do %><a href={~p"/images/#{@image}/source_changes"} title="Source history"><i class="fa fa-history"></i> <span class="hidden-below-md">History</span> ({@source_change_count})</a><% end %>
+        <%= if can?(@conn, :hide, @image) and not hide_staff_tools?(@conn) do %><a class="button button-danger button-size-badge" data-confirm="Are you really, really sure?" data-method="delete" href={~p"/images/#{@image}/source_history"} title="Wipe sources"><i class="fas fa-eraser"></i> Wipe</a><% end %>
       </div>
     </div>
     <div class="block-content">

@@ -19,6 +19,7 @@
 @import "@philomena/philomena-css/css/components/alert.css";
 @import "@philomena/philomena-css/css/components/block.css";
 @import "@philomena/philomena-css/css/components/burger.css";
+@import "@philomena/philomena-css/css/components/button.css";
 @import "@philomena/philomena-css/css/components/card.css";
 @import "@philomena/philomena-css/css/components/counter.css";
 @import "@philomena/philomena-css/css/components/header.css";
@@ -38,7 +39,6 @@
 @import "elements/misc";
 @import "elements/barline";
 @import "elements/blocks";
-@import "elements/button";
 @import "elements/checkbox";
 @import "elements/dropdown";
 @import "elements/forms";

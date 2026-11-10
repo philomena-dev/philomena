@@ -39,23 +39,23 @@
   <% end %>
   <footer class="rule__footer">
     <%= unless @show_timestamp do %>
-      <a class="button button--state-primary" href={"##{@rule.position}"} title="Link to Rule"><span class="small-text"><i class="fa fa-fw fa-link"></i></span></a>
+      <a class="button button-primary" href={"##{@rule.position}"} title="Link to Rule"><span class="small-text"><i class="fa fa-fw fa-link"></i></span></a>
     <% end %>
     <%= if @rule.example != "" do %>
       <a
-        class="button button--state-primary"
+        class="button button-primary"
         data-click-toggle={".js-rule-example-toggle-#{@rule.id}"}
         href="#"
         title="View Examples"
       ><span class="small-text"><i class="fa fa-eye"></i> <span>View Examples</span></span></a>
     <% end %>
     <%= unless @show_timestamp do %>
-      <%= link to: ~p"/rules/#{@rule}", class: "button button--state-primary" do %>
+      <%= link to: ~p"/rules/#{@rule}", class: "button button-primary" do %>
         <span class="small-text"><i class="fa fa-circle-info"></i> More Details</span>
       <% end %>
     <% end %>
     <%= if can?(@conn, :edit, @rule) do %>
-      <a class="button button--state-warning" href={~p"/rules/#{@rule}/edit"} title="Edit Rule"><span class="small-text"><i class="fa fa-edit"></i>
+      <a class="button button-warning" href={~p"/rules/#{@rule}/edit"} title="Edit Rule"><span class="small-text"><i class="fa fa-edit"></i>
       Edit</span></a>
     <% end %>
     <%= if @show_timestamp do %>

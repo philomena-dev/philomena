@@ -204,3 +204,20 @@ select.input:focus:hover {
 form > .alert {
   margin-bottom: var(--spacing-md);
 }
+
+/* A checkbox drawn as the button after it, pressed and filled like a success button while checked */
+.button-check-input {
+  @mixin hidden-toggle;
+}
+
+.button-check-input:checked + .button {
+  --_bevel: var(--well-shadow);
+  --_drop: transparent;
+  --_border-color: var(--success-border-color);
+  color: var(--success-button-text-color);
+  background-color: var(--success-button-color);
+}
+
+.button-check-input:focus-visible + .button {
+  @mixin focus-ring-offset;
+}

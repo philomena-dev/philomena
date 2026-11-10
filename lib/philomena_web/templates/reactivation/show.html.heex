@@ -2,7 +2,7 @@
 {button_to("Cancel", ~p"/", class: "button")}{button_to(
   "Reactivate",
   ~p"/reactivations/#{@token}",
-  class: ["button", "button--state-success", "button--separate-left"],
+  class: ["button", "button-success", "ms-md"],
   method: :put,
   data: [confirm: "Are you sure you want to reactivate your account?"]
 )}

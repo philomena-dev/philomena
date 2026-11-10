@@ -110,24 +110,9 @@
   border-top-color: var(--legacy-danger-color);
 }
 
-.rule--important .rule__footer .button {
-  background-color: var(--legacy-danger-color);
-  border-color: var(--button-danger-border-color);
-}
-
 .rule--admin {
   background: var(--warning-light-color);
   border-color: var(--legacy-warning-color);
-}
-
-.rule--admin .rule__footer .button {
-  background-color: var(--legacy-warning-color);
-  border-color: var(--button-warning-border-color);
-}
-
-.rule--important .rule__footer .button:hover {
-  background-color: var(--button-danger-hover-background);
-  border-color: var(--button-danger-hover-border);
 }
 
 .rule--important .rule__example {
@@ -137,11 +122,6 @@
 
 .rule--important hr {
   border-top-color: var(--legacy-danger-color);
-}
-
-.rule--admin .rule__footer .button:hover {
-  background-color: var(--button-warning-hover-background);
-  border-color: var(--button-warning-hover-border);
 }
 
 .rule--admin hr {
@@ -172,16 +152,6 @@
 
 .rule:target .rule__footer {
   border-top-color: var(--legacy-primary-color);
-}
-
-.rule:target .rule__footer .button {
-  background-color: var(--legacy-primary-color);
-  border-color: var(--button-primary-border-color);
-}
-
-.rule:target .rule__footer .button:hover {
-  background-color: var(--button-primary-hover-background);
-  border-color: var(--button-primary-hover-border);
 }
 
 .rule:target hr {

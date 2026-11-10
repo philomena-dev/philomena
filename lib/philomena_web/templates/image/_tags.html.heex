@@ -73,7 +73,7 @@
         <%= if @changeset do %>
           <a
             accessKey="t"
-            class="button button--inline js-tag-sauce-toggle"
+            class="js-tag-sauce-toggle"
             data-click-focus=".js-taginput-plain:not(.hidden), .js-taginput-input"
             data-click-toggle=".tagsauce, .js-imageform"
             id="edit-tags"
@@ -82,7 +82,6 @@
         <% end %>
         <%= if @tag_change_count > 0 do %>
           <a
-            class="button button--link button--inline"
             href={~p"/images/#{@image}/tag_changes"}
             title="Tag history"
           ><i class="fa fa-history"></i> <span class="hidden-below-md">History</span>

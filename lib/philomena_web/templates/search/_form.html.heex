@@ -163,7 +163,7 @@
     </div>
   </div>
   <div class="field field--inline flex-wrap">
-    {submit("Search", class: "button button--state-primary")}
+    {submit("Search", class: "button button-primary")}
     <% random_is_selected = to_string(@conn.params["sf"]) =~ ~r/\Arandom(:\d+)?\z/
 
     random_seed =

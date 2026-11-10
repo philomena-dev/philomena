@@ -5,12 +5,12 @@ target_url = comparison_url(@conn, @duplicate_report.duplicate_of_image)
   largest_dimensions([@duplicate_report.image, @duplicate_report.duplicate_of_image]) %>
 <div class="comparison--navigation">
   <a
-    class="button button--state-success comparison--navigation__button"
+    class="button button-success comparison--navigation__button"
     href={source_url}
     target="_blank"
   >Open source file</a>
   <a
-    class="button button--state-success comparison--navigation__button"
+    class="button button-success comparison--navigation__button"
     href={target_url}
     target="_blank"
   >Open target file</a>

@@ -54,7 +54,7 @@
   <%= if @report.user do %>
     {link("Send PM",
       to: ~p"/conversations/new?#{[recipient: @report.user.name]}",
-      class: "button button--link"
+      class: "button"
     )}
   <% end %>
   <%= if @report.open do %>

@@ -18,7 +18,7 @@
       autocomplete: if(@conn.cookies["enable_search_ac"], do: "on", else: "off"),
       inputmode: "search",
       data: [autocomplete: "multi-tags", autocomplete_condition: "enable_search_ac"]
-    )}{submit("Search", class: "hform__button button button--state-primary")}{select(
+    )}{submit("Search", class: "hform__button button button-primary")}{select(
       f,
       :sf,
       [
@@ -144,7 +144,7 @@
                 <%= if reverts_tag_changes?(@conn) do %>
                   <div class="flex flex-1"></div>
                   <a
-                    class="button button--state-danger"
+                    class="button button-danger"
                     data-confirm="Are you really, really sure?"
                     data-method="delete"
                     href={~p"/tag_changes/#{tag_change}"}

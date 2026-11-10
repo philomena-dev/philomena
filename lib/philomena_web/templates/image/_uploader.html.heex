@@ -7,7 +7,7 @@
         value: username(@image.user),
         class: "input input--short input--small"
       )} {submit("Save Changes",
-        class: "button button--small",
+        class: "button button-size-badge",
         data: [disable_with: raw("Saving&hellip;")]
       )}
       <div>Changes IP to '127.0.0.1' and FP to 'ffff'. Empty for anonymous.</div>
@@ -16,13 +16,13 @@
   <div class="image-anonymous hidden">
     <%= if @image.anonymous do %>
       {button_to("Reveal author", ~p"/images/#{@image}/anonymous",
-        class: "button button--small",
+        class: "button button-size-badge",
         method: "delete",
         data: [confirm: "Are you really, really sure?"]
       )}
     <% else %>
       {button_to("Hide author", ~p"/images/#{@image}/anonymous",
-        class: "button button--small",
+        class: "button button-size-badge",
         method: "create",
         data: [confirm: "Are you really, really sure?"]
       )}

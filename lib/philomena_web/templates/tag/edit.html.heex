@@ -37,7 +37,7 @@
       conn: @conn
     )}
   </div>
-  <br />{submit("Save Tag", class: "button button--state-primary")}
+  <br />{submit("Save Tag", class: "button button-primary")}
 <% end %>
 <br /><br />
 <%= if can?(@conn, :alias, @tag) do %>
@@ -54,7 +54,7 @@
       </p>
       {button_to("Destroy tag", ~p"/tags/#{@tag}",
         method: "delete",
-        class: "button button--state-danger",
+        class: "button button-danger",
         data: [confirm: "Are you really, really sure?", disable_with: raw("Deleting&hellip;")]
       )}
       <p><strong>Irreversible. Use with extreme caution!</strong></p>

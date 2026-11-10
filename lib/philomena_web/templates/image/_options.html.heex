@@ -115,7 +115,7 @@
               class: "input input--wide js-scraper",
               placeholder: "Link a deviantART page, a Tumblr post, or the image directly"
             )}<button
-              class="button button--separate-left"
+              class="button ms-md"
               data-disable-with="Fetch"
               disabled
               id="js-scraper-preview"
@@ -130,7 +130,7 @@
     </div>
     <div class="tab-panel" data-tab="administration">
       <div class="alert alert-danger">
-        <a class="button button--link" href={~p"/images/#{@image}/scratchpad/edit"}><i class="far fa-edit"></i></a>
+        <a href={~p"/images/#{@image}/scratchpad/edit"} title="Edit mod notes"><i class="far fa-edit"></i></a>
         <%= if present?(@image.scratchpad) do %>
           <strong>Mod notes:</strong> {escape_nl2br(@image.scratchpad)}
         <% else %>
@@ -146,7 +146,7 @@
                 class: "input input--wide",
                 placeholder: "Rule violation",
                 required: true
-              )}{submit("Delete", class: "button button--state-danger button--separate-left")}
+              )}{submit("Delete", class: "button button-danger ms-md")}
             </div>
           <% end %>
         <% end %>
@@ -160,7 +160,7 @@
                 placeholder: "Rule violation",
                 required: true
               )}{submit("Change deletion reason",
-                class: "button button--state-danger button--separate-left"
+                class: "button button-danger ms-md"
               )}
             </div>
           <% end %>
@@ -174,7 +174,7 @@
                 <p>Marks the image as featured</p>
                 {submit("Feature",
                   data: [confirm: "Are you really, really sure?"],
-                  class: "button button--state-success"
+                  class: "button button-success"
                 )}
               </div>
             <% end %>
@@ -182,12 +182,12 @@
         <% else %>
           {button_to("Restore", ~p"/images/#{@image}/delete",
             method: "delete",
-            class: "button button--state-success"
+            class: "button button-success"
           )}
         <% end %>
         <%= if @repair_changeset do %>
           <%= form_for @repair_changeset, ~p"/images/#{@image}/repair", [method: "post"], fn _f -> %>
-            <div class="field">{submit("Repair", class: "button button--state-success")}</div>
+            <div class="field">{submit("Repair", class: "button button-success")}</div>
           <% end %>
         <% end %>
         <%= if @hash_changeset do %>
@@ -197,7 +197,7 @@
               <div class="flex justify-end">
                 {submit("Clear hash",
                   data: [confirm: "Are you really, really sure?"],
-                  class: "button button--state-danger"
+                  class: "button button-danger"
                 )}
               </div>
             </div>
@@ -246,14 +246,14 @@
         <%= if not @image.approved and can?(@conn, :approve, @image) do %>
           {button_to("Approve image", ~p"/images/#{@image}/approve",
             method: "post",
-            class: "button button--state-success",
+            class: "button button-success",
             data: [confirm: "Are you sure?"]
           )}
         <% end %>
         <%= if @image.hidden_from_users and can?(@conn, :destroy, @image) do %>
           {button_to("Destroy image", ~p"/images/#{@image}/destroy",
             method: "post",
-            class: "button button--state-danger",
+            class: "button button-danger",
             data: [confirm: "This action is IRREVERSIBLE. Are you sure?"]
           )}
         <% end %>

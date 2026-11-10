@@ -24,7 +24,7 @@
         <%= if can?(@conn, :approve, image) do %>
           {button_to("Approve", ~p"/images/#{image}/approve",
             method: "post",
-            class: "button button--state-success"
+            class: "button button-success"
           )}
         <% end %>
         <%= if can?(@conn, :hide, image) do %>
@@ -34,7 +34,7 @@
                 class: "input input--wide",
                 placeholder: "Rule violation",
                 required: true
-              )}{submit("Delete", class: "button button--state-danger button--separate-left")}
+              )}{submit("Delete", class: "button button-danger ms-md")}
             </div>
           <% end %>
         <% end %>

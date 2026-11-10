@@ -4,18 +4,18 @@
     <%= for {label, state} <- states() do %>
       <input
         checked={Enum.member?(f.data.states, state)}
-        class="checkbox-button__checkbox"
+        class="button-check-input"
         id={input_id(f, :states, state)}
         name={"#{input_name(f, :states)}[]"}
         type="checkbox"
         value={state}
       /><label
-        class="checkbox-button button button--separate-right"
+        class="button me-md"
         for={input_id(f, :states, state)}
       >{label}</label>
     <% end %>
     {select(f, :sd, sorts(), class: "input input--separate-right")}{submit("Search",
-      class: "button button--state-primary"
+      class: "button button-primary"
     )}
   </div>
   <div class="errors">{error_tag(f, :states)}{error_tag(f, :sd)}</div>

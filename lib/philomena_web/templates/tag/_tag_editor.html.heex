@@ -26,12 +26,12 @@ html_options = Keyword.merge(textarea_options, assigns[:extra] || []) %>
   </div>
 </div>
 <button
-  class="button button--state-primary button--bold js-taginput-show"
+  class="button button-primary js-taginput-show"
   data-click-focus={".js-taginput-input.js-taginput-#{@name}"}
   data-click-hide=".js-taginput-plain,.js-taginput-show"
   data-click-show=".js-taginput-fancy,.js-taginput-hide"
 >Fancy Editor</button><button
-  class="hidden button button--state-primary button--bold js-taginput-hide"
+  class="hidden button button-primary js-taginput-hide"
   data-click-focus={".js-taginput-plain.js-taginput-#{@name}"}
   data-click-hide=".js-taginput-fancy,.js-taginput-hide"
   data-click-show=".js-taginput-plain,.js-taginput-show"
