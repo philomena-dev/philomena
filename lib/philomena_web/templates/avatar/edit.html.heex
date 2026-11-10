@@ -1,12 +1,12 @@
-<div class="profile-top">
-  <div class="profile-top__avatar">
+<div class="flex gap-lg">
+  <div class="flex-none">
     {render(PhilomenaWeb.UserAttributionView, "_user_avatar.html",
       object: %{user: @current_user},
       conn: @conn,
       no_profile_link: true
     )}
   </div>
-  <div class="profile-top__name-and-links">
+  <div class="flex-1">
     <div>
       <h1>Your avatar</h1>
       <p>Add a new avatar or remove your existing one here.</p>

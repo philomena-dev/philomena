@@ -21,7 +21,7 @@ defmodule PhilomenaWeb.ProfileView do
   def should_see_link?(conn, user, link),
     do: link.public or can?(conn, :edit, link) or current?(user, conn.assigns.current_user)
 
-  def link_block_class(%{public: false}), do: "private-link"
+  def link_block_class(%{public: false}), do: "artist-link-private"
   def link_block_class(_link), do: nil
 
   def award_title(%{badge_name: nil} = award),

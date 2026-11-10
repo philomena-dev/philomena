@@ -1,5 +1,5 @@
-<div class="profile-top">
-  <div class="profile-top__avatar">
+<div class="flex gap-lg">
+  <div class="flex-none">
     <div class="tag-info__image thumb-tiny-container">
       <%= if @tag.image do %>
         <img alt="spoiler image" height="50" src={tag_image(@tag)} width="50" />
@@ -8,7 +8,7 @@
       <% end %>
     </div>
   </div>
-  <div class="profile-top__name-and-links">
+  <div class="flex-1">
     <div>
       <h1>Tag image</h1>
       <p>Add a new image or remove the existing one here.</p>

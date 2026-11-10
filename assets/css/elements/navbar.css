@@ -221,6 +221,11 @@ a.header-button:hover {
   padding-block: var(--spacing-lg);
 }
 
+/* The page does not scroll behind the open burger menu (assets/js/burger.ts) */
+.no-overflow {
+  overflow: hidden;
+}
+
 /* The secondary bar wraps where the staff links do not fit beside the sections, a row of bar height each */
 @media (min-width: $breakpoint-md) {
   .navbar.secondary {

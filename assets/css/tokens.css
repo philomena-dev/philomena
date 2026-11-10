@@ -26,6 +26,7 @@
     --header-spacing-vertical: 0;
     --navbar-item-padding-horizontal: var(--spacing-lg);
     --button-padding-vertical: var(--spacing-lg);
+    --nav-link-padding-vertical: var(--spacing-lg);
     --input-padding: var(--spacing-lg);
     --editor-button-size: 2.5rem;
   }

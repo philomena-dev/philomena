@@ -1,5 +1,5 @@
-<div class="profile-top">
-  <div class="profile-top__avatar">
+<div class="flex gap-lg">
+  <div class="flex-none">
     <% avatar =
       render(PhilomenaWeb.UserAttributionView, "_user_avatar.html",
         object: %{user: @user},
@@ -12,42 +12,48 @@
       {avatar}
     <% end %>
   </div>
-  <div class="profile-top__name-and-links">
-    <div>
-      <h1 class="profile-top__name-header">{@user.name}'s profile</h1>
-      {render(PhilomenaWeb.UserAttributionView, "_user_title.html",
-        object: %{user: @user},
-        large: true
-      )}<br />
-      <%= if can?(@conn, :edit_description, @user) do %>
-        {link("Edit Personal Title", to: ~p"/profiles/#{@user}/description/edit")}<br />
-      <% end %>
-      <span>Member since {pretty_time(@user.created_at)}</span>
-    </div>
-    <div class="profile-top__options">
-      <ul class="profile-top__options__column">
-        <li>{link("Send message", to: ~p"/conversations/new?#{[recipient: @user.name]}")}</li>
-        <li>{link("Our conversations", to: ~p"/conversations?#{[with: @user.id]}")}</li>
-        <li>{link("Report this user", to: ~p"/profiles/#{@user}/reports/new")}</li>
-      </ul>
-      <ul class="profile-top__options__column">
+  <div class="flex-1">
+    <h1 class="m-0">{@user.name}'s profile</h1>
+    {render(PhilomenaWeb.UserAttributionView, "_user_title.html",
+      object: %{user: @user},
+      large: true
+    )}<br />
+    <%= if can?(@conn, :edit_description, @user) do %>
+      {link("Edit Personal Title", to: ~p"/profiles/#{@user}/description/edit")}<br />
+    <% end %>
+    <span>Member since {pretty_time(@user.created_at)}</span>
+    <div class="flex flex-wrap gap-x-xl mt-md">
+      <nav class="nav">
+        {link("Send message",
+          to: ~p"/conversations/new?#{[recipient: @user.name]}",
+          class: "nav-link"
+        )}
+        {link("Our conversations", to: ~p"/conversations?#{[with: @user.id]}", class: "nav-link")}
+        {link("Report this user", to: ~p"/profiles/#{@user}/reports/new", class: "nav-link")}
+      </nav>
+      <nav class="nav">
         <% true_prefix = if can_reveal_anon?(@conn), do: "true_", else: "" %>
-        <li>
-          {link("Uploads", to: ~p"/search?#{[q: "#{true_prefix}uploader_id:#{@user.id}"]}")}
-        </li>
-        <li>
-          {link("Comments", to: ~p"/comments?#{[cq: "#{true_prefix}author_id:#{@user.id}"]}")}
-        </li>
-        <li>{link("Posts", to: ~p"/posts?#{[pq: "#{true_prefix}author_id:#{@user.id}"]}")}</li>
+        {link("Uploads",
+          to: ~p"/search?#{[q: "#{true_prefix}uploader_id:#{@user.id}"]}",
+          class: "nav-link"
+        )}
+        {link("Comments",
+          to: ~p"/comments?#{[cq: "#{true_prefix}author_id:#{@user.id}"]}",
+          class: "nav-link"
+        )}
+        {link("Posts",
+          to: ~p"/posts?#{[pq: "#{true_prefix}author_id:#{@user.id}"]}",
+          class: "nav-link"
+        )}
         <%= if current?(@user, @conn.assigns.current_user) do %>
-          <li>{link("My reports", to: ~p"/reports")}</li>
+          {link("My reports", to: ~p"/reports", class: "nav-link")}
         <% end %>
-      </ul>
-      <ul class="profile-top__options__column">
-        <li>{link("Favorites", to: ~p"/search?#{[q: "faved_by_id:#{@user.id}"]}")}</li>
-        <li>{link("Tag changes", to: ~p"/profiles/#{@user}/tag_changes")}</li>
-        <li>{link("Source changes", to: ~p"/profiles/#{@user}/source_changes")}</li>
-      </ul>
+      </nav>
+      <nav class="nav">
+        {link("Favorites", to: ~p"/search?#{[q: "faved_by_id:#{@user.id}"]}", class: "nav-link")}
+        {link("Tag changes", to: ~p"/profiles/#{@user}/tag_changes", class: "nav-link")}
+        {link("Source changes", to: ~p"/profiles/#{@user}/source_changes", class: "nav-link")}
+      </nav>
     </div>
   </div>
 </div>
@@ -134,7 +140,7 @@
       <% end %>
       <%= for award <- award_order(@user.awards) do %>
         <div
-          class="block-content flex items-center justify-center alternating-color no-overflow"
+          class="block-content flex items-center justify-center alternating-color"
           title={award.label}
         >
           <div class="flex-1 text-center">
@@ -211,7 +217,7 @@
         <div class="block-header">
           <a href={~p"/profiles/#{@user}/scratchpad/edit"}>Moderation Scratchpad</a>
         </div>
-        <div class="block-content profile-about markdown">{@scratchpad}</div>
+        <div class="block-content markdown">{@scratchpad}</div>
       </div>
     <% end %>
     <%= if can_see_user_name_changes?(@conn, @user) and not hide_staff_tools?(@conn) and Enum.any?(@name_changes) do %>

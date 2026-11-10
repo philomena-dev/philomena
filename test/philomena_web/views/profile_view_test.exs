@@ -134,7 +134,7 @@ defmodule PhilomenaWeb.ProfileViewTest do
   end
 
   test "link_block_class/1 marks a link hidden from the public" do
-    assert ProfileView.link_block_class(%{public: false}) == "private-link"
+    assert ProfileView.link_block_class(%{public: false}) == "artist-link-private"
     assert ProfileView.link_block_class(%{public: true}) == nil
   end
 end
