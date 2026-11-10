@@ -114,6 +114,110 @@ defmodule PhilomenaWeb.LayoutView do
       !is_nil(conn.assigns[:image]) and conn.assigns.image.__meta__.state == :loaded and
         is_list(conn.assigns.image.tags)
 
+  @doc """
+  The sections of the site that the secondary bar and the burger menu link to, each with the pages under it.
+  """
+  def site_sections(conn) do
+    forums = Enum.map(conn.assigns.forums, &%{label: &1.name, path: ~p"/forums/#{&1}"})
+
+    [
+      %{
+        icon: "fa fa-images",
+        label: "Images",
+        path: ~p"/images",
+        pages: [%{icon: "fa fa-random", label: "Random", path: ~p"/images/random"}]
+      },
+      %{
+        icon: "fa fa-bolt",
+        label: "Activity",
+        path: ~p"/activity",
+        pages: [%{icon: "fa fa-comments", label: "Comments", path: ~p"/comments"}]
+      },
+      %{
+        icon: "fas fa-pen-square",
+        label: "Forums",
+        path: ~p"/forums",
+        pages: forums ++ [%{icon: "fa fa-search", label: "Post Search", path: ~p"/posts"}]
+      },
+      %{
+        icon: "fa fa-tag",
+        label: "Tags",
+        path: ~p"/tags",
+        pages: [%{icon: "fa fa-tags", label: "Tag Changes", path: ~p"/tag_changes"}]
+      },
+      %{
+        icon: "fa fa-podcast",
+        label: "Live",
+        path: ~p"/channels",
+        pages: [],
+        count: conn.assigns.live_channels
+      },
+      %{icon: "fa fa-image", label: "Galleries", path: ~p"/galleries", pages: []},
+      %{icon: "fa fa-address-card", label: "Commissions", path: ~p"/commissions", pages: []}
+    ]
+  end
+
+  @doc "The pages of a signed-in user's menu, from the profile to logging out."
+  def user_links(user) do
+    [
+      %{icon: "fa fa-user-circle", label: user.name, path: ~p"/profiles/#{user}"},
+      %{icon: "fa fa-eye", label: "Watched", path: "/search?q=my:watched"},
+      %{icon: "fa fa-star", label: "Faves", path: "/search?q=my:faves"},
+      %{icon: "fa fa-arrow-up", label: "Upvotes", path: "/search?q=my:upvotes"},
+      %{
+        icon: "fa fa-image",
+        label: "Galleries",
+        path: ~p"/galleries?#{[gallery: [creator: user.name]]}"
+      },
+      %{icon: "fa fa-upload", label: "Uploads", path: "/search?q=my:uploads"},
+      %{icon: "fa fa-comments", label: "Comments", path: "/comments?cq=my:comments"},
+      %{icon: "fas fa-pen-square", label: "Posts", path: "/posts?pq=my:posts"},
+      %{icon: "fa fa-link", label: "Links", path: ~p"/profiles/#{user}/artist_links"},
+      %{icon: "fa fa-cogs", label: "Settings", path: ~p"/settings/edit"},
+      %{icon: "fa fa-envelope", label: "Messages", path: ~p"/conversations"},
+      %{icon: "fa fa-user", label: "Account", path: ~p"/registrations/edit"},
+      %{icon: "fa fa-sign-out-alt", label: "Logout", path: ~p"/sessions", method: "delete"}
+    ]
+  end
+
+  @doc "The administration pages the signed-in staff member may manage."
+  def admin_links(conn) do
+    [
+      {manages_site_notices?(conn), "fa fa-info-circle", "Site Notices", ~p"/admin/site_notices"},
+      {manages_users?(conn), "fa fa-users", "Users", ~p"/admin/users"},
+      {manages_forums?(conn), "fa fa-paragraph", "Forums", ~p"/admin/forums"},
+      {manages_ads?(conn), "fa fa-shopping-bag", "Adverts", ~p"/admin/adverts"},
+      {manages_badges?(conn), "fa fa-trophy", "Badges", ~p"/admin/badges"},
+      {manages_static_pages?(conn), "fa fa-sticky-note", "Pages", ~p"/pages"},
+      {manages_mod_notes?(conn), "fa fa-clipboard", "Mod Notes", ~p"/admin/mod_notes"},
+      {can_see_moderation_log?(conn), "fa fa-list-alt", "Mod Logs", ~p"/moderation_logs"}
+    ]
+    |> Enum.filter(&elem(&1, 0))
+    |> Enum.map(fn {_allowed, icon, label, path} -> %{icon: icon, label: label, path: path} end)
+  end
+
+  @doc "The ban lists, for staff who may ban."
+  def ban_links(conn) do
+    if manages_bans?(conn) do
+      [
+        %{icon: "fa fa-user", label: "User Bans", path: ~p"/admin/user_bans"},
+        %{icon: "fab fa-internet-explorer", label: "IP Bans", path: ~p"/admin/subnet_bans"},
+        %{icon: "fa fa-desktop", label: "FP Bans", path: ~p"/admin/fingerprint_bans"}
+      ]
+    else
+      []
+    end
+  end
+
+  @doc """
+  Whether `path` is the page being shown or a section it belongs to. Links with a query, which are searches,
+  never are.
+  """
+  def current_page?(conn, path) do
+    not String.contains?(path, "?") and
+      (conn.request_path == path or String.starts_with?(conn.request_path, path <> "/"))
+  end
+
   def staff?(conn) do
     case conn.assigns.current_user do
       %User{role: role} -> role != "user"

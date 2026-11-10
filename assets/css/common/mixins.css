@@ -7,11 +7,6 @@
   }
 }
 
-@define-mixin transform-n-animation $type, $dur, $delta {
-  transform: $(delta);
-  animation: $(type) $(dur) ease-in-out;
-}
-
 @define-mixin even-odd-type $classname, $type {
   .$(classname):nth-child(odd).$(type),
   .$(classname):nth-child(odd) .$(type) {
@@ -55,16 +50,6 @@
   @mixin even-odd-type $el, success;
   @mixin even-odd-type $el, warning;
   @mixin even-odd-type $el, danger;
-}
-
-@define-mixin number-wrap $color {
-  display: inline-flex;
-  padding: 0 6px;
-  margin-left: 6px;
-  line-height: inherit;
-  font-size: 16px;
-  text-align: center;
-  background: $(color);
 }
 
 /* 16x16 checkerboard */

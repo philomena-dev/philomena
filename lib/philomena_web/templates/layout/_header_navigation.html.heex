@@ -1,34 +1,21 @@
-<div class="hide-mobile header__navigation">
-  <div class="dropdown header__dropdown">
-    <a class="header__link" href="/images">Images
-    <span data-click-preventdefault="true"><i class="fa fa-caret-down"></i></span></a>
-    <div class="dropdown__content"><a class="header__link" href="/images/random">Random</a></div>
-  </div>
-  <div class="dropdown header__dropdown">
-    <a class="header__link" href="/activity">Activity
-    <span data-click-preventdefault="true"><i class="fa fa-caret-down"></i></span></a>
-    <div class="dropdown__content"><a class="header__link" href="/comments">Comments</a></div>
-  </div>
-  <div class="dropdown header__dropdown">
-    <a class="header__link" href="/forums">Forums
-    <span data-click-preventdefault="true"><i class="fa fa-caret-down"></i></span></a>
-    <div class="dropdown__content">
-      <a :for={forum <- @conn.assigns.forums} class="header__link" href={~p"/forums/#{forum}"}>{forum.name}</a><a
-        class="header__link"
-        href="/posts"
-      ><i class="fa fa-fw fa-search"></i> Post Search</a>
-    </div>
-  </div>
-  <div class="dropdown header__dropdown">
-    <a class="header__link" href="/tags">Tags
-    <span data-click-preventdefault="true"><i class="fa fa-caret-down"></i></span>
-    <div class="dropdown__content">
-      <a class="header__link" href="/tag_changes">Tag Changes</a>
-    </div></a>
-  </div>
-  <a class="header__link" href="/channels">Live
-  <span class="header__counter">{@conn.assigns.live_channels}</span></a><a
-    class="header__link"
-    href="/galleries"
-  >Galleries</a><a class="header__link" href="/commissions">Commissions</a>
-</div>
+<nav class="navbar secondary" aria-label="Sections">
+  <%= for section <- site_sections(@conn) do %>
+    <%= if section.pages == [] do %>
+      <a class="navbar-item" href={section.path}>
+        {section.label}<span :if={section[:count]} class="counter subtle">{section.count}</span>
+      </a>
+    <% else %>
+      <div class="navbar-dropdown">
+        <a aria-haspopup="true" class="navbar-item caret" href={section.path}>{section.label}</a>
+        {render(PhilomenaWeb.LayoutView, "_navbar_menu.html",
+          links: section.pages,
+          label: section.label,
+          end: false
+        )}
+      </div>
+    <% end %>
+  <% end %>
+  <%= if staff?(@conn) do %>
+    {render(PhilomenaWeb.LayoutView, "_header_staff_links.html", assigns)}
+  <% end %>
+</nav>

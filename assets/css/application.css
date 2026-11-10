@@ -16,6 +16,10 @@
 @import "./themes/hues/blue.css";
 @import "@philomena/philomena-css/css/design/index.css";
 @import "@philomena/philomena-css/css/components/alert.css";
+@import "@philomena/philomena-css/css/components/burger.css";
+@import "@philomena/philomena-css/css/components/counter.css";
+@import "@philomena/philomena-css/css/components/header.css";
+@import "@philomena/philomena-css/css/components/navbar.css";
 @import "@philomena/philomena-css/css/components/separator.css";
 @import "./tokens.css";
 @import "./legacy.css";
@@ -29,14 +33,13 @@
 @import "elements/misc";
 @import "elements/barline";
 @import "elements/blocks";
-@import "elements/burger";
 @import "elements/button";
 @import "elements/checkbox";
 @import "elements/dropdown";
 @import "elements/forms";
-@import "elements/header";
 @import "elements/layout";
 @import "elements/media";
+@import "elements/navbar";
 @import "elements/page";
 @import "elements/toggle";
 

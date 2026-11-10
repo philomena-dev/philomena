@@ -20,6 +20,7 @@ import { setupGalleryEditing } from './galleries';
 import { initImagesClientside } from './imagesclientside';
 import { bindImageTarget } from './image-expansion';
 import { setupEvents } from './misc';
+import { setupNavbarMenus } from './navbar';
 import { setupNotifications } from './notifications';
 import { setupPreviews } from './preview';
 import { setupQuickTag } from './quick-tag';
@@ -52,6 +53,7 @@ whenReady(
   setupGalleryEditing,
   bindImageTarget,
   setupEvents,
+  setupNavbarMenus,
   setupNotifications,
   setupPreviews,
   setupQuickTag,

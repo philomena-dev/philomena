@@ -356,10 +356,6 @@ span.stat {
   overflow: hidden;
 }
 
-.no-overflow-x {
-  overflow-x: hidden;
-}
-
 .hidden {
   display: none !important;
 }

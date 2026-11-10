@@ -159,6 +159,55 @@ defmodule PhilomenaWeb.LayoutViewTest do
     end
   end
 
+  describe "current_page?/2" do
+    test "matches a page and the section it belongs to, but no search" do
+      conn = %Plug.Conn{request_path: "/forums/dis/topics/example"}
+
+      assert LayoutView.current_page?(conn, "/forums")
+      assert LayoutView.current_page?(conn, "/forums/dis")
+      refute LayoutView.current_page?(conn, "/forum")
+      refute LayoutView.current_page?(%Plug.Conn{request_path: "/tag_changes"}, "/tags")
+
+      refute LayoutView.current_page?(
+               %Plug.Conn{request_path: "/comments"},
+               "/comments?cq=my:comments"
+             )
+    end
+  end
+
+  describe "burger menu" do
+    defp burger(response) do
+      [_header, burger] = String.split(response, ~s(<nav class="burger"))
+      burger |> String.split("</nav>") |> hd()
+    end
+
+    test "holds every page of the bars for staff and marks the current section", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_admin(%{conn: conn})
+      burger = conn |> get(~p"/forums") |> html_response(200) |> burger()
+
+      assert burger =~ ~s(<a class="burger-item current" href="/forums">)
+      refute burger =~ ~s(current" href="/images")
+      assert burger =~ ~s(data-method="delete" href="/sessions")
+      assert burger =~ ~s(id="filter-burger-menu")
+      assert burger =~ ~s(id="spoiler-burger-menu")
+
+      for label <-
+            ["Random", "Post Search", "Tag Changes", "Rankings", "Donate", "Watched"] ++
+              ["Site Notices", "Mod Logs", "User Bans", "FP Bans"] do
+        assert burger =~ label
+      end
+    end
+
+    test "offers anonymous visitors the filters and settings, and no account pages", %{conn: conn} do
+      burger = conn |> get(~p"/forums") |> html_response(200) |> burger()
+
+      assert burger =~ "Filters (Default)"
+      assert burger =~ ~s(href="/settings/edit")
+      refute burger =~ "Watched"
+      refute burger =~ "Site Notices"
+    end
+  end
+
   describe "theme" do
     test "anonymous pages load no theme and follow the system color scheme", %{conn: conn} do
       response = html_response(get(conn, ~p"/settings/edit"), 200)

@@ -1,0 +1,245 @@
+/*
+ * The header bars: the header with the site's navbar and the search, the secondary bar under it with the sections of
+ * the site and the staff links, and the burger menu that holds all of it on narrow screens. Each bar keeps the
+ * colors of the theme's bar: it sets the tokens that the framework's navbar, menus, counters and burger read.
+ */
+
+/* What the framework paints in page colors takes the bar's colors (menus, hovered items, counters), with no lines */
+.header,
+.navbar.secondary,
+.navbar-staff {
+  --header-brand-color: var(--header-text-color);
+  --surface-color: var(--header-color);
+  --tint-faint-color: var(--bar-hover-shade-color);
+  --active-shade-color: var(--bar-hover-shade-color);
+  --tint-color: transparent;
+  /* stylelint-disable-next-line length-zero-no-unit -- a length, which the navbar negates in calc() */
+  --border-width: 0px;
+  --fill-bevel-shadow: none;
+  /* The icon column of the menus is a slot without a strip of its own */
+  --well-color: transparent;
+  --neutral-color: transparent;
+  --muted-text-color: currentcolor;
+  --neutral-text-color: currentcolor;
+}
+
+/* The item of an open menu has the hover color, as its menu has the bar color */
+.navbar .navbar-dropdown > .navbar-item {
+  --surface-color: var(--bar-hover-shade-color);
+}
+
+/* The header scrolls with the page and keeps the page's text color; its navbars and fields color their contents */
+.header {
+  position: static;
+  color: var(--text-color);
+  --link-style-hover-decoration: none;
+}
+
+.header .navbar {
+  --text-color: var(--header-text-color);
+}
+
+.navbar.secondary {
+  --header-color: var(--header-secondary-color);
+  --header-text-color: var(--text-color);
+  --bar-hover-shade-color: var(--header-secondary-hover-color);
+  padding-inline: var(--header-spacing-horizontal);
+}
+
+/* The staff links, at the end of the secondary bar */
+.navbar .navbar-staff {
+  --header-color: var(--header-admin-color);
+  --bar-hover-shade-color: var(--header-admin-hover-color);
+  display: flex;
+  margin-inline-start: auto;
+  background-color: var(--header-color);
+}
+
+/* The new conversations envelope */
+.navbar .navbar-icon.unread {
+  color: var(--unread-message-color);
+}
+
+/* The notification counter shows only while there are notifications */
+.counter[data-notification-count="0"] {
+  display: none;
+}
+
+/*
+ * Fields on a bar: the search and the quick selects. A .header-field holds a row of .header-input controls (a text
+ * field or a select) and .header-button icons, joined, in the bar's field color.
+ */
+
+.header-field {
+  display: flex;
+  align-self: center;
+  margin-inline: var(--spacing-md);
+  border-radius: var(--border-radius-inner);
+  overflow: hidden;
+}
+
+.header-input,
+.header-button {
+  box-sizing: border-box;
+  block-size: var(--header-field-height);
+  padding-inline: var(--spacing-md);
+  color: var(--header-text-color);
+  background-color: var(--header-field-color);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.header-button {
+  display: flex;
+  align-items: center;
+}
+
+.header-input:focus-visible,
+.header-button:focus-visible {
+  @mixin focus-ring-inset;
+}
+
+input.header-input {
+  cursor: text;
+  text-overflow: ellipsis;
+}
+
+input.header-input::placeholder {
+  color: inherit;
+  opacity: 0.54;
+}
+
+/* Webkit paints autofilled fields in its own colors */
+input.header-input:-webkit-autofill {
+  -webkit-text-fill-color: var(--header-text-color);
+  box-shadow: inset 0 0 0 100em var(--header-field-color);
+}
+
+/* A select draws its arrow in the text color, out of the way of its text */
+select.header-input {
+  max-inline-size: 15em;
+  padding-inline-end: calc(var(--spacing-md) + 1em);
+  text-overflow: ellipsis;
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentcolor 50%),
+    linear-gradient(135deg, currentcolor 50%, transparent 50%);
+  background-position:
+    right calc(var(--spacing-md) + 0.35em) center,
+    right var(--spacing-md) center;
+  background-size: 0.35em 0.35em;
+  background-repeat: no-repeat;
+}
+
+select.header-input option,
+select.header-input optgroup {
+  background-color: var(--header-field-color);
+}
+
+select.header-input:hover,
+.header-button:hover {
+  background-color: var(--header-field-hover-color);
+}
+
+a.header-button:hover {
+  color: var(--search-icon-hover-color);
+}
+
+/* The search follows the site's navbar and pushes the user's navbar to the end */
+.header-search {
+  margin-inline-end: auto;
+}
+
+.header-search input.header-input {
+  inline-size: 18vw;
+  max-inline-size: 21rem;
+}
+
+/*
+ * The burger menu, in --burger-color with --burger-divider-color lines: items take --burger-hover-color and
+ * --burger-hover-text-color under the pointer. Its fields are rows of their own, which take the colors of the row.
+ */
+
+.burger {
+  --surface-color: var(--burger-color);
+  --tint-faint-color: var(--burger-hover-color);
+  --tint-color: var(--burger-divider-color);
+  --active-shade-color: transparent;
+  --muted-text-color: currentcolor;
+  --bar-link-color: currentcolor;
+  --header-text-color: currentcolor;
+  --header-field-color: transparent;
+  --header-field-hover-color: transparent;
+  font-size: var(--header-font-size);
+}
+
+.burger .burger-header {
+  --tint-color: var(--burger-color);
+}
+
+.burger .burger-item {
+  padding-block: var(--spacing-lg);
+}
+
+/* The icons are a column as wide as a fixed-width icon, which also indents the rows that have none */
+.burger .burger-icon {
+  inline-size: 1.25em;
+}
+
+.burger .burger-item:hover,
+.burger .burger-item.current,
+.burger .burger-close:hover {
+  color: var(--burger-hover-text-color);
+}
+
+.burger .header-input {
+  flex: 1 1 auto;
+  block-size: auto;
+  padding-inline-start: 0;
+}
+
+/* The secondary bar wraps where the staff links do not fit beside the sections, a row of bar height each */
+@media (min-width: $breakpoint-md) {
+  .navbar.secondary {
+    flex-wrap: wrap;
+  }
+
+  .navbar.secondary .navbar-item {
+    min-block-size: var(--header-secondary-height);
+  }
+
+  .navbar .navbar-staff {
+    margin-inline-end: var(--spacing-lg);
+  }
+
+  .layout--center-aligned {
+    --header-spacing-horizontal: calc(2 * var(--spacing-lg));
+  }
+}
+
+/* On narrow screens the search is a row of its own under the pinned items, and the staff links share the bar */
+@media not all and (min-width: $breakpoint-md) {
+  .header {
+    flex-wrap: wrap;
+  }
+
+  .header-search {
+    order: 1;
+    flex: 1 1 100%;
+    margin-block-end: var(--spacing-md);
+  }
+
+  .header-search input.header-input {
+    flex: 1 1 auto;
+    inline-size: auto;
+    max-inline-size: none;
+  }
+
+  .navbar .navbar-staff {
+    flex: 1 1 auto;
+  }
+
+  .navbar-staff > .navbar-item {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}

@@ -32,35 +32,6 @@ nav {
   display: inline-block;
 }
 
-#burger {
-  font-size: 18px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 200px;
-  height: 100%;
-  display: none;
-  overflow: auto;
-  background: var(--burger-color);
-  padding: 5px;
-}
-
-#burger a {
-  background: var(--burger-color);
-  color: var(--text-color);
-  display: block;
-  padding: 5px;
-}
-
-#burger a:hover {
-  background: var(--burger-hover-color);
-  color: var(--burger-hover-text-color);
-}
-
-#burger hr {
-  border-top-color: var(--burger-divider-color);
-}
-
 #container {
   box-sizing: border-box;
   display: flex;
@@ -192,20 +163,11 @@ nav {
   justify-content: center;
 }
 
-/* Mostly for the header */
-.flex--start-bunched {
-  justify-content: flex-start;
-}
-
 .flex--end-bunched {
   justify-content: flex-end;
 }
 
 @media (max-width: $min-desktop-width) {
-  .flex--maybe-wrap {
-    flex-wrap: wrap !important;
-  }
-
   #footer {
     align-items: normal !important;
   }
@@ -223,10 +185,6 @@ nav {
     margin-left: 1rem;
     font-size: 14px;
   }
-}
-
-.flex--maybe-wrap {
-  flex-wrap: nowrap;
 }
 
 .flex--no-wrap {
