@@ -1,49 +1,8 @@
-.staff-block__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+/* The staff page: user cards in rows of equal height, wide enough for an avatar and its message button */
+.staff-grid {
+  --grid-auto-column-width: calc(2 * var(--avatar-lg-size));
   grid-auto-rows: 1fr;
-  gap: 0.5em;
-}
-
-.staff-block__user-card {
-  display: grid;
-  grid-template-columns: auto 8em;
-}
-
-.staff-block__user {
-  flex-grow: 1;
-  width: auto;
-  padding: 1em;
-}
-
-.staff-block__info {
-  margin-left: auto;
-}
-
-.profile-block {
-  display: inline-block;
-  vertical-align: top;
-}
-
-.profile-block b {
-  display: block;
-}
-
-.staff-block__description {
-  margin: 1em 0;
-}
-
-.staff-block__separator {
-  margin: 0.75em 0.5em;
-}
-
-.staff-block__category {
-  margin-top: 1em;
-}
-
-.staff-block__user-description {
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
 }
 
 body[data-hide-staff-tools="true"] .js-staff-action {

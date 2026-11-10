@@ -40,7 +40,7 @@ defmodule PhilomenaWeb.StaffView do
   def category_class(:public_relations), do: "alert-warning"
   def category_class(:moderators), do: "alert-success"
   def category_class(:assistants), do: "alert-special"
-  def category_class(_), do: ""
+  def category_class(_), do: nil
 
   def staff_description(%{description: desc}) when desc not in [nil, ""] do
     [part] = Regex.run(@desc_regex, desc, capture: :all_but_first)
