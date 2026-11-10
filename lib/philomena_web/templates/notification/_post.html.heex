@@ -1,6 +1,6 @@
 <% topic = @notification.topic %>
 <% post = @notification.post %>
-<div class="flex items-center flex-1">
+<div class="flex items-center flex-1 wrap-anywhere">
   <div>
     {render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: post, conn: @conn)} posted a new reply in
     <strong>{link(topic.title,

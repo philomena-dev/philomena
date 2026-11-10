@@ -6,7 +6,7 @@
   class: "me-lg",
   conn: @conn
 )}
-<div class="flex items-center flex-1">
+<div class="flex items-center flex-1 wrap-anywhere">
   <div>
     {render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: comment, conn: @conn)} commented on
     <strong>{link("##{image.id}", to: ~p"/images/#{image}" <> "#comments")}</strong> {pretty_time(

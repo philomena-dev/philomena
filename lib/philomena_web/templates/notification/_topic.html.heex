@@ -1,6 +1,6 @@
 <% topic = @notification.topic %>
 <% forum = topic.forum %>
-<div class="flex items-center flex-1">
+<div class="flex items-center flex-1 wrap-anywhere">
   <div>
     {render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: topic, conn: @conn)} posted a new topic titled
     <strong>{link(topic.title, to: ~p"/forums/#{forum}/topics/#{topic}")}</strong>
