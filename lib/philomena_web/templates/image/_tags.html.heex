@@ -7,7 +7,7 @@
   <div class={"js-imageform #{form_class}"}>
     <%= if @changeset && can?(@conn, :edit_metadata, @image) && !@conn.assigns.current_ban do %>
       <%= if Enum.any?(@image.locked_tags) do %>
-        <div class="block block--fixed block--warning">
+        <div class="alert alert-warning">
           <i class="fa fa-lock"></i>
           The following tags have been restricted on this image:
           <code>{Enum.map_join(@image.locked_tags, ", ", & &1.name)}</code>
@@ -34,7 +34,7 @@
           )}{error_tag(f, :tag_input)}
         </div>
         <%= if !@conn.assigns.current_user do %>
-          <div class="block block--fixed block--warning">
+          <div class="alert alert-warning">
             <strong><em>Hang on a sec&hellip;</em></strong><br />Make sure you have read and understood our
             <a href="/pages/tags">tagging guidelines</a>
             before editing tags.

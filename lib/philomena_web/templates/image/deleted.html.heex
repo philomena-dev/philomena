@@ -1,5 +1,5 @@
 <%= if @image.duplicate_id do %>
-  <div class="block block--fixed block--warning">
+  <div class="card card-warning">
     <h1>This image has been merged into another image</h1>
     <p>
       This image was merged into image {link("##{@image.duplicate_id}",
@@ -8,7 +8,7 @@
     </p>
   </div>
 <% else %>
-  <div class="block block--fixed block--warning">
+  <div class="card card-warning">
     <h1>This image has been deleted</h1>
     <p>
       Reason:

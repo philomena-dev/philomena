@@ -1,7 +1,7 @@
 <article class="block allow-overflow communication" id={"comment_#{@comment.id}"}>
   <%= if not @comment.approved and not @comment.hidden_from_users do %>
     <div class="block-content communication__content">
-      <div class="block block--fixed block--danger">
+      <div class="card card-danger">
         <p>
           <i class="fas fa-exclamation-triangle"></i>
           This comment is pending approval from a staff member.

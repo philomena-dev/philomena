@@ -14,7 +14,7 @@
         </p>
       </div>
       <br />
-      <div class="block block--fixed block--success page-narrow">
+      <div class="card card-success page-narrow">
         <h2>Two Factor Authentication Enabled</h2>
         <p>
           You've successfully enabled two factor authentication on your account. From now on you'll be asked for the 6 digit code each time you log in.
@@ -49,7 +49,7 @@
   <% else %>
     <p>Two factor authentication is currently <strong>disabled</strong> for your account.</p>
     <br />
-    <div class="block block--fixed block--warning">
+    <div class="alert alert-warning">
       <p>
         Enabling 2FA will make it harder for an attacker to get into your account, but it may also make it harder for
         <strong>you</strong>
@@ -137,7 +137,7 @@
     </div>
   <% end %>
   <br />
-  <div class="block block--fixed block--warning">
+  <div class="card card-warning">
     <div class="field">
       {password_input(f, :current_password, class: "input", placeholder: "Current password")}{error_tag(
         f,

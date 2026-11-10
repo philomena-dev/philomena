@@ -44,7 +44,7 @@ other = other_party(@current_user, @conversation) %>
   </div>
 </div>
 <%= if not @trusted? do %>
-  <div class="block block--fixed block--warning hidden js-hidden-warning">
+  <div class="card card-warning hidden js-hidden-warning">
     <h2>Warning!</h2>
     <p>
       <strong>Your account is too new, so your PM will need to be reviewed by staff members.</strong>

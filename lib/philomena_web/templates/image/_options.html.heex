@@ -119,7 +119,7 @@
       <% end %>
     </div>
     <div class="block__tab hidden" data-tab="administration">
-      <div class="block block--danger">
+      <div class="alert alert-danger">
         <a class="button button--link" href={~p"/images/#{@image}/scratchpad/edit"}><i class="far fa-edit"></i></a>
         <%= if present?(@image.scratchpad) do %>
           <strong>Mod notes:</strong> {escape_nl2br(@image.scratchpad)}

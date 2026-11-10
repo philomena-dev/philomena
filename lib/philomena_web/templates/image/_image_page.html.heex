@@ -7,7 +7,7 @@
     )}
   <% else %>
     <div
-      class="block block--fixed block--warning page-narrow"
+      class="card card-warning page-narrow"
       id="thumbnails-not-yet-generated"
     >
       <h3>Just a moment</h3>
@@ -23,7 +23,7 @@
   <% end %>
   <%= if !@image.processed and @image.thumbnails_generated do %>
     <br />
-    <div class="block block--fixed block--warning page-narrow" id="image-being-optimized">
+    <div class="alert alert-warning page-narrow" id="image-being-optimized">
       This image is being processed to optimize the filesize. It should finish shortly.
     </div>
   <% end %>

@@ -88,47 +88,6 @@
   background: var(--block-header-color);
 }
 
-/* Fixed blocks do not have header and content */
-.block--fixed {
-  padding: 6px var(--header-spacing);
-  background: var(--background-color);
-  border: var(--border);
-  line-height: 1.35;
-}
-
-.block--fixed--sub {
-  padding: 3px var(--header-spacing);
-}
-
-.block--no-margin {
-  margin: 0;
-}
-
-.block--success {
-  background: var(--success-light-color);
-  border-color: var(--legacy-success-color);
-}
-
-.block--warning {
-  background: var(--warning-light-color);
-  border-color: var(--legacy-warning-color);
-}
-
-.block--danger {
-  background: var(--danger-light-color);
-  border-color: var(--legacy-danger-color);
-}
-
-.block--primary {
-  background: var(--primary-light-color);
-  border-color: var(--legacy-primary-color);
-}
-
-.block--assistant {
-  background: var(--assistant-color);
-  border-color: var(--assistant-border-color);
-}
-
 /* Somewhat dirty workaround for <h*> margins */
 /* Now even dirtier without nesting! */
 .block__tab > h1,
@@ -136,12 +95,6 @@
 .block__tab > h3,
 .block__tab > h4,
 .block__tab > h5,
-.block__tab > h6,
-.block--fixed > h1,
-.block--fixed > h2,
-.block--fixed > h3,
-.block--fixed > h4,
-.block--fixed > h5,
-.block--fixed > h6 {
+.block__tab > h6 {
   margin-top: 6px;
 }

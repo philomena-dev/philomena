@@ -61,7 +61,7 @@
       <strong class="comment_deleted">This artist is on the Do-Not-Post List with the following restrictions:</strong>
       <div class="flex flex-col">
         <%= for {body, entry} <- @dnp_entries do %>
-          <div class="block block--fixed">
+          <div class="alert">
             <strong><i class="fa fa-fw fa-triangle-exclamation"></i> {entry.dnp_type}</strong> {link "View details", to: ~p"/dnp/#{entry}"}<%= case body do %>
               <% {:safe, html} when html != "" -> %><br /><strong><i class="fa fa-fw fa-circle-info"></i> Conditions:</strong>{body}<% _ -> %><span></span><% end %>
           </div>

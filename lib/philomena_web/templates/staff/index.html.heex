@@ -1,5 +1,5 @@
 <h1>Staff</h1>
-<div class="block block--fixed block--warning">
+<div class="card card-warning">
   <h3>Do you wish to submit a report?</h3>
   <p phx-no-format>
     <strong>Do <em>not</em></strong> PM staff members with your reports. Instead, if you think something breaks
@@ -7,7 +7,7 @@
   </p>
   <p>Staff PMs are only for general questions or for getting help with using the site.</p>
 </div>
-<div class="block block--fixed">
+<div class="card">
   <p>
     Before contacting any of the staff members, you should try to ask your question in our
     <%= link to: "/pages/discord" do %>
@@ -23,7 +23,7 @@
     <% users = @categories[category] %>
     <% header = category_title(category) %>
     <%= if Enum.any?(users) do %>
-      <div class={"#{"block block--fixed staff-block__category #{category_class(category)}"}"}>
+      <div class={"alert staff-block__category #{category_class(category)}"}>
         {header}
       </div>
       <p class="staff-block__description">

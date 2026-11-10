@@ -35,11 +35,11 @@ defmodule PhilomenaWeb.StaffView do
 
   def category_description(_), do: "This category has no description provided."
 
-  def category_class(:administrators), do: "block--danger"
-  def category_class(:developers), do: "block--warning"
-  def category_class(:public_relations), do: "block--warning"
-  def category_class(:moderators), do: "block--success"
-  def category_class(:assistants), do: "block--assistant"
+  def category_class(:administrators), do: "alert-danger"
+  def category_class(:developers), do: "alert-warning"
+  def category_class(:public_relations), do: "alert-warning"
+  def category_class(:moderators), do: "alert-success"
+  def category_class(:assistants), do: "alert-special"
   def category_class(_), do: ""
 
   def staff_description(%{description: desc}) when desc not in [nil, ""] do

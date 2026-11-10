@@ -44,7 +44,7 @@
             <td>
               {ban.reason}
               <%= if present?(ban.note) do %>
-                <p class="block block--fixed"><em>Note: {ban.note}</em></p>
+                <p class="alert"><em>Note: {ban.note}</em></p>
               <% end %>
             </td>
             <td>{ban.generated_ban_id}</td>

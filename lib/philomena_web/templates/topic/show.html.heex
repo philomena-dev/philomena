@@ -3,7 +3,7 @@
   render(PhilomenaWeb.PaginationView, "_pagination.html", page: @posts, route: route, last: true) %>
 <h1>{@topic.title}</h1>
 <%= if @topic.hidden_from_users do %>
-  <div class="block block--fixed block--danger">
+  <div class="card card-danger">
     <h4>This topic has been deleted by a moderator</h4>
     <p><strong>Reason:</strong> <em>{@topic.deletion_reason}</em></p>
     <%= if can?(@conn, :hide, @topic) do %>
@@ -77,7 +77,7 @@
     </div>
   </div>
   <%= if @topic.locked_at do %>
-    <div class="block block--fixed block--warning">
+    <div class="card card-warning">
       <h4>This topic has been locked to new posts from non-moderators.</h4>
       <p>Locked {pretty_time(@topic.locked_at)}</p>
       <p>Lock reason: <em>{@topic.lock_reason}</em></p>
@@ -94,7 +94,7 @@
     <% @conn.assigns.current_ban -> %>
       {render(PhilomenaWeb.BanView, "_ban_reason.html", conn: @conn)}
     <% @topic.hidden_from_users -> %>
-      <div class="block block--fixed block--danger">
+      <div class="alert alert-danger">
         <h4>Cannot reply to a deleted topic.</h4>
       </div>
     <% @topic.post_count < 200_000 and can?(@conn, :create_post, @topic) -> %>

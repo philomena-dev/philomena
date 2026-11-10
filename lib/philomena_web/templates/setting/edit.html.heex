@@ -143,7 +143,7 @@
           )}
           <div class="field">{select fs, :theme_name, themes(), class: "input"} <label>Theme</label> {error_tag fs, :theme_name}</div>
           <div class="field">{select fs, :theme_color, theme_colors(), class: "input"} <label>Theme color</label> {error_tag fs, :theme_color}</div>
-          <div class="block block--fixed block--warning">Don't forget to save the settings to apply the theme!</div>
+          <div class="alert alert-warning">Don't forget to save the settings to apply the theme!</div>
           <div class="hidden" data-theme-paths={JSON.encode!(theme_paths())} id="js-theme-paths"></div>
           <div class="field">{select fs, :scale_large_images, scale_options(), class: "input"} {label fs, :scale_large_images} {error_tag fs, :scale_large_images}</div>
           <% delay_home_images = if staff?(@conn.assigns.current_user), do: :staff_delay_home_images, else: :delay_home_images %>
@@ -252,7 +252,7 @@
       class={"block__tab #{tab_class(@conn, "local", default: is_nil(@conn.assigns.current_user))}"}
       data-tab="local"
     >
-      <div class="block block--fixed block--warning">
+      <div class="alert alert-warning">
         Settings on this tab are saved in the current browser. They are independent of your login.
       </div>
       {field_with_help(
