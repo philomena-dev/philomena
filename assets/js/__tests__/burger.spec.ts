@@ -1,6 +1,19 @@
 import { fireEvent } from '@testing-library/dom';
 import { setupBurgerMenu } from '../burger';
 
+let resize: () => void;
+
+vi.stubGlobal(
+  'ResizeObserver',
+  class {
+    constructor(callback: () => void) {
+      resize = callback;
+    }
+
+    observe() {}
+  },
+);
+
 describe('setupBurgerMenu', () => {
   let toggle: HTMLButtonElement;
   let panel: HTMLElement;
@@ -49,6 +62,19 @@ describe('setupBurgerMenu', () => {
     expect(toggle).toHaveAttribute('aria-expanded', 'false');
     expect(document.documentElement).not.toHaveClass('no-overflow');
     expect(document.activeElement).toBe(toggle);
+  });
+
+  it('closes when the screen grows wide enough to hide the toggle', () => {
+    const rects = vi.spyOn(toggle, 'getClientRects').mockReturnValue([new DOMRect()] as unknown as DOMRectList);
+    fireEvent.click(toggle);
+
+    resize();
+    expect(isOpen()).toBe(true);
+
+    rects.mockRestore();
+    resize();
+    expect(panel).not.toHaveClass('open');
+    expect(document.documentElement).not.toHaveClass('no-overflow');
   });
 
   it('closes on Escape, leaving the focus where it is when it has left the panel', () => {

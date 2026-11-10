@@ -1,6 +1,7 @@
 /**
  * The burger menu. The navbar's burger button opens the panel over its veil; the veil, the close button and Escape
- * close it again. While it is open the page behind it does not scroll and Tab keeps the focus inside it.
+ * close it again, and so does a screen wide enough to hide the button. While it is open the page behind it does not
+ * scroll and Tab keeps the focus inside it.
  */
 
 import { $, $$ } from './utils/dom';
@@ -40,6 +41,10 @@ export function setupBurgerMenu() {
   };
 
   toggle.addEventListener('click', () => setOpen(true));
+
+  new ResizeObserver(() => {
+    if (toggle.getClientRects().length === 0) setOpen(false);
+  }).observe(toggle);
 
   for (const closer of $$('.js-burger-close')) {
     closer.addEventListener('click', () => setOpen(false));
