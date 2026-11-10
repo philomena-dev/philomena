@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { closeSync, mkdtempSync, openSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import postcss from 'postcss';
@@ -78,7 +78,14 @@ describe('theme contrast', () => {
     const stylesheet = path.join(dir, name.replace('/', '-'));
 
     writeFileSync(stylesheet, themeBlocks(code));
-    const { status, stdout, stderr } = spawnSync(process.execPath, [contrastScript, stylesheet], { encoding: 'utf8' });
+    // The script exits right after printing, which cuts a report written to a pipe short; a file gets all of it
+    const report = openSync(`${stylesheet}.txt`, 'w');
+    const { status, stderr } = spawnSync(process.execPath, [contrastScript, stylesheet], {
+      encoding: 'utf8',
+      stdio: ['ignore', report, 'pipe'],
+    });
+    closeSync(report);
+    const stdout = readFileSync(`${stylesheet}.txt`, 'utf8');
     const failing = failingPairs(stdout);
     const count = failureCount(stdout);
 
