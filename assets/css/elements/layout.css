@@ -21,22 +21,3 @@ figure figcaption {
   display: block;
   font-weight: bold;
 }
-
-.minimal {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.minimal__message {
-  padding: 30px;
-  max-width: 560px;
-  width: 100%;
-  margin: auto;
-  text-align: left;
-  background-color: var(--header-secondary-color);
-}
-
-.minimal__message__header {
-  margin: 0 0 10px;
-}

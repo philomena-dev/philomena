@@ -70,6 +70,19 @@ body {
   align-items: center;
 }
 
+/* A page outside the site's frame (an error, the two factor sign-in): a card in the middle of the screen */
+.page-minimal {
+  align-items: center;
+  justify-content: center;
+  padding: var(--content-spacing);
+}
+
+.page-minimal > .card {
+  box-sizing: border-box;
+  inline-size: 100%;
+  max-inline-size: var(--layout-narrow-width);
+}
+
 /* The notices under the header bars: square alerts from edge to edge, their text in line with the bar items */
 .page-notices {
   --border-radius-inner: 0;
