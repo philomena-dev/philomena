@@ -1,25 +1,26 @@
-/* The advert box on image pages: a small caption over the banner, centered */
-#imagespns {
+/* The advert box of image pages: a small caption over the banner, centered */
+.spns {
   text-align: center;
 }
 
-#imagespns .spnstxt {
+.spns-text {
   margin-bottom: var(--spacing-sm);
   font-size: var(--text-size-xs);
   text-transform: uppercase;
   color: var(--muted-text-color);
 }
 
-#imagespns img {
-  max-width: 100%;
-  height: auto;
-}
-
-#imagespns__link {
+.spns-link {
   display: flex;
   justify-content: center;
 }
 
-.table--adverts__image {
+.spns-link img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* The adverts table of the administration keeps a column as wide as a banner */
+.advert-image-column {
   width: 730px;
 }

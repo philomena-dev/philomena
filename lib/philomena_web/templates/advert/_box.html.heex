@@ -1,8 +1,8 @@
-<div class="card" id="imagespns">
-  <div class="spnstxt">
+<div class="card spns">
+  <div class="spns-text">
     Interested in advertising on Derpibooru? {link("Click here", to: "/pages/advertising")} for information!
   </div>
-  <a href={~p"/adverts/#{@advert}"} id="imagespns__link" rel="nofollow" title={@advert.title}><img
+  <a class="spns-link" href={~p"/adverts/#{@advert}"} rel="nofollow" title={@advert.title}><img
     alt={@advert.title}
     src={advert_image_url(@advert)}
   /></a>
