@@ -12,11 +12,6 @@
   margin-top: 0;
 }
 
-.clearfix {
-  clear: both;
-  height: 0;
-}
-
 .walloftext {
   font-size: 14px;
 }
@@ -27,23 +22,8 @@
   }
 }
 
-.literal {
-  white-space: pre-wrap;
-}
-
-/* donations */
-.donate-button {
-  background: 0;
-  border: 0;
-  margin-left: 170px;
-}
-
 .button_to {
   display: inline;
-}
-
-.large-text {
-  font-size: 15px;
 }
 
 .small-text {
@@ -59,27 +39,6 @@ i.favicon-home {
   height: 1em;
   display: inline-block;
 }
-
-/* changelog */
-.commit-sha {
-  background: var(--assistant-color);
-  border: 1px solid var(--assistant-border-color);
-  padding: 2px;
-  font-size: 12px;
-  font-family: var(--font-family-monospace);
-  vertical-align: top;
-}
-
-.commit-message {
-  display: block;
-}
-
-.seamless-frame {
-  border: 0;
-  overflow: hidden;
-  padding: 0;
-}
-
 
 .line-spacing {
   line-height: 30px;
