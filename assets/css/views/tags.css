@@ -88,40 +88,29 @@
   border-radius: var(--tag-border-radius);
 }
 
-/* Quick Tag Table */
+/* The columns of a quick tag table tab */
 .quick-tag-table__tab > div {
   display: inline-block;
-  padding: 0 6px;
+  padding: 0 var(--spacing-md);
   vertical-align: top;
-  border-right: var(--border);
-  border-left: var(--border);
+  border-left: var(--border-width) solid var(--tint-color);
+  border-right: var(--border-width) solid var(--tint-color);
 }
 
 .quick-tag-table__tab > div:last-child {
   border-right: none;
 }
 
-span.quick-tag-table__tab-separator {
-  background: var(--background-color);
-  border: var(--border);
-  border-bottom: 0;
-  display: inline-block;
-}
-
-.tag-image--constrained {
-  width: 50px;
-  height: 50px;
-}
-
+/* Tag descriptions in static pages */
 .tag-info__category {
-  margin-left: 20px;
+  margin-left: var(--spacing-xl);
 }
 
 .tag-info__heading {
-  margin: 8px 0;
+  margin: var(--spacing-md) 0;
 }
 
 .tag-info__list {
   margin: 0;
-  padding-left: 30px;
+  padding-left: calc(2 * var(--spacing-xl));
 }

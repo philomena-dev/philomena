@@ -1,95 +1,90 @@
+/* A list of tag changes, each the image beside who made it, the tags added and removed and the staff tools */
 .tag__changes {
   display: flex;
   flex-flow: column;
-  gap: var(--padding-normal);
+  gap: var(--spacing-lg);
+}
+
+.tag__change-block {
+  display: flex;
+  flex: 1 0 auto;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background-color: var(--surface-color);
+  border: var(--border-width) solid var(--tint-color);
+  border-radius: var(--border-radius-inner);
+}
+
+.tag__change--staff {
+  border-color: var(--success-border-color);
+  box-shadow: inset 0 0 var(--spacing-sm) var(--success-tint-color);
 }
 
 .tag__change {
   display: flex;
-  gap: var(--padding-normal);
   flex-wrap: wrap;
   align-items: center;
-  margin-bottom: var(--padding-small);
-}
-
-.tag__change--staff {
-  border: 1px solid var(--legacy-success-color);
-  box-shadow:
-    inset 1px 1px 4px var(--success-light-color),
-    inset -1px -1px 4px var(--success-light-color);
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
 }
 
 .tag__change-info {
   display: flex;
   flex: 1 0 auto;
   flex-wrap: wrap;
-  max-width: 100%;
-  gap: var(--padding-small);
   align-items: center;
+  gap: var(--spacing-md);
+  max-width: 100%;
 }
 
 .tag__change-image {
   display: flex;
-  gap: var(--padding-small);
   align-items: center;
-}
-
-.tag__change-revert {
-  display: flex;
-  gap: var(--padding-small);
+  gap: var(--spacing-md);
 }
 
 .tag__change-tags > .added,
 .tag__change-tags > .removed {
   display: flex;
   flex: 1 0 auto;
-  gap: var(--padding-small);
-}
-
-.tag__change-tags > .removed > i,
-.tag__change-tags > .added > i {
-  font-size: 10px;
-  font-weight: bold;
-  padding: 6px;
-  place-content: center;
+  gap: var(--spacing-md);
 }
 
 .tag__change-tags > .added {
-  background: var(--success-muted-color);
+  background-color: var(--success-tint-color);
 }
 
 .tag__change-tags > .removed {
-  background: var(--danger-muted-color);
+  background-color: var(--danger-tint-color);
+}
+
+.tag__change-tags > .added > i,
+.tag__change-tags > .removed > i {
+  align-self: center;
+  padding: var(--spacing-md);
+  font-size: 0.75em;
 }
 
 .tag__change-tags .tag-list {
-  padding: var(--padding-tiny) 0;
+  padding: var(--spacing-sm) 0;
 }
 
 .tag__change-tools {
   display: flex;
   align-items: center;
-  gap: var(--padding-small);
-  margin-top: var(--padding-small);
-  padding-top: var(--padding-small);
-  border-top: 2px solid var(--border-color);
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: var(--border-thick-width) solid var(--tint-color);
 }
 
+/* A tag that a later change took back */
 .tag__change--not-retained .tag-name {
-  text-decoration: line-through !important;
-  font-weight: normal !important;
-  font-style: italic !important;
+  text-decoration: line-through;
+  font-weight: normal;
+  font-style: italic;
 }
 
 .tag__change--not-retained .tag-count {
   display: none;
-}
-
-.tag__change-block {
-  display: flex;
-  flex: 1 0 auto;
-  padding: var(--padding-small);
-  gap: var(--padding-small);
-  background: var(--background-color);
-  border: var(--border);
 }
