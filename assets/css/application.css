@@ -12,7 +12,11 @@
 @import "@fortawesome/fontawesome-free/css/solid.css";
 @import "@fortawesome/fontawesome-free/css/regular.css";
 @import "@fortawesome/fontawesome-free/css/brands.css";
-@import "normalize.css";
+
+/* The framework's configuration, Philomena's, then the framework's design layer: reset, tokens, base layout. */
+@import "@philomena/philomena-css/css/config.css";
+@import "./config.css";
+@import "@philomena/philomena-css/css/design/index.css";
 
 /* Import the dark blue theme to act as a fallback. */
 @import "themes/dark-blue";

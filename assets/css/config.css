@@ -1,0 +1,8 @@
+/*
+ * Philomena's configuration of the framework, loaded after its css/config.css and before anything that emits CSS.
+ * Only $variables: they are substituted where they are defined, so a file that also has @imports builds wrongly.
+ */
+
+/* Everything from 800px up is the desktop layout */
+$breakpoint-md: 800px;
+$breakpoint-xl: 1150px;

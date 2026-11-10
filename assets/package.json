@@ -23,7 +23,6 @@
     "browserslist": "^4.29.5",
     "cross-env": "^10.1.0",
     "focus-visible": "^5.2.1",
-    "normalize.css": "^8.0.1",
     "postcss": "^8.5.32",
     "postcss-focus-visible": "^11.0.0",
     "postcss-logical": "^9.0.2",
