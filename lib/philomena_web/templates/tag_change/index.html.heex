@@ -55,7 +55,7 @@
         <a data-click-checkall=".tag-changes-form"><i class="fa fa-check"></i> Toggle all</a>
       </div>
     <% end %>
-    <div class="block-content tag__changes">
+    <div class="block-content tag-change-list">
       <div class="card card-warning">
         <h4>
           <i class="fa fa-triangle-exclamation"></i>
@@ -70,9 +70,9 @@
         <% added_tags_count = Enum.count(added_tags) %>
         <% removed_tags_count = Enum.count(removed_tags) %>
         <% non_retained = non_retained_tags(tag_change) %>
-        <div class={"tag__change-block #{user_block_class(tag_change)}"}>
+        <div class={["tag-change", user_block_class(tag_change)]}>
           <%= unless assigns[:hide_image] do %>
-            <div class="tag__change-image">
+            <div class="tag-change-image">
               {render(PhilomenaWeb.ImageView, "_image_container.html",
                 image: tag_change.image,
                 size: :thumb_tiny,
@@ -81,8 +81,8 @@
             </div>
           <% end %>
           <div class="flex-1">
-            <div class="tag__change">
-              <div class="tag__change-info">
+            <div class="tag-change-header">
+              <div class="tag-change-info">
                 {render(PhilomenaWeb.UserAttributionView, "_anon_user.html",
                   object: tag_change,
                   conn: @conn
@@ -108,13 +108,13 @@
                 </div>
               </div>
             </div>
-            <div class="tag__change-tags">
+            <div class="tag-change-tags">
               <%= if added_tags_count > 0 do %>
-                <div class="added">
+                <div class="tag-change-added">
                   <i class="fa fa-plus"></i>
                   <div class="tag-list">
                     <%= for tag <- added_tags do %>
-                      <div class={"#{non_retained_class(non_retained, tag)}"}>
+                      <div class={non_retained_class(non_retained, tag)}>
                         {render(PhilomenaWeb.TagView, "_tag.html", tag: tag, conn: @conn)}
                       </div>
                     <% end %>
@@ -122,11 +122,11 @@
                 </div>
               <% end %>
               <%= if removed_tags_count > 0 do %>
-                <div class="removed">
+                <div class="tag-change-removed">
                   <i class="fa fa-minus"></i>
                   <div class="tag-list">
                     <%= for tag <- removed_tags do %>
-                      <div class={"#{non_retained_class(non_retained, tag)}"}>
+                      <div class={non_retained_class(non_retained, tag)}>
                         {render(PhilomenaWeb.TagView, "_tag.html", tag: tag, conn: @conn)}
                       </div>
                     <% end %>
@@ -135,7 +135,7 @@
               <% end %>
             </div>
             <%= if reverts_tag_changes?(@conn) or can?(@conn, :show, :identity_metadata) do %>
-              <div class="tag__change-tools">
+              <div class="tag-change-tools">
                 <%= if can?(@conn, :show, :identity_metadata) do %>
                   {link_to_ip(@conn, tag_change.ip)} {link_to_fingerprint(
                     @conn,

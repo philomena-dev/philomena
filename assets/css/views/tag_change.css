@@ -1,11 +1,11 @@
 /* A list of tag changes, each the image beside who made it, the tags added and removed and the staff tools */
-.tag__changes {
+.tag-change-list {
   display: flex;
   flex-flow: column;
   gap: var(--spacing-lg);
 }
 
-.tag__change-block {
+.tag-change {
   display: flex;
   flex: 1 0 auto;
   gap: var(--spacing-md);
@@ -15,12 +15,12 @@
   border-radius: var(--border-radius-inner);
 }
 
-.tag__change--staff {
+.tag-change.staff {
   border-color: var(--success-border-color);
   box-shadow: inset 0 0 var(--spacing-sm) var(--success-tint-color);
 }
 
-.tag__change {
+.tag-change-header {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -28,7 +28,7 @@
   margin-bottom: var(--spacing-md);
 }
 
-.tag__change-info {
+.tag-change-info {
   display: flex;
   flex: 1 0 auto;
   flex-wrap: wrap;
@@ -37,39 +37,39 @@
   max-width: 100%;
 }
 
-.tag__change-image {
+.tag-change-image {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
 }
 
-.tag__change-tags > .added,
-.tag__change-tags > .removed {
+.tag-change-added,
+.tag-change-removed {
   display: flex;
   flex: 1 0 auto;
   gap: var(--spacing-md);
 }
 
-.tag__change-tags > .added {
+.tag-change-added {
   background-color: var(--success-tint-color);
 }
 
-.tag__change-tags > .removed {
+.tag-change-removed {
   background-color: var(--danger-tint-color);
 }
 
-.tag__change-tags > .added > i,
-.tag__change-tags > .removed > i {
+.tag-change-added > i,
+.tag-change-removed > i {
   align-self: center;
   padding: var(--spacing-md);
   font-size: 0.75em;
 }
 
-.tag__change-tags .tag-list {
+.tag-change-tags .tag-list {
   padding: var(--spacing-sm) 0;
 }
 
-.tag__change-tools {
+.tag-change-tools {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
@@ -79,12 +79,12 @@
 }
 
 /* A tag that a later change took back */
-.tag__change--not-retained .tag-name {
+.tag-change-not-retained .tag-name {
   text-decoration: line-through;
   font-weight: normal;
   font-style: italic;
 }
 
-.tag__change--not-retained .tag-count {
+.tag-change-not-retained .tag-count {
   display: none;
 }

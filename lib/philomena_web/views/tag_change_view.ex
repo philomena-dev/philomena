@@ -25,7 +25,7 @@ defmodule PhilomenaWeb.TagChangeView do
 
   def user_block_class(tag_change) do
     if staff?(tag_change) do
-      "tag__change--staff"
+      "staff"
     else
       nil
     end
@@ -47,9 +47,9 @@ defmodule PhilomenaWeb.TagChangeView do
 
   def non_retained_class(non_retained, tag) do
     if tag_not_retained(non_retained, tag) do
-      "tag__change--not-retained"
+      "tag-change-not-retained"
     else
-      ""
+      nil
     end
   end
 
