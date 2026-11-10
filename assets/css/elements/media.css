@@ -103,11 +103,11 @@ a.media-box__header--link:hover {
 }
 
 .media-box__header--unselected {
-  background-color: var(--danger-color);
+  background-color: var(--legacy-danger-color);
 }
 
 .media-box__header--selected {
-  background-color: var(--success-color);
+  background-color: var(--legacy-success-color);
 }
 
 .media-box__content {

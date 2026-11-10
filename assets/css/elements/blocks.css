@@ -1,17 +1,17 @@
 .block {
-  margin-bottom: var(--block-spacing);
+  margin-bottom: var(--spacing-md);
 }
 
 .block .success {
-  background-color: var(--success-color);
+  background-color: var(--legacy-success-color);
 }
 
 .block .warning {
-  background-color: var(--warning-color);
+  background-color: var(--legacy-warning-color);
 }
 
 .block .danger {
-  background-color: var(--danger-color);
+  background-color: var(--legacy-danger-color);
 }
 
 .block__content,
@@ -19,7 +19,7 @@
   border-left: 1px solid var(--border-color);
   border-right: 1px solid var(--border-color);
   background: var(--background-color);
-  padding: var(--block-spacing);
+  padding: var(--spacing-md);
 }
 
 .block__content img,
@@ -195,22 +195,22 @@ a.block__header--single-item:hover,
 
 .block--success {
   background: var(--success-light-color);
-  border-color: var(--success-color);
+  border-color: var(--legacy-success-color);
 }
 
 .block--warning {
   background: var(--warning-light-color);
-  border-color: var(--warning-color);
+  border-color: var(--legacy-warning-color);
 }
 
 .block--danger {
   background: var(--danger-light-color);
-  border-color: var(--danger-color);
+  border-color: var(--legacy-danger-color);
 }
 
 .block--primary {
   background: var(--primary-light-color);
-  border-color: var(--primary-color);
+  border-color: var(--legacy-primary-color);
 }
 
 .block--assistant {
@@ -269,18 +269,18 @@ a.block__header--single-item:hover,
 
 .block__list a.block__list__link.primary {
   background: var(--primary-light-color);
-  border-color: var(--primary-color);
+  border-color: var(--legacy-primary-color);
 }
 
 .block__list a.block__list__link:hover,
 .block__list a.block__list__link.active {
   background: var(--success-light-color);
-  border-color: var(--success-color);
+  border-color: var(--legacy-success-color);
 }
 
 .block__list a.block__list__link.active:hover {
   background: var(--danger-light-color);
-  border-color: var(--danger-color);
+  border-color: var(--legacy-danger-color);
 }
 
 .block__list a.block__list__link.hidden {

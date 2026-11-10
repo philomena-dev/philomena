@@ -1,7 +1,7 @@
 .rule {
   border: var(--border);
   background: var(--background-color);
-  margin-bottom: calc(var(--block-spacing) * 2);
+  margin-bottom: calc(var(--spacing-md) * 2);
 }
 
 .rule h2 {
@@ -12,7 +12,7 @@
 
 .rule h2.important {
   background: var(--danger-light-color);
-  border-color: var(--danger-color);
+  border-color: var(--legacy-danger-color);
 }
 
 /* Make HTML lists with multi-line text readable */
@@ -65,7 +65,7 @@
 
 .rule__badge--admin {
   background: var(--warning-light-color);
-  border: 1px solid var(--warning-color);
+  border: 1px solid var(--legacy-warning-color);
 }
 
 .rule__body {
@@ -98,30 +98,30 @@
 
 .rule--important {
   background: var(--danger-light-color);
-  border-color: var(--danger-color);
+  border-color: var(--legacy-danger-color);
 }
 
 .rule--important .rule__header {
-  background: var(--danger-color);
-  border-bottom-color: var(--danger-color);
+  background: var(--legacy-danger-color);
+  border-bottom-color: var(--legacy-danger-color);
 }
 
 .rule--important .rule__footer {
-  border-top-color: var(--danger-color);
+  border-top-color: var(--legacy-danger-color);
 }
 
 .rule--important .rule__footer .button {
-  background-color: var(--danger-color);
+  background-color: var(--legacy-danger-color);
   border-color: var(--button-danger-border-color);
 }
 
 .rule--admin {
   background: var(--warning-light-color);
-  border-color: var(--warning-color);
+  border-color: var(--legacy-warning-color);
 }
 
 .rule--admin .rule__footer .button {
-  background-color: var(--warning-color);
+  background-color: var(--legacy-warning-color);
   border-color: var(--button-warning-border-color);
 }
 
@@ -132,11 +132,11 @@
 
 .rule--important .rule__example {
   background: var(--danger-odd-color);
-  border-top-color: var(--danger-color);
+  border-top-color: var(--legacy-danger-color);
 }
 
 .rule--important hr {
-  background: var(--danger-color);
+  background: var(--legacy-danger-color);
 }
 
 .rule--admin .rule__footer .button:hover {
@@ -145,16 +145,16 @@
 }
 
 .rule--admin hr {
-  background: var(--warning-color);
+  background: var(--legacy-warning-color);
 }
 
 .rule--admin .rule__footer {
-  border-top-color: var(--warning-color);
+  border-top-color: var(--legacy-warning-color);
 }
 
 .rule--admin .rule__header {
-  background: var(--warning-color);
-  border-bottom-color: var(--warning-color);
+  background: var(--legacy-warning-color);
+  border-bottom-color: var(--legacy-warning-color);
 }
 
 /* Emphasize the rule a #anchor link points at in blue, overriding
@@ -162,20 +162,20 @@
 
 .rule:target {
   background: var(--primary-light-color);
-  border-color: var(--primary-color);
+  border-color: var(--legacy-primary-color);
 }
 
 .rule:target .rule__header {
-  background: var(--primary-color);
-  border-bottom-color: var(--primary-color);
+  background: var(--legacy-primary-color);
+  border-bottom-color: var(--legacy-primary-color);
 }
 
 .rule:target .rule__footer {
-  border-top-color: var(--primary-color);
+  border-top-color: var(--legacy-primary-color);
 }
 
 .rule:target .rule__footer .button {
-  background-color: var(--primary-color);
+  background-color: var(--legacy-primary-color);
   border-color: var(--button-primary-border-color);
 }
 
@@ -185,5 +185,5 @@
 }
 
 .rule:target hr {
-  background: var(--primary-color);
+  background: var(--legacy-primary-color);
 }

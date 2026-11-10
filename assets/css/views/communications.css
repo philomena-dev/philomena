@@ -122,7 +122,7 @@ span.communication__sender__stats,
 .communication__body__avatar,
 .communication__body__sender,
 .communication__body__text {
-  padding: var(--block-spacing);
+  padding: var(--spacing-md);
 }
 
 .communication__body__avatar {
@@ -181,7 +181,7 @@ span.communication__sender__stats,
 
     /* Restore padding since text now aligns with left of parent */
     margin-top: 0;
-    padding-left: var(--block-spacing);
+    padding-left: var(--spacing-md);
     padding-bottom: 6px;
   }
 

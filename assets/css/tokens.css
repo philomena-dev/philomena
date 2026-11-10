@@ -1,7 +1,11 @@
 /*
- * Philomena's own color tokens and its values of the framework's header tokens, on the framework's three theme
- * selectors. The header bars keep the colors of Philomena's themes: the hover colors are opaque.
+ * Philomena's own tokens and its values of the framework's. Colors are set on the framework's three theme selectors;
+ * the header bars keep the colors of Philomena's themes, with opaque hover colors.
  */
+
+:root {
+  --header-height: 36px;
+}
 
 @define-mixin philomena-light-colors {
   --header-color: hsl(from $base-color-light h s calc(l - 9));

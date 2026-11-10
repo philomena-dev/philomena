@@ -96,11 +96,11 @@ td.table--stats__sparkline {
 }
 
 .banner__2fa .success {
-  background: var(--success-color);
+  background: var(--legacy-success-color);
 }
 
 .banner__2fa .danger {
-  background: var(--danger-color);
+  background: var(--legacy-danger-color);
 }
 
 .enable-2fa {

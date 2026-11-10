@@ -357,7 +357,7 @@ figure figcaption {
 .theme-preview-trixie {
   align-self: flex-end; /* place the image next to the theme switch (align it to the bottom of the container) */
   min-width: 0; /* allow the image to be downsized */
-  padding-left: var(--block-spacing); /* on narrow screens, the image would sit uncomfortably close to the text */
+  padding-left: var(--spacing-md); /* on narrow screens, the image would sit uncomfortably close to the text */
 }
 
 .table-list__label {
@@ -399,12 +399,12 @@ figure figcaption {
 }
 
 .permission-choice__label input:checked .permission-option--yes {
-  border-color: var(--success-color);
+  border-color: var(--legacy-success-color);
   background-color: var(--success-light-color);
 }
 
 .permission-choice__label input:checked .permission-option--no {
-  border-color: var(--danger-color);
+  border-color: var(--legacy-danger-color);
   background-color: var(--danger-light-color);
 }
 

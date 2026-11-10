@@ -1,5 +1,5 @@
 .media-box--js-sortable-chosen .media-box__header {
-  background: var(--primary-color);
+  background: var(--legacy-primary-color);
 }
 
 /* Make it clear that the extra images are not truly part of the page. */
@@ -48,7 +48,7 @@
 }
 
 .add-to-gallery-list ::-webkit-scrollbar-thumb {
-  background-color: var(--primary-color);
+  background-color: var(--legacy-primary-color);
 }
 
 .add-to-gallery-list ul {

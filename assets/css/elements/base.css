@@ -81,7 +81,7 @@ p,
 @media (max-width: $min-desktop-width) {
   .communication__body__text pre {
     /* 32px = page padding(4px * 2) + pre padding(10px * 2) + borders(1px * 4) */
-    max-width: calc(98vw - var(--block-spacing) * 2 - 32px);
+    max-width: calc(98vw - var(--spacing-md) * 2 - 32px);
   }
 }
 
@@ -211,7 +211,7 @@ hr {
 #error_explanation {
   margin: 1em 0;
   background: var(--warning-light-color);
-  border: 1px solid var(--warning-color);
+  border: 1px solid var(--legacy-warning-color);
   padding: 0.62em;
 }
 
@@ -398,17 +398,17 @@ pre code {
 
 .label--success {
   background: var(--success-light-color);
-  border: 1px solid var(--success-color);
+  border: 1px solid var(--legacy-success-color);
 }
 
 .label--danger {
   background: var(--danger-light-color);
-  border: 1px solid var(--danger-color);
+  border: 1px solid var(--legacy-danger-color);
 }
 
 .label--warning {
   background: var(--warning-light-color);
-  border: 1px solid var(--warning-color);
+  border: 1px solid var(--legacy-warning-color);
 }
 
 .label--purple {
@@ -418,7 +418,7 @@ pre code {
 
 .label--primary {
   background: var(--primary-light-color);
-  border: 1px solid var(--primary-color);
+  border: 1px solid var(--legacy-primary-color);
 }
 
 a.label {

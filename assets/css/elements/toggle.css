@@ -8,7 +8,7 @@ input[type="checkbox"].fancy-toggle {
   width: var(--toggle-width);
   height: var(--toggle-height);
   background: var(--danger-light-color);
-  border: var(--toggle-border-width) solid var(--danger-color);
+  border: var(--toggle-border-width) solid var(--legacy-danger-color);
   border-radius: var(--border-radius-toggle);
   transition:
     background var(--transition-animation-duration) ease,
@@ -35,7 +35,7 @@ input[type="checkbox"].fancy-toggle {
 
 .fancy-toggle:checked {
   background: var(--success-light-color);
-  border-color: var(--success-color);
+  border-color: var(--legacy-success-color);
   transition:
     background var(--transition-animation-duration) ease,
     border-color var(--transition-animation-duration) ease;

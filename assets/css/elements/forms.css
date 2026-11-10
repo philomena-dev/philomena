@@ -130,11 +130,11 @@ textarea {
 }
 
 .field_with_errors {
-  background: var(--danger-color);
+  background: var(--legacy-danger-color);
 }
 
 span.help-block {
-  background: var(--danger-color);
+  background: var(--legacy-danger-color);
   display: block;
 }
 
@@ -199,7 +199,7 @@ span.help-block {
 }
 
 .toggle-box:checked + label + .toggle-box-container > .toggle-box-container__content {
-  margin-top: var(--block-spacing);
+  margin-top: var(--spacing-md);
 }
 
 select.input,

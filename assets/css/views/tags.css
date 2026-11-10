@@ -152,7 +152,7 @@
 /* Tags */
 .tag {
   --tag-background: var(--tag-normal-background);
-  --tag-border: var(--tag-normal-border);
+  --tag-border-color: var(--tag-normal-border);
   --tag-color: var(--tag-normal-color);
   border: 1px solid;
   display: inline-grid;
@@ -166,7 +166,7 @@
   font-size: 14px;
   font-weight: bold;
   background: var(--tag-background);
-  border-color: var(--tag-border);
+  border-color: var(--tag-border-color);
   color: var(--tag-color);
 }
 
@@ -200,7 +200,7 @@
 }
 
 .tag__count {
-  background-color: var(--tag-border);
+  background-color: var(--tag-border-color);
   color: var(--foreground-color);
   font-weight: normal;
   padding: 0 5px;
@@ -220,7 +220,7 @@
 @define-mixin tag-category $cat {
   .tag[data-tag-category="$(cat)"] {
     --tag-background: var(--tag-category-$(cat)-background);
-    --tag-border: var(--tag-category-$(cat)-border);
+    --tag-border-color: var(--tag-category-$(cat)-border);
     --tag-color: var(--tag-category-$(cat)-color);
   }
 }
