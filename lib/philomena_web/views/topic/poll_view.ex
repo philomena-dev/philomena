@@ -16,12 +16,7 @@ defmodule PhilomenaWeb.Topic.PollView do
     DateTime.diff(poll.active_until, DateTime.utc_now()) > 0
   end
 
-  def require_answer?(%{vote_method: vote_method}), do: vote_method == "single"
-
-  def input_type(%{vote_method: "single"}), do: "radio"
-  def input_type(_poll), do: "checkbox"
-
-  def input_name(_poll), do: "poll[option_ids][]"
+  def single_choice?(%{vote_method: vote_method}), do: vote_method == "single"
 
   def percent_of_total(_option, %{total_votes: 0}), do: "0%"
 

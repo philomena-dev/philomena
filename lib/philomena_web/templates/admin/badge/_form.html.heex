@@ -17,20 +17,8 @@
       placeholder: "Description"
     )}{error_tag(f, :description)}
   </div>
-  <div class="field">
-    {checkbox(f, :disable_award, class: "checkbox")} {label(
-      f,
-      :disable_award,
-      "Prevent image from appearing in \"Badge to award\" list"
-    )}
-  </div>
-  <div class="field">
-    {checkbox(f, :priority, class: "checkbox")} {label(
-      f,
-      :priority,
-      "Displays before badges that don't have this checkbox checked"
-    )}
-  </div>
+  {checkbox_field(f, :disable_award, "Prevent image from appearing in \"Badge to award\" list")}
+  {checkbox_field(f, :priority, "Displays before badges that don't have this checkbox checked")}
   <%= if @changeset.data.__meta__.state != :loaded do %>
     <h4>Image</h4>
     <div class="field">

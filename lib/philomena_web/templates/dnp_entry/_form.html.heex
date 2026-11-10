@@ -86,13 +86,7 @@
           :reason
         )}
       </div>
-      <div class="field">
-        {checkbox(f, :hide_reason, class: "checkbox")} {label(
-          f,
-          :hide_reason,
-          "Hide request reason"
-        )}
-      </div>
+      {checkbox_field(f, :hide_reason, "Hide request reason")}
       <p>
         Only select this box if your request contains sensitive or private information that you do not wish to be publicly available. Reasons that do not contain such information will not be hidden.
       </p>

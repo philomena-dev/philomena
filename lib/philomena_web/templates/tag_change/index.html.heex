@@ -150,15 +150,12 @@
                     href={~p"/tag_changes/#{tag_change}"}
                   ><i class="fa fa-trash"></i>
                   <span class="hidden-below-md">Delete from history</span><span class="hidden-from-md">Delete</span></a>
-                  <div class="flex items-center gap-md">
-                    <span>Revert</span>
-                    <input
-                      class="fancy-checkbox"
-                      name="ids[]"
-                      type="checkbox"
-                      value={tag_change.id}
-                    />
-                  </div>
+                  {checkbox_field(:tag_change, :revert, "Revert",
+                    id: "tag_change_revert_#{tag_change.id}",
+                    name: "ids[]",
+                    checked_value: tag_change.id,
+                    hidden_input: false
+                  )}
                 <% end %>
               </div>
             <% end %>

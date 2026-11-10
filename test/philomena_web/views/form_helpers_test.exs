@@ -34,4 +34,55 @@ defmodule PhilomenaWeb.FormHelpersTest do
       refute html =~ "full_width"
     end
   end
+
+  describe "checkbox_field/4" do
+    test "draws the box in a row of its own with its label after it" do
+      html =
+        form(%{"anonymous" => "true"})
+        |> FormHelpers.checkbox_field(:anonymous, "Post anonymously",
+          class: "js-preview-anonymous"
+        )
+        |> safe_to_string()
+
+      assert html =~
+               ~s(<div class="form-control-wrap"><div class="form-control-checkbox"><span class="form-checkbox-input-wrap">)
+
+      assert html =~
+               ~s(<input checked class="form-checkbox-input js-preview-anonymous" id="user_anonymous" name="user[anonymous]" type="checkbox" value="true">)
+
+      assert html =~
+               ~s(<i aria-hidden="true" class="form-checkbox-check-icon fa fa-check"></i></span><label class="form-checkbox-label" for="user_anonymous">Post anonymously</label></div></div>)
+    end
+
+    test "points the label at a given id" do
+      html =
+        :tag_change
+        |> FormHelpers.checkbox_field(:revert, "Revert", id: "revert_5", hidden_input: false)
+        |> safe_to_string()
+
+      assert html =~ ~s(id="revert_5")
+      assert html =~ ~s(<label class="form-checkbox-label" for="revert_5">)
+    end
+  end
+
+  describe "collection_checkboxes/4" do
+    test "checks the selected values and submits an empty list when none is checked" do
+      html =
+        form()
+        |> FormHelpers.collection_checkboxes(:roles, [{"Manage images", 1}, {"Alias tags", 2}],
+          selected: [2]
+        )
+        |> Phoenix.HTML.html_escape()
+        |> safe_to_string()
+
+      assert html =~
+               ~s(<input class="form-checkbox-input" id="user_roles_1" name="user[roles][]" type="checkbox" value="1">)
+
+      assert html =~
+               ~s(<input checked class="form-checkbox-input" id="user_roles_2" name="user[roles][]" type="checkbox" value="2">)
+
+      assert html =~ ~s(<label class="form-checkbox-label" for="user_roles_2">Alias tags</label>)
+      assert html =~ ~s(<input id="user_roles" name="user[roles][]" type="hidden" value="">)
+    end
+  end
 end

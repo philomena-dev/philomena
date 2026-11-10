@@ -32,4 +32,54 @@ defmodule PhilomenaWeb.FormHelpers do
       class: ["form-control-select", width]
     )
   end
+
+  @doc """
+  A checkbox drawn by the framework, with its label after it, in a row of its own. The options go to
+  `Phoenix.HTML.Form.checkbox/3`, a `:class` next to the box's own; an `:id` is the label's target.
+  """
+  def checkbox_field(form, field, label_text, opts \\ []) do
+    {class, opts} = Keyword.pop(opts, :class)
+    id = Keyword.get_lazy(opts, :id, fn -> input_id(form, field) end)
+
+    box =
+      content_tag(
+        :span,
+        [
+          checkbox(form, field, [class: ["form-checkbox-input", class]] ++ opts),
+          content_tag(:i, "", class: "form-checkbox-check-icon fa fa-check", aria_hidden: "true")
+        ],
+        class: "form-checkbox-input-wrap"
+      )
+
+    control =
+      content_tag(
+        :div,
+        [box, label(form, field, label_text, for: id, class: "form-checkbox-label")],
+        class: "form-control-checkbox"
+      )
+
+    content_tag(:div, control, class: "form-control-wrap")
+  end
+
+  @doc """
+  One `checkbox_field/4` per `{label, value}` of the collection for a list field, the values in
+  `:selected` checked, and an empty value that submits the list when nothing is checked.
+  """
+  def collection_checkboxes(form, field, collection, opts \\ []) do
+    name = input_name(form, field) <> "[]"
+    selected = Keyword.get(opts, :selected, [])
+
+    boxes =
+      Enum.map(collection, fn {label_text, value} ->
+        checkbox_field(form, field, label_text,
+          id: "#{input_id(form, field)}_#{value}",
+          name: name,
+          checked_value: value,
+          checked: value in selected,
+          hidden_input: false
+        )
+      end)
+
+    [boxes, hidden_input(form, field, name: name, value: "")]
+  end
 end

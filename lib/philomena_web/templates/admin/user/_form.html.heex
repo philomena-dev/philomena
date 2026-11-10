@@ -9,24 +9,25 @@
       <span class="block-header-title">Essential user details</span>
     </div>
     <div class="block-content">
-      <label class="table-list__label"><div class="table-list__label__text">Name:</div>
-      <div class="table-list__label__input">
-        {error_tag(f, :name)}{text_input(f, :name, class: "input-field")}
-      </div></label><label class="table-list__label"><div class="table-list__label__text">
-        Email:
+      <div class="form-control">
+        {label(f, :name, "Name:")}{text_input(f, :name, class: "input-field")}{error_tag(f, :name)}
       </div>
-      <div class="table-list__label__input">
-        {error_tag(f, :email)}{text_input(f, :email, class: "input-field")}
-      </div></label><label class="table-list__label"><div class="table-list__label__text">
-        Role:
+      <div class="form-control">
+        {label(f, :email, "Email:")}{text_input(f, :email, class: "input-field")}{error_tag(
+          f,
+          :email
+        )}
       </div>
-      <div class="table-list__label__input">
-        {select_field(f, :role, ["user", "assistant", "moderator", "admin"])}
-      </div></label><label class="table-list__label"><div class="table-list__label__text">
-        Secondary banner:
+      <div class="form-control">
+        {label(f, :role, "Role:")}{select_field(f, :role, [
+          "user",
+          "assistant",
+          "moderator",
+          "admin"
+        ])}
       </div>
-      <div class="table-list__label__input">
-        {select_field(
+      <div class="form-control">
+        {label(f, :secondary_role, "Secondary banner:")}{select_field(
           f,
           :secondary_role,
           [
@@ -37,29 +38,17 @@
             "Public Relations"
           ]
         )}
-      </div></label><label class="table-list__label"><div class="table-list__label__text">
-        Hide staff banner:
       </div>
-      <div class="table-list__label__input">
-        {checkbox(f, :hide_default_role, class: "checkbox")}
-      </div></label><label class="table-list__label"><div class="table-list__label__text">
-        Senior staff:
-      </div>
-      <div class="table-list__label__input">{checkbox(f, :senior_staff, class: "checkbox")}</div></label><label class="table-list__label"><div class="table-list__label__text">
-        Bypass rate limits:
-      </div>
-      <div class="table-list__label__input">
-        {checkbox(f, :bypass_rate_limits, class: "checkbox")}
-      </div></label>
-      <div class="table-list__label">
-        <div class="table-list__label__text">Avatar</div>
-        <div class="table-list__label__input">
-          {link("Remove avatar",
-            to: ~p"/admin/users/#{@user}/avatar",
-            class: "button",
-            data: [method: "delete", confirm: "Are you really, really sure?"]
-          )}
-        </div>
+      {checkbox_field(f, :hide_default_role, "Hide staff banner")}
+      {checkbox_field(f, :senior_staff, "Senior staff")}
+      {checkbox_field(f, :bypass_rate_limits, "Bypass rate limits")}
+      <div class="form-control">
+        <span>Avatar:</span>
+        {link("Remove avatar",
+          to: ~p"/admin/users/#{@user}/avatar",
+          class: "button",
+          data: [method: "delete", confirm: "Are you really, really sure?"]
+        )}
       </div>
     </div>
   </div>
@@ -67,11 +56,9 @@
     <div class="block-header"><span class="block-header-title">General user flags</span></div>
     <div class="block-content">
       {error_tag(f, :roles)}
-      <ul>
-        {collection_checkboxes(f, :roles, filtered_roles(general_permissions(), @roles),
-          mapper: &checkbox_mapper/6
-        )}
-      </ul>
+      {collection_checkboxes(f, :roles, filtered_roles(general_permissions(), @roles),
+        selected: role_ids(f.data)
+      )}
     </div>
   </div>
   <div class="block block-warning">
@@ -79,11 +66,9 @@
       <span class="block-header-title">Special roles for assistants</span>
     </div>
     <div class="block-content">
-      <ul>
-        {collection_checkboxes(f, :roles, filtered_roles(assistant_permissions(), @roles),
-          mapper: &checkbox_mapper/6
-        )}
-      </ul>
+      {collection_checkboxes(f, :roles, filtered_roles(assistant_permissions(), @roles),
+        selected: role_ids(f.data)
+      )}
     </div>
   </div>
   <div class="block block-danger">
@@ -91,11 +76,9 @@
       <span class="block-header-title">Special roles for moderators</span>
     </div>
     <div class="block-content">
-      <ul>
-        {collection_checkboxes(f, :roles, filtered_roles(moderator_permissions(), @roles),
-          mapper: &checkbox_mapper/6
-        )}
-      </ul>
+      {collection_checkboxes(f, :roles, filtered_roles(moderator_permissions(), @roles),
+        selected: role_ids(f.data)
+      )}
     </div>
   </div>
   {submit("Save User", class: "button")}

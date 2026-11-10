@@ -50,13 +50,13 @@ function setupHelpExpansions() {
       return;
     }
 
-    const helpButton = event.target.closest('.field-help-button');
+    const help = event.target.closest('.js-help-toggle')?.closest('.form-control')?.querySelector('.form-message');
 
-    if (!helpButton || !helpButton.nextElementSibling) {
+    if (!help) {
       return;
     }
 
-    helpButton.nextElementSibling.classList.toggle('hidden');
+    help.classList.toggle('hidden');
   });
 }
 

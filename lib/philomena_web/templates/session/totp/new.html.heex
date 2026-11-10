@@ -10,12 +10,6 @@
       autocomplete: "off"
     )}
   </div>
-  <div class="field">
-    {checkbox(f, :remember_me, checked: true)} {label(
-      f,
-      :remember_me,
-      "Remember this device"
-    )}
-  </div>
+  {checkbox_field(f, :remember_me, "Remember this device", checked: true)}
   {submit("Sign in", class: "button")}
 <% end %>

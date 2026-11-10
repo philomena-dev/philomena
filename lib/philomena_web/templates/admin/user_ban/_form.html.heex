@@ -37,6 +37,6 @@
     )}{error_tag(f, :valid_until)}
   </div>
   <br />
-  <div class="field">{checkbox(f, :enabled)} {label(f, :enabled)}</div>
+  {checkbox_field(f, :enabled, "Enabled")}
   <br />{submit("Save Ban", class: "button")}
 <% end %>

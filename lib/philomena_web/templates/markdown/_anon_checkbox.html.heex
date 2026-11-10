@@ -1,9 +1,8 @@
 <% f = assigns[:f] %>
-<% label_lext = assigns[:label] || "Anonymous" %>
+<% label_text = assigns[:label] || "Anonymous" %>
 <%= if @conn.assigns.current_user do %>
-  {checkbox(f, :anonymous, value: anonymous_by_default?(@conn), class: "js-preview-anonymous")} {label(
-    f,
-    :anonymous,
-    label_lext
+  {checkbox_field(f, :anonymous, label_text,
+    value: anonymous_by_default?(@conn),
+    class: "js-preview-anonymous"
   )}
 <% end %>

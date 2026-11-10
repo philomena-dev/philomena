@@ -43,11 +43,10 @@
   </div>
   <div class="field">
     {label(f, :categories, "Art Categories:")}
-    <br />{collection_checkboxes(f, :categories, categories(),
-      selected: f.data.categories,
-      input_opts: [class: "checkbox me-lg"],
-      wrapper: &Phoenix.HTML.Tag.content_tag(:span, &1, class: "commission__category")
-    )}{error_tag(f, :categories)}
+    <div class="form-control-group">
+      {collection_checkboxes(f, :categories, categories(), selected: f.data.categories)}
+    </div>
+    {error_tag(f, :categories)}
   </div>
   <div class="field">
     {label(f, :sheet_image_id, "Image ID of your commissions sheet (optional but recommended):")}
@@ -57,7 +56,7 @@
     )}
   </div>
   <div class="field">
-    {label(f, :open, "Currently accepting commissions.")}{checkbox(f, :open, class: "checkbox")}
+    {checkbox_field(f, :open, "Currently accepting commissions.")}
     {error_tag(f, :open)}
   </div>
   <br />{submit("Save", class: "button")}

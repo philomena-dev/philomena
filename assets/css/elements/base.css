@@ -1,6 +1,6 @@
 /*
  * The elements that the framework's reset leaves unstyled and that are used outside its components: links, text
- * semantics, paragraphs, lists, images, code, and native checkboxes and radio buttons.
+ * semantics, paragraphs, lists, images and code.
  */
 
 /* Links are in the link color, underlined under the pointer; components set their own link styles */
@@ -115,10 +115,4 @@ pre code {
   border-radius: 0;
   background: none;
   white-space: pre-wrap;
-}
-
-/* Checkboxes and radio buttons keep the browser's look, except the framework's controls, drawn in CSS */
-[type="checkbox"]:not(.form-checkbox-input):not(.form-switch-input):not(.menu-check-input),
-[type="radio"]:not(.form-radio-input):not(.menu-check-input) {
-  appearance: revert;
 }

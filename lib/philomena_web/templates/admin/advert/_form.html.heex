@@ -61,6 +61,6 @@
       :restrictions
     )}
   </div>
-  <div class="field">{checkbox(f, :live, class: "checkbox")} {label(f, :live, "Live")}</div>
+  {checkbox_field(f, :live, "Live")}
   {submit("Save Advert", class: "button")}
 <% end %>

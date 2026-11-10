@@ -6,15 +6,12 @@
       <%= for {name, _value} <- categories() do %>
         <% checked =
           Atom.to_string(name) in (Ecto.Changeset.get_field(@changeset, :category) || []) %>
-        <div class="field">
-          {checkbox(f, name,
-            checked_value: name,
-            checked: checked,
-            name: "commission[category][]",
-            class: "checkbox me-lg",
-            hidden_input: false
-          )} {label(f, name, name)}
-        </div>
+        {checkbox_field(f, name, name,
+          checked_value: name,
+          checked: checked,
+          name: "commission[category][]",
+          hidden_input: false
+        )}
       <% end %>
       <br />
       <div class="field">{label(f, :item_type, "Commission Type:")}</div>

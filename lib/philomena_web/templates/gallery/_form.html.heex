@@ -40,19 +40,16 @@
       min: 0
     )}{error_tag(f, :thumbnail_id)}
   </div>
-  <div class="field">
-    {label(
-      f,
-      :order_position_asc,
-      "Reverse gallery order (images will be inserted at the end of the gallery)"
-    )}{checkbox(f, :order_position_asc, class: "checkbox")}{error_tag(f, :order_position_asc)}
-  </div>
-  <div class="field">
-    {label(f, :anonymous, "Anonymous",
-      title:
-        "Anonymous galleries are accessible to others, but they won't reveal you as the creator and won't appear on your profile."
-    )}{checkbox(f, :anonymous, class: "checkbox")}{error_tag(f, :anonymous)}
-  </div>
+  {checkbox_field(
+    f,
+    :order_position_asc,
+    "Reverse gallery order (images will be inserted at the end of the gallery)"
+  )}{error_tag(f, :order_position_asc)}
+  {checkbox_field(f, :anonymous, "Anonymous")}
+  <p class="form-message form-message-description">
+    Anonymous galleries are accessible to others, but they won't reveal you as the creator and won't appear on your profile.
+  </p>
+  {error_tag(f, :anonymous)}
   <div class="field"></div>
   {submit("Save Gallery", class: "button")}
 <% end %>

@@ -1,16 +1,30 @@
 <%= form_for :poll_vote, ~p"/forums/#{@forum}/topics/#{@topic}/poll/votes", [class: "poll-vote-form"], fn _f -> %>
   <h4 class="poll__header">Poll: {@poll.title}</h4>
   <div class="poll-form__options">
-    <% input_type = input_type(@poll)
-    input_name = input_name(@poll)
-    require_answer? = require_answer?(@poll) %>
-    <label :for={option <- @poll.options} class="poll-form__options__label"><input
-      class="me-md"
-      name={input_name}
-      required={require_answer?}
-      type={input_type}
-      value={option.id}
-    /> <span>{option.label}</span></label>
+    <%= for option <- @poll.options do %>
+      <%= if single_choice?(@poll) do %>
+        <label class="poll-form__options__label form-control-radio">
+          <span class="form-radio-input-wrap"><input
+            class="form-radio-input"
+            name="poll[option_ids][]"
+            required
+            type="radio"
+            value={option.id}
+          /><span class="form-radio-select-icon"></span></span>
+          <span class="form-radio-label">{option.label}</span>
+        </label>
+      <% else %>
+        <label class="poll-form__options__label form-control-checkbox">
+          <span class="form-checkbox-input-wrap"><input
+            class="form-checkbox-input"
+            name="poll[option_ids][]"
+            type="checkbox"
+            value={option.id}
+          /><i aria-hidden="true" class="form-checkbox-check-icon fa fa-check"></i></span>
+          <span class="form-checkbox-label">{option.label}</span>
+        </label>
+      <% end %>
+    <% end %>
   </div>
   <div class="poll-form__status">
     <p>Voting ends {pretty_time(@poll.active_until)}</p>

@@ -23,7 +23,7 @@
       :password
     )}
   </div>
-  <div class="field">{checkbox(f, :remember_me)} {label(f, :remember_me, "Remember me")}</div>
+  {checkbox_field(f, :remember_me, "Remember me")}
   {render(PhilomenaWeb.CaptchaView, "_captcha.html", name: "session", conn: @conn)}
   <div class="actions">{submit("Sign in", class: "button")}</div>
 <% end %>

@@ -28,8 +28,11 @@ function renderSettings({ signedIn = true } = {}) {
         </div>
       </div>
       ${signedIn ? theme : ''}
-      <div class="field"><span class="field-help-button"><i></i> Help</span><div class="field-help-content hidden"></div></div>
-      <span class="field-help-button lonely"></span>
+      <div class="form-control">
+        <div><button class="js-help-toggle" type="button"><i></i> Help</button></div>
+        <div class="form-message hidden"></div>
+      </div>
+      <button class="js-help-toggle lonely" type="button"></button>
     </form>
   `;
 }
@@ -95,15 +98,15 @@ describe('setupSettings', () => {
     renderSettings({ signedIn: false });
     setupSettings();
 
-    const help = $('.field-help-content')!;
+    const help = $('.form-message')!;
 
-    fireEvent.click($('.field-help-button i')!);
+    fireEvent.click($('.js-help-toggle i')!);
     expect(help).not.toHaveClass('hidden');
-    fireEvent.click($('.field-help-button')!);
+    fireEvent.click($('.js-help-toggle')!);
     expect(help).toHaveClass('hidden');
 
     fireEvent.click($('.lonely')!);
-    fireEvent.click($('.field')!);
+    fireEvent.click($('.form-control')!);
     fireEvent.click(document);
     expect(help).toHaveClass('hidden');
   });

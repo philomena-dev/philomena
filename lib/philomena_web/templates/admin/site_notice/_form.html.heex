@@ -54,6 +54,6 @@
     )}{error_tag(f, :finish_date)}
   </div>
   <h3>Enable</h3>
-  <div class="field">{checkbox(f, :live, class: "checkbox")} {label(f, :live, "Live")}</div>
+  {checkbox_field(f, :live, "Live")}
   {submit("Save Site Notice", class: "button")}
 <% end %>

@@ -41,19 +41,19 @@
       {textarea(f, :example, class: "input-field", rows: 6)}{error_tag(f, :example)}
     </div>
     <div class="flex gap-lg">
-      <strong>{label f, :highlight}</strong>{checkbox(f, :highlight)}<span>(if checked, displays the rule as "important" on the rules page)</span>{error_tag(
+      {checkbox_field(f, :highlight, "Highlight")}<span>(if checked, displays the rule as \"important\" on the rules page)</span>{error_tag(
         f,
         :highlight
       )}
     </div>
     <div class="flex gap-lg">
-      <strong>{label f, :hidden}</strong>{checkbox(f, :hidden)}<span>(if checked, hides the rule from the rules page, but not the report reason selector)</span>{error_tag(
+      {checkbox_field(f, :hidden, "Hidden")}<span>(if checked, hides the rule from the rules page, but not the report reason selector)</span>{error_tag(
         f,
         :hidden
       )}
     </div>
     <div class="flex gap-lg">
-      <strong>{label f, :internal}</strong>{checkbox(f, :internal)}<span>(if checked, hides the rule from any public views)</span>{error_tag(
+      {checkbox_field(f, :internal, "Internal")}<span>(if checked, hides the rule from any public views)</span>{error_tag(
         f,
         :internal
       )}

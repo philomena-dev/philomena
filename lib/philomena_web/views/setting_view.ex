@@ -54,23 +54,31 @@ defmodule PhilomenaWeb.SettingView do
     end
   end
 
-  def field_with_help(title, children) do
-    content =
-      children
-      |> Enum.intersperse(" ")
-      |> Enum.concat([
-        content_tag :span, class: "field-help-button" do
-          [
-            content_tag(:i, "", class: "fa-regular fa-question-circle"),
-            " Help"
-          ]
-        end,
-        content_tag :div, class: "field-help-content hidden" do
-          [help_text(title), tag(:hr)]
-        end
-      ])
+  def field_with_help(help, control) do
+    row =
+      content_tag(
+        :div,
+        [
+          control,
+          content_tag(
+            :button,
+            [content_tag(:i, "", class: "fa-regular fa-question-circle"), " Help"],
+            class: "button button-size-badge js-help-toggle",
+            type: "button"
+          )
+        ],
+        class: "flex flex-wrap items-center gap-md"
+      )
 
-    content_tag(:div, content, class: "field", title: title)
+    content_tag(
+      :div,
+      [
+        row,
+        content_tag(:div, help_text(help), class: "form-message form-message-description hidden")
+      ],
+      class: "form-control",
+      title: help
+    )
   end
 
   # The `title` is static and doesn't include dynamic user input.

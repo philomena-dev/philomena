@@ -93,7 +93,7 @@
     </div>
     <%= cond do %>
       <% is_nil(input_value(f, :id)) -> %>
-        <div class="field">{checkbox(f, :public, class: "checkbox")}{label(f, :public)}</div>
+        {checkbox_field(f, :public, "Public")}
         <div class="fieldlabel">
           <strong>You probably do not want to check this unless you know what you are doing - it cannot be changed later</strong>. Public filters can be shared with other users and used by them; if you make changes to a filter, it will update all users of that filter.
         </div>

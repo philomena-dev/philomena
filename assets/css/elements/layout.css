@@ -34,33 +34,6 @@ figure figcaption {
   font-weight: bold;
 }
 
-.table-list__label {
-  width: 100%;
-  display: flex;
-  flex-flow: row wrap;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.table-list__label .table-list__label__text,
-.table-list__label .table-list__label__input {
-  padding: 8px;
-}
-
-.table-list__label .table-list__label__text {
-  flex: 1 0 30%;
-}
-
-@media (min-width: $min-desktop-width) {
-  .table-list__label .table-list__label__text {
-    text-align: right;
-  }
-}
-
-.table-list__label .table-list__label__input {
-  flex: 1 1 60%;
-}
-
 .minimal {
   display: flex;
   align-items: center;

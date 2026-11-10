@@ -121,10 +121,6 @@
   fill: var(--foreground-color);
 }
 
-#add-poll {
-  margin-top: 0.5em;
-}
-
 #delete-poll-form {
   text-align: left;
 }
