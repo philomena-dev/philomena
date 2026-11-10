@@ -6,7 +6,7 @@ import bcd, { type CompatStatement, type Identifier } from '@mdn/browser-compat-
 import { enhancements } from './enhancements.ts';
 import { floor, lacking } from './floor.ts';
 import { classTwin } from './postcss-floor-focus-visible.ts';
-import { inKeyframes } from './postcss-floor-selectors.ts';
+import { inKeyframes, isSimple } from './postcss-floor-selectors.ts';
 
 /** A feature that some piece of CSS needs: a browser-compat-data path, spelled as the CSS spells it */
 interface Need {
@@ -63,6 +63,9 @@ function selectorNeeds(selector: selectorParser.Selector): Need[] {
     if (node.type === 'attribute' && node.insensitive) {
       needs.push({ path: 'css.selectors.attribute.case_insensitive_modifier' });
     }
+    if (node.type === 'attribute' && node.sensitive) {
+      needs.push({ path: 'css.selectors.attribute.case_sensitive_modifier' });
+    }
     if (typeof (node as { namespace?: unknown }).namespace === 'string') {
       needs.push({ path: 'css.selectors.namespace' });
     }
@@ -73,8 +76,12 @@ function selectorNeeds(selector: selectorParser.Selector): Need[] {
     // A vendor pseudo-element that browser-compat-data does not know is meant for that vendor's browsers only
     if (known || !prefixed(name)) needs.push({ path: `css.selectors.${known ?? name}`, spelling: name });
 
-    if (name === 'not' && (node.nodes.length > 1 || node.nodes.some(n => n.nodes.some(c => c.type === 'combinator')))) {
+    // Selectors Level 4 :not(), which takes any list
+    if (name === 'not' && !(node.nodes.length === 1 && isSimple(node.nodes[0]))) {
       needs.push({ path: 'css.selectors.not.selector_list' });
+    }
+    if (/^nth(-last)?-child$/.test(name) && /\sof\s/i.test(String(node))) {
+      needs.push({ path: `css.selectors.${name}.of_syntax` });
     }
   });
 

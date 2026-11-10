@@ -28,15 +28,13 @@ export function droppedSelector(node: Node) {
   return !name.startsWith('-') && !(path in enhancements) && Boolean(lacking(path)?.length);
 }
 
-function needsLowering(not: Pseudo): boolean {
-  let found = not.nodes.length !== 1 || isComplex(not.nodes[0]);
+/** Whether `selector` is what :not() takes in Selectors Level 3: one simple selector, not a negation or a group */
+export const isSimple = (selector: Selector) =>
+  selector.nodes.length === 1 &&
+  !parser.isPseudoElement(selector.nodes[0]) &&
+  !isPseudo(selector.nodes[0], ':not', ':is', ':where');
 
-  not.nodes[0].walkPseudos(pseudo => {
-    found ||= isPseudo(pseudo, ':is', ':where') || (isPseudo(pseudo, ':not') && needsLowering(pseudo));
-  });
-
-  return found;
-}
+const needsLowering = (not: Pseudo) => not.nodes.length !== 1 || !isSimple(not.nodes[0]);
 
 /** A compound `selector` without the spaces it had around it in a list */
 function trimmed(selector: Selector) {
@@ -91,18 +89,21 @@ function splice(pseudo: Pseudo, alternative: Selector) {
   return true;
 }
 
-/** :not(a, b) and :not(:is(a, b)) as :not(a):not(b); a complex argument has no Selectors Level 3 form */
+/**
+ * :not(a, b) and :not(:is(a, b)) as :not(a):not(b), without padding inside :not(). Any other argument, such as a
+ * compound, a complex selector or a negation, has no Selectors Level 3 form.
+ */
 function lowerNot(not: Pseudo) {
-  const alternatives = not.nodes.flatMap(lower);
-  const complex = alternatives.find(isComplex);
+  const alternatives = not.nodes.flatMap(selector => lower(selector, false)).map(trimmed);
+  const other = alternatives.find(alternative => !isSimple(alternative));
 
-  if (complex) throw new Error(`:not(${complex}) has no form that floor browsers parse, restructure the rule`);
+  if (other) throw new Error(`:not(${other}) has no form that floor browsers parse, restructure the rule`);
 
-  not.replaceWith(...alternatives.map(alternative => parser.pseudo({ value: ':not', nodes: [trimmed(alternative)] })));
+  not.replaceWith(...alternatives.map(alternative => parser.pseudo({ value: ':not', nodes: [alternative] })));
 }
 
-/** The selectors that `selector` stands for in Selectors Level 3 */
-function lower(selector: Selector): Selector[] {
+/** The selectors that `selector` stands for in Selectors Level 3, those of :is() `padded` to its specificity */
+function lower(selector: Selector, padded = true): Selector[] {
   let not: Pseudo | undefined;
 
   selector.walkPseudos(pseudo => {
@@ -111,7 +112,7 @@ function lower(selector: Selector): Selector[] {
 
   if (not) {
     lowerNot(not);
-    return lower(selector);
+    return lower(selector, padded);
   }
 
   const group = selector.nodes.find(node => isPseudo(node, ':is', ':where')) as Pseudo | undefined;
@@ -120,7 +121,7 @@ function lower(selector: Selector): Selector[] {
   const complex = group.nodes.find(isComplex);
   if (complex) throw new Error(`${group.value}(${complex}) has a combinator inside a compound, restructure the rule`);
 
-  const target = isPseudo(group, ':is') ? specificityOfMostSpecificListItem(group.nodes) : undefined;
+  const target = padded && isPseudo(group, ':is') ? specificityOfMostSpecificListItem(group.nodes) : undefined;
 
   return group.nodes.flatMap(alternative => {
     const copy = selector.clone();
@@ -128,14 +129,14 @@ function lower(selector: Selector): Selector[] {
 
     if (target) pad(option, target);
 
-    return splice(copy.at(selector.index(group)) as Pseudo, option) ? lower(copy) : [];
+    return splice(copy.at(selector.index(group)) as Pseudo, option) ? lower(copy, padded) : [];
   });
 }
 
 /**
  * Rewrites selectors into Selectors Level 3, which every floor browser parses: :is() and :where() become the list of
- * their alternatives, each at its own specificity (those of :is() padded to at least that of the :is()), and :not()
- * takes one compound at a time, which counts every argument. Selectors with a
+ * their alternatives, each at its own specificity (those of :is() padded to at least that of the :is(), except
+ * inside :not()), and :not() takes one simple selector at a time, which counts every argument. Selectors with a
  * standard pseudo-class or pseudo-element that a floor browser lacks (:has(), :user-invalid) are dropped, so that
  * current browsers render what the floor renders.
  */
@@ -150,7 +151,7 @@ const postcssFloorSelectors: PluginCreator<void> = () => ({
       try {
         lowered = parser()
           .astSync(rule.selector)
-          .nodes.flatMap(lower)
+          .nodes.flatMap(selector => lower(selector))
           .filter(selector => {
             let dead = false;
             selector.walk(node => {

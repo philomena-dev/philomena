@@ -16,10 +16,12 @@ describe('postcss-floor-selectors', () => {
     expect(lower(':is(.a, b.c) {}')).toBe('.a:not(does-not-exist), b.c {}');
   });
 
-  it('gives :not() one compound at a time', () => {
+  it('gives :not() one simple selector at a time, unpadded', () => {
     expect(lower('.a:not(.b, :is(.c, .d)) {}')).toBe('.a:not(.b):not(.c):not(.d) {}');
-    expect(lower('.a:not(:not(.b, .c)) {}')).toBe('.a:not(:not(.b):not(.c)) {}');
+    expect(lower('.a:not(:is(#b, .c)), :not(:hover) {}')).toBe('.a:not(#b):not(.c), :not(:hover) {}');
     expect(() => lower('a:not(.tag a) {}')).toThrow(':not(.tag a) has no form');
+    expect(() => lower('a:not(.b.c) {}')).toThrow(':not(.b.c) has no form');
+    expect(() => lower('.a:not(:not(.b, .c)) {}')).toThrow(':not(:not(.b):not(.c)) has no form');
     expect(() => lower(':where(.a .b) {}')).toThrow('has a combinator');
   });
 
