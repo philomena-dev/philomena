@@ -8,8 +8,8 @@
       <thead>
         <tr>
           <th class="table--communication-list__name">Forum</th>
-          <th class="table--communication-list__stats hide-mobile">Topics</th>
-          <th class="table--communication-list__stats hide-mobile">Posts</th>
+          <th class="table--communication-list__stats hidden-below-md">Topics</th>
+          <th class="table--communication-list__stats hidden-below-md">Posts</th>
           <th class="table--communication-list__last-post">Last Post</th>
         </tr>
       </thead>
@@ -20,8 +20,8 @@
               {link(forum.name, to: ~p"/forums/#{forum}")}
               <div class="small-text">{forum.description}</div>
             </td>
-            <td class="table--communication-list__stats hide-mobile">{forum.topic_count}</td>
-            <td class="table--communication-list__stats hide-mobile">{forum.post_count}</td>
+            <td class="table--communication-list__stats hidden-below-md">{forum.topic_count}</td>
+            <td class="table--communication-list__stats hidden-below-md">{forum.post_count}</td>
             <td class="table--communication-list__last-post">
               <%= if forum.last_post do %>
                 <strong>{link(forum.last_post.topic.title,

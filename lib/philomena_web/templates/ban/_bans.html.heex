@@ -3,7 +3,7 @@
     <tr>
       <th>Ban Enacted</th>
       <th>Ban Expires</th>
-      <th class="hide-mobile">Duration</th>
+      <th class="hidden-below-md">Duration</th>
       <th>Active?</th>
       <th>Reason</th>
       <th>Ban ID</th>
@@ -14,7 +14,7 @@
       <tr>
         <td>{pretty_time(b.created_at)}</td>
         <td>{pretty_time(b.valid_until)}</td>
-        <td class="hide-mobile">{distance_of_time_in_words(b.created_at, b.valid_until)}</td>
+        <td class="hidden-below-md">{distance_of_time_in_words(b.created_at, b.valid_until)}</td>
         <%= if active?(b) do %>
           <td class="success">Yes</td>
         <% else %>

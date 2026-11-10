@@ -11,7 +11,7 @@
     </button>
     <a class="navbar-item navbar-pinned" href="/" title="Derpibooru">
       <i class="navbar-icon fa-fw favicon-home"></i>
-      <span class="hide-limited-desktop hide-mobile">Derpibooru</span>
+      <span class="hidden-below-xl">Derpibooru</span>
     </a>
     <a class="navbar-item" href="/images/new" title="Upload">
       <i class="navbar-icon fa fa-upload"></i>
@@ -83,7 +83,7 @@
       </a>
       <a class="navbar-item" href="/filters" title="Filters">
         <i class="navbar-icon fa fa-filter"></i>
-        <span class="hide-limited-desktop">Filters</span>
+        <span class="hidden-below-xl">Filters</span>
       </a>
       <%= form_for @user_changeset, ~p"/filters/current", [class: "header-field", id: "filter-quick-form"], fn f -> %>
         {select(f, :current_filter_id, @available_filters,
@@ -95,7 +95,7 @@
           "aria-label": "Filter"
         )}
       <% end %>
-      <%= form_for @spoiler_changeset, ~p"/filters/spoiler_type", [class: "header-field hide-limited-desktop", id: "spoiler-quick-form"], fn f -> %>
+      <%= form_for @spoiler_changeset, ~p"/filters/spoiler_type", [class: "header-field hidden-below-xl", id: "spoiler-quick-form"], fn f -> %>
         {select(f, :spoiler_type, @spoiler_types,
           id: "spoiler-quick-menu",
           class: "header-input",

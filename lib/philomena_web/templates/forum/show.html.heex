@@ -28,7 +28,7 @@
       <thead>
         <tr>
           <th class="table--communication-list__name">Topic</th>
-          <th class="table--communication-list__stats hide-mobile">Posts</th>
+          <th class="table--communication-list__stats hidden-below-md">Posts</th>
           <th class="table--communication-list__last-post">Last Post</th>
         </tr>
       </thead>
@@ -51,7 +51,7 @@
                 )}
               </div>
             </td>
-            <td class="table--communication-list__stats hide-mobile">{topic.post_count}</td>
+            <td class="table--communication-list__stats hidden-below-md">{topic.post_count}</td>
             <td class="table--communication-list__last-post">
               <%= if topic.last_post do %>
                 {link("Go to post",

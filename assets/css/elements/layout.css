@@ -1,23 +1,5 @@
-@media (max-width: $min-desktop-width) {
-  .hide-mobile {
-    display: none !important;
-  }
-}
-
 @media (max-width: $min-desktop-thumb-width) {
   .hide-mobile-t {
-    display: none !important;
-  }
-}
-
-@media (max-width: $max-limited-desktop-width) and (min-width: $min-desktop-width) {
-  .hide-limited-desktop {
-    display: none !important;
-  }
-}
-
-@media (min-width: $min-desktop-width) {
-  .hide-desktop {
     display: none !important;
   }
 }

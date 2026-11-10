@@ -1,6 +1,6 @@
 <div class="dropdown block__header__dropdown-tab">
   <a href="#"><i class="fa fa-images"></i>
-  <span class="hide-limited-desktop hide-mobile">Galleries</span><span data-click-preventdefault="true"><i class="fa fa-caret-down"></i></span></a>
+  <span class="hidden-below-xl">Galleries</span><span data-click-preventdefault="true"><i class="fa fa-caret-down"></i></span></a>
   <div class="dropdown__content dropdown__content-right">
     <div class="block">
       <div class="block__content add-to-gallery-list">
@@ -8,7 +8,7 @@
           <a
             class="block__list__link primary"
             href={~p"/galleries?#{[gallery: [include_image: @image.id]]}"}
-          ><i class="fa fa-table"></i> <span class="hide-mobile">Featured in</span></a>
+          ><i class="fa fa-table"></i> <span class="hidden-below-md">Featured in</span></a>
         </div>
         <%= if Enum.any?(@user_galleries) do %>
           <ul class="block__list js-gallery-list">
@@ -61,10 +61,10 @@
               class="block__list__link primary"
               href={~p"/galleries/new?#{[with_image: @image.id]}"}
             ><i class="fa fa-plus"></i>
-            <span class="hide-limited-desktop hide-mobile">Create a gallery</span></a>
+            <span class="hidden-below-xl">Create a gallery</span></a>
           <% else %>
             <a class="block__list__link primary" href={~p"/sessions/new"}><i class="fa fa-user-plus"></i>
-            <span class="hide-limited-desktop hide-mobile">Sign in to create a gallery</span></a>
+            <span class="hidden-below-xl">Sign in to create a gallery</span></a>
           <% end %>
         </div>
       </div>

@@ -1,6 +1,6 @@
 <article class="block communication" id={"comment_#{@comment.id}"}>
   <div class={"block__content communication__content flex flex--no-wrap #{communication_body_class(@comment)}"}>
-    <div class="communication__body__avatar hide-mobile">
+    <div class="communication__body__avatar hidden-below-md">
       <div class="post-image-container">
         {render(PhilomenaWeb.ImageView, "_image_container.html",
           image: @comment.image,
@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="flex__grow communication__body">
-      <div class="communication__body__avatar hide-desktop">
+      <div class="communication__body__avatar hidden-from-md">
         <div class="post-image-container">
           {render(PhilomenaWeb.ImageView, "_image_container.html",
             image: @comment.image,

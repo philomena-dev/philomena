@@ -1,12 +1,12 @@
 <div class="block flex communication__content">
-  <div class="communication__body__avatar hide-mobile">
+  <div class="communication__body__avatar hidden-below-md">
     {render(PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html",
       object: @post,
       conn: @conn
     )}
   </div>
   <div class="flex__grow communication__body">
-    <div class="communication__body__avatar hide-desktop">
+    <div class="communication__body__avatar hidden-from-md">
       {render(PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html",
         object: @post,
         conn: @conn

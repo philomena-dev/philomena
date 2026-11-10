@@ -5,7 +5,7 @@
       <th>Rule</th>
       <th>Reason</th>
       <th>User</th>
-      <th class="hide-mobile">Opened</th>
+      <th class="hidden-below-md">Opened</th>
       <th>State</th>
       <th>Options</th>
     </tr>
@@ -34,7 +34,7 @@
             )}
           <% end %>
         </td>
-        <td class="hide-mobile">{pretty_time(report.created_at)}</td>
+        <td class="hidden-below-md">{pretty_time(report.created_at)}</td>
         <td class={"#{report_row_class(report)}"}>
           {pretty_state(report)} {user_abbrv(report.admin)}
         </td>

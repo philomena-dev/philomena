@@ -17,7 +17,7 @@ info = render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @image
       <strong>{@gallery.title}</strong></span></span>
       <div class="page__pagination">{pagination}</div>
       <div class="flex__right page__options" phx-no-format>
-        {render PhilomenaWeb.ImageView, "_random_button.html", conn: @conn, params: scope}<a href={~p"/galleries/#{@gallery}/reports/new"}><i class="fa fa-exclamation-triangle"></i> <span class="hide-mobile">Report</span></a><a :if={can?(@conn, :edit, @gallery)} href={~p"/galleries/#{@gallery}/edit"}><i class="fas fa-edit"></i> <span class="hide-mobile">Edit</span></a><%= if can?(@conn, :edit, @gallery) do %><a class="rearrange-button js-rearrange" data-click-hide=".js-rearrange" data-click-show=".js-save,#gallery-rearrange-info" href="#"><i class="fa fa-sort"></i> Rearrange</a><a class="rearrange-button js-save hidden" data-click-hide=".js-save,#gallery-rearrange-info" data-click-show=".js-rearrange" data-reorder-path={~p"/galleries/#{@gallery}/order"} href="#"><i class="fa fa-check"></i> Save</a><a data-confirm="Are you really, really sure?" data-method="delete" href={~p"/galleries/#{@gallery}"}><i class="fa fa-trash"></i> <span class="hide-mobile">Delete</span></a><% end %><%= if show_subscription_link?(@gallery.user, @conn.assigns.current_user) do %>{render PhilomenaWeb.Gallery.SubscriptionView, "_subscription.html", watching: @watching, gallery: @gallery, conn: @conn}<% end %>
+        {render PhilomenaWeb.ImageView, "_random_button.html", conn: @conn, params: scope}<a href={~p"/galleries/#{@gallery}/reports/new"}><i class="fa fa-exclamation-triangle"></i> <span class="hidden-below-md">Report</span></a><a :if={can?(@conn, :edit, @gallery)} href={~p"/galleries/#{@gallery}/edit"}><i class="fas fa-edit"></i> <span class="hidden-below-md">Edit</span></a><%= if can?(@conn, :edit, @gallery) do %><a class="rearrange-button js-rearrange" data-click-hide=".js-rearrange" data-click-show=".js-save,#gallery-rearrange-info" href="#"><i class="fa fa-sort"></i> Rearrange</a><a class="rearrange-button js-save hidden" data-click-hide=".js-save,#gallery-rearrange-info" data-click-show=".js-rearrange" data-reorder-path={~p"/galleries/#{@gallery}/order"} href="#"><i class="fa fa-check"></i> Save</a><a data-confirm="Are you really, really sure?" data-method="delete" href={~p"/galleries/#{@gallery}"}><i class="fa fa-trash"></i> <span class="hidden-below-md">Delete</span></a><% end %><%= if show_subscription_link?(@gallery.user, @conn.assigns.current_user) do %>{render PhilomenaWeb.Gallery.SubscriptionView, "_subscription.html", watching: @watching, gallery: @gallery, conn: @conn}<% end %>
       </div>
     </section>
     <div class="block__header block__header--light block__header--sub">
@@ -30,7 +30,7 @@ info = render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @image
         "image",
         "images",
         @gallery.image_count
-      )}<span class="hide-mobile-t">, last updated {pretty_time(@gallery.updated_at)} (created {pretty_time(
+      )}<span class="hidden-below-md">, last updated {pretty_time(@gallery.updated_at)} (created {pretty_time(
         @gallery.created_at
       )})</span>
     </div>

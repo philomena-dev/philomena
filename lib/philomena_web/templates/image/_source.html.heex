@@ -25,7 +25,7 @@
         <%= if !has_sources || length(@image.sources) == 1 do %>Source <% else %>Sources <% end %></span>
       <div class="block__header__buttons">
         <%= if @changeset do %><a accessKey="s" class="button button--inline" data-click-focus=".js-image-source" data-click-hide="#image-source" data-click-show="#source-form" id="edit-source" title="Edit source"><i class="fas fa-edit"></i><%= if has_sources do %>Add/Edit <% else %>Add <% end %></a><% end %>
-        <%= if @source_change_count > 0 do %><a class="button button--link button--inline" href={~p"/images/#{@image}/source_changes"} title="Source history"><i class="fa fa-history"></i> <span class="hide-mobile">History</span> ({@source_change_count})</a><% end %>
+        <%= if @source_change_count > 0 do %><a class="button button--link button--inline" href={~p"/images/#{@image}/source_changes"} title="Source history"><i class="fa fa-history"></i> <span class="hidden-below-md">History</span> ({@source_change_count})</a><% end %>
         <%= if can?(@conn, :hide, @image) and not hide_staff_tools?(@conn) do %><a class="button button--state-danger button--inline" data-confirm="Are you really, really sure?" data-method="delete" href={~p"/images/#{@image}/source_history"} title="Wipe sources"><i class="fas fa-eraser"></i> Wipe</a><% end %>
       </div>
     </div>

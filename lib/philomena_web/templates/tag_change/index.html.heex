@@ -90,7 +90,7 @@
                   <i class="fa fa-gavel"></i> Staff Member
                 </div>
               <% end %>
-              <div class="flex__grow hide-mobile"></div>
+              <div class="flex__grow hidden-below-md"></div>
               <span>{pretty_time(tag_change.created_at)}</span>
               <div class="tag_change-tag-count">
                 <%= if added_tags_count > 0 do %>
@@ -148,7 +148,7 @@
                   data-method="delete"
                   href={~p"/tag_changes/#{tag_change}"}
                 ><i class="fa fa-trash"></i>
-                <span class="hide-mobile">Delete from history</span><span class="hide-desktop">Delete</span></a>
+                <span class="hidden-below-md">Delete from history</span><span class="hidden-from-md">Delete</span></a>
                 <div class="flex flex--centered flex--gap-small">
                   <span>Revert</span>
                   <input

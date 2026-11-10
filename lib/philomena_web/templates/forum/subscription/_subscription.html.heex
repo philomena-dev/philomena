@@ -11,14 +11,14 @@ unwatch_class = if @watching, do: "", else: "hidden" %><span
   data-remote="true"
   href={watch_path}
   phx-no-format
-><i class="fa fa-bell"></i> <span class="hide-mobile">Subscribe</span> </a><a
+><i class="fa fa-bell"></i> <span class="hidden-below-md">Subscribe</span> </a><a
   class={"js-subscription-link #{unwatch_class}"}
   data-method="delete"
   data-remote="true"
   href={unwatch_path}
   phx-no-format
-><i class="fa fa-bell-slash"></i> <span class="hide-mobile">Unsubscribe</span> </a></span><a
+><i class="fa fa-bell-slash"></i> <span class="hidden-below-md">Unsubscribe</span> </a></span><a
   :if={!@conn.assigns.current_user}
   href={~p"/sessions/new"}
   phx-no-format
-><i class="fa fa-bell"></i> <span class="hide-mobile">Subscribe</span> </a>
+><i class="fa fa-bell"></i> <span class="hidden-below-md">Subscribe</span> </a>

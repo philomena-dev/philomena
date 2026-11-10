@@ -13,13 +13,13 @@
           </div>
         </div>
       <% end %>
-      <div class="block block--fixed block--fixed--sub block--success center hide-mobile">
+      <div class="block block--fixed block--fixed--sub block--success center hidden-below-md">
         Enjoy the site? <a href="/pages/donations">Become a patron or donate!</a>
       </div>
-      <div class="block block--fixed block--fixed--sub center hide-mobile">
+      <div class="block block--fixed block--fixed--sub center hidden-below-md">
         Issues? Want to chat? <a href="/pages/contact">Contact us!</a>
       </div>
-      <div class="block hide-mobile">
+      <div class="block hidden-below-md">
         <a
           class="block__header--single-item center"
           href="/search?q=first_seen_at.gt:3 days ago&amp;sf=wilson_score&amp;sd=desc"
@@ -35,19 +35,19 @@
         </div>
         <a class="block__header--single-item center" href="/search?q=*&amp;sf=score&amp;sd=desc">All Time Top Scoring</a>
       </div>
-      <div class="block hide-mobile">
+      <div class="block hidden-below-md">
         <a class="block__header--single-item center" href="/channels">Streams</a>
         <%= for channel <- @streams do %>
           {render(PhilomenaWeb.ActivityView, "_channel_strip.html", channel: channel, conn: @conn)}
         <% end %>
       </div>
-      <div class="block hide-mobile">
+      <div class="block hidden-below-md">
         <a class="block__header--single-item center" href="/forums">Forum Activity</a>
         <%= for topic <- @topics do %>
           {render(PhilomenaWeb.ActivityView, "_topic_strip.html", topic: topic, conn: @conn)}
         <% end %>
       </div>
-      <div class="block hide-mobile">
+      <div class="block hidden-below-md">
         <a class="block__header--single-item center" href="/comments">Recent Comments</a>
         <%= for comment <- @comments do %>
           {render(PhilomenaWeb.ActivityView, "_comment_strip.html", comment: comment, conn: @conn)}
@@ -66,7 +66,7 @@
         <div class="block__header">
           <span class="block__header__title">Watched Images</span>
           <a href="/search?q=my:watched" title="Browse Watched Images"><i class="fa fa-eye"></i>
-          <span class="hide-mobile">Browse Watched Images</span></a>
+          <span class="hidden-below-md">Browse Watched Images</span></a>
         </div>
         <div class="block__content">
           <div class="media-list media-list--small">
