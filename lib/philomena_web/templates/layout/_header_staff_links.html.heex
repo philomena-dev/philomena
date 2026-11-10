@@ -1,7 +1,13 @@
 <div class="navbar-staff navbar-pinned js-staff-action">
   <% admin_links = admin_links(@conn) %>
   <div :if={admin_links != []} class="navbar-dropdown hidden-below-md">
-    <button aria-haspopup="true" class="navbar-item caret" title="Admin" type="button">A</button>
+    <button
+      aria-expanded="false"
+      aria-haspopup="true"
+      class="navbar-item caret"
+      title="Admin"
+      type="button"
+    >A</button>
     {render(PhilomenaWeb.LayoutView, "_navbar_menu.html",
       links: admin_links,
       label: "Admin",
@@ -40,7 +46,13 @@
   </a>
   <% ban_links = ban_links(@conn) %>
   <div :if={ban_links != []} class="navbar-dropdown hidden-below-md">
-    <button aria-haspopup="true" class="navbar-item caret" title="Bans" type="button">B</button>
+    <button
+      aria-expanded="false"
+      aria-haspopup="true"
+      class="navbar-item caret"
+      title="Bans"
+      type="button"
+    >B</button>
     {render(PhilomenaWeb.LayoutView, "_navbar_menu.html",
       links: ban_links,
       label: "Bans",

@@ -6,7 +6,12 @@
       </a>
     <% else %>
       <div class="navbar-dropdown">
-        <a aria-haspopup="true" class="navbar-item caret" href={section.path}>{section.label}</a>
+        <a
+          aria-expanded="false"
+          aria-haspopup="true"
+          class="navbar-item caret"
+          href={section.path}
+        >{section.label}</a>
         {render(PhilomenaWeb.LayoutView, "_navbar_menu.html",
           links: section.pages,
           label: section.label,

@@ -12,6 +12,7 @@ const itemAt = (target: EventTarget | null) =>
 
 function setOpen(item: Element, open: boolean) {
   item.parentElement!.classList.toggle('open', open);
+  item.setAttribute('aria-expanded', String(open));
 }
 
 function closeMenus(except?: Element | null) {

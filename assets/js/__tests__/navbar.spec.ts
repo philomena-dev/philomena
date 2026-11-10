@@ -16,7 +16,7 @@ describe('setupNavbarMenus', () => {
       </style>
       <nav class="navbar">
         <div class="navbar-dropdown">
-          <a aria-haspopup="true" class="navbar-item caret" href="/forums">Forums</a>
+          <a aria-expanded="false" aria-haspopup="true" class="navbar-item caret" href="/forums">Forums</a>
           <div class="navbar-menu"><a class="navbar-menu-item" href="/forums/dis">Discussion</a></div>
         </div>
         <a class="navbar-item" href="/galleries">Galleries</a>
@@ -32,7 +32,7 @@ describe('setupNavbarMenus', () => {
     return fireEvent.click(target);
   };
 
-  const isOpen = () => dropdown.classList.contains('open');
+  const isOpen = () => dropdown.classList.contains('open') && item.getAttribute('aria-expanded') === 'true';
 
   it('opens a menu on the first tap on its item instead of following the link', () => {
     expect(tap(item)).toBe(false);
@@ -67,6 +67,7 @@ describe('setupNavbarMenus', () => {
     tap(elsewhere());
 
     expect(dropdown).not.toHaveClass('open');
+    expect(item).toHaveAttribute('aria-expanded', 'false');
   });
 
   it('closes an open menu on Escape', () => {
