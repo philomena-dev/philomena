@@ -1,6 +1,6 @@
-<nav class={["navbar-menu", assigns[:end] && "end"]} aria-label={@label}>
+<div class={["navbar-menu", @align_end && "end"]}>
   <a :for={link <- @links} class="navbar-menu-item" data-method={link[:method]} href={link.path}>
     <span class="navbar-menu-icon"><i :if={link[:icon]} class={[link.icon, "fa-fw"]}></i></span>
     <span class="navbar-menu-text">{link.label}</span>
   </a>
-</nav>
+</div>
