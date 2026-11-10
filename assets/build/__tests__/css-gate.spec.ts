@@ -47,6 +47,7 @@ describe('css-gate', () => {
     [':focus-visible beside other selectors', '.a, .b:focus-visible { color: red }', 'split the rule'],
     ['an unprefixed property without its prefix', '.a { user-select: none }', 'css.properties.user-select'],
     ['an unknown property', '.a { colour: red }', 'css.properties.colour'],
+    ['a keyword in camel case in the data', '.a { text-decoration: underline currentcolor }', 'currentColor'],
   ])('rejects %s', (_, css, problem) => {
     expect(checkCss(css).join('\n')).toContain(problem);
   });

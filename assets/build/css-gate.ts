@@ -18,6 +18,7 @@ interface Need {
 
 const prefixed = (name: string) => /^-[a-z]+-/.test(name);
 const unprefixed = (name: string) => name.replace(/^-[a-z]+-/, '');
+const prefixOf = (name: string) => name.slice(0, name.length - unprefixed(name).length);
 
 /** Function names and units, by the `<code>` names in the descriptions of browser-compat-data's CSS types */
 function index(pattern: RegExp, node: Identifier, path: string, found: Record<string, string> = {}) {
@@ -80,9 +81,20 @@ function selectorNeeds(selector: selectorParser.Selector): Need[] {
   return needs;
 }
 
+/**
+ * The subfeature of `prop` at `key` under the property in browser-compat-data, as a value spelled with `prefix` or
+ * the prefix of the property
+ */
+function subfeature(prop: string, key: string, prefix = ''): Need {
+  const name = prefix + key.slice(key.lastIndexOf('.') + 1);
+  return { path: `css.properties.${unprefixed(prop)}.${key}`, spelling: name, alias: prefixOf(prop) + name };
+}
+
 function valueNeeds(prop: string, value: string): Need[] {
   const needs: Need[] = [];
   const base = unprefixed(prop);
+  // browser-compat-data spells some keywords in camel case, such as currentColor
+  const keywords = new Map(Object.keys(bcd.css.properties[base] ?? {}).map(key => [key.toLowerCase(), key]));
 
   valueParser(value).walk(node => {
     if (node.type === 'function') {
@@ -102,9 +114,9 @@ function valueNeeds(prop: string, value: string): Need[] {
     const word = node.value.toLowerCase();
     if (bcd.css.types.global_keywords[word]) needs.push({ path: `css.types.global_keywords.${word}` });
     // A value keyword is recorded as prefixed itself (`-moz-fit-content`) or with the prefix of its property
-    if (!prop.startsWith('--') && bcd.css.properties[base]?.[unprefixed(word)]?.__compat) {
-      const alias = prop.slice(0, prop.length - base.length) + word;
-      needs.push({ path: `css.properties.${base}.${unprefixed(word)}`, spelling: word, alias });
+    const keyword = keywords.get(unprefixed(word));
+    if (!prop.startsWith('--') && keyword && keyword !== '__compat') {
+      needs.push(subfeature(prop, keyword, prefixOf(word)));
     }
   });
 
