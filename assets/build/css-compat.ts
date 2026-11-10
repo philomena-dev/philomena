@@ -1,4 +1,5 @@
 import autoprefixer from 'autoprefixer';
+import postcssFocusVisible from 'postcss-focus-visible';
 import postcssLogical, { type pluginOptions } from 'postcss-logical';
 import type { AcceptedPlugin } from 'postcss';
 import postcssFloorReset from './postcss-floor-reset.ts';
@@ -26,6 +27,8 @@ export default function cssCompat({ force = false } = {}): AcceptedPlugin[] {
   return [
     logical(),
     postcssFloorValues(),
+    // Matched by the focus-visible polyfill, loaded by js/app.ts
+    postcssFocusVisible({ preserve: false, disablePolyfillReadyClass: true }),
     postcssFloorReset(),
     postcssFloorSelectors(),
     postcssFlexGap(),
