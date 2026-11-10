@@ -47,9 +47,13 @@
                   (No example)
                 <% end %>
               </td>
-              <td><strong>{item.item_type}</strong><br /><br />{description}</td>
+              <td>
+                <strong>{item.item_type}</strong><br /><br /><div class="markdown">
+                  {description}
+                </div>
+              </td>
               <td>${Decimal.round(item.base_price, 2)}</td>
-              <td>{add_ons}</td>
+              <td class="markdown">{add_ons}</td>
               <%= if can?(@conn, :edit, @commission) do %>
                 <td>
                   {link("Edit item", to: ~p"/profiles/#{@user}/commission/items/#{item}/edit")}<br /><br />{link(

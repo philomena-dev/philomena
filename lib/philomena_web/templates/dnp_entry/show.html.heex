@@ -21,18 +21,18 @@
           </tr>
           <tr>
             <td>Conditions:</td>
-            <td>{@conditions}</td>
+            <td class="markdown">{@conditions}</td>
           </tr>
           <%= if can?(@conn, :show_reason, @dnp_entry) do %>
             <tr>
               <td>Reason:</td>
-              <td>{@reason}</td>
+              <td class="markdown">{@reason}</td>
             </tr>
           <% end %>
           <%= if can?(@conn, :show_feedback, @dnp_entry) do %>
             <tr>
               <td>Instructions:</td>
-              <td>{@instructions}</td>
+              <td class="markdown">{@instructions}</td>
             </tr>
             <tr>
               <td>Feedback:</td>

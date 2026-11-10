@@ -1,6 +1,5 @@
 /*
- * Philomena's styles of elements and classes that have no stylesheet of their own: Markdown paragraphs, quotes,
- * spoilers and single-purpose helpers.
+ * Philomena's styles of classes that have no stylesheet of their own: single-purpose helpers.
  */
 
 /* Labels of what only staff sees */
@@ -11,14 +10,6 @@
 /* Slightly dirty, no clean way to strip top margins off headers though */
 .remove-top-margin {
   margin-top: 0;
-}
-
-.paragraph {
-  hyphens: none;
-  margin-bottom: var(--padding-small);
-  margin-top: var(--padding-small);
-  margin-left: 2px;
-  line-height: 1.35em;
 }
 
 .clearfix {
@@ -36,110 +27,8 @@
   }
 }
 
-/* Text Editor */
-blockquote {
-  margin: 1em 2em;
-  border: 1px dotted var(--foreground-color);
-  padding: var(--padding-small);
-  background-color: inherit;
-}
-
-blockquote .paragraph:first-child {
-  margin-top: 0;
-}
-
-blockquote .paragraph:last-child {
-  margin-bottom: 0;
-}
-
-/* Prevent blockquote from gaining far too much indentation and breaking. */
-blockquote blockquote blockquote blockquote blockquote blockquote {
-  margin: 1em 0;
-  padding: 1em 2px;
-}
-
-/* Horizontal space is at a high premium on mobile. */
-@media (max-width: $min-desktop-width) {
-  blockquote {
-    margin: 1em 4px;
-    padding: var(--padding-small) 4px;
-  }
-}
-
-.spoiler {
-  background-color: var(--admin-links-hover-color);
-  color: var(--admin-links-hover-color);
-}
-
-.spoiler a {
-  color: var(--admin-links-hover-color);
-}
-
-.spoiler:not(:hover) > .image-show-container {
-  background: var(--admin-links-hover-color);
-}
-
-.spoiler:not(:hover) > .image-show-container > * {
-  visibility: hidden;
-}
-
-.spoiler,
-.spoiler-revealed {
-  display: inline-block;
-  position: relative;
-}
-
-.spoiler:before,
-.spoiler-revealed:before {
-  content: " ";
-  display: block;
-  position: absolute;
-  pointer-events: none;
-  inset: 0;
-  background-color: var(--admin-links-hover-color);
-}
-
-.spoiler:hover:before,
-.spoiler-revealed:before {
-  display: none;
-}
-
-.spoiler:hover,
-.spoiler-revealed {
-  background-color: var(--admin-links-color);
-  color: var(--foreground-color);
-}
-
-.spoiler-revealed a,
-.spoiler:hover a {
-  color: var(--link-color);
-}
-
-.spoiler-revealed a:hover,
-.spoiler:hover a:hover {
-  color: var(--link-dark-color);
-}
-
 .literal {
   white-space: pre-wrap;
-}
-
-/* We need to use $variables here because @media tags
- * do not work with CSS3 custom properties (variables) */
-@mixin image-alt-size tiny, $image-tiny-size;
-@mixin image-alt-size small, $image-small-size;
-@mixin image-alt-size medium, $image-medium-size;
-@mixin image-alt-size large, $image-large-size;
-
-.spoiler code {
-  background: 0;
-  border: 0;
-}
-
-.spoiler-revealed code,
-.spoiler:hover code {
-  background-color: var(--well-color);
-  border: var(--border-width) solid var(--tint-color);
 }
 
 /* donations */

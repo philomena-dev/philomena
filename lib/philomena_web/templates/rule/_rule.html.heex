@@ -29,12 +29,12 @@
     <%= if admin_only_rule and @rule.short_description != "" do %>
       <p><strong>{@rule.short_description}</strong></p>
     <% end %>
-    <div class="walloftext">{@rule.description}</div>
+    <div class="walloftext markdown">{@rule.description}</div>
   </div>
   <%= if @rule.example != "" do %>
     <div class={"rule__example hidden #{"js-rule-example-toggle-#{@rule.id}"}"}>
       <h4>Examples</h4>
-      <div class="walloftext">{@rule.example}</div>
+      <div class="walloftext markdown">{@rule.example}</div>
     </div>
   <% end %>
   <footer class="rule__footer">

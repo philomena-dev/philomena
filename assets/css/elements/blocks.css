@@ -19,7 +19,6 @@
 
 /* Images in user content stay inside their block */
 .block-content img,
-.tab-panel img,
-.communication-text img {
+.tab-panel img {
   max-width: 100%;
 }

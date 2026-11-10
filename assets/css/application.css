@@ -20,6 +20,7 @@
 @import "@philomena/philomena-css/css/components/avatar.css";
 @import "@philomena/philomena-css/css/components/badge.css";
 @import "@philomena/philomena-css/css/components/block.css";
+@import "@philomena/philomena-css/css/components/blockquote.css";
 @import "@philomena/philomena-css/css/components/burger.css";
 @import "@philomena/philomena-css/css/components/button.css";
 @import "@philomena/philomena-css/css/components/card.css";
@@ -38,6 +39,7 @@
 @import "@philomena/philomena-css/css/components/pagination.css";
 @import "@philomena/philomena-css/css/components/separator.css";
 @import "@philomena/philomena-css/css/components/slider.css";
+@import "@philomena/philomena-css/css/components/spoiler.css";
 @import "@philomena/philomena-css/css/components/table.css";
 @import "@philomena/philomena-css/css/components/tabs.css";
 @import "@philomena/philomena-css/css/components/tag.css";
@@ -57,6 +59,7 @@
 @import "elements/dropdown";
 @import "elements/forms";
 @import "elements/layout";
+@import "elements/markdown";
 @import "elements/media";
 @import "elements/navbar";
 @import "elements/page";

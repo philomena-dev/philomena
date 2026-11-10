@@ -1,0 +1,97 @@
+/*
+ * Rendered Markdown, as the comrak fork emits it: paragraphs are div.paragraph, code is a bare code or pre. It is
+ * styled inside the containers that hold it, the text of a communication and .markdown for descriptions, profiles,
+ * rules, static pages and the other places that show it. Quotes and spoilers are the framework's blockquote and
+ * .spoiler.
+ */
+$markdown: .communication-text, .markdown;
+
+.markdown {
+  line-height: var(--text-line-height);
+  overflow-wrap: anywhere;
+}
+
+/* The raw HTML of static pages and rules follows the rhythm of the page */
+.markdown > * {
+  --flow: 1;
+}
+
+/* Blocks of text follow each other at the distance of paragraphs, with nothing at the edges of the container */
+:is($(markdown)) > :where(p, .paragraph, ul, ol, blockquote, pre, table, hr) {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+:is($(markdown)) > * + :where(p, .paragraph, ul, ol, blockquote, pre, table, hr) {
+  margin-top: var(--spacing-md);
+}
+
+/* Images stay inside the container; one whose alternative text names a size is no larger than it */
+:is($(markdown)) img {
+  max-width: min(100%, var(--image-size, 100%));
+  max-height: var(--image-size, none);
+}
+
+:is($(markdown)) img[alt="tiny"] {
+  --image-size: 64px;
+}
+
+:is($(markdown)) img[alt="small"] {
+  --image-size: 128px;
+}
+
+:is($(markdown)) img[alt="medium"] {
+  --image-size: 256px;
+}
+
+:is($(markdown)) img[alt="large"] {
+  --image-size: 512px;
+}
+
+/* Code, as the framework's code span and code block; a block wraps its lines */
+:is($(markdown)) :where(code, kbd) {
+  padding: var(--code-padding-vertical) var(--code-padding-horizontal);
+  line-height: var(--code-line-height);
+  border-radius: var(--border-radius-inner);
+  color: var(--text-color);
+  background-color: var(--well-color);
+  border: var(--border-width) solid var(--tint-color);
+  font-family: var(--mono-font);
+}
+
+:is($(markdown)) pre {
+  max-width: 100%;
+  padding: var(--code-block-padding);
+  overflow: auto hidden;
+  font-family: var(--mono-font);
+  font-size: var(--code-block-font-size);
+  line-height: var(--code-line-height);
+  color: var(--text-color);
+  background-color: var(--well-color);
+  border: var(--border-width) solid var(--tint-color);
+  box-shadow: var(--emphasis-shadow), var(--container-shadow);
+  border-radius: var(--border-radius-inner);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+:is($(markdown)) pre code {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
+/* Hidden spoiler text hides the chrome of its code, and an embedded image or video as a block in its color */
+.spoiler:not(:hover):not(:focus):not(:focus-within):not(.revealed) code {
+  background: none;
+  border-color: transparent;
+}
+
+.spoiler:not(:hover):not(:focus):not(:focus-within):not(.revealed) .image-show-container {
+  background-color: var(--neutral-color);
+}
+
+.spoiler:not(:hover):not(:focus):not(:focus-within):not(.revealed) .image-show-container > * {
+  visibility: hidden;
+}

@@ -197,7 +197,7 @@
                 <tbody>
                   <%= for {mod_note, body} <- @mod_notes do %>
                     <tr>
-                      <td>{body}</td>
+                      <td class="markdown">{body}</td>
                       <td>{pretty_time(mod_note.created_at)}</td>
                     </tr>
                   <% end %>
@@ -211,7 +211,7 @@
         <div class="block-header">
           <a href={~p"/profiles/#{@user}/scratchpad/edit"}>Moderation Scratchpad</a>
         </div>
-        <div class="block-content profile-about">{@scratchpad}</div>
+        <div class="block-content profile-about markdown">{@scratchpad}</div>
       </div>
     <% end %>
     <%= if can_see_user_name_changes?(@conn, @user) and not hide_staff_tools?(@conn) and Enum.any?(@name_changes) do %>

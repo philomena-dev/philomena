@@ -59,7 +59,7 @@
                 {link(request.requesting_user.name, to: ~p"/profiles/#{request.requesting_user}")}
               </td>
               <td>{request.dnp_type}</td>
-              <td>{body}</td>
+              <td class="markdown">{body}</td>
               <td class={dnp_entry_row_class(request)}>
                 {pretty_state(request)}
                 <%= if request.modifying_user do %>

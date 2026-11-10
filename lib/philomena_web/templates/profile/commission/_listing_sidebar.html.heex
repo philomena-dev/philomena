@@ -14,13 +14,13 @@
       )
       |> Decimal.to_string()} - ${Decimal.round(max.base_price, 2) |> Decimal.to_string()} USD
     <% end %>
-    <br /><br />{@rendered.information}
+    <br /><br /><div class="markdown">{@rendered.information}</div>
   </div>
 </div>
 <%!-- Contact information block --%>
 <div class="block">
   <div class="block-header"><span class="block-header-title">Contact information</span></div>
-  <div class="block-content commission__block_body">{@rendered.contact}</div>
+  <div class="block-content commission__block_body markdown">{@rendered.contact}</div>
 </div>
 <%!-- Categories block --%>
 <div class="block">
@@ -33,7 +33,7 @@
 <%= if @commission.will_create not in [nil, ""] do %>
   <div class="block">
     <div class="block-header"><span class="block-header-title">Will draw/create</span></div>
-    <div class="block-content commission__block_body">{@rendered.will_create}</div>
+    <div class="block-content commission__block_body markdown">{@rendered.will_create}</div>
   </div>
 <% end %>
 <%!-- Will not create block --%>
@@ -42,7 +42,7 @@
     <div class="block-header">
       <span class="block-header-title">Will not draw/create</span>
     </div>
-    <div class="block-content commission__block_body">{@rendered.will_not_create}</div>
+    <div class="block-content commission__block_body markdown">{@rendered.will_not_create}</div>
   </div>
 <% end %>
 <%!-- Options block --%>

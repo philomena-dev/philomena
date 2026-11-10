@@ -99,8 +99,9 @@ defmodule PhilomenaWeb.PageControllerTest do
       response = html_response(conn, 200)
 
       assert response =~ "Test About Page - Derpibooru"
-      # Markdown body is rendered to HTML
-      assert response =~ "All <em>about</em> this test site."
+      # Markdown body is rendered to HTML, in the container that styles rendered Markdown
+      assert response =~
+               ~s(<div class="markdown"><div class="paragraph">All <em>about</em> this test site.)
     end
 
     test "renders the edit link only for static-page managers", %{conn: conn} do

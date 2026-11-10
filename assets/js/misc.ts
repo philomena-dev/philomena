@@ -36,9 +36,9 @@ function formResult({ target, detail }: FetchcompleteEvent) {
 
 function revealSpoiler(event: MouseEvent | TouchEvent) {
   const target = assertType(event.target, HTMLElement);
-  const spoiler = target.closest('.spoiler');
+  const spoiler = target.closest('.spoiler:not(.revealed)');
   const showContainer = target.closest('.image-show-container');
-  let imgspoiler = target.closest('.spoiler .imgspoiler, .spoiler-revealed .imgspoiler');
+  let imgspoiler = target.closest('.spoiler .imgspoiler');
 
   // Prevent reveal if touchend came after touchmove event
   if (touchMoved) {
@@ -56,8 +56,7 @@ function revealSpoiler(event: MouseEvent | TouchEvent) {
       }
     }
 
-    spoiler.classList.remove('spoiler');
-    spoiler.classList.add('spoiler-revealed');
+    spoiler.classList.add('revealed');
     // Prevent click-through to links on mobile platforms
     if (event.type === 'touchend') event.preventDefault();
 

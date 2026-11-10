@@ -64,7 +64,7 @@
             <tr>
               <td>{render(PhilomenaWeb.TagView, "_tag.html", tag: entry.tag, conn: @conn)}</td>
               <td>{entry.dnp_type}</td>
-              <td class="hidden-below-md">{body}</td>
+              <td class="hidden-below-md markdown">{body}</td>
               <%= if @status_column do %>
                 <td>{pretty_state(entry)}</td>
                 <td>{pretty_time(entry.created_at)}</td>

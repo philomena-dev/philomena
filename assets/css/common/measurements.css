@@ -2,10 +2,6 @@ $font-family-base: verdana, arial, helvetica, sans-serif;
 $font-family-monospace: "Droid Sans Mono", monospace;
 
 $min-desktop-width: $breakpoint-md;
-$image-tiny-size: 64px;
-$image-small-size: 128px;
-$image-medium-size: 256px;
-$image-large-size: 512px;
 
 :root {
   --border: 1px solid var(--border-color);
@@ -14,10 +10,6 @@ $image-large-size: 512px;
   --padding-small: 0.4rem;
   --padding-normal: 0.75rem;
   --padding-large: 1.5rem;
-  --image-tiny-size: $image-tiny-size;
-  --image-small-size: $image-small-size;
-  --image-medium-size: $image-medium-size;
-  --image-large-size: $image-large-size;
   --header-spacing: 12px;
   --transition-long-animation-duration: 0.3s;
 }

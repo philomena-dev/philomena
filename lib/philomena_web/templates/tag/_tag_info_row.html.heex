@@ -53,7 +53,7 @@
           </details>
           <br />
         <% end %>
-        <%= if @tag.description not in [nil, ""] do %><strong>Detailed description:</strong> <br />{@body}<% end %>
+        <%= if @tag.description not in [nil, ""] do %><strong>Detailed description:</strong><div class="markdown">{@body}</div><% end %>
       </div>
     <% end %>
     <%= if Enum.any?(@dnp_entries) do %>
@@ -63,7 +63,7 @@
         <%= for {body, entry} <- @dnp_entries do %>
           <div class="alert">
             <strong><i class="fa fa-fw fa-triangle-exclamation"></i> {entry.dnp_type}</strong> {link "View details", to: ~p"/dnp/#{entry}"}<%= case body do %>
-              <% {:safe, html} when html != "" -> %><br /><strong><i class="fa fa-fw fa-circle-info"></i> Conditions:</strong>{body}<% _ -> %><span></span><% end %>
+              <% {:safe, html} when html != "" -> %><br /><strong><i class="fa fa-fw fa-circle-info"></i> Conditions:</strong><div class="markdown">{body}</div><% _ -> %><span></span><% end %>
           </div>
         <% end %>
       </div>

@@ -12,7 +12,8 @@
         <br />
       <% end %>
       <%!-- Lotta space here --%>
-      <br />{@commission_information}<br /><br />{link("More information",
+      <br /><div class="markdown">{@commission_information}</div><br /><br />{link(
+        "More information",
         to: ~p"/profiles/#{@user}/commission"
       )}
     <% current?(@user, @conn.assigns.current_user) -> %>

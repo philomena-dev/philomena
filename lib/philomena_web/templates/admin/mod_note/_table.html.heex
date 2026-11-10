@@ -13,7 +13,7 @@
       <%= for {note, body} <- @mod_notes do %>
         <tr>
           <td>{link_to_target(note)}</td>
-          <td>{body}</td>
+          <td class="markdown">{body}</td>
           <td>{pretty_time(note.created_at)}</td>
           <td>{link(note.moderator.name, to: ~p"/profiles/#{note.moderator}")}</td>
           <td>

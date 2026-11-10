@@ -1,6 +1,6 @@
 /*
  * The elements that the framework's reset leaves unstyled and that are used outside its components: links, text
- * semantics, paragraphs, lists, images and code.
+ * semantics, paragraphs, lists and images.
  */
 
 /* Links are in the link color, underlined under the pointer; components set their own link styles */
@@ -83,36 +83,4 @@ ol {
 
 img {
   vertical-align: bottom;
-}
-
-/* As the framework's code span and code block; code in a block wraps */
-code,
-kbd {
-  padding: var(--code-padding-vertical) var(--code-padding-horizontal);
-  line-height: var(--code-line-height);
-  border-radius: var(--border-radius-inner);
-  background-color: var(--well-color);
-  border: var(--border-width) solid var(--tint-color);
-  font-family: var(--mono-font);
-}
-
-pre {
-  max-width: 100%;
-  padding: var(--code-block-padding);
-  overflow: auto hidden;
-  font-family: var(--mono-font);
-  font-size: var(--code-block-font-size);
-  line-height: var(--code-line-height);
-  background-color: var(--well-color);
-  border: var(--border-width) solid var(--tint-color);
-  box-shadow: var(--emphasis-shadow), var(--container-shadow);
-  border-radius: var(--border-radius-inner);
-}
-
-pre code {
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  white-space: pre-wrap;
 }

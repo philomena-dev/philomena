@@ -1,12 +1,3 @@
-@define-mixin image-alt-size $name, $size {
-  @media (min-width: $size) {
-    img[alt="$(name)"] {
-      max-height: $size !important;
-      max-width: $size !important;
-    }
-  }
-}
-
 /* 16x16 checkerboard */
 @define-mixin img-checkerboard-background {
   img {
