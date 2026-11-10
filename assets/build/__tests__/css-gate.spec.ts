@@ -87,6 +87,7 @@ describe('css-gate', () => {
         @media (min-width: 600px) and (prefers-reduced-motion) { .a:not(.b):not(.c) > .d + .e { margin: 0 } }
         .a { -webkit-user-select: none; user-select: none; width: -moz-fit-content; width: fit-content }
         .a.focus-visible, .b { outline: 1px solid; accent-color: red } .a:focus-visible { outline: 1px solid; accent-color: red }
+        .a:focus:not(:focus-visible) { outline: 0 } [title=":focus-visible"] { color: red }
         .a { display: flex; gap: 1px; row-gap: 1px; column-gap: 1px; align-items: flex-start }
         .fa:before { content: var(--fa) / "" } @supports not (content: ""/"") { .fa:before { content: var(--fa) } }
         .a { text-decoration: underline var(--a); text-decoration: var(--a, none) }

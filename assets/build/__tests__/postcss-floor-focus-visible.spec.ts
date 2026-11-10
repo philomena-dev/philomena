@@ -10,4 +10,8 @@ describe('postcss-floor-focus-visible', () => {
       '.c:hover {} .a.focus-visible, .b { outline: 0 } .a:focus-visible { outline: 0 } [title=":focus-visible"] {}',
     );
   });
+
+  it('keeps a rule that negates :focus-visible native only, which floor browsers drop', () => {
+    expect(run('.a:focus:not(:focus-visible) { outline: 0 }')).toBe('.a:focus:not(:focus-visible) { outline: 0 }');
+  });
 });

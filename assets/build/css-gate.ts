@@ -217,15 +217,18 @@ const describe = (gaps: Map<string, Set<string>>) =>
 const signatures = (rule: Rule, selectors = rule.selectors) =>
   selectors.map(selector => `${selector} { ${rule.nodes.map(String).join('; ')} }`);
 
-/** A rule for :focus-visible needs a class twin that is the same but for `.focus-visible`, which floor browsers match */
+/**
+ * A selector with :focus-visible needs a class twin that is the same but for `.focus-visible`, which floor browsers
+ * match, unless it only negates :focus-visible, which leaves floor browsers to drop the rule. checkRule reports lists
+ * that floor browsers drop for one of their selectors.
+ */
 function checkFocusVisible(rule: Rule, problems: string[], twins: Map<Container | undefined, Set<string>>) {
   const natives = rule.selectors.filter(selector => classTwin(selector) !== selector);
-  const where = rule.selector.slice(0, 120);
 
-  if (natives.length < rule.selectors.length) {
-    problems.push(`${where}: floor browsers drop the whole list for :focus-visible, split the rule`);
-  } else if (!signatures(rule, natives.map(classTwin)).every(twin => twins.get(rule.parent)?.has(twin))) {
-    problems.push(`${where}: :focus-visible without its .focus-visible twin (css.selectors.focus-visible)`);
+  if (!signatures(rule, natives.map(classTwin)).every(twin => twins.get(rule.parent)?.has(twin))) {
+    problems.push(
+      `${rule.selector.slice(0, 120)}: :focus-visible without its .focus-visible twin (css.selectors.focus-visible)`,
+    );
   }
 }
 
