@@ -69,11 +69,6 @@ span.communication__sender__stats,
   hyphens: auto;
 }
 
-.checkbox-label-of-doom {
-  display: inline-block;
-  margin-right: 2em;
-}
-
 .communication--destroyed {
   background-color: var(--destroyed-content-color);
 }
