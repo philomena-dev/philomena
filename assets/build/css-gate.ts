@@ -213,19 +213,30 @@ const describe = (gaps: Map<string, Set<string>>) =>
     )
     .join('; ');
 
+/** What `rule` declares */
+const body = (rule: Rule) => rule.nodes.map(String).join('; ');
+
 /** What `rule` declares, under each of its selectors */
 const signatures = (rule: Rule, selectors = rule.selectors) =>
-  selectors.map(selector => `${selector} { ${rule.nodes.map(String).join('; ')} }`);
+  selectors.map(selector => `${selector} { ${body(rule)} }`);
+
+const native = (selector: string) => classTwin(selector) !== selector;
 
 /**
- * A selector with :focus-visible needs a class twin that is the same but for `.focus-visible`, which floor browsers
- * match, unless it only negates :focus-visible, which leaves floor browsers to drop the rule. checkRule reports lists
- * that floor browsers drop for one of their selectors.
+ * A selector with :focus-visible needs a class twin, the same but for `.focus-visible`, which floor browsers match, in
+ * the rule right before its own, so that no rule between the two wins in one kind of browser only. A selector that
+ * only negates :focus-visible needs none, which leaves floor browsers to drop the rule. checkRule reports lists that
+ * floor browsers drop for one of their selectors.
  */
-function checkFocusVisible(rule: Rule, problems: string[], twins: Map<Container | undefined, Set<string>>) {
-  const natives = rule.selectors.filter(selector => classTwin(selector) !== selector);
+function checkFocusVisible(rule: Rule, problems: string[]) {
+  let previous = rule.prev();
+  // The minifier writes a list of native selectors as one rule each
+  while (previous?.type === 'rule' && body(previous) === body(rule) && previous.selectors.every(native)) {
+    previous = previous.prev();
+  }
+  const twins = new Set(previous?.type === 'rule' ? signatures(previous) : []);
 
-  if (!signatures(rule, natives.map(classTwin)).every(twin => twins.get(rule.parent)?.has(twin))) {
+  if (!signatures(rule, rule.selectors.filter(native).map(classTwin)).every(twin => twins.has(twin))) {
     problems.push(
       `${rule.selector.slice(0, 120)}: :focus-visible without its .focus-visible twin (css.selectors.focus-visible)`,
     );
@@ -368,19 +379,12 @@ function checkAtRule(rule: AtRule, problems: string[], guarded: Set<string>) {
 export function checkCss(css: string): string[] {
   const root = postcss.parse(css);
   const problems: string[] = [];
-  // The rules of each container by their signatures, where a rule for :focus-visible looks for its twin
-  const twins = new Map<Container | undefined, Set<string>>();
-  root.walkRules(rule => {
-    const rules = twins.get(rule.parent) ?? new Set<string>();
-    twins.set(rule.parent, rules);
-    for (const signature of signatures(rule)) rules.add(signature);
-  });
 
   // A feature that a positive @supports tests for is safe inside it: the CSS around the block is the fallback
   (function walk(container: Container, guarded: Set<string>) {
     container.each(node => {
       if (node.type === 'rule') checkRule(node, problems, guarded);
-      if (node.type === 'rule' && /:focus-visible/i.test(node.selector)) checkFocusVisible(node, problems, twins);
+      if (node.type === 'rule' && /:focus-visible/i.test(node.selector)) checkFocusVisible(node, problems);
       if (node.type === 'atrule') checkAtRule(node, problems, guarded);
       // The descriptors of @font-face are judged by their names, not their values
       if (node.type === 'decl' && node.parent?.type === 'atrule') {

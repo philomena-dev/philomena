@@ -38,6 +38,11 @@ describe('css-gate', () => {
       '@media print { .a.focus-visible { color: red } } .a:focus-visible { color: red }',
       'without its .focus-visible twin',
     ],
+    [
+      ':focus-visible apart from its twin',
+      '.a.focus-visible { color: red } .a.b { color: blue } .a:focus-visible { color: red }',
+      'without its .focus-visible twin',
+    ],
     [':not() lists', '.a:not(.b, .c) { color: red }', 'not.selector_list'],
     ['complex :not()', '.a:not(.b .c) { color: red }', 'not.selector_list'],
     ['compound :not()', '.a:not(.b.c) { color: red }', 'not.selector_list'],
@@ -87,6 +92,7 @@ describe('css-gate', () => {
         @media (min-width: 600px) and (prefers-reduced-motion) { .a:not(.b):not(.c) > .d + .e { margin: 0 } }
         .a { -webkit-user-select: none; user-select: none; width: -moz-fit-content; width: fit-content }
         .a.focus-visible, .b { outline: 1px solid; accent-color: red } .a:focus-visible { outline: 1px solid; accent-color: red }
+        .c.focus-visible, .d.focus-visible { color: red } .c:focus-visible { color: red } .d:focus-visible { color: red }
         .a:focus:not(:focus-visible) { outline: 0 } [title=":focus-visible"] { color: red }
         .a { display: flex; gap: 1px; row-gap: 1px; column-gap: 1px; align-items: flex-start }
         .fa:before { content: var(--fa) / "" } @supports not (content: ""/"") { .fa:before { content: var(--fa) } }
