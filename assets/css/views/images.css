@@ -50,7 +50,7 @@ a.interaction--comments:hover {
   font-size: 12px;
 }
 
-/* Used for elements that wrap .image-container */
+/* The square of a tag's spoiler image, as large as a tiny thumbnail */
 .thumb-tiny-container {
   width: var(--media-box-tiny-width);
   height: var(--media-box-tiny-width);

@@ -34,13 +34,12 @@ info = render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @image
       )})</span>
     </div>
     <div class="block-content flex js-imagelist-info">
-      <div class="flex-none thumb-tiny-container me-lg">
-        {render(PhilomenaWeb.ImageView, "_image_container.html",
-          image: @gallery.thumbnail,
-          size: :thumb_tiny,
-          conn: @conn
-        )}
-      </div>
+      {render(PhilomenaWeb.ImageView, "_image_container.html",
+        image: @gallery.thumbnail,
+        size: :thumb_tiny,
+        class: "me-lg",
+        conn: @conn
+      )}
       <div class="flex-1">
         <%= if @gallery.spoiler_warning not in [nil, ""] do %>
           <strong>Warning:</strong> {@gallery.spoiler_warning}

@@ -1,12 +1,11 @@
 <% target = @notification.target %>
 <% source = @notification.source %>
-<div class="flex items-center flex-none thumb-tiny-container me-lg">
-  {render(PhilomenaWeb.ImageView, "_image_container.html",
-    image: target,
-    size: :thumb_tiny,
-    conn: @conn
-  )}
-</div>
+{render(PhilomenaWeb.ImageView, "_image_container.html",
+  image: target,
+  size: :thumb_tiny,
+  class: "me-lg",
+  conn: @conn
+)}
 <div class="flex items-center flex-1">
   <div>
     Someone merged #{source.id} into

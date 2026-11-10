@@ -1,11 +1,10 @@
 <div class="block-content flex alternating-color items-center">
-  <div class="me-lg thumb-tiny-container">
-    {render(PhilomenaWeb.ImageView, "_image_container.html",
-      image: @comment.image,
-      size: :thumb_tiny,
-      conn: @conn
-    )}
-  </div>
+  {render(PhilomenaWeb.ImageView, "_image_container.html",
+    image: @comment.image,
+    size: :thumb_tiny,
+    class: "me-lg",
+    conn: @conn
+  )}
   <div class="flex-1">
     <a href={"/#{@comment.image.id}#comment_#{@comment.id}"}>#{@comment.image.id}</a>
     by
