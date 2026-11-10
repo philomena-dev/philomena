@@ -136,7 +136,7 @@
 }
 
 .rule--important hr {
-  background: var(--legacy-danger-color);
+  border-top-color: var(--legacy-danger-color);
 }
 
 .rule--admin .rule__footer .button:hover {
@@ -145,7 +145,7 @@
 }
 
 .rule--admin hr {
-  background: var(--legacy-warning-color);
+  border-top-color: var(--legacy-warning-color);
 }
 
 .rule--admin .rule__footer {
@@ -185,5 +185,5 @@
 }
 
 .rule:target hr {
-  background: var(--legacy-primary-color);
+  border-top-color: var(--legacy-primary-color);
 }
