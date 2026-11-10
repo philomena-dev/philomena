@@ -45,10 +45,11 @@ defmodule Philomena.MixProject do
       {:phoenix_ecto, "~> 4.6"},
       {:ecto_sql, "~> 3.13"},
       {:postgrex, ">= 0.0.0"},
-      # Must be kept at 3.x because of Slime
+      # Must be kept at 3.x because templates use its form and link helpers
       {:phoenix_html, "~> 3.3"},
       {:phoenix_view, "~> 2.0"},
       {:phoenix_live_reload, "~> 1.6", only: :dev},
+      {:phoenix_live_view, "~> 1.2"},
       {:gettext, "~> 1.0"},
       {:bandit, "~> 1.8"},
       {:slime, "~> 1.3.1"},
