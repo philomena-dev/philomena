@@ -13,7 +13,7 @@ target_url = comparison_url(@conn, @duplicate_report.duplicate_of_image)
 </div>
 <h1>Difference</h1>
 <div class="difference" id="subtractive">
-  <svg class="difference__image" height={height} width={width} viewBox={"0 0 #{width} #{height}"}><defs>
+  <svg class="difference-image" height={height} width={width} viewBox={"0 0 #{width} #{height}"}><defs>
     <filter id="overlay-diff">
       <feImage
         crossorigin="anonymous"
@@ -47,7 +47,7 @@ target_url = comparison_url(@conn, @duplicate_report.duplicate_of_image)
 </div>
 <h1>Swipe</h1>
 <div class="swipe" id="swipe">
-  <svg class="swipe__image" height={height} width={width} viewBox={"0 0 #{width} #{height}"}><defs>
+  <svg class="swipe-image" height={height} width={width} viewBox={"0 0 #{width} #{height}"}><defs>
     <pattern height="16" id="checkerboard" patternUnits="userSpaceOnUse" width="16">
       <rect fill="#ffffff44" height="8" width="8" x="0" y="0"></rect>
       <rect fill="#00000044" height="8" width="8" x="0" y="8"></rect>
@@ -83,7 +83,7 @@ target_url = comparison_url(@conn, @duplicate_report.duplicate_of_image)
 </div>
 <h1>Onion Skin</h1>
 <div class="onion-skin" id="onion-skin">
-  <svg class="onion-skin__image" height={height} width={width} viewBox={"0 0 #{width} #{height}"}><defs>
+  <svg class="onion-skin-image" height={height} width={width} viewBox={"0 0 #{width} #{height}"}><defs>
     <pattern height="16" id="checkerboard" patternUnits="userSpaceOnUse" width="16">
       <rect fill="#ffffff44" height="8" width="8" x="0" y="0"></rect>
       <rect fill="#00000044" height="8" width="8" x="0" y="8"></rect>
@@ -96,7 +96,7 @@ target_url = comparison_url(@conn, @duplicate_report.duplicate_of_image)
   </image>
   <image crossorigin="anonymous" height="100%" id="target" width="100%" xlink:href={target_url}>
   </image></svg>
-  <div class="onion-skin__controls">
+  <div class="onion-skin-controls">
     <input class="slider flex-1 js-onion-skin-slider" max="1" min="0" step="0.01" type="range" /><button class="button js-onion-skin-button">0%</button><button class="button js-onion-skin-button">100%</button>
   </div>
 </div>

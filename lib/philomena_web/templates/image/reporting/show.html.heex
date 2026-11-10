@@ -1,6 +1,6 @@
 <a class="button" href={~p"/images/#{@image}/reports/new"}><i class="fa fa-exclamation-triangle"></i>
 General reporting</a>
-<div class="report-duplicate">
+<div class="mt-lg">
   <% checked = Enum.any?(@dupe_reports, &(&1.state == "open")) %>
   <details class="disclosure" open={checked}>
     <summary class="button">Updating/merging</summary>

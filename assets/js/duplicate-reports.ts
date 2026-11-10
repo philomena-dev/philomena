@@ -14,9 +14,9 @@ export function setupDupeReports() {
     setupBrowserWorkarounds(diffImageSource, diffImageTarget);
   }
 
-  const onion = $<SVGSVGElement>('.onion-skin__image');
+  const onion = $<SVGSVGElement>('.onion-skin-image');
   const slider = $<HTMLInputElement>('.js-onion-skin-slider');
-  const swipe = $<SVGSVGElement>('.swipe__image');
+  const swipe = $<SVGSVGElement>('.swipe-image');
 
   if (swipe) setupSwipe(swipe);
   if (onion && slider) setupOnionSkin(onion, slider);

@@ -3,31 +3,11 @@
  * difference, swipe and onion skin comparisons of the report page.
  */
 
-.dupe-report-list--image {
-  width: 200px;
-}
-
 .dupe-report-image {
   width: var(--media-box-small-width);
   height: var(--media-box-small-width);
 
   @mixin img-checkerboard-background;
-}
-
-.dupe-report-list__cell {
-  padding: var(--spacing-md) var(--spacing-sm);
-}
-
-.dr__diff {
-  white-space: nowrap;
-}
-
-.dr__status-options {
-  padding: var(--spacing-md);
-}
-
-.report-duplicate {
-  margin-top: var(--spacing-lg);
 }
 
 .difference,
@@ -40,19 +20,19 @@
 }
 
 /* The comparisons are as large as the larger image, shrunk to fit the page */
-.difference__image,
-.swipe__image,
-.onion-skin__image {
+.difference-image,
+.swipe-image,
+.onion-skin-image {
   max-width: 100%;
   max-height: 900px;
   height: auto;
 }
 
-.swipe__image {
+.swipe-image {
   cursor: ew-resize;
 }
 
-.onion-skin__controls {
+.onion-skin-controls {
   display: flex;
   align-items: center;
   gap: var(--group-gap);

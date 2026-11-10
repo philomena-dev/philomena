@@ -42,7 +42,7 @@ it.each(['', '<feImage id="source"/>', '<feImage id="target"/>'])(
 describe('onion skin', () => {
   beforeEach(() => {
     document.body.innerHTML = `
-      <svg class="onion-skin__image"><image id="source"/><image id="target"/></svg>
+      <svg class="onion-skin-image"><image id="source"/><image id="target"/></svg>
       <input class="js-onion-skin-slider" type="range" min="0" max="1" step="0.01" value="0.5">
       <button class="js-onion-skin-button">0%</button>
       <button class="js-onion-skin-button">100%</button>`;

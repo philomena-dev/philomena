@@ -1,5 +1,5 @@
 <tr class={"duplicate-report-#{@report.id}"}>
-  <td class="dupe-report-list__cell dupe-report-list--image">
+  <td>
     {render(PhilomenaWeb.DuplicateReportView, "_image_cell.html",
       image: @report.image,
       source: true,
@@ -7,7 +7,7 @@
       conn: @conn
     )}
   </td>
-  <td class="dupe-report-list__cell dupe-report-list--image">
+  <td>
     {render(PhilomenaWeb.DuplicateReportView, "_image_cell.html",
       image: @report.duplicate_of_image,
       source: false,
@@ -15,7 +15,7 @@
       conn: @conn
     )}
   </td>
-  <td class="dr__diff dupe-report-list__cell">
+  <td class="whitespace-nowrap">
     <div class="table-wrap">
       <table class="table">
         <tbody>
@@ -123,8 +123,8 @@
       </table>
     </div>
   </td>
-  <td class="flex flex-col dupe-report-list__cell" id={"report_options_#{@report.id}"}>
-    <div class={["dr__status-options", state_class(@report)]}>
+  <td class="flex flex-col" id={"report_options_#{@report.id}"}>
+    <div class={["p-md", state_class(@report)]}>
       {String.capitalize(@report.state)}
       <%= if can?(@conn, :accept, @report) and not is_nil(@report.modifier) do %>
         by {@report.modifier.name}
@@ -144,7 +144,7 @@
         </div>
       <% end %>
     </div>
-    <div class="dr__status-options">
+    <div class="p-md">
       <div>
         Reported {pretty_time(@report.created_at)}
         <%= if can?(@conn, :accept, @report) and @report.user do %>
