@@ -5,16 +5,16 @@
       <span class="block-header-title">Essential user details</span>
     </div>
     <div class="block-content">
-      <div class="form-control">
+      <div class="form-control horizontal">
         {label(f, :name, "Name:")}{text_input(f, :name, class: "input-field")}{error_tag(f, :name)}
       </div>
-      <div class="form-control">
+      <div class="form-control horizontal">
         {label(f, :email, "Email:")}{text_input(f, :email, class: "input-field")}{error_tag(
           f,
           :email
         )}
       </div>
-      <div class="form-control">
+      <div class="form-control horizontal">
         {label(f, :role, "Role:")}{select_field(f, :role, [
           "user",
           "assistant",
@@ -22,7 +22,7 @@
           "admin"
         ])}
       </div>
-      <div class="form-control">
+      <div class="form-control horizontal">
         {label(f, :secondary_role, "Secondary banner:")}{select_field(
           f,
           :secondary_role,
@@ -35,10 +35,16 @@
           ]
         )}
       </div>
-      {checkbox_field(f, :hide_default_role, "Hide staff banner")}
-      {checkbox_field(f, :senior_staff, "Senior staff")}
-      {checkbox_field(f, :bypass_rate_limits, "Bypass rate limits")}
-      <div class="form-control">
+      <div class="form-control horizontal">
+        {checkbox_field(f, :hide_default_role, "Hide staff banner")}
+      </div>
+      <div class="form-control horizontal">
+        {checkbox_field(f, :senior_staff, "Senior staff")}
+      </div>
+      <div class="form-control horizontal">
+        {checkbox_field(f, :bypass_rate_limits, "Bypass rate limits")}
+      </div>
+      <div class="form-control horizontal">
         <span>Avatar:</span>
         {link("Remove avatar",
           to: ~p"/admin/users/#{@user}/avatar",

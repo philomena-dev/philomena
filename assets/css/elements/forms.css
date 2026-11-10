@@ -27,6 +27,24 @@
   }
 }
 
+/* From md up a horizontal field has its label in a right-aligned column beside it; a control alone sits under the
+   controls of the fields around it */
+@media (min-width: $breakpoint-md) {
+  .form-control.horizontal {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .form-control.horizontal > :first-child:not(:only-child) {
+    flex: 0 0 30%;
+    text-align: right;
+  }
+
+  .form-control.horizontal > :only-child {
+    margin-inline-start: calc(30% + var(--form-control-spacing));
+  }
+}
+
 /* The field padding of the framework comes after its select rule, which keeps room for the chevron */
 .form-control-select > .form-select-input:not([type="color"]) {
   padding-right: var(--padding-value);
