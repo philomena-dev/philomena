@@ -84,7 +84,6 @@
 .header-input,
 .header-button {
   box-sizing: border-box;
-  block-size: var(--header-field-height);
   padding-inline: var(--spacing-md);
   color: var(--header-text-color);
   background-color: var(--header-field-color);
@@ -147,6 +146,11 @@ a.header-button:hover {
   color: var(--search-icon-hover-color);
 }
 
+.header-field > .header-input,
+.header-field > .header-button {
+  block-size: var(--header-field-height);
+}
+
 /* The search follows the site's navbar and pushes the user's navbar to the end */
 .header-search {
   margin-inline-end: auto;
@@ -180,7 +184,7 @@ a.header-button:hover {
   --tint-color: var(--burger-color);
 }
 
-.burger .burger-item {
+.burger a.burger-item {
   padding-block: var(--spacing-lg);
 }
 
@@ -195,9 +199,14 @@ a.header-button:hover {
   color: var(--burger-hover-text-color);
 }
 
-.burger .header-input {
+/* A quick select fills the rest of its row and is as high as a link row, so that all of it can be tapped */
+.burger form.burger-item {
+  padding-block: 0;
+}
+
+.burger form.burger-item .header-input {
   flex: 1 1 auto;
-  block-size: auto;
+  padding-block: var(--spacing-lg);
 }
 
 /* The secondary bar wraps where the staff links do not fit beside the sections, a row of bar height each */
