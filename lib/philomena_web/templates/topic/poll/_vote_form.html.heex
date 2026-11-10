@@ -1,9 +1,9 @@
-<%= form_for :poll_vote, ~p"/forums/#{@forum}/topics/#{@topic}/poll/votes", [class: "poll-vote-form"], fn _f -> %>
-  <h4 class="poll__header">Poll: {@poll.title}</h4>
-  <div class="poll-form__options">
+<%= form_for :poll_vote, ~p"/forums/#{@forum}/topics/#{@topic}/poll/votes", [class: "poll"], fn _f -> %>
+  <h4>Poll: {@poll.title}</h4>
+  <div class="poll-options">
     <%= for option <- @poll.options do %>
       <%= if single_choice?(@poll) do %>
-        <label class="poll-form__options__label form-control-radio">
+        <label class="poll-choice form-control-radio">
           <span class="form-radio-input-wrap"><input
             class="form-radio-input"
             name="poll[option_ids][]"
@@ -14,7 +14,7 @@
           <span class="form-radio-label">{option.label}</span>
         </label>
       <% else %>
-        <label class="poll-form__options__label form-control-checkbox">
+        <label class="poll-choice form-control-checkbox">
           <span class="form-checkbox-input-wrap"><input
             class="form-checkbox-input"
             name="poll[option_ids][]"
@@ -26,8 +26,6 @@
       <% end %>
     <% end %>
   </div>
-  <div class="poll-form__status">
-    <p>Voting ends {pretty_time(@poll.active_until)}</p>
-  </div>
+  <p>Voting ends {pretty_time(@poll.active_until)}</p>
   <button class="button button-success"><i class="fa fa-check"></i> Vote</button>
 <% end %>

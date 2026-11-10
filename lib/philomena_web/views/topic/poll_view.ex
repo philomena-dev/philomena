@@ -24,11 +24,6 @@ defmodule PhilomenaWeb.Topic.PollView do
     :io_lib.format("~.2f%", [vote_count / total_votes * 100])
   end
 
-  def option_class(%{id: option_id}, %{id: option_id}, true), do: "poll-option--top"
-  def option_class(_option, _top_option, _winners?), do: nil
-
-  def poll_bar_class(%{id: option_id}, %{id: option_id}, true),
-    do: "poll-bar__fill poll-bar__fill--top"
-
-  def poll_bar_class(_option, _top_option, _winners?), do: "poll-bar__fill"
+  def winner?(_option, %{total_votes: 0}), do: false
+  def winner?(%{id: id}, poll), do: winning_option(poll).id == id
 end

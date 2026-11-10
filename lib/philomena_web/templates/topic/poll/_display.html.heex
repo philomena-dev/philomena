@@ -10,15 +10,11 @@
     <% end %>
   </div>
   <div class="tab-panel selected" data-tab="voting">
-    <div class="poll">
-      <div class="poll-area">
-        <%= if @poll_active and not @voted and not is_nil(@conn.assigns.current_user) do %>
-          {render(PhilomenaWeb.Topic.PollView, "_vote_form.html", assigns)}
-        <% else %>
-          {render(PhilomenaWeb.Topic.PollView, "_results.html", assigns)}
-        <% end %>
-      </div>
-    </div>
+    <%= if @poll_active and not @voted and not is_nil(@conn.assigns.current_user) do %>
+      {render(PhilomenaWeb.Topic.PollView, "_vote_form.html", assigns)}
+    <% else %>
+      {render(PhilomenaWeb.Topic.PollView, "_results.html", assigns)}
+    <% end %>
   </div>
   <%= if can?(@conn, :hide, @topic) do %>
     <div class="tab-panel" data-tab="voters">

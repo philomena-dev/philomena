@@ -40,16 +40,12 @@ defmodule PhilomenaWeb.Topic.PollViewTest do
     assert PollView.percent_of_total(option(1, 0), poll([option(1, 0)])) == "0%"
   end
 
-  test "marks the winning option and its bar only once there are votes" do
-    winner = option(1, 3)
-    other = option(2, 1)
+  test "names the winning option only once there are votes" do
+    poll = poll([option(1, 3), option(2, 1)])
+    [winner, other] = poll.options
 
-    assert PollView.option_class(winner, winner, true) == "poll-option--top"
-    assert PollView.poll_bar_class(winner, winner, true) == "poll-bar__fill poll-bar__fill--top"
-
-    for {option, winners?} <- [{other, true}, {winner, false}] do
-      assert PollView.option_class(option, winner, winners?) == nil
-      assert PollView.poll_bar_class(option, winner, winners?) == "poll-bar__fill"
-    end
+    assert PollView.winner?(winner, poll)
+    refute PollView.winner?(other, poll)
+    refute PollView.winner?(option(1, 0), poll([option(1, 0), option(2, 0)]))
   end
 end

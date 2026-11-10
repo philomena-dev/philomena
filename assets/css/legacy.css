@@ -25,7 +25,6 @@ $commission-color-light: #986f3d;
   --assistant-border-color: hsl(from $assistant-color-light h s calc(l - 8));
   --commission-category-background: hsl(from $commission-color-light h calc(s + 12) calc(l + 40));
   --commission-category-border: hsl(from $commission-color-light h s calc(l + 20));
-  --poll-form-label-background: hsl(from $base-color-light h calc(s - 16) calc(l + 36));
 }
 
 :root {
@@ -49,7 +48,6 @@ $commission-color-light: #986f3d;
   --sparkline-color: hsl(from $base-color-dark h s calc(l + 5));
   --commission-category-background: hsl(from $commission-color-dark h s calc(l - 36));
   --commission-category-border: hsl(from $commission-color-dark h s calc(l - 25));
-  --poll-form-label-background: hsl(from $burger-divider-color-dark h s calc(l + 8));
 }
 
 @media (prefers-color-scheme: light) {
