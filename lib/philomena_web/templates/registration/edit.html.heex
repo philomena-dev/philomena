@@ -11,12 +11,14 @@
 <p>
   Your API key is
   <div id="api-key-button">
-    <code>{link("Click to show",
+    <code class="code-span">{link("Click to show",
       to: "#",
       data: [click_show: "#api-key", click_hide: "#api-key-button"]
     )}</code>
   </div>
-  <div class="hidden" id="api-key"><code>{@current_user.authentication_token}</code></div>
+  <div class="hidden" id="api-key">
+    <code class="code-span">{@current_user.authentication_token}</code>
+  </div>
   <p>You can use this to allow API consumers to access your account.</p>
 </p>
 <p>Avoid sharing this key with others, as it could be used to compromise your account.</p>

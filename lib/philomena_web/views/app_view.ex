@@ -133,7 +133,7 @@ defmodule PhilomenaWeb.AppView do
     |> to_string()
   end
 
-  def link_to_ip(_conn, nil), do: content_tag(:code, "null")
+  def link_to_ip(_conn, nil), do: content_tag(:code, "null", class: "code-span")
 
   def link_to_ip(_conn, ip) do
     link(to: "/ip_profiles/#{ip}") do
@@ -145,7 +145,7 @@ defmodule PhilomenaWeb.AppView do
     end
   end
 
-  def link_to_fingerprint(_conn, nil), do: content_tag(:code, "null")
+  def link_to_fingerprint(_conn, nil), do: content_tag(:code, "null", class: "code-span")
 
   def link_to_fingerprint(_conn, fp) do
     link(to: "/fingerprint_profiles/#{fp}") do

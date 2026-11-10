@@ -3,7 +3,7 @@
     <div class="alert alert-danger">
       Oops, there was an error parsing your query! Check for mistakes like mismatched parentheses. The error was:
     </div>
-    <pre>{assigns[:error]}</pre>
+    <pre class="code-block">{assigns[:error]}</pre>
   <% blank?(@conn.params["q"]) -> %>
     <%!-- Don't render anything. --%>
   <% true -> %>

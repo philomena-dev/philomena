@@ -40,7 +40,7 @@
         {link_to_ip(@conn, @report.ip)} {link_to_fingerprint(@conn, @report.fingerprint)}
       </div>
     </div>
-    <div>User-Agent: <code>{@report.user_agent}</code></div>
+    <div>User-Agent: <code class="code-span">{@report.user_agent}</code></div>
   </div>
 </article>
 <%= if assigns[:mod_notes] do %>

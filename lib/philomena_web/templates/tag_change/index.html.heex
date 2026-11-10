@@ -186,78 +186,93 @@
     </thead>
     <tbody>
       <tr>
-        <td><code>tag</code></td>
+        <td><code class="code-span">tag</code></td>
         <td>Literal</td>
         <td>
           Matches the name of the changed tag. You can also simply search for the tags without specifying the "tag" field. To search for an added/removed tag, use
-          <code>added_tag</code>
-          or <code>removed_tag</code>.
+          <code class="code-span">added_tag</code>
+          or <code class="code-span">removed_tag</code>.
         </td>
         <td>
-          <code>{link("tag:safe", to: ~p"/tag_changes?#{[tcq: "tag:safe"]}")}</code>
-          or <code>{link "safe", to: ~p"/tag_changes?#{[tcq: "safe"]}"}</code>, also try
-          <code>{link("added_tag:safe", to: ~p"/tag_changes?#{[tcq: "added_tag:safe"]}")}</code>
+          <code class="code-span">{link("tag:safe", to: ~p"/tag_changes?#{[tcq: "tag:safe"]}")}</code>
+          or <code class="code-span">{link "safe", to: ~p"/tag_changes?#{[tcq: "safe"]}"}</code>, also try
+          <code class="code-span">{link("added_tag:safe",
+            to: ~p"/tag_changes?#{[tcq: "added_tag:safe"]}"
+          )}</code>
           and
-          <code>{link("removed_tag:safe", to: ~p"/tag_changes?#{[tcq: "removed_tag:safe"]}")}</code>
+          <code class="code-span">{link("removed_tag:safe",
+            to: ~p"/tag_changes?#{[tcq: "removed_tag:safe"]}"
+          )}</code>
         </td>
       </tr>
       <tr>
-        <td><code>tag_count</code></td>
+        <td><code class="code-span">tag_count</code></td>
         <td>Numeric Range</td>
         <td>
           Matches the number of changed tags in the tag change. To search for the number of added/removed tags, use
-          <code>added_tag_count</code>
-          or <code>removed_tag_count</code>.
+          <code class="code-span">added_tag_count</code>
+          or <code class="code-span">removed_tag_count</code>.
         </td>
         <td>
-          <code>{link "tag_count.gte:3", to: ~p"/tag_changes?#{[tcq: "tag_count.gte:3"]}"}</code>, also try
-          <code>{link("added_tag_count.gte:3",
+          <code class="code-span">{link "tag_count.gte:3", to: ~p"/tag_changes?#{[tcq: "tag_count.gte:3"]}"}</code>, also try
+          <code class="code-span">{link("added_tag_count.gte:3",
             to: ~p"/tag_changes?#{[tcq: "added_tag_count.gte:3"]}"
           )}</code>
           and
-          <code>{link("removed_tag_count.gte:3",
+          <code class="code-span">{link("removed_tag_count.gte:3",
             to: ~p"/tag_changes?#{[tcq: "removed_tag_count.gte:3"]}"
           )}</code>
         </td>
       </tr>
       <tr>
-        <td><code>created_at</code></td>
+        <td><code class="code-span">created_at</code></td>
         <td>Date/Time Range</td>
         <td>Matches the creation time of the tag change.</td>
         <td>
-          <code>{link("created_at.gte:1 month ago",
+          <code class="code-span">{link("created_at.gte:1 month ago",
             to: ~p"/tag_changes?#{[tcq: "created_at.gte:1 month ago"]}"
           )}</code>
         </td>
       </tr>
       <tr>
-        <td><code>my</code></td>
+        <td><code class="code-span">my</code></td>
         <td>Meta</td>
-        <td><code>my:changes</code> matches the tag changes you've made if you are signed in.</td>
-        <td><code>{link("my:changes", to: ~p"/tag_changes?#{[tcq: "my:changes"]}")}</code></td>
+        <td>
+          <code class="code-span">my:changes</code>
+          matches the tag changes you've made if you are signed in.
+        </td>
+        <td>
+          <code class="code-span">{link("my:changes", to: ~p"/tag_changes?#{[tcq: "my:changes"]}")}</code>
+        </td>
       </tr>
       <tr>
-        <td><code>anonymous</code></td>
+        <td><code class="code-span">anonymous</code></td>
         <td>Boolean</td>
         <td>Matches tag changes made by anonymous users, or users without an account.</td>
         <td>
-          <code>{link("anonymous:true", to: ~p"/tag_changes?#{[tcq: "anonymous:true"]}")}</code>
+          <code class="code-span">{link("anonymous:true",
+            to: ~p"/tag_changes?#{[tcq: "anonymous:true"]}"
+          )}</code>
         </td>
       </tr>
       <tr>
-        <td><code>user</code></td>
+        <td><code class="code-span">user</code></td>
         <td>Literal</td>
         <td>Matches the user who created the tag change.</td>
         <td>
-          <code>{link("user:LightningBolt", to: ~p"/tag_changes?#{[tcq: "user:LightningBolt"]}")}</code>
+          <code class="code-span">{link("user:LightningBolt",
+            to: ~p"/tag_changes?#{[tcq: "user:LightningBolt"]}"
+          )}</code>
         </td>
       </tr>
       <tr>
-        <td><code>user_id</code></td>
+        <td><code class="code-span">user_id</code></td>
         <td>Literal</td>
         <td>Matches tag changes made by a specific user ID.</td>
         <td>
-          <code>{link("user_id:217932", to: ~p"/tag_changes?#{[tcq: "user_id:217932"]}")}</code>
+          <code class="code-span">{link("user_id:217932",
+            to: ~p"/tag_changes?#{[tcq: "user_id:217932"]}"
+          )}</code>
         </td>
       </tr>
     </tbody>

@@ -10,7 +10,7 @@
         <div class="alert alert-warning">
           <i class="fa fa-lock"></i>
           The following tags have been restricted on this image:
-          <code>{Enum.map_join(@image.locked_tags, ", ", & &1.name)}</code>
+          <code class="code-span">{Enum.map_join(@image.locked_tags, ", ", & &1.name)}</code>
         </div>
       <% end %>
       <%= form_for changeset, ~p"/images/#{@image}/tags", [id: "tags-form", method: "put", data: [remote: "true"], class: "content"], fn f -> %>

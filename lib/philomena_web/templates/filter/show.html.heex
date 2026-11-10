@@ -21,7 +21,7 @@
         {render(PhilomenaWeb.TagView, "_tag.html", tag: tag, conn: @conn)}
       <% end %>
     </div>
-    <pre class="spoiler-filter-code">{@filter.spoilered_complex_str}</pre>
+    <pre class="code-block wrap">{@filter.spoilered_complex_str}</pre>
   <% else %>
     <p>This filter doesn't spoiler any tags.</p>
   <% end %>
@@ -32,7 +32,7 @@
         {render(PhilomenaWeb.TagView, "_tag.html", tag: tag, conn: @conn)}
       <% end %>
     </div>
-    <pre class="spoiler-filter-code">{@filter.hidden_complex_str}</pre>
+    <pre class="code-block wrap">{@filter.hidden_complex_str}</pre>
   <% else %>
     <p>This filter doesn't hide any tags.</p>
   <% end %>
