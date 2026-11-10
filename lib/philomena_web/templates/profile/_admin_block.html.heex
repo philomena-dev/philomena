@@ -21,7 +21,7 @@
   Two factor auth: <strong>{enabled_text(@user.otp_required_for_login)}</strong><br />
   <%= if @user.locked_at do %>
     <i class="fas fa-fw fa-lock"></i>
-    <strong class="comment_deleted">Account locked, {@user.failed_attempts} failed login attempts</strong>
+    <strong class="text-danger">Account locked, {@user.failed_attempts} failed login attempts</strong>
   <% else %>
     <i class="fas fa-fw fa-unlock"></i> Not currently locked
   <% end %>

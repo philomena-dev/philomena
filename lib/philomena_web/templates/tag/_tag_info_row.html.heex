@@ -7,10 +7,10 @@
     <% end %>
   </div>
   <div class="flex-1" phx-no-format>
-    {render PhilomenaWeb.TagView, "_tag.html", tag: @tag, conn: @conn} {link "Tag changes", to: ~p"/tags/#{@tag}/tag_changes", class: "detail-link"}<%= if manages_tags?(@conn) do %>{link "Edit details", to: ~p"/tags/#{@tag}/edit", class: "detail-link"}{link "Usage", to: ~p"/tags/#{@tag}/details", class: "detail-link"}<% end %><%= if manages_dnp?(@conn) do %>{link "Create new DNP entry", to: ~p"/dnp/new?#{[tag_id: @tag.id]}", class: "detail-link"}<% end %>
+    {render PhilomenaWeb.TagView, "_tag.html", tag: @tag, conn: @conn} {link "Tag changes", to: ~p"/tags/#{@tag}/tag_changes", class: "me-md"}<%= if manages_tags?(@conn) do %>{link "Edit details", to: ~p"/tags/#{@tag}/edit", class: "me-md"}{link "Usage", to: ~p"/tags/#{@tag}/details", class: "me-md"}<% end %><%= if manages_dnp?(@conn) do %>{link "Create new DNP entry", to: ~p"/dnp/new?#{[tag_id: @tag.id]}", class: "me-md"}<% end %>
     <br />
     <%= if @tag.short_description not in [nil, ""] do %><strong>Short description:</strong> {@tag.short_description}<br /><% end %>
-    <%= if manages_tags?(@conn) and present?(@tag.mod_notes) do %><strong class="comment_deleted">Mod notes:</strong> {@tag.mod_notes}<br /><% end %>
+    <%= if manages_tags?(@conn) and present?(@tag.mod_notes) do %><strong class="text-danger">Mod notes:</strong> {@tag.mod_notes}<br /><% end %>
     <%= if Enum.any?(@tag.aliases) do %>
       <strong>Aliases:</strong>
       <%= if aliases_tags?(@conn) do %>{map_join(Tag.display_order(@tag.aliases), ", ", &link(&1.name, to: ~p"/tags/#{&1}/alias/edit"))}<% else %>{map_join(Tag.display_order(@tag.aliases), ", ", & &1.name)}<% end %>
@@ -18,7 +18,7 @@
     <% end %>
     <%= if Enum.any?(@tag.implied_tags) do %><strong>Implies:</strong> {map_join(Tag.display_order(@tag.implied_tags), ", ", &link(&1.name, to: ~p"/tags/#{&1}"))}<br /><% end %>
     <%= if Enum.any?(@tag.hidden_links) and manages_links?(@conn) do %>
-      <strong class="comment_deleted">Hidden links:</strong> <br />
+      <strong class="text-danger">Hidden links:</strong> <br />
       <%= for artist_link <- @tag.hidden_links do %>{link artist_link.user.name, to: ~p"/profiles/#{artist_link.user}"} &rarr; {link artist_link.uri, to: artist_link.uri} <br /><% end %>
     <% end %>
     <%= if present?(@tag.public_links) or present?(@tag.channels) or present?(@tag.implied_by_tags) or present?(@tag.description) do %>
@@ -58,7 +58,7 @@
     <% end %>
     <%= if Enum.any?(@dnp_entries) do %>
       <hr />
-      <strong class="comment_deleted">This artist is on the Do-Not-Post List with the following restrictions:</strong>
+      <strong class="text-danger">This artist is on the Do-Not-Post List with the following restrictions:</strong>
       <div class="flex flex-col">
         <%= for {body, entry} <- @dnp_entries do %>
           <div class="alert">

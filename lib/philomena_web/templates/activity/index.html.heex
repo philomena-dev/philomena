@@ -3,7 +3,7 @@
     <aside class="layout-side" id="activity-side">
       <%= if not is_nil(@featured_image) and not PhilomenaWeb.ImageView.filter_or_spoiler_hits?(@conn, @featured_image) do %>
         <div class="text-center">
-          <h4 class="remove-top-margin">Featured Image</h4>
+          <h4 class="mt-0">Featured Image</h4>
           {render(PhilomenaWeb.ImageView, "_image_box.html",
             image: @featured_image,
             size: :medium,

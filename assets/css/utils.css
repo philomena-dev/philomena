@@ -11,3 +11,12 @@
 .hyphens-auto {
   hyphens: auto !important;
 }
+
+/* Text in the strong color of a type, readable on the page and on surfaces */
+.text-danger {
+  color: var(--danger-tint-text-color) !important;
+}
+
+.text-warning {
+  color: var(--warning-tint-text-color) !important;
+}

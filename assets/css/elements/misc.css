@@ -2,32 +2,14 @@
  * Philomena's styles of classes that have no stylesheet of their own: single-purpose helpers.
  */
 
-/* Labels of what only staff sees */
-.comment_deleted {
-  color: var(--danger-tint-text-color);
-}
-
-/* Slightly dirty, no clean way to strip top margins off headers though */
-.remove-top-margin {
-  margin-top: 0;
-}
-
+/* Running text, also in the HTML of static pages and rules: the base size in the line height of text */
 .walloftext {
-  font-size: 14px;
-}
-
-@media (max-width: 900px) {
-  .walloftext {
-    width: 95%;
-  }
+  font-size: var(--text-size-base);
+  line-height: var(--text-line-height);
 }
 
 .button_to {
   display: inline;
-}
-
-.small-text {
-  font-size: 10px;
 }
 
 i.favicon-home {
@@ -38,12 +20,4 @@ i.favicon-home {
   min-width: 1em;
   height: 1em;
   display: inline-block;
-}
-
-.line-spacing {
-  line-height: 30px;
-}
-
-.fa--important {
-  color: #fc7f1c;
 }

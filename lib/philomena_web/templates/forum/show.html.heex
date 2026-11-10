@@ -41,7 +41,7 @@
                 ></i><i :if={topic.poll} class="fas fa-poll-h"></i> {link(topic.title,
                   to: ~p"/forums/#{@forum}/topics/#{topic}"
                 )}
-                <div class="small-text">
+                <div class="text-xs">
                   Posted {pretty_time(topic.created_at)} by {render(
                     PhilomenaWeb.UserAttributionView,
                     "_anon_user.html",

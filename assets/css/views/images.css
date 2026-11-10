@@ -210,10 +210,6 @@
   @mixin focus-ring;
 }
 
-.detail-link {
-  margin-right: var(--spacing-md);
-}
-
 .full-height {
   height: 100%;
 }

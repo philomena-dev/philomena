@@ -19,7 +19,7 @@
       We are aware of several common reasons for why artists seek a DNP. They include things such as unwanted edits or a wish to disassociate their name from their artwork. Many of these concerns can be addressed without removing art.
     </p>
     <p>We have created several options for you below:</p>
-    <ul class="line-spacing">
+    <ul class="flex flex-col gap-lg">
       <li :for={{type, description} <- reasons()}>
         {link(description,
           to: "#",

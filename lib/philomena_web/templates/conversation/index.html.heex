@@ -30,7 +30,7 @@
               <tr class={conversation_class(@conn.assigns.current_user, c)}>
                 <td class="table--communication-list__name">
                   {link(c.title, to: ~p"/conversations/#{c}")}
-                  <div class="small-text hidden-below-md">
+                  <div class="text-xs hidden-below-md">
                     {c.message_count} {pluralize("message", "messages", c.message_count)}; started {pretty_time(
                       c.created_at
                     )}, last message {pretty_time(c.last_message_at)}
