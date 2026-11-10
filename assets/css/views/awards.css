@@ -12,10 +12,3 @@
 .award > img {
   max-width: none;
 }
-
-.awards .dropdown__content {
-  padding: var(--spacing-sm);
-  background-color: var(--tint-color);
-  border-radius: var(--border-radius-inner);
-  box-shadow: var(--menu-shadow);
-}

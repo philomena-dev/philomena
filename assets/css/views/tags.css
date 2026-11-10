@@ -209,6 +209,25 @@
   align-content: center;
 }
 
+/* The menu of watch, spoiler and hide links shows while the tag is hovered */
+.tag .dropdown__content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: var(--z-menu);
+  min-width: 100%;
+}
+
+.tag:hover .dropdown__content {
+  display: block;
+}
+
+.tag .dropdown__content > :not(.hidden) {
+  display: block;
+  white-space: nowrap;
+}
+
 .tag__dropdown__link {
   background-color: var(--meta-color);
   padding: 5px;

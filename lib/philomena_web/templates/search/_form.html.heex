@@ -19,100 +19,152 @@
     <div class="block-header">
       <a data-search-prepend="-">NOT</a>
       <div class="dropdown">
-        <a>Search terms
-        <span data-click-preventdefault="true"><i class="fa fa-caret-down"></i></span></a>
-        <div class="dropdown__content">
-          <a
+        <a aria-expanded="false" aria-haspopup="true" data-click-preventdefault="true" href="#">Search terms
+        <i class="fa fa-caret-down"></i></a>
+        <div class="dropdown-menu">
+          <button
+            class="dropdown-item"
             data-search-add="score.gte:100"
             data-search-select-last="3"
             data-search-show-help="numeric"
-          >Score</a><a
+            type="button"
+          >Score</button><button
+            class="dropdown-item"
             data-search-add="created_at.lte:3 years ago"
             data-search-select-last="11"
             data-search-show-help="date"
-          >Created at</a><a
+            type="button"
+          >Created at</button><button
+            class="dropdown-item"
             data-search-add="id.lte:10"
             data-search-select-last="2"
             data-search-show-help="numeric"
-          >Numeric ID</a><a
+            type="button"
+          >Numeric ID</button><button
+            class="dropdown-item"
             data-search-add="faves.gte:100"
             data-search-select-last="3"
             data-search-show-help="numeric"
-          >Number of faves</a><a
+            type="button"
+          >Number of faves</button><button
+            class="dropdown-item"
             data-search-add="upvotes.gte:100"
             data-search-select-last="3"
             data-search-show-help="numeric"
-          >Number of upvotes</a><a
+            type="button"
+          >Number of upvotes</button><button
+            class="dropdown-item"
             data-search-add="downvotes.gte:100"
             data-search-select-last="3"
             data-search-show-help="numeric"
-          >Number of downvotes</a><a
+            type="button"
+          >Number of downvotes</button><button
+            class="dropdown-item"
             data-search-add="comment_count.gt:20"
             data-search-select-last="2"
             data-search-show-help="numeric"
-          >Number of comments</a><a
+            type="button"
+          >Number of comments</button><button
+            class="dropdown-item"
             data-search-add="uploader:k_a"
             data-search-select-last="3"
             data-search-show-help="literal"
-          >Uploader</a><a
+            type="button"
+          >Uploader</button><button
+            class="dropdown-item"
             data-search-add="original_format:gif"
             data-search-select-last="3"
             data-search-show-help="literal"
-          >File extension</a><a
+            type="button"
+          >File extension</button><button
+            class="dropdown-item"
             data-search-add="file_name:tumblr_*"
             data-search-select-last="8"
             data-search-show-help="literal"
-          >Original file name</a><a
+            type="button"
+          >Original file name</button><button
+            class="dropdown-item"
             data-search-add="mime_type:image/jpeg"
             data-search-select-last="10"
             data-search-show-help="literal"
-          >MIME type</a><a
+            type="button"
+          >MIME type</button><button
+            class="dropdown-item"
             data-search-add="source_url:*deviantart.com*"
             data-search-select-last="16"
             data-search-show-help="literal"
-          >Image source URL</a><a
+            type="button"
+          >Image source URL</button><button
+            class="dropdown-item"
             data-search-add="width:1920"
             data-search-select-last="4"
             data-search-show-help="numeric"
-          >Image width</a><a
+            type="button"
+          >Image width</button><button
+            class="dropdown-item"
             data-search-add="height:1080"
             data-search-select-last="4"
             data-search-show-help="numeric"
-          >Image height</a><a
+            type="button"
+          >Image height</button><button
+            class="dropdown-item"
             data-search-add="aspect_ratio:1"
             data-search-select-last="1"
             data-search-show-help="numeric"
-          >Aspect ratio</a><a
+            type="button"
+          >Aspect ratio</button><button
+            class="dropdown-item"
             data-search-add="animated:false"
             data-search-select-last="5"
             data-search-show-help="boolean"
-          >Animated</a><a
+            type="button"
+          >Animated</button><button
+            class="dropdown-item"
             data-search-add="duration:10"
             data-search-select-last="2"
             data-search-show-help="numeric"
-          >Duration (seconds)</a><a
+            type="button"
+          >Duration (seconds)</button><button
+            class="dropdown-item"
             data-search-add="pixels.gte:5000000"
             data-search-select-last="7"
             data-search-show-help="numeric"
-          >Pixels</a><a
+            type="button"
+          >Pixels</button><button
+            class="dropdown-item"
             data-search-add="size.lt:1048576"
             data-search-select-last="7"
             data-search-show-help="numeric"
-          >File size (bytes)</a>
+            type="button"
+          >File size (bytes)</button>
         </div>
       </div>
       <%= if @conn.assigns.current_user do %>
         <div class="dropdown">
-          <a>Belonging to&hellip;
-          <span data-click-preventdefault="true"><i class="fa fa-caret-down"></i></span></a>
-          <div class="dropdown__content">
-            <a data-search-add="my:faves" data-search-show-help=" ">My favorites</a><a
+          <a aria-expanded="false" aria-haspopup="true" data-click-preventdefault="true" href="#">Belonging to&hellip;
+          <i class="fa fa-caret-down"></i></a>
+          <div class="dropdown-menu">
+            <button
+              class="dropdown-item"
+              data-search-add="my:faves"
+              data-search-show-help=" "
+              type="button"
+            >My favorites</button><button
+              class="dropdown-item"
               data-search-add="my:upvotes"
               data-search-show-help=" "
-            >My upvotes</a><a data-search-add="my:uploads" data-search-show-help=" ">My uploads</a><a
+              type="button"
+            >My upvotes</button><button
+              class="dropdown-item"
+              data-search-add="my:uploads"
+              data-search-show-help=" "
+              type="button"
+            >My uploads</button><button
+              class="dropdown-item"
               data-search-add="my:watched"
               data-search-show-help=" "
-            >My watched tags</a>
+              type="button"
+            >My watched tags</button>
           </div>
         </div>
       <% end %>

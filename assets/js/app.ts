@@ -14,13 +14,13 @@ import { registerEvents } from './boorujs';
 import { setupBurgerMenu } from './burger';
 import { bindCaptchaLinks } from './captcha';
 import { setupComments } from './comment';
+import { setupDropdowns } from './dropdowns';
 import { setupDupeReports } from './duplicate-reports';
 import { setSesCookie } from './fp';
 import { setupGalleryEditing } from './galleries';
 import { initImagesClientside } from './imagesclientside';
 import { bindImageTarget } from './image-expansion';
 import { setupEvents } from './misc';
-import { setupNavbarMenus } from './navbar';
 import { setupNotifications } from './notifications';
 import { setupPreviews } from './preview';
 import { setupQuickTag } from './quick-tag';
@@ -48,12 +48,12 @@ whenReady(
   bindCaptchaLinks,
   initImagesClientside,
   setupComments,
+  setupDropdowns,
   setupDupeReports,
   setSesCookie,
   setupGalleryEditing,
   bindImageTarget,
   setupEvents,
-  setupNavbarMenus,
   setupNotifications,
   setupPreviews,
   setupQuickTag,
