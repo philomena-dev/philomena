@@ -1,0 +1,24 @@
+/*
+ * A progress bar: a track in the input material with a bar inside, whose width you set (style="width: 40%").
+ * The bar is primary unless the track has .progress-{type}. Give it role="progressbar" and the aria-value* attributes.
+ */
+
+.progress {
+  display: block;
+  width: 100%;
+  height: var(--progress-bar-height);
+  border-radius: var(--progress-bar-height);
+  background-color: var(--well-deep-color);
+  border: var(--border-width) solid var(--tint-color);
+  box-shadow: var(--well-shadow);
+  overflow: hidden;
+}
+
+.progress .progress-bar {
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--primary-color);
+  transition: width 0.2s;
+}
+
+@mixin each-type progress-color-variation;

@@ -1,0 +1,83 @@
+/*
+ * Grid utilities, named as in Tailwind (they are !important, like the flex ones):
+ *  .grid .inline-grid          a grid container; set its gap with .gap-{key}
+ *  .grid-cols-{n}              n equal columns, 1 to 6 and 12; .grid-cols-none for no explicit columns
+ *  .grid-cols-auto             as many columns of at least --grid-auto-column-width as fit, filling the row
+ *  .col-span-{n}               an item across n columns, 1 to 6 and 12; .col-span-full across all of them
+ *  .place-items-center         every item centered in its cell
+ * A column is minmax(0, 1fr), so it shrinks below its content instead of widening the grid. To add a count, call the
+ * grid-utilities mixin with it. The older .grid-flex with .grid-flex-item and .flex-basis-{n} follows.
+ */
+
+.grid {
+  display: grid !important;
+}
+
+.inline-grid {
+  display: inline-grid !important;
+}
+
+@define-mixin grid-utilities $count {
+  .grid-cols-$(count) {
+    grid-template-columns: repeat($(count), minmax(0, 1fr)) !important;
+  }
+
+  .col-span-$(count) {
+    grid-column: span $(count) / span $(count) !important;
+  }
+}
+
+@mixin grid-utilities 1;
+@mixin grid-utilities 2;
+@mixin grid-utilities 3;
+@mixin grid-utilities 4;
+@mixin grid-utilities 5;
+@mixin grid-utilities 6;
+@mixin grid-utilities 12;
+
+.grid-cols-none {
+  grid-template-columns: none !important;
+}
+
+.grid-cols-auto {
+  grid-template-columns: repeat(auto-fill, minmax(min(var(--grid-auto-column-width), 100%), 1fr)) !important;
+}
+
+.col-span-full {
+  grid-column: 1 / -1 !important;
+}
+
+.place-items-center {
+  place-items: center !important;
+}
+
+.grid-flex {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--grid-column-gap);
+}
+
+.grid-flex .grid-flex-item {
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+
+.flex-basis-auto {
+  flex-basis: auto !important;
+}
+
+.flex-basis-15 {
+  flex-basis: 15% !important;
+}
+
+.flex-basis-20 {
+  flex-basis: 20% !important;
+}
+
+.flex-basis-30 {
+  flex-basis: 30% !important;
+}
+
+.flex-basis-40 {
+  flex-basis: 40% !important;
+}

@@ -1,0 +1,193 @@
+/*
+ * An editor: a textarea in one frame with a toolbar above it and an optional footer below, for writing comments and
+ * posts in Markdown or any other markup. The framework draws the parts; what the buttons do is your script's job.
+ *   <div class="editor">
+ *     <div class="editor-toolbar" role="toolbar" aria-label="Formatting">
+ *       <div class="editor-toolbar-group">
+ *         <button class="editor-button" type="button" title="Bold">…icon…</button>
+ *         <button class="editor-button active" type="button" title="Italic">…icon…</button>
+ *       </div>
+ *       <div class="editor-toolbar-group">…</div>
+ *       <span class="editor-toolbar-spacer"></span>
+ *       <button class="editor-button" type="button">Preview</button>
+ *     </div>
+ *     <textarea class="editor-input" rows="6" placeholder="…"></textarea>
+ *     <div class="editor-footer"><span>Markdown is supported</span><span>0 / 2000</span></div>
+ *   </div>
+ * The textarea is resized by its lower edge and the frame follows it. Groups of buttons are divided by a line, an
+ * .editor-toolbar-spacer pushes what follows it to the end of the bar, and the bar wraps when it runs out of room.
+ * .active marks a button whose format is on, .editor-input.mono sets the text in the monospace font, .invalid on
+ * the editor marks it like an invalid field. A textarea outside an editor is an .input-field, which is resized by
+ * its lower edge as well.
+ */
+
+.editor {
+  display: flex;
+  flex-flow: column;
+  min-inline-size: 0;
+  color: var(--text-color);
+  background-color: var(--well-color);
+  border: var(--border-width) solid var(--control-border-color);
+  border-radius: var(--border-radius-inner);
+  transition: border-color 0.1s;
+}
+
+.editor.invalid {
+  border-color: var(--danger-tint-text-color);
+}
+
+/* The frame is the field: it reacts to the pointer and shows the focus of the textarea */
+.editor:hover {
+  border-color: var(--text-color);
+}
+
+.editor:focus-within {
+  border-color: var(--focus-color);
+}
+
+.editor:has(.editor-input:focus-visible) {
+  @mixin focus-ring;
+}
+
+/* An invalid editor keeps the danger color for its focus, as an invalid field does */
+.editor.invalid:focus-within {
+  border-color: var(--danger-tint-text-color);
+}
+
+.editor.invalid:has(.editor-input:focus-visible) {
+  @mixin focus-ring var(--danger-tint-text-color);
+}
+
+.editor .editor-toolbar {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: stretch;
+  gap: var(--spacing-xs) 0;
+  padding: var(--spacing-xs);
+  background-color: var(--tint-color);
+  border-bottom: var(--border-width) solid var(--tint-color);
+  border-radius: calc(var(--border-radius-inner) - var(--border-width))
+    calc(var(--border-radius-inner) - var(--border-width)) 0 0;
+}
+
+.editor .editor-toolbar-group {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+}
+
+/* A line between two groups */
+.editor .editor-toolbar-group + .editor-toolbar-group {
+  margin-inline-start: var(--spacing-sm);
+  padding-inline-start: var(--spacing-sm);
+  border-inline-start: var(--border-width) solid var(--inset-shadow-color);
+}
+
+.editor .editor-toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+/* A toolbar button: flat until it is hovered, pressed or .active, with room for an icon or a short text */
+.editor .editor-button {
+  --_shade: transparent;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-xs);
+  box-sizing: border-box;
+  min-inline-size: var(--editor-button-size);
+  min-block-size: var(--editor-button-size);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  color: var(--bar-link-color);
+  background-color: transparent;
+  border: 0;
+  border-radius: var(--border-radius-inner);
+  box-shadow: inset 0 0 0 100em var(--_shade);
+  font-size: var(--badge-font-size);
+  font-weight: bold;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition-property: color, box-shadow;
+  transition-duration: 0.1s;
+}
+
+.editor .editor-button:disabled {
+  cursor: not-allowed;
+  @mixin faded;
+}
+
+.editor .editor-button:not(:disabled):hover {
+  --_shade: var(--hover-shade-color);
+  color: var(--text-color);
+}
+
+.editor .editor-button:not(:disabled):active,
+.editor .editor-button.active {
+  --_shade: var(--active-shade-color);
+  color: var(--text-color);
+}
+
+.editor .editor-button:focus-visible {
+  @mixin focus-ring-inset;
+}
+
+/* The textarea fills the frame, which draws its border; the lower edge resizes it */
+.editor .editor-input {
+  display: block;
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-block-size: var(--editor-min-height);
+  margin: 0;
+  padding: var(--input-padding);
+  color: inherit;
+  background-color: transparent;
+  border: 0;
+  outline: 0;
+  box-shadow: var(--well-shadow);
+  font: inherit;
+  line-height: var(--text-line-height);
+  resize: vertical;
+  scrollbar-width: thin;
+}
+
+.editor .editor-input.mono {
+  font-family: var(--mono-font);
+}
+
+.editor .editor-input::placeholder {
+  color: var(--placeholder-color);
+}
+
+.editor .editor-input:disabled {
+  cursor: not-allowed;
+  @mixin faded;
+}
+
+/* The footer: a hint at the start, a count or a link at the end */
+.editor .editor-footer {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-xs) var(--spacing-md);
+  padding: var(--spacing-xs) var(--input-padding);
+  font-size: var(--badge-font-size);
+  color: var(--muted-text-color);
+  background-color: var(--tint-faint-color);
+  border-top: var(--border-width) solid var(--tint-color);
+  border-radius: 0 0 calc(var(--border-radius-inner) - var(--border-width))
+    calc(var(--border-radius-inner) - var(--border-width));
+}
+
+.editor .editor-footer a:where(:not($(bar-controls))) {
+  color: var(--bar-link-color);
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.editor .editor-footer a:where(:not($(bar-controls))):hover {
+  text-decoration: underline;
+}

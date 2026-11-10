@@ -1,0 +1,205 @@
+/*
+ * Layout helpers.
+ *  .layout-columns   a side column (.layout-side, --layout-side-width wide) next to the main one (.layout-main);
+ *                    below the md breakpoint they stack. Put .layout-side after .layout-main for a column at the end
+ *  .layout-narrow    a column of readable width (--layout-narrow-width), .layout-center centers a block in its row
+ *
+ * Flex utilities, named as in Tailwind. They are !important, so that they win over the display and alignment of a
+ * component:
+ *  .flex .inline-flex                 a flex container
+ *  .flex-row .flex-col                its direction, also .flex-row-reverse and .flex-col-reverse
+ *  .flex-wrap .flex-nowrap            whether its items wrap
+ *  .items-{start|center|end|stretch|baseline}            the items on the cross axis
+ *  .justify-{start|center|end|between|around|evenly}     the items on the main axis
+ *  .self-{start|center|end|stretch}   one item on the cross axis
+ *  .flex-1 .flex-auto .flex-none      an item that shares the room, grows from its size, or keeps its size
+ *  .grow .grow-0 .shrink .shrink-0    the two halves of that on their own
+ *  .gap-{key} .gap-x-{key} .gap-y-{key}   the gap of a flex or grid container, a step of the spacing scale or 0
+ * The older names still work: .flex-column, .flex-center (cross axis), .flex-middle (both axes), .flex-between,
+ * .flex-end, and on items .flex-grow and .flex-fixed.
+ */
+
+.layout-columns {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: flex-start;
+  gap: var(--block-spacing);
+}
+
+.layout-columns > .layout-side {
+  flex: 0 0 auto;
+  inline-size: var(--layout-side-width);
+  overflow-wrap: break-word;
+}
+
+.layout-columns > .layout-main {
+  flex: 1 1 auto;
+  /* Lets long words and wide tables shrink instead of pushing the side column out */
+  min-inline-size: 0;
+  overflow-wrap: break-word;
+}
+
+@media not all and (min-width: $breakpoint-md) {
+  .layout-columns {
+    flex-flow: column nowrap;
+    align-items: stretch;
+  }
+
+  .layout-columns > .layout-side {
+    inline-size: auto;
+  }
+}
+
+.layout-narrow {
+  max-inline-size: var(--layout-narrow-width);
+}
+
+.layout-center {
+  margin-inline: auto;
+}
+
+.flex {
+  display: flex !important;
+}
+
+.inline-flex {
+  display: inline-flex !important;
+}
+
+.flex-row {
+  flex-direction: row !important;
+}
+
+.flex-row-reverse {
+  flex-direction: row-reverse !important;
+}
+
+.flex-col {
+  flex-direction: column !important;
+}
+
+.flex-col-reverse {
+  flex-direction: column-reverse !important;
+}
+
+.flex-wrap {
+  flex-wrap: wrap !important;
+}
+
+.flex-nowrap {
+  flex-wrap: nowrap !important;
+}
+
+@define-mixin align-utilities $name, $value {
+  .items-$(name) {
+    align-items: $(value) !important;
+  }
+
+  .self-$(name) {
+    align-self: $(value) !important;
+  }
+}
+
+@mixin align-utilities start, flex-start;
+@mixin align-utilities center, center;
+@mixin align-utilities end, flex-end;
+@mixin align-utilities stretch, stretch;
+
+.items-baseline {
+  align-items: baseline !important;
+}
+
+@define-mixin justify-utility $name, $value {
+  .justify-$(name) {
+    justify-content: $(value) !important;
+  }
+}
+
+@mixin justify-utility start, flex-start;
+@mixin justify-utility center, center;
+@mixin justify-utility end, flex-end;
+@mixin justify-utility between, space-between;
+@mixin justify-utility around, space-around;
+@mixin justify-utility evenly, space-evenly;
+
+/* An item of 0 basis may shrink below its content, so that long words do not push its row wider */
+.flex-1 {
+  flex: 1 1 0% !important;
+  min-inline-size: 0;
+}
+
+.flex-auto {
+  flex: 1 1 auto !important;
+}
+
+.flex-none {
+  flex: none !important;
+}
+
+.grow {
+  flex-grow: 1 !important;
+}
+
+.grow-0 {
+  flex-grow: 0 !important;
+}
+
+.shrink {
+  flex-shrink: 1 !important;
+}
+
+.shrink-0 {
+  flex-shrink: 0 !important;
+}
+
+/* The older names */
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-center {
+  align-items: center;
+}
+
+.flex-middle {
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  justify-content: space-between;
+}
+
+.flex-end {
+  justify-content: flex-end;
+}
+
+.flex-grow {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+
+.flex-fixed {
+  flex: 0 0 auto;
+}
+
+@define-mixin gap-utilities $key {
+  .gap-$(key) {
+    gap: var(--spacing-$(key)) !important;
+  }
+
+  .gap-x-$(key) {
+    column-gap: var(--spacing-$(key)) !important;
+  }
+
+  .gap-y-$(key) {
+    row-gap: var(--spacing-$(key)) !important;
+  }
+}
+
+@mixin gap-utilities 0;
+@mixin gap-utilities xs;
+@mixin gap-utilities sm;
+@mixin gap-utilities md;
+@mixin gap-utilities lg;
+@mixin gap-utilities xl;

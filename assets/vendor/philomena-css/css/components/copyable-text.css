@@ -1,0 +1,24 @@
+.copyable-text {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+.copyable-text > * {
+  display: flex;
+  border-radius: var(--border-radius-inner);
+}
+
+/* prettier-ignore */
+@mixin combined-border-radius .copyable-text > *;
+
+.copyable-text > * > .button {
+  border-radius: inherit !important;
+}
+
+.copyable-text .copyable-text-data {
+  user-select: all;
+  /* The wrapper stretches it to the height of the button, so center the text instead of leaving it at the top */
+  align-items: center;
+}

@@ -1,0 +1,159 @@
+html {
+  font-size: var(--base-font-size);
+  font-family: var(--base-font);
+}
+
+@media not print {
+  html {
+    background-color: var(--page-bg-color);
+  }
+}
+
+body {
+  min-height: 100vh;
+  font-family: var(--base-font);
+  color: var(--text-color);
+  line-height: var(--base-line-height);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: var(--heading-line-height);
+  font-weight: normal;
+}
+
+h1 {
+  font-size: var(--heading-1-size);
+}
+
+h2 {
+  font-size: var(--heading-2-size);
+}
+
+h3 {
+  font-size: var(--heading-3-size);
+}
+
+h4 {
+  font-size: var(--heading-4-size);
+}
+
+h5 {
+  font-size: var(--heading-5-size);
+}
+
+h6 {
+  font-size: var(--heading-6-size);
+}
+
+/* Headings keep a large distance from what surrounds them, except where they are the label of a component */
+:where(h1, h2, h3, h4, h5, h6):where(:not(.card-header *, th *, td *, .badge *, .tag *, .button *)) {
+  margin-block: var(--heading-spacing);
+}
+
+:where(h1, h2, h3, h4, h5, h6):where(:not(.card-header *)):where(:first-child) {
+  margin-top: 0;
+}
+
+:where(h1, h2, h3, h4, h5, h6):where(:not(.card-header *)):where(:last-child) {
+  margin-bottom: 0;
+}
+
+/*
+ * Scrollbars are thin and in the tints of the theme, on the page and inside everything that scrolls. scrollbar-color
+ * is inherited, so the root is enough; the ::-webkit-scrollbar rules are for browsers that do not have it yet.
+ */
+
+:root {
+  scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
+}
+
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: var(--scrollbar-size);
+    height: var(--scrollbar-size);
+    background-color: var(--scrollbar-track-color);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb-color);
+    border-radius: var(--scrollbar-size);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background-color: var(--scrollbar-track-color);
+  }
+}
+
+/* Small scrolling boxes inside the components get the thin variant */
+:where(.code-block, .table-wrap, .tag-box, .combobox-suggestions, .collapsible, .burger, .docs-source) {
+  scrollbar-width: thin;
+}
+
+/*
+ * The reset removes every outline. Anything focusable gets the focus ring back here, at no specificity, so that the
+ * components (and you) can restyle it; elements that are clipped by their container draw it inside themselves.
+ */
+
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  @mixin focus-ring;
+}
+
+:where(.tag, .media-box, .block-header, .tabs, .communication, .table-wrap) :where(a, button):focus-visible {
+  @mixin focus-ring-inset;
+}
+
+/*
+ * Rhythm. Significant blocks that follow each other in normal flow keep a large distance, a run of alerts a medium
+ * one, and so do running text and controls: a paragraph or list from what follows it, a group of controls (or a
+ * single button) from the text and blocks around it. Only the children of the framework's flow containers are
+ * spaced, a flex or grid parent of your own lays its children out with its gap. The rules have no specificity, so
+ * any margin of your own wins.
+ */
+/* prettier-ignore */
+$flow-containers: body, main, .content, .card, .block-content, .tab-panel, .collapsible-inner, .accordion-item-body, .popup, .card-forms-section, .layout-main, .layout-side;
+/* prettier-ignore */
+$flow-blocks: .card, .block, .communication, blockquote, .blockquote, .media-list, .table-wrap, .alert, .code-block, .collapsible.visible, .tag-box, .accordion, .form-control-group, .editor, .side-tabs, .content;
+/* prettier-ignore */
+$flow-groups: .button-group, .badge-group, .tag-list, .pagination, .pagination-bar;
+$flow-text: p, ul, ol;
+
+:where($(flow-containers)) > :where($(flow-blocks)) + :where($(flow-blocks)) {
+  margin-top: var(--block-spacing);
+}
+
+:where($(flow-containers)) > :where(.alert) + :where(.alert) {
+  margin-top: var(--alert-gap);
+}
+
+:where($(flow-containers)) > :where($(flow-text)) + :where($(flow-text), .button, $(flow-groups), $(flow-blocks)) {
+  margin-top: var(--spacing-md);
+}
+
+/* A button after a button is inline with it, so it is not spaced */
+:where($(flow-containers)) > :where(.button, $(flow-groups)) + :where($(flow-text), $(flow-groups), $(flow-blocks)) {
+  margin-top: var(--spacing-md);
+}
+
+:where($(flow-containers)) > :where($(flow-blocks)) + :where($(flow-text), .button, $(flow-groups)) {
+  margin-top: var(--spacing-md);
+}
+
+/* Form controls that are stacked without a .form-control-group, and the submit row after them, keep the form distance */
+/* prettier-ignore */
+:where($(flow-containers)) > :where(.form-control-wrap, .form-control, .form-control-group) + :where(.form-control-wrap, .form-control, .form-control-submit, .from-control-submit) {
+  margin-top: var(--form-control-spacing);
+}
+
+/* People who ask for reduced motion get no transitions; the loading indicator keeps turning, it conveys state */
+@media (prefers-reduced-motion) {
+  *,
+  *:before,
+  *:after {
+    transition: none !important;
+  }
+}

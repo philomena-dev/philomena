@@ -1,0 +1,15 @@
+.content-container {
+  margin: 0 auto;
+  width: 100%;
+  max-width: calc(var(--content-container-max-width) + 2 * var(--content-spacing));
+  padding: var(--content-spacing);
+}
+
+.content-container .content {
+  display: block;
+  width: 100%;
+}
+
+.content-container .content > :not(:last-child) {
+  margin-bottom: var(--content-spacing);
+}

@@ -1,0 +1,44 @@
+/*
+ * Blockquotes, for quoted text and reply threads: a rounded bar on the start side with a gap to the text. A quote inside a
+ * quote adds another bar, so the depth of a thread shows as a row of bars; from the seventh level on the gap
+ * between bar and text is small so that deep threads keep room for the text. <blockquote> and .blockquote both work.
+ */
+
+blockquote,
+.blockquote {
+  position: relative;
+  margin: 0;
+  padding-inline-start: calc(var(--blockquote-bar-width) + var(--blockquote-gap));
+}
+
+/* The bar is drawn by a pseudo-element so that it can be rounded on all corners */
+:is(blockquote, .blockquote):before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: var(--blockquote-bar-width);
+  border-radius: var(--border-radius-large);
+  background-color: var(--accent-color);
+}
+
+/* The text of a quote keeps the rhythm of the surrounding content */
+:where(blockquote, .blockquote) > * + * {
+  margin-top: var(--spacing-md);
+}
+
+/* A nested quote stands a little further off the text above it */
+:where(blockquote, .blockquote) > * + :is(blockquote, .blockquote) {
+  margin-top: var(--blockquote-nested-gap);
+}
+
+/* Seven levels deep and beyond */
+:is(blockquote, .blockquote)
+  :is(blockquote, .blockquote)
+  :is(blockquote, .blockquote)
+  :is(blockquote, .blockquote)
+  :is(blockquote, .blockquote)
+  :is(blockquote, .blockquote)
+  :is(blockquote, .blockquote) {
+  padding-inline-start: calc(var(--blockquote-bar-width) + var(--blockquote-deep-gap));
+}

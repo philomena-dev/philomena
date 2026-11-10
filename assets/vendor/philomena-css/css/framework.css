@@ -1,0 +1,4 @@
+/* Everything except the configuration: design tokens and base styles, utilities and all components */
+@import "design/index.css";
+@import "utils/index.css";
+@import "components/index.css";

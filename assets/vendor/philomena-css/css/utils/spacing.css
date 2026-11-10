@@ -1,0 +1,123 @@
+/*
+ * Margin and padding utilities, named as in Tailwind, for each step of the spacing scale (--spacing-{key}, the keys
+ * are 0 and xs, sm, md, lg, xl): .m-{key} for all sides, .mx- and .my- for an axis, .mt- .mb- .ml- .mr- for a side,
+ * .ms- and .me- for the start and the end of the line, and the same with p for padding. .m-auto, .mx-auto, .my-auto
+ * and the per-side forms (.ms-auto ...) take the free space, to center a block or push an item to the other end of
+ * a flex row. To add a step, define --spacing-{key} and call the mixins with the new key.
+ */
+@define-mixin margin-utilities $key {
+  .m-$(key) {
+    margin: var(--spacing-$(key)) !important;
+  }
+
+  .mt-$(key) {
+    margin-top: var(--spacing-$(key)) !important;
+  }
+
+  .mb-$(key) {
+    margin-bottom: var(--spacing-$(key)) !important;
+  }
+
+  .my-$(key) {
+    margin-top: var(--spacing-$(key)) !important;
+    margin-bottom: var(--spacing-$(key)) !important;
+  }
+
+  .mx-$(key) {
+    margin-left: var(--spacing-$(key)) !important;
+    margin-right: var(--spacing-$(key)) !important;
+  }
+
+  .ml-$(key) {
+    margin-left: var(--spacing-$(key)) !important;
+  }
+
+  .mr-$(key) {
+    margin-right: var(--spacing-$(key)) !important;
+  }
+
+  @mixin margin-start .ms-$(key), var(--spacing-$(key));
+  @mixin margin-end .me-$(key), var(--spacing-$(key));
+}
+
+@define-mixin padding-utilities $key {
+  .p-$(key) {
+    padding: var(--spacing-$(key)) !important;
+  }
+
+  .pt-$(key) {
+    padding-top: var(--spacing-$(key)) !important;
+  }
+
+  .pb-$(key) {
+    padding-bottom: var(--spacing-$(key)) !important;
+  }
+
+  .py-$(key) {
+    padding-top: var(--spacing-$(key)) !important;
+    padding-bottom: var(--spacing-$(key)) !important;
+  }
+
+  .px-$(key) {
+    padding-left: var(--spacing-$(key)) !important;
+    padding-right: var(--spacing-$(key)) !important;
+  }
+
+  .pl-$(key) {
+    padding-left: var(--spacing-$(key)) !important;
+  }
+
+  .pr-$(key) {
+    padding-right: var(--spacing-$(key)) !important;
+  }
+
+  @mixin padding-start .ps-$(key), var(--spacing-$(key));
+  @mixin padding-end .pe-$(key), var(--spacing-$(key));
+}
+
+@mixin margin-utilities 0;
+@mixin margin-utilities xs;
+@mixin margin-utilities sm;
+@mixin margin-utilities md;
+@mixin margin-utilities lg;
+@mixin margin-utilities xl;
+
+@mixin padding-utilities 0;
+@mixin padding-utilities xs;
+@mixin padding-utilities sm;
+@mixin padding-utilities md;
+@mixin padding-utilities lg;
+@mixin padding-utilities xl;
+
+.m-auto {
+  margin: auto !important;
+}
+
+.mx-auto {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.my-auto {
+  margin-top: auto !important;
+  margin-bottom: auto !important;
+}
+
+.mt-auto {
+  margin-top: auto !important;
+}
+
+.mb-auto {
+  margin-bottom: auto !important;
+}
+
+.ml-auto {
+  margin-left: auto !important;
+}
+
+.mr-auto {
+  margin-right: auto !important;
+}
+
+@mixin margin-start .ms-auto, auto;
+@mixin margin-end .me-auto, auto;

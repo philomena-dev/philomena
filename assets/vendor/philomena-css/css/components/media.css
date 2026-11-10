@@ -1,0 +1,273 @@
+/*
+ * Media boxes and lists, after Philomena's thumbnails. A box holds an image in a square area (fitted inside it,
+ * .cover to crop it to fill) with an optional title bar above and overlay badges on the image. A list is a grid of as
+ * many boxes as fit per row, at least the thumbnail width each (the small one on small screens), filling the row.
+ *   <div class="media-list">
+ *     <figure class="media-box">
+ *       <div class="media-box-header"><a href="…">Title</a></div>
+ *       <a class="media-box-content" href="…"><img src="…" alt="…"><span class="media-box-overlay">Badge</span></a>
+ *     </figure>
+ *   </div>
+ */
+
+.media-box {
+  display: flex;
+  flex-flow: column;
+  min-width: 0;
+  color: var(--text-color);
+  background-color: var(--surface-color);
+  border: var(--border-width) solid var(--tint-color);
+  position: relative;
+  border-radius: var(--border-radius-outer);
+  overflow: hidden;
+  box-shadow: var(--container-shadow);
+}
+
+@mixin bevel .media-box;
+
+/* The title bar: one line, truncated; links in it are bold */
+.media-box .media-box-header {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  gap: var(--media-header-padding-horizontal);
+  padding: var(--media-header-padding-vertical) var(--media-header-padding-horizontal);
+  font-size: var(--media-header-font-size);
+  line-height: var(--base-line-height);
+  color: var(--text-color);
+  background-color: var(--tint-color);
+  white-space: nowrap;
+}
+
+.media-box .media-box-header > * {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.media-box .media-box-header.start {
+  justify-content: flex-start;
+}
+
+.media-box .media-box-header a:where(:not($(bar-controls))) {
+  color: var(--bar-link-color);
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.media-box .media-box-header a:where(:not($(bar-controls))):hover {
+  text-decoration: underline;
+}
+
+/*
+ * An action row, as the header of Philomena's image thumbnails: .media-box-header.actions holds .media-box-action
+ * links (an icon, optionally with a count) and a .media-box-score between the votes. Each action has the color of
+ * its kind (.fave, .upvote, .downvote, .comments, .hide), the vivid hues of the tag palette, and is filled with it
+ * when hovered or .active:
+ *   <div class="media-box-header actions">
+ *     <a class="media-box-action fave" href="#" title="Fave">★ <span>12</span></a>
+ *     <a class="media-box-action upvote active" href="#" title="Upvote">↑</a>
+ *     <span class="media-box-score" title="Score">34</span>
+ *     <a class="media-box-action downvote" href="#" title="Downvote">↓</a> …
+ *   </div>
+ */
+
+.media-box .media-box-header.actions {
+  flex-wrap: wrap;
+  gap: 0;
+  padding: 0;
+  align-items: stretch;
+}
+
+/* An action is never cut off: if a row of long counts does not fit the box, it wraps */
+.media-box .media-box-header.actions > :where(.media-box-action, .media-box-score) {
+  overflow: visible;
+}
+
+/* Icons are as wide as their shape here and not a fixed width, which the narrow boxes have no room for */
+.media-box .media-box-header .media-box-action > svg {
+  inline-size: auto;
+}
+
+.media-box .media-box-header .media-box-action,
+.media-box .media-box-header .media-box-score {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--media-header-padding-vertical) var(--media-header-padding-horizontal);
+  font-weight: bold;
+}
+
+.media-box .media-box-header .media-box-action {
+  --_color: var(--bar-link-color);
+  color: var(--_color);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.media-box .media-box-header .media-box-action.fave {
+  --_color: var(--tag-spoiler-text-color);
+}
+
+.media-box .media-box-header .media-box-action.upvote {
+  --_color: var(--tag-default-text-color);
+}
+
+.media-box .media-box-header .media-box-action.downvote,
+.media-box .media-box-header .media-box-action.hide {
+  --_color: var(--tag-error-text-color);
+}
+
+.media-box .media-box-header .media-box-action:hover,
+.media-box .media-box-header .media-box-action:focus-visible,
+.media-box .media-box-header .media-box-action.active {
+  color: var(--surface-color);
+  background-color: var(--_color);
+  text-decoration: none;
+}
+
+.media-box .media-box-header .media-box-action.disabled {
+  @mixin faded;
+  pointer-events: none;
+}
+
+/* Small boxes (a .small list, and every list on phones) have a smaller header, as Philomena's small thumbnails */
+.media-list.small .media-box .media-box-header {
+  font-size: var(--media-header-small-font-size);
+}
+
+.media-list.small .media-box .media-box-header .media-box-action,
+.media-list.small .media-box .media-box-header .media-box-score {
+  padding-inline: var(--spacing-xs);
+}
+
+@media not all and (min-width: $breakpoint-md) {
+  .media-box .media-box-header {
+    font-size: var(--media-header-small-font-size);
+  }
+
+  .media-box .media-box-header .media-box-action,
+  .media-box .media-box-header .media-box-score {
+    padding-inline: var(--spacing-xs);
+  }
+}
+
+/* The image area is square and the image is fitted inside it, as a thumbnail is; .cover crops it to fill the area */
+.media-box .media-box-content {
+  display: block;
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+
+.media-box .media-box-content img,
+.media-box .media-box-content video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.media-box.cover .media-box-content img,
+.media-box.cover .media-box-content video {
+  object-fit: cover;
+}
+
+/*
+ * Overlays: labels over the image, as Philomena's "WebM", "Spoiler: …" or "Deleted" markers. A label is a rounded,
+ * centered bar spanning the image minus a large inset on both sides. A single .media-box-overlay sits at the top
+ * (.bottom: at the bottom), several go in a .media-box-overlays wrapper, which stacks them with a small gap.
+ * .media-{color} on a label gives it the palette color.
+ */
+
+.media-box .media-box-overlay,
+.media-box .media-box-overlays {
+  position: absolute;
+  top: var(--media-overlay-inset-vertical);
+  inset-inline: var(--media-overlay-inset-horizontal);
+  pointer-events: none;
+}
+
+.media-box .media-box-overlays {
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  gap: var(--media-overlay-gap);
+}
+
+.media-box .media-box-overlay,
+.media-box .media-box-overlays > * {
+  padding: var(--media-overlay-padding);
+  border-radius: var(--border-radius-inner);
+  font-size: var(--media-header-font-size);
+  font-weight: bold;
+  line-height: var(--base-line-height);
+  text-align: center;
+  color: var(--overlay-text-color);
+  background-color: var(--overlay-color);
+  overflow-wrap: break-word;
+}
+
+.media-box .media-box-overlay.bottom,
+.media-box .media-box-overlays.bottom {
+  top: auto;
+  bottom: var(--media-overlay-inset-vertical);
+}
+
+@mixin each-type media-overlay-color-variation;
+
+/*
+ * A veil covers the whole image with a centered label, for spoilered or filtered media. .spoilered on the box also
+ * blurs the image under it. Remove the class (or the veil) from your script to reveal the image.
+ */
+
+.media-box .media-box-veil {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+  text-align: center;
+  font-weight: bold;
+  color: var(--veil-text-color);
+  background-color: var(--veil-color);
+  overflow-wrap: break-word;
+  pointer-events: none;
+}
+
+.media-box.spoilered .media-box-content img,
+.media-box.spoilered .media-box-content video {
+  filter: blur(var(--media-spoiler-blur));
+  /* Scaled up so the blur does not fade out at the edges */
+  transform: scale(1.1);
+}
+
+/* Faded until hovered, for spoilered or hidden media */
+.media-box.muted .media-box-content {
+  @mixin faded;
+}
+
+.media-box.muted:hover .media-box-content,
+.media-box.muted:focus-within .media-box-content {
+  opacity: 1;
+}
+
+@mixin each-type media-color-variation;
+
+/*
+ * The list: as many boxes as fit per row, at least the thumbnail width each, stretched to fill the row. .small uses
+ * the small width.
+ */
+
+.media-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(var(--media-box-width), 100%), 1fr));
+  gap: var(--group-gap);
+  align-items: start;
+}
+
+.media-list.small {
+  grid-template-columns: repeat(auto-fill, minmax(min(var(--media-box-small-width), 100%), 1fr));
+}

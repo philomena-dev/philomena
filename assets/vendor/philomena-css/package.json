@@ -1,0 +1,91 @@
+{
+  "name": "@philomena/philomena-css",
+  "version": "0.4.0",
+  "description": "HTML/CSS-only design framework based on HammerTimeCSS and adapted for Philomena, customizable through PostCSS variables",
+  "keywords": [
+    "css",
+    "postcss",
+    "design-system",
+    "css-variables",
+    "dark-mode",
+    "philomena",
+    "no-js"
+  ],
+  "homepage": "https://github.com/Meow/PhilomenaCSS#readme",
+  "bugs": {
+    "url": "https://github.com/Meow/PhilomenaCSS/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Meow/PhilomenaCSS.git"
+  },
+  "license": "MIT",
+  "author": "WentTheFox",
+  "type": "module",
+  "style": "dist/philomena.css",
+  "exports": {
+    ".": {
+      "style": "./dist/philomena.css",
+      "default": "./dist/philomena.css"
+    },
+    "./css/*": "./css/*",
+    "./dist/*": "./dist/*",
+    "./postcss.config.js": "./postcss.config.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "css",
+    "dist",
+    "postcss.config.js"
+  ],
+  "scripts": {
+    "build": "vite build && vite build --mode min",
+    "check:contrast": "node scripts/contrast.mjs",
+    "lint": "oxlint . && stylelint \"css/**/*.css\" \"docs/src/styles/*.css\"",
+    "fmt": "prettier --write .",
+    "fmt:check": "prettier --check .",
+    "commitlint": "commitlint --edit",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "the-new-css-reset": "^1.11.3"
+  },
+  "peerDependencies": {
+    "@csstools/postcss-relative-color-syntax": "^4.0.16",
+    "postcss-mixins": "^12.1.2",
+    "postcss-simple-vars": "^7.0.1"
+  },
+  "peerDependenciesMeta": {
+    "@csstools/postcss-relative-color-syntax": {
+      "optional": true
+    },
+    "postcss-mixins": {
+      "optional": true
+    },
+    "postcss-simple-vars": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "@csstools/postcss-relative-color-syntax": "^4.0.16",
+    "husky": "^9.1.7",
+    "oxlint": "^1.92.0",
+    "postcss": "^8.5.32",
+    "postcss-mixins": "^12.1.2",
+    "postcss-simple-vars": "^7.0.1",
+    "prettier": "^3.9.10",
+    "prettier-plugin-astro": "^1.1.2",
+    "stylelint": "^18.0.0",
+    "stylelint-config-recommended": "^19.0.0",
+    "vite": "^8.3.7"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "packageManager": "pnpm@12.18.0"
+}

@@ -1,0 +1,66 @@
+/*
+ * A block, as on Philomena: a tinted header bar at text size (a plain title, bold links and room for actions) over
+ * bordered content. Like a card, but with a bar instead of a heading band. Markup:
+ *   <section class="block">
+ *     <header class="block-header"><span class="block-header-title">Title</span><a href="…">Link</a> <div class="block-header-actions">…</div></header>
+ *     <div class="block-content">…</div>
+ *   </section>
+ * .block-header.sub is a lighter bar for a section inside the block. .block-{color} colors the bar and the border.
+ */
+
+.block {
+  color: var(--text-color);
+  background-color: var(--surface-color);
+  border: var(--border-width) solid var(--tint-color);
+  position: relative;
+  border-radius: var(--border-radius-outer);
+  overflow: hidden;
+  box-shadow: var(--container-shadow);
+}
+
+@mixin bevel .block;
+
+.block .block-header {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  gap: var(--block-header-padding-horizontal);
+  padding: var(--block-header-padding-vertical) var(--block-header-padding-horizontal);
+  color: var(--text-color);
+  background-color: var(--tint-color);
+}
+
+.block .block-header.sub {
+  background-color: var(--tint-faint-color);
+}
+
+/* Links in the content take the content link color, or the block's color on a colored block */
+.block .block-content a:where(:not($(content-controls))) {
+  color: var(--link-color);
+  text-decoration: underline;
+}
+
+.block .block-header a:where(:not($(bar-controls))) {
+  color: var(--bar-link-color);
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.block .block-header a:where(:not($(bar-controls))):hover {
+  text-decoration: underline;
+}
+
+/* Actions sit at the end of the bar */
+.block .block-header .block-header-actions {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-inline-start: auto;
+}
+
+.block .block-content {
+  padding: var(--block-content-padding);
+}
+
+@mixin each-type block-color-variation;

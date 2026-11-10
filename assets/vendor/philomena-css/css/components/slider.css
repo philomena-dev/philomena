@@ -1,0 +1,86 @@
+/*
+ * A slider: a range input with a track in the input material and a knob filled like a button.
+ *   <input class="slider" type="range" min="0" max="100" value="40">
+ * Firefox fills the track up to the knob by itself. Elsewhere set --slider-fill to the value as a percentage
+ * (style="--slider-fill: 40%", kept up to date by your script) to get the same.
+ */
+
+.slider {
+  --slider-fill: 0%;
+  --_track: linear-gradient(
+    to right,
+    var(--primary-color) var(--slider-fill),
+    var(--well-deep-color) var(--slider-fill)
+  );
+  display: block;
+  inline-size: var(--slider-width);
+  max-inline-size: 100%;
+  block-size: var(--slider-thumb-size);
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.slider.full-width {
+  inline-size: 100%;
+}
+
+.slider::-webkit-slider-runnable-track {
+  box-sizing: border-box;
+  block-size: var(--slider-track-height);
+  background: var(--_track);
+  border: var(--border-width) solid var(--control-border-color);
+  border-radius: var(--slider-track-height);
+}
+
+.slider::-moz-range-track {
+  box-sizing: border-box;
+  block-size: var(--slider-track-height);
+  background: var(--well-deep-color);
+  border: var(--border-width) solid var(--control-border-color);
+  border-radius: var(--slider-track-height);
+}
+
+.slider::-moz-range-progress {
+  block-size: var(--slider-track-height);
+  background: var(--primary-color);
+  border-radius: var(--slider-track-height);
+}
+
+.slider::-webkit-slider-thumb {
+  box-sizing: border-box;
+  inline-size: var(--slider-thumb-size);
+  block-size: var(--slider-thumb-size);
+  margin-top: calc((var(--slider-track-height) - var(--slider-thumb-size)) / 2 - var(--border-width));
+  appearance: none;
+  background-color: var(--neutral-color);
+  border: var(--border-width) solid var(--neutral-border-color);
+  border-radius: 50%;
+}
+
+.slider::-moz-range-thumb {
+  box-sizing: border-box;
+  inline-size: var(--slider-thumb-size);
+  block-size: var(--slider-thumb-size);
+  background-color: var(--neutral-color);
+  border: var(--border-width) solid var(--neutral-border-color);
+  border-radius: 50%;
+}
+
+.slider:not(:disabled):hover::-webkit-slider-thumb {
+  box-shadow: inset 0 0 0 100em var(--hover-shade-color);
+}
+
+.slider:not(:disabled):hover::-moz-range-thumb {
+  box-shadow: inset 0 0 0 100em var(--hover-shade-color);
+}
+
+.slider:focus-visible {
+  @mixin focus-ring-offset;
+}
+
+.slider:disabled {
+  @mixin faded;
+  cursor: not-allowed;
+}

@@ -1,0 +1,293 @@
+/*
+ * Tabs, as the tabbed headers of Philomena's blocks: a row of .tab links over the .tab-panel of the selected one.
+ * The framework styles the states, your script moves .selected between the tabs and between the panels:
+ *   <div class="tabs" role="tablist">
+ *     <a class="tab selected" href="#" role="tab" aria-selected="true">Comments</a>
+ *     <a class="tab" href="#" role="tab">History</a>
+ *   </div>
+ *   <div class="tab-panel selected" role="tabpanel">…</div>
+ *   <div class="tab-panel" role="tabpanel">…</div>
+ * The bar and its panels form one framed piece; they also work as the header and content of a .block.
+ *
+ * Side tabs put the same tabs in a column at the start, with the panel next to it, for settings pages and other
+ * long lists of sections. Wrap the bar and the panels in a .side-tabs; a .tabs-title is a heading between groups
+ * of tabs:
+ *   <div class="side-tabs">
+ *     <nav class="tabs">
+ *       <span class="tabs-title">Account</span>
+ *       <a class="tab selected" href="…">Profile</a>
+ *       <a class="tab" href="…">Security</a>
+ *     </nav>
+ *     <div class="tab-panel selected">…</div>
+ *   </div>
+ * They work the same two ways as tabs: with a panel per tab and a script that moves .selected, or as plain links
+ * to other pages, where each page has the one panel and marks its own tab .selected. Below the md breakpoint the
+ * column is a list over the panel. To make that list a selector that only shows the selected tab until it is
+ * clicked, add a checkbox before the bar and a label for it as the first thing inside:
+ *   <input class="side-tabs-toggle" type="checkbox" id="sections" aria-label="Show all sections">
+ *   <nav class="tabs"><label class="side-tabs-expand" for="sections"></label>…</nav>
+ * It needs no script; a script that switches panels in place should uncheck the box after a choice.
+ */
+
+.tabs {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: stretch;
+  background-color: var(--tint-color);
+  border: var(--border-width) solid var(--tint-color);
+  border-bottom: 0;
+  border-radius: var(--border-radius-outer) var(--border-radius-outer) 0 0;
+  position: relative;
+  /* The bar's part of the line of shadow outside a raised piece, the panel has the rest */
+  box-shadow: 1px 0 0 var(--container-shadow-color);
+  overflow: hidden;
+}
+
+/* The upper half of the bevel, as a layer over the tabs: the light line along the top and left of the bar */
+.tabs:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow:
+    inset 1px 1px 0 var(--inset-highlight-color),
+    inset -1px 0 0 var(--raised-inset-color);
+  pointer-events: none;
+}
+
+.tabs .tab {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  color: var(--bar-link-color);
+  font-weight: bold;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition-property: color, background-color;
+  transition-duration: 0.1s;
+}
+
+.tabs .tab:hover {
+  background-color: var(--tint-faint-color);
+}
+
+/* The selected tab takes the surface of its panel, so that the two read as one piece */
+.tabs .tab.selected {
+  color: var(--text-color);
+  background-color: var(--surface-color);
+}
+
+.tabs .tab:focus-visible {
+  @mixin focus-ring-inset;
+}
+
+.tabs .tab.disabled {
+  @mixin faded;
+  font-style: italic;
+  pointer-events: none;
+}
+
+.tab-panel {
+  padding: var(--block-content-padding);
+  color: var(--text-color);
+  background-color: var(--surface-color);
+  border: var(--border-width) solid var(--tint-color);
+  border-top: 0;
+  border-radius: 0 0 var(--border-radius-outer) var(--border-radius-outer);
+  /* The lower half of the bevel, the bar has the upper half */
+  box-shadow:
+    inset 1px 0 0 var(--inset-highlight-color),
+    inset -1px -1px 0 var(--raised-inset-color),
+    var(--container-shadow);
+}
+
+.tab-panel:not(.selected) {
+  display: none;
+}
+
+/* A panel fades in as it is selected; people who ask for reduced motion get it at once */
+@media (prefers-reduced-motion: no-preference) {
+  .tab-panel.selected {
+    animation: tab-panel-in 0.14s ease-out;
+  }
+}
+
+@keyframes tab-panel-in {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* In a block the block draws the frame */
+.block > .tabs,
+.block > .tab-panel {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.block > .tabs:after,
+.side-tabs > .tabs:after {
+  content: none;
+}
+
+.tabs .tabs-title {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--badge-font-size);
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+/* Side tabs: one frame around the column of tabs and the panel next to it */
+.side-tabs {
+  display: grid;
+  grid-template-columns: var(--side-tabs-width) minmax(0, 1fr);
+  color: var(--text-color);
+  background-color: var(--surface-color);
+  border: var(--border-width) solid var(--tint-color);
+  border-radius: var(--border-radius-outer);
+  position: relative;
+  box-shadow: var(--container-shadow);
+  overflow: hidden;
+}
+
+@mixin bevel .side-tabs;
+
+.side-tabs > .tabs {
+  flex-flow: column nowrap;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Long names wrap in the column instead of widening it; rows are taller and icons further from the text */
+.side-tabs > .tabs .tab {
+  gap: var(--spacing-md);
+  padding-block: var(--spacing-lg);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* A group title is set larger than the tabs, with room around it */
+.side-tabs > .tabs .tabs-title {
+  padding-block: var(--spacing-lg);
+  font-size: var(--heading-6-size);
+}
+
+/* A title after other tabs starts a new group, set off by more room */
+.side-tabs > .tabs .tab + .tabs-title {
+  margin-top: var(--spacing-lg);
+}
+
+.side-tabs > .tab-panel {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* The toggle and its label only exist on narrow screens */
+.side-tabs > .side-tabs-toggle,
+.side-tabs > .tabs > .side-tabs-expand {
+  display: none;
+}
+
+/*
+ * Narrow screens: the column is a list over the panel. With a .side-tabs-toggle checkbox before the bar and a
+ * .side-tabs-expand label inside it, the list is a selector: only the selected tab shows, and clicking it opens the
+ * whole list. The label covers the closed row, and is the caret in the corner of the open list.
+ */
+@media not all and (min-width: $breakpoint-md) {
+  .side-tabs {
+    display: block;
+  }
+
+  .side-tabs > .tabs {
+    position: relative;
+  }
+
+  .side-tabs > .tabs .tab + .tabs-title {
+    margin-top: 0;
+  }
+
+  .side-tabs > .side-tabs-toggle {
+    display: block;
+    @mixin hidden-toggle;
+  }
+
+  .side-tabs > .side-tabs-toggle:focus-visible ~ .tabs {
+    @mixin focus-ring-inset;
+  }
+
+  /* The rows fold away instead of disappearing, so that the list opens and closes in a quick slide */
+  .side-tabs > .side-tabs-toggle ~ .tabs > :not(.side-tabs-expand) {
+    max-block-size: var(--side-tabs-row-max-height);
+    overflow: hidden;
+    transition:
+      max-block-size 0.16s ease-out,
+      padding 0.16s ease-out,
+      opacity 0.12s ease-out,
+      background-color 0.1s,
+      visibility 0s;
+  }
+
+  .side-tabs > .side-tabs-toggle:not(:checked) ~ .tabs > :not(.selected, .side-tabs-expand) {
+    max-block-size: 0;
+    padding-block: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition-delay: 0s, 0s, 0s, 0s, 0.16s;
+  }
+
+  /* The closed selector is a bar in the tint of the tabs, with its text in their link color like a control */
+  .side-tabs > .side-tabs-toggle:not(:checked) ~ .tabs > .tab.selected {
+    color: var(--bar-link-color);
+    background-color: transparent;
+  }
+
+  /* Room for the caret at the end of the first row */
+  .side-tabs > .side-tabs-toggle ~ .tabs > :not(.side-tabs-expand) {
+    padding-inline-end: var(--side-tabs-toggle-size);
+  }
+
+  .side-tabs > .tabs > .side-tabs-expand {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    cursor: pointer;
+  }
+
+  .side-tabs > .side-tabs-toggle:checked ~ .tabs > .side-tabs-expand {
+    inset: 0 0 auto auto;
+  }
+
+  /* The caret, in a box as tall as a row: down when closed, up when open */
+  .side-tabs > .tabs > .side-tabs-expand:after {
+    content: "";
+    box-sizing: border-box;
+    margin: calc((var(--side-tabs-toggle-size) - 0.35em) / 2) calc((var(--side-tabs-toggle-size) - 0.7em) / 2);
+    border: 0.35em solid transparent;
+    border-top-color: var(--text-color);
+    border-bottom-width: 0;
+    transition:
+      transform 0.16s ease-out,
+      border-color 0.1s;
+  }
+
+  .side-tabs > .side-tabs-toggle:checked ~ .tabs > .side-tabs-expand:after {
+    transform: rotate(180deg);
+  }
+
+  .side-tabs > .side-tabs-toggle:not(:checked) ~ .tabs > .side-tabs-expand:after {
+    border-top-color: var(--bar-link-color);
+  }
+}

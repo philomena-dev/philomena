@@ -1,0 +1,16 @@
+.card-forms {
+  display: flex;
+  flex-flow: row wrap;
+  gap: var(--card-padding);
+  justify-content: flex-start;
+}
+
+.card-forms .card-forms-section {
+  flex: 0 1 100%;
+}
+
+@media (min-width: $breakpoint-xl) {
+  .card-forms .card-forms-section {
+    flex-basis: calc(50% - var(--card-padding) / 2);
+  }
+}

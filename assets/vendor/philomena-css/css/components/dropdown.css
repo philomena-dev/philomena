@@ -1,0 +1,152 @@
+/*
+ * A dropdown: a menu under any trigger (a button, a link, an avatar). It opens while the .dropdown is hovered or
+ * has the focus inside, without a script, or with .open; .dropdown.manual only opens with .open, for a click toggle
+ * of your own. Markup:
+ *   <div class="dropdown">
+ *     <button type="button" class="button" aria-haspopup="true">Options</button>
+ *     <div class="dropdown-menu">
+ *       <a class="dropdown-item" href="…"><span class="dropdown-icon">…</span>Edit</a>
+ *       <hr class="dropdown-divider">
+ *       <a class="dropdown-item dropdown-danger" href="…">Delete</a>
+ *     </div>
+ *   </div>
+ *
+ * A <details class="dropdown"> with a <summary> as the trigger opens and closes on click, without a script, which
+ * suits menus that stay open while you use them. Items can be labels with a control, a checkbox, radio or switch
+ * (css/components/menu.css):
+ *   <details class="dropdown">
+ *     <summary class="button">Filters</summary>
+ *     <div class="dropdown-menu">
+ *       <label class="dropdown-item"><span class="dropdown-icon">…</span>Night mode
+ *         <input class="form-switch-input menu-end" type="checkbox" checked></label>
+ *       <label class="dropdown-item"><input class="menu-check-input" type="checkbox"><span class="menu-check-box"></span>Safe</label>
+ *       <div class="dropdown-actions">…buttons…</div>
+ *     </div>
+ *   </details>
+ *
+ * .dropdown-menu.end aligns the menu with the end of the trigger, .up opens it above. The menus of a navbar are the
+ * same thing with an icon column (css/components/navbar.css).
+ */
+
+.dropdown {
+  position: relative;
+  display: inline-flex;
+}
+
+.dropdown .dropdown-menu {
+  display: none;
+  position: absolute;
+  z-index: var(--z-menu);
+  top: 100%;
+  inset-inline-start: 0;
+  min-inline-size: max(100%, var(--dropdown-min-width));
+  flex-flow: column;
+  box-sizing: border-box;
+  padding-block: var(--spacing-sm);
+  color: var(--text-color);
+  background-color: var(--surface-color);
+  border: var(--border-width) solid var(--tint-color);
+  /* Attached to its trigger: square where the two meet, like the menus of a navbar */
+  border-radius: 0 0 var(--border-radius-outer) var(--border-radius-outer);
+  box-shadow: var(--emphasis-shadow), var(--menu-shadow);
+}
+
+.dropdown .dropdown-menu.end {
+  inset-inline: auto 0;
+}
+
+.dropdown .dropdown-menu.up {
+  top: auto;
+  bottom: 100%;
+  /* The shadow falls away from the trigger, upward */
+  box-shadow:
+    var(--emphasis-shadow),
+    0 calc(-1 * var(--spacing-lg)) var(--spacing-lg) calc(-1 * var(--spacing-sm)) var(--shadow-color);
+  border-radius: var(--border-radius-outer) var(--border-radius-outer) 0 0;
+}
+
+.dropdown.open > .dropdown-menu {
+  display: flex;
+}
+
+/* A <details> dropdown is opened by its summary, not by the pointer */
+/* stylelint-disable-next-line no-descending-specificity -- the open rules stay together */
+details.dropdown > .dropdown-menu {
+  display: none;
+}
+
+details.dropdown[open] > .dropdown-menu {
+  display: flex;
+}
+
+:not(details).dropdown:not(.manual):hover > .dropdown-menu,
+:not(details).dropdown:not(.manual):focus-within > .dropdown-menu {
+  display: flex;
+}
+
+/* While the menu is open a button trigger looks pressed and loses the corners on the side of the menu, so that the
+   two read as one piece */
+
+.dropdown.open > .button,
+details.dropdown[open] > .button,
+:not(details).dropdown:not(.manual):hover > .button,
+:not(details).dropdown:not(.manual):focus-within > .button {
+  --_shade: var(--_active-shade);
+  --_bevel: var(--well-shadow);
+  --_drop: transparent;
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+}
+
+.dropdown:has(> .dropdown-menu.up).open > .button,
+details.dropdown:has(> .dropdown-menu.up)[open] > .button,
+:not(details).dropdown:has(> .dropdown-menu.up):not(.manual):hover > .button,
+:not(details).dropdown:has(> .dropdown-menu.up):not(.manual):focus-within > .button {
+  border-radius: 0 0 var(--border-radius-inner) var(--border-radius-inner);
+}
+
+.dropdown .dropdown-item {
+  @mixin menu-item;
+  white-space: nowrap;
+}
+
+.dropdown .dropdown-item.dropdown-danger {
+  color: var(--danger-tint-text-color);
+}
+
+.dropdown .dropdown-item:hover,
+.dropdown .dropdown-item:focus-visible,
+.dropdown .dropdown-item.current {
+  background-color: var(--tint-faint-color);
+}
+
+.dropdown .dropdown-item:focus-visible {
+  @mixin focus-ring-inset;
+}
+
+.dropdown .dropdown-icon {
+  @mixin menu-icon;
+}
+
+.dropdown .dropdown-item.dropdown-danger .dropdown-icon {
+  color: inherit;
+}
+
+.dropdown .dropdown-divider {
+  @mixin menu-divider;
+  margin-block: var(--spacing-sm);
+}
+
+/* A row of buttons at the end of a menu, such as Apply and Clear */
+.dropdown .dropdown-actions {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
+}
+
+details.dropdown > summary {
+  cursor: pointer;
+  user-select: none;
+}

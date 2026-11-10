@@ -1,0 +1,37 @@
+/*
+ * Size utilities for each size token (--size-{step}, step 10 is 1em): .s-{step} sets the width and height,
+ * .fs-{step} the font size. To add a step, define --size-{step} and call the mixin with it.
+ *
+ * Text size utilities, named as in Tailwind, for each step of the text scale (--text-size-{key}, in rem, so that
+ * they do not compound when nested): .text-xs, .text-sm, .text-base, .text-lg, .text-xl, .text-2xl and .text-3xl.
+ * To add a step, define --text-size-{key} and call the text-size-utility mixin with it.
+ */
+@define-mixin size-utilities $step {
+  .s-$(step) {
+    width: var(--size-$(step));
+    height: var(--size-$(step));
+  }
+
+  .fs-$(step) {
+    font-size: var(--size-$(step));
+  }
+}
+
+@mixin size-utilities 10;
+@mixin size-utilities 15;
+@mixin size-utilities 20;
+@mixin size-utilities 100;
+
+@define-mixin text-size-utility $key {
+  .text-$(key) {
+    font-size: var(--text-size-$(key)) !important;
+  }
+}
+
+@mixin text-size-utility xs;
+@mixin text-size-utility sm;
+@mixin text-size-utility base;
+@mixin text-size-utility lg;
+@mixin text-size-utility xl;
+@mixin text-size-utility 2xl;
+@mixin text-size-utility 3xl;

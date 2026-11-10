@@ -1,0 +1,122 @@
+.input-field {
+  display: block;
+  box-sizing: border-box;
+  /* A field with a size or cols attribute is never wider than its column */
+  max-inline-size: 100%;
+  border: var(--border-width) solid var(--control-border-color);
+  border-radius: var(--border-radius-inner);
+  box-shadow: var(--well-shadow);
+  transition: border-color 0.1s;
+}
+
+/* Under the pointer the border of a control takes the text color, the counterpart of a button's hover shade */
+.input-field:where(:not(:disabled, [readonly])):hover {
+  border-color: var(--text-color);
+}
+
+/* A textarea is resized by its lower edge only */
+textarea.input-field {
+  min-block-size: calc(2em * var(--text-line-height) + 2 * var(--input-padding));
+  line-height: var(--text-line-height);
+  resize: vertical;
+  scrollbar-width: thin;
+}
+
+.input-field.full-width {
+  width: 100%;
+}
+
+.input-field:focus {
+  z-index: var(--z-focus);
+  border-color: var(--focus-color);
+}
+
+.input-field:focus-visible {
+  @mixin focus-ring;
+}
+
+.input-field:not([type="color"]) {
+  color: var(--text-color);
+  background-color: var(--well-color);
+  padding: var(--input-padding);
+}
+
+/* Read-only: a flat field on the surface with a dashed border, since its text can be selected but not edited */
+/* The field of a select-only combobox is read-only too, but still a control, and keeps the regular look */
+.input-field[readonly]:not([type="color"]):where(:not(.form-select-input)) {
+  background-color: transparent;
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.input-field:not([type="color"])::placeholder {
+  color: var(--placeholder-color);
+}
+
+/*
+ * Invalid: only once the user has edited the field (:user-invalid), so that an empty required field is not red when
+ * the page loads, or when your script or server marks it with .invalid. Browsers without :user-invalid fall back to
+ * fields that have content.
+ */
+
+.input-field:not([type="color"]).invalid,
+.input-field:not([type="color"]):user-invalid {
+  color: var(--danger-tint-text-color);
+  background-color: var(--danger-tint-color);
+  border-color: var(--danger-tint-text-color);
+}
+
+/* An invalid field reacts to the pointer like any other: its red border takes the text color */
+.input-field:not([type="color"]):is(.invalid, :user-invalid):where(:not(:disabled, [readonly])):hover {
+  border-color: var(--text-color);
+}
+
+.input-field.invalid:focus-visible,
+.input-field:user-invalid:focus-visible {
+  @mixin focus-ring var(--danger-tint-text-color);
+}
+
+@supports not selector(:user-invalid) {
+  .input-field:not([type="color"]):invalid:not(:placeholder-shown) {
+    color: var(--danger-tint-text-color);
+    background-color: var(--danger-tint-color);
+    border-color: var(--danger-tint-text-color);
+  }
+
+  .input-field:not([type="color"]):invalid:not(:placeholder-shown):where(:not(:disabled, [readonly])):hover {
+    border-color: var(--text-color);
+  }
+}
+
+.input-field[type="color"] {
+  /* The reset leaves color inputs without an intrinsic size */
+  width: var(--color-input-width);
+  height: var(--color-input-height);
+  cursor: pointer;
+}
+
+.input-field[type="color"]::-moz-color-swatch {
+  border: none;
+}
+
+.input-field[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border-radius: 0;
+}
+
+.input-field[type="color"]::-webkit-color-swatch {
+  border: none;
+}
+
+.input-field.hide-selection {
+  caret-color: transparent;
+}
+
+.input-field.hide-selection::selection {
+  background-color: transparent;
+}
+
+.input-field[disabled] {
+  cursor: not-allowed;
+  @mixin faded;
+}

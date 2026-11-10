@@ -1,0 +1,26 @@
+/*
+ * A separator: a horizontal rule in the border tint, at the distance of significant blocks. <hr> gets it by itself,
+ * .separator puts it on any element. .thin keeps a medium distance, .vertical is a rule between the items of a row
+ * (buttons, links), stretched to the height of the row.
+ */
+
+:where(hr),
+.separator {
+  block-size: 0;
+  margin: var(--block-spacing) 0;
+  border: 0;
+  border-top: var(--border-width) solid var(--tint-color);
+}
+
+.separator.thin {
+  margin-block: var(--spacing-md);
+}
+
+.separator.vertical {
+  align-self: stretch;
+  inline-size: 0;
+  block-size: auto;
+  margin: 0 var(--spacing-md);
+  border-top: 0;
+  border-inline-start: var(--border-width) solid var(--tint-color);
+}

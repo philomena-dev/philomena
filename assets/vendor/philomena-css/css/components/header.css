@@ -1,0 +1,60 @@
+.header {
+  position: sticky;
+  z-index: var(--z-header);
+  height: var(--header-height);
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--header-color);
+  color: var(--header-text-color);
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--header-spacing-vertical) var(--header-spacing-horizontal);
+  box-sizing: border-box;
+  border-bottom: var(--border-width) solid var(--header-border-color);
+  box-shadow: var(--edge-shadow);
+}
+
+/* A header lays its children out in a row: the brand, then whatever follows, pushed apart */
+.header > .nav {
+  flex-flow: row nowrap;
+}
+
+.header.non-stick {
+  position: absolute;
+}
+
+/* Without the line along its bottom, for a header with a navbar (or another bar) right under it */
+.header.borderless {
+  border-bottom: 0;
+  box-shadow: none;
+}
+
+/* What follows makes room for it; a burger menu after the header is fixed to the screen, so the room is made after it */
+.header.non-stick + :not(.burger, .burger-overlay),
+.header.non-stick + .burger + .burger-overlay + * {
+  margin-top: var(--header-height);
+}
+
+@media print {
+  .header {
+    display: none;
+  }
+}
+
+.header .header-brand {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  font-size: var(--header-brand-font-size);
+  color: var(--header-brand-color);
+  text-decoration: none;
+}
+
+.header .header-brand .header-brand-text {
+  font-weight: bold;
+  margin-inline-start: var(--spacing-sm);
+}

@@ -1,0 +1,58 @@
+/*
+ * Configuration. Load it first, override any of these after it, then load the framework:
+ *
+ *   @import "@philomena/philomena-css/css/config.css";
+ *   $base-color-dark: #99501e;
+ *   @import "@philomena/philomena-css/css/framework.css";
+ *
+ * Values are substituted when the framework is loaded, so overrides have to come before it.
+ *
+ * The palette comes from Philomena's light-blue and dark-blue themes and is laid out for contrast: text, labels,
+ * control borders and button text are at least 4.5:1 from what they sit on (WCAG 2 ratios), everything else keeps Philomena's
+ * tones. The lightness of every derived color is fixed in css/design/tokens.css, so other hues keep the ratios
+ * roughly; verify with `pnpm run check:contrast` after changing a color.
+ */
+
+/* Base (structural) colors the chrome is tinted with: Philomena's $base-color of each theme */
+$base-color-dark: #546c99;
+$base-color-light: #62a7d9;
+
+/* The page, the cards on it and the text: Philomena's $page-background-color, $background-color and $foreground-color */
+$page-color-dark: #141a24;
+$page-color-light: #f8fafc;
+$surface-color-dark: #1d242f;
+$surface-color-light: #ffffff;
+$text-color-dark: #e0e0e0;
+$text-color-light: #333333;
+
+/* Links inside content */
+$link-color-dark: #478acc;
+$link-color-light: #419cd9;
+
+/* Semantic hues for buttons, alerts and messages (the dark-blue theme's, special is its assistant color); each theme
+   sets its own lightness */
+$primary-color: #1a4c6b;
+$success-color: #144714;
+$danger-color: #66211f;
+$warning-color: #7d4825;
+$special-color: #511b4e;
+
+/* Tag category hues (the dark-blue theme's); each theme sets its own lightness. $tag-color is the plain tag */
+$tag-color: #4aa158;
+$tag-rating-color: #418dd9;
+$tag-spoiler-color: #d49b39;
+$tag-origin-color: #6f66d6;
+$tag-oc-color: #b157b7;
+$tag-error-color: #d45460;
+$tag-character-color: #4aaabf;
+$tag-official-color: #b9b541;
+$tag-fanmade-color: #cc8eb5;
+$tag-species-color: #b16b50;
+$tag-body-color: #b8b8b8;
+
+/* Breakpoints for the responsive tokens and media queries */
+$breakpoint-sm: 400px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1200px;
+$breakpoint-xxl: 1600px;

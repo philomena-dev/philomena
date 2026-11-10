@@ -1,0 +1,35 @@
+/* A block of code, as Philomena styles <pre>: the code material with padding, a smaller monospace font and horizontal scrolling */
+.code-block {
+  display: block;
+  max-width: 100%;
+  padding: var(--code-block-padding);
+  overflow: auto hidden;
+  font-family: var(--mono-font);
+  font-size: var(--code-block-font-size);
+  line-height: var(--code-line-height);
+  color: var(--text-color);
+  background-color: var(--well-color);
+  border: var(--border-width) solid var(--tint-color);
+  box-shadow: var(--emphasis-shadow), var(--container-shadow);
+  border-radius: var(--border-radius-inner);
+  box-sizing: border-box;
+  white-space: pre;
+}
+
+.code-block.wrap {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+/* Code inside a block has no chrome of its own */
+.code-block code,
+.code-block .code-span {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  background: none;
+}

@@ -1,0 +1,38 @@
+/*
+ * Inline spoiler text: a blacked-out run of text that shows while it is hovered or has the focus, or for good with
+ * .revealed (set it from your script on click, for touch screens). Give it tabindex="0" to make it reachable from the
+ * keyboard:
+ *   The killer is <span class="spoiler" tabindex="0">the butler</span>.
+ * A spoilered media box is a different thing, see .media-box.spoilered (css/components/media.css).
+ */
+
+.spoiler {
+  padding: 0 var(--spacing-xs);
+  border-radius: var(--border-radius-inner);
+  color: transparent;
+  background-color: var(--neutral-color);
+  transition-property: color, background-color;
+  transition-duration: 0.1s;
+}
+
+/* Everything inside is hidden with the text, links included */
+.spoiler:not(:hover, :focus, :focus-within, .revealed) * {
+  color: transparent !important;
+  text-decoration-color: transparent !important;
+}
+
+.spoiler:not(:hover, :focus, :focus-within, .revealed) img {
+  visibility: hidden;
+}
+
+.spoiler:hover,
+.spoiler:focus,
+.spoiler:focus-within,
+.spoiler.revealed {
+  color: inherit;
+  background-color: var(--tint-faint-color);
+}
+
+.spoiler:focus-visible {
+  @mixin focus-ring;
+}

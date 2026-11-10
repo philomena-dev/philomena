@@ -1,0 +1,18 @@
+.code-span {
+  padding: var(--code-padding-vertical) var(--code-padding-horizontal);
+  line-height: var(--code-line-height);
+  border-radius: var(--border-radius-inner);
+  color: var(--text-color);
+  background-color: var(--well-color);
+  box-sizing: border-box;
+  border: var(--border-width) solid var(--tint-color);
+  font-family: var(--mono-font);
+}
+
+.code-span.base-font {
+  font-family: var(--base-font);
+}
+
+.code-span.small {
+  font-size: var(--code-small-font-size);
+}

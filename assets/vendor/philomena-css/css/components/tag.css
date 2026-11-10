@@ -1,0 +1,144 @@
+/*
+ * Tags, as on Philomena's tag lists: a bold name with an optional count, colored by category (.tag-{category}).
+ * Borderless by default, set --tag-border to a width to draw a border in the count color. Markup:
+ *   <span class="tag tag-rating"><span class="tag-icon">…</span><a class="tag-name" href="…">safe</a><span class="tag-count">1234</span></span>
+ */
+
+.tag {
+  --_text: var(--tag-default-text-color);
+  --_bg: var(--tag-default-color);
+  --_affix: var(--tag-default-affix-color);
+  display: inline-flex;
+  align-items: stretch;
+  gap: var(--tag-gap);
+  width: fit-content;
+  font-size: var(--tag-font-size);
+  font-weight: bold;
+  line-height: var(--base-line-height);
+  color: var(--_text);
+  background-color: var(--_bg);
+  border: var(--tag-border) solid var(--_affix);
+  border-radius: var(--border-radius-inner);
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--raised-shadow);
+}
+
+@mixin bevel .tag;
+
+/* The vertical padding gives way to the border, so a bordered tag is as tall as a borderless one */
+.tag > * {
+  display: inline-flex;
+  align-items: center;
+  padding: calc(var(--tag-padding-vertical) - var(--tag-border)) var(--tag-padding-horizontal);
+}
+
+.tag a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* The icon slot sits flush against the name */
+.tag .tag-icon {
+  padding-right: 0;
+}
+
+.tag .tag-icon + .tag-name {
+  padding-left: 0;
+}
+
+.tag .tag-count {
+  font-weight: normal;
+  color: var(--text-color);
+  background-color: var(--_affix);
+}
+
+/* An optional remove control at the end of the tag, for tag boxes */
+.tag .tag-remove {
+  cursor: pointer;
+  color: var(--text-color);
+  background-color: var(--_affix);
+}
+
+.tag .tag-remove:focus-visible {
+  @mixin focus-ring-inset var(--_text);
+}
+
+/* Spoilered or hidden tags fade until hovered */
+.tag.muted {
+  @mixin faded;
+}
+
+.tag.muted:hover,
+.tag.muted:focus-within {
+  opacity: 1;
+}
+
+@mixin tag-category-variation rating;
+@mixin tag-category-variation spoiler;
+@mixin tag-category-variation origin;
+@mixin tag-category-variation oc;
+@mixin tag-category-variation error;
+@mixin tag-category-variation character;
+@mixin tag-category-variation official;
+@mixin tag-category-variation fanmade;
+@mixin tag-category-variation species;
+@mixin tag-category-variation body;
+
+.tag-list {
+  display: flex;
+  flex-flow: row wrap;
+  gap: var(--group-gap);
+}
+
+/*
+ * A tag box, as Philomena's tags input: a wrapping list of tags in the input material, with room to type. Put the
+ * .tag elements and an .input-field inside, the input is a subtle, dotted field in the box. It grows with its content up to a limit,
+ * then scrolls, and can be resized vertically.
+ */
+
+.tag-box {
+  display: flex;
+  flex-flow: row wrap;
+  align-content: flex-start;
+  align-items: center;
+  gap: var(--group-gap);
+  min-height: var(--tag-box-min-height);
+  max-height: var(--tag-box-max-height);
+  padding: var(--tag-box-padding);
+  overflow: auto;
+  resize: vertical;
+  color: var(--text-color);
+  background-color: var(--well-color);
+  border: var(--border-width) solid var(--control-border-color);
+  border-radius: var(--border-radius-inner);
+  box-sizing: border-box;
+}
+
+.tag-box:focus-within {
+  border-color: var(--focus-color);
+}
+
+.tag-box .input-field {
+  /* As wide as its placeholder or what has been typed, like one more tag; browsers without field-sizing fall back to
+     the size attribute (size="12" fits "Add a tag...") */
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+  max-width: 100%;
+  field-sizing: content;
+  border: var(--border-width) dotted var(--control-border-color);
+  border-radius: var(--border-radius-inner);
+  background-color: var(--hover-color);
+  box-shadow: none;
+  padding: var(--tag-padding-vertical) var(--tag-padding-horizontal);
+}
+
+.tag-box .input-field:focus {
+  border-color: var(--focus-color);
+}
+
+.tag-box .input-field:focus-visible {
+  outline: none;
+}
