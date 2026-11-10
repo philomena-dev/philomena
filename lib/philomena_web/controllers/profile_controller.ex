@@ -42,7 +42,7 @@ defmodule PhilomenaWeb.ProfileController do
           tags: page.tags,
           forced: user.forced_filter,
           bans: page.bans,
-          layout_class: "layout--medium",
+          layout_class: "page-medium",
           title: "#{user.name}'s profile"
         ] ++ admin_assigns(conn, user)
 

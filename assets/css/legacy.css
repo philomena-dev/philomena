@@ -28,7 +28,6 @@ $tag-body-color-light: #4e4e4e;
 
 @define-mixin legacy-light-colors {
   --background-color: $surface-color-light;
-  --page-background-color: $page-color-light;
   --foreground-color: $text-color-light;
   --legacy-primary-color: $primary-color-light;
   --legacy-success-color: $success-color-light;
@@ -165,7 +164,6 @@ $tag-body-color-light: #4e4e4e;
 
 :root {
   --background-color: $surface-color-dark;
-  --page-background-color: $page-color-dark;
   --foreground-color: $text-color-dark;
   --primary-light-color: $primary-color;
   --success-light-color: $success-color;

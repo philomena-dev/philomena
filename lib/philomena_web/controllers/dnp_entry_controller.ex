@@ -20,7 +20,7 @@ defmodule PhilomenaWeb.DnpEntryController do
 
     render(conn, "index.html",
       title: "Do-Not-Post List",
-      layout_class: "layout--medium",
+      layout_class: "page-medium",
       dnp_entries: dnp_entries,
       status_column: listing.status_column,
       linked_tags: listing.linked_tags

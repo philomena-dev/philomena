@@ -27,7 +27,7 @@ defmodule PhilomenaWeb.ImageController do
 
     render(conn, "index.html",
       title: "Images",
-      layout_class: "layout--wide",
+      layout_class: "page-wide",
       images: images,
       interactions: interactions,
       scope: ImageScope.scope(conn)
@@ -71,7 +71,7 @@ defmodule PhilomenaWeb.ImageController do
       interactions: page.interactions,
       watching: page.watching,
       can_interact: page.can_interact,
-      layout_class: "layout--wide",
+      layout_class: "page-wide",
       title: "##{image.id} - #{Images.tag_list(image)}"
     ]
 

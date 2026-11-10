@@ -8,7 +8,7 @@
   can_interact: @can_interact,
   conn: @conn
 )}{render(PhilomenaWeb.ImageView, "_image_page.html", image: @image, conn: @conn)}
-<div class="layout--narrow">
+<div class="page-narrow">
   <%= if @conn.assigns.advert do %>
     {render(PhilomenaWeb.AdvertView, "_box.html", advert: @conn.assigns.advert, conn: @conn)}
   <% end %>

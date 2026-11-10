@@ -9,7 +9,7 @@ defmodule PhilomenaWeb.Admin.AdvertController do
     with {:ok, adverts} <- Adverts.list_adverts(conn.assigns.actor, conn.assigns.scrivener) do
       render(conn, "index.html",
         title: "Admin - Adverts",
-        layout_class: "layout--wide",
+        layout_class: "page-wide",
         adverts: adverts
       )
     end

@@ -10,7 +10,7 @@ defmodule PhilomenaWeb.Admin.UserBanController do
       {:ok, user_bans, changeset} ->
         render(conn, "index.html",
           title: "Admin - User Bans",
-          layout_class: "layout--wide",
+          layout_class: "page-wide",
           user_bans: user_bans,
           changeset: changeset
         )
@@ -18,7 +18,7 @@ defmodule PhilomenaWeb.Admin.UserBanController do
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "index.html",
           title: "Admin - User Bans",
-          layout_class: "layout--wide",
+          layout_class: "page-wide",
           user_bans: nil,
           changeset: changeset
         )

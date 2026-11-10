@@ -208,6 +208,16 @@ defmodule PhilomenaWeb.LayoutViewTest do
     end
   end
 
+  describe "centering_class/1" do
+    test "centers the page unless the signed-in user turned that off" do
+      assert LayoutView.centering_class(nil) == "page-centered"
+      assert LayoutView.centering_class(%User{settings: %Settings{}}) == "page-centered"
+
+      assert LayoutView.centering_class(%User{settings: %Settings{use_centered_layout: false}}) ==
+               nil
+    end
+  end
+
   describe "theme" do
     test "anonymous pages load no theme and follow the system color scheme", %{conn: conn} do
       response = html_response(get(conn, ~p"/settings/edit"), 200)

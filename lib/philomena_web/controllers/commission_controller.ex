@@ -18,7 +18,7 @@ defmodule PhilomenaWeb.CommissionController do
         title: "Commissions",
         commissions: directory.commissions,
         changeset: directory.changeset,
-        layout_class: "layout--wide"
+        layout_class: "page-wide"
       )
     end
   end

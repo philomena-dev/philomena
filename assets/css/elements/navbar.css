@@ -210,10 +210,6 @@ a.header-button:hover {
   .navbar .navbar-staff {
     margin-inline-end: var(--spacing-lg);
   }
-
-  .layout--center-aligned {
-    --header-spacing-horizontal: calc(2 * var(--spacing-lg));
-  }
 }
 
 /* On narrow screens the search is a row of its own under the pinned items, and the staff links share the bar */

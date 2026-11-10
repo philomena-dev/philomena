@@ -17,7 +17,7 @@ defmodule PhilomenaWeb.SearchController do
           tags: TagInfoRenderer.render_tag_info(tags, conn),
           search_query: params["q"],
           interactions: interactions,
-          layout_class: "layout--wide"
+          layout_class: "page-wide"
         )
 
       {:error, msg} ->

@@ -22,7 +22,7 @@ defmodule PhilomenaWeb.Search.ReverseController do
 
         render(conn, "index.html",
           title: "Reverse Search",
-          layout_class: "layout--wide",
+          layout_class: "page-wide",
           images: result.images,
           changeset: result.changeset,
           interactions: interactions
@@ -31,7 +31,7 @@ defmodule PhilomenaWeb.Search.ReverseController do
       {:error, changeset} ->
         render(conn, "index.html",
           title: "Reverse Search",
-          layout_class: "layout--wide",
+          layout_class: "page-wide",
           images: nil,
           changeset: changeset
         )
@@ -43,7 +43,7 @@ defmodule PhilomenaWeb.Search.ReverseController do
            DuplicateReports.create_reverse_search(conn.assigns.actor) do
       render(conn, "index.html",
         title: "Reverse Search",
-        layout_class: "layout--wide",
+        layout_class: "page-wide",
         images: result.images,
         changeset: result.changeset
       )

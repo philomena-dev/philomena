@@ -21,7 +21,7 @@ defmodule PhilomenaWeb.Admin.DnpEntryController do
       dnp_entries = %{dnp_entries | entries: Enum.zip(bodies, dnp_entries.entries)}
 
       render(conn, "index.html",
-        layout_class: "layout--wide",
+        layout_class: "page-wide",
         title: "Admin - DNP Entries",
         dnp_entries: dnp_entries,
         changeset: changeset

@@ -1,10 +1,8 @@
 $font-family-base: verdana, arial, helvetica, sans-serif;
 $font-family-monospace: "Droid Sans Mono", monospace;
 
-$medium-layout-width: 1330px;
 $max-limited-desktop-width: $breakpoint-xl;
 $min-desktop-width: $breakpoint-md;
-$limited-layout-width: 980px;
 $min-desktop-thumb-width: 700px;
 $image-tiny-size: 64px;
 $image-small-size: 128px;
@@ -12,10 +10,8 @@ $image-medium-size: 256px;
 $image-large-size: 512px;
 
 :root {
-  --medium-layout-width: $medium-layout-width;
   --max-limited-desktop-width: $max-limited-desktop-width;
   --min-desktop-width: $min-desktop-width;
-  --limited-layout-width: $limited-layout-width;
   --min-desktop-thumb-width: $min-desktop-thumb-width;
   --border: 1px solid var(--border-color);
   --border-radius-toggle: 0.3rem;
@@ -38,8 +34,6 @@ $image-large-size: 512px;
   --padding-small: 0.4rem;
   --padding-normal: 0.75rem;
   --padding-large: 1.5rem;
-  --centered-margin: 24px;
-  --normal-margin: 12px;
   --image-tiny-size: $image-tiny-size;
   --image-small-size: $image-small-size;
   --image-medium-size: $image-medium-size;

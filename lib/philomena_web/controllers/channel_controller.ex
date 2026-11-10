@@ -12,7 +12,7 @@ defmodule PhilomenaWeb.ChannelController do
       {:ok, channels, subscriptions, changeset} ->
         render(conn, "index.html",
           title: "Livestreams",
-          layout_class: "layout--wide",
+          layout_class: "page-wide",
           channels: channels,
           subscriptions: subscriptions,
           changeset: changeset
@@ -21,7 +21,7 @@ defmodule PhilomenaWeb.ChannelController do
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "index.html",
           title: "Livestreams",
-          layout_class: "layout--wide",
+          layout_class: "page-wide",
           channels: nil,
           subscriptions: %{},
           changeset: changeset

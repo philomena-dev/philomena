@@ -10,11 +10,12 @@ defmodule PhilomenaWeb.LayoutView do
   alias Plug.Conn
 
   def layout_class(conn) do
-    conn.assigns[:layout_class] || "layout--narrow"
+    conn.assigns[:layout_class] || "page-narrow"
   end
 
-  def container_class(%{settings: %{use_centered_layout: false}}), do: nil
-  def container_class(_user), do: "layout--center-aligned"
+  @doc "Centers the page, unless the signed-in user turned that off."
+  def centering_class(%{settings: %{use_centered_layout: false}}), do: nil
+  def centering_class(_user), do: "page-centered"
 
   def philomena_version, do: Application.spec(:philomena, :vsn)
 
