@@ -426,8 +426,11 @@ export function checkCss(css: string): string[] {
 
 /**
  * Fails the build when an emitted stylesheet uses a selector, at-rule, property, value, function or unit that a
- * browser of the floor (assets/.browserslistrc) lacks, judged by browser-compat-data. build/enhancements.ts lists
- * the features accepted anyway.
+ * browser of the floor (assets/.browserslistrc) lacks, judged by browser-compat-data, except for keywords set through
+ * custom properties, values of several keywords, math keywords inside calc(), keywords under an alternative name,
+ * media queries with `not` in parentheses, @import conditions, @font-face descriptor values, the inside of
+ * vendor-prefixed functions and the real container of alignment keywords. build/enhancements.ts lists the features
+ * accepted anyway.
  */
 export default function cssGate(): Plugin {
   return {
