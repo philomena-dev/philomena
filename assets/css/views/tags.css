@@ -101,6 +101,24 @@
   border-right: none;
 }
 
+/* A tag's spoiler image, in a bordered square as large as a tiny thumbnail */
+.tag-info__image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--media-box-tiny-width);
+  height: var(--media-box-tiny-width);
+  overflow: hidden;
+  font-size: var(--text-size-sm);
+  text-align: center;
+  border: var(--border-width) solid var(--tint-color);
+}
+
+.tag-info__image img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
 /* Tag descriptions in static pages */
 .tag-info__category {
   margin-left: var(--spacing-xl);
