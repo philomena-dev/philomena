@@ -3,9 +3,3 @@
 @import "./hues/teal.css";
 @import "@philomena/philomena-css/css/design/tokens.css";
 @import "../tokens.css";
-@import "../legacy.css";
-
-/* Legacy properties that differ from the formulas of legacy.css */
-:root[data-theme="light"] {
-  --background-odd-color: #e2f1f1;
-}

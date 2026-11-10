@@ -25,6 +25,3 @@ $burger-divider-color-light: #dacfe3;
 $link-hover-color-dark: #cbb5f8;
 $link-hover-color-light: #cf73d0;
 $block-header-link-text-color-dark: #a96fdb;
-
-/* Read only by css/legacy.css */
-$primary-color-light: #dec1f9;

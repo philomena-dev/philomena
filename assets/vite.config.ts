@@ -69,7 +69,7 @@ export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
           postcssMixins(),
           postcssSimpleVars(),
           postcssRelativeColor(),
-          themeColors({ themes, keep: [path.resolve(import.meta.dirname, 'css/legacy.css')] }),
+          themeColors({ themes }),
           ...cssCompat(),
         ],
       },

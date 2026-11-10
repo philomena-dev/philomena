@@ -3,8 +3,6 @@ import type { Container, Node, Plugin } from 'postcss';
 interface Options {
   // The theme stylesheets
   themes: string[];
-  // Stylesheets whose declarations are kept whatever their names
-  keep: string[];
 }
 
 const fileOf = (node: Node) => node.source?.input.file ?? '';
@@ -13,14 +11,14 @@ const fileOf = (node: Node) => node.source?.input.file ?? '';
  * Keeps only the color tokens (`--*-color`) of the theme stylesheets. They load after application.css and import
  * the framework's tokens again, whose sizes and other values would reset what application.css sets.
  */
-export default function postcssThemeColors({ themes, keep }: Options): Plugin {
+export default function postcssThemeColors({ themes }: Options): Plugin {
   return {
     postcssPlugin: 'philomena-theme-colors',
     OnceExit(root) {
       if (!themes.includes(fileOf(root))) return;
 
       root.walkDecls(decl => {
-        if (!/^--.*-color$/.test(decl.prop) && !keep.includes(fileOf(decl))) decl.remove();
+        if (!/^--.*-color$/.test(decl.prop)) decl.remove();
       });
 
       const prune = (container: Container) => {

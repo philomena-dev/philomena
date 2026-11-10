@@ -2,9 +2,8 @@ import postcss from 'postcss';
 import postcssThemeColors from '../postcss-theme-colors.ts';
 
 const theme = '/srv/css/themes/purple.css';
-const legacy = '/srv/css/legacy.css';
 const run = (css: string, from?: string) =>
-  postcss([postcssThemeColors({ themes: [theme], keep: [legacy] })])
+  postcss([postcssThemeColors({ themes: [theme] })])
     .process(css, { from })
     .css.replace(/\s+/g, ' ')
     .trim();
@@ -19,15 +18,6 @@ describe('postcss-theme-colors', () => {
 
     expect(run(css, theme)).toBe(
       '@charset "UTF-8"; :root { --text-color: #fff } @media (prefers-color-scheme: light) { :root { --text-color: #000 } }',
-    );
-  });
-
-  it('keeps every declaration of the stylesheets it is told to keep', () => {
-    const root = postcss.parse(':root { --z-menu: 6 }', { from: theme });
-    root.append(postcss.parse(':root { --input-border: #000 }', { from: legacy }).nodes);
-
-    expect(postcss([postcssThemeColors({ themes: [theme], keep: [legacy] })]).process(root).css).toBe(
-      ':root { --input-border: #000 }',
     );
   });
 

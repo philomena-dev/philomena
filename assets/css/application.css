@@ -46,11 +46,9 @@
 @import "@philomena/philomena-css/css/components/tabs.css";
 @import "@philomena/philomena-css/css/components/tag.css";
 @import "./tokens.css";
-@import "./legacy.css";
 @import "./utils.css";
 
 /* Files containing common properties, such as variable definitions. */
-@import "common/measurements";
 @import "common/mixins";
 
 /* General style elements that are used throughout the project. */

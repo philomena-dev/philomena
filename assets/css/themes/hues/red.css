@@ -41,8 +41,3 @@ $link-hover-color-dark: #fff3bd;
 $link-hover-color-light: #944563;
 $block-header-link-text-color-dark: #dbdb00;
 $notice-color-dark: #3b3b3b;
-
-/* Read only by css/legacy.css */
-$commission-color-dark: #e02727;
-$primary-color-light: #f9c6c1;
-$danger-color-light: #ebbbbb;

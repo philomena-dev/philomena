@@ -15,6 +15,3 @@ $burger-color-dark: #282e39;
 $burger-divider-color-dark: #2d3649;
 $burger-divider-color-light: #d9e7f1;
 $block-header-link-text-color-dark: #4f95db;
-
-/* Read only by css/legacy.css */
-$primary-color-light: #c1e4f9;
