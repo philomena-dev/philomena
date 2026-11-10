@@ -26,8 +26,9 @@ function commentPosted(response: Response) {
   commentEditTab?.click();
   commentEditForm.reset();
 
-  // A comment that was not posted redirects back or fails; the reloaded page shows why at its top
-  if (!response.ok || response.redirected) {
+  // A posted comment answers with its page of comments; a refused one is not OK, and its reason is a flash
+  // at the top of the reloaded page
+  if (!response.ok) {
     window.location.reload();
     window.scrollTo(0, 0);
   } else {

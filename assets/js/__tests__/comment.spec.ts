@@ -138,9 +138,11 @@ describe('comment.ts setupComments', () => {
     const form = $<HTMLFormElement>('#js-comment-form')!;
     const writeTab = $<HTMLAnchorElement>('a[data-click-tab="write"]')!;
     const clickSpy = vi.spyOn(writeTab, 'click');
+    const reloadSpy = vi.spyOn(window.location, 'reload');
 
+    // The post redirects to the page of comments that holds the new one, which fetch follows
     const event = new CustomEvent('fetchcomplete', {
-      detail: { ok: true, text: async () => '<div>after post</div>' },
+      detail: { ok: true, redirected: true, text: async () => '<div>after post</div>' },
       bubbles: true,
     });
     Object.defineProperty(event, 'target', { value: form });
@@ -150,12 +152,13 @@ describe('comment.ts setupComments', () => {
       expect(clickSpy).toHaveBeenCalled();
       expect(comments).toContainHTML('<div>after post</div>');
     });
+    expect(reloadSpy).not.toHaveBeenCalled();
   });
 
   it.each([
-    ['redirected back', { ok: true, redirected: true }],
-    ['refused', { ok: false, redirected: false }],
-  ])('reloads and scrolls up when a comment post is %s', async (_, response) => {
+    ['refused with a flash', 300],
+    ['forbidden', 403],
+  ])('reloads and scrolls up when a comment post is %s', async (_, status) => {
     mockCommentsDom();
     const comments = $<HTMLDivElement>('#comments')!;
     comments.dataset.loaded = 'true';
@@ -167,7 +170,7 @@ describe('comment.ts setupComments', () => {
 
     const form = $<HTMLFormElement>('#js-comment-form')!;
     const event = new CustomEvent('fetchcomplete', {
-      detail: { ...response, text: async () => '' },
+      detail: { ok: false, status, text: async () => '' },
       bubbles: true,
     });
     Object.defineProperty(event, 'target', { value: form });
