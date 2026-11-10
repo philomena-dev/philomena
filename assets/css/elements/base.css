@@ -9,6 +9,10 @@ body {
   --link-style-hover-decoration: underline;
 }
 
+a:hover {
+  @mixin links-hover;
+}
+
 strong,
 b {
   font-weight: bold;
