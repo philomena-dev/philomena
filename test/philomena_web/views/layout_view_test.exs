@@ -2,6 +2,7 @@ defmodule PhilomenaWeb.LayoutViewTest do
   use PhilomenaWeb.ConnCase, async: true
 
   import Philomena.UsersFixtures
+  alias Philomena.SiteNotices.SiteNotice
   alias Philomena.Users.{Settings, User}
   alias PhilomenaWeb.LayoutView
 
@@ -164,6 +165,35 @@ defmodule PhilomenaWeb.LayoutViewTest do
           ] do
         assert response =~ label
       end
+    end
+  end
+
+  describe "_notices.html" do
+    test "renders the site notices, then the flash in the alert of its kind" do
+      conn =
+        build_conn()
+        |> init_test_session(%{})
+        |> fetch_flash()
+        |> Phoenix.Controller.put_flash(:info, "Settings saved.")
+        |> Phoenix.Controller.put_flash(:error, "Upload failed.")
+        |> assign(:site_notices, [
+          %SiteNotice{
+            title: "Maintenance",
+            text: "Tonight.",
+            link: "/pages/news",
+            link_text: "News"
+          },
+          %SiteNotice{title: "Contest", text: "Enter now."}
+        ])
+
+      html = Phoenix.View.render_to_string(LayoutView, "_notices.html", conn: conn)
+
+      assert html =~ ~s(<strong>Maintenance</strong> Tonight.)
+      assert html =~ ~s(<strong>Contest</strong> Enter now.)
+      assert [_] = Regex.scan(~r/<a /, html)
+      assert html =~ ~s(<a href="/pages/news">News</a>)
+      assert html =~ ~s(<div class="alert alert-success">Settings saved.</div>)
+      assert html =~ ~s(<div class="alert alert-danger">Upload failed.</div>)
     end
   end
 
