@@ -33,6 +33,8 @@ export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
       host: '0.0.0.0',
       port: 5173,
       cors: true,
+      // The workspace root is the repository: serve only the assets and the packages, fonts included
+      fs: { allow: [import.meta.dirname, path.resolve(import.meta.dirname, '../node_modules')] },
     },
     resolve: {
       alias: {
