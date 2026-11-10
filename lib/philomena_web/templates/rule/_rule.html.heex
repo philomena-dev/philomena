@@ -1,9 +1,7 @@
 <% admin_only_rule = @rule.hidden or @rule.internal %>
-<% modifiers = if @rule.highlight, do: " rule--important", else: "" %>
-<% modifiers = if admin_only_rule, do: modifiers <> " rule--admin", else: modifiers %>
-<article class={"#{"rule#{modifiers}"}"} id={"#{@rule.position}"}>
-  <header class="rule__header">
-    <h2 class="rule__title">
+<article class={["card rule", rule_class(@rule)]} id={"#{@rule.position}"}>
+  <header class="card-header flex flex-wrap items-center justify-between gap-md">
+    <h2 class="text-lg">
       <%= if admin_only_rule do %>
         {@rule.name}
       <% else %>
@@ -11,56 +9,65 @@
       <% end %>
     </h2>
     <%= if @rule.highlight or admin_only_rule do %>
-      <div class="rule__badges">
+      <div class="badge-group">
         <%= if @rule.highlight do %>
-          <span class="rule__badge rule__badge--important"><i class="fa fa-exclamation-triangle"></i>
-          Important</span>
+          <span class="badge badge-danger">
+            <span><i class="fa fa-exclamation-triangle"></i> Important</span>
+          </span>
         <% end %>
         <%= if @rule.hidden do %>
-          <span class="rule__badge rule__badge--admin"><i class="fa fa-eye-slash"></i> Hidden</span>
+          <span class="badge badge-warning"><span><i class="fa fa-eye-slash"></i> Hidden</span></span>
         <% end %>
         <%= if @rule.internal do %>
-          <span class="rule__badge rule__badge--admin"><i class="fa fa-gear"></i> Internal</span>
+          <span class="badge badge-warning"><span><i class="fa fa-gear"></i> Internal</span></span>
         <% end %>
       </div>
     <% end %>
   </header>
-  <div class="rule__body">
-    <%= if admin_only_rule and @rule.short_description != "" do %>
-      <p><strong>{@rule.short_description}</strong></p>
-    <% end %>
-    <div class="walloftext markdown">{@rule.description}</div>
-  </div>
+  <%= if admin_only_rule and @rule.short_description != "" do %>
+    <p><strong>{@rule.short_description}</strong></p>
+  <% end %>
+  <div class="walloftext markdown">{@rule.description}</div>
   <%= if @rule.example != "" do %>
-    <div class={"rule__example hidden #{"js-rule-example-toggle-#{@rule.id}"}"}>
+    <div class={"hidden js-rule-example-toggle-#{@rule.id}"}>
+      <hr />
       <h4>Examples</h4>
       <div class="walloftext markdown">{@rule.example}</div>
     </div>
   <% end %>
-  <footer class="rule__footer">
+  <hr />
+  <footer class="flex flex-wrap items-center gap-md">
     <%= unless @show_timestamp do %>
-      <a class="button button-primary" href={"##{@rule.position}"} title="Link to Rule"><span class="small-text"><i class="fa fa-fw fa-link"></i></span></a>
+      <a
+        class="button button-primary button-size-badge icon-only"
+        href={"##{@rule.position}"}
+        title="Link to Rule"
+      ><i class="fa fa-fw fa-link"></i></a>
     <% end %>
     <%= if @rule.example != "" do %>
       <a
-        class="button button-primary"
+        class="button button-primary button-size-badge"
         data-click-toggle={".js-rule-example-toggle-#{@rule.id}"}
         href="#"
         title="View Examples"
-      ><span class="small-text"><i class="fa fa-eye"></i> <span>View Examples</span></span></a>
+      ><i class="fa fa-eye"></i> View Examples</a>
     <% end %>
     <%= unless @show_timestamp do %>
-      <%= link to: ~p"/rules/#{@rule}", class: "button button-primary" do %>
-        <span class="small-text"><i class="fa fa-circle-info"></i> More Details</span>
+      <%= link to: ~p"/rules/#{@rule}", class: "button button-primary button-size-badge" do %>
+        <i class="fa fa-circle-info"></i> More Details
       <% end %>
     <% end %>
     <%= if can?(@conn, :edit, @rule) do %>
-      <a class="button button-warning" href={~p"/rules/#{@rule}/edit"} title="Edit Rule"><span class="small-text"><i class="fa fa-edit"></i>
-      Edit</span></a>
+      <a
+        class="button button-warning button-size-badge"
+        href={~p"/rules/#{@rule}/edit"}
+        title="Edit Rule"
+      ><i class="fa fa-edit"></i> Edit</a>
     <% end %>
     <%= if @show_timestamp do %>
-      <span class="rule__timestamp small-text"><i class="fa fa-clock"></i>
-      Last updated {pretty_time(@rule.updated_at)}</span>
+      <span class="rule-timestamp">
+        <i class="fa fa-clock"></i> Last updated {pretty_time(@rule.updated_at)}
+      </span>
     <% end %>
   </footer>
 </article>

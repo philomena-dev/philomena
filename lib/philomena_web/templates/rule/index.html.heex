@@ -7,8 +7,8 @@
 <% end %>
 <%= if can?(@conn, :create, Philomena.Rules.Rule) do %>
   <p>
-    <%= link to: ~p"/rules/new", class: "button button-primary" do %>
-      <span class="small-text"><i class="fa fa-plus"></i> Create New Rule</span>
+    <%= link to: ~p"/rules/new", class: "button button-primary button-size-badge" do %>
+      <i class="fa fa-plus"></i> Create New Rule
     <% end %>
   </p>
 <% end %>
