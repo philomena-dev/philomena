@@ -13,6 +13,11 @@ describe('css-gate', () => {
     ['oklch()', '.a { color: oklch(50% 0.1 100) }', 'oklch'],
     ['lab()', '.a { --c: lab(50% 10 10) }', 'css.types.color.lab'],
     ['relative color', '.a { color: rgb(from red r g b) }', 'rgb.relative_syntax'],
+    [
+      'a function that a floor browser lacks in every spelling given',
+      '.a { background: -webkit-image-set(url(a.png) 1x); background: image-set(url(a.png) 1x) }',
+      'css.types.image.image-set (missing in firefox 81)',
+    ],
     ['container queries', '@container (min-width: 1px) { .a { color: red } }', 'css.at-rules.container'],
     ['container-type', '.a { container-type: inline-size }', 'css.properties.container-type'],
     ['dvh', '.a { height: 100dvh }', 'viewport_percentage_units_dynamic'],
@@ -85,7 +90,6 @@ describe('css-gate', () => {
         .a { display: flex; gap: 1px; row-gap: 1px; column-gap: 1px; align-items: flex-start }
         .fa:before { content: var(--fa) / "" } @supports not (content: ""/"") { .fa:before { content: var(--fa) } }
         .a { text-decoration: underline var(--a); text-decoration: var(--a, none) }
-        .a { background-image: -webkit-image-set(url(a.png) 1x) }
         .grid { display: grid; gap: 1px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start }
         ::-webkit-scrollbar { width: 1px } .a { -webkit-line-break: after-white-space; -webkit-unknown: 1 }
         @supports (-webkit-unknown: 1) { .a { color: red } } @import url("a.css") screen;
@@ -94,7 +98,7 @@ describe('css-gate', () => {
         @keyframes spin { to { transform: rotate(1turn) } } @-webkit-keyframes spin { to { opacity: 1 } }
         [type="a" i] { outline: 0 } .a::selection { color: red } .a:-moz-focusring { outline: 0 } ::-webkit-details-marker { display: none }
         :root { --a: rgba(0, 0, 0, 0.5); color: var(--a, hsla(0, 0%, 0%, 1)); width: calc((1px + 2px) * 2) }
-        .a { background: -webkit-linear-gradient(red, blue) }
+        .a { background: -webkit-linear-gradient(red, blue); background: linear-gradient(red, blue) }
         @supports ((display: grid)) or selector(:hover) { .a { color: red } } @media (-webkit-min-device-pixel-ratio: 2) { .a { color: red } }
       `),
     ).toEqual([]);

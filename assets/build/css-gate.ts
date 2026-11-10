@@ -125,15 +125,18 @@ function valueNeeds(prop: string, value: string, grid = false): Need[] {
   }
 
   parsed.walk(node => {
-    // A vendor function is meant for that vendor's browsers, whatever it takes
-    if (node.type === 'function' && prefixed(node.value)) return false;
-    if (node.type === 'function') {
+    // A parenthesized group is a function without a name
+    if (node.type === 'function' && node.value) {
       const name = node.value.toLowerCase();
-      const own = bcd.css.properties[base]?.[name]?.__compat && `css.properties.${base}.${name}`;
-      if (name) needs.push({ path: own || (functions[name] ?? `css.types.${name}`) });
+      const bare = unprefixed(name);
+      const own = bcd.css.properties[base]?.[bare]?.__compat && `css.properties.${base}.${bare}`;
+      const spelling = prefixed(name) ? name : undefined;
+      needs.push({ path: own || (functions[bare] ?? `css.types.${bare}`), spelling });
       if (node.nodes[0]?.value === 'from' && functions[name]) {
         needs.push({ path: `${functions[name]}.relative_syntax` });
       }
+      // The arguments of a vendor function follow that vendor's syntax
+      if (prefixed(name)) return false;
     }
 
     if (node.type !== 'word') return;
@@ -174,7 +177,8 @@ function declarationNeeds(decl: Declaration): Need[] {
 /**
  * The floor browsers that lack something in `needs`, with the paths of what they lack. A property, selector,
  * function, at-rule, media feature or @font-face descriptor that browser-compat-data does not know counts as missing
- * everywhere; the vendor-prefixed ones the data does not know never get here, being meant for that vendor's browsers.
+ * everywhere; the vendor-prefixed selectors and properties the data does not know never get here, being meant for
+ * that vendor's browsers.
  * Value keywords and units are judged only where the data records them, so unknown ones pass.
  */
 function missing(needs: Need[], guarded: Set<string>, excused = true) {
