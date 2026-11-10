@@ -22,12 +22,14 @@ describe('setupBurgerMenu', () => {
   beforeEach(() => {
     document.body.innerHTML = `
       <button class="js-burger-toggle" aria-controls="burger" aria-expanded="false">Menu</button>
-      <nav class="burger" id="burger">
+      <div class="burger" id="burger" role="dialog" aria-modal="true" aria-label="Menu">
         <button class="burger-close js-burger-close">Close</button>
-        <a class="burger-item" href="/images">Images</a>
-        <form><input type="hidden" name="_csrf_token"><select><option>Default</option></select></form>
-        <a class="burger-item" href="/sessions">Logout</a>
-      </nav>
+        <nav>
+          <a class="burger-item" href="/images">Images</a>
+          <form><input type="hidden" name="_csrf_token"><select><option>Default</option></select></form>
+          <a class="burger-item" href="/sessions">Logout</a>
+        </nav>
+      </div>
       <div class="burger-overlay js-burger-close"></div>
     `;
     toggle = document.querySelector('.js-burger-toggle')!;

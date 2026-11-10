@@ -1,80 +1,82 @@
-<nav class="burger" id="burger" aria-label="Menu">
+<div class="burger" id="burger" role="dialog" aria-modal="true" aria-label="Menu">
   <div class="burger-header">
     <span><i class="fa-fw favicon-home"></i> Derpibooru</span>
     <button class="burger-close js-burger-close" title="Close" type="button">
       <i class="fa fa-fw fa-times"></i>
     </button>
   </div>
-  {render(PhilomenaWeb.LayoutView, "_burger_links.html",
-    conn: @conn,
-    links: [%{icon: "fa fa-upload", label: "Upload", path: ~p"/images/new"}]
-  )}
-  <%= for section <- site_sections(@conn) do %>
-    {render(PhilomenaWeb.LayoutView, "_burger_links.html", conn: @conn, links: [section])}
+  <nav aria-label="Site">
     {render(PhilomenaWeb.LayoutView, "_burger_links.html",
       conn: @conn,
-      links: section.pages,
-      nested: true
+      links: [%{icon: "fa fa-upload", label: "Upload", path: ~p"/images/new"}]
     )}
-  <% end %>
-  {render(PhilomenaWeb.LayoutView, "_burger_links.html",
-    conn: @conn,
-    links: [
-      %{
-        icon: "fas fa-poll",
-        label: "Rankings",
-        path: "/search?q=first_seen_at.gt:3 days ago&sf=wilson_score&sd=desc"
-      },
-      %{icon: "fa fa-heart", label: "Donate", path: ~p"/pages/donations"}
-    ]
-  )}
-  <hr class="burger-divider" />
-  <%= if @current_user do %>
-    {render(PhilomenaWeb.LayoutView, "_burger_links.html",
-      conn: @conn,
-      links: [%{icon: "fa fa-filter", label: "Filters", path: ~p"/filters"}]
-    )}
-    <%= form_for @user_changeset, ~p"/filters/current", [class: "burger-item", id: "filter-burger-form"], fn f -> %>
-      <span class="burger-icon"><i class="fa-fw"></i></span>
-      {select(f, :current_filter_id, @available_filters,
-        name: "id",
-        id: "filter-burger-menu",
-        class: "header-input",
-        data: [change_submit: "#filter-burger-form"],
-        autocomplete: "off",
-        "aria-label": "Filter"
+    <%= for section <- site_sections(@conn) do %>
+      {render(PhilomenaWeb.LayoutView, "_burger_links.html", conn: @conn, links: [section])}
+      {render(PhilomenaWeb.LayoutView, "_burger_links.html",
+        conn: @conn,
+        links: section.pages,
+        nested: true
       )}
     <% end %>
-    <%= form_for @spoiler_changeset, ~p"/filters/spoiler_type", [class: "burger-item", id: "spoiler-burger-form"], fn f -> %>
-      <span class="burger-icon"><i class="fa-fw"></i></span>
-      {select(f, :spoiler_type, @spoiler_types,
-        id: "spoiler-burger-menu",
-        class: "header-input",
-        data: [change_submit: "#spoiler-burger-form"],
-        autocomplete: "off",
-        "aria-label": "Spoilers"
-      )}
-    <% end %>
-    <hr class="burger-divider" />
-    {render(PhilomenaWeb.LayoutView, "_burger_links.html",
-      conn: @conn,
-      links: user_links(@current_user)
-    )}
-  <% else %>
     {render(PhilomenaWeb.LayoutView, "_burger_links.html",
       conn: @conn,
       links: [
-        %{icon: "fa fa-filter", label: "Filters (#{@current_filter.name})", path: ~p"/filters"},
-        %{icon: "fa fa-cogs", label: "Settings", path: ~p"/settings/edit"}
+        %{
+          icon: "fas fa-poll",
+          label: "Rankings",
+          path: "/search?q=first_seen_at.gt:3 days ago&sf=wilson_score&sd=desc"
+        },
+        %{icon: "fa fa-heart", label: "Donate", path: ~p"/pages/donations"}
       ]
     )}
-  <% end %>
-  <%= if staff?(@conn) do %>
     <hr class="burger-divider" />
-    {render(PhilomenaWeb.LayoutView, "_burger_links.html",
-      conn: @conn,
-      links: admin_links(@conn) ++ ban_links(@conn)
-    )}
-  <% end %>
-</nav>
+    <%= if @current_user do %>
+      {render(PhilomenaWeb.LayoutView, "_burger_links.html",
+        conn: @conn,
+        links: [%{icon: "fa fa-filter", label: "Filters", path: ~p"/filters"}]
+      )}
+      <%= form_for @user_changeset, ~p"/filters/current", [class: "burger-item", id: "filter-burger-form"], fn f -> %>
+        <span class="burger-icon"><i class="fa-fw"></i></span>
+        {select(f, :current_filter_id, @available_filters,
+          name: "id",
+          id: "filter-burger-menu",
+          class: "header-input",
+          data: [change_submit: "#filter-burger-form"],
+          autocomplete: "off",
+          "aria-label": "Filter"
+        )}
+      <% end %>
+      <%= form_for @spoiler_changeset, ~p"/filters/spoiler_type", [class: "burger-item", id: "spoiler-burger-form"], fn f -> %>
+        <span class="burger-icon"><i class="fa-fw"></i></span>
+        {select(f, :spoiler_type, @spoiler_types,
+          id: "spoiler-burger-menu",
+          class: "header-input",
+          data: [change_submit: "#spoiler-burger-form"],
+          autocomplete: "off",
+          "aria-label": "Spoilers"
+        )}
+      <% end %>
+      <hr class="burger-divider" />
+      {render(PhilomenaWeb.LayoutView, "_burger_links.html",
+        conn: @conn,
+        links: user_links(@current_user)
+      )}
+    <% else %>
+      {render(PhilomenaWeb.LayoutView, "_burger_links.html",
+        conn: @conn,
+        links: [
+          %{icon: "fa fa-filter", label: "Filters (#{@current_filter.name})", path: ~p"/filters"},
+          %{icon: "fa fa-cogs", label: "Settings", path: ~p"/settings/edit"}
+        ]
+      )}
+    <% end %>
+    <%= if staff?(@conn) do %>
+      <hr class="burger-divider" />
+      {render(PhilomenaWeb.LayoutView, "_burger_links.html",
+        conn: @conn,
+        links: admin_links(@conn) ++ ban_links(@conn)
+      )}
+    <% end %>
+  </nav>
+</div>
 <div class="burger-overlay js-burger-close"></div>

@@ -177,8 +177,13 @@ defmodule PhilomenaWeb.LayoutViewTest do
 
   describe "burger menu" do
     defp burger(response) do
-      [_header, burger] = String.split(response, ~s(<nav class="burger"))
-      burger |> String.split("</nav>") |> hd()
+      [_header, burger] =
+        String.split(
+          response,
+          ~s(<div class="burger" id="burger" role="dialog" aria-modal="true" aria-label="Menu">)
+        )
+
+      burger |> String.split(~s(<div class="burger-overlay)) |> hd()
     end
 
     test "holds every page of the bars for staff and marks the current section", %{conn: conn} do
