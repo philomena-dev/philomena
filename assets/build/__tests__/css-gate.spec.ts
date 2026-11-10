@@ -39,13 +39,25 @@ describe('css-gate', () => {
     ['nested :not()', '.a:not(:not(.b)) { color: red }', 'not.selector_list'],
     [':nth-child() of a selector', '.a:nth-child(2 of .b) { color: red }', 'nth-child.of_syntax'],
     ['the case-sensitive attribute flag', '[type="a" s] { color: red }', 'case_sensitive_modifier'],
-    ['alignment to the writing mode in a flex container', '.a { justify-content: start }', 'justify-content.start'],
+    ['justify-content: start in any container', '.a { justify-content: start }', 'justify-content.start'],
+    ['align-items: start, which may be in a flex container', '.a { align-items: start }', 'start_in_flex'],
+    ['overflow: clip', '.a { overflow: clip }', 'overflow.clip'],
+    ['alternative text of generated content', '.a:before { content: "x" / "" }', 'content.alt_text'],
+    [
+      'a fallback for another selector',
+      '.a:before { content: "x" / "" } @supports not (content: ""/"") { .b:before { content: "x" } }',
+      'content.alt_text',
+    ],
+    ['a thickness in text-decoration', '.a { text-decoration: underline 2px }', 'includes_thickness'],
+    ['a color in text-decoration', '.a { text-decoration: underline calc(1px) red }', 'includes_color-and-style'],
+    ['a relative color left for the browser', '.a { color: rgb(from var(--a) r g b) }', 'rgb.relative_syntax'],
     ['aspect-ratio', '.a { aspect-ratio: 1 }', 'css.properties.aspect-ratio'],
     ['inset', '.a { inset: 0 }', 'css.properties.inset'],
     ['margin-inline', '.a { margin-inline: 0 }', 'css.properties.margin-inline'],
     ['padding-block', '.a { padding-block: 0 }', 'css.properties.padding-block'],
     ['translate', '.a { translate: 1px }', 'css.properties.translate'],
     ['a feature that only a negated @supports tests', '@supports not (inset: 0) { .a { inset: 0 } }', 'inset'],
+    ['a feature that its @supports does not test', '@supports (display: grid) { .a { inset: 0 } }', 'inset'],
     ['media ranges', '@media (width >= 1px) { .a { color: red } }', 'range_syntax'],
     ['a selector list that some browser drops', '.a, .b:fullscreen { color: red }', 'split the rule'],
     [':focus-visible beside other selectors', '.a, .b:focus-visible { color: red }', 'split the rule'],
@@ -64,9 +76,13 @@ describe('css-gate', () => {
         @media (min-width: 600px) and (prefers-reduced-motion) { .a:not(.b):not(.c) > .d + .e { margin: 0 } }
         .a { -webkit-user-select: none; user-select: none; width: -moz-fit-content; width: fit-content }
         .a.focus-visible, .b { outline: 1px solid; accent-color: red } .a:focus-visible { outline: 1px solid; accent-color: red }
-        .a { display: flex; gap: 1px }
-        .grid { display: grid; gap: 1px; grid-template-columns: repeat(2, minmax(0, 1fr)) }
+        .a { display: flex; gap: 1px; row-gap: 1px; column-gap: 1px; align-items: flex-start }
+        .fa:before { content: var(--fa) / "" } @supports not (content: ""/"") { .fa:before { content: var(--fa) } }
+        .a { text-decoration: underline var(--a); text-decoration: var(--a, none) }
+        .a { background-image: -webkit-image-set(url(a.png) 1x) }
+        .grid { display: grid; gap: 1px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start }
         ::-webkit-scrollbar { width: 1px } .a { -webkit-line-break: after-white-space; -webkit-unknown: 1 }
+        @supports (-webkit-unknown: 1) { .a { color: red } }
         @supports (color: lab(from red l 1 1% / calc(alpha + 0.1))) { :root { --a: lab(from red l a b) } }
         @keyframes spin { to { transform: rotate(1turn) } } @-webkit-keyframes spin { to { opacity: 1 } }
         [type="a" i] { outline: 0 } .a:-moz-focusring { outline: 0 } ::-webkit-details-marker { display: none }

@@ -97,17 +97,40 @@ function subfeature(prop: string, key: string, prefix = ''): Need {
   return { path: `css.properties.${unprefixed(prop)}.${key}`, spelling: name, alias: prefixOf(prop) + name };
 }
 
-function valueNeeds(prop: string, value: string): Need[] {
-  const needs: Need[] = [];
+const decorationLines = /^(none|underline|overline|line-through|blink|inherit|initial|unset|revert|revert-layer)$/i;
+
+/** The thickness, style and color in a text-decoration shorthand, which browser-compat-data records on their own */
+function decorationNeeds(prop: string, nodes: valueParser.Node[]): Need[] {
+  return nodes
+    .filter(node => (node.type === 'word' && !decorationLines.test(node.value)) || node.type === 'function')
+    .filter(node => !/^var$/i.test(node.value))
+    .map(node => {
+      const thickness =
+        node.type === 'function'
+          ? /^(calc|min|max|clamp)$/i.test(node.value)
+          : /^(auto|from-font)$/i.test(node.value) || Boolean(valueParser.unit(node.value));
+      return subfeature(prop, thickness ? 'includes_thickness' : 'includes_color-and-style');
+    });
+}
+
+function valueNeeds(prop: string, value: string, grid = false): Need[] {
   const base = unprefixed(prop);
+  const parsed = valueParser(value);
+  const needs = base === 'text-decoration' ? decorationNeeds(prop, parsed.nodes) : [];
   // browser-compat-data spells some keywords in camel case, such as currentColor
   const keywords = new Map(Object.keys(bcd.css.properties[base] ?? {}).map(key => [key.toLowerCase(), key]));
 
-  valueParser(value).walk(node => {
+  if (base === 'content' && parsed.nodes.some(node => node.type === 'div' && node.value === '/')) {
+    needs.push(subfeature(prop, 'alt_text'));
+  }
+
+  parsed.walk(node => {
+    // A vendor function is meant for that vendor's browsers, whatever it takes
+    if (node.type === 'function' && prefixed(node.value)) return false;
     if (node.type === 'function') {
       const name = node.value.toLowerCase();
       const own = bcd.css.properties[base]?.[name]?.__compat && `css.properties.${base}.${name}`;
-      if (name && !prefixed(name)) needs.push({ path: own || (functions[name] ?? `css.types.${name}`) });
+      if (name) needs.push({ path: own || (functions[name] ?? `css.types.${name}`) });
       if (node.nodes[0]?.value === 'from' && functions[name]) {
         needs.push({ path: `${functions[name]}.relative_syntax` });
       }
@@ -125,13 +148,19 @@ function valueNeeds(prop: string, value: string): Need[] {
     if (!prop.startsWith('--') && keyword && keyword !== '__compat') {
       needs.push(subfeature(prop, keyword, prefixOf(word)));
     }
+    // Some alignment keywords came later to flex containers, which any box may be unless its own rule makes it a grid
+    const flex = `${unprefixed(word)}_in_flex`;
+    if (!grid && bcd.css.properties[base]?.context_flex?.[flex]) needs.push(subfeature(prop, `context_flex.${flex}`));
   });
 
   return needs;
 }
 
 function declarationNeeds(decl: Declaration): Need[] {
-  const needs = valueNeeds(decl.prop, decl.value);
+  const grid = decl.parent?.some(
+    node => 'prop' in node && node.prop === 'display' && /^(inline-)?grid$/i.test(node.value),
+  );
+  const needs = valueNeeds(decl.prop, decl.value, grid);
   if (decl.prop.startsWith('--')) return needs;
 
   const base = unprefixed(decl.prop);
@@ -215,20 +244,46 @@ function checkRule(rule: Rule, problems: string[], guarded: Set<string>) {
   });
 
   for (const [prop, decls] of groups) {
-    const gaps = decls.map(decl => missing(declarationNeeds(decl), guarded));
     // Vendor declarations alone are meant for that vendor's browsers
     if (decls.every(decl => prefixed(decl.prop))) continue;
 
-    const left = [...gaps[0].keys()].filter(browser => gaps.every(g => g.has(browser)));
-    const own = gaps[decls.findIndex(decl => !prefixed(decl.prop))];
+    const own = decls.find(decl => !prefixed(decl.prop)) as Declaration;
+    const left = (covered: Set<string>) => {
+      const gaps = decls.map(decl => missing(declarationNeeds(decl), covered));
+      return new Map([...missing(declarationNeeds(own), covered)].filter(([b]) => gaps.every(g => g.has(b))));
+    };
 
-    if (left.length) {
-      problems.push(`${where} { ${prop} }: ${describe(new Map(left.map(b => [b, own.get(b) as Set<string>])))}`);
+    const gaps = left(guarded);
+    if (gaps.size && left(new Set([...guarded, ...fallbacks(rule, prop)])).size) {
+      problems.push(`${where} { ${prop} }: ${describe(gaps)}`);
     }
   }
 }
 
-/** The supports() functions of an @supports condition, and the features its tests vouch for inside the block */
+/** The features that a later `@supports not (…)` block declares `prop` again for, for the selector of `rule` */
+function fallbacks(rule: Rule, prop: string) {
+  const paths: string[] = [];
+
+  for (let node = rule.next(); node; node = node.next()) {
+    if (
+      node.type === 'atrule' &&
+      /^supports$/i.test(node.name) &&
+      node.some(
+        r =>
+          r.type === 'rule' && r.selector === rule.selector && r.some(d => 'prop' in d && unprefixed(d.prop) === prop),
+      )
+    ) {
+      paths.push(...supportsCondition(node.params).fallbacks);
+    }
+  }
+
+  return paths;
+}
+
+/**
+ * The supports() functions of an @supports condition, the features its tests vouch for inside the block, and those
+ * that a single negated test gives the block as fallback for
+ */
 function supportsCondition(params: string) {
   const names: string[] = [];
   const tests: Need[] = [];
@@ -253,7 +308,10 @@ function supportsCondition(params: string) {
     }
   })(valueParser(params).nodes);
 
-  return { functions: names, guards: positive ? tests.map(test => test.path) : [] };
+  const paths = tests.map(test => test.path);
+  const negated = /^\s*not\s*\([^()]*\)\s*$/i.test(params);
+
+  return { functions: names, guards: positive ? paths : [], fallbacks: negated ? paths : [] };
 }
 
 function checkAtRule(rule: AtRule, problems: string[], guarded: Set<string>) {
