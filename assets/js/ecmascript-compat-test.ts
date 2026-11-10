@@ -5,8 +5,8 @@
  * specified in the tsconfig.json.
  */
 
-function _ecmascript2021() {
-  // @ts-expect-error Safari 14 lacks the ES2021 `WeakRef`, which is past the
-  // `lib` of tsconfig.json.
-  return WeakRef;
+function _ecmascript2022(list: number[]) {
+  // @ts-expect-error Safari 14.1 lacks the ES2022 `Array.prototype.at`, which
+  // is past the `lib` of tsconfig.json.
+  return list.at(-1);
 }
