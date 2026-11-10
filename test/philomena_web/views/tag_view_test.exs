@@ -87,4 +87,19 @@ defmodule PhilomenaWeb.TagViewTest do
       assert response =~ ~p"/tags/artist-alias/alias/edit"
     end
   end
+
+  describe "tag_class/1" do
+    test "gives every category its framework tag color class" do
+      classes = Enum.map(Tag.categories(), &TagView.tag_class(%Tag{category: &1}))
+
+      assert Enum.all?(classes, &match?(["tag", "tag-" <> _], &1))
+      assert ["tag", "tag-official"] in classes
+      assert ["tag", "tag-fanmade"] in classes
+      assert ["tag", "tag-body"] in classes
+    end
+
+    test "leaves a tag without a category in the default color" do
+      assert TagView.tag_class(%Tag{category: nil}) == ["tag", nil]
+    end
+  end
 end

@@ -1,8 +1,3 @@
-.tag {
-  border-radius: 0.15rem;
-}
-
-.tag .tag__count {
-  border-top-right-radius: calc(var(--borderless-tags) * 0.15rem);
-  border-bottom-right-radius: calc(var(--borderless-tags) * 0.15rem);
+:root {
+  --tag-border-radius: var(--border-radius-inner);
 }

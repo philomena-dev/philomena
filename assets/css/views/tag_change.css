@@ -75,13 +75,13 @@
   border-top: 2px solid var(--border-color);
 }
 
-.tag__change--not-retained .tag__name {
+.tag__change--not-retained .tag-name {
   text-decoration: line-through !important;
   font-weight: normal !important;
   font-style: italic !important;
 }
 
-.tag__change--not-retained .tag__count {
+.tag__change--not-retained .tag-count {
   display: none;
 }
 

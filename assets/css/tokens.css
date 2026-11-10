@@ -36,6 +36,12 @@
   --layout-side-width: 326px;
 }
 
+/* Tags are bordered and square; the tag options of the settings (css/options/) remove the border or round them */
+:root {
+  --tag-border: var(--border-width);
+  --tag-border-radius: 0;
+}
+
 @define-mixin philomena-light-colors {
   color-scheme: light;
   --link-color: hsl(from $link-color-light h s $link-lightness-light);

@@ -331,7 +331,7 @@ describe('Image upload form', () => {
         const frm = form;
         await waitFor(() => {
           assertSubmitButtonIsEnabled();
-          expect($$<HTMLDivElement>('.tag-error', frm)).toHaveLength(tagErrorCounts[i]);
+          expect($$<HTMLDivElement>('.js-tag-error', frm)).toHaveLength(tagErrorCounts[i]);
         });
       }
     });
@@ -363,7 +363,7 @@ describe('Image upload form', () => {
       fireEvent.submit(form);
 
       // Should not crash and no errors should be created
-      expect($$<HTMLDivElement>('.tag-error', form)).toHaveLength(0);
+      expect($$<HTMLDivElement>('.js-tag-error', form)).toHaveLength(0);
     });
 
     it('should return early from disableUploadButton if submitButton not disabled on pagehide', async () => {

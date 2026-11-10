@@ -230,12 +230,15 @@ export function setupImageUpload() {
 
     if (!buttonAfter) return;
 
-    const errorElement = makeEl('span', { className: 'form-message form-message-error tag-error', innerText: message });
+    const errorElement = makeEl('span', {
+      className: 'form-message form-message-error js-tag-error',
+      innerText: message,
+    });
     buttonAfter.insertAdjacentElement('beforebegin', errorElement);
   };
 
   const clearTagErrors = () => {
-    $$('.tag-error').forEach(el => el.remove());
+    $$('.js-tag-error').forEach(el => el.remove());
   };
 
   const ratingsTags = ['safe', 'suggestive', 'questionable', 'explicit', 'semi-grimdark', 'grimdark', 'grotesque'];

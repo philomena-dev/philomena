@@ -144,7 +144,7 @@ export function setupTagsInput(tagBlock: HTMLDivElement) {
     textarea.value = tags.join(', ');
 
     // Insert the new element
-    const el = `<span class="tag">${escapeHtml(name)} <a href="#" data-click-focus=".js-taginput-input" data-tag-name="${escapeHtml(name)}">x</a></span>`;
+    const el = `<span class="tag"><span class="tag-name">${escapeHtml(name)}</span><a class="tag-remove" href="#" data-click-focus=".js-taginput-input" data-tag-name="${escapeHtml(name)}" title="Remove">x</a></span>`;
     inputField.insertAdjacentHTML('beforebegin', el);
     inputField.value = '';
   }
