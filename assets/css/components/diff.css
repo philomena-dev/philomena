@@ -15,7 +15,7 @@
 }
 
 .diff td {
-  padding: 1px var(--spacing-md);
+  padding: var(--spacing-xs) var(--spacing-md);
 }
 
 .diff .diff-row.deleted {
