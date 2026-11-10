@@ -52,7 +52,7 @@
 /* Style elements specific to certain pages. */
 @import "views/adverts";
 @import "views/approval";
-@import "views/badges";
+@import "views/awards";
 @import "views/channels";
 @import "views/comments";
 @import "views/commissions";
