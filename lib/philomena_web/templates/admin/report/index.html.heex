@@ -46,21 +46,21 @@
     {pagination}
   </div>
 </div>
-<%= form_for @changeset, ~p"/admin/reports", [as: "rq", method: "get", class: "hform"], fn f -> %>
-  <div class="field">
+<%= form_for @changeset, ~p"/admin/reports", [as: "rq", method: "get", class: "content"], fn f -> %>
+  <div class="form-input-group short">
     {text_input(f, :query,
-      class: "input-field hform__text",
+      class: "input-field",
       placeholder: "Search reports",
       autocapitalize: "none",
       spellcheck: "false",
       autocomplete: if(@conn.cookies["enable_search_ac"], do: "on", else: "off"),
       inputmode: "search",
       data: [autocomplete: "properties"]
-    )}{submit("Search", class: "hform__button button")}
+    )}{submit("Search", class: "button")}
   </div>
   <div class="error">{error_tag(f, :query)}</div>
 <% end %>
-<div class="field">
+<div class="form-control">
   <label for="rq[query]">Searchable fields: id, created_at, reason, state, open, user, user_id, admin, admin_id, ip, fingerprint, reportable_type, reportable_id, image_id
   <br />Report reason is used if you don't specify a field.</label>
 </div>

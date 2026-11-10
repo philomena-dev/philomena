@@ -6,7 +6,7 @@
 ]
 
 html_options = Keyword.merge(textarea_options, assigns[:extra] || []) %>
-<div class={"js-tag-block #{"fancy-tag-#{@type}"}"}>
+<div class={"js-tag-block self-stretch #{"fancy-tag-#{@type}"}"}>
   {textarea(@f, @name, html_options)}
   <div
     class="js-taginput input-field full-width tagsinput hidden js-taginput-fancy"

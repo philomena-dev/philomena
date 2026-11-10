@@ -1,8 +1,8 @@
 <div class="block">
   <div class="block-header"><span class="block-header-title">Search</span></div>
   <div class="block-content">
-    <%= form_for @changeset, ~p"/commissions", [as: :commission, method: "get", class: "hform"], fn f -> %>
-      <div class="field">{label(f, :categories, "Art Categories:")}</div>
+    <%= form_for @changeset, ~p"/commissions", [as: :commission, method: "get", class: "content"], fn f -> %>
+      <span>Art Categories:</span>
       <%= for {name, _value} <- categories() do %>
         <% checked =
           Atom.to_string(name) in (Ecto.Changeset.get_field(@changeset, :category) || []) %>
@@ -13,33 +13,29 @@
           hidden_input: false
         )}
       <% end %>
-      <br />
-      <div class="field">{label(f, :item_type, "Commission Type:")}</div>
-      <div class="field">{select_field(f, :item_type, types())}</div>
-      <br />
-      <div class="field">{label(f, :price_min, "Price:")}</div>
-      <div class="field">
-        {number_input(f, :price_min,
+      <div class="form-control">
+        {label(f, :item_type, "Commission Type:")}{select_field(f, :item_type, types())}
+      </div>
+      <div class="form-control">
+        {label(f, :price_min, "Price:")}{number_input(f, :price_min,
           class: "input-field",
           placeholder: "At Least",
           step: "any",
           min: 0
-        )}
-      </div>
-      <div class="field">
-        {number_input(f, :price_max,
+        )}{number_input(f, :price_max,
           class: "input-field",
           placeholder: "At Most",
           step: "any",
           min: 0
         )}
       </div>
-      <br />
-      <div class="field">{label(f, :keywords, "Search:")}</div>
-      <div class="field">
-        {text_input(f, :keywords, class: "input-field", placeholder: "Keywords")}
+      <div class="form-control">
+        {label(f, :keywords, "Search:")}{text_input(f, :keywords,
+          class: "input-field",
+          placeholder: "Keywords"
+        )}
       </div>
-      {submit("Search", class: "button")}
+      <div class="form-control-submit">{submit("Search", class: "button")}</div>
     <% end %>
   </div>
 </div>

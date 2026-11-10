@@ -1,5 +1,5 @@
 <h1>Reverse Search</h1>
-<%= form_for @changeset, ~p"/search/reverse", [multipart: true, as: :image], fn f -> %>
+<%= form_for @changeset, ~p"/search/reverse", [multipart: true, as: :image, class: "content"], fn f -> %>
   <div class="walloftext">
     <p>
       Basic image similarity search. Finds uploaded images similar to the one provided based on simple intensities and uses the median frame of animations; very low contrast images (such as sketches) will produce poor results and, regardless of contrast, results may include seemingly random images that look very different.
@@ -10,19 +10,19 @@
     <p>
       Upload a file from your computer, or provide a link to the page containing the image and click Fetch.
     </p>
-    <div class="field">
+    <div class="form-control">
       {file_input(f, :image, class: "input-field js-scraper")}{error_tag(f, :uploaded_image)}{error_tag(
         f,
         :image_width
       )}{error_tag(f, :image_height)}{error_tag(f, :image_mime_type)}
     </div>
-    <div class="field field--inline">
+    <div class="form-input-group">
       {url_input(f, :url,
         name: "url",
-        class: "input-field full-width js-scraper",
+        class: "input-field js-scraper",
         placeholder: "Link a deviantART page, a Tumblr post, or the image directly"
       )}<button
-        class="button ms-md"
+        class="button"
         data-disable-with="Fetch"
         disabled
         id="js-scraper-preview"
@@ -30,11 +30,11 @@
         type="button"
       >Fetch</button>
     </div>
-    <div class="field-error-js hidden js-scraper"></div>
+    <div class="alert alert-warning hidden js-scraper"></div>
   </div>
   <h4>Optional settings</h4>
-  <div class="field">
-    {label(f, :distance, "Match distance (suggested values: between 0.2 and 0.5)")}<br />{number_input(
+  <div class="form-control">
+    {label(f, :distance, "Match distance (suggested values: between 0.2 and 0.5)")}{number_input(
       f,
       :distance,
       min: 0,
@@ -44,7 +44,7 @@
     )}{error_tag(f, :distance)}
   </div>
   {error_tag(f, :limit)}
-  <div class="field">{submit("Reverse Search", class: "button")}</div>
+  <div class="form-control-submit">{submit("Reverse Search", class: "button")}</div>
 <% end %>
 <%= cond do %>
   <% is_nil(@images) -> %>

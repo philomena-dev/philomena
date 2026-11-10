@@ -1,10 +1,6 @@
 <h1>Two Factor Authentication</h1>
 <%= form_for @changeset, ~p"/registrations/totp", [as: :user, class: "content"], fn f -> %>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
-    </div>
-  <% end %>
+  {error_summary(@changeset)}
   <%= if @current_user.otp_required_for_login do %>
     <%= if !@changeset.action and get_flash(@conn, :totp_backup_codes) do %>
       <div class="dnp-warning">
@@ -40,7 +36,7 @@
     <p>
       Note that the 6-digit codes are limited to a single use within their lifespan of 30 seconds, so if you just logged in with a code, entering it again here will cause an error. If that's the case, just wait for a new code to be generated.
     </p>
-    <div class="field">
+    <div class="form-control">
       {text_input(f, :twofactor_token, class: "input-field", placeholder: "6-digit code")}{error_tag(
         f,
         :twofactor_token
@@ -138,14 +134,17 @@
   <% end %>
   <br />
   <div class="card card-warning">
-    <div class="field">
+    <div class="form-control">
       {password_input(f, :current_password, class: "input-field", placeholder: "Current password")}{error_tag(
         f,
         :current_password
       )}
+      <div class="form-message form-message-description">
+        We need your current password to confirm these changes
+      </div>
     </div>
-    <div class="fieldlabel">We need your current password to confirm these changes</div>
-    <br />{submit("Save Account", class: "button")}
+
+    <div class="form-control-submit">{submit("Save Account", class: "button")}</div>
   </div>
 <% end %>
 <p>{link("Back", to: ~p"/registrations/edit")}</p>

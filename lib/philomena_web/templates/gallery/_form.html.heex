@@ -1,17 +1,13 @@
-<%= form_for @changeset, @action, fn f -> %>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
-    </div>
-  <% end %>
-  <div class="field">
+<%= form_for @changeset, @action, [class: "content"], fn f -> %>
+  {error_summary(@changeset)}
+  <div class="form-control">
     {label(f, :title, "Choose a title displayed in gallery preview")}{text_input(f, :title,
       class: "input-field full-width",
       placeholder: "Title",
       required: true
     )}{error_tag(f, :title)}
   </div>
-  <div class="field">
+  <div class="form-control">
     {label(
       f,
       :spoiler_warning,
@@ -24,14 +20,14 @@
       :spoiler_warning
     )}
   </div>
-  <div class="field">
+  <div class="form-control">
     {label(:description, "Describe the gallery in a few words")}{textarea(f, :description,
       class: "input-field full-width",
       placeholder: "Description"
     )}{error_tag(f, :description)}
   </div>
-  <div class="field">
-    {label(f, :thumbnail_id, "Set an existing image as the gallery cover")}<br />{number_input(
+  <div class="form-control">
+    {label(f, :thumbnail_id, "Set an existing image as the gallery cover")}{number_input(
       f,
       :thumbnail_id,
       value: input_value(f, :thumbnail_id) || @conn.params["with_image"],
@@ -45,11 +41,12 @@
     :order_position_asc,
     "Reverse gallery order (images will be inserted at the end of the gallery)"
   )}{error_tag(f, :order_position_asc)}
-  {checkbox_field(f, :anonymous, "Anonymous")}
-  <p class="form-message form-message-description">
-    Anonymous galleries are accessible to others, but they won't reveal you as the creator and won't appear on your profile.
-  </p>
-  {error_tag(f, :anonymous)}
-  <div class="field"></div>
-  {submit("Save Gallery", class: "button")}
+  <div class="form-control">
+    {checkbox_field(f, :anonymous, "Anonymous")}
+    <p class="form-message form-message-description">
+      Anonymous galleries are accessible to others, but they won't reveal you as the creator and won't appear on your profile.
+    </p>
+    {error_tag(f, :anonymous)}
+  </div>
+  <div class="form-control-submit">{submit("Save Gallery", class: "button")}</div>
 <% end %>

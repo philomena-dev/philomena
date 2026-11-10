@@ -1,10 +1,6 @@
-<%= form_for @changeset, @action, fn f -> %>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
-    </div>
-  <% end %>
-  <div class="field">
+<%= form_for @changeset, @action, [class: "content"], fn f -> %>
+  {error_summary(@changeset)}
+  <div class="form-control">
     {label(f, :title, "Title (the bold bit) for the site notice; keep this short:")} {text_input(
       f,
       :title,
@@ -16,7 +12,7 @@
       :title
     )}
   </div>
-  <div class="field">
+  <div class="form-control">
     {label(f, :text, "Main body of the site notice:")} {text_input(f, :text,
       class: "input-field full-width",
       placeholder: "Text",
@@ -24,20 +20,20 @@
     )}{error_tag(f, :text)}
   </div>
   <h3>Link <small>(optional; leave these two fields blank for no link)</small></h3>
-  <div class="field">
+  <div class="form-control">
     {label(f, :link_text, "Text which will contain the link:")} {text_input(f, :link_text,
       class: "input-field full-width",
       placeholder: "Link text"
     )}{error_tag(f, :link_text)}
   </div>
-  <div class="field">
+  <div class="form-control">
     {label(f, :link, "Link which the site notice should take users to:")} {text_input(f, :link,
       class: "input-field full-width",
       placeholder: "Link"
     )}{error_tag(f, :link)}
   </div>
   <h3>Run Time</h3>
-  <div class="field">
+  <div class="form-control">
     {label(f, :start_date, "Start time for the site notice (usually \"now\"):")} {text_input(
       f,
       :start_date,
@@ -45,7 +41,7 @@
       required: true
     )}{error_tag(f, :start_date)}
   </div>
-  <div class="field">
+  <div class="form-control">
     {label(f, :finish_date, "Finish time for the site notice (e.g. \"2 weeks from now\"):")} {text_input(
       f,
       :finish_date,
@@ -55,5 +51,5 @@
   </div>
   <h3>Enable</h3>
   {checkbox_field(f, :live, "Live")}
-  {submit("Save Site Notice", class: "button")}
+  <div class="form-control-submit">{submit("Save Site Notice", class: "button")}</div>
 <% end %>

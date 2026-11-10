@@ -1,13 +1,13 @@
 <h1>Users</h1>
-<%= form_for @changeset, ~p"/admin/users", [as: :uq, method: "get", class: "hform"], fn f -> %>
-  <div class="field">
+<%= form_for @changeset, ~p"/admin/users", [as: :uq, method: "get", class: "content"], fn f -> %>
+  <div class="form-input-group short">
     {text_input(f, :query,
-      class: "hform__text input-field",
+      class: "input-field",
       placeholder: "Search query",
       spellcheck: "false"
-    )} {submit("Search", class: "button hform__button")}
+    )} {submit("Search", class: "button")}
   </div>
-  <div class="field">
+  <div class="form-control">
     <% sort_fields = [
       "Sort by user ID": :id,
       "Sort by name": :name,

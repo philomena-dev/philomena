@@ -13,14 +13,10 @@
           <code>{Enum.map_join(@image.locked_tags, ", ", & &1.name)}</code>
         </div>
       <% end %>
-      <%= form_for changeset, ~p"/images/#{@image}/tags", [id: "tags-form", method: "put", data: [remote: "true"]], fn f -> %>
-        <%= if changeset.action do %>
-          <div class="alert alert-danger">
-            <p>Oops, something went wrong! Please check the errors below.</p>
-          </div>
-        <% end %>
+      <%= form_for changeset, ~p"/images/#{@image}/tags", [id: "tags-form", method: "put", data: [remote: "true"], class: "content"], fn f -> %>
+        {error_summary(changeset)}
         {hidden_input(f, :old_tag_input, value: tag_input)}
-        <div class="field">
+        <div class="form-control">
           <%= label f, :tag_input do %>
             Separate tags with commas. Use 'artist:name' tags to identify artists. Got questions? Check the
             <a href="/pages/tags">tag guidelines</a>
@@ -43,7 +39,7 @@
         <% end %>
         <ul class="horizontal-list">
           <li>
-            <div class="actions">
+            <div class="form-control-submit">
               {submit("Save tags",
                 class: "button",
                 id: "edit_save_button",

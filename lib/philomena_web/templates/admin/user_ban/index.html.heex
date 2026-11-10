@@ -8,15 +8,16 @@
         route: route,
         params: page_params(@conn.params)
       ) %>
-<%= form_for @changeset, ~p"/admin/user_bans", [method: "get", class: "hform"], fn f -> %>
-  <div class="field">
+<%= form_for @changeset, ~p"/admin/user_bans", [method: "get"], fn f -> %>
+  <div class="form-input-group short">
     {text_input(f, :bq,
       name: :bq,
-      class: "hform__text input-field",
+      class: "input-field",
       placeholder: "Search",
       spellcheck: "false"
-    )}{error_tag(f, :bq)}{submit("Search", class: "button hform__button")}
+    )}{submit("Search", class: "button")}
   </div>
+  {error_tag(f, :bq)}
 <% end %>
 <div class="block">
   <div :if={multiple_pages?(@user_bans)} class="block-header">

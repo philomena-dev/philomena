@@ -82,4 +82,17 @@ defmodule PhilomenaWeb.FormHelpers do
 
     [boxes, hidden_input(form, field, name: name, value: "")]
   end
+
+  @doc """
+  The alert at the top of a form whose changeset failed to save, nothing otherwise.
+  """
+  def error_summary(%{action: nil}), do: nil
+
+  def error_summary(_changeset) do
+    content_tag(
+      :div,
+      content_tag(:p, "Oops, something went wrong! Please check the errors below."),
+      class: "alert alert-danger"
+    )
+  end
 end

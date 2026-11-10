@@ -85,4 +85,15 @@ defmodule PhilomenaWeb.FormHelpersTest do
       assert html =~ ~s(<input id="user_roles" name="user[roles][]" type="hidden" value="">)
     end
   end
+
+  describe "error_summary/1" do
+    test "is empty until the changeset was submitted" do
+      assert FormHelpers.error_summary(%Ecto.Changeset{action: nil}) == nil
+
+      html = %Ecto.Changeset{action: :insert} |> FormHelpers.error_summary() |> safe_to_string()
+
+      assert html ==
+               ~s(<div class="alert alert-danger"><p>Oops, something went wrong! Please check the errors below.</p></div>)
+    end
+  end
 end

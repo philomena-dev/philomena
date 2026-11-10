@@ -1,17 +1,13 @@
-<%= form_for @changeset, @action, fn f -> %>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
-    </div>
-  <% end %>
-  <div class="field">
+<%= form_for @changeset, @action, [class: "content"], fn f -> %>
+  {error_summary(@changeset)}
+  <div class="form-control">
     {label(f, :fingerprint, "Fingerprint:")} {text_input(f, :fingerprint,
       class: "input-field",
       placeholder: "Fingerprint",
       required: true
     )}
   </div>
-  <div class="field">
+  <div class="form-control">
     {label(
       f,
       :reason,
@@ -25,13 +21,13 @@
       :reason
     )}
   </div>
-  <div class="field">
+  <div class="form-control">
     {label(f, :note, "Admin-only note:")} {text_input(f, :note,
       class: "input-field full-width",
       placeholder: "Note"
     )}
   </div>
-  <div class="field">
+  <div class="form-control">
     {label(
       f,
       :valid_until,
@@ -44,5 +40,5 @@
   </div>
   <br />
   {checkbox_field(f, :enabled, "Enabled")}
-  <br />{submit("Save Ban", class: "button")}
+  <div class="form-control-submit">{submit("Save Ban", class: "button")}</div>
 <% end %>

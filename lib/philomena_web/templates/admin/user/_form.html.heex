@@ -1,9 +1,5 @@
 <%= form_for @changeset, @action, [class: "content"], fn f -> %>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
-    </div>
-  <% end %>
+  {error_summary(@changeset)}
   <div class="block">
     <div class="block-header">
       <span class="block-header-title">Essential user details</span>
@@ -81,5 +77,5 @@
       )}
     </div>
   </div>
-  {submit("Save User", class: "button")}
+  <div class="form-control-submit">{submit("Save User", class: "button")}</div>
 <% end %>

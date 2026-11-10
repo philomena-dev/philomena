@@ -3,10 +3,10 @@
 <p>
   Verifying a link will automatically award an artist badge if the link is public, no artist badge exists, and an "artist:" tag is specified.
 </p>
-<%= form_for @changeset, ~p"/admin/artist_links", [as: :lq, method: "get", class: "hform"], fn f -> %>
-  <div class="field">
+<%= form_for @changeset, ~p"/admin/artist_links", [as: :lq, method: "get"], fn f -> %>
+  <div class="form-input-group short">
     {text_input(f, :text,
-      class: "input-field hform__text",
+      class: "input-field",
       placeholder: "Search query",
       autocapitalize: "none",
       spellcheck: "false"
@@ -14,8 +14,9 @@
     <%= for state <- input_value(f, :states) || [] do %>
       {hidden_input(f, :states, name: "#{f.name}[states][]", value: state)}
     <% end %>
-    {error_tag(f, :states)}{error_tag(f, :text)}{submit("Search", class: "hform__button button")}
+    {submit("Search", class: "button")}
   </div>
+  {error_tag(f, :states)}{error_tag(f, :text)}
 <% end %>
 <% route = fn p -> ~p"/admin/artist_links?#{p}" end %>
 <% pagination =

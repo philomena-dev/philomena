@@ -1,82 +1,30 @@
-.field--block {
-  display: block;
+/*
+ * Philomena's additions to the framework's form controls.
+ */
+
+/* An input group of a search form is as wide as a short sentence */
+.form-input-group.short {
+  max-inline-size: 30em;
 }
 
-.field--inline {
-  display: flex;
-}
+/* On narrow screens the fields of a form take the full width, and checkbox rows are as tall as a field */
+@media not all and (min-width: $breakpoint-md) {
+  .form-control {
+    align-items: stretch;
+  }
 
-.field-error-js {
-  background: var(--warning-light-color);
-  padding: 3px;
-}
+  .form-control > .button {
+    align-self: flex-start;
+  }
 
-.field,
-.actions {
-  margin-bottom: 6px;
-}
+  .form-control-select > .form-select-input {
+    width: 100%;
+  }
 
-.field-help-button,
-.field-help-button * {
-  font-style: italic;
-  cursor: pointer;
-}
-
-.field-help-button {
-  margin-left: 6px;
-  font-size: 0.8em;
-  color: var(--foreground-half-color);
-  border-color: var(--foreground-half-color);
-  border-style: dashed;
-  border-width: 1px;
-  border-radius: 10px;
-  padding: 4px;
-
-  /*
-    We want this to behave like a button, so double clicking on it
-    shouldn't trigger a selection
-  */
-  user-select: none;
-}
-
-.field-help-button:hover {
-  background-color: var(--primary-light-color);
-}
-
-.field-help-content {
-  color: var(--foreground-half-color);
-  margin: 10px auto;
-  font-style: italic;
-}
-
-.field_with_errors {
-  background: var(--legacy-danger-color);
-}
-
-span.help-block {
-  background: var(--legacy-danger-color);
-  display: block;
-}
-
-/* hform is used for 30em inline 2-element textinput/button forms */
-.hform .field {
-  display: flex;
-  max-width: 30em;
-  width: 100%;
-}
-
-.hform__wide .field {
-  max-width: 100%;
-}
-
-/* text input - grow to container size */
-.hform__text {
-  flex: 1 0 auto;
-}
-/* button - don't shrink or grow at all */
-.hform__button {
-  flex: 0 0 auto;
-  margin-left: 5px;
+  .form-control-checkbox {
+    align-items: center;
+    min-block-size: calc(1em + 2 * var(--input-padding) + 2 * var(--border-width));
+  }
 }
 
 /* The field padding of the framework comes after its select rule, which keeps room for the chevron */

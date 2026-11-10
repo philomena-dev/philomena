@@ -40,7 +40,7 @@
     <br />
   <% end %>
   <%= form_for @changeset, @action, [class: "content"], fn f -> %>
-    <div class="field">
+    <div class="form-control">
       {select_field(f, :rule_id, report_categories(@rules),
         prompt: [key: "Select a rule", disabled: true, selected: true],
         required: true

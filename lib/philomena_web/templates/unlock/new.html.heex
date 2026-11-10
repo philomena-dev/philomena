@@ -1,8 +1,8 @@
 <h1>Resend unlock instructions</h1>
-<%= form_for :user, ~p"/unlocks", fn f -> %>
-  <div class="field">
+<%= form_for :user, ~p"/unlocks", [class: "content"], fn f -> %>
+  <div class="form-control">
     {email_input(f, :email, placeholder: "Email", class: "input-field", required: true)}
   </div>
   {render(PhilomenaWeb.CaptchaView, "_captcha.html", name: "unlock", conn: @conn)}
-  <div>{submit("Resend unlock instructions", class: "button")}</div>
+  <div class="form-control-submit">{submit("Resend unlock instructions", class: "button")}</div>
 <% end %>

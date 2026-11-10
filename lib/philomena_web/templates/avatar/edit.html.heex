@@ -13,12 +13,8 @@
       <p>
         Avatars must be less than 1000px tall and wide, and smaller than 500 KiB in size. PNG, JPEG, and GIF are acceptable.
       </p>
-      <%= form_for @changeset, ~p"/avatar", [method: "put", multipart: true], fn f -> %>
-        <%= if @changeset.action do %>
-          <div class="alert alert-danger">
-            <p>Oops, something went wrong! Please check the errors below.</p>
-          </div>
-        <% end %>
+      <%= form_for @changeset, ~p"/avatar", [method: "put", multipart: true, class: "content"], fn f -> %>
+        {error_summary(@changeset)}
         <%!-- todo: extract this --%>
         <h4>Select an image</h4>
         <div class="image-other">
@@ -26,18 +22,18 @@
           <p>
             Upload a file from your computer, or provide a link to the page containing the image and click Fetch.
           </p>
-          <div class="field">
+          <div class="form-control">
             {file_input(f, :avatar, class: "input-field js-scraper")}{error_tag(f, :avatar_size)}{error_tag(
               f,
               :avatar_width
             )}{error_tag(f, :avatar_height)}{error_tag(f, :avatar_mime_type)}
           </div>
-          <div class="field field--inline">
+          <div class="form-input-group">
             {url_input(f, :scraper_url,
-              class: "input-field full-width js-scraper",
+              class: "input-field js-scraper",
               placeholder: "Link a deviantART page, a Tumblr post, or the image directly"
             )}<button
-              class="button ms-md"
+              class="button"
               data-disable-with="Fetch"
               disabled
               id="js-scraper-preview"
@@ -45,8 +41,8 @@
               type="button"
             >Fetch</button>
           </div>
-          <div class="field-error-js hidden js-scraper"></div>
-          <br />{submit("Update my avatar", class: "button")}
+          <div class="alert alert-warning hidden js-scraper"></div>
+          <div class="form-control-submit">{submit("Update my avatar", class: "button")}</div>
         </div>
       <% end %>
       <br />{button_to("Remove my avatar", ~p"/avatar",

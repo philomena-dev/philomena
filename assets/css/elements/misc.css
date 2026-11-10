@@ -106,22 +106,6 @@ td {
   background-color: var(--danger-light-color);
 }
 
-#error_explanation {
-  margin: 1em 0;
-  background: var(--warning-light-color);
-  border: 1px solid var(--legacy-warning-color);
-  padding: 0.62em;
-}
-
-#error_explanation li {
-  margin: 3px;
-  margin-left: 15px;
-}
-
-#error_explanation h2 {
-  font-size: 19px;
-}
-
 .walloftext {
   font-size: 14px;
 }

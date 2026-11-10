@@ -162,7 +162,7 @@
       {PhilomenaWeb.TagView.quick_tags(@conn)}
     </div>
   </div>
-  <div class="field field--inline flex-wrap">
+  <div class="flex flex-wrap items-center gap-md">
     {submit("Search", class: "button button-primary")}
     <% random_is_selected = to_string(@conn.params["sf"]) =~ ~r/\Arandom(:\d+)?\z/
 
@@ -207,12 +207,10 @@
       "Deleted/Merged Only": "only"
     ] %>
     {select_field(f, :sf, sort_fields,
-      class: "ms-md",
       name: "sf",
       autocomplete: "off",
       selected: @conn.params["sf"]
     )}{select_field(f, :sd, sort_directions,
-      class: "ms-md",
       name: "sd",
       autocomplete: "off",
       selected: @conn.params["sd"]
@@ -222,7 +220,6 @@
     <% end %>
     <%= if hides_images?(@conn) do %>
       {select_field(f, :del, sort_hidden,
-        class: "ms-md",
         name: "del",
         autocomplete: "off",
         selected: @conn.params["del"]

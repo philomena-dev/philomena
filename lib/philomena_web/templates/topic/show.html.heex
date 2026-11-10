@@ -115,29 +115,29 @@
                 <%= link(to: ~p"/forums/#{@forum}/topics/#{@topic}/stick", method: :delete, class: "button") do %><i class="fas fa-thumbtack"></i> Unstick <% end %><% else %>
                 <%= link(to: ~p"/forums/#{@forum}/topics/#{@topic}/stick", method: :post, class: "button") do %><i class="fas fa-thumbtack"></i> Stick <% end %><% end %><%= if @topic.locked_at do %><%= link(to: ~p"/forums/#{@forum}/topics/#{@topic}/lock", method: :delete, class: "button") do %><i class="fas fa-unlock"></i> Unlock <% end %>
               <% else %>
-                <%= form_for :topic, ~p"/forums/#{@forum}/topics/#{@topic}/lock", [method: :post, class: "hform"], fn f -> %>
-                  <div class="field">
-                    {text_input f, :lock_reason, class: "input-field hform__text", placeholder: "Lock reason", required: true}
-                    <%= submit class: "hform__button button" do %><i class="fas fa-lock"></i> Lock <% end %>
+                <%= form_for :topic, ~p"/forums/#{@forum}/topics/#{@topic}/lock", [method: :post], fn f -> %>
+                  <div class="form-input-group short">
+                    {text_input f, :lock_reason, class: "input-field", placeholder: "Lock reason", required: true}
+                    <%= submit class: "button" do %><i class="fas fa-lock"></i> Lock <% end %>
                   </div>
                 <% end %>
               <% end %>
-              <%= form_for @topic_changeset, ~p"/forums/#{@forum}/topics/#{@topic}", [method: :put, class: "hform"], fn f -> %>
-                <div class="field">
-                  {text_input f, :title, class: "input-field hform__text", placeholder: "New Title"}
-                  <%= submit class: "hform__button button" do %><i class="fas fa-pen"></i> Set Title <% end %>
+              <%= form_for @topic_changeset, ~p"/forums/#{@forum}/topics/#{@topic}", [method: :put], fn f -> %>
+                <div class="form-input-group short">
+                  {text_input f, :title, class: "input-field", placeholder: "New Title"}
+                  <%= submit class: "button" do %><i class="fas fa-pen"></i> Set Title <% end %>
                 </div>
               <% end %>
-              <%= form_for :topic, ~p"/forums/#{@forum}/topics/#{@topic}/move", [method: :post, class: "hform"], fn f -> %>
-                <div class="field">
-                  {select_field f, :target_forum, Enum.map(@conn.assigns.forums, &{&1.name, &1.short_name}), class: "hform__text"}
-                  <%= submit class: "hform__button button" do %><i class="fas fa-truck"></i> Move <% end %>
+              <%= form_for :topic, ~p"/forums/#{@forum}/topics/#{@topic}/move", [method: :post], fn f -> %>
+                <div class="form-input-group short">
+                  {select_field f, :target_forum, Enum.map(@conn.assigns.forums, &{&1.name, &1.short_name}), full_width: true}
+                  <%= submit class: "button" do %><i class="fas fa-truck"></i> Move <% end %>
                 </div>
               <% end %>
-              <%= form_for :topic, ~p"/forums/#{@forum}/topics/#{@topic}/hide", [method: :post, class: "hform"], fn f -> %>
-                <div class="field">
-                  {text_input f, :deletion_reason, class: "input-field hform__text", placeholder: "Deletion reason", required: true}
-                  <%= submit class: "hform__button button" do %><i class="fas fa-trash"></i> Delete <% end %>
+              <%= form_for :topic, ~p"/forums/#{@forum}/topics/#{@topic}/hide", [method: :post], fn f -> %>
+                <div class="form-input-group short">
+                  {text_input f, :deletion_reason, class: "input-field", placeholder: "Deletion reason", required: true}
+                  <%= submit class: "button" do %><i class="fas fa-trash"></i> Delete <% end %>
                 </div>
               <% end %>
             <% else %>Moderation tools unavailable for deleted topics.<% end %>

@@ -1,10 +1,6 @@
 <h1>Content Settings</h1>
 <%= form_for @changeset, ~p"/settings", [method: "put", class: "content"], fn f -> %>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
-    </div>
-  <% end %>
+  {error_summary(@changeset)}
   <div class="block" data-tab-persist-in-query-params="true" id="js-setting-table">
     <div class="tabs">
       <%= if @conn.assigns.current_user do %>
@@ -28,7 +24,7 @@
     <%= if @conn.assigns.current_user do %>
       <div class={["tab-panel", tab_class(@conn, "watched", default: true)]} data-tab="watched">
         <h4>Tags</h4>
-        <div class="field">
+        <div class="form-control">
           {label(f, :watched_tag_list, "Tags to watch")}{render(
             PhilomenaWeb.TagView,
             "_tag_editor.html",
@@ -49,7 +45,7 @@
           )} for how to write queries.
         </p>
         <%= inputs_for f, :settings, fn fs -> %>
-          <div class="field">
+          <div class="form-control">
             {label(
               fs,
               :watched_images_query_str,
@@ -60,7 +56,7 @@
               spellcheck: "false"
             )}{error_tag(fs, :watched_images_query_str)}
           </div>
-          <div class="field">
+          <div class="form-control">
             {label(
               fs,
               :watched_images_exclude_str,
@@ -124,11 +120,11 @@
               error_tag(fs, :images_per_page) \
             ] \
           )}
-          <div class="field">{select_field fs, :theme_name, themes()} <label>Theme</label> {error_tag fs, :theme_name}</div>
-          <div class="field">{select_field fs, :theme_color, theme_colors()} <label>Theme color</label> {error_tag fs, :theme_color}</div>
+          <div class="form-control form-control-buttons items-center">{select_field fs, :theme_name, themes()}{label fs, :theme_name, "Theme"}{error_tag fs, :theme_name}</div>
+          <div class="form-control form-control-buttons items-center">{select_field fs, :theme_color, theme_colors()}{label fs, :theme_color, "Theme color"}{error_tag fs, :theme_color}</div>
           <div class="alert alert-warning">Don't forget to save the settings to apply the theme!</div>
           <div class="hidden" data-theme-paths={JSON.encode!(theme_paths())} id="js-theme-paths"></div>
-          <div class="field">{select_field fs, :scale_large_images, scale_options()} {label fs, :scale_large_images} {error_tag fs, :scale_large_images}</div>
+          <div class="form-control form-control-buttons items-center">{select_field fs, :scale_large_images, scale_options()}{label fs, :scale_large_images}{error_tag fs, :scale_large_images}</div>
           <% delay_home_images = if staff?(@conn.assigns.current_user), do: :staff_delay_home_images, else: :delay_home_images %>
           {field_with_help( \
             "Hide images without thumbnails on the homepage and for the first 3 minutes after upload (to allow for last-minute tag changes)",
@@ -250,15 +246,15 @@
       {checkbox_field(f, :enable_search_ac, "Enable search auto-completion",
         checked: @conn.cookies["enable_search_ac"] == "true"
       )}
-      <div class={"autocomplete-settings #{if(@conn.cookies["enable_search_ac"] != "true", do: "hidden", else: "")}"}>
+      <div class={"autocomplete-settings content #{if(@conn.cookies["enable_search_ac"] != "true", do: "hidden", else: "")}"}>
         {checkbox_field(
           f,
           :autocomplete_search_history_hidden,
           "Hide search history in auto-completion",
           checked: @conn.cookies["autocomplete_search_history_hidden"] == "true"
         )}
-        <div class={"autocomplete-search-history-settings #{if(@conn.cookies["autocomplete_search_history_hidden"] == "true", do: "hidden", else: "")}"}>
-          <div class="field">
+        <div class={"autocomplete-search-history-settings content #{if(@conn.cookies["autocomplete_search_history_hidden"] == "true", do: "hidden", else: "")}"}>
+          <div class="form-control form-control-buttons items-center">
             {number_input(
               f,
               :autocomplete_search_history_max_suggestions_when_typing,
@@ -268,7 +264,7 @@
               value:
                 @conn.cookies["autocomplete_search_history_max_suggestions_when_typing"] || 3,
               class: "input-field"
-            )} {label(
+            )}{label(
               f,
               :autocomplete_search_history_max_suggestions_when_typing,
               "Maximum number of search history suggestions in auto-completion when typing"
@@ -298,5 +294,5 @@
       </div>
     <% end %>
   </div>
-  <br />{submit("Save My Settings", class: "button")}<br />
+  <div class="form-control-submit">{submit("Save My Settings", class: "button")}</div>
 <% end %>

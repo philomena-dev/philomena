@@ -2,29 +2,29 @@
   <h1>{@user.name}'s Donations</h1>
   {render(PhilomenaWeb.Admin.DonationView, "_table.html", donations: @donations, conn: @conn)}
   <h1>Add Donation</h1>
-  <%= form_for @changeset, ~p"/admin/donations", fn f -> %>
-    <div class="field">
+  <%= form_for @changeset, ~p"/admin/donations", [class: "content"], fn f -> %>
+    <div class="form-control">
       {label(f, :user_id, "User ID:")} {number_input(f, :user_id,
         class: "input-field",
         value: @user.id
       )}
     </div>
-    <div class="field">
+    <div class="form-control">
       {label(f, :email, "Email:")} {text_input(f, :email,
         class: "input-field full-width",
         value: @user.email
       )}
     </div>
-    <div class="field">
+    <div class="form-control">
       {label(f, :amount, "Amount:")} {number_input(f, :amount,
         class: "input-field full-width",
         min: 0,
         step: 0.01
       )}
     </div>
-    <div class="field">
+    <div class="form-control">
       {label(f, :note, "Note:")} {textarea(f, :note, class: "input-field full-width")}
     </div>
-    {submit("Create Donation", class: "button")}
+    <div class="form-control-submit">{submit("Create Donation", class: "button")}</div>
   <% end %>
 </div>

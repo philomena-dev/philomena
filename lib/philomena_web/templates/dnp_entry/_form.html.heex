@@ -35,17 +35,13 @@
   </div>
 <% end %>
 <%= form_for @changeset, @action, [class: "content"], fn f -> %>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
-    </div>
-  <% end %>
+  {error_summary(@changeset)}
   <div class={"block js-dnp-form #{form_class(@changeset)}"}>
     <div class="block-header"><span class="block-header-title">DNP Request Form</span></div>
     <div class="block-content">
       <%!-- Option (set by script depending on the option chosen above) --%>
       <strong>Type</strong>
-      <div class="field">
+      <div class="form-control">
         {select_field(f, :dnp_type, selectable_types(), full_width: true)}{error_tag(
           f,
           :dnp_type
@@ -54,7 +50,7 @@
       <%!-- Artist Tag --%>
       <strong>Artist Tag</strong>
       <p>Select the artist tag you would like to request a DNP entry for</p>
-      <div class="field">
+      <div class="form-control">
         {select_field(f, :tag_id, selectable_options(@selectable_tags))}{error_tag(
           f,
           :tag_id
@@ -66,7 +62,7 @@
       <p>
         If you selected "Other", or have other conditions applicable to your request, please enter them here. If someone always has permission to upload your artwork, enter their name here. (Optional)
       </p>
-      <div class="field">
+      <div class="form-control">
         {textarea(f, :conditions, class: "input-field full-width", placeholder: "Conditions")}{error_tag(
           f,
           :conditions
@@ -76,7 +72,7 @@
       <%!-- Reason --%>
       <strong>Reason For Request</strong>
       <p>Please indicate the reason why you would like your artwork to be removed. (Required)</p>
-      <div class="field">
+      <div class="form-control">
         {textarea(f, :reason,
           class: "input-field full-width",
           placeholder: "Reason",
@@ -96,7 +92,7 @@
       <p>
         If you would like existing artwork to be removed under this request, please provide instructions, such as "Remove all art with my artist tag that contain the "edit" tag." (Optional)
       </p>
-      <div class="field">
+      <div class="form-control">
         {textarea(f, :instructions, class: "input-field full-width", placeholder: "Instructions")}{error_tag(
           f,
           :instructions
@@ -108,14 +104,14 @@
       <p>
         If you have any additional feedback for the site staff, you may enter it here. (Optional)
       </p>
-      <div class="field">
+      <div class="form-control">
         {textarea(f, :feedback, class: "input-field full-width", placeholder: "Feedback")}{error_tag(
           f,
           :feedback
         )}
       </div>
       <hr />
-      {submit("Submit Request", class: "button")}
+      <div class="form-control-submit">{submit("Submit Request", class: "button")}</div>
     </div>
   </div>
 <% end %>

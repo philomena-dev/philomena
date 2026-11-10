@@ -1,6 +1,6 @@
 <h1>Force-assigning a filter for user {@user.name}</h1>
-<%= form_for @changeset, ~p"/admin/users/#{@user}/force_filter", [method: "post"], fn f -> %>
-  <div class="field">
+<%= form_for @changeset, ~p"/admin/users/#{@user}/force_filter", [method: "post", class: "content"], fn f -> %>
+  <div class="form-control">
     {text_input(f, :forced_filter_id,
       placeholder: "Filter ID",
       class: "input-field",
@@ -10,5 +10,5 @@
       :forced_filter_id
     )}
   </div>
-  <div class="field">{submit("Force", class: "button button-primary")}</div>
+  <div class="form-control-submit">{submit("Force", class: "button button-primary")}</div>
 <% end %>

@@ -1,8 +1,6 @@
-<%= form_for @changeset, @path, fn f -> %>
+<%= form_for @changeset, @path, [class: "content"], fn f -> %>
   <div class="flex flex-col gap-md">
-    <%= if @changeset.action do %>
-      <div class="alert alert-danger">Please correct the errors below.</div>
-    <% end %>
+    {error_summary(@changeset)}
     <div class="flex flex-col">
       <div class="flex gap-lg items-center">
         <strong>{label(f, :name)}</strong>

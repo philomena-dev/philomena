@@ -1,6 +1,6 @@
 <%= if is_nil(@conn.assigns.current_user) do %>
   <% challenge = challenge_name(@name) %>
-  <div class="field js-captcha-box">
+  <div class="form-control js-captcha-box">
     {checkbox_field(:captcha, challenge, "I am not a robot!",
       class: "js-captcha",
       value: 0,

@@ -230,7 +230,7 @@ export function setupImageUpload() {
 
     if (!buttonAfter) return;
 
-    const errorElement = makeEl('span', { className: 'help-block tag-error', innerText: message });
+    const errorElement = makeEl('span', { className: 'form-message form-message-error tag-error', innerText: message });
     buttonAfter.insertAdjacentElement('beforebegin', errorElement);
   };
 

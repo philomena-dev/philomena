@@ -7,18 +7,21 @@
     params: scope(@conn)
   ) %>
 <h1>{@title}</h1>
-<%= form_for :tag_changes, @path, [method: "get", class: "hform hform__wide", enforce_utf8: false], fn f -> %>
-  <div class="field">
-    {text_input(f, :tcq,
-      name: :tcq,
-      value: @conn.params["tcq"],
-      class: "input-field hform__text",
-      placeholder: "Search tag changes",
-      autocapitalize: "none",
-      autocomplete: if(@conn.cookies["enable_search_ac"], do: "on", else: "off"),
-      inputmode: "search",
-      data: [autocomplete: "multi-tags", autocomplete_condition: "enable_search_ac"]
-    )}{submit("Search", class: "hform__button button button-primary")}{select_field(
+<%= form_for :tag_changes, @path, [method: "get", enforce_utf8: false, class: "content"], fn f -> %>
+  <div class="flex flex-wrap items-start gap-md">
+    <div class="form-input-group flex-1">
+      {text_input(f, :tcq,
+        name: :tcq,
+        value: @conn.params["tcq"],
+        class: "input-field",
+        placeholder: "Search tag changes",
+        autocapitalize: "none",
+        autocomplete: if(@conn.cookies["enable_search_ac"], do: "on", else: "off"),
+        inputmode: "search",
+        data: [autocomplete: "multi-tags", autocomplete_condition: "enable_search_ac"]
+      )}{submit("Search", class: "button button-primary")}
+    </div>
+    {select_field(
       f,
       :sf,
       [
@@ -28,18 +31,16 @@
         "Sort by removed tag count": "removed_tag_count"
       ],
       name: :sf,
-      class: "ms-md",
       selected: @conn.params["sf"]
     )} {select_field(
       f,
       :sd,
       [Descending: "desc", Ascending: "asc"],
       name: :sd,
-      class: "ms-md",
       selected: @conn.params["sd"]
     )}
   </div>
-  <div class="fieldlabel">
+  <div class="form-message form-message-description">
     For more information, see the <a href="/pages/search_syntax">search syntax documentation</a>. Wildcards are supported in all literal fields.
   </div>
   <br />

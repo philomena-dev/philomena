@@ -3,33 +3,31 @@
 <%= if can?(@conn, :alias, @tag) do %>
   <p>{link("Edit aliases", to: ~p"/tags/#{@tag}/alias/edit")}</p>
 <% end %>
-<%= form_for @changeset, ~p"/tags/#{@tag}", [class: "form"], fn f -> %>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
-    </div>
-  <% end %>
+<%= form_for @changeset, ~p"/tags/#{@tag}", [class: "content"], fn f -> %>
+  {error_summary(@changeset)}
   <h2>{@tag.name}</h2>
-  <div class="field">Category: {select_field(f, :category, tag_categories())}</div>
+  <div class="form-control form-control-buttons items-center">
+    {label(f, :category, "Category:")}{select_field(f, :category, tag_categories())}
+  </div>
   <h4>Description</h4>
-  <div class="field">
+  <div class="form-control">
     {label(f, :short_description, "Short description:")} {text_input(f, :short_description,
       class: "input-field full-width"
     )}
   </div>
-  <div class="field">
+  <div class="form-control">
     {label(f, :description, "Long description:")} {textarea(f, :description,
       class: "input-field full-width"
     )}
   </div>
-  <div class="field">
+  <div class="form-control">
     {label(f, :mod_notes, "Mod notes:")} {textarea(f, :mod_notes, class: "input-field full-width")}
   </div>
   <h4>Implied Tags</h4>
-  <div class="fieldlabel">
-    Tags in this list will be added when this tag is added to an image.
-  </div>
-  <div class="field">
+  <div class="form-control">
+    <div class="form-message form-message-description">
+      Tags in this list will be added when this tag is added to an image.
+    </div>
     {render(PhilomenaWeb.TagView, "_tag_editor.html",
       f: f,
       name: :implied_tag_list,
@@ -37,7 +35,7 @@
       conn: @conn
     )}
   </div>
-  <br />{submit("Save Tag", class: "button button-primary")}
+  <div class="form-control-submit">{submit("Save Tag", class: "button button-primary")}</div>
 <% end %>
 <br /><br />
 <%= if can?(@conn, :alias, @tag) do %>

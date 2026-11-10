@@ -73,22 +73,22 @@
 <% end %>
 <h2>Search</h2>
 <p>Some filters are publicly shared; you can search these filters with the box below.</p>
-<%= form_for :filters, ~p"/filters", [method: "get", class: "hform", enforce_utf8: false], fn f -> %>
-  <div class="field">
+<%= form_for :filters, ~p"/filters", [method: "get", enforce_utf8: false], fn f -> %>
+  <div class="form-input-group short">
     {text_input(f, :fq,
       name: :fq,
       value: @conn.params["fq"],
-      class: "input-field hform__text",
+      class: "input-field",
       placeholder: "Search filters",
       autocapitalize: "none",
       spellcheck: "false",
       autocomplete: if(@conn.cookies["enable_search_ac"], do: "on", else: "off"),
       inputmode: "search",
       data: [autocomplete: "properties"]
-    )}{submit("Search", class: "hform__button button")}
+    )}{submit("Search", class: "button")}
   </div>
 <% end %>
-<p class="fieldlabel">
+<p class="form-message form-message-description">
   For more information, see the <a href="/pages/search_syntax">search syntax documentation</a>. Search results are sorted alphabetically.
 </p>
 <%= if @conn.params["fq"] do %>

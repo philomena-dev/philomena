@@ -3,52 +3,53 @@
     <div class="block">
       <div class="block-content">
         <h3>Search Galleries</h3>
-        <%= form_for @changeset, ~p"/galleries", [as: :gallery, method: "get", class: "hform"], fn f -> %>
-          <div class="field">{label(f, :title, "Title")}</div>
-          <div class="field">
+        <%= form_for @changeset, ~p"/galleries", [as: :gallery, method: "get", class: "content"], fn f -> %>
+          <div class="form-control">
+            {label(f, :title, "Title")}
             {text_input(f, :title,
-              class: "input-field hform__text",
+              class: "input-field full-width",
               placeholder: "Gallery title (* as wildcard)"
             )}
           </div>
-          <div class="field">{label(f, :description, "Description")}</div>
-          <div class="field">
+          <div class="form-control">
+            {label(f, :description, "Description")}
             {textarea(f, :description,
-              class: "input-field hform__text",
+              class: "input-field full-width",
               placeholder: "Gallery description"
             )}
           </div>
-          <div class="field">{label(f, :creator, "Creator")}</div>
-          <div class="field">
+          <div class="form-control">
+            {label(f, :creator, "Creator")}
             {text_input(f, :creator,
-              class: "input-field hform__text",
+              class: "input-field full-width",
               placeholder: "Gallery creator (exact match)"
             )}
           </div>
-          <div class="field">{label(f, :include_image, "Include image")}</div>
-          <div class="field">
+          <div class="form-control">
+            {label(f, :include_image, "Include image")}
             {number_input(f, :include_image,
-              class: "input-field hform__text",
+              class: "input-field full-width",
               placeholder: "Image ID (e.g. 100)"
             )}
           </div>
-          <div class="field">{label(f, :sf, "Sort by")}</div>
-          <div class="field">
-            {select_field(
-              f,
-              :sf,
-              "Creation date": "created_at",
-              "Modification date": "updated_at",
-              "Image count": "image_count",
-              "Subscriber count": "subscriber_count",
-              Relevance: "_score"
-            )} {select_field(f, :sd, Descending: "desc", Ascending: "asc")}
+          <div class="form-control">
+            {label(f, :sf, "Sort by")}
+            <div class="flex flex-wrap gap-md">
+              {select_field(
+                f,
+                :sf,
+                "Creation date": "created_at",
+                "Modification date": "updated_at",
+                "Image count": "image_count",
+                "Subscriber count": "subscriber_count",
+                Relevance: "_score"
+              )}{select_field(f, :sd, Descending: "desc", Ascending: "asc")}
+            </div>
           </div>
-          <div class="error">{error_tag(f, :include_image)}</div>
-          <div class="error">{error_tag(f, :sf)}</div>
-          <div class="error">{error_tag(f, :sd)}</div>
-          <div class="field"></div>
-          {submit("Search", class: "button button-primary")}
+          {error_tag(f, :include_image)}{error_tag(f, :sf)}{error_tag(f, :sd)}
+          <div class="form-control-submit">
+            {submit("Search", class: "button button-primary")}
+          </div>
         <% end %>
       </div>
     </div>

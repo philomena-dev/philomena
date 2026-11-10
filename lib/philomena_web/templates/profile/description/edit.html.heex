@@ -1,14 +1,10 @@
 <h1>Updating Profile Description</h1>
 <%= form_for @changeset, ~p"/profiles/#{@user}/description", [method: "put", class: "content"], fn f -> %>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
-    </div>
-  <% end %>
+  {error_summary(@changeset)}
   <div class="block">
     <div class="block-header"><span class="block-header-title">Personal Title</span></div>
     <div class="block-content">
-      <div class="field">
+      <div class="form-control">
         {text_input(f, :personal_title, class: "input-field", placeholder: "Title")}{error_tag(
           f,
           :personal_title

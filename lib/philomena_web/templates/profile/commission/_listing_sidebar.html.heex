@@ -64,7 +64,7 @@
   <div class="block-header"><span class="block-header-title">Share this listing</span></div>
   <div class="block-content">
     <% url = url(~p"/profiles/#{@user}/commission") %>
-    <div class="field">
+    <div class="form-control">
       <label for="commission_url">URL</label>
       <a data-click-copy="#commission_url" href="#"><i class="fa fa-clipboard"></i> Copy</a> {text_input(
         :commission,

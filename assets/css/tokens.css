@@ -5,7 +5,7 @@
  * framework's fixed lightness sets to keep the contrast of the palette.
  */
 
-/* The header bars are as high as Philomena's, with fields and items filling them; bars and buttons are touch-sized */
+/* The header bars are as high as Philomena's, with fields and items filling them; controls are touch-sized */
 :root {
   --header-height: 36px;
   --header-secondary-height: 32px;
@@ -26,6 +26,7 @@
     --header-spacing-vertical: 0;
     --navbar-item-padding-horizontal: var(--spacing-lg);
     --button-padding-vertical: var(--spacing-lg);
+    --input-padding: var(--spacing-lg);
   }
 }
 

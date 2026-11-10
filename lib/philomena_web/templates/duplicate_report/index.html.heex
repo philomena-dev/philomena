@@ -1,6 +1,6 @@
 <h1>Duplicate Reports</h1>
 <%= form_for @changeset, ~p"/duplicate_reports", [as: :dq, method: :get], fn f -> %>
-  <div class="field field field--inline">
+  <div class="flex flex-wrap items-center gap-md">
     <%= for {label, state} <- states() do %>
       <input
         checked={Enum.member?(f.data.states, state)}
@@ -10,11 +10,11 @@
         type="checkbox"
         value={state}
       /><label
-        class="button me-md"
+        class="button"
         for={input_id(f, :states, state)}
       >{label}</label>
     <% end %>
-    {select_field(f, :sd, sorts(), class: "me-md")}{submit("Search",
+    {select_field(f, :sd, sorts())}{submit("Search",
       class: "button button-primary"
     )}
   </div>

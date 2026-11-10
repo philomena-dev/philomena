@@ -1,23 +1,19 @@
 <h1>Register</h1>
 <%= form_for @changeset, ~p"/registrations", [class: "content"], fn f -> %>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
+  {error_summary(@changeset)}
+  <div class="form-control">
+    <div class="form-message form-message-description">
+      Non-anonymous posts permanently show your username as of posting time, and may appear on search engines; choose wisely.
     </div>
-  <% end %>
-  <div class="fieldlabel">
-    Non-anonymous posts permanently show your username as of posting time, and may appear on search engines; choose wisely.
-  </div>
-  <div class="field">
     {text_input(f, :name, class: "input-field", placeholder: "Username", required: true)}{error_tag(
       f,
       :name
     )}
   </div>
-  <div class="fieldlabel">
-    You'll use your email address to log in, and we'll use this to get in touch if we need to. Don't worry, we won't share this or spam you.
-  </div>
-  <div class="field">
+  <div class="form-control">
+    <div class="form-message form-message-description">
+      You'll use your email address to log in, and we'll use this to get in touch if we need to. Don't worry, we won't share this or spam you.
+    </div>
     {email_input(f, :email,
       class: "input-field",
       placeholder: "Email",
@@ -25,10 +21,10 @@
       pattern: ~S/[^@,;\s]+@[^@,;\s]+\.[^@,;\s]+/
     )}{error_tag(f, :email)}
   </div>
-  <div class="fieldlabel">
-    Pick a good strong password - longer is better! Minimum of 12 characters.
-  </div>
-  <div class="field">
+  <div class="form-control">
+    <div class="form-message form-message-description">
+      Pick a good strong password - longer is better! Minimum of 12 characters.
+    </div>
     {password_input(f, :password,
       class: "input-field",
       placeholder: "Password",
@@ -36,7 +32,7 @@
       minlength: 12
     )}{error_tag(f, :password)}
   </div>
-  <div class="field">
+  <div class="form-control">
     {password_input(f, :password_confirmation,
       class: "input-field",
       placeholder: "Confirm password",
@@ -54,5 +50,5 @@
       before you dive in - they contain a quick introduction on how to use the site.</strong>
     </p>
   </div>
-  <br />{submit("Sign Up", class: "button")}
+  <div class="form-control-submit">{submit("Sign Up", class: "button")}</div>
 <% end %>
