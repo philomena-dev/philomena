@@ -1,6 +1,7 @@
 import postcss from 'postcss';
 import cssCompat from '../css-compat.ts';
 
+const reset = '*:where(:not(html, iframe, canvas, img, svg, video, audio):not(svg *, symbol *)) { all: unset }';
 const run = (css: string) => postcss(cssCompat()).process(css, { from: 'css/a.css' }).css.replace(/\s+/g, ' ');
 
 describe('css-compat', () => {
@@ -8,6 +9,10 @@ describe('css-compat', () => {
     expect(run('.a { margin-inline: 1px 2px; text-align: start }')).toBe(
       '.a { margin-left: 1px; margin-right: 2px; text-align: start }',
     );
+  });
+
+  it('raises type selectors to the reset once they are lowered', () => {
+    expect(run(`${reset} :where(.a), :where(p) {}`)).toContain(` .a, p${':not(does-not-exist)'.repeat(5)} {}`);
   });
 
   it('keeps native :focus-visible after its class twin, both at the same specificity', () => {
