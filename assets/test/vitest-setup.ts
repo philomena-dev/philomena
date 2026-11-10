@@ -17,6 +17,7 @@ window.booru = {
   spoileredTagList: [],
   userCanEditFilter: false,
   userIsSignedIn: false,
+  userRole: undefined,
   watchedTagList: [],
   hiddenFilter: matchNone(),
   spoileredFilter: matchNone(),

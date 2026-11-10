@@ -1,6 +1,6 @@
 import {
   HistorySuggestionComponent,
-  ItemSelectedEvent,
+  ItemSelection,
   PropertySuggestionComponent,
   Suggestions,
   SuggestionsPopupComponent,
@@ -157,12 +157,12 @@ describe('Suggestions', () => {
 
       popup.selectCtrlDown();
 
-      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties.at(0));
+      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties[0]);
       expect($<HTMLElement>('.autocomplete__item__property')).toHaveClass(selectedItemClassName);
 
       popup.selectCtrlDown();
 
-      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties.at(-1));
+      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties[mockedSuggestions.properties.length - 1]);
       expect($<HTMLElement>('.autocomplete__item__property:last-child')).toHaveClass(selectedItemClassName);
 
       // Should loop around
@@ -176,21 +176,21 @@ describe('Suggestions', () => {
 
       popup.selectCtrlUp();
 
-      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties.at(-1));
+      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties[mockedSuggestions.properties.length - 1]);
       expect($<HTMLElement>('.autocomplete__item__property:last-child')).toHaveClass(selectedItemClassName);
 
       popup.selectCtrlUp();
 
       const expectedNthOfTypeIndex = mockedSuggestions.history.length + mockedSuggestions.tags.length;
 
-      expect(popup.selectedSuggestion).toBe(mockedSuggestions.tags.at(-1));
+      expect(popup.selectedSuggestion).toBe(mockedSuggestions.tags[mockedSuggestions.tags.length - 1]);
       expect($<HTMLElement>(`.autocomplete__item__tag:nth-of-type(${expectedNthOfTypeIndex})`)).toHaveClass(
         selectedItemClassName,
       );
 
       popup.selectCtrlUp();
 
-      expect(popup.selectedSuggestion).toBe(mockedSuggestions.history.at(-1));
+      expect(popup.selectedSuggestion).toBe(mockedSuggestions.history[mockedSuggestions.history.length - 1]);
       expect($<HTMLElement>(`.autocomplete__item__history:nth-child(${mockedSuggestions.history.length})`)).toHaveClass(
         selectedItemClassName,
       );
@@ -203,7 +203,7 @@ describe('Suggestions', () => {
       // Should loop around
       popup.selectCtrlUp();
 
-      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties.at(-1));
+      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties[mockedSuggestions.properties.length - 1]);
       expect($<HTMLElement>('.autocomplete__item__property:last-child')).toHaveClass(selectedItemClassName);
     });
 
@@ -258,7 +258,7 @@ describe('Suggestions', () => {
     it('should emit an event when an item was clicked with a mouse', () => {
       [popup, input] = mockBaseSuggestionsPopup(true);
 
-      const itemSelectedHandler = vi.fn<(event: ItemSelectedEvent) => void>();
+      const itemSelectedHandler = vi.fn<(event: ItemSelection) => void>();
 
       popup.onItemSelected(itemSelectedHandler);
 
