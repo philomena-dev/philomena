@@ -5,6 +5,7 @@ import postcssSimpleVars from 'postcss-simple-vars';
 import postcssRelativeColor from '@csstools/postcss-relative-color-syntax';
 import { defineConfig } from 'vitest/config';
 import cssCompat from './build/css-compat.ts';
+import cssGate from './build/css-gate.ts';
 import { buildTarget } from './build/floor.ts';
 import type { ConfigEnv, ViteUserConfig } from 'vitest/config';
 
@@ -27,7 +28,7 @@ export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
 
   return {
     publicDir: 'static',
-    plugins: [],
+    plugins: [cssGate({ forced })],
     server: {
       host: '0.0.0.0',
       port: 5173,
