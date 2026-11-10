@@ -1,6 +1,6 @@
 .button {
   --_border-color: var(--neutral-button-border-color);
-  --_shade: transparent;
+  --_shade: var(--_pointer-shade, transparent);
   --_bevel: var(--emphasis-shadow);
   --_drop: var(--raised-shadow-color);
   /* A long label is cut off (or wraps, with .allow-overflow) instead of widening the page */
@@ -62,8 +62,13 @@
 }
 
 /* A pressed button keeps its darker shade under the pointer */
-.button:not(:disabled, .pressed):hover {
-  --_shade: var(--_hover-shade);
+.button:hover {
+  --_pointer-shade: var(--_hover-shade);
+}
+
+.button:disabled,
+.button.pressed {
+  --_pointer-shade: initial;
 }
 
 .button.icon-only {

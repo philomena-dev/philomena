@@ -231,14 +231,18 @@
 }
 
 .form-control-radio .form-radio-input-wrap .form-radio-input {
-  border: var(--border-width) solid var(--control-border-color);
+  border: var(--border-width) solid var(--_radio-hover-border-color, var(--control-border-color));
   background-color: var(--well-color);
   border-radius: 50%;
   transition: border-color 0.1s;
 }
 
-.form-control-radio:hover .form-radio-input-wrap .form-radio-input:where(:not(:disabled)) {
-  border-color: var(--text-color);
+.form-control-radio:hover {
+  --_radio-hover-border-color: var(--text-color);
+}
+
+.form-control-radio .form-radio-input-wrap .form-radio-input:disabled {
+  --_radio-hover-border-color: initial;
 }
 
 .form-control-radio .form-radio-input-wrap .form-radio-input:focus {

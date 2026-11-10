@@ -3,15 +3,21 @@
   box-sizing: border-box;
   /* A field with a size or cols attribute is never wider than its column */
   max-inline-size: 100%;
-  border: var(--border-width) solid var(--control-border-color);
+  border: var(--border-width) solid var(--_hover-border-color, var(--control-border-color));
   border-radius: var(--border-radius-inner);
   box-shadow: var(--well-shadow);
   transition: border-color 0.1s;
 }
 
-/* Under the pointer the border of a control takes the text color, the counterpart of a button's hover shade */
-.input-field:where(:not(:disabled, [readonly])):hover {
-  border-color: var(--text-color);
+/* Under the pointer the border of a control takes the text color, the counterpart of a button's hover shade, in the
+   rules that color the border */
+.input-field:hover {
+  --_hover-border-color: var(--text-color);
+}
+
+.input-field:disabled,
+.input-field[readonly] {
+  --_hover-border-color: initial;
 }
 
 /* A textarea is resized by its lower edge only */
@@ -63,12 +69,7 @@ textarea.input-field {
 .input-field:not([type="color"]):user-invalid {
   color: var(--danger-tint-text-color);
   background-color: var(--danger-tint-color);
-  border-color: var(--danger-tint-text-color);
-}
-
-/* An invalid field reacts to the pointer like any other: its red border takes the text color */
-.input-field:not([type="color"]):is(.invalid, :user-invalid):where(:not(:disabled, [readonly])):hover {
-  border-color: var(--text-color);
+  border-color: var(--_hover-border-color, var(--danger-tint-text-color));
 }
 
 .input-field.invalid:focus-visible,
@@ -80,11 +81,7 @@ textarea.input-field {
   .input-field:not([type="color"]):invalid:not(:placeholder-shown) {
     color: var(--danger-tint-text-color);
     background-color: var(--danger-tint-color);
-    border-color: var(--danger-tint-text-color);
-  }
-
-  .input-field:not([type="color"]):invalid:not(:placeholder-shown):where(:not(:disabled, [readonly])):hover {
-    border-color: var(--text-color);
+    border-color: var(--_hover-border-color, var(--danger-tint-text-color));
   }
 }
 
