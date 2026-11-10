@@ -56,9 +56,10 @@
   margin-bottom: var(--spacing-md);
 }
 
-/* The error summary at the top of a form keeps its fields at a distance */
-form > .alert {
-  margin-bottom: var(--spacing-md);
+/* Blocks, cards and alerts among the controls of a form keep the form distance to them */
+:where(.form-control-wrap, .form-control, .form-control-group) + :where(.block, .card, .alert),
+:where(.block, .card, .alert) + :where(.form-control-wrap, .form-control, .form-control-submit) {
+  --flow-form-gap: var(--form-control-spacing);
 }
 
 /* A checkbox drawn as the button after it, pressed and filled like a success button while checked */

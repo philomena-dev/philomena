@@ -40,7 +40,7 @@
       minlength: 12
     )}{error_tag(f, :password_confirmation)}
   </div>
-  {render(PhilomenaWeb.CaptchaView, "_captcha.html", name: "registration", conn: @conn)}<br />
+  {render(PhilomenaWeb.CaptchaView, "_captcha.html", name: "registration", conn: @conn)}
   <div class="card card-warning">
     <p>
       We won't share your personal information, won't send you spam emails, and take your security and privacy seriously.
