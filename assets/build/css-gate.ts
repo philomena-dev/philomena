@@ -150,10 +150,12 @@ function valueNeeds(prop: string, value: string, grid = false): Need[] {
     if (bcd.css.types.global_keywords[word]) needs.push({ path: `css.types.global_keywords.${word}` });
     // A value keyword is recorded as prefixed itself (`-moz-fit-content`) or with the prefix of its property
     const keyword = keywords.get(unprefixed(word));
+    // Some alignment keywords came later to flex containers, which browser-compat-data records as _in_flex subfeatures
+    // or as the start and end keywords themselves; in a grid they are as old as grid layout
+    const inGrid = grid && /^(start|end)$/.test(word) && bcd.css.properties[base]?.context_grid;
     if (!prop.startsWith('--') && keyword && keyword !== '__compat') {
-      needs.push(subfeature(prop, keyword, prefixOf(word)));
+      needs.push(subfeature(prop, inGrid ? 'context_grid' : keyword, prefixOf(word)));
     }
-    // Some alignment keywords came later to flex containers, which any box may be unless its own rule makes it a grid
     const flex = `${unprefixed(word)}_in_flex`;
     if (!grid && bcd.css.properties[base]?.context_flex?.[flex]) needs.push(subfeature(prop, `context_flex.${flex}`));
   });
@@ -166,13 +168,16 @@ const property = (decl: Declaration) => (decl.prop.startsWith('--') ? decl.prop 
 
 function declarationNeeds(decl: Declaration): Need[] {
   const prop = property(decl);
-  const grid = decl.parent?.some(
-    node => node.type === 'decl' && property(node) === 'display' && /^(inline-)?grid$/i.test(node.value),
-  );
+  const base = unprefixed(prop);
+  // Any box may be a flex container unless its own rule makes it a grid, and the container of an item is unknown
+  const grid =
+    !base.endsWith('-self') &&
+    decl.parent?.some(
+      node => node.type === 'decl' && property(node) === 'display' && /^(inline-)?grid$/i.test(node.value),
+    );
   const needs = valueNeeds(prop, decl.value, grid);
   if (prop.startsWith('--')) return needs;
 
-  const base = unprefixed(prop);
   if (bcd.css.properties[base]) return [{ path: `css.properties.${base}`, spelling: prop }, ...needs];
   if (bcd.css.properties[prop] || !prefixed(prop)) return [{ path: `css.properties.${prop}` }, ...needs];
 

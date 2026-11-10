@@ -52,6 +52,7 @@ describe('css-gate', () => {
     ['the case-sensitive attribute flag', '[type="a" s] { color: red }', 'case_sensitive_modifier'],
     ['justify-content: start in any container', '.a { justify-content: start }', 'justify-content.start'],
     ['align-items: start, which may be in a flex container', '.a { align-items: start }', 'start_in_flex'],
+    ['align-self: start, whose container is unknown', '.a { display: grid; align-self: start }', 'align-self.start'],
     ['overflow: clip', '.a { overflow: clip }', 'overflow.clip'],
     ['alternative text of generated content', '.a:before { content: "x" / "" }', 'content.alt_text'],
     [
@@ -99,6 +100,7 @@ describe('css-gate', () => {
         @supports not (content: ""/"") { .b:before { content: "x" } } .b:before { content: "x" / "" }
         .a { text-decoration: underline var(--a); text-decoration: var(--a, none) }
         .grid { display: grid; gap: 1px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start }
+        .grid { display: grid; justify-content: start; align-content: end; place-items: start; place-content: end }
         ::-webkit-scrollbar { width: 1px } .a { -webkit-line-break: after-white-space; -webkit-unknown: 1 }
         @supports (-webkit-unknown: 1) { .a { color: red } } @import url("a.css") screen;
         @font-face { font-family: a; src: url(a.woff2) format("woff2"); font-display: block; unicode-range: U+0-FF }
