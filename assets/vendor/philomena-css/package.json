@@ -40,12 +40,7 @@
   ],
   "scripts": {
     "build": "vite build && vite build --mode min",
-    "check:contrast": "node scripts/contrast.mjs",
-    "lint": "oxlint . && stylelint \"css/**/*.css\" \"docs/src/styles/*.css\"",
-    "fmt": "prettier --write .",
-    "fmt:check": "prettier --check .",
-    "commitlint": "commitlint --edit",
-    "prepare": "husky"
+    "check:contrast": "node scripts/contrast.mjs"
   },
   "dependencies": {
     "the-new-css-reset": "^1.11.3"
@@ -67,18 +62,10 @@
     }
   },
   "devDependencies": {
-    "@commitlint/cli": "^21.2.4",
-    "@commitlint/config-conventional": "^21.2.4",
     "@csstools/postcss-relative-color-syntax": "^4.0.16",
-    "husky": "^9.1.7",
-    "oxlint": "^1.92.0",
     "postcss": "^8.5.32",
     "postcss-mixins": "^12.1.2",
     "postcss-simple-vars": "^7.0.1",
-    "prettier": "^3.9.10",
-    "prettier-plugin-astro": "^1.1.2",
-    "stylelint": "^18.0.0",
-    "stylelint-config-recommended": "^19.0.0",
     "vite": "^8.3.7"
   },
   "engines": {
@@ -86,6 +73,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "packageManager": "pnpm@12.18.0"
+  }
 }

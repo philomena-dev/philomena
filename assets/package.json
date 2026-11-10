@@ -1,4 +1,6 @@
 {
+  "name": "philomena-assets",
+  "private": true,
   "type": "module",
   "scripts": {
     "deploy": "cross-env NODE_ENV=production tsc --project tsconfig.build.json && cross-env NODE_ENV=production vite build",
@@ -12,6 +14,7 @@
   "dependencies": {
     "@csstools/postcss-relative-color-syntax": "^4.0.16",
     "@fortawesome/fontawesome-free": "^7.3.1",
+    "@philomena/philomena-css": "*",
     "@types/postcss-mixins": "^9.0.6",
     "@types/web": "^0.0.360",
     "autoprefixer": "^10.6.2",
