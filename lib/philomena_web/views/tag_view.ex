@@ -35,9 +35,6 @@ defmodule PhilomenaWeb.TagView do
   def tab_class(0), do: "selected"
   def tab_class(_), do: nil
 
-  def tab_body_class(0), do: nil
-  def tab_body_class(_), do: "hidden"
-
   def tag_link(nil, tag_name), do: tag_name
 
   def tag_link(tag, tag_name) do

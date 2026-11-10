@@ -32,17 +32,14 @@ defmodule PhilomenaWeb.SettingView do
   def staff?(_), do: false
 
   def tab_class(conn, tab_id, opts \\ []) do
-    if is_active_tab(conn, tab_id, opts), do: "", else: "hidden"
+    if is_active_tab(conn, tab_id, opts), do: "selected"
   end
 
   def tab_link(conn, display_name, tab_id, opts \\ []) do
-    default = Keyword.get(opts, :default, false)
-    class = if is_active_tab(conn, tab_id, opts), do: "selected", else: ""
-
     link(display_name,
       to: "?tab=#{tab_id}",
-      data: [click_tab: tab_id, tab_default: default],
-      class: class
+      data: [click_tab: tab_id, tab_default: Keyword.get(opts, :default, false)],
+      class: ["tab", tab_class(conn, tab_id, opts)]
     )
   end
 

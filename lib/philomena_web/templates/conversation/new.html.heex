@@ -38,15 +38,13 @@
   </div>
   <div class="block">
     <%= inputs_for f, :messages, fn fm -> %>
-      <div>
-        {render(PhilomenaWeb.MarkdownView, "_input.html",
-          changeset: @changeset,
-          conn: @conn,
-          f: fm,
-          action_icon: "pencil-alt",
-          action_text: "Compose"
-        )}
-      </div>
+      {render(PhilomenaWeb.MarkdownView, "_input.html",
+        changeset: @changeset,
+        conn: @conn,
+        f: fm,
+        action_icon: "pencil-alt",
+        action_text: "Compose"
+      )}
     <% end %>
     <div class="block-content communication-edit__actions">
       {submit("Send", class: "button", autocomplete: "off", data: [disable_with: "Sending..."])}

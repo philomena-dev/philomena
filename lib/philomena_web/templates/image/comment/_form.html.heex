@@ -6,14 +6,12 @@
     </div>
   <% end %>
   <div class="block">
-    <div>
-      {render(PhilomenaWeb.MarkdownView, "_input.html",
-        conn: @conn,
-        f: f,
-        placeholder:
-          "Please read the site rules before posting and use ||spoilers|| for above-rating stuff."
-      )}
-    </div>
+    {render(PhilomenaWeb.MarkdownView, "_input.html",
+      conn: @conn,
+      f: f,
+      placeholder:
+        "Please read the site rules before posting and use ||spoilers|| for above-rating stuff."
+    )}
     <div class="block-content communication-edit__actions">
       {submit("Post", class: "button", data: [disable_with: raw("Posting&hellip;")])} {render(
         PhilomenaWeb.MarkdownView,

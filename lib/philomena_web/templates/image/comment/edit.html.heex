@@ -5,14 +5,12 @@
     </div>
   <% end %>
   <div class="block">
-    <div class="communication-edit__wrap">
-      {render(PhilomenaWeb.MarkdownView, "_input.html",
-        conn: @conn,
-        f: f,
-        placeholder:
-          "Please read the site rules before posting and use ||spoilers|| for above-rating stuff."
-      )}
-    </div>
+    {render(PhilomenaWeb.MarkdownView, "_input.html",
+      conn: @conn,
+      f: f,
+      placeholder:
+        "Please read the site rules before posting and use ||spoilers|| for above-rating stuff."
+    )}
     <div class="block-content field">
       {text_input(f, :edit_reason, class: "input input--wide", placeholder: "Reason for edit")}{error_tag(
         f,

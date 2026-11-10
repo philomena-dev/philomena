@@ -5,21 +5,17 @@
     </div>
   <% end %>
   <div class="block">
-    <div class="communication-edit__wrap">
-      <div class="field">
-        {render(PhilomenaWeb.MarkdownView, "_input.html",
-          conn: @conn,
-          f: f,
-          placeholder:
-            "Please read the site rules before posting and use ||spoilers|| for NSFW stuff in SFW forums."
-        )}
-      </div>
-      <div class="block-content field">
-        {text_input(f, :edit_reason, class: "input input--wide", placeholder: "Reason for edit")}{error_tag(
-          f,
-          :edit_reason
-        )}
-      </div>
+    {render(PhilomenaWeb.MarkdownView, "_input.html",
+      conn: @conn,
+      f: f,
+      placeholder:
+        "Please read the site rules before posting and use ||spoilers|| for NSFW stuff in SFW forums."
+    )}
+    <div class="block-content field">
+      {text_input(f, :edit_reason, class: "input input--wide", placeholder: "Reason for edit")}{error_tag(
+        f,
+        :edit_reason
+      )}
     </div>
     <div class="block-content communication-edit__actions">
       {submit("Edit", class: "button", data: [disable_with: raw("Posting&hellip;")])}

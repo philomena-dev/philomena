@@ -6,16 +6,14 @@
     </div>
   <% end %>
   <div class="block">
-    <div>
-      {render(PhilomenaWeb.MarkdownView, "_input.html",
-        conn: @conn,
-        f: f,
-        action_text: "Scratchpad",
-        placeholder: "Scratchpad Contents",
-        name: :scratchpad,
-        required: false
-      )}
-    </div>
+    {render(PhilomenaWeb.MarkdownView, "_input.html",
+      conn: @conn,
+      f: f,
+      action_text: "Scratchpad",
+      placeholder: "Scratchpad Contents",
+      name: :scratchpad,
+      required: false
+    )}
     <div class="block-content communication-edit__actions">
       {submit("Update", class: "button")}
     </div>

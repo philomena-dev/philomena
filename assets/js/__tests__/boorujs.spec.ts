@@ -389,12 +389,12 @@ describe('boorujs', () => {
     it('switches tabs with data-click-tab', () => {
       document.body.innerHTML = `
         <div class="block">
-          <div class="block__nav">
-            <a class="block__tab selected" data-click-tab="tab1">Tab 1</a>
-            <a class="block__tab" data-click-tab="tab2">Tab 2</a>
+          <div class="tabs">
+            <a class="tab selected" data-click-tab="tab1">Tab 1</a>
+            <a class="tab" data-click-tab="tab2">Tab 2</a>
           </div>
-          <div class="block__tab" data-tab="tab1">Content 1</div>
-          <div class="block__tab" data-tab="tab2" class="hidden">Content 2</div>
+          <div class="tab-panel selected" data-tab="tab1">Content 1</div>
+          <div class="tab-panel" data-tab="tab2">Content 2</div>
         </div>
       `;
 
@@ -410,20 +410,20 @@ describe('boorujs', () => {
       // Tab 2 should be selected
       expect(tab2Link.classList.contains('selected')).toBe(true);
       // Tab 1 content should be hidden
-      expect(tab1Content.classList.contains('hidden')).toBe(true);
+      expect(tab1Content).not.toHaveClass('selected');
       // Tab 2 content should be shown
-      expect(tab2Content.classList.contains('hidden')).toBe(false);
+      expect(tab2Content).toHaveClass('selected');
     });
 
     it('switches tabs when no tab is preselected', () => {
       document.body.innerHTML = `
         <div class="block">
-          <div class="block__nav">
-            <a class="block__tab" data-click-tab="tab1">Tab 1</a>
-            <a class="block__tab" data-click-tab="tab2">Tab 2</a>
+          <div class="tabs">
+            <a class="tab" data-click-tab="tab1">Tab 1</a>
+            <a class="tab" data-click-tab="tab2">Tab 2</a>
           </div>
-          <div class="block__tab" data-tab="tab1">Content 1</div>
-          <div class="block__tab" data-tab="tab2">Content 2</div>
+          <div class="tab-panel" data-tab="tab1">Content 1</div>
+          <div class="tab-panel" data-tab="tab2">Content 2</div>
         </div>
       `;
 
@@ -438,14 +438,14 @@ describe('boorujs', () => {
 
       // Selected class should be added to clicked link, and contents updated
       expect(tab1Link.classList.contains('selected')).toBe(true);
-      expect(tab1Content.classList.contains('hidden')).toBe(false);
-      expect(tab2Content.classList.contains('hidden')).toBe(true);
+      expect(tab1Content).toHaveClass('selected');
+      expect(tab2Content).not.toHaveClass('selected');
     });
 
     it('returns early when tab block resolves to Document (no HTMLElement two levels up)', () => {
       // Create a tab trigger directly under <html>, so parentNode is <html> and parentNode.parentNode is Document
       const tab = document.createElement('a');
-      tab.className = 'block__tab';
+      tab.className = 'tab';
       tab.setAttribute('data-click-tab', 'tab1');
       tab.textContent = 'Tab 1';
 
@@ -522,12 +522,12 @@ describe('boorujs', () => {
     it('loads tab content once when data-load-tab is provided', async () => {
       document.body.innerHTML = `
         <div class="block">
-          <div class="block__nav">
-            <a class="block__tab selected" data-click-tab="tab1">Tab 1</a>
-            <a class="block__tab" data-click-tab="tab2" data-load-tab="/tab2.html">Tab 2</a>
+          <div class="tabs">
+            <a class="tab selected" data-click-tab="tab1">Tab 1</a>
+            <a class="tab" data-click-tab="tab2" data-load-tab="/tab2.html">Tab 2</a>
           </div>
-          <div class="block__tab" data-tab="tab1">Content 1</div>
-          <div class="block__tab" data-tab="tab2"></div>
+          <div class="tab-panel selected" data-tab="tab1">Content 1</div>
+          <div class="tab-panel" data-tab="tab2"></div>
         </div>
       `;
 
@@ -556,12 +556,12 @@ describe('boorujs', () => {
     it('shows error text when loading tab content fails', async () => {
       document.body.innerHTML = `
         <div class="block">
-          <div class="block__nav">
-            <a class="block__tab selected" data-click-tab="tab1">Tab 1</a>
-            <a class="block__tab" data-click-tab="tab2" data-load-tab="/tab2.html">Tab 2</a>
+          <div class="tabs">
+            <a class="tab selected" data-click-tab="tab1">Tab 1</a>
+            <a class="tab" data-click-tab="tab2" data-load-tab="/tab2.html">Tab 2</a>
           </div>
-          <div class="block__tab" data-tab="tab1">Content 1</div>
-          <div class="block__tab" data-tab="tab2"></div>
+          <div class="tab-panel selected" data-tab="tab1">Content 1</div>
+          <div class="tab-panel" data-tab="tab2"></div>
         </div>
       `;
 

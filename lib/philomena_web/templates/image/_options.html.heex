@@ -1,14 +1,24 @@
 <% display_mod_tools? = can?(@conn, :hide, @image) %>
-<div id="image_options_area">
-  <div class="block__header block__header--js-tabbed">
-    <a data-click-tab="reporting" data-load-tab={~p"/images/#{@image}/reporting"} href="#"><i class="fa fa-exclamation-triangle"></i>
-    Report</a><a data-click-tab="sharing" href="#"><i class="fa fa-share"></i> Share</a><a
+<div class="block" id="image_options_area">
+  <div class="tabs">
+    <a
+      class="tab"
+      data-click-tab="reporting"
+      data-load-tab={~p"/images/#{@image}/reporting"}
+      href="#"
+    ><i class="fa fa-exclamation-triangle"></i> Report</a><a
+      class="tab"
+      data-click-tab="sharing"
+      href="#"
+    ><i class="fa fa-share"></i> Share</a><a
+      class="tab"
       data-click-tab="favoriters"
       data-load-tab={~p"/images/#{@image}/favorites"}
       href="#"
     ><i class="fa fa-star"></i> List favoriters</a>
     <%= if display_mod_tools? and not hide_staff_tools?(@conn) do %>
-      <a data-click-tab="replace" href="#"><i class="fa fa-upload"></i> Replace</a><a
+      <a class="tab" data-click-tab="replace" href="#"><i class="fa fa-upload"></i> Replace</a><a
+        class="tab"
         data-click-tab="administration"
         href="#"
       ><i class="fa fa-toolbox"></i>
@@ -18,13 +28,13 @@
       <% end %></a>
     <% end %>
   </div>
-  <div class="block__tab hidden" data-tab="favoriters">
+  <div class="tab-panel" data-tab="favoriters">
     <p>Loading...</p>
   </div>
-  <div class="block__tab hidden" data-tab="reporting">
+  <div class="tab-panel" data-tab="reporting">
     <p>Loading...</p>
   </div>
-  <div class="block__tab hidden" data-tab="sharing">
+  <div class="tab-panel" data-tab="sharing">
     <div id="embed_options">
       <% source_link =
         if image_has_sources(@image),
@@ -94,7 +104,7 @@
     </div>
   </div>
   <%= if display_mod_tools? do %>
-    <div class="block__tab hidden" data-tab="replace">
+    <div class="tab-panel" data-tab="replace">
       <%= if @file_changeset do %>
         <%= form_for @file_changeset, ~p"/images/#{@image}/file", [method: "put", multipart: true], fn f -> %>
           <div id="js-image-upload-previews"></div>
@@ -118,7 +128,7 @@
         <% end %>
       <% end %>
     </div>
-    <div class="block__tab hidden" data-tab="administration">
+    <div class="tab-panel" data-tab="administration">
       <div class="alert alert-danger">
         <a class="button button--link" href={~p"/images/#{@image}/scratchpad/edit"}><i class="far fa-edit"></i></a>
         <%= if present?(@image.scratchpad) do %>

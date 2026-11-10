@@ -24,6 +24,7 @@
 @import "@philomena/philomena-css/css/components/header.css";
 @import "@philomena/philomena-css/css/components/navbar.css";
 @import "@philomena/philomena-css/css/components/separator.css";
+@import "@philomena/philomena-css/css/components/tabs.css";
 @import "./tokens.css";
 @import "./legacy.css";
 

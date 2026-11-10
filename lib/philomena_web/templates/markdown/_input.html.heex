@@ -5,8 +5,9 @@
 <% field_placeholder = assigns[:placeholder] || "Your message" %>
 <% is_required = assigns[:required] %>
 <% input_classes = assigns[:class] %>
-<div class="block__header block__header--js-tabbed">
-  <a class="selected" data-click-tab="write" href="#"><i class={"fa #{"fa-#{action_icon}"}"}></i> {action_text}</a><a
+<div class="tabs">
+  <a class="tab selected" data-click-tab="write" href="#"><i class={"fa #{"fa-#{action_icon}"}"}></i> {action_text}</a><a
+    class="tab"
     data-click-tab="preview"
     href="#"
   ><i
@@ -15,7 +16,7 @@
   ></i> <i class="fa fa-eye fa-fw js-preview-idle"></i>
   Preview</a>
 </div>
-<div class="block__tab communication-edit__tab selected js-preview-input-wrapper" data-tab="write">
+<div class="tab-panel selected" data-tab="write">
   {render(PhilomenaWeb.MarkdownView, "_help.html", conn: @conn)}{render(
     PhilomenaWeb.MarkdownView,
     "_toolbar.html",
@@ -33,5 +34,4 @@
     )}{error_tag(form, field_name)}
   </div>
 </div>
-<div class="block__tab communication-edit__tab hidden js-preview-content" data-tab="preview">
-</div>
+<div class="tab-panel js-preview-content" data-tab="preview"></div>

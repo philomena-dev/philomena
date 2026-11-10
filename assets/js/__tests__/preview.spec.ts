@@ -28,7 +28,7 @@ function makeBaseDom({ withAnon }: { withAnon?: boolean } = {}) {
     <textarea class="js-preview-input"></textarea>
     <div class="js-preview-loading hidden"></div>
     <div class="js-preview-idle"></div>
-    <div class="js-preview-content"></div>
+    <div class="tab-panel selected js-preview-content"></div>
     ${withAnon ? '<input type="checkbox" class="js-preview-anonymous" />' : ''}
   `;
 
@@ -230,7 +230,7 @@ describe('preview.ts setupPreviews', () => {
       <textarea class="js-preview-input"></textarea>
       <div class="js-preview-loading hidden"></div>
       <div class="js-preview-idle"></div>
-      <div class="js-preview-content hidden"></div>
+      <div class="tab-panel js-preview-content"></div>
       <input type="checkbox" class="js-preview-anonymous" />
     `;
 
@@ -258,7 +258,7 @@ describe('preview.ts setupPreviews', () => {
       <textarea class="js-preview-description"></textarea>
       <div class="js-preview-loading hidden"></div>
       <div class="js-preview-idle"></div>
-      <div class="js-preview-content"></div>
+      <div class="tab-panel selected js-preview-content"></div>
     `;
 
     const desc = $<HTMLTextAreaElement>('.js-preview-description')!;

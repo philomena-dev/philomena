@@ -18,83 +18,11 @@
 }
 
 /* Images in user content stay inside their block */
-.block-content img {
+.block-content img,
+.tab-panel img {
   max-width: 100%;
-}
-
-.block__tab {
-  border-left: 1px solid var(--border-color);
-  border-right: 1px solid var(--border-color);
-  background: var(--background-color);
-  padding: var(--spacing-md);
-}
-
-.block__tab img {
-  max-width: 100%;
-}
-
-.block__tab:not(.hidden) {
-  border-bottom: 1px solid var(--border-color);
-}
-
-.block__header--js-tabbed {
-  font-size: 14px;
-  line-height: var(--block-header-height);
-  color: var(--foreground-color);
-  background: transparent;
-  display: flex;
-  flex-wrap: wrap;
-  border-bottom: var(--border);
-}
-
-.block__header--js-tabbed a {
-  padding-left: var(--header-spacing);
-  padding-right: var(--header-spacing);
-  color: var(--block-header-link-text-color);
-  display: inline-block;
-  cursor: pointer;
-  font-weight: bold;
-  background: var(--block-header-light-color);
-  border-top: var(--border);
-  /* hide the bottom border for tab links */
-  margin-bottom: -1px;
-  border-bottom: 1px solid var(--block-header-light-color);
-}
-
-.block__header--js-tabbed a:hover {
-  border-color: var(--block-header-light-hover-color);
-  background: var(--block-header-light-hover-color);
-  color: var(--block-header-light-link-text-hover-color);
-}
-
-.block__header--js-tabbed a:first-child {
-  border-left: var(--border);
-}
-
-.block__header--js-tabbed a:last-child {
-  border-right: var(--border);
-}
-
-.block__header--js-tabbed a.selected,
-.block__header--js-tabbed a.selected:hover {
-  cursor: default;
-  color: var(--foreground-color);
-  background: var(--background-color);
-  border-color: var(--block-header-light-color);
-  border-bottom: 1px solid var(--background-color);
 }
 
 .header__span {
   background: var(--block-header-color);
-}
-
-/* Somewhat dirty workaround for <h*> margins */
-/* Now even dirtier without nesting! */
-.block__tab > h1,
-.block__tab > h2,
-.block__tab > h3,
-.block__tab > h4,
-.block__tab > h5,
-.block__tab > h6 {
-  margin-top: 6px;
 }

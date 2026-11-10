@@ -119,7 +119,7 @@ function setupPreviews() {
 
   if (previewAnon) {
     previewAnon.addEventListener('click', () => {
-      if (previewContent.classList.contains('hidden')) return;
+      if (!previewContent.classList.contains('selected')) return;
 
       updatePreview();
     });

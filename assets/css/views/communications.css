@@ -60,10 +60,6 @@ span.communication__sender__stats,
   margin-left: 6px;
 }
 
-.communication-edit__tab {
-  padding-bottom: 12px;
-}
-
 .communication-edit__actions {
   margin-top: -4px; /* Dirty! 1px to override the border, 3px to negate input margin */
   padding-top: 0;

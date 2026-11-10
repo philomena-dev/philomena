@@ -6,7 +6,7 @@
     </div>
   <% end %>
   <div class="block" data-tab-persist-in-query-params="true" id="js-setting-table">
-    <div class="block__header block__header--js-tabbed">
+    <div class="tabs">
       <%= if @conn.assigns.current_user do %>
         {tab_link(@conn, "Watch List", "watched", default: true)}{tab_link(
           @conn,
@@ -26,7 +26,7 @@
       <% end %>
     </div>
     <%= if @conn.assigns.current_user do %>
-      <div class={"block__tab #{tab_class(@conn, "watched", default: true)}"} data-tab="watched">
+      <div class={["tab-panel", tab_class(@conn, "watched", default: true)]} data-tab="watched">
         <h4>Tags</h4>
         <div class="field">
           {label(f, :watched_tag_list, "Tags to watch")}{render(
@@ -100,7 +100,7 @@
           <br />Do not share this URL with anyone, it may allow an attacker to compromise your account.
         </p>
       </div>
-      <div class={"block__tab #{tab_class(@conn, "display")}"} data-tab="display" phx-no-format>
+      <div class={["tab-panel", tab_class(@conn, "display")]} data-tab="display" phx-no-format>
         <%= inputs_for f, :settings, fn fs -> %>{field_with_help( \
               "Align content to the center of the page - try this option out if you " <> \
               "browse the site on a tablet or a fairly wide screen.",
@@ -155,7 +155,7 @@
             ] \
           )}<% end %>
       </div>
-      <div class={"block__tab #{tab_class(@conn, "comments")}"} data-tab="comments" phx-no-format>
+      <div class={["tab-panel", tab_class(@conn, "comments")]} data-tab="comments" phx-no-format>
         <%= inputs_for f, :settings, fn fs -> %>{field_with_help( \
             "Display the newest comments at the top of the page.", \
             [ \
@@ -190,7 +190,7 @@
           )}<% end %>
       </div>
       <div
-        class={"block__tab #{tab_class(@conn, "notifications")}"}
+        class={["tab-panel", tab_class(@conn, "notifications")]}
         data-tab="notifications"
         phx-no-format
       >
@@ -218,7 +218,7 @@
             ] \
           )}<% end %>
       </div>
-      <div class={"block__tab #{tab_class(@conn, "metadata")}"} data-tab="metadata">
+      <div class={["tab-panel", tab_class(@conn, "metadata")]} data-tab="metadata">
         <%= inputs_for f, :settings, fn fs -> %>
           <div class="field">
             {checkbox(fs, :fancy_tag_field_on_upload, class: "checkbox")} {label(
@@ -249,7 +249,7 @@
       </div>
     <% end %>
     <div
-      class={"block__tab #{tab_class(@conn, "local", default: is_nil(@conn.assigns.current_user))}"}
+      class={["tab-panel", tab_class(@conn, "local", default: is_nil(@conn.assigns.current_user))]}
       data-tab="local"
     >
       <div class="alert alert-warning">
@@ -390,7 +390,7 @@
       <% end %>
     </div>
     <%= if !@conn.assigns.current_user do %>
-      <div class={"block__tab #{tab_class(@conn, "join-the-herd")}"} data-tab="join-the-herd">
+      <div class={["tab-panel", tab_class(@conn, "join-the-herd")]} data-tab="join-the-herd">
         <p>
           Consider {link("creating an account!", to: ~p"/registrations/new")}
           <br />You will be able to customize the number of images and comments you get on a single page, as well as change the appearance of the site with custom themes.
