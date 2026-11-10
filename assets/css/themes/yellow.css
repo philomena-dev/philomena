@@ -2,6 +2,7 @@
 @import "../config.css";
 @import "./hues/yellow.css";
 @import "@philomena/philomena-css/css/design/tokens.css";
+@import "../tokens.css";
 @import "../legacy.css";
 
 /* Legacy properties that differ from the formulas of legacy.css */

@@ -15,6 +15,7 @@
 @import "./config.css";
 @import "./themes/hues/blue.css";
 @import "@philomena/philomena-css/css/design/index.css";
+@import "./tokens.css";
 @import "./legacy.css";
 
 /* Files containing common properties, such as variable definitions. */

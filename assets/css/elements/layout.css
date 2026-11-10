@@ -41,20 +41,24 @@ nav {
   height: 100%;
   display: none;
   overflow: auto;
-  background: var(--meta-color);
+  background: var(--burger-color);
   padding: 5px;
 }
 
 #burger a {
-  background: var(--meta-color);
-  color: var(--foreground-color);
+  background: var(--burger-color);
+  color: var(--text-color);
   display: block;
   padding: 5px;
 }
 
 #burger a:hover {
-  background: var(--base-color);
-  color: var(--link-light-color);
+  background: var(--burger-hover-color);
+  color: var(--burger-hover-text-color);
+}
+
+#burger hr {
+  background: var(--burger-divider-color);
 }
 
 #container {

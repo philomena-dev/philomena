@@ -34,8 +34,8 @@
   border: none;
   height: var(--header-field-height);
   background: var(--header-field-color);
-  color: var(--text-light-color);
-  -webkit-text-fill-color: var(--text-light-color);
+  color: var(--header-text-color);
+  -webkit-text-fill-color: var(--header-text-color);
   text-overflow: ellipsis;
 
   /* reset rounded borders on iOS/Safari */
@@ -43,7 +43,7 @@
 }
 
 span.header__counter {
-  @mixin number-wrap var(--header-hover-color);
+  @mixin number-wrap var(--bar-hover-shade-color);
 }
 
 select.header__input,
@@ -54,8 +54,8 @@ select.header__input:focus {
    * (based on http://stackoverflow.com/a/28274325) the first two items create left and right triangles
    * that match up to create an arrow, the third one specifies dropdown background */
   background:
-    linear-gradient(45deg, transparent 50%, var(--text-light-color) 50%) calc(100% - 15px) 12px / 5px 5px no-repeat,
-    linear-gradient(135deg, var(--text-light-color) 50%, transparent 50%) calc(100% - 10px) 12px / 5px 5px no-repeat;
+    linear-gradient(45deg, transparent 50%, var(--header-text-color) 50%) calc(100% - 15px) 12px / 5px 5px no-repeat,
+    linear-gradient(135deg, var(--header-text-color) 50%, transparent 50%) calc(100% - 10px) 12px / 5px 5px no-repeat;
   background-color: var(--header-field-color);
   /* prevent the custom arrow from overlapping the content */
   padding-right: 25px;
@@ -90,7 +90,7 @@ select.header__input:focus optgroup {
 .header__input--search:-webkit-autofill,
 .header__input--search:-webkit-autofill:hover,
 .header__input--search:-webkit-autofill:focus {
-  -webkit-text-fill-color: var(--text-light-color);
+  -webkit-text-fill-color: var(--header-text-color);
   box-shadow: 0 0 0 1000px var(--header-field-color) inset;
   border: none;
 }
@@ -104,7 +104,7 @@ select.header__input:focus optgroup {
   line-height: var(--header-field-height);
   font-size: 1.25em;
   background: var(--header-field-color);
-  color: var(--text-light-color);
+  color: var(--header-text-color);
 }
 
 .header__search__button:hover,
@@ -121,21 +121,21 @@ select.header__input:focus optgroup {
 span.header__link-user__dropdown-arrow {
   padding: 0 9px;
   background:
-    linear-gradient(45deg, transparent 50%, var(--text-light-color) 50%) calc(100% - 5px) 12px / 5px 5px no-repeat,
-    linear-gradient(135deg, var(--text-light-color) 50%, transparent 50%) calc(100%) 12px / 5px 5px no-repeat;
+    linear-gradient(45deg, transparent 50%, var(--header-text-color) 50%) calc(100% - 5px) 12px / 5px 5px no-repeat,
+    linear-gradient(135deg, var(--header-text-color) 50%, transparent 50%) calc(100%) 12px / 5px 5px no-repeat;
   background-color: var(--header-color);
 }
 
 span.header__link-user__dropdown-arrow:hover,
 .header__dropdown:hover span.header__link-user__dropdown-arrow {
-  background-color: var(--header-hover-color);
+  background-color: var(--bar-hover-shade-color);
 }
 
 a.header__link {
   display: inline-block;
   padding: 0 var(--header-spacing);
   font-size: var(--header-font-size);
-  color: var(--text-light-color);
+  color: var(--header-text-color);
   background: var(--header-color);
   flex-shrink: 0;
   line-height: var(--header-height);
@@ -153,7 +153,7 @@ a.header__link-user {
 
 .header--secondary a {
   line-height: var(--header-sub-height);
-  color: var(--foreground-color);
+  color: var(--text-color);
   background: var(--header-secondary-color);
 }
 
@@ -175,7 +175,7 @@ a.header__link-user {
 a.header__link:hover,
 .header__dropdown:hover > a {
   cursor: pointer;
-  background-color: var(--header-hover-color);
+  background-color: var(--bar-hover-shade-color);
 }
 
 .header--secondary a:hover {

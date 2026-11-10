@@ -1,0 +1,47 @@
+/*
+ * Philomena's own color tokens and its values of the framework's header tokens, on the framework's three theme
+ * selectors. The header bars keep the colors of Philomena's themes: the hover colors are opaque.
+ */
+
+@define-mixin philomena-light-colors {
+  --header-color: hsl(from $base-color-light h s calc(l - 9));
+  --header-text-color: $surface-color-light;
+  --bar-hover-shade-color: hsl(from $base-color-light h s calc(l - 16));
+  --header-field-color: $base-color-light;
+  --header-field-hover-color: hsl(from $base-color-light h s calc(l - 7));
+  --header-secondary-color: hsl(from $base-color-light h calc(s - 25) calc(l + 30));
+  --header-secondary-hover-color: hsl(from $base-color-light h calc(s - 25) calc(l + 23));
+  --header-admin-color: $header-admin-color-light;
+  --header-admin-hover-color: $header-admin-hover-color-light;
+  --burger-color: $burger-color-light;
+  --burger-hover-color: $base-color-light;
+  --burger-hover-text-color: $surface-color-light;
+  --burger-divider-color: $burger-divider-color-light;
+}
+
+:root {
+  --header-color: $header-color-dark;
+  --header-text-color: $text-color-dark;
+  --bar-hover-shade-color: hsl(from $header-color-dark h s calc(l - 8));
+  --header-field-color: $header-field-color-dark;
+  --header-field-hover-color: hsl(from $header-color-dark h s calc(l - 12));
+  --header-secondary-color: $header-secondary-color-dark;
+  --header-secondary-hover-color: hsl(from $header-secondary-color-dark h s calc(l - 4));
+  --header-admin-color: $header-admin-color-dark;
+  --header-admin-hover-color: hsl(from $header-admin-color-dark h s calc(l - 5));
+  --burger-color: $burger-color-dark;
+  --burger-hover-color: $base-color-dark;
+  --burger-hover-text-color: $text-color-dark;
+  --burger-divider-color: $burger-divider-color-dark;
+  --unread-message-color: $unread-message-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    @mixin philomena-light-colors;
+  }
+}
+
+:root[data-theme="light"] {
+  @mixin philomena-light-colors;
+}
