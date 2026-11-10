@@ -4,6 +4,7 @@ import type { AcceptedPlugin } from 'postcss';
 import postcssFloorReset from './postcss-floor-reset.ts';
 import postcssFloorSelectors from './postcss-floor-selectors.ts';
 import postcssFloorSupports from './postcss-floor-supports.ts';
+import postcssFlexGap from './postcss-flex-gap.ts';
 import postcssFloorValues from './postcss-floor-values.ts';
 
 // The framework is written for left-to-right pages, so logical properties are static physical ones. text-align and
@@ -27,6 +28,7 @@ export default function cssCompat({ force = false } = {}): AcceptedPlugin[] {
     postcssFloorValues(),
     postcssFloorReset(),
     postcssFloorSelectors(),
+    postcssFlexGap(),
     postcssFloorSupports({ force }),
     // Reads .browserslistrc
     autoprefixer(),
