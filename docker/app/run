@@ -13,7 +13,7 @@ info "Running in devcontainer mode"
 # Some routines need to be run every time the container starts, because they
 # need to modify the bind-mounted volume.
 
-# Install prettier if not already. Required for git pre-commit hook to work.
+# Install npm dependencies. Prettier is required for the git pre-commit hook to work.
 step npm ci --ignore-scripts
 
 # Install the pre-commit hook. It's a symlink, to make sure it stays always up-to-date.

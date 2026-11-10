@@ -17,7 +17,7 @@ config :philomena, PhilomenaWeb.Endpoint,
   watchers: [
     node: [
       "watch.js",
-      "node_modules/vite/bin/vite.js",
+      "../node_modules/vite/bin/vite.js",
       "--mode",
       "development",
       "--host",
@@ -28,7 +28,7 @@ config :philomena, PhilomenaWeb.Endpoint,
     ],
     node: [
       "watch.js",
-      "node_modules/vite/bin/vite.js",
+      "../node_modules/vite/bin/vite.js",
       "build",
       "--mode",
       "development",

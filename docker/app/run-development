@@ -34,17 +34,11 @@ server() {
   START_WORKER=true mix phx.server
 }
 
-# Always install assets
-(
-  step cd /srv/philomena/assets
-  step npm install
-)
+step cd /srv/philomena
 
-# Always install mix dependencies
-(
-  step cd /srv/philomena
-  step mix deps.get
-)
+# Always install npm and mix dependencies
+step npm install
+step mix deps.get
 
 # Initialize S3 buckets
 step mix run -e 'PhilomenaMedia.Objects.create_buckets()' > /dev/null

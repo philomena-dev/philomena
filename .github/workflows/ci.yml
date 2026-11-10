@@ -100,7 +100,6 @@ jobs:
           cache: 'npm'
 
       - run: npm ci --ignore-scripts
-        working-directory: ./assets
 
       - run: npm run lint
         working-directory: ./assets
