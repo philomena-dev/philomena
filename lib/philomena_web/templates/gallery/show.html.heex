@@ -20,18 +20,14 @@ info = render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @image
       </div>
     </section>
     <div class="block-header sub">
-      <span class="block-header-title">A gallery by</span>{render(
-        PhilomenaWeb.UserAttributionView,
-        "_anon_user.html",
-        object: @gallery,
-        conn: @conn
-      )}with {@gallery.image_count} {pluralize(
-        "image",
-        "images",
-        @gallery.image_count
-      )}<span class="hidden-below-md">, last updated {pretty_time(@gallery.updated_at)} (created {pretty_time(
-        @gallery.created_at
-      )})</span>
+      <span>
+        A gallery by {render(PhilomenaWeb.UserAttributionView, "_anon_user.html",
+          object: @gallery,
+          conn: @conn
+        )} with {@gallery.image_count} {pluralize("image", "images", @gallery.image_count)}<span class="hidden-below-md">, last updated {pretty_time(
+          @gallery.updated_at
+        )} (created {pretty_time(@gallery.created_at)})</span>
+      </span>
     </div>
     <div class="block-content flex js-imagelist-info">
       {render(PhilomenaWeb.ImageView, "_image_container.html",
