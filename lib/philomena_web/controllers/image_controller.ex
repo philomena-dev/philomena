@@ -4,7 +4,7 @@ defmodule PhilomenaWeb.ImageController do
   alias PhilomenaWeb.ImageScope
   alias PhilomenaWeb.NotificationCountPlug
   alias PhilomenaWeb.MarkdownRenderer
-  alias PhilomenaWeb.RateLimitedResponse
+  alias PhilomenaWeb.RefusalResponse
   alias Philomena.Images
   alias Philomena.Interactions
 
@@ -101,7 +101,7 @@ defmodule PhilomenaWeb.ImageController do
         render(conn, "new.html", changeset: changeset)
 
       {:error, :rate_limited} ->
-        RateLimitedResponse.call(conn, "You may only upload images once every 5 seconds.")
+        RefusalResponse.call(conn, "You may only upload images once every 5 seconds.")
 
       error ->
         error

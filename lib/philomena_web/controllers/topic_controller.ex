@@ -3,7 +3,7 @@ defmodule PhilomenaWeb.TopicController do
 
   alias PhilomenaWeb.NotificationCountPlug
   alias PhilomenaWeb.MarkdownRenderer
-  alias PhilomenaWeb.RateLimitedResponse
+  alias PhilomenaWeb.RefusalResponse
   alias Philomena.Forums.Forum
   alias Philomena.Topics
 
@@ -63,7 +63,7 @@ defmodule PhilomenaWeb.TopicController do
         |> render("new.html", changeset: changeset)
 
       {:error, :rate_limited} ->
-        RateLimitedResponse.call(conn, "You may only make a new topic once every 5 minutes.")
+        RefusalResponse.call(conn, "You may only make a new topic once every 5 minutes.")
 
       error ->
         error

@@ -2,7 +2,7 @@ defmodule PhilomenaWeb.Topic.PostController do
   use PhilomenaWeb, :controller
 
   alias Philomena.Posts
-  alias PhilomenaWeb.RateLimitedResponse
+  alias PhilomenaWeb.RefusalResponse
 
   action_fallback PhilomenaWeb.FallbackController
 
@@ -25,7 +25,7 @@ defmodule PhilomenaWeb.Topic.PostController do
         |> redirect(to: ~p"/forums/#{post.topic.forum}/topics/#{post.topic}")
 
       {:error, :rate_limited} ->
-        RateLimitedResponse.call(conn, "You may only make a post once every 15 seconds.")
+        RefusalResponse.call(conn, "You may only make a post once every 15 seconds.")
 
       error ->
         error

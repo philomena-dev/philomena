@@ -1,10 +1,10 @@
-defmodule PhilomenaWeb.RateLimitedResponse do
+defmodule PhilomenaWeb.RefusalResponse do
   @moduledoc """
-  Renders the response for a write refused with `{:error, :rate_limited}`.
+  Renders the response for a write refused with a flash message, such as a
+  rate limit or a failed captcha.
 
-  The flash carries the controller-specific message. AJAX requests get an
-  empty 300 response (ujs.ts reloads the page so the flash renders);
-  everything else is redirected back to the referrer.
+  AJAX requests get an empty 300 response (ujs.ts reloads the page so the
+  flash renders); everything else is redirected back to the referrer.
   """
 
   alias Plug.Conn

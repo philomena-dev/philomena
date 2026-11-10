@@ -2,7 +2,7 @@ defmodule PhilomenaWeb.Image.CommentController do
   use PhilomenaWeb, :controller
 
   alias PhilomenaWeb.MarkdownRenderer
-  alias PhilomenaWeb.RateLimitedResponse
+  alias PhilomenaWeb.RefusalResponse
   alias Philomena.Comments
 
   action_fallback PhilomenaWeb.FallbackController
@@ -61,7 +61,7 @@ defmodule PhilomenaWeb.Image.CommentController do
         |> redirect(to: ~p"/images/#{image}")
 
       {:error, :rate_limited} ->
-        RateLimitedResponse.call(conn, "You may only create a comment once every 15 seconds.")
+        RefusalResponse.call(conn, "You may only create a comment once every 15 seconds.")
 
       error ->
         error

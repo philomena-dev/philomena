@@ -2,7 +2,7 @@ defmodule PhilomenaWeb.Image.TagController do
   use PhilomenaWeb, :controller
 
   alias Philomena.Images
-  alias PhilomenaWeb.RateLimitedResponse
+  alias PhilomenaWeb.RefusalResponse
 
   action_fallback PhilomenaWeb.FallbackController
 
@@ -41,7 +41,7 @@ defmodule PhilomenaWeb.Image.TagController do
         )
 
       {:error, :rate_limited} ->
-        RateLimitedResponse.call(
+        RefusalResponse.call(
           conn,
           "Too many tags changed. Change fewer tags or try again later."
         )

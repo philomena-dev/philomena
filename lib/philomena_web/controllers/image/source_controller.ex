@@ -3,7 +3,7 @@ defmodule PhilomenaWeb.Image.SourceController do
 
   alias Philomena.Images.Source
   alias Philomena.Images
-  alias PhilomenaWeb.RateLimitedResponse
+  alias PhilomenaWeb.RefusalResponse
 
   action_fallback PhilomenaWeb.FallbackController
 
@@ -37,7 +37,7 @@ defmodule PhilomenaWeb.Image.SourceController do
         )
 
       {:error, :rate_limited} ->
-        RateLimitedResponse.call(conn, "You may only update metadata once every 5 seconds.")
+        RefusalResponse.call(conn, "You may only update metadata once every 5 seconds.")
 
       {:error, _} = error ->
         error

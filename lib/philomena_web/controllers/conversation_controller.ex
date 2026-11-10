@@ -2,7 +2,7 @@ defmodule PhilomenaWeb.ConversationController do
   use PhilomenaWeb, :controller
 
   alias PhilomenaWeb.NotificationCountPlug
-  alias PhilomenaWeb.RateLimitedResponse
+  alias PhilomenaWeb.RefusalResponse
   alias Philomena.Conversations
   alias Philomena.Conversations.ConversationIndex
   alias PhilomenaWeb.MarkdownRenderer
@@ -72,7 +72,7 @@ defmodule PhilomenaWeb.ConversationController do
         )
 
       {:error, :rate_limited} ->
-        RateLimitedResponse.call(conn, "You may only create a conversation once every minute.")
+        RefusalResponse.call(conn, "You may only create a conversation once every minute.")
 
       error ->
         error
