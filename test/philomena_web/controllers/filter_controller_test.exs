@@ -84,6 +84,24 @@ defmodule PhilomenaWeb.FilterControllerTest do
       assert response =~ filter.name
     end
 
+    test "says what a filter spoilers and hides, and when it does neither", %{conn: conn} do
+      empty = filter_fixture(confirmed_user_fixture(), %{public: true})
+      response = html_response(get(conn, ~p"/filters/#{empty}"), 200)
+
+      assert response =~ "This filter doesn't spoiler any tags."
+      assert response =~ "This filter doesn't hide any tags."
+      refute response =~ "code-block"
+
+      complex =
+        filter_fixture(confirmed_user_fixture(), %{public: true, hidden_complex_str: "safe"})
+
+      response = html_response(get(conn, ~p"/filters/#{complex}"), 200)
+
+      assert response =~ "This filter doesn't spoiler any tags."
+      assert response =~ "This filter hides..."
+      assert response =~ ~s(<pre class="code-block wrap">safe</pre>)
+    end
+
     test "renders another user's public filter", %{conn: conn} do
       filter = filter_fixture(confirmed_user_fixture(), %{public: true})
 
