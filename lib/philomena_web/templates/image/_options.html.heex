@@ -42,42 +42,47 @@
           else: " (Original source unknown at time of posting)" %>
       <% medium_url = thumb_url(@image, false, select_version(@image, :medium)) %>
       <h5>Derpibooru</h5>
-      <p>
+      <p class="flex flex-wrap items-center gap-md">
         <strong>Small thumbnail</strong>
-        <input
-          class="input-field"
-          cols="10"
-          id="embed_small_thumbnail_tag"
-          readonly="readonly"
-          type="text"
-          value={">>#{@image.id}s"}
-        />
-        <a data-click-copy="#embed_small_thumbnail_tag" href="#"><i class="fa fa-clipboard"></i>
-        Copy</a>
+        <span class="copyable-text">
+          <input
+            class="input-field copyable-text-data"
+            id="embed_small_thumbnail_tag"
+            readonly="readonly"
+            size="10"
+            type="text"
+            value={">>#{@image.id}s"}
+          /><a class="button" data-click-copy="#embed_small_thumbnail_tag" href="#"><i class="fa fa-clipboard"></i>
+          Copy</a>
+        </span>
       </p>
-      <p>
+      <p class="flex flex-wrap items-center gap-md">
         <strong>Thumbnail</strong>
-        <input
-          class="input-field"
-          cols="10"
-          id="embed_thumbnail_tag"
-          readonly="readonly"
-          type="text"
-          value={">>#{@image.id}t"}
-        />
-        <a data-click-copy="#embed_thumbnail_tag" href="#"><i class="fa fa-clipboard"></i> Copy</a>
+        <span class="copyable-text">
+          <input
+            class="input-field copyable-text-data"
+            id="embed_thumbnail_tag"
+            readonly="readonly"
+            size="10"
+            type="text"
+            value={">>#{@image.id}t"}
+          /><a class="button" data-click-copy="#embed_thumbnail_tag" href="#"><i class="fa fa-clipboard"></i>
+          Copy</a>
+        </span>
       </p>
-      <p>
+      <p class="flex flex-wrap items-center gap-md">
         <strong>Preview</strong>
-        <input
-          class="input-field"
-          cols="10"
-          id="embed_preview_tag"
-          readonly="readonly"
-          type="text"
-          value={">>#{@image.id}p"}
-        />
-        <a data-click-copy="#embed_preview_tag" href="#"><i class="fa fa-clipboard"></i> Copy</a>
+        <span class="copyable-text">
+          <input
+            class="input-field copyable-text-data"
+            id="embed_preview_tag"
+            readonly="readonly"
+            size="10"
+            type="text"
+            value={">>#{@image.id}p"}
+          /><a class="button" data-click-copy="#embed_preview_tag" href="#"><i class="fa fa-clipboard"></i>
+          Copy</a>
+        </span>
       </p>
       <h5>BBCode</h5>
       <p>

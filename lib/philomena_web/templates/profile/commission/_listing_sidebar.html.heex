@@ -68,13 +68,14 @@
     <% url = url(~p"/profiles/#{@user}/commission") %>
     <div class="form-control">
       <label for="commission_url">URL</label>
-      <a data-click-copy="#commission_url" href="#"><i class="fa fa-clipboard"></i> Copy</a> {text_input(
-        :commission,
-        :commission_url,
-        value: url,
-        class: "input-field full-width mt-md",
-        readonly: true
-      )}
+      <div class="copyable-text">
+        {text_input(:commission, :commission_url,
+          value: url,
+          class: "input-field full-width copyable-text-data",
+          readonly: true
+        )}<a class="button" data-click-copy="#commission_url" href="#"><i class="fa fa-clipboard"></i>
+        Copy</a>
+      </div>
     </div>
   </div>
 </div>
