@@ -155,47 +155,23 @@ span.help-block {
   margin-left: 5px;
 }
 
-/* Click-toggleable */
-.toggle-box {
-  display: none;
-}
-
-.toggle-box + label {
-  position: relative;
-}
-
-.toggle-box + label > * {
-  display: inline;
-}
-
-.toggle-box + label:before {
+/* A <details> opened by its <summary>, a button with a caret that points down while it is open */
+.disclosure > summary:before {
   content: "";
-  width: 0;
-  height: 0;
-  border-style: solid;
   display: inline-block;
-  margin-right: 0.25em;
-  border-width: 0.5em 0 0.5em 0.9em;
-  border-color: transparent transparent transparent var(--foreground-color);
+  border: 0.3em solid transparent;
+  border-inline-start-color: currentcolor;
+  border-inline-end-width: 0;
+  margin-inline-end: var(--spacing-sm);
+  transition: transform 0.1s;
 }
 
-.toggle-box:checked + label:before {
-  border-width: 0.9em 0.5em 0;
-  border-color: var(--foreground-color) transparent transparent transparent;
+.disclosure[open] > summary:before {
+  transform: rotate(90deg);
 }
 
-.toggle-box-container {
-  overflow: hidden;
-  position: relative;
-  height: 0;
-}
-
-.toggle-box:checked + label + .toggle-box-container {
-  height: auto;
-}
-
-.toggle-box:checked + label + .toggle-box-container > .toggle-box-container__content {
-  margin-top: var(--spacing-md);
+.disclosure[open] > summary {
+  margin-bottom: var(--spacing-md);
 }
 
 select.input,

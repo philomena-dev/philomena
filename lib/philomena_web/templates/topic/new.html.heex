@@ -29,12 +29,10 @@
         label: "Post anonymously"
       )}
       <%= inputs_for f, :poll, fn fp -> %>
-        <div class="field" id="add-poll">
-          <input class="toggle-box" id="add_poll" name="add_poll" type="checkbox" /><label for="add_poll">Add a poll</label>
-          <div class="toggle-box-container">
-            {render(PhilomenaWeb.Topic.PollView, "_form.html", Map.put(assigns, :f, fp))}
-          </div>
-        </div>
+        <details class="disclosure">
+          <summary class="button">Add a poll</summary>
+          {render(PhilomenaWeb.Topic.PollView, "_form.html", Map.put(assigns, :f, fp))}
+        </details>
       <% end %>
     </div>
     <div class="block-content communication-edit__actions">

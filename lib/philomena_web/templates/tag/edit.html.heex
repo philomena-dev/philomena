@@ -41,9 +41,9 @@
 <% end %>
 <br /><br />
 <%= if can?(@conn, :alias, @tag) do %>
-  <input checked="false" class="toggle-box" id="tag-management" type="checkbox" /><label for="tag-management">Tag Processing</label>
-  <div class="toggle-box-container">
-    <div class="toggle-box-container__content">
+  <details class="disclosure">
+    <summary class="button">Tag Processing</summary>
+    <div class="content">
       {button_to("Rebuild index", ~p"/tags/#{@tag}/reindex",
         method: "post",
         class: "button",
@@ -66,5 +66,5 @@
         </li>
       </ul>
     </div>
-  </div>
+  </details>
 <% end %>

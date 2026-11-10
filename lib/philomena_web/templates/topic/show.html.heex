@@ -107,10 +107,9 @@
   <%= if can?(@conn, :hide, @topic) do %>
     <div class="block">
       <div class="block-content">
-        <input class="toggle-box" id="administrator_tools" type="checkbox" /><label for="administrator_tools">Manage Topic</label>
-        <div class="toggle-box-container">
-          <div class="toggle-box-container__content">
-            <p phx-no-format>
+        <details class="disclosure">
+          <summary class="button">Manage Topic</summary>
+          <div class="content" phx-no-format>
             <%= if not @topic.hidden_from_users do %>
               <%= if @topic.sticky do %>
                 <%= link(to: ~p"/forums/#{@forum}/topics/#{@topic}/stick", method: :delete, class: "button") do %><i class="fas fa-thumbtack"></i> Unstick <% end %><% else %>
@@ -142,9 +141,8 @@
                 </div>
               <% end %>
             <% else %>Moderation tools unavailable for deleted topics.<% end %>
-          </p>
           </div>
-        </div>
+        </details>
       </div>
     </div>
   <% end %>

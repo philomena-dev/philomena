@@ -2,9 +2,9 @@
 General reporting</button></a>
 <div class="report-duplicate">
   <% checked = Enum.any?(@dupe_reports, &(&1.state == "open")) %>
-  <input checked={checked} class="toggle-box" id="image-dedupe" type="checkbox" /><label for="image-dedupe">Updating/merging</label>
-  <div class="toggle-box-container">
-    <div class="toggle-box-container__content">
+  <details class="disclosure" open={checked}>
+    <summary class="button">Updating/merging</summary>
+    <div class="content">
       <%= if @conn.assigns.current_user do %>
         {render(PhilomenaWeb.DuplicateReportView, "_form.html",
           image: @image,
@@ -32,5 +32,5 @@ General reporting</button></a>
         <% end %>
       <% end %>
     </div>
-  </div>
+  </details>
 </div>
