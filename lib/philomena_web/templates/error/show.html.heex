@@ -6,12 +6,6 @@
     {viewport_meta_tag(@conn)}
     <title phx-no-format>{@status} - Philomena</title>
     <link href={~p"/css/application.css"} rel="stylesheet" />
-    <link href={stylesheet_path(@conn, nil)} rel="stylesheet" />
-    <link
-      href={light_stylesheet_path(@conn)}
-      media="(prefers-color-scheme: light)"
-      rel="stylesheet"
-    />
     <link href="/favicon.ico" rel="icon" type="image/x-icon" />
     <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
   </head>

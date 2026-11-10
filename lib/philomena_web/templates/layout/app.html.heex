@@ -1,20 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html data-theme={theme_mode(@current_user)} lang="en">
   <head>
     <meta content="IE=edge" http-equiv="X-UA-Compatible" />
     {viewport_meta_tag(@conn)}
     <title phx-no-format><%= if assigns[:title] do %>{assigns[:title]} - Derpibooru <% else %>Derpibooru <% end %></title>
     <link href={"https://#{cdn_host()}"} rel="preconnect" />
     <link href={~p"/css/application.css"} rel="stylesheet" />
-    <link href={stylesheet_path(@conn, @current_user)} id="js-theme-stylesheet" rel="stylesheet" />
-    <%= if is_nil(@current_user) do %>
-      <link
-        href={light_stylesheet_path(@conn)}
-        id="js-theme-stylesheet"
-        media="(prefers-color-scheme: light)"
-        rel="stylesheet"
-      />
-    <% end %>
+    <link
+      :if={@current_user}
+      href={user_stylesheet_path(@current_user)}
+      id="js-theme-stylesheet"
+      rel="stylesheet"
+    />
     {render(PhilomenaWeb.LayoutView, "_options.html", assigns)}
     <link href="/favicon.ico" rel="icon" type="image/x-icon" />
     <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
@@ -38,7 +35,6 @@
   </head>
   <body
     data-hide-staff-tools={hide_staff_tools_attribute(@conn)}
-    data-theme={theme_name(@current_user)}
     data-vite-reload={to_string(vite_hmr?())}
   >
     {render(PhilomenaWeb.LayoutView, "_burger.html", assigns)}

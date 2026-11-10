@@ -1,12 +1,7 @@
 defmodule PhilomenaWeb.ErrorView do
   use PhilomenaWeb, :view
 
-  import PhilomenaWeb.LayoutView,
-    only: [
-      stylesheet_path: 2,
-      light_stylesheet_path: 1,
-      viewport_meta_tag: 1
-    ]
+  import PhilomenaWeb.LayoutView, only: [viewport_meta_tag: 1]
 
   @codes %{
     400 => {"Bad Request", "Couldn't process your request!"},

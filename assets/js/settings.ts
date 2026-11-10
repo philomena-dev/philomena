@@ -16,12 +16,12 @@ function setupThemeSettings() {
   );
   const styleSheet = assertNotNull($<HTMLLinkElement>('#js-theme-stylesheet'));
 
-  // Theme preview
+  // Theme preview: the stylesheet holds the colors of both modes, data-theme picks one
   const themePreviewCallback = () => {
-    const themeName = assertNotUndefined(themeSelect.options[themeSelect.selectedIndex].value);
-    const themeColor = assertNotUndefined(themeColorSelect.options[themeColorSelect.selectedIndex].value);
+    const themeName = themeSelect.value;
 
-    styleSheet.href = themePaths[`${themeName}-${themeColor}`];
+    document.documentElement.dataset.theme = themeName;
+    styleSheet.href = themePaths[`${themeName}-${themeColorSelect.value}`];
   };
 
   themeSelect.addEventListener('change', themePreviewCallback);

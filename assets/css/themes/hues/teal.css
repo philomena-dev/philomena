@@ -1,0 +1,36 @@
+/* The framework's palette */
+$base-color-dark: #549099;
+$base-color-light: #40c5c9;
+$page-color-dark: #0d1a1c;
+$surface-color-dark: #1d2d2f;
+$link-color-dark: #15d1d4;
+$link-color-light: #10a3ad;
+$primary-color: #1a6b68;
+
+/* Philomena's header bars and mobile menu */
+$header-color-dark: #1a6e75;
+$header-field-color-dark: #1c524e;
+$header-secondary-color-dark: #1d3d44;
+$burger-color-dark: #283739;
+$burger-divider-color-dark: #1d3d44;
+$burger-divider-color-light: #b8dfe0;
+
+/* Read only by css/legacy.css */
+$destroyed-content-color-dark: #382c2f;
+$meta-color-dark: #19282a;
+$block-header-color-dark: #1d3d44;
+$block-header-link-text-color-dark: #15d1d4;
+$block-header-light-color-dark: #1d3d44;
+$block-header-light-link-text-color-dark: #15d1d4;
+$media-box-color-dark: #2d3d41;
+$link-hover-color-dark: #b099dd;
+$commission-color-dark: #e07b27;
+$notice-color-dark: #07070a;
+$autocomplete-history-color-dark: #0ebcbf;
+$primary-color-light: #c1f6f9;
+$danger-color-light: #ebc0bb;
+$warning-color-light: #eee9bc;
+$link-hover-color-light: #9273d0;
+$fave-color-light: #c4b246;
+$assistant-color-light: #eeceed;
+$autocomplete-history-color-light: #1098a2;

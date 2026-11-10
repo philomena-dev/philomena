@@ -1,0 +1,52 @@
+/* The framework's palette */
+$base-color-dark: #995454;
+$base-color-light: #d96262;
+$page-color-dark: #412121;
+$surface-color-dark: #412121;
+$link-color-dark: #dbdb00;
+$link-color-light: #d94141;
+$primary-color: #641f1f;
+$success-color: #2e4e2e;
+$danger-color: #7b3b00;
+$warning-color: #5b5b00;
+$tag-color: #d16767;
+$tag-rating-color: #9dc3e9;
+$tag-spoiler-color: #ddcf53;
+$tag-origin-color: #bbb6eb;
+$tag-oc-color: #dd7ee4;
+$tag-error-color: #ff5566;
+$tag-character-color: #82d0e2;
+$tag-official-color: #d1cf84;
+$tag-fanmade-color: #ebb1d6;
+$tag-species-color: #d2b48c;
+
+/* Philomena's header bars and mobile menu */
+$header-color-dark: #923131;
+$header-field-color-dark: #5e2727;
+$header-secondary-color-dark: #7a2d2d;
+$header-admin-color-dark: #3b3b3b;
+$header-admin-color-light: #cccccc;
+$header-admin-hover-color-light: #b3b3b3;
+$burger-color-dark: #512b2b;
+$burger-divider-color-dark: #7c2424;
+$burger-divider-color-light: #f1d9d9;
+
+/* Read only by css/legacy.css */
+$destroyed-content-color-dark: #412f2f;
+$meta-color-dark: #411d1d;
+$block-header-color-dark: #812d2d;
+$block-header-link-text-color-dark: #dbdb00;
+$block-header-light-color-dark: #7a3030;
+$block-header-light-link-text-color-dark: #dbdb00;
+$media-box-color-dark: #7c2424;
+$link-hover-color-dark: #fff3bd;
+$commission-color-dark: #e02727;
+$notice-color-dark: #3b3b3b;
+$autocomplete-history-color-dark: #d2d207;
+$primary-color-light: #f9c6c1;
+$danger-color-light: #ebbbbb;
+$warning-color-light: #eee9bc;
+$link-hover-color-light: #944563;
+$fave-color-light: #c4b246;
+$assistant-color-light: #eeceed;
+$autocomplete-history-color-light: #d94141;

@@ -6,6 +6,7 @@ import postcssRelativeColor from '@csstools/postcss-relative-color-syntax';
 import { defineConfig } from 'vitest/config';
 import cssCompat from './build/css-compat.ts';
 import cssGate from './build/css-gate.ts';
+import themeColors from './build/postcss-theme-colors.ts';
 import { buildTarget } from './build/floor.ts';
 import type { ConfigEnv, ViteUserConfig } from 'vitest/config';
 
@@ -13,12 +14,12 @@ export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
   const isDev = command !== 'build' && mode !== 'test';
   const forced = process.env.CSS_FORCE_FALLBACKS === '1';
   const targets = new Map();
+  const themes = fs
+    .readdirSync(path.resolve(import.meta.dirname, 'css/themes/'))
+    .filter(name => name.endsWith('.css'))
+    .map(name => path.resolve(import.meta.dirname, 'css/themes/', name));
 
-  fs.readdirSync(path.resolve(import.meta.dirname, 'css/themes/')).forEach(name => {
-    const m = name.match(/([-a-z]+).css/);
-
-    if (m) targets.set(`css/${m[1]}`, `./css/themes/${m[1]}.css`);
-  });
+  themes.forEach(file => targets.set(`css/${path.basename(file, '.css')}`, file));
 
   fs.readdirSync(path.resolve(import.meta.dirname, 'css/options/')).forEach(name => {
     const m = name.match(/([-a-z]+).css/);
@@ -64,7 +65,13 @@ export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
     },
     css: {
       postcss: {
-        plugins: [postcssMixins(), postcssSimpleVars(), postcssRelativeColor(), ...cssCompat({ force: forced })],
+        plugins: [
+          postcssMixins(),
+          postcssSimpleVars(),
+          postcssRelativeColor(),
+          themeColors({ themes, keep: [path.resolve(import.meta.dirname, 'css/legacy.css')] }),
+          ...cssCompat({ force: forced }),
+        ],
       },
     },
     test: {

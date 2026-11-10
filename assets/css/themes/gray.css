@@ -1,0 +1,20 @@
+@import "@philomena/philomena-css/css/config.css";
+@import "../config.css";
+@import "./hues/gray.css";
+@import "@philomena/philomena-css/css/design/tokens.css";
+@import "../legacy.css";
+
+/* Legacy properties that differ from the formulas of legacy.css */
+:root[data-theme="light"] {
+  --block-header-color: hsl(from $base-color-light h s calc(l + 15));
+  --block-header-hover-color: hsl(from $base-color-light h calc(s - 5) calc(l + 5));
+  --block-header-link-text-color: hsl(from $base-color-light h calc(s + 5) calc(l - 30));
+  --block-header-link-text-hover-color: hsl(from $base-color-light h s calc(l - 30));
+  --block-header-light-color: hsl(from $base-color-light h calc(s - 16) calc(l + 22));
+  --block-header-light-hover-color: hsl(from $base-color-light h calc(s - 25) calc(l + 12));
+  --block-header-light-link-text-color: hsl(from $base-color-light h calc(s - 16) calc(l - 11));
+  --block-header-light-link-text-hover-color: hsl(from $base-color-light h calc(s - 16) calc(l - 21));
+  --media-box-color: hsl(from $base-color-light h calc(s - 26) calc(l + 20));
+  --media-box-hover-color: hsl(from $base-color-light h calc(s - 20) calc(l + 14));
+  --background-odd-color: #eaeaea;
+}

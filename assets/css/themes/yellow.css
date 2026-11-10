@@ -1,0 +1,11 @@
+@import "@philomena/philomena-css/css/config.css";
+@import "../config.css";
+@import "./hues/yellow.css";
+@import "@philomena/philomena-css/css/design/tokens.css";
+@import "../legacy.css";
+
+/* Legacy properties that differ from the formulas of legacy.css */
+:root[data-theme="light"] {
+  --comment-color: #9273d0;
+  --background-odd-color: #f5efde;
+}

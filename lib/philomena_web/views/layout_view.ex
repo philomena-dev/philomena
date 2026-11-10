@@ -87,18 +87,23 @@ defmodule PhilomenaWeb.LayoutView do
     Config.get(:footer)
   end
 
-  def stylesheet_path(conn, %{settings: %{theme: theme}})
-      when theme in @themes,
-      do: static_path(conn, "/css/#{theme}.css")
+  @doc """
+  The mode (`dark` or `light`) of a signed-in user's theme, for `<html data-theme>`. Anonymous users have none:
+  their pages follow the system's color scheme.
+  """
+  def theme_mode(nil), do: nil
+  def theme_mode(user), do: user |> user_theme() |> String.split("-") |> hd()
 
-  def stylesheet_path(_conn, _user),
-    do: ~p"/css/dark-blue.css"
+  def user_stylesheet_path(user), do: user |> user_theme() |> theme_stylesheet_path()
 
-  def light_stylesheet_path(_conn),
-    do: ~p"/css/light-blue.css"
+  @doc "The stylesheet of a theme such as `dark-purple`: the one of its color, for both modes."
+  def theme_stylesheet_path(theme) do
+    [_mode, color] = String.split(theme, "-")
+    static_path(PhilomenaWeb.Endpoint, "/css/#{color}.css")
+  end
 
-  def theme_name(%{settings: %{theme: theme}}), do: theme
-  def theme_name(_user), do: "dark-blue"
+  defp user_theme(%{settings: %{theme: theme}}) when theme in @themes, do: theme
+  defp user_theme(_user), do: "dark-blue"
 
   def hide_staff_tools_attribute(conn),
     do: if(conn.cookies["hide_staff_tools"] == "true", do: "true", else: "false")

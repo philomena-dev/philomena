@@ -1,11 +1,7 @@
 @charset "UTF-8";
 /*
- * Main stylesheet file.
- *
- * This generates the base file for the stylesheets used throughout the project.
- * Themes should be contained within the "themes" folder, and only contain
- * color variations, and optional CSS changes.
- *
+ * The site stylesheet, in the default theme: the blue hue, dark or light as the system prefers. The stylesheets of
+ * css/themes/ load after it for signed-in users and hold the colors of one hue, for the mode <html data-theme> names.
  */
 
 @import "@fortawesome/fontawesome-free/css/fontawesome.css";
@@ -13,13 +9,13 @@
 @import "@fortawesome/fontawesome-free/css/regular.css";
 @import "@fortawesome/fontawesome-free/css/brands.css";
 
-/* The framework's configuration, Philomena's, then the framework's design layer: reset, tokens, base layout. */
+/* The framework's configuration, Philomena's and the default hue's, then the framework's design layer: reset,
+   tokens, base layout */
 @import "@philomena/philomena-css/css/config.css";
 @import "./config.css";
+@import "./themes/hues/blue.css";
 @import "@philomena/philomena-css/css/design/index.css";
-
-/* Import the dark blue theme to act as a fallback. */
-@import "themes/dark-blue";
+@import "./legacy.css";
 
 /* Files containing common properties, such as variable definitions. */
 @import "common/measurements";

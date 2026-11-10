@@ -6,3 +6,10 @@
 /* Everything from 800px up is the desktop layout */
 $breakpoint-md: 800px;
 $breakpoint-xl: 1150px;
+
+/* Inputs of Philomena's color tokens that every hue shares unless it sets its own */
+$header-admin-color-dark: #3b1d1d;
+$header-admin-color-light: #ffcfcf;
+$header-admin-hover-color-light: #ff9c9c;
+$burger-color-light: #f7f7f7;
+$unread-message-color: #ff8800;

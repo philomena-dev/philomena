@@ -2,6 +2,8 @@ defmodule PhilomenaWeb.LayoutViewTest do
   use PhilomenaWeb.ConnCase, async: true
 
   import Philomena.UsersFixtures
+  alias Philomena.Repo
+  alias Philomena.Users.{Settings, User}
   alias PhilomenaWeb.LayoutView
 
   defp staff_links(conn, user) do
@@ -155,6 +157,34 @@ defmodule PhilomenaWeb.LayoutViewTest do
           ] do
         assert response =~ label
       end
+    end
+  end
+
+  describe "theme" do
+    test "anonymous pages load no theme and follow the system color scheme", %{conn: conn} do
+      response = html_response(get(conn, ~p"/settings/edit"), 200)
+
+      assert response =~ ~s(<html lang="en">)
+      refute response =~ "js-theme-stylesheet"
+    end
+
+    test "signed-in pages load the stylesheet of the theme's color, in its mode", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      Repo.update!(Ecto.Changeset.change(Repo.get!(Settings, user.id), theme: "light-purple"))
+
+      response = html_response(get(conn, ~p"/settings/edit"), 200)
+
+      assert response =~ ~s(<html data-theme="light" lang="en">)
+
+      assert response =~
+               ~s(<link href="/css/purple.css" id="js-theme-stylesheet" rel="stylesheet">)
+    end
+
+    test "a theme that no longer exists falls back to dark blue" do
+      user = %User{settings: %Settings{theme: "dark-neon"}}
+
+      assert LayoutView.theme_mode(user) == "dark"
+      assert LayoutView.user_stylesheet_path(user) == "/css/blue.css"
     end
   end
 end

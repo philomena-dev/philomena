@@ -1,6 +1,7 @@
 defmodule PhilomenaWeb.SettingView do
   use PhilomenaWeb, :view
   alias Philomena.Users.Settings
+  alias PhilomenaWeb.LayoutView
 
   def themes do
     [
@@ -16,9 +17,7 @@ defmodule PhilomenaWeb.SettingView do
   end
 
   def theme_paths do
-    Map.new(Settings.themes(), fn name ->
-      {name, static_path(PhilomenaWeb.Endpoint, "/css/#{name}.css")}
-    end)
+    Map.new(Settings.themes(), &{&1, LayoutView.theme_stylesheet_path(&1)})
   end
 
   def scale_options do
