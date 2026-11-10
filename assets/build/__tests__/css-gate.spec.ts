@@ -12,7 +12,7 @@ describe('css-gate', () => {
     ['@layer', '@layer base { .a { color: red } }', 'css.at-rules.layer'],
     ['color-mix()', '.a { color: color-mix(in srgb, red, blue) }', 'color-mix'],
     ['oklch()', '.a { color: oklch(50% 0.1 100) }', 'oklch'],
-    ['lab()', '.a { --c: lab(50% 10 10) }', 'css.types.color.lab'],
+    ['lab()', '.a { --c: rgb(0, 0, 0); --c: lab(50% 10 10) }', 'css.types.color.lab'],
     ['relative color', '.a { color: rgb(from red r g b) }', 'rgb.relative_syntax'],
     [
       'a function that a floor browser lacks in every spelling given',

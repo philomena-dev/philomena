@@ -279,7 +279,8 @@ function checkRule(rule: Rule, problems: string[], guarded: Set<string>) {
   rule.each(node => {
     if (node.type !== 'decl') return;
     const prop = unprefixed(property(node));
-    groups.set(prop, [...(groups.get(prop) ?? []), node]);
+    // Every browser takes the last declaration of a custom property, whatever its value
+    groups.set(prop, prop.startsWith('--') ? [node] : [...(groups.get(prop) ?? []), node]);
   });
 
   for (const [prop, decls] of groups) {
