@@ -26,8 +26,9 @@ export default function cssCompat(): AcceptedPlugin[] {
   return [
     logical(),
     postcssFloorValues(),
-    postcssFloorFocusVisible(),
     postcssFloorSelectors(),
+    // Twins the lowered selectors, so that :focus-visible inside :is() or :where() gets a rule of its own
+    postcssFloorFocusVisible(),
     // Rewrites the reset before the floor-selectors plugin runs and raises selectors after it
     postcssFloorReset(),
     postcssFloorSupports(),
