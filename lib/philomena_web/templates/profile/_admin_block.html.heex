@@ -88,7 +88,7 @@
     <%= if can?(@conn, :force_filter, @user) do %>
       <li>
         <%= link to: ~p"/admin/users/#{@user}/force_filter/new" do %>
-          <i class="fas faw-fw fa-filter"></i><span class="admin__button">Force Filter</span>
+          <i class="fas fa-fw fa-filter"></i><span class="admin__button">Force Filter</span>
         <% end %>
       </li>
     <% end %>
