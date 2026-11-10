@@ -23,17 +23,25 @@ function setTagButton(text: string) {
   assertNotNull($('.js-quick-tag--submit span')).textContent = text;
 }
 
+// While tagging, the boxes of the queued images are marked as selected and the others as unselected
+function markQueuedImages() {
+  const tagging = Boolean(currentTags());
+  const queue = currentQueue();
+
+  for (const mediaBox of $$<HTMLElement>('.media-box[data-image-id]')) {
+    const queued = queue.includes(assertNotUndefined(mediaBox.dataset.imageId));
+
+    mediaBox.classList.toggle('media-success', tagging && queued);
+    mediaBox.classList.toggle('media-danger', tagging && !queued);
+  }
+}
+
 function toggleActiveState() {
   toggleEl($$<HTMLElement>('.js-quick-tag,.js-quick-tag--abort,.js-quick-tag--all,.js-quick-tag--submit'));
 
   setTagButton(`Submit (${currentTags()})`);
 
-  $$('.media-box__header').forEach(el => el.classList.toggle('media-box__header--unselected'));
-  $$('.media-box__header').forEach(el => el.classList.remove('media-box__header--selected'));
-
-  currentQueue().forEach(id =>
-    $$(`.media-box__header[data-image-id="${id}"]`).forEach(el => el.classList.add('media-box__header--selected')),
-  );
+  markQueuedImages();
 }
 
 function activate(event: Event) {
@@ -94,11 +102,8 @@ function modifyImageQueue(event: Event, mediaBox: HTMLDivElement) {
     queue.push(imageId);
   }
 
-  for (const boxHeader of $$(`.media-box__header[data-image-id="${imageId}"]`)) {
-    boxHeader.classList.toggle('media-box__header--selected');
-  }
-
   store.set(imageQueueStorage, queue);
+  markQueuedImages();
   event.preventDefault();
 }
 

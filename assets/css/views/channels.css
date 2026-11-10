@@ -1,16 +1,3 @@
-.channel-strip__image {
-  vertical-align: top;
-}
-
 .channel-strip__state {
   white-space: nowrap;
-}
-
-.media-box__header--channel {
-  width: 240px;
-}
-
-.media-box__content--channel {
-  height: 180px;
-  padding-top: 0;
 }

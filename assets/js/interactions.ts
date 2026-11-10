@@ -170,10 +170,7 @@ function loadInteractions() {
   /* Users will blind downvote without this */
   window.booru.imagesWithDownvotingDisabled.forEach((i: string) => {
     onImage(i, '.js-interaction-downvote', (node: HTMLElement) => {
-      // TODO Use a 'js-' class to target these instead
-      const icon = $('i', node) || $('.oc-icon-small', node) || node;
-
-      icon.setAttribute('title', spoilerDownvoteMsg);
+      node.title = spoilerDownvoteMsg;
       node.classList.add('disabled');
     });
   });

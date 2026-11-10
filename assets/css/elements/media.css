@@ -1,182 +1,73 @@
-.media-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(var(--media-container-width), 1fr));
-  grid-auto-rows: 1fr;
-  gap: var(--padding-small);
+/*
+ * Philomena's additions to the framework's media boxes. A thumbnail (image/_image_container.html.heex) is the
+ * .media-box-content of its box, or stands alone in rows and tables.
+ */
+
+/* Thumbnails are fitted into their box but never shown larger than they are */
+.media-box .image-container img,
+.media-box .image-container video {
+  object-fit: scale-down;
 }
 
-/* Ensure the shape of the image list entries is square
-   plus the media header height. */
-
-.media-list:before {
-  content: "";
-  width: 0;
-  padding-bottom: calc(100% + var(--media-box-header-height));
-  grid-row: 1 / 1;
-  grid-column: 1 / 1;
+/* A landscape box has a 4:3 content area, for stream screenshots */
+.media-box.landscape .media-box-content {
+  padding-bottom: 75%;
 }
 
-@media (max-width: $max-limited-desktop-width) {
-  .media-list {
-    grid-template-columns: repeat(auto-fill, minmax(var(--media-small-container-width), 1fr));
-  }
+/* A fixed list keeps its small boxes at their width instead of stretching them across the row */
+.media-list.small.fixed {
+  grid-template-columns: repeat(auto-fill, var(--media-box-small-width));
 }
 
-.media-list--small {
-  grid-template-columns: repeat(auto-fill, minmax(var(--media-small-container-width), 1fr));
-}
-
-.media-list--small-fixed-size {
-  grid-template-columns: repeat(auto-fill, var(--media-small-container-width));
-}
-
-.media-list--small-fixed-size.media-list:before {
-  padding-bottom: 0 !important;
-}
-
-.media-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto;
-  gap: var(--padding-small);
-}
-
-/* Thumbnail links are not underlined, also inside block content */
-.media-box {
-  overflow: hidden;
-  border: var(--media-border);
-  --link-style-decoration: none;
-}
-
-/* Shift the image list by 1 element introduced due to
-   the .media-list:before rule */
-
-.media-box:first-child {
-  grid-row: 1 / 1;
-  grid-column: 1 / 1;
-}
-
-.media-box.over {
-  border: var(--media-over-border);
-}
-
-.media-box__header {
-  min-width: 100%;
-  background: var(--media-box-color);
-  color: var(--foreground-color);
-  line-height: var(--media-box-header-height);
-  font-size: 12px;
-  text-align: center;
-  white-space: nowrap;
-}
-
-/* Links that take up the whole width of .media-box (title links) should use this class along with .media-box__header (without containers) */
-a.media-box__header--link {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: bold;
-  color: var(--media-box-header-link-text-color);
-}
-
-a.media-box__header--link:hover {
-  color: var(--media-box-header-link-text-hover-color);
-  background-color: var(--media-box-hover-color);
-}
-
-/* Containers with a row of links (e.g. image thumbnail header) should use this class. */
-.media-box__header--link-row > a {
-  display: inline-block;
-}
-
-.media-box__header--link-row > a,
-.media-box__overlay {
-  line-height: var(--media-box-header-height);
-  padding: 0 4px;
-}
-
-.media-box__header--small {
-  width: var(--media-small-container-width);
-  font-size: 11px;
-}
-
-.media-box__header--small a {
-  padding: 0 3px;
-}
-
-.media-box__header--unselected {
-  background-color: var(--legacy-danger-color);
-}
-
-.media-box__header--selected {
-  background-color: var(--legacy-success-color);
-}
-
-.media-box__content {
-  width: 100%;
-  padding-top: 100%;
+/* A thumbnail outside a media box centers its image at its own size, at most as large as the container */
+.image-container:not(.media-box-content) {
   position: relative;
-  overflow: hidden;
-}
-
-.media-box__content .image-container {
-  position: absolute;
-  inset: 0;
-}
-
-.media-box__content--featured {
-  width: var(--media-featured-width);
-  height: auto;
-}
-
-.media-box__content--featured .image-container {
-  max-height: var(--media-featured-width);
-}
-
-.media-box__content--large {
-  max-height: var(--media-medium-container-width);
-}
-
-.media-box__content--small {
-  max-height: var(--media-small-container-width);
-}
-
-.media--featured {
   display: flex;
+  align-items: center;
   justify-content: center;
 }
 
-.media--featured .media-box {
-  max-width: var(--media-featured-width);
-  max-height: calc(var(--media-featured-width) + var(--media-box-header-height));
-  margin-bottom: var(--padding-small);
+.image-container:not(.media-box-content) a,
+.image-container:not(.media-box-content) picture {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
-.media-box__overlay {
-  display: block;
+.image-container:not(.media-box-content) img,
+.image-container:not(.media-box-content) video {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.image-container.thumb_tiny {
+  flex: none;
+  width: var(--media-box-tiny-width);
+  height: var(--media-box-tiny-width);
+}
+
+/* Its overlays are small labels across the top of the image */
+.image-container:not(.media-box-content) > .media-box-overlays {
   position: absolute;
-  z-index: 4;
-  min-width: 95%;
-  text-align: left;
-  font-weight: bold;
-  overflow-wrap: break-word;
-  line-height: var(--media-box-header-height);
-  pointer-events: none;
   top: 0;
-  color: var(--image-overlay-color);
-  background: var(--image-overlay-background-color);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  pointer-events: none;
 }
 
-.thumb_small .media-box__overlay {
-  font-size: 11px;
-}
-
-.thumb_tiny .media-box__overlay {
-  font-size: 10px;
-  line-height: 16px;
-}
-
-/* TODO: replace absolute positioning with a more flexible solution */
-.media-box__overlay:nth-child(2) {
-  top: var(--media-box-header-height);
+.image-container:not(.media-box-content) > .media-box-overlays > * {
+  padding: 0 var(--spacing-xs);
+  border-radius: var(--border-radius-inner);
+  font-size: var(--text-size-xs);
+  font-weight: bold;
+  line-height: var(--base-line-height);
+  text-align: center;
+  color: var(--overlay-text-color);
+  background-color: var(--overlay-color);
+  overflow-wrap: break-word;
 }

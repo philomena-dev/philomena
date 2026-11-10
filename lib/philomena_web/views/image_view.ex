@@ -194,13 +194,6 @@ defmodule PhilomenaWeb.ImageView do
     ]
   end
 
-  def image_container(conn, image, size, block) do
-    content_tag(:div, block.(),
-      class: "image-container #{size}",
-      data: image_container_data(conn, image, size)
-    )
-  end
-
   def display_order(tags) do
     Tag.display_order(tags)
   end

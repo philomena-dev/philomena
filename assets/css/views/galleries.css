@@ -27,30 +27,26 @@
   background-color: var(--danger-tint-color);
 }
 
-.media-box--js-sortable-chosen .media-box__header {
-  background: var(--legacy-primary-color);
-}
-
-/* Make it clear that the extra images are not truly part of the page. */
-.js-sortable-has-next .media-box:last-child,
-.js-sortable-has-prev .media-box:first-child {
-  opacity: 0.4;
-}
-
-/* The server renders additional thumb(s) for extra images in a gallery,
- * if the user is allowed to edit it and it has multiple pages; hide these
- * until the user explicitly requests to edit it (if at all). */
-
-.js-sortable-has-next:not(.editing) .media-box:last-child,
-.js-sortable-has-prev:not(.editing) .media-box:first-child {
-  display: none;
-}
-
-.js-sortable-has-prev:not(.editing) .media-box:nth-child(2) {
-  grid-row: 1 / 1;
-  grid-column: 1 / 1;
-}
+/*
+ * Rearranging a gallery: the thumbnail being dragged is faded and the one it is over is outlined. A gallery of
+ * several pages also renders the last image of the previous page and the first of the next one, to move images
+ * between pages; they are hidden until rearranging starts, then faded as they are not part of the page.
+ */
 
 .dragging {
-  opacity: 0.4;
+  @mixin faded;
+}
+
+.media-box.over {
+  outline: var(--border-thick-width) dashed var(--focus-color);
+}
+
+.sortable-has-next .media-box:last-child,
+.sortable-has-prev .media-box:first-child {
+  @mixin faded;
+}
+
+.sortable-has-next:not(.editing) .media-box:last-child,
+.sortable-has-prev:not(.editing) .media-box:first-child {
+  display: none;
 }

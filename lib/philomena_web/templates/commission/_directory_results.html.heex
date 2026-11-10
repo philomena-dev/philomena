@@ -55,22 +55,21 @@ pagination =
                   <p>
                     <strong>Offers:</strong> {Enum.map(c.items, & &1.item_type) |> Enum.join(", ")}
                   </p>
-                  <p>
-                    <strong>Example Artwork:</strong> <br />
-                    <div class="media-list media-list--small-fixed-size">
+                  <div>
+                    <strong>Example Artwork:</strong>
+                    <div class="media-list small fixed">
                       <%= for item <- Enum.take_random(c.items, 5), not is_nil(item.example_image) do %>
                         <div class="media-box">
-                          <div class="media-box__content media-box__content--small">
-                            {render(PhilomenaWeb.ImageView, "_image_container.html",
-                              image: item.example_image,
-                              size: :thumb_small,
-                              conn: @conn
-                            )}
-                          </div>
+                          {render(PhilomenaWeb.ImageView, "_image_container.html",
+                            image: item.example_image,
+                            size: :thumb_small,
+                            class: "media-box-content",
+                            conn: @conn
+                          )}
                         </div>
                       <% end %>
                     </div>
-                  </p>
+                  </div>
                   <p>
                     <strong>{link("More information", to: ~p"/profiles/#{c.user}/commission")}</strong>
                   </p>

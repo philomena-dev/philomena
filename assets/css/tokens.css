@@ -31,6 +31,18 @@
   }
 }
 
+/* Thumbnail lists keep Philomena's columns, 225px wide above 1150px and small up to it; tiny thumbnails are 50px */
+:root {
+  --media-box-width: var(--media-box-small-width);
+  --media-box-tiny-width: 50px;
+}
+
+@media not all and (max-width: $breakpoint-xl) {
+  :root {
+    --media-box-width: 225px;
+  }
+}
+
 /* The side column of two-column pages fits the featured image box */
 :root {
   --layout-side-width: 326px;

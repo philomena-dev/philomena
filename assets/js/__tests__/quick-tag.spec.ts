@@ -10,12 +10,8 @@ const quickTagData = `<div>
   <a class="js-quick-tag--submit hidden"><span>Submit</span></a>
   <a class="js-quick-tag--all hidden"><span>Toggle all</span></a>
   <div id="imagelist-container">
-    <div class="media-box" data-image-id="0">
-      <div class="media-box__header" data-image-id="0"></div>
-    </div>
-    <div class="media-box" data-image-id="1">
-      <div class="media-box__header" data-image-id="1"></div>
-    </div>
+    <div class="media-box" data-image-id="0"></div>
+    <div class="media-box" data-image-id="1"></div>
   </div>
 </div>`;
 
@@ -65,7 +61,8 @@ describe('Batch tagging', () => {
 
   it('should not modify media boxes before entry', () => {
     mediaBoxes[0].click();
-    expect(mediaBoxes[0].firstElementChild).not.toHaveClass('media-box__header--selected');
+    expect(mediaBoxes[0]).not.toHaveClass('media-success');
+    expect(mediaBoxes[0]).not.toHaveClass('media-danger');
   });
 
   describe('Quick tag storage', () => {
@@ -73,8 +70,8 @@ describe('Batch tagging', () => {
       localStorage.clear();
 
       setupQuickTag();
-      expect(mediaBoxes[0].firstElementChild).not.toHaveClass('media-box__header--selected');
-      expect(mediaBoxes[1].firstElementChild).not.toHaveClass('media-box__header--selected');
+      expect(mediaBoxes[0]).not.toHaveClass('media-success');
+      expect(mediaBoxes[1]).not.toHaveClass('media-danger');
     });
 
     it('should restore the list of tagged images on reload', () => {
@@ -85,8 +82,8 @@ describe('Batch tagging', () => {
       localStorage.setItem('quickTagName', JSON.stringify('a'));
 
       setupQuickTag();
-      expect(mediaBoxes[0].firstElementChild).toHaveClass('media-box__header--selected');
-      expect(mediaBoxes[1].firstElementChild).toHaveClass('media-box__header--selected');
+      expect(mediaBoxes[0]).toHaveClass('media-success');
+      expect(mediaBoxes[1]).toHaveClass('media-success');
     });
   });
 
@@ -120,15 +117,17 @@ describe('Batch tagging', () => {
 
     it('should toggle media box state on click', () => {
       mediaBoxes[0].click();
-      expect(mediaBoxes[0].firstElementChild).toHaveClass('media-box__header--selected');
-      expect(mediaBoxes[1].firstElementChild).not.toHaveClass('media-box__header--selected');
+      expect(mediaBoxes[0]).toHaveClass('media-success');
+      expect(mediaBoxes[0]).not.toHaveClass('media-danger');
+      expect(mediaBoxes[1]).toHaveClass('media-danger');
+      expect(mediaBoxes[1]).not.toHaveClass('media-success');
     });
 
     it('should toggle all media box states', () => {
       mediaBoxes[0].click();
       toggleAllButton.click();
-      expect(mediaBoxes[0].firstElementChild).not.toHaveClass('media-box__header--selected');
-      expect(mediaBoxes[1].firstElementChild).toHaveClass('media-box__header--selected');
+      expect(mediaBoxes[0]).toHaveClass('media-danger');
+      expect(mediaBoxes[1]).toHaveClass('media-success');
     });
   });
 
@@ -157,8 +156,9 @@ describe('Batch tagging', () => {
       expect(fetch).toHaveBeenCalledOnce();
 
       return waitFor(() => {
-        expect(mediaBoxes[0].firstElementChild).not.toHaveClass('media-box__header--selected');
-        expect(mediaBoxes[1].firstElementChild).not.toHaveClass('media-box__header--selected');
+        expect(mediaBoxes[0]).not.toHaveClass('media-success');
+        expect(mediaBoxes[1]).not.toHaveClass('media-success');
+        expect(mediaBoxes[1]).not.toHaveClass('media-danger');
       });
     });
 
@@ -172,8 +172,8 @@ describe('Batch tagging', () => {
 
       return waitFor(() => {
         expect(spy).toHaveBeenCalledOnce();
-        expect(mediaBoxes[0].firstElementChild).not.toHaveClass('media-box__header--selected');
-        expect(mediaBoxes[1].firstElementChild).not.toHaveClass('media-box__header--selected');
+        expect(mediaBoxes[0]).not.toHaveClass('media-success');
+        expect(mediaBoxes[1]).not.toHaveClass('media-success');
       });
     });
   });

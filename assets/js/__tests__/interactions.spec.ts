@@ -233,13 +233,11 @@ describe('interactions', () => {
     expect(fetchJson).not.toHaveBeenCalled();
   });
 
-  it('loadInteractions sets title on anchor when no icon present', () => {
+  it('loadInteractions disables and explains spoilered downvotes in image lists', () => {
     setWindowBooru({ signedIn: true, interactions: [], disabled: ['42'] });
     setupDom({ withList: true });
 
-    // Remove all children to hit the third fallback branch
     const downvote = $('a.js-interaction-downvote')!;
-    downvote.innerHTML = '';
 
     setupInteractions();
 
