@@ -59,6 +59,11 @@ describe('css-gate', () => {
     ['a feature that only a negated @supports tests', '@supports not (inset: 0) { .a { inset: 0 } }', 'inset'],
     ['a feature that its @supports does not test', '@supports (display: grid) { .a { inset: 0 } }', 'inset'],
     ['media ranges', '@media (width >= 1px) { .a { color: red } }', 'range_syntax'],
+    ['media queries joined by or', '@media (min-width: 1px) or (hover) { .a { color: red } }', 'or_syntax'],
+    ['an @import into a layer', '@import "a.css" layer(base);', 'css.at-rules.import.layer'],
+    ['an @import with supports()', '@import url(a.css) supports(display: grid);', 'css.at-rules.import.supports'],
+    ['an @font-face descriptor a floor browser lacks', '@font-face { ascent-override: 90% }', 'ascent-override'],
+    ['an unknown @font-face descriptor', '@font-face { font-colour: red }', 'css.at-rules.font-face.font-colour'],
     ['a selector list that some browser drops', '.a, .b:fullscreen { color: red }', 'split the rule'],
     [':focus-visible beside other selectors', '.a, .b:focus-visible { color: red }', 'split the rule'],
     ['an unprefixed property without its prefix', '.a { user-select: none }', 'css.properties.user-select'],
@@ -82,7 +87,8 @@ describe('css-gate', () => {
         .a { background-image: -webkit-image-set(url(a.png) 1x) }
         .grid { display: grid; gap: 1px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start }
         ::-webkit-scrollbar { width: 1px } .a { -webkit-line-break: after-white-space; -webkit-unknown: 1 }
-        @supports (-webkit-unknown: 1) { .a { color: red } }
+        @supports (-webkit-unknown: 1) { .a { color: red } } @import url("a.css") screen;
+        @font-face { font-family: a; src: url(a.woff2) format("woff2"); font-display: block; unicode-range: U+0-FF }
         @supports (color: lab(from red l 1 1% / calc(alpha + 0.1))) { :root { --a: lab(from red l a b) } }
         @keyframes spin { to { transform: rotate(1turn) } } @-webkit-keyframes spin { to { opacity: 1 } }
         [type="a" i] { outline: 0 } .a:-moz-focusring { outline: 0 } ::-webkit-details-marker { display: none }
@@ -91,6 +97,10 @@ describe('css-gate', () => {
         @supports ((display: grid)) or selector(:hover) { .a { color: red } } @media (-webkit-min-device-pixel-ratio: 2) { .a { color: red } }
       `),
     ).toEqual([]);
+  });
+
+  it('judges value keywords and units only where browser-compat-data records them', () => {
+    expect(checkCss('.a { display: flox; width: 1zz }')).toEqual([]);
   });
 
   it('fails the build on the stylesheets that need what the floor lacks', () => {

@@ -171,7 +171,12 @@ function declarationNeeds(decl: Declaration): Need[] {
   return needs;
 }
 
-/** The floor browsers that lack something in `needs`, with the paths of what they lack */
+/**
+ * The floor browsers that lack something in `needs`, with the paths of what they lack. A property, selector,
+ * function, at-rule, media feature or @font-face descriptor that browser-compat-data does not know counts as missing
+ * everywhere; the vendor-prefixed ones the data does not know never get here, being meant for that vendor's browsers.
+ * Value keywords and units are judged only where the data records them, so unknown ones pass.
+ */
 function missing(needs: Need[], guarded: Set<string>) {
   const result = new Map<string, Set<string>>();
 
@@ -328,6 +333,17 @@ function checkAtRule(rule: AtRule, problems: string[], guarded: Set<string>) {
     if (/[<>=]/.test(rule.params.replace(/\([^():]*:[^()]*\)/g, ''))) {
       needs.push({ path: 'css.at-rules.media.range_syntax' });
     }
+    valueParser(rule.params).walk(node => {
+      if (node.type === 'word' && /^or$/i.test(node.value)) needs.push({ path: 'css.at-rules.media.or_syntax' });
+    });
+  }
+
+  if (name === 'import') {
+    for (const node of valueParser(rule.params).nodes) {
+      if (node.type !== 'string' && /^(layer|supports)$/i.test(node.value)) {
+        needs.push({ path: `css.at-rules.import.${node.value.toLowerCase()}` });
+      }
+    }
   }
 
   if (name === 'supports') {
@@ -356,12 +372,11 @@ export function checkCss(css: string): string[] {
       if (node.type === 'rule') checkRule(node, problems, guarded);
       if (node.type === 'rule' && /:focus-visible/i.test(node.selector)) checkFocusVisible(node, problems, twins);
       if (node.type === 'atrule') checkAtRule(node, problems, guarded);
-      if (
-        node.type === 'decl' &&
-        node.parent?.type === 'atrule' &&
-        !/^font-face$/i.test((node.parent as AtRule).name)
-      ) {
-        const gaps = missing(declarationNeeds(node), guarded);
+      // The descriptors of @font-face are judged by their names, not their values
+      if (node.type === 'decl' && node.parent?.type === 'atrule') {
+        const descriptor = /^font-face$/i.test((node.parent as AtRule).name);
+        const needs = descriptor ? [{ path: `css.at-rules.font-face.${node.prop}` }] : declarationNeeds(node);
+        const gaps = missing(needs, guarded);
         if (gaps.size) problems.push(`${node.prop}: ${describe(gaps)}`);
       }
       if (node.type === 'atrule' && /^supports$/i.test(node.name)) {
