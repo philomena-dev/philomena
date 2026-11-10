@@ -7,7 +7,7 @@ defmodule PhilomenaWeb.FilterBannedUsersPlug do
 
       plug PhilomenaWeb.FilterBannedUsersPlug
   """
-  alias Phoenix.Controller
+  alias PhilomenaWeb.RefusalResponse
   alias Plug.Conn
 
   @doc false
@@ -23,20 +23,15 @@ defmodule PhilomenaWeb.FilterBannedUsersPlug do
   end
 
   @doc """
-  Emits the ban response: flash "You are currently banned." plus an external
-  redirect to `conn.assigns.referrer`, then halt.
+  Emits the ban response: the `PhilomenaWeb.RefusalResponse` with the flash
+  "You are currently banned.".
 
   Shared with `PhilomenaWeb.FallbackController` so the context-driven
   `{:error, :ban}` path stays byte-identical with the plug for controllers not
   yet migrated off it.
   """
   @spec ban_response(Conn.t()) :: Conn.t()
-  def ban_response(conn) do
-    conn
-    |> Controller.put_flash(:error, "You are currently banned.")
-    |> Controller.redirect(external: conn.assigns.referrer)
-    |> Conn.halt()
-  end
+  def ban_response(conn), do: RefusalResponse.call(conn, "You are currently banned.")
 
   defp maybe_halt(nil, conn), do: conn
 

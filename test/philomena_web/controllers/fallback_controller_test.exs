@@ -93,4 +93,19 @@ defmodule PhilomenaWeb.FallbackControllerTest do
       assert conn.halted
     end
   end
+
+  test "an AJAX write refused for a ban or a forced filter gets an empty 300 with the flash" do
+    for {error, flash} <- [
+          ban: "You are currently banned.",
+          forced_filter: "You have been blocked from performing this action on this image."
+        ] do
+      conn =
+        conn_with_referer("/images/1")
+        |> assign(:ajax?, true)
+        |> FallbackController.call({:error, error})
+
+      assert response(conn, 300) == ""
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == flash
+    end
+  end
 end
