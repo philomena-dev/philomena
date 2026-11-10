@@ -161,16 +161,20 @@ function valueNeeds(prop: string, value: string, grid = false): Need[] {
   return needs;
 }
 
-function declarationNeeds(decl: Declaration): Need[] {
-  const grid = decl.parent?.some(
-    node => 'prop' in node && node.prop === 'display' && /^(inline-)?grid$/i.test(node.value),
-  );
-  const needs = valueNeeds(decl.prop, decl.value, grid);
-  if (decl.prop.startsWith('--')) return needs;
+/** The property that `decl` declares, in lower case unless it is a custom property */
+const property = (decl: Declaration) => (decl.prop.startsWith('--') ? decl.prop : decl.prop.toLowerCase());
 
-  const base = unprefixed(decl.prop);
-  if (bcd.css.properties[base]) return [{ path: `css.properties.${base}`, spelling: decl.prop }, ...needs];
-  if (bcd.css.properties[decl.prop] || !prefixed(decl.prop)) return [{ path: `css.properties.${decl.prop}` }, ...needs];
+function declarationNeeds(decl: Declaration): Need[] {
+  const prop = property(decl);
+  const grid = decl.parent?.some(
+    node => node.type === 'decl' && property(node) === 'display' && /^(inline-)?grid$/i.test(node.value),
+  );
+  const needs = valueNeeds(prop, decl.value, grid);
+  if (prop.startsWith('--')) return needs;
+
+  const base = unprefixed(prop);
+  if (bcd.css.properties[base]) return [{ path: `css.properties.${base}`, spelling: prop }, ...needs];
+  if (bcd.css.properties[prop] || !prefixed(prop)) return [{ path: `css.properties.${prop}` }, ...needs];
 
   // A vendor property that browser-compat-data does not know is meant for that vendor's browsers only
   return needs;
@@ -268,7 +272,9 @@ function checkRule(rule: Rule, problems: string[], guarded: Set<string>) {
   // Every floor browser needs one declaration of each property that it understands
   const groups = new Map<string, Declaration[]>();
   rule.each(node => {
-    if (node.type === 'decl') groups.set(unprefixed(node.prop), [...(groups.get(unprefixed(node.prop)) ?? []), node]);
+    if (node.type !== 'decl') return;
+    const prop = unprefixed(property(node));
+    groups.set(prop, [...(groups.get(prop) ?? []), node]);
   });
 
   for (const [prop, decls] of groups) {
@@ -298,7 +304,9 @@ function fallbacks(rule: Rule, prop: string) {
       /^supports$/i.test(node.name) &&
       node.some(
         r =>
-          r.type === 'rule' && r.selector === rule.selector && r.some(d => 'prop' in d && unprefixed(d.prop) === prop),
+          r.type === 'rule' &&
+          r.selector === rule.selector &&
+          r.some(d => d.type === 'decl' && unprefixed(property(d)) === prop),
       )
     ) {
       paths.push(...supportsCondition(node.params).fallbacks);
@@ -350,8 +358,9 @@ function checkAtRule(rule: AtRule, problems: string[], guarded: Set<string>) {
   if (rule.parent?.type === 'rule') needs.push({ path: 'css.selectors.nesting' });
 
   if (name === 'media') {
-    for (const [, feature] of rule.params.matchAll(/\(\s*([-a-z]+)\s*[:)]/gi)) {
-      if (!prefixed(feature)) needs.push({ path: `css.at-rules.media.${feature.replace(/^(min|max)-/, '')}` });
+    for (const [, written] of rule.params.matchAll(/\(\s*([-a-z]+)\s*[:)]/gi)) {
+      const feature = written.toLowerCase().replace(/^(min|max)-/, '');
+      if (!prefixed(feature)) needs.push({ path: `css.at-rules.media.${feature}` });
     }
     if (/[<>=]/.test(rule.params.replace(/\([^():]*:[^()]*\)/g, ''))) {
       needs.push({ path: 'css.at-rules.media.range_syntax' });
@@ -391,7 +400,7 @@ export function checkCss(css: string): string[] {
       // The descriptors of @font-face are judged by their names, not their values
       if (node.type === 'decl' && node.parent?.type === 'atrule') {
         const descriptor = /^font-face$/i.test((node.parent as AtRule).name);
-        const needs = descriptor ? [{ path: `css.at-rules.font-face.${node.prop}` }] : declarationNeeds(node);
+        const needs = descriptor ? [{ path: `css.at-rules.font-face.${property(node)}` }] : declarationNeeds(node);
         const gaps = missing(needs, guarded);
         if (gaps.size) problems.push(`${node.prop}: ${describe(gaps)}`);
       }

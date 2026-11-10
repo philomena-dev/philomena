@@ -102,6 +102,7 @@ describe('css-gate', () => {
         ::-webkit-scrollbar { width: 1px } .a { -webkit-line-break: after-white-space; -webkit-unknown: 1 }
         @supports (-webkit-unknown: 1) { .a { color: red } } @import url("a.css") screen;
         @font-face { font-family: a; src: url(a.woff2) format("woff2"); font-display: block; unicode-range: U+0-FF }
+        .a { COLOR: red } @media (MIN-WIDTH: 1px) { .a { color: red } } @font-face { font-family: a; SRC: url(a.woff2) }
         @supports (color: lab(from red l 1 1% / calc(alpha + 0.1))) { :root { --a: lab(from red l a b) } }
         @keyframes spin { to { transform: rotate(1turn) } } @-webkit-keyframes spin { to { opacity: 1 } }
         [type="a" i] { outline: 0 } .a::selection { color: red } .a:-moz-focusring { outline: 0 } ::-webkit-details-marker { display: none }
