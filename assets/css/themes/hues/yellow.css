@@ -32,10 +32,7 @@ $link-hover-color-light: #d09873;
 $block-header-link-text-color-dark: #ffdc18;
 
 /* Read only by css/legacy.css */
-$meta-color-dark: #2a2919;
 $media-box-color-dark: #504d31;
-$autocomplete-history-color-dark: #e9c600;
 $primary-color-light: #f9f0ab;
 $warning-color-light: #eed0bc;
 $fave-color-light: #ab9517;
-$autocomplete-history-color-light: #8e7e06;

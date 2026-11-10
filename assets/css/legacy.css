@@ -33,7 +33,6 @@ $commission-color-light: #986f3d;
   --image-overlay-color: #ffffff;
   --image-overlay-background-color: #000000;
   --text-light-color: $surface-color-light;
-  --meta-border-color: hsl(from $text-color-light h s calc(l + 58));
   --comment-color: var(--link-hover-color);
   --border-color: $burger-divider-color-light;
   --media-box-color: hsl(from $base-color-light h calc(s - 26) calc(l + 31));
@@ -64,15 +63,6 @@ $commission-color-light: #986f3d;
   --downvote-disabled-color: hsl(from $vote-down-color-light h calc(s - 40) calc(l - 20));
   --dnp-warning-hover-color: hsl(from $vote-down-color-light h s calc(l + 10));
   --poll-form-label-background: hsl(from $base-color-light h calc(s - 16) calc(l + 36));
-  --autocomplete-background: var(--background-color);
-  --autocomplete-history-color: $autocomplete-history-color-light;
-  --autocomplete-history-match-color: hsl(from $autocomplete-history-color-light h s calc(l - 13));
-  --autocomplete-history-delete-hover-background: hsl(from $autocomplete-history-color-light h s l / 0.25);
-  --autocomplete-tag-color: hsl(from $text-color-light h s calc(l + 20));
-  --autocomplete-tag-match-color: hsl(from $text-color-light h s calc(l - 20));
-  --autocomplete-tag-count-color: var(--foreground-half-color);
-  --autocomplete-hover-background: hsl(from $base-color-light h calc(s - 25) 93);
-  --autocomplete-selected-background: hsl(from $base-color-light h calc(s - 25) 87);
 }
 
 :root {
@@ -94,7 +84,6 @@ $commission-color-light: #986f3d;
   --commission-category-color: $commission-color-dark;
   --image-overlay-background-color: #000000;
   --text-light-color: $text-color-dark;
-  --meta-border-color: hsl(from $meta-color-dark h calc(s - 15) calc(l + 25));
   --comment-color: var(--link-hover-color);
   --link-light-color: var(--foreground-color);
   --legacy-primary-color: hsl(from $primary-color h calc(s + 4) calc(l + 5));
@@ -124,15 +113,6 @@ $commission-color-light: #986f3d;
   --downvote-disabled-color: hsl(from $vote-down-color-dark h calc(s - 10) calc(l - 10));
   --dnp-warning-hover-color: hsl(from $vote-down-color-dark h s calc(l + 10));
   --poll-form-label-background: hsl(from $burger-divider-color-dark h s calc(l + 8));
-  --autocomplete-background: var(--background-color);
-  --autocomplete-history-color: $autocomplete-history-color-dark;
-  --autocomplete-history-match-color: hsl(from $autocomplete-history-color-dark h s calc(l + 20));
-  --autocomplete-history-delete-hover-background: hsl(from $autocomplete-history-color-dark h s l / 0.25);
-  --autocomplete-tag-color: hsl(from $text-color-dark h s calc(l - 5));
-  --autocomplete-tag-match-color: hsl(from $text-color-dark h s calc(l + 20));
-  --autocomplete-tag-count-color: var(--foreground-half-color);
-  --autocomplete-hover-background: hsl(from $page-color-dark h s calc(l + 13));
-  --autocomplete-selected-background: hsl(from $page-color-dark h s calc(l + 18));
 }
 
 @media (prefers-color-scheme: light) {

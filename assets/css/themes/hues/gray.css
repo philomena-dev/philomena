@@ -21,8 +21,5 @@ $block-header-link-text-color-dark: #aec5d5;
 $notice-color-dark: #38385a;
 
 /* Read only by css/legacy.css */
-$meta-color-dark: #1c1e22;
 $media-box-color-dark: #444444;
-$autocomplete-history-color-dark: #9baab5;
 $primary-color-light: #d7e2e8;
-$autocomplete-history-color-light: #3e7da1;

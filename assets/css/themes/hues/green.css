@@ -29,8 +29,5 @@ $link-hover-color-light: #13bb16;
 $block-header-link-text-color-dark: #11cf69;
 
 /* Read only by css/legacy.css */
-$meta-color-dark: #192a1e;
 $media-box-color-dark: #36453d;
-$autocomplete-history-color-dark: #11cf69;
 $primary-color-light: #baf4c2;
-$autocomplete-history-color-light: #2ca052;

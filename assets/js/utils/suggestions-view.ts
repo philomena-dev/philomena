@@ -104,9 +104,7 @@ export class HistorySuggestionComponent implements SuggestionComponent {
   render(): HTMLElement[] {
     return [
       makeEl('div', { className: 'autocomplete__item__content' }, [
-        makeEl('i', {
-          className: 'autocomplete__item__history__icon fa-solid fa-history',
-        }),
+        makeEl('i', { className: 'fa-solid fa-history' }),
         makeEl('b', {
           textContent: ` ${this.content.slice(0, this.matchLength)}`,
           className: 'autocomplete__item__history__match',
