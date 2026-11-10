@@ -20,3 +20,8 @@
 .text-warning {
   color: var(--warning-tint-text-color) !important;
 }
+
+/* Text that stays on one line */
+.whitespace-nowrap {
+  white-space: nowrap !important;
+}
