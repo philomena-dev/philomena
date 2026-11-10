@@ -10,13 +10,16 @@
 .navbar-staff {
   --header-brand-color: var(--header-text-color);
   --surface-color: var(--header-color);
-  --tint-faint-color: var(--bar-hover-shade-color);
   --active-shade-color: var(--bar-hover-shade-color);
   --tint-color: transparent;
   /* stylelint-disable-next-line length-zero-no-unit -- a length, which the navbar negates in calc() */
   --border-width: 0px;
   --fill-bevel-shadow: none;
-  /* The icon column of the menus is a slot without a strip of its own */
+}
+
+/* Menu items take the hover color of their bar, and the icon column is a slot without a strip of its own */
+.navbar .navbar-menu {
+  --tint-faint-color: var(--bar-hover-shade-color);
   --well-color: transparent;
   --neutral-color: transparent;
   --muted-text-color: currentcolor;
