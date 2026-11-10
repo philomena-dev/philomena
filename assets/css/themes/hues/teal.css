@@ -24,23 +24,14 @@ $header-secondary-color-dark: #1d3d44;
 $burger-color-dark: #283739;
 $burger-divider-color-dark: #1d3d44;
 $burger-divider-color-light: #b8dfe0;
-$link-hover-color-dark: #b099dd;
-$link-hover-color-light: #9273d0;
 
 /* Read only by css/legacy.css */
-$destroyed-content-color-dark: #382c2f;
 $meta-color-dark: #19282a;
 $block-header-color-dark: #1d3d44;
 $block-header-link-text-color-dark: #15d1d4;
 $block-header-light-color-dark: #1d3d44;
 $block-header-light-link-text-color-dark: #15d1d4;
 $media-box-color-dark: #2d3d41;
-$commission-color-dark: #e07b27;
-$notice-color-dark: #07070a;
 $autocomplete-history-color-dark: #0ebcbf;
 $primary-color-light: #c1f6f9;
-$danger-color-light: #ebc0bb;
-$warning-color-light: #eee9bc;
-$fave-color-light: #c4b246;
-$assistant-color-light: #eeceed;
 $autocomplete-history-color-light: #1098a2;
