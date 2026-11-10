@@ -6,9 +6,10 @@
     // Tests need `@types/node`, which pulls in more of the standard library
     // (`<reference lib="es2020" />` plus some `esnext` parts), so the IDE may
     // suggest features that the browsers lack. There seems to be no way to give
-    // the IDE a separate tsconfig for application files, so the final build and
-    // CI use `tsconfig.build.json`, which leaves out `vitest/globals` and `node`
-    // and so checks that the app depends on nothing past this level.
+    // the IDE a separate tsconfig for application files, so the final build
+    // uses `tsconfig.build.json`, which leaves out `vitest/globals` and `node`
+    // and so checks that the app depends on nothing past this level. `npm run
+    // lint` checks everything with this file, tests and build scripts included.
     "lib": ["ES2021", "DOM", "DOM.Iterable"],
     "target": "ES2021",
     "types": ["vitest/globals", "node"],
@@ -33,5 +34,5 @@
     // before this can be enabled
     // "noUncheckedIndexedAccess": true
   },
-  "include": ["./js/**/*", "./test/**/*", "./build/**/*"]
+  "include": ["./js/**/*", "./test/**/*", "./build/**/*", "./vite.config.ts"]
 }
