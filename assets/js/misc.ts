@@ -11,7 +11,7 @@ let touchMoved = false;
 function formResult({ target, detail }: FetchcompleteEvent) {
   const elements: Record<string, string> = {
     '#description-form': '.image-description',
-    '#uploader-form': '.image_uploader',
+    '#uploader-form': '.image-uploader',
   };
 
   function showResult(formEl: HTMLFormElement, resultEl: HTMLElement, response: string) {

@@ -24,17 +24,17 @@
       <%= if can?(@conn, :hide, @image) and not hide_staff_tools?(@conn) do %><a class="button button-danger button-size-badge" data-confirm="Are you really, really sure?" data-method="delete" href={~p"/images/#{@image}/source_history"} title="Wipe sources"><i class="fas fa-eraser"></i> Wipe</a><% end %>
     </div>
     <div class="block-content">
-      <div class="image_sources">
+      <div class="image-sources">
         <%= if has_sources do %>
           <% [first_source | sources] = @image.sources %>
-          <div class="image_source__icon"><i class={"#{image_source_icon(first_source.source)}"}></i></div>
+          <div class="image-source-icon"><i class={"#{image_source_icon(first_source.source)}"}></i></div>
           <div class="wrap-anywhere"><a class="js-source-link" href={first_source.source}><strong>{first_source.source}</strong></a></div>
           <%= for source <- sources do %>
-            <div class="image_source__icon"><i class={"#{image_source_icon(source.source)}"}></i></div>
+            <div class="image-source-icon"><i class={"#{image_source_icon(source.source)}"}></i></div>
             <div class="wrap-anywhere"><a href={source.source}><strong>{source.source}</strong></a></div>
           <% end %>
         <% else %>
-          <div class="image_source__icon"><i class="fa fa-unlink"></i></div>
+          <div class="image-source-icon"><i class="fa fa-unlink"></i></div>
           <div class="wrap-anywhere"><em>not provided yet</em> </div>
         <% end %>
       </div>
