@@ -163,7 +163,7 @@ describe('preview.ts setupPreviews', () => {
     // add reply link
     const container = document.createElement('div');
     container.innerHTML = `
-      <a href="/u/test" class="post-reply" data-author="User" data-post="quote\nmore">
+      <a href="/u/test" class="js-post-reply" data-author="User" data-post="quote\nmore">
         <span class="inner">reply</span>
       </a>
     `;
@@ -286,7 +286,7 @@ describe('preview.ts setupPreviews', () => {
 
     const container = document.createElement('div');
     container.innerHTML = `
-      <a href="/u/test" class="post-reply" data-author="User" data-post="quote">
+      <a href="/u/test" class="js-post-reply" data-author="User" data-post="quote">
         <span class="inner">reply</span>
       </a>
     `;
@@ -309,7 +309,7 @@ describe('preview.ts setupPreviews', () => {
 
     const container = document.createElement('div');
     container.innerHTML = `
-      <a href="/u/test" class="post-reply" data-author="User">
+      <a href="/u/test" class="js-post-reply" data-author="User">
         <span class="inner">reply</span>
       </a>
     `;
@@ -356,7 +356,7 @@ describe('preview.ts setupPreviews', () => {
 
     const container = document.createElement('div');
     container.innerHTML = `
-      <a class="post-reply">
+      <a class="js-post-reply">
         <span class="inner">reply</span>
       </a>
     `;

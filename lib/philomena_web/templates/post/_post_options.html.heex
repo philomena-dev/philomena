@@ -36,7 +36,7 @@ quote_body = if @post.hidden_from_users, do: "", else: @post.body %>
       <% end %>
       <a
         :if={deletable?}
-        class="togglable-delete-form-link"
+        class="js-togglable-delete-form-link"
         data-click-toggle={"#inline-del-form-post-#{@post.id}"}
         href="#"
       ><i class="fa fa-times"></i> Delete</a>
@@ -49,13 +49,13 @@ quote_body = if @post.hidden_from_users, do: "", else: @post.body %>
   <div>
     <a href={link_path} title="Link to post"><i class="fa fa-link"></i> Link</a>
     <a
-      class="post-reply post-reply-quote"
+      class="js-post-reply"
       data-author={safe_author}
       data-post={quote_body}
       data-reply-url={link_path}
       href={link_path}
     ><i class="fa fa-quote-right"></i> Quote</a>
-    <a class="post-reply" data-author={safe_author} data-reply-url={link_path} href={link_path}>
+    <a class="js-post-reply" data-author={safe_author} data-reply-url={link_path} href={link_path}>
       <i class="fa fa-reply"></i> Reply
     </a>
     <a
@@ -66,7 +66,7 @@ quote_body = if @post.hidden_from_users, do: "", else: @post.body %>
     </a>
   </div>
   <%= if staff? and deletable? do %>
-    <%= form_for :post, ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/hide", [class: "togglable-delete-form hidden flex", id: "inline-del-form-post-#{@post.id}"], fn f -> %>
+    <%= form_for :post, ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/hide", [class: "js-togglable-delete-form hidden flex", id: "inline-del-form-post-#{@post.id}"], fn f -> %>
       {text_input(f, :deletion_reason,
         class: "input-field full-width",
         placeholder: "Deletion Reason",

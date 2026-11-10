@@ -33,7 +33,7 @@ quote_body = if @comment.hidden_from_users, do: "", else: @comment.body %>
       <% end %>
       <a
         :if={deletable?}
-        class="js-staff-action togglable-delete-form-link"
+        class="js-staff-action js-togglable-delete-form-link"
         data-click-toggle={"#inline-del-form-comment-#{@comment.id}"}
         href="#"
       ><i class="fas fa-times"></i> Delete</a>
@@ -46,13 +46,13 @@ quote_body = if @comment.hidden_from_users, do: "", else: @comment.body %>
   <div>
     <a href={link_path} title="Link to comment"><i class="fa fa-link"></i> Link</a>
     <a
-      class="post-reply post-reply-quote"
+      class="js-post-reply"
       data-author={safe_author}
       data-post={quote_body}
       data-reply-url={link_path}
       href={link_path}
     ><i class="fa fa-quote-right"></i> Quote</a>
-    <a class="post-reply" data-author={safe_author} data-reply-url={link_path} href={link_path}>
+    <a class="js-post-reply" data-author={safe_author} data-reply-url={link_path} href={link_path}>
       <i class="fa fa-reply"></i> Reply
     </a>
     <a
@@ -63,7 +63,7 @@ quote_body = if @comment.hidden_from_users, do: "", else: @comment.body %>
     </a>
   </div>
   <%= if staff? and deletable? do %>
-    <%= form_for :comment, ~p"/images/#{@comment.image_id}/comments/#{@comment}/hide", [class: "togglable-delete-form hidden flex js-staff-action", id: "inline-del-form-comment-#{@comment.id}"], fn f -> %>
+    <%= form_for :comment, ~p"/images/#{@comment.image_id}/comments/#{@comment}/hide", [class: "js-togglable-delete-form hidden flex js-staff-action", id: "inline-del-form-comment-#{@comment.id}"], fn f -> %>
       {text_input(f, :deletion_reason,
         class: "input-field full-width",
         placeholder: "Deletion Reason",

@@ -126,7 +126,7 @@ function setupPreviews() {
   }
 
   delegate(document, 'click', {
-    '.post-reply': (event: Event, link: HTMLElement) => {
+    '.js-post-reply': (event: Event, link: HTMLElement) => {
       commentReply(link.dataset.author || '', link.getAttribute('href') || '', textarea!, link.dataset.post);
       event.preventDefault();
     },
