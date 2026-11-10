@@ -53,6 +53,7 @@ types, and testing style.
 
 ### Frontend (in `assets/`)
 
+- `npm ci` (repo root): installs the npm workspaces `assets` and `assets/vendor/philomena-css` from the single root `package-lock.json`
 - `npm run test` / `npm run test:watch` — vitest with coverage
 - `npm run lint` — oxlint + stylelint
 - `npm run build` — typecheck (tsc) + vite build
@@ -79,4 +80,4 @@ Four Elixir app namespaces under `lib/`:
 
 **Native code:** `native/philomena/` is a Rustler NIF crate (exposed as `Philomena.Native`) handling Markdown rendering via a forked comrak, plus other hot paths. The same Cargo workspace contains `mediaproc`/`mediaproc_client`/`mediaproc_server` — an RPC service (separate `mediaproc` compose container) that performs actual media processing so the BEAM isn't blocked by ffmpeg/imagemagick work.
 
-**Frontend:** TypeScript (no framework) in `assets/js`, built with Vite, tested with vitest; CSS uses PostCSS with mixins/vars.
+**Frontend:** TypeScript (no framework) in `assets/js`, built with Vite, tested with vitest; CSS uses PostCSS with mixins/vars. `assets/vendor/philomena-css/` is a vendored copy of the PhilomenaCSS framework, kept identical to upstream and excluded from Philomena's formatters and linters; `UPSTREAM.md` there lists its source commit, local modifications and update steps.
