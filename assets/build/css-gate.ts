@@ -294,11 +294,14 @@ function checkRule(rule: Rule, problems: string[], guarded: Set<string>) {
   }
 }
 
-/** The features that a later `@supports not (…)` block declares `prop` again for, for the selector of `rule` */
+/**
+ * The features that an `@supports not (…)` block beside `rule` declares `prop` again for, for its selector. Browsers
+ * with the feature skip the block and those without it drop the declaration, so either may come first.
+ */
 function fallbacks(rule: Rule, prop: string) {
   const paths: string[] = [];
 
-  for (let node = rule.next(); node; node = node.next()) {
+  rule.parent?.each(node => {
     if (
       node.type === 'atrule' &&
       /^supports$/i.test(node.name) &&
@@ -311,7 +314,7 @@ function fallbacks(rule: Rule, prop: string) {
     ) {
       paths.push(...supportsCondition(node.params).fallbacks);
     }
-  }
+  });
 
   return paths;
 }

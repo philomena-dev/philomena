@@ -97,6 +97,7 @@ describe('css-gate', () => {
         .a:focus:not(:focus-visible) { outline: 0 } [title=":focus-visible"] { color: red }
         .a { display: flex; gap: 1px; row-gap: 1px; column-gap: 1px; align-items: flex-start }
         .fa:before { content: var(--fa) / "" } @supports not (content: ""/"") { .fa:before { content: var(--fa) } }
+        @supports not (content: ""/"") { .b:before { content: "x" } } .b:before { content: "x" / "" }
         .a { text-decoration: underline var(--a); text-decoration: var(--a, none) }
         .grid { display: grid; gap: 1px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start }
         ::-webkit-scrollbar { width: 1px } .a { -webkit-line-break: after-white-space; -webkit-unknown: 1 }
