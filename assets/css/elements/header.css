@@ -1,4 +1,5 @@
 .header {
+  --link-style-hover-decoration: none;
   background: var(--header-color);
 }
 
@@ -11,6 +12,7 @@
 }
 
 .fa-search-button {
+  box-sizing: content-box;
   padding: 0 0.5rem;
 }
 
@@ -105,6 +107,14 @@ select.header__input:focus optgroup {
   font-size: 1.25em;
   background: var(--header-field-color);
   color: var(--header-text-color);
+}
+
+button.header__search__button {
+  padding: 0 var(--spacing-sm);
+}
+
+a.header__search__button:hover {
+  color: var(--search-icon-hover-color);
 }
 
 .header__search__button:hover,

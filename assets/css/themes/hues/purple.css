@@ -16,6 +16,8 @@ $header-secondary-color-dark: #251c36;
 $burger-color-dark: #312839;
 $burger-divider-color-dark: #332941;
 $burger-divider-color-light: #dacfe3;
+$link-hover-color-dark: #cbb5f8;
+$link-hover-color-light: #cf73d0;
 
 /* Read only by css/legacy.css */
 $destroyed-content-color-dark: #332025;
@@ -25,14 +27,12 @@ $block-header-link-text-color-dark: #a96fdb;
 $block-header-light-color-dark: #2d253c;
 $block-header-light-link-text-color-dark: #8f72c4;
 $media-box-color-dark: #311e49;
-$link-hover-color-dark: #cbb5f8;
 $commission-color-dark: #e07b27;
 $notice-color-dark: #07070a;
 $autocomplete-history-color-dark: #b577eb;
 $primary-color-light: #dec1f9;
 $danger-color-light: #ebc0bb;
 $warning-color-light: #eee9bc;
-$link-hover-color-light: #cf73d0;
 $fave-color-light: #c4b246;
 $assistant-color-light: #eeceed;
 $autocomplete-history-color-light: #9241d9;

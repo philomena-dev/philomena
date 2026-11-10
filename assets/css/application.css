@@ -24,6 +24,7 @@
 
 /* General style elements that are used throughout the project. */
 @import "elements/base";
+@import "elements/misc";
 @import "elements/barline";
 @import "elements/blocks";
 @import "elements/burger";
@@ -34,7 +35,6 @@
 @import "elements/header";
 @import "elements/layout";
 @import "elements/media";
-@import "elements/text";
 @import "elements/toggle";
 
 /* Style elements specific to certain pages. */

@@ -17,6 +17,7 @@
   --header-secondary-hover-color: hsl(from $base-color-light h calc(s - 25) calc(l + 23));
   --header-admin-color: $header-admin-color-light;
   --header-admin-hover-color: $header-admin-hover-color-light;
+  --search-icon-hover-color: $link-hover-color-light;
   --burger-color: $burger-color-light;
   --burger-hover-color: $base-color-light;
   --burger-hover-text-color: $surface-color-light;
@@ -33,6 +34,7 @@
   --header-secondary-hover-color: hsl(from $header-secondary-color-dark h s calc(l - 4));
   --header-admin-color: $header-admin-color-dark;
   --header-admin-hover-color: hsl(from $header-admin-color-dark h s calc(l - 5));
+  --search-icon-hover-color: $link-hover-color-dark;
   --burger-color: $burger-color-dark;
   --burger-hover-color: $base-color-dark;
   --burger-hover-text-color: $text-color-dark;

@@ -58,7 +58,7 @@ nav {
 }
 
 #burger hr {
-  background: var(--burger-divider-color);
+  border-top-color: var(--burger-divider-color);
 }
 
 #container {
