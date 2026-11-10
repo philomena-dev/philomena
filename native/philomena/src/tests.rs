@@ -340,9 +340,9 @@ fn diff_unchanged_document_renders_as_plain_context() {
         "Hello world\n\nSecond line",
         concat!(
             "<table class=\"diff\"><tbody>",
-            "<tr class=\"diff__row\"><td class=\"diff__gutter\">1</td><td class=\"diff__gutter\">1</td><td class=\"diff__text\">Hello world</td></tr>",
-            "<tr class=\"diff__row\"><td class=\"diff__gutter\">2</td><td class=\"diff__gutter\">2</td><td class=\"diff__text\"></td></tr>",
-            "<tr class=\"diff__row\"><td class=\"diff__gutter\">3</td><td class=\"diff__gutter\">3</td><td class=\"diff__text\">Second line</td></tr>",
+            "<tr class=\"diff-row\"><td class=\"diff-gutter\">1</td><td class=\"diff-gutter\">1</td><td class=\"diff-text\">Hello world</td></tr>",
+            "<tr class=\"diff-row\"><td class=\"diff-gutter\">2</td><td class=\"diff-gutter\">2</td><td class=\"diff-text\"></td></tr>",
+            "<tr class=\"diff-row\"><td class=\"diff-gutter\">3</td><td class=\"diff-gutter\">3</td><td class=\"diff-text\">Second line</td></tr>",
             "</tbody></table>",
         ),
     );
@@ -355,8 +355,8 @@ fn diff_word_change_highlights_only_the_changed_word() {
         "The quick red fox",
         concat!(
             "<table class=\"diff\"><tbody>",
-            "<tr class=\"diff__row diff__row--del\"><td class=\"diff__gutter\">1</td><td class=\"diff__gutter\"></td><td class=\"diff__text\">The quick <del class=\"diff__hl\">brown</del> fox</td></tr>",
-            "<tr class=\"diff__row diff__row--ins\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\">1</td><td class=\"diff__text\">The quick <ins class=\"diff__hl\">red</ins> fox</td></tr>",
+            "<tr class=\"diff-row deleted\"><td class=\"diff-gutter\">1</td><td class=\"diff-gutter\"></td><td class=\"diff-text\">The quick <del class=\"diff-mark\">brown</del> fox</td></tr>",
+            "<tr class=\"diff-row inserted\"><td class=\"diff-gutter\"></td><td class=\"diff-gutter\">1</td><td class=\"diff-text\">The quick <ins class=\"diff-mark\">red</ins> fox</td></tr>",
             "</tbody></table>",
         ),
     );
@@ -369,9 +369,9 @@ fn diff_inserted_line_gets_its_own_row_without_highlights() {
         "First line\nSecond line\nThird line",
         concat!(
             "<table class=\"diff\"><tbody>",
-            "<tr class=\"diff__row\"><td class=\"diff__gutter\">1</td><td class=\"diff__gutter\">1</td><td class=\"diff__text\">First line</td></tr>",
-            "<tr class=\"diff__row diff__row--ins\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\">2</td><td class=\"diff__text\">Second line</td></tr>",
-            "<tr class=\"diff__row\"><td class=\"diff__gutter\">2</td><td class=\"diff__gutter\">3</td><td class=\"diff__text\">Third line</td></tr>",
+            "<tr class=\"diff-row\"><td class=\"diff-gutter\">1</td><td class=\"diff-gutter\">1</td><td class=\"diff-text\">First line</td></tr>",
+            "<tr class=\"diff-row inserted\"><td class=\"diff-gutter\"></td><td class=\"diff-gutter\">2</td><td class=\"diff-text\">Second line</td></tr>",
+            "<tr class=\"diff-row\"><td class=\"diff-gutter\">2</td><td class=\"diff-gutter\">3</td><td class=\"diff-text\">Third line</td></tr>",
             "</tbody></table>",
         ),
     );
@@ -384,12 +384,12 @@ fn diff_collapses_unchanged_lines_after_the_context_window() {
         "start new\nl2\nl3\nl4\nl5\nl6\nl7\nl8\nl9",
         concat!(
             "<table class=\"diff\"><tbody>",
-            "<tr class=\"diff__row diff__row--del\"><td class=\"diff__gutter\">1</td><td class=\"diff__gutter\"></td><td class=\"diff__text\">start <del class=\"diff__hl\">old</del></td></tr>",
-            "<tr class=\"diff__row diff__row--ins\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\">1</td><td class=\"diff__text\">start <ins class=\"diff__hl\">new</ins></td></tr>",
-            "<tr class=\"diff__row\"><td class=\"diff__gutter\">2</td><td class=\"diff__gutter\">2</td><td class=\"diff__text\">l2</td></tr>",
-            "<tr class=\"diff__row\"><td class=\"diff__gutter\">3</td><td class=\"diff__gutter\">3</td><td class=\"diff__text\">l3</td></tr>",
-            "<tr class=\"diff__row\"><td class=\"diff__gutter\">4</td><td class=\"diff__gutter\">4</td><td class=\"diff__text\">l4</td></tr>",
-            "<tr class=\"diff__row diff__row--gap\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\"></td><td class=\"diff__text\">5 unchanged lines</td></tr>",
+            "<tr class=\"diff-row deleted\"><td class=\"diff-gutter\">1</td><td class=\"diff-gutter\"></td><td class=\"diff-text\">start <del class=\"diff-mark\">old</del></td></tr>",
+            "<tr class=\"diff-row inserted\"><td class=\"diff-gutter\"></td><td class=\"diff-gutter\">1</td><td class=\"diff-text\">start <ins class=\"diff-mark\">new</ins></td></tr>",
+            "<tr class=\"diff-row\"><td class=\"diff-gutter\">2</td><td class=\"diff-gutter\">2</td><td class=\"diff-text\">l2</td></tr>",
+            "<tr class=\"diff-row\"><td class=\"diff-gutter\">3</td><td class=\"diff-gutter\">3</td><td class=\"diff-text\">l3</td></tr>",
+            "<tr class=\"diff-row\"><td class=\"diff-gutter\">4</td><td class=\"diff-gutter\">4</td><td class=\"diff-text\">l4</td></tr>",
+            "<tr class=\"diff-row skipped\"><td class=\"diff-gutter\"></td><td class=\"diff-gutter\"></td><td class=\"diff-text\">5 unchanged lines</td></tr>",
             "</tbody></table>",
         ),
     );
@@ -402,12 +402,12 @@ fn diff_collapses_unchanged_lines_before_the_context_window() {
         "l1\nl2\nl3\nl4\nl5\nl6\nl7\nl8\nend new",
         concat!(
             "<table class=\"diff\"><tbody>",
-            "<tr class=\"diff__row diff__row--gap\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\"></td><td class=\"diff__text\">5 unchanged lines</td></tr>",
-            "<tr class=\"diff__row\"><td class=\"diff__gutter\">6</td><td class=\"diff__gutter\">6</td><td class=\"diff__text\">l6</td></tr>",
-            "<tr class=\"diff__row\"><td class=\"diff__gutter\">7</td><td class=\"diff__gutter\">7</td><td class=\"diff__text\">l7</td></tr>",
-            "<tr class=\"diff__row\"><td class=\"diff__gutter\">8</td><td class=\"diff__gutter\">8</td><td class=\"diff__text\">l8</td></tr>",
-            "<tr class=\"diff__row diff__row--del\"><td class=\"diff__gutter\">9</td><td class=\"diff__gutter\"></td><td class=\"diff__text\">end <del class=\"diff__hl\">old</del></td></tr>",
-            "<tr class=\"diff__row diff__row--ins\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\">9</td><td class=\"diff__text\">end <ins class=\"diff__hl\">new</ins></td></tr>",
+            "<tr class=\"diff-row skipped\"><td class=\"diff-gutter\"></td><td class=\"diff-gutter\"></td><td class=\"diff-text\">5 unchanged lines</td></tr>",
+            "<tr class=\"diff-row\"><td class=\"diff-gutter\">6</td><td class=\"diff-gutter\">6</td><td class=\"diff-text\">l6</td></tr>",
+            "<tr class=\"diff-row\"><td class=\"diff-gutter\">7</td><td class=\"diff-gutter\">7</td><td class=\"diff-text\">l7</td></tr>",
+            "<tr class=\"diff-row\"><td class=\"diff-gutter\">8</td><td class=\"diff-gutter\">8</td><td class=\"diff-text\">l8</td></tr>",
+            "<tr class=\"diff-row deleted\"><td class=\"diff-gutter\">9</td><td class=\"diff-gutter\"></td><td class=\"diff-text\">end <del class=\"diff-mark\">old</del></td></tr>",
+            "<tr class=\"diff-row inserted\"><td class=\"diff-gutter\"></td><td class=\"diff-gutter\">9</td><td class=\"diff-text\">end <ins class=\"diff-mark\">new</ins></td></tr>",
             "</tbody></table>",
         ),
     );
@@ -420,8 +420,8 @@ fn diff_keeps_raw_user_html_escaped() {
         "after <script> text",
         concat!(
             "<table class=\"diff\"><tbody>",
-            "<tr class=\"diff__row diff__row--del\"><td class=\"diff__gutter\">1</td><td class=\"diff__gutter\"></td><td class=\"diff__text\"><del class=\"diff__hl\">before</del> &lt;script&gt; text</td></tr>",
-            "<tr class=\"diff__row diff__row--ins\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\">1</td><td class=\"diff__text\"><ins class=\"diff__hl\">after</ins> &lt;script&gt; text</td></tr>",
+            "<tr class=\"diff-row deleted\"><td class=\"diff-gutter\">1</td><td class=\"diff-gutter\"></td><td class=\"diff-text\"><del class=\"diff-mark\">before</del> &lt;script&gt; text</td></tr>",
+            "<tr class=\"diff-row inserted\"><td class=\"diff-gutter\"></td><td class=\"diff-gutter\">1</td><td class=\"diff-text\"><ins class=\"diff-mark\">after</ins> &lt;script&gt; text</td></tr>",
             "</tbody></table>",
         ),
     );
@@ -434,8 +434,8 @@ fn diff_from_empty_shows_pure_insertions() {
         "line one\nline two",
         concat!(
             "<table class=\"diff\"><tbody>",
-            "<tr class=\"diff__row diff__row--ins\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\">1</td><td class=\"diff__text\">line one</td></tr>",
-            "<tr class=\"diff__row diff__row--ins\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\">2</td><td class=\"diff__text\">line two</td></tr>",
+            "<tr class=\"diff-row inserted\"><td class=\"diff-gutter\"></td><td class=\"diff-gutter\">1</td><td class=\"diff-text\">line one</td></tr>",
+            "<tr class=\"diff-row inserted\"><td class=\"diff-gutter\"></td><td class=\"diff-gutter\">2</td><td class=\"diff-text\">line two</td></tr>",
             "</tbody></table>",
         ),
     );
@@ -448,7 +448,7 @@ fn diff_to_empty_shows_pure_deletions() {
         "",
         concat!(
             "<table class=\"diff\"><tbody>",
-            "<tr class=\"diff__row diff__row--del\"><td class=\"diff__gutter\">1</td><td class=\"diff__gutter\"></td><td class=\"diff__text\">only line</td></tr>",
+            "<tr class=\"diff-row deleted\"><td class=\"diff-gutter\">1</td><td class=\"diff-gutter\"></td><td class=\"diff-text\">only line</td></tr>",
             "</tbody></table>",
         ),
     );
@@ -461,9 +461,9 @@ fn diff_matches_lines_across_crlf_and_lf_revisions() {
         "same one\nsame two\nadded three",
         concat!(
             "<table class=\"diff\"><tbody>",
-            "<tr class=\"diff__row\"><td class=\"diff__gutter\">1</td><td class=\"diff__gutter\">1</td><td class=\"diff__text\">same one</td></tr>",
-            "<tr class=\"diff__row\"><td class=\"diff__gutter\">2</td><td class=\"diff__gutter\">2</td><td class=\"diff__text\">same two</td></tr>",
-            "<tr class=\"diff__row diff__row--ins\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\">3</td><td class=\"diff__text\">added three</td></tr>",
+            "<tr class=\"diff-row\"><td class=\"diff-gutter\">1</td><td class=\"diff-gutter\">1</td><td class=\"diff-text\">same one</td></tr>",
+            "<tr class=\"diff-row\"><td class=\"diff-gutter\">2</td><td class=\"diff-gutter\">2</td><td class=\"diff-text\">same two</td></tr>",
+            "<tr class=\"diff-row inserted\"><td class=\"diff-gutter\"></td><td class=\"diff-gutter\">3</td><td class=\"diff-text\">added three</td></tr>",
             "</tbody></table>",
         ),
     );

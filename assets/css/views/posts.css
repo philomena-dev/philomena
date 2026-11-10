@@ -9,7 +9,7 @@
 }
 
 /* Rows run together, also inside a framework table cell */
-.diff .diff__row {
+.diff .diff-row {
   border: 0;
   background: none;
 }
@@ -18,20 +18,20 @@
   padding: 1px var(--spacing-md);
 }
 
-.diff .diff__row--del {
+.diff .diff-row.deleted {
   background-color: var(--danger-tint-color);
 }
 
-.diff .diff__row--ins {
+.diff .diff-row.inserted {
   background-color: var(--success-tint-color);
 }
 
-.diff .diff__row--gap,
-.diff .diff__gutter {
+.diff .diff-row.skipped,
+.diff .diff-gutter {
   color: var(--muted-text-color);
 }
 
-.diff .diff__gutter {
+.diff .diff-gutter {
   min-width: 40px;
   width: 1%;
   text-align: right;
@@ -39,41 +39,41 @@
   user-select: none;
 }
 
-.diff__text {
+.diff-text {
   width: 100%;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
 /* Line markers live in generated content so copied text stays clean. */
-.diff__text:before {
+.diff-text:before {
   content: " ";
   display: inline-block;
   width: 1ch;
   margin-right: var(--spacing-md);
 }
 
-.diff__row--del .diff__text:before {
+.diff-row.deleted .diff-text:before {
   content: "-";
 }
 
-.diff__row--ins .diff__text:before {
+.diff-row.inserted .diff-text:before {
   content: "+";
 }
 
-.diff__row--gap .diff__text:before {
+.diff-row.skipped .diff-text:before {
   content: "\22ef";
 }
 
-.diff__hl {
+.diff-mark {
   text-decoration: none;
   border-radius: var(--border-radius-inner);
 }
 
-del.diff__hl {
+del.diff-mark {
   background-color: var(--danger-bar-color);
 }
 
-ins.diff__hl {
+ins.diff-mark {
   background-color: var(--success-bar-color);
 }

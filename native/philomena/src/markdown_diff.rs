@@ -2,11 +2,11 @@
 //
 // The Markdown source is diffed line-by-line and rendered as a unified diff
 // table: each line becomes a row with old/new line-number gutters, changed
-// rows are marked with `diff__row--del` / `diff__row--ins`, and runs of
+// rows are marked with `deleted` / `inserted`, and runs of
 // unchanged lines beyond the context window collapse into an
 // "N unchanged lines" separator row. When a line is edited in place, the
 // exact changed words inside it are additionally wrapped in
-// `<del class="diff__hl">` / `<ins class="diff__hl">`.
+// `<del class="diff-mark">` / `<ins class="diff-mark">`.
 //
 // The source text is HTML-escaped as it is emitted, so untrusted input stays
 // inert; the only live markup is the table structure and the diff wrappers.
@@ -93,7 +93,7 @@ fn inline_content(change: &InlineChange<str>) -> String {
 
         match emphasis {
             Some(tag) if emphasized => {
-                let _ = write!(html, "<{tag} class=\"diff__hl\">");
+                let _ = write!(html, "<{tag} class=\"diff-mark\">");
                 escape_into(&mut html, piece);
                 let _ = write!(html, "</{tag}>");
             }
@@ -114,9 +114,9 @@ fn push_row(
     content: &str,
 ) {
     let row_class = match tag {
-        ChangeTag::Equal => "diff__row",
-        ChangeTag::Delete => "diff__row diff__row--del",
-        ChangeTag::Insert => "diff__row diff__row--ins",
+        ChangeTag::Equal => "diff-row",
+        ChangeTag::Delete => "diff-row deleted",
+        ChangeTag::Insert => "diff-row inserted",
     };
 
     out.push_str("<tr class=\"");
@@ -124,7 +124,7 @@ fn push_row(
     out.push_str("\">");
     push_gutter(out, old_index);
     push_gutter(out, new_index);
-    out.push_str("<td class=\"diff__text\">");
+    out.push_str("<td class=\"diff-text\">");
     out.push_str(content);
     out.push_str("</td></tr>");
 }
@@ -138,7 +138,7 @@ fn push_gap(out: &mut String, count: usize) {
     let noun = if count == 1 { "line" } else { "lines" };
     let _ = write!(
         out,
-        "<tr class=\"diff__row diff__row--gap\"><td class=\"diff__gutter\"></td><td class=\"diff__gutter\"></td><td class=\"diff__text\">{count} unchanged {noun}</td></tr>"
+        "<tr class=\"diff-row skipped\"><td class=\"diff-gutter\"></td><td class=\"diff-gutter\"></td><td class=\"diff-text\">{count} unchanged {noun}</td></tr>"
     );
 }
 
@@ -147,9 +147,9 @@ fn push_gap(out: &mut String, count: usize) {
 fn push_gutter(out: &mut String, index: Option<usize>) {
     match index {
         Some(i) => {
-            let _ = write!(out, "<td class=\"diff__gutter\">{}</td>", i + 1);
+            let _ = write!(out, "<td class=\"diff-gutter\">{}</td>", i + 1);
         }
-        None => out.push_str("<td class=\"diff__gutter\"></td>"),
+        None => out.push_str("<td class=\"diff-gutter\"></td>"),
     }
 }
 
