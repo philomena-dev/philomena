@@ -282,33 +282,39 @@ div.image-container video {
   max-width: 200px;
 }
 
-#js-image-upload-previews .scraper-preview--label {
+/* The images a scraper found: a hidden radio button each, the chosen image framed and the others faded */
+#js-image-upload-previews .scraper-preview-label {
   cursor: pointer;
-  margin: 0 8px 8px 0;
+  margin: 0 var(--spacing-md) var(--spacing-md) 0;
 }
 
-#js-image-upload-previews .scraper-preview--label .scraper-preview--image-wrapper {
+#js-image-upload-previews .scraper-preview-frame {
   display: inline-block;
-  padding: 9px;
-  border: 1px solid transparent;
-  opacity: 0.6;
+  padding: var(--spacing-md);
+  border: var(--border-width) solid transparent;
+  border-radius: var(--border-radius-inner);
+
+  @mixin faded;
 }
 
-#js-image-upload-previews .scraper-preview--label .scraper-preview--image {
+#js-image-upload-previews .scraper-preview-image {
   background: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeD0iMHB4IiB5PSIwcHgiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTYgMTYiIHhtbDpzcGFjZT0icHJlc2VydmUiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIvPjxyZWN0IGZpbGw9IiNFRkVGRUYiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiLz48cmVjdCBmaWxsPSIjRUZFRkVGIiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiB4PSI4IiB5PSI4Ii8+PC9zdmc+Cg==")
     repeat top left;
   background-size: 16px;
 }
 
-#js-image-upload-previews .scraper-preview--label .scraper-preview--input {
-  display: none;
+#js-image-upload-previews .scraper-preview-input {
+  @mixin hidden-toggle;
 }
 
-#js-image-upload-previews .scraper-preview--label.checked > .scraper-preview--image-wrapper,
-#js-image-upload-previews .scraper-preview--label .scraper-preview--input:checked + .scraper-preview--image-wrapper {
+#js-image-upload-previews .scraper-preview-input:checked + .scraper-preview-frame {
   opacity: 1;
-  border-color: var(--input-border-active);
-  background-color: var(--input-color-active);
+  border-color: var(--primary-border-color);
+  background-color: var(--tint-color);
+}
+
+#js-image-upload-previews .scraper-preview-input:focus-visible + .scraper-preview-frame {
+  @mixin focus-ring;
 }
 
 .detail-link {
