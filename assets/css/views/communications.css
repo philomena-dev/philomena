@@ -1,13 +1,13 @@
-td.table--communication-list__name {
-  font-size: 18px;
+/* Tables of forums, topics and conversations: a large name, narrow counts and a wide column of details */
+.thread-list-name {
+  font-size: var(--text-size-xl);
 }
 
-td.table--communication-list__stats {
+.thread-list-stat {
   width: 6%;
 }
 
-td.table--communication-list__last-post,
-td.table--communication-list__options {
+.thread-list-detail {
   width: 35%;
 }
 

@@ -5,29 +5,29 @@
   </div>
   <div class="block-content">
     <div class="table-wrap responsive">
-      <table class="table striped table--communication-list">
+      <table class="table striped">
         <thead>
           <tr>
-            <th class="table--communication-list__name">Forum</th>
-            <th class="table--communication-list__stats hidden-below-md numeric">Topics</th>
-            <th class="table--communication-list__stats hidden-below-md numeric">Posts</th>
-            <th class="table--communication-list__last-post">Last Post</th>
+            <th>Forum</th>
+            <th class="hidden-below-md numeric">Topics</th>
+            <th class="hidden-below-md numeric">Posts</th>
+            <th>Last Post</th>
           </tr>
         </thead>
         <tbody>
           <%= for forum <- @forums do %>
             <tr>
-              <td class="table--communication-list__name">
+              <td class="thread-list-name">
                 {link(forum.name, to: ~p"/forums/#{forum}")}
                 <div class="text-xs">{forum.description}</div>
               </td>
-              <td class="table--communication-list__stats hidden-below-md numeric">
+              <td class="thread-list-stat hidden-below-md numeric">
                 {forum.topic_count}
               </td>
-              <td class="table--communication-list__stats hidden-below-md numeric">
+              <td class="thread-list-stat hidden-below-md numeric">
                 {forum.post_count}
               </td>
-              <td class="table--communication-list__last-post">
+              <td class="thread-list-detail">
                 <%= if forum.last_post do %>
                   <strong>{link(forum.last_post.topic.title,
                     to: ~p"/forums/#{forum.last_post.topic.forum}/topics/#{forum.last_post.topic}"

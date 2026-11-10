@@ -23,18 +23,18 @@
   </div>
   <div class="block-content">
     <div class="table-wrap responsive">
-      <table class="table striped table--communication-list">
+      <table class="table striped">
         <thead>
           <tr>
-            <th class="table--communication-list__name">Topic</th>
-            <th class="table--communication-list__stats hidden-below-md numeric">Posts</th>
-            <th class="table--communication-list__last-post">Last Post</th>
+            <th>Topic</th>
+            <th class="hidden-below-md numeric">Posts</th>
+            <th>Last Post</th>
           </tr>
         </thead>
         <tbody>
           <%= for topic <- @topics do %>
             <tr>
-              <td class="table--communication-list__name">
+              <td class="thread-list-name">
                 <i :if={topic.sticky} class="fa fa-thumbtack"></i><i
                   :if={topic.locked_at}
                   class="fa fa-lock"
@@ -50,10 +50,10 @@
                   )}
                 </div>
               </td>
-              <td class="table--communication-list__stats hidden-below-md numeric">
+              <td class="thread-list-stat hidden-below-md numeric">
                 {topic.post_count}
               </td>
-              <td class="table--communication-list__last-post">
+              <td class="thread-list-detail">
                 <%= if topic.last_post do %>
                   {link("Go to post",
                     to:

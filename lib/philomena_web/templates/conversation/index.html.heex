@@ -17,18 +17,18 @@
     </div>
     <div class="block-content">
       <div class="table-wrap responsive">
-        <table class="table striped hover table--communication-list">
+        <table class="table striped hover">
           <thead>
             <tr>
-              <th class="table--communication-list__name">Conversation</th>
-              <th class="table--communication-list__stats">With</th>
-              <th class="table--communication-list__options">Options</th>
+              <th>Conversation</th>
+              <th>With</th>
+              <th>Options</th>
             </tr>
           </thead>
           <tbody>
             <%= for c <- @conversations do %>
               <tr class={conversation_class(@conn.assigns.current_user, c)}>
-                <td class="table--communication-list__name">
+                <td class="thread-list-name">
                   {link(c.title, to: ~p"/conversations/#{c}")}
                   <div class="text-xs hidden-below-md">
                     {c.message_count} {pluralize("message", "messages", c.message_count)}; started {pretty_time(
@@ -36,13 +36,13 @@
                     )}, last message {pretty_time(c.last_message_at)}
                   </div>
                 </td>
-                <td class="table--communication-list__stats">
+                <td class="thread-list-stat">
                   {render(PhilomenaWeb.UserAttributionView, "_user.html",
                     object: %{user: other_party(@current_user, c)},
                     conn: @conn
                   )}
                 </td>
-                <td class="table--communication-list__options">
+                <td class="thread-list-detail">
                   {link("Last message", to: last_message_path(c, c.message_count))} &bull; {link(
                     "Hide",
                     to: ~p"/conversations/#{c}/hide",
