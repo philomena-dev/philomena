@@ -328,7 +328,7 @@ export function setupImageUpload() {
       // Let the form submission complete
     } else {
       // Scroll to view validation errors
-      assertNotNull($('.fancy-tag-upload')).scrollIntoView();
+      assertNotNull($('.js-fancy-tag-upload')).scrollIntoView();
 
       // Prevent the form from being submitted
       event.preventDefault();

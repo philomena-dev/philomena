@@ -98,7 +98,7 @@ describe('Image upload form', () => {
         <div class="alert alert-warning hidden js-scraper"></div>
 
         <input id="image_sources_0_source" name="image[sources][0][source]" type="text" class="js-source-url" />
-        <div class="js-tag-block fancy-tag-upload">
+        <div class="js-tag-block js-fancy-tag-upload">
           <textarea id="image_tag_input" name="image[tag_input]" class="input-field full-width js-image-tags-input js-taginput js-taginput-plain"></textarea>
           <div class="tag-box hidden js-taginput js-taginput-fancy"></div>
         </div>
@@ -576,7 +576,7 @@ describe('Image upload form - additional branches', () => {
         <div class="alert alert-warning hidden js-scraper"></div>
 
         <input id="image_sources_0_source" name="image[sources][0][source]" type="text" class="js-source-url" />
-        <div class="js-tag-block fancy-tag-upload">
+        <div class="js-tag-block js-fancy-tag-upload">
           <textarea id="image_tag_input" name="image[tag_input]" class="input-field full-width js-image-tags-input js-taginput js-taginput-plain"></textarea>
           <div class="tag-box hidden js-taginput js-taginput-fancy"></div>
         </div>

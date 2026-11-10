@@ -170,8 +170,8 @@ export function setupTagsInput(tagBlock: HTMLDivElement) {
 function fancyEditorRequested(tagBlock: HTMLDivElement) {
   // Check whether the user made the fancy editor the default for each type of tag block.
   return (
-    (window.booru.fancyTagUpload && tagBlock.classList.contains('fancy-tag-upload')) ||
-    (window.booru.fancyTagEdit && tagBlock.classList.contains('fancy-tag-edit'))
+    (window.booru.fancyTagUpload && tagBlock.classList.contains('js-fancy-tag-upload')) ||
+    (window.booru.fancyTagEdit && tagBlock.classList.contains('js-fancy-tag-edit'))
   );
 }
 

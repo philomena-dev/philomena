@@ -45,14 +45,14 @@
   </div>
   <br />
 <% end %>
-<%= form_for :tag_changes, ~p"/tag_changes/revert", [class: "content tag-changes-form"], fn _f -> %>
+<%= form_for :tag_changes, ~p"/tag_changes/revert", [class: "content js-tag-changes-form"], fn _f -> %>
   <div class="block allow-overflow">
     <div :if={multiple_pages?(@tag_changes)} class="block-header">
       {pagination}
     </div>
     <%= if reverts_tag_changes?(@conn) do %>
       <div class="block-header sub">
-        <a data-click-checkall=".tag-changes-form"><i class="fa fa-check"></i> Toggle all</a>
+        <a data-click-checkall=".js-tag-changes-form"><i class="fa fa-check"></i> Toggle all</a>
       </div>
     <% end %>
     <div class="block-content tag-change-list">

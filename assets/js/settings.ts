@@ -29,8 +29,8 @@ function setupThemeSettings() {
 }
 
 function setupAutocompleteSettings() {
-  const autocompleteSettings = assertNotNull($<HTMLElement>('.autocomplete-settings'));
-  const autocompleteSearchHistorySettings = assertNotNull($<HTMLElement>('.autocomplete-search-history-settings'));
+  const autocompleteSettings = assertNotNull($<HTMLElement>('.js-autocomplete-settings'));
+  const autocompleteSearchHistorySettings = assertNotNull($<HTMLElement>('.js-autocomplete-search-history-settings'));
   const enableSearchAutocomplete = assertNotNull($<HTMLInputElement>('#user_enable_search_ac'));
   const userSearchHistoryHidden = assertNotNull($<HTMLInputElement>('#user_autocomplete_search_history_hidden'));
 

@@ -246,14 +246,14 @@
       {checkbox_field(f, :enable_search_ac, "Enable search auto-completion",
         checked: @conn.cookies["enable_search_ac"] == "true"
       )}
-      <div class={"autocomplete-settings content #{if(@conn.cookies["enable_search_ac"] != "true", do: "hidden", else: "")}"}>
+      <div class={"js-autocomplete-settings content #{if(@conn.cookies["enable_search_ac"] != "true", do: "hidden", else: "")}"}>
         {checkbox_field(
           f,
           :autocomplete_search_history_hidden,
           "Hide search history in auto-completion",
           checked: @conn.cookies["autocomplete_search_history_hidden"] == "true"
         )}
-        <div class={"autocomplete-search-history-settings content #{if(@conn.cookies["autocomplete_search_history_hidden"] == "true", do: "hidden", else: "")}"}>
+        <div class={"js-autocomplete-search-history-settings content #{if(@conn.cookies["autocomplete_search_history_hidden"] == "true", do: "hidden", else: "")}"}>
           <div class="form-control form-control-buttons items-center">
             {number_input(
               f,

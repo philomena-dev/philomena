@@ -22,9 +22,9 @@ function renderSettings({ signedIn = true } = {}) {
         <input type="checkbox" id="user_hidpi">
         <input type="text" id="user_webm_volume" value="">
         <input type="checkbox" id="user_enable_search_ac" checked>
-        <div class="autocomplete-settings">
+        <div class="js-autocomplete-settings">
           <input type="checkbox" id="user_autocomplete_search_history_hidden">
-          <div class="autocomplete-search-history-settings"></div>
+          <div class="js-autocomplete-search-history-settings"></div>
         </div>
       </div>
       ${signedIn ? theme : ''}
@@ -86,12 +86,12 @@ describe('setupSettings', () => {
     const hideHistory = $<HTMLInputElement>('#user_autocomplete_search_history_hidden')!;
 
     fireEvent.click(enable);
-    expect($('.autocomplete-settings')).toHaveClass('hidden');
+    expect($('.js-autocomplete-settings')).toHaveClass('hidden');
     fireEvent.click(enable);
-    expect($('.autocomplete-settings')).not.toHaveClass('hidden');
+    expect($('.js-autocomplete-settings')).not.toHaveClass('hidden');
 
     fireEvent.click(hideHistory);
-    expect($('.autocomplete-search-history-settings')).toHaveClass('hidden');
+    expect($('.js-autocomplete-search-history-settings')).toHaveClass('hidden');
   });
 
   it('toggles the help text of a field', () => {

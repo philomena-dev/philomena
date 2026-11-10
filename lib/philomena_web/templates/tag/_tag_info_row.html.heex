@@ -22,8 +22,8 @@
       <%= for artist_link <- @tag.hidden_links do %>{link artist_link.user.name, to: ~p"/profiles/#{artist_link.user}"} &rarr; {link artist_link.uri, to: artist_link.uri} <br /><% end %>
     <% end %>
     <%= if present?(@tag.public_links) or present?(@tag.channels) or present?(@tag.implied_by_tags) or present?(@tag.description) do %>
-      <br />{link "Toggle detailed information", to: "#", data: [click_toggle: ".tag-info__more"]}
-      <div class="tag-info__more">
+      <br />{link "Toggle detailed information", to: "#", data: [click_toggle: ".js-tag-info-more"]}
+      <div class="js-tag-info-more">
         <hr />
         <%= if Enum.any?(@tag.public_links) do %>
           <strong>Associated links:</strong>
