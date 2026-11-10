@@ -7,7 +7,7 @@ import { enhancements } from './enhancements.ts';
 import { floor, lacking } from './floor.ts';
 import { inKeyframes } from './postcss-floor-selectors.ts';
 
-/** A feature that some piece of CSS needs: a browser-compat-data path, spelt as the CSS spells it */
+/** A feature that some piece of CSS needs: a browser-compat-data path, spelled as the CSS spells it */
 interface Need {
   path: string;
   spelling?: string;
