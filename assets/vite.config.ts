@@ -12,7 +12,6 @@ import type { ConfigEnv, ViteUserConfig } from 'vitest/config';
 
 export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
   const isDev = command !== 'build' && mode !== 'test';
-  const forced = process.env.CSS_FORCE_FALLBACKS === '1';
   const targets = new Map();
   const themes = fs
     .readdirSync(path.resolve(import.meta.dirname, 'css/themes/'))
@@ -70,7 +69,7 @@ export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
           postcssSimpleVars(),
           postcssRelativeColor(),
           themeColors({ themes, keep: [path.resolve(import.meta.dirname, 'css/legacy.css')] }),
-          ...cssCompat({ force: forced }),
+          ...cssCompat(),
         ],
       },
     },

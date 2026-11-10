@@ -20,9 +20,9 @@ function logical() {
 
 /**
  * The PostCSS stage that brings the CSS down to the floor browsers, after the authoring plugins and before Vite's
- * own lowering for `build.cssTarget`. `force` renders every feature-detected fallback, for testing them.
+ * own lowering for `build.cssTarget`.
  */
-export default function cssCompat({ force = false } = {}): AcceptedPlugin[] {
+export default function cssCompat(): AcceptedPlugin[] {
   return [
     logical(),
     postcssFloorValues(),
@@ -30,7 +30,7 @@ export default function cssCompat({ force = false } = {}): AcceptedPlugin[] {
     postcssFocusVisible({ preserve: false, disablePolyfillReadyClass: true }),
     postcssFloorReset(),
     postcssFloorSelectors(),
-    postcssFloorSupports({ force }),
+    postcssFloorSupports(),
     // Reads .browserslistrc
     autoprefixer(),
   ];

@@ -1,11 +1,8 @@
 import postcss from 'postcss';
 import postcssFloorSupports from '../postcss-floor-supports.ts';
 
-const run = (css: string, force?: boolean) =>
-  postcss([postcssFloorSupports({ force })])
-    .process(css, { from: undefined })
-    .css.replace(/\s+/g, ' ')
-    .trim();
+const run = (css: string) =>
+  postcss([postcssFloorSupports()]).process(css, { from: undefined }).css.replace(/\s+/g, ' ').trim();
 
 describe('postcss-floor-supports', () => {
   it('settles the conditions on selectors that the build drops', () => {
@@ -23,10 +20,5 @@ describe('postcss-floor-supports', () => {
     expect(run('@supports (display: grid) and (gap: 0) { .a {} }')).toBe(
       '@supports (display: grid) and (gap: 0) { .a {} }',
     );
-  });
-
-  it('counts every tested feature as missing when forced', () => {
-    expect(run('@supports not (inset: 0) { .a {} } @supports (inset: 0) { .b {} }', true)).toBe('.a {}');
-    expect(run('@supports ((not (inset: 0))) { .a {} }', true)).toBe('.a {}');
   });
 });
