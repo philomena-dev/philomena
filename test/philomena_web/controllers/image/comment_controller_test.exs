@@ -306,6 +306,22 @@ defmodule PhilomenaWeb.Image.CommentControllerTest do
       assert Repo.aggregate(Comment, :count) == 0
     end
 
+    test "with an empty body over AJAX answers 300 so the page reloads into the flash",
+         %{conn: conn} do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+      image = image_fixture()
+
+      conn =
+        conn
+        |> put_req_header("x-requested-with", "XMLHttpRequest")
+        |> post(~p"/images/#{image}/comments", %{"comment" => %{"body" => ""}})
+
+      assert response(conn, 300) == ""
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "There was an error posting your comment"
+    end
+
     test "on an image with commenting disabled redirects with the authorization flash",
          %{conn: conn} do
       %{conn: conn} = register_and_log_in_user(%{conn: conn})

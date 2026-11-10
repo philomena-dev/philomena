@@ -56,9 +56,11 @@ defmodule PhilomenaWeb.Image.CommentController do
         index(conn, %{"comment_id" => comment.id, "image_id" => comment.image_id})
 
       {:error, {image, %Ecto.Changeset{}}} ->
-        conn
-        |> put_flash(:error, "There was an error posting your comment")
-        |> redirect(to: ~p"/images/#{image}")
+        RefusalResponse.call(
+          conn,
+          "There was an error posting your comment",
+          ~p"/images/#{image}"
+        )
 
       {:error, :rate_limited} ->
         RefusalResponse.call(conn, "You may only create a comment once every 15 seconds.")

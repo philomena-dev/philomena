@@ -4,14 +4,15 @@ defmodule PhilomenaWeb.RefusalResponse do
   rate limit or a failed captcha.
 
   AJAX requests get an empty 300 response (ujs.ts reloads the page so the
-  flash renders); everything else is redirected back to the referrer.
+  flash renders); everything else is redirected to `return_to`, by default
+  the referrer.
   """
 
   alias Plug.Conn
   alias Phoenix.Controller
 
-  @spec call(Plug.Conn.t(), String.t()) :: Plug.Conn.t()
-  def call(conn, message) do
+  @spec call(Plug.Conn.t(), String.t(), String.t() | nil) :: Plug.Conn.t()
+  def call(conn, message, return_to \\ nil) do
     conn = Controller.put_flash(conn, :error, message)
 
     if conn.assigns.ajax? do
@@ -20,7 +21,7 @@ defmodule PhilomenaWeb.RefusalResponse do
       |> Conn.halt()
     else
       conn
-      |> Controller.redirect(external: conn.assigns.referrer)
+      |> Controller.redirect(external: return_to || conn.assigns.referrer)
       |> Conn.halt()
     end
   end
