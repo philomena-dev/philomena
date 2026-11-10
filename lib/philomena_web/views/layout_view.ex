@@ -181,7 +181,9 @@ defmodule PhilomenaWeb.LayoutView do
     ]
   end
 
-  @doc "The administration pages the signed-in staff member may manage."
+  @doc """
+  The administration pages the signed-in staff member may manage; every staff role may at least read the mod notes.
+  """
   def admin_links(conn) do
     [
       {manages_site_notices?(conn), "fa fa-info-circle", "Site Notices", ~p"/admin/site_notices"},

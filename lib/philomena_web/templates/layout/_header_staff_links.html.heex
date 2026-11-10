@@ -1,6 +1,5 @@
 <div class="navbar-staff navbar-pinned js-staff-action">
-  <% admin_links = admin_links(@conn) %>
-  <div :if={admin_links != []} class="navbar-dropdown hidden-below-md">
+  <div class="navbar-dropdown hidden-below-md">
     <button
       aria-expanded="false"
       aria-haspopup="true"
@@ -9,7 +8,7 @@
       type="button"
     >A</button>
     {render(PhilomenaWeb.LayoutView, "_navbar_menu.html",
-      links: admin_links,
+      links: admin_links(@conn),
       align_end: false
     )}
   </div>

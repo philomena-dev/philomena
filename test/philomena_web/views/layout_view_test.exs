@@ -119,6 +119,14 @@ defmodule PhilomenaWeb.LayoutViewTest do
   end
 
   describe "_header_staff_links.html" do
+    test "renders an assistant the mod notes and no ban menu", %{conn: conn} do
+      response = staff_links(conn, assistant_user_fixture())
+
+      assert response =~ ~s(title="Admin")
+      assert response =~ "Mod Notes"
+      refute response =~ ~s(title="Bans")
+    end
+
     test "renders only the tools granted to a plain moderator", %{conn: conn} do
       moderator = moderator_user_fixture()
       response = staff_links(conn, moderator)
