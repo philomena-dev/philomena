@@ -52,8 +52,9 @@
       :sheet_image_id
     )}
   </div>
-  <div class="field" phx-no-format>
-    <%= label f, :open, "Currently accepting commissions." do %><% end %>{checkbox f, :open, class: "checkbox"} {error_tag f, :open}
+  <div class="field">
+    {label(f, :open, "Currently accepting commissions.")}{checkbox(f, :open, class: "checkbox")}
+    {error_tag(f, :open)}
   </div>
   <br />{submit("Save", class: "button")}
 <% end %>
