@@ -70,13 +70,13 @@
         ]
       )}
     <% end %>
-    <%= if staff?(@conn) do %>
+    <div :if={staff?(@conn)} class="js-staff-action">
       <hr class="burger-divider" />
       {render(PhilomenaWeb.LayoutView, "_burger_links.html",
         conn: @conn,
         links: admin_links(@conn) ++ ban_links(@conn)
       )}
-    <% end %>
+    </div>
   </nav>
 </div>
 <div class="burger-overlay js-burger-close"></div>
