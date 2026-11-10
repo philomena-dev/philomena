@@ -51,8 +51,15 @@ sub {
   vertical-align: sub;
 }
 
+/* Paragraphs keep a medium distance to their neighbors, and none to the edges of a flow container (--flow) */
 p {
+  margin-top: var(--flow-margin, calc((1 - var(--flow, 0)) * var(--spacing-md)));
+  margin-bottom: var(--spacing-md);
   line-height: var(--text-line-height);
+}
+
+p:last-child {
+  margin-bottom: calc((1 - var(--flow, 0)) * var(--spacing-md));
 }
 
 /* Running text lists, with bullets or numbers */
