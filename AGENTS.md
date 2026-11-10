@@ -58,6 +58,12 @@ types, and testing style.
 - `npm run lint` — oxlint + stylelint
 - `npm run build` — typecheck (tsc) + vite build
 
+#### Browser floor and CSS compatibility
+
+- `assets/.browserslistrc` is the only place that names the supported browsers (the floor is Chrome/Edge 85, Firefox 81, Safari/iOS 14.0). `assets/build/floor.ts` derives Vite's `build.target` (which `build.cssTarget` follows) and the versions the CSS gate judges from it; Samsung Internet and the families without browser-compat-data records are not judged (see `floor.ts`).
+- `assets/build/css-compat.ts` is the PostCSS stage that brings the CSS down to the floor, after the authoring plugins: logical properties to left-to-right physical ones, `:focus-visible` to the `.focus-visible` class of the polyfill loaded by `js/app.ts`, `:is()`/`:where()` expanded and `:not()` split into single compounds, selectors that a floor browser can't match (`:has()`, `:user-invalid`) dropped, the-new-css-reset's first rule rewritten, and a margin fallback for flex `gap` behind `@supports not (list-style-type: "")`. `CSS_FORCE_FALLBACKS=1 npx vite build` renders every `@supports` fallback, for checking them in a current browser.
+- `assets/build/css-gate.ts` is a Vite plugin that fails `vite build` when an emitted stylesheet uses a selector, at-rule, property, value, function or unit that a floor browser lacks, judged from `@mdn/browser-compat-data`. Features that may stay although a floor browser lacks them go in `assets/build/enhancements.ts`, one entry per browser-compat-data path with the reason its absence keeps the look; never add one whose absence changes the layout or leaves a component unstyled.
+
 ### Rust (in `native/philomena/`)
 
 - `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo test` — all enforced by CI
