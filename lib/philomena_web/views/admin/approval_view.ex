@@ -22,7 +22,7 @@ defmodule PhilomenaWeb.Admin.ApprovalView do
 
   def class_for_image(%{image_format: "svg"}), do: "alert alert-warning"
   def class_for_image(%{image_format: f}) when f in ["webm", "gif"], do: "alert alert-danger"
-  def class_for_image(_), do: ""
+  def class_for_image(_), do: nil
 
   def warning_text(%{processed: false}), do: "(not processed)"
   def warning_text(%{thumbnails_generated: false}), do: "(not processed)"

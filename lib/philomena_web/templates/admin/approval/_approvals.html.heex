@@ -1,26 +1,26 @@
 <div class="block-header">
-  <div class="approval-grid flex-1">
-    <div class="approval-items--main">
+  <div class="approval-row flex-1">
+    <div class="approval-main">
       <span>ID</span><span>Image</span><span>Uploader</span><span>Time</span>
     </div>
-    <div class="approval-items--footer hidden-below-md">
+    <div class="approval-actions hidden-below-md">
       <span class="hidden-below-md">Actions</span>
     </div>
   </div>
 </div>
 <%= for image <- @images do %>
   <div class="block-content alternating-color">
-    <div class="approval-grid">
-      <div class="approval-items--main">
+    <div class="approval-row">
+      <div class="approval-main">
         <span>{link(">>#{image.id}", to: ~p"/images/#{image}")}</span>
-        <div class={"approval-items__details #{class_for_image(image)}"}>
+        <div class={["approval-details", class_for_image(image)]}>
           <span>{image_thumb(@conn, image)}</span><span>{warning_text(image)}</span>
         </div>
         <span phx-no-format><%= if image.user do %>{link image.user.name, to: ~p"/profiles/#{image.user}"}<% else %><em>{truncated_ip_link(image.ip)}</em> {link_to_fingerprint(@conn, image.fingerprint)}<% end %></span><span>{pretty_time(
           image.created_at
         )}</span>
       </div>
-      <div class="approval-items--footer">
+      <div class="approval-actions">
         <%= if can?(@conn, :approve, image) do %>
           {button_to("Approve", ~p"/images/#{image}/approve",
             method: "post",
