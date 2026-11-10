@@ -16,6 +16,7 @@
   --bar-link-color: hsl(from $base-color-light h s $bar-link-lightness-light);
   --control-border-color: hsl(from $base-color-light h calc(s - 20) $control-border-lightness-light);
   --focus-color: hsl(from $base-color-light h s $focus-lightness-light);
+
   @mixin type-color-light neutral, $base-color-light, -48, $neutral-fill-light;
   @mixin type-color-light primary, $primary-color, 0, $primary-fill-light;
   @mixin type-color-light warning, $warning-color, 0, $warning-fill-light;
@@ -42,6 +43,7 @@
   --tint-color: hsl(from $base-color-dark h s $tint-lightness-dark);
   --control-border-color: hsl(from $base-color-dark h s $control-border-lightness-dark);
   --focus-color: hsl(from $base-color-dark h calc(s + 15) $focus-lightness-dark);
+
   @mixin type-color-dark neutral, $base-color-dark, -9, $neutral-fill-dark;
   @mixin type-color-dark primary, $primary-color, 0, $primary-fill-dark;
   @mixin type-color-dark warning, $warning-color, 0, $warning-fill-dark;
