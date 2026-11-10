@@ -19,7 +19,7 @@ if [[ -z "$files" ]]; then
 fi
 
 if command -v typos &> /dev/null; then
-  echo "$files" | step xargs typos
+  echo "$files" | step xargs typos --force-exclude
 else
   info "Skipping typos check, executable not found"
 fi
