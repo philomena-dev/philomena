@@ -10,8 +10,6 @@ $image-large-size: 512px;
 
 :root {
   --border: 1px solid var(--border-color);
-  --border-radius-toggle: 0.3rem;
-  --border-radius-inner-toggle: 0.2rem;
   --media-border: 1px solid var(--media-box-color);
   --media-over-border: 1px dotted var(--vote-down-color);
   --media-box-header-height: 22px;
@@ -35,9 +33,5 @@ $image-large-size: 512px;
   --image-large-size: $image-large-size;
   --header-spacing: 12px;
   --reduced-communication-avatar-size: 50px;
-  --toggle-width: 3rem;
-  --toggle-height: 1.5rem;
-  --toggle-border-width: 2px;
-  --transition-animation-duration: 0.15s;
   --transition-long-animation-duration: 0.3s;
 }

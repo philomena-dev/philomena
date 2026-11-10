@@ -48,7 +48,6 @@
 @import "elements/media";
 @import "elements/navbar";
 @import "elements/page";
-@import "elements/toggle";
 
 /* Style elements specific to certain pages. */
 @import "views/adverts";
