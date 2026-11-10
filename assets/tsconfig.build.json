@@ -12,5 +12,5 @@
   // final app build, where we don't need tests, especially because they depend
   // on `@types/node` and `es2020`.
   // See more details in the main `tsconfig.json`.
-  "exclude": ["**/__tests__/**/*", "./test/**/*", "./build/**/*"]
+  "exclude": ["**/__tests__/**/*", "./test/**/*", "./build/**/*", "./vite.config.ts"]
 }
