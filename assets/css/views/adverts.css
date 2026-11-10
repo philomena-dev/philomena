@@ -1,17 +1,13 @@
+/* The advert box on image pages: a small caption over the banner, centered */
 #imagespns {
   text-align: center;
 }
 
-#imagespns .subtext {
-  font-size: 10px;
-}
-
 #imagespns .spnstxt {
-  font-size: 10px;
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--text-size-xs);
   text-transform: uppercase;
-  color: var(--foreground-half-color);
-  margin: 2px;
-  margin-bottom: 4px;
+  color: var(--muted-text-color);
 }
 
 #imagespns img {
