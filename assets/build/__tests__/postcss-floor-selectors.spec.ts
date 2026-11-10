@@ -27,7 +27,9 @@ describe('postcss-floor-selectors', () => {
 
   it('drops the selectors that a floor browser can not match, keeping enhancements and vendor ones', () => {
     expect(lower('.a:has(b), .c {} .d:has(e) {} .f:user-invalid {}')).toBe('.c {}');
-    expect(lower('.popup::backdrop, ::-webkit-scrollbar {}')).toBe('.popup::backdrop, ::-webkit-scrollbar {}');
+    expect(lower('.popup::backdrop {} .a::selection {} ::-webkit-scrollbar {}')).toBe(
+      '.popup::backdrop {} .a::selection {} ::-webkit-scrollbar {}',
+    );
     expect(lower('@keyframes spin { from {} to {} }')).toBe('@keyframes spin { from {} to {} }');
   });
 });

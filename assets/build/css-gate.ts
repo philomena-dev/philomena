@@ -177,12 +177,14 @@ function declarationNeeds(decl: Declaration): Need[] {
  * everywhere; the vendor-prefixed ones the data does not know never get here, being meant for that vendor's browsers.
  * Value keywords and units are judged only where the data records them, so unknown ones pass.
  */
-function missing(needs: Need[], guarded: Set<string>) {
+function missing(needs: Need[], guarded: Set<string>, excused = true) {
   const result = new Map<string, Set<string>>();
 
   for (const need of needs) {
     if (guarded.has(need.path)) continue;
-    if (Object.keys(enhancements).some(path => need.path === path || need.path.startsWith(`${path}.`))) continue;
+    if (excused && Object.keys(enhancements).some(path => need.path === path || need.path.startsWith(`${path}.`))) {
+      continue;
+    }
 
     const alias = need.alias ? lacking(need.path, need.alias) : undefined;
     const browsers = (lacking(need.path, need.spelling) ?? Object.keys(floor)).filter(b => !alias || alias.includes(b));
@@ -228,17 +230,18 @@ function checkRule(rule: Rule, problems: string[], guarded: Set<string>) {
 
   if (rule.parent?.type === 'rule') problems.push(`${where}: nested rule (css.selectors.nesting)`);
 
-  // A selector list is dropped as a whole by a browser that can't parse one of its selectors
+  // A selector list is dropped as a whole by a browser that can't parse one of its selectors, enhancements included
   const lists = (inKeyframes(rule) ? [] : selectorParser().astSync(rule.selector).nodes).map(selector => {
-    const vendor = selectorNeeds(selector).some(need => prefixed(need.spelling ?? ''));
-    return { vendor, gaps: missing(selectorNeeds(selector), guarded) };
+    const needs = selectorNeeds(selector);
+    const vendor = needs.some(need => prefixed(need.spelling ?? ''));
+    return { vendor, gaps: missing(needs, guarded), dropped: missing(needs, guarded, false) };
   });
 
   for (const { vendor, gaps } of lists) {
     if (gaps.size && !vendor) problems.push(`${where}: ${describe(gaps)}`);
     if (gaps.size === Object.keys(floor).length) problems.push(`${where}: no floor browser matches this selector`);
   }
-  if (new Set(lists.map(({ gaps }) => [...gaps.keys()].sort().join())).size > 1) {
+  if (new Set(lists.map(({ dropped }) => [...dropped.keys()].sort().join())).size > 1) {
     problems.push(`${where}: some floor browsers drop the whole list for one of its selectors, split the rule`);
   }
 

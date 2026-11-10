@@ -19,6 +19,7 @@ export const enhancements: Record<string, string> = {
   'css.properties.resize': 'a textarea keeps the resize handle of the browser',
   'css.properties.cursor': 'touch screens show no pointer',
   'css.selectors.backdrop': 'the floor Safari has no <dialog> to draw a backdrop for',
+  'css.selectors.selection': 'iOS Safari shows the selection in a field that hides it, whose caret stays hidden',
   'css.properties.user-select.all': 'a click selects a word of a copyable text rather than all of it',
   'css.properties.font-synthesis': 'the icon font has every weight and style it is used in, nothing to synthesize',
   // The framework's anchored popups, under @supports (position-anchor: …)

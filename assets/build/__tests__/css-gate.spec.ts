@@ -66,6 +66,7 @@ describe('css-gate', () => {
     ['an unknown @font-face descriptor', '@font-face { font-colour: red }', 'css.at-rules.font-face.font-colour'],
     ['a selector list that some browser drops', '.a, .b:fullscreen { color: red }', 'split the rule'],
     [':focus-visible beside other selectors', '.a, .b:focus-visible { color: red }', 'split the rule'],
+    ['an enhancement beside other selectors', '.a, .b::selection { color: red }', 'split the rule'],
     ['an unprefixed property without its prefix', '.a { user-select: none }', 'css.properties.user-select'],
     ['an unknown property', '.a { colour: red }', 'css.properties.colour'],
     ['a keyword in camel case in the data', '.a { text-decoration: underline currentcolor }', 'currentColor'],
@@ -91,7 +92,7 @@ describe('css-gate', () => {
         @font-face { font-family: a; src: url(a.woff2) format("woff2"); font-display: block; unicode-range: U+0-FF }
         @supports (color: lab(from red l 1 1% / calc(alpha + 0.1))) { :root { --a: lab(from red l a b) } }
         @keyframes spin { to { transform: rotate(1turn) } } @-webkit-keyframes spin { to { opacity: 1 } }
-        [type="a" i] { outline: 0 } .a:-moz-focusring { outline: 0 } ::-webkit-details-marker { display: none }
+        [type="a" i] { outline: 0 } .a::selection { color: red } .a:-moz-focusring { outline: 0 } ::-webkit-details-marker { display: none }
         :root { --a: rgba(0, 0, 0, 0.5); color: var(--a, hsla(0, 0%, 0%, 1)); width: calc((1px + 2px) * 2) }
         .a { background: -webkit-linear-gradient(red, blue) }
         @supports ((display: grid)) or selector(:hover) { .a { color: red } } @media (-webkit-min-device-pixel-ratio: 2) { .a { color: red } }
