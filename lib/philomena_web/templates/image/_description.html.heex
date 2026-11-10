@@ -13,12 +13,10 @@
     ><i class="fas fa-edit"></i> Edit</a>
   </div>
   <div class="block-content">
-    <p>
-      <%= if String.length(@image.description) > 0 do %>
-        {@body}
-      <% else %>
-        <em>No description provided.</em>
-      <% end %>
-    </p>
+    <%= if String.length(@image.description) > 0 do %>
+      {@body}
+    <% else %>
+      <em>No description provided.</em>
+    <% end %>
   </div>
 </div>
