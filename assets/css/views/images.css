@@ -113,9 +113,9 @@
 }
 
 .tag-info__image {
-  border: var(--border);
+  border: var(--border-width) solid var(--tint-color);
   text-align: center;
-  font-size: 12px;
+  font-size: var(--text-size-sm);
 }
 
 /* The square of a tag's spoiler image, as large as a tiny thumbnail */
@@ -132,7 +132,6 @@
   padding-bottom: var(--spacing-md);
 }
 
-/* This and the one above needed for older browsers for some reason, appears to be a bug */
 .image-target {
   max-width: 100%;
 }
@@ -156,7 +155,7 @@
 
 /* Due to the address bar hiding/reappearing in mobile browsers, viewport
  * units are only reliable in desktop browsers. */
-@media (min-width: $min-desktop-width) {
+@media (min-width: $breakpoint-md) {
   .image-scaled {
     max-height: 80vh;
   }
@@ -167,33 +166,13 @@
   height: auto;
 }
 
-.image-description {
-  overflow: auto;
-}
-
-.image-description img {
-  max-width: 100%;
-}
-
 .image_source__link {
   overflow-wrap: anywhere;
 }
 
-#image-source > p {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .interaction-user-list-item {
   display: inline-block;
-  padding: 2px;
-  padding-right: 7px;
-}
-
-.image_menu {
-  padding-left: 0;
-  margin: 1em 0 0;
+  padding: var(--spacing-xs) var(--spacing-md) var(--spacing-xs) var(--spacing-xs);
 }
 
 .horizontal-list {
@@ -208,16 +187,6 @@
 
 .horizontal-list li + li {
   margin-left: 1em;
-}
-
-.derpy__2fa {
-  width: 25%;
-  min-width: 200px;
-}
-
-.derpy__login {
-  margin-left: 8px;
-  align-self: flex-end;
 }
 
 #js-image-upload-previews {
@@ -272,7 +241,7 @@
 }
 
 .detail-link {
-  margin-right: 8px;
+  margin-right: var(--spacing-md);
 }
 
 .full-height {
