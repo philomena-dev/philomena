@@ -39,7 +39,6 @@ export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
         common: path.resolve(import.meta.dirname, 'css/common/'),
         views: path.resolve(import.meta.dirname, 'css/views/'),
         elements: path.resolve(import.meta.dirname, 'css/elements/'),
-        themes: path.resolve(import.meta.dirname, 'css/themes/'),
       },
     },
     build: {

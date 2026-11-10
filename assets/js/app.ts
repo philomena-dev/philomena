@@ -74,8 +74,8 @@ whenReady(
 // Would typically be either the theme file, or any additional file
 // you later intend to put in the <link> tag.
 //
-// For example, if you'd like to work on the dark blue theme,
+// For example, if you'd like to work on the purple theme,
 // import the following:
 //
 // import '../css/application.css';
-// import '../css/themes/dark-blue.css';
+// import '../css/themes/purple.css';
