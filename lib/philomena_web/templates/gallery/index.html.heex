@@ -71,16 +71,16 @@
             route: route,
             params: [gallery: @conn.params["gallery"]]
           ) %>
-        <div class="block-header page__header">
-          <div class="page__pagination">{pagination}</div>
+        <div :if={multiple_pages?(@galleries)} class="block-header">
+          {pagination}
         </div>
         <div class="block-content media-list">
           <%= for gallery <- @galleries do %>
             {render(PhilomenaWeb.GalleryView, "_gallery.html", gallery: gallery, conn: @conn)}
           <% end %>
         </div>
-        <div class="block-header sub page__header">
-          <div class="page__pagination">{pagination}</div>
+        <div :if={multiple_pages?(@galleries)} class="block-header sub">
+          {pagination}
         </div>
       <% else %>
         <div class="block-content">

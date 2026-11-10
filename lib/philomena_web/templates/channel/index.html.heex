@@ -21,8 +21,8 @@
   </div>
 <% end %>
 <div class="block">
-  <div class="block-header page__header">
-    <div class="page__pagination">{pagination}</div>
+  <div class="block-header">
+    {pagination}
     <%= if @conn.cookies["chan_nsfw"] == "true" do %>
       <a data-method="delete" href={~p"/channels/nsfw"}><i class="fa fa-eye-slash"></i>
       Hide NSFW streams</a>
@@ -42,8 +42,8 @@
       <% end %>
     </div>
   </div>
-  <div class="block-header page__header">
-    <div class="page__pagination">{pagination}</div>
+  <div :if={multiple_pages?(@channels)} class="block-header">
+    {pagination}
   </div>
 </div>
 <br />

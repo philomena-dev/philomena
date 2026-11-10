@@ -11,11 +11,9 @@
       conn: @conn
     ) %>
   <div class="block">
-    <div class="block-header page__header">
-      <div class="page__pagination">{pagination}</div>
-      <div class="page__info">
-        <a href={~p"/conversations/new"}><i class="fa fa-paper-plane"></i> Create New Conversation</a>
-      </div>
+    <div class="block-header">
+      {pagination}
+      <a href={~p"/conversations/new"}><i class="fa fa-paper-plane"></i> Create New Conversation</a>
     </div>
     <div class="block-content">
       <table class="table table--communication-list">
@@ -56,8 +54,8 @@
         </tbody>
       </table>
     </div>
-    <div class="block-header sub page__header">
-      <div class="page__pagination">{pagination}</div>
+    <div :if={multiple_pages?(@conversations)} class="block-header sub">
+      {pagination}
     </div>
   </div>
 <% end %>

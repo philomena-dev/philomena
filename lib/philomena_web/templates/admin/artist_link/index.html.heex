@@ -35,7 +35,7 @@
     )} {link("All",
       to: ~p"/admin/artist_links?#{[lq: [states: Philomena.ArtistLinks.ArtistLink.states()]]}"
     )}
-    <div class="page__pagination">{pagination}</div>
+    {pagination}
   </div>
   <div class="block-content">
     <table class="table">
@@ -103,7 +103,7 @@
       </tbody>
     </table>
   </div>
-  <div class="block-header sub">
-    <div class="page__pagination">{pagination}</div>
+  <div :if={multiple_pages?(@artist_links)} class="block-header sub">
+    {pagination}
   </div>
 </div>

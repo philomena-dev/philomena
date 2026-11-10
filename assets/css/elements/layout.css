@@ -1,15 +1,3 @@
-@media (max-width: $min-desktop-thumb-width) {
-  .hide-mobile-t {
-    display: none !important;
-  }
-}
-
-@media (min-width: $min-desktop-thumb-width) {
-  .hide-desktop-t {
-    display: none !important;
-  }
-}
-
 @media (max-width: $min-desktop-width) {
   .stretched-mobile-links {
     display: flex;

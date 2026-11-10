@@ -8,8 +8,8 @@ pagination =
   ) %>
 <h1>Listing Moderation Logs</h1>
 <div class="block">
-  <div class="block-header">
-    <div class="page__pagination">{pagination}</div>
+  <div :if={multiple_pages?(@moderation_logs)} class="block-header">
+    {pagination}
   </div>
   <div class="block-content">
     <table class="table">
@@ -44,7 +44,7 @@ pagination =
       </tbody>
     </table>
   </div>
-  <div class="block-header sub">
-    <div class="page__pagination">{pagination}</div>
+  <div :if={multiple_pages?(@moderation_logs)} class="block-header sub">
+    {pagination}
   </div>
 </div>

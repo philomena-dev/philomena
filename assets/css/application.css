@@ -23,6 +23,7 @@
 @import "@philomena/philomena-css/css/components/counter.css";
 @import "@philomena/philomena-css/css/components/header.css";
 @import "@philomena/philomena-css/css/components/navbar.css";
+@import "@philomena/philomena-css/css/components/pagination.css";
 @import "@philomena/philomena-css/css/components/separator.css";
 @import "@philomena/philomena-css/css/components/tabs.css";
 @import "./tokens.css";
@@ -61,7 +62,6 @@
 @import "views/images";
 @import "views/notifications";
 @import "views/pages";
-@import "views/pagination";
 @import "views/polls";
 @import "views/posts";
 @import "views/profiles";

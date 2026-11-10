@@ -33,7 +33,7 @@
 <div class="block allow-overflow">
   <div class="block-header">
     <span class="block-header-title">All Reports</span>
-    <div class="page__pagination">{pagination}</div>
+    {pagination}
   </div>
   <div class="block-content">
     <%= if not is_nil(@reports) and Enum.any?(@reports) do %>
@@ -42,8 +42,8 @@
       <p>We couldn't find any reports for you, sorry!</p>
     <% end %>
   </div>
-  <div class="block-header sub">
-    <div class="page__pagination">{pagination}</div>
+  <div :if={multiple_pages?(@reports)} class="block-header sub">
+    {pagination}
   </div>
 </div>
 <%= form_for @changeset, ~p"/admin/reports", [as: "rq", method: "get", class: "hform"], fn f -> %>

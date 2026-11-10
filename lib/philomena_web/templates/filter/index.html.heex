@@ -38,16 +38,16 @@
           <span class="hidden-below-md">New filter</span></a>
         </div>
       </div>
-      <div class="block-header">
-        <div class="page__pagination">{pagination}</div>
+      <div :if={multiple_pages?(@my_filters)} class="block-header">
+        {pagination}
       </div>
       <div class="block-content">
         <%= for filter <- @my_filters do %>
           {render(PhilomenaWeb.FilterView, "_filter.html", conn: @conn, filter: filter)}
         <% end %>
       </div>
-      <div class="block-header sub">
-        <div class="page__pagination">{pagination}</div>
+      <div :if={multiple_pages?(@my_filters)} class="block-header sub">
+        {pagination}
       </div>
     </div>
   <% end %>
@@ -103,24 +103,23 @@
           conn: @conn
         ) %>
       <div class="block">
-        <div class="block-header page__header">
+        <div class="block-header">
           <span class="block-header-title">Search Results</span>
-          <div class="page__pagination">{pagination}</div>
+          {pagination}
         </div>
         <div class="block-content">
           <%= for filter <- @filters do %>
             {render(PhilomenaWeb.FilterView, "_filter.html", conn: @conn, filter: filter)}
           <% end %>
         </div>
-        <div class="block-header sub page__header">
-          <div class="page__pagination">{pagination}</div>
-          <div class="page__info">
-            <span class="block-header-title">{render(
+        <div class="block-header sub">
+          <div class="pagination-bar">
+            {pagination}{render(
               PhilomenaWeb.PaginationView,
               "_pagination_info.html",
               page: @filters,
               conn: @conn
-            )}</span>
+            )}
           </div>
         </div>
       </div>

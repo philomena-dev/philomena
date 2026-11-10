@@ -21,7 +21,7 @@
 <div class="block">
   <div class="block-header">
     <a href={~p"/admin/fingerprint_bans/new"}><i class="fa fa-plus"></i> New fingerprint ban</a>
-    <div class="page__pagination">{pagination}</div>
+    {pagination}
   </div>
   <div class="block-content">
     <table class="table">
@@ -62,7 +62,7 @@
       </tbody>
     </table>
   </div>
-  <div class="block-header sub">
-    <div class="page__pagination">{pagination}</div>
+  <div :if={multiple_pages?(@fingerprint_bans)} class="block-header sub">
+    {pagination}
   </div>
 </div>

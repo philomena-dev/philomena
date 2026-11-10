@@ -1,6 +1,6 @@
 <div class="block">
-  <div class="block-header page__header">
-    <div class="page__pagination">{@pagination}</div>
+  <div :if={multiple_pages?(@users)} class="block-header">
+    {@pagination}
   </div>
   <div class="block-content">
     <table class="table">
@@ -67,14 +67,13 @@
       </tbody>
     </table>
   </div>
-  <div class="block-header sub page__header">
-    <div class="page__pagination">{@pagination}</div>
-    <div class="page__info">
-      <span class="block-header-title">{render(
+  <div class="block-header sub">
+    <div class="pagination-bar">
+      {@pagination}{render(
         PhilomenaWeb.PaginationView,
         "_pagination_info.html",
         page: @users
-      )}</span>
+      )}
     </div>
   </div>
 </div>

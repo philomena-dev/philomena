@@ -22,7 +22,7 @@
   ) %>
 <div class="block allow-overflow">
   <div class="block-header">
-    <div class="page__pagination">{pagination}</div>
+    {pagination}
     <span class="block-header-title">Display only:</span>{link("All Entries",
       to:
         ~p"/admin/dnp_entries?#{[eq: [states: ~W(requested claimed listed rescinded acknowledged closed)]]}"
@@ -111,7 +111,7 @@
       </tbody>
     </table>
   </div>
-  <div class="block-header sub">
-    <div class="page__pagination">{pagination}</div>
+  <div :if={multiple_pages?(@dnp_entries)} class="block-header sub">
+    {pagination}
   </div>
 </div>

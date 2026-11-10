@@ -3,7 +3,6 @@ $font-family-monospace: "Droid Sans Mono", monospace;
 
 $max-limited-desktop-width: $breakpoint-xl;
 $min-desktop-width: $breakpoint-md;
-$min-desktop-thumb-width: 700px;
 $image-tiny-size: 64px;
 $image-small-size: 128px;
 $image-medium-size: 256px;

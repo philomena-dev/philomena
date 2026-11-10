@@ -22,7 +22,3 @@
 .tab-panel img {
   max-width: 100%;
 }
-
-.header__span {
-  background: var(--block-header-color);
-}

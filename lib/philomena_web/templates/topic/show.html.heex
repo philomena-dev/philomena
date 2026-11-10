@@ -31,30 +31,24 @@
     <% end %>
   </div>
   <%= if not @topic.hidden_from_users or can?(@conn, :hide, @topic) do %>
-    <div class="block-header sub page__header">
-      <div class="flex-none page__pagination">{pagination}</div>
-      <div class="flex-none page__options">
+    <div class="block-header sub">
+      {pagination}
+      <span>
         Started by {render(PhilomenaWeb.UserAttributionView, "_anon_user.html",
           object: @topic,
           conn: @conn
         )}
-      </div>
-      <div class="page__info">
-        <div class="flex justify-center">
-          <div class="flex-none">
-            Posted {pretty_time(@topic.created_at)}
-          </div>
-          <div class="flex-none">{@topic.post_count - 1} replies</div>
-          <%= if not @topic.hidden_from_users do %>
-            {render(PhilomenaWeb.Topic.SubscriptionView, "_subscription.html",
-              forum: @forum,
-              topic: @topic,
-              watching: @watching,
-              conn: @conn
-            )}
-          <% end %>
-        </div>
-      </div>
+      </span>
+      <span>Posted {pretty_time(@topic.created_at)}</span>
+      <span>{@topic.post_count - 1} replies</span>
+      <%= if not @topic.hidden_from_users do %>
+        {render(PhilomenaWeb.Topic.SubscriptionView, "_subscription.html",
+          forum: @forum,
+          topic: @topic,
+          watching: @watching,
+          conn: @conn
+        )}
+      <% end %>
     </div>
   <% end %>
 </div>
@@ -71,9 +65,9 @@
     {render(PhilomenaWeb.AdvertView, "_box.html", advert: @conn.assigns.advert, conn: @conn)}
   <% end %>
   <%!-- Footer section --%>
-  <div class="block">
-    <div class="block-header sub page__header">
-      <div class="page__pagination">{pagination}</div>
+  <div :if={multiple_pages?(@posts)} class="block">
+    <div class="block-header sub">
+      {pagination}
     </div>
   </div>
   <%= if @topic.locked_at do %>

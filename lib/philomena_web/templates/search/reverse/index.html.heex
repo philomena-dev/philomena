@@ -51,29 +51,25 @@
     <%!-- Don't render anything. --%>
   <% Enum.any?(@images) -> %>
     <div class="block" id="imagelist-container">
-      <section class="block-header page__header">
-        <span class="block-header-title page__title hidden-below-md">Search by uploaded image</span>
+      <section class="block-header">
+        <span class="block-header-title">Search by uploaded image</span>
       </section>
-    </div>
-    <div class="block-content media-list">
-      <%= for image <- @images do %>
-        {render(PhilomenaWeb.ImageView, "_image_box.html",
-          image: image,
-          link: ~p"/images/#{image}",
-          size: :thumb,
-          conn: @conn
-        )}
-      <% end %>
-    </div>
-    <div class="block-header sub page__header">
-      <span class="block-header-title page__info">{render(
-        PhilomenaWeb.PaginationView,
-        "_pagination_info.html",
-        page: @images
-      )}</span>
-      <div class="flex-auto text-right page__options">
-        <a href="/settings/edit" title="Display Settings"><i class="fa fa-cog"></i>
-        <span class="hidden-below-xl">Display Settings</span></a>
+      <div class="block-content media-list">
+        <%= for image <- @images do %>
+          {render(PhilomenaWeb.ImageView, "_image_box.html",
+            image: image,
+            link: ~p"/images/#{image}",
+            size: :thumb,
+            conn: @conn
+          )}
+        <% end %>
+      </div>
+      <div class="block-header sub">
+        {render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @images)}
+        <div class="block-header-actions">
+          <a href="/settings/edit" title="Display Settings"><i class="fa fa-cog"></i>
+          <span class="hidden-below-xl">Display Settings</span></a>
+        </div>
       </div>
     </div>
   <% true -> %>

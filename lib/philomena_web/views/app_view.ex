@@ -157,6 +157,10 @@ defmodule PhilomenaWeb.AppView do
     end
   end
 
+  # Listings that failed to load have no page
+  def multiple_pages?(%{total_pages: pages}), do: pages > 1
+  def multiple_pages?(nil), do: false
+
   def communication_body_class(%{destroyed_content: true}), do: "communication--destroyed"
   def communication_body_class(_communication), do: nil
 

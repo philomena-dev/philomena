@@ -12,8 +12,8 @@
       <div class="block-header">
         <span class="block-header-title">{name_of_category(@category)}</span>
       </div>
-      <div class="block-header sub">
-        <div class="page__pagination">{pagination}</div>
+      <div :if={multiple_pages?(@notifications)} class="block-header sub">
+        {pagination}
       </div>
       <%= for notification <- @notifications do %>
         <div class="block-content flex notification">
@@ -23,8 +23,8 @@
           )}
         </div>
       <% end %>
-      <div class="block-header sub">
-        <div class="page__pagination">{pagination}</div>
+      <div :if={multiple_pages?(@notifications)} class="block-header sub">
+        {pagination}
       </div>
     </div>
   <% true -> %>

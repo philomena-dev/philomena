@@ -1,5 +1,5 @@
-<div class="block-header">
-  <div class="page__pagination">{@pagination}</div>
+<div :if={multiple_pages?(@source_changes)} class="block-header">
+  {@pagination}
 </div>
 <div class="block-content">
   <table class="table">
@@ -53,6 +53,6 @@
     </tbody>
   </table>
 </div>
-<div class="block-header sub">
-  <div class="page__pagination">{@pagination}</div>
+<div :if={multiple_pages?(@source_changes)} class="block-header sub">
+  {@pagination}
 </div>

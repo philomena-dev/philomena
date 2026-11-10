@@ -15,10 +15,10 @@ pagination =
 
 info = render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @images) %>
 <div class="block allow-overflow" id="imagelist-container">
-  <section class="block-header page__header">
-    <span class="block-header-title page__title hidden-below-md">{header}</span>
-    <div class="page__pagination">{pagination}</div>
-    <div class="flex-auto text-right page__info">
+  <section class="block-header">
+    <span class="block-header-title hidden-below-md">{header}</span>
+    {pagination}
+    <div class="block-header-actions gap-lg">
       {random_button(@conn, params)}{hidden_toggle(@conn, route, params)}{deleted_toggle(
         @conn,
         route,
@@ -47,10 +47,9 @@ info = render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @image
       <% end %>
     <% end %>
   </div>
-  <div class="block-header sub page__header">
-    <div class="page__pagination">{pagination}</div>
-    <span class="block-header-title page__info">{info}</span>
-    <div class="flex-auto text-right page__options">
+  <div class="block-header sub">
+    <div class="pagination-bar">{pagination}{info}</div>
+    <div class="block-header-actions">
       <a href="/settings/edit" title="Display Settings"><i class="fa fa-cog"></i>
       <span class="hidden-below-xl">Display Settings</span></a>
     </div>

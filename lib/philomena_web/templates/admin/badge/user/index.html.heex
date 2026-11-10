@@ -3,8 +3,8 @@
 <% pagination =
   render(PhilomenaWeb.PaginationView, "_pagination.html", page: @users, route: route, conn: @conn) %>
 <div class="block">
-  <div class="block-header">
-    <div class="page__pagination">{pagination}</div>
+  <div :if={multiple_pages?(@users)} class="block-header">
+    {pagination}
   </div>
   <div class="block-content">
     <table class="table">
@@ -22,7 +22,7 @@
       </tbody>
     </table>
   </div>
-  <div class="block-header sub">
-    <div class="page__pagination">{pagination}</div>
+  <div :if={multiple_pages?(@users)} class="block-header sub">
+    {pagination}
   </div>
 </div>

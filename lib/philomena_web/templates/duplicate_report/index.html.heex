@@ -30,8 +30,8 @@
       params: [dq: @conn.params["dq"]]
     ) %>
   <div class="block">
-    <div class="block-header page__header">
-      <div class="page__pagination">{pagination}</div>
+    <div :if={multiple_pages?(@duplicate_reports)} class="block-header">
+      {pagination}
     </div>
     <div class="block-content">
       {render(PhilomenaWeb.DuplicateReportView, "_list.html",
@@ -39,8 +39,8 @@
         conn: @conn
       )}
     </div>
-    <div class="block-header sub page__header">
-      <div class="page__pagination">{pagination}</div>
+    <div :if={multiple_pages?(@duplicate_reports)} class="block-header sub">
+      {pagination}
     </div>
   </div>
 <% end %>

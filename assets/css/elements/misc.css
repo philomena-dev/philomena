@@ -310,10 +310,6 @@ a.label {
   font-size: 10px;
 }
 
-.page-current {
-  padding: 0 var(--header-spacing);
-}
-
 i.favicon-home {
   background-image: url("/favicon.svg");
   background-size: contain;
