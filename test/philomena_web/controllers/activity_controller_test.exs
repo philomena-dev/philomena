@@ -100,6 +100,7 @@ defmodule PhilomenaWeb.ActivityControllerTest do
 
       hidden_response = html_response(get(conn, ~p"/"), 200)
       refute hidden_response =~ channel.title
+      assert hidden_response =~ "No streams to show"
 
       visible_response =
         conn
@@ -108,6 +109,7 @@ defmodule PhilomenaWeb.ActivityControllerTest do
         |> html_response(200)
 
       assert visible_response =~ channel.title
+      refute visible_response =~ "No streams to show"
     end
   end
 

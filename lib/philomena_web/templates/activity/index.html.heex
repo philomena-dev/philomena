@@ -39,6 +39,9 @@
         <%= for channel <- @streams do %>
           {render(PhilomenaWeb.ActivityView, "_channel_strip.html", channel: channel, conn: @conn)}
         <% end %>
+        <div :if={Enum.empty?(@streams)} class="block-content text-center">
+          No streams to show
+        </div>
       </div>
       <div class="block striped hidden-below-md">
         <div class="block-header justify-center"><a href="/forums">Forum Activity</a></div>
