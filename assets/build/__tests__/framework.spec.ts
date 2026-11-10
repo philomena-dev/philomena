@@ -54,7 +54,17 @@ describe('the vendored framework', () => {
     const universal = declaring(root, '--flow', 'initial');
 
     expect(universal.selectors).toEqual([expect.stringMatching(/^\*?(:not\(does-not-exist\))+$/)]);
-    expect(universal.declarations['--flow-margin']).toMatch(/^calc\(var\(--flow\)\s*\*/);
+    // Every gap is reset and the innermost var() has no fallback, so the margin is invalid and computes to 0
+    expect(universal.declarations).toEqual({
+      '--flow': 'initial',
+      '--flow-block-gap': 'initial',
+      '--flow-alert-gap': 'initial',
+      '--flow-text-gap': 'initial',
+      '--flow-form-gap': 'initial',
+      '--flow-margin':
+        'calc(var(--flow) * var(--flow-form-gap,var(--flow-text-gap,var(--flow-alert-gap,var(--flow-block-gap)))))',
+      'margin-top': 'var(--flow-margin)',
+    });
     expect(declaring(root, '--flow', '1').selectors).toEqual(expect.arrayContaining(['.content>*', '.card>*']));
   });
 });
