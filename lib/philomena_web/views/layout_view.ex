@@ -185,18 +185,19 @@ defmodule PhilomenaWeb.LayoutView do
   The administration pages the signed-in staff member may manage; every staff role may at least read the mod notes.
   """
   def admin_links(conn) do
-    [
-      {manages_site_notices?(conn), "fa fa-info-circle", "Site Notices", ~p"/admin/site_notices"},
-      {manages_users?(conn), "fa fa-users", "Users", ~p"/admin/users"},
-      {manages_forums?(conn), "fa fa-paragraph", "Forums", ~p"/admin/forums"},
-      {manages_ads?(conn), "fa fa-shopping-bag", "Adverts", ~p"/admin/adverts"},
-      {manages_badges?(conn), "fa fa-trophy", "Badges", ~p"/admin/badges"},
-      {manages_static_pages?(conn), "fa fa-sticky-note", "Pages", ~p"/pages"},
-      {manages_mod_notes?(conn), "fa fa-clipboard", "Mod Notes", ~p"/admin/mod_notes"},
-      {can_see_moderation_log?(conn), "fa fa-list-alt", "Mod Logs", ~p"/moderation_logs"}
-    ]
-    |> Enum.filter(&elem(&1, 0))
-    |> Enum.map(fn {_allowed, icon, label, path} -> %{icon: icon, label: label, path: path} end)
+    for {allowed?, icon, label, path} <- [
+          {manages_site_notices?(conn), "fa fa-info-circle", "Site Notices",
+           ~p"/admin/site_notices"},
+          {manages_users?(conn), "fa fa-users", "Users", ~p"/admin/users"},
+          {manages_forums?(conn), "fa fa-paragraph", "Forums", ~p"/admin/forums"},
+          {manages_ads?(conn), "fa fa-shopping-bag", "Adverts", ~p"/admin/adverts"},
+          {manages_badges?(conn), "fa fa-trophy", "Badges", ~p"/admin/badges"},
+          {manages_static_pages?(conn), "fa fa-sticky-note", "Pages", ~p"/pages"},
+          {manages_mod_notes?(conn), "fa fa-clipboard", "Mod Notes", ~p"/admin/mod_notes"},
+          {can_see_moderation_log?(conn), "fa fa-list-alt", "Mod Logs", ~p"/moderation_logs"}
+        ],
+        allowed?,
+        do: %{icon: icon, label: label, path: path}
   end
 
   @doc "The ban lists, for staff who may ban."
