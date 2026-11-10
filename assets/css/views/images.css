@@ -178,9 +178,7 @@
 }
 
 #js-image-upload-previews .scraper-preview-image {
-  background: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeD0iMHB4IiB5PSIwcHgiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTYgMTYiIHhtbDpzcGFjZT0icHJlc2VydmUiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIvPjxyZWN0IGZpbGw9IiNFRkVGRUYiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiLz48cmVjdCBmaWxsPSIjRUZFRkVGIiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiB4PSI4IiB5PSI4Ii8+PC9zdmc+Cg==")
-    repeat top left;
-  background-size: 16px;
+  @mixin checkerboard;
 }
 
 #js-image-upload-previews .scraper-preview-input {

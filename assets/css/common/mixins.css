@@ -1,6 +1,4 @@
-/* 16x16 checkerboard */
-@define-mixin img-checkerboard-background {
-  img {
-    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAGUlEQVR42mP474AKGdDhCFGALoChYWQoAACpW7+B5lv5BwAAAABJRU5ErkJggg==");
-  }
+/* A checkerboard of 8px squares behind an image, so that its transparent parts show */
+@define-mixin checkerboard {
+  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAGUlEQVR42mP474AKGdDhCFGALoChYWQoAACpW7+B5lv5BwAAAABJRU5ErkJggg==");
 }

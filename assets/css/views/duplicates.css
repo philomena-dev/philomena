@@ -6,8 +6,10 @@
 .dupe-report-image {
   width: var(--media-box-small-width);
   height: var(--media-box-small-width);
+}
 
-  @mixin img-checkerboard-background;
+.dupe-report-image img {
+  @mixin checkerboard;
 }
 
 .difference,
