@@ -33,8 +33,8 @@
 }
 
 /* Links take the stronger shade made for tinted surfaces, as in alerts */
-.collapsible a:where(:not($(content-controls))) {
-  color: var(--link-strong-color);
+.collapsible {
+  --link-style-color: var(--link-strong-color);
 }
 
 .collapsible .collapsible-inner > :not(:last-child) {

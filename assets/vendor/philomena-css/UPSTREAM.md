@@ -19,6 +19,23 @@ Repository plumbing and the documentation site: `.github/`, `.husky/`, `docs/`, 
   `prettier-plugin-astro`, `stylelint` and `stylelint-config-recommended` devDependencies
 - removed `packageManager`
 
+The CSS, so that Philomena's build can bring it down to the browsers of `assets/.browserslistrc` (Safari 14,
+Chrome 85, Firefox 81), whose selectors have neither `:where()` nor complex `:not()` arguments. Philomena's
+PostCSS stage (`assets/build/`) does the rest; these are the parts no transform can produce:
+
+- `design/mixins.css`, `design/layout.css` and the link rules of `components/card.css`, `block.css`,
+  `collapsible.css`, `editor.css`, `media.css` and `communication.css`: a container sets its link style as
+  `--link-style-*` custom properties (the new `content-links` and `bar-links` mixins) that one `a` rule applies, and
+  buttons, nav links, tags and badges reset them, in place of `a:where(:not($(content-controls)))`, whose
+  `.tag a`-style arguments floor browsers can't parse and whose expansion would outrank the component link rules.
+  The media box color variants no longer give the bar's background to its links as well.
+- `design/layout.css`: headings inside a card header, a table cell, a badge, a tag or a button get
+  `--heading-rhythm: 0` instead of being left out by `:not(.card-header *, …)`.
+- `components/media.css`: the square image area is `height: 0; padding-bottom: 100%` with the image or video
+  positioned over it, as floor browsers lack `aspect-ratio`.
+- `components/forms.css`: the combobox suggestion label takes `gap: var(--input-padding)` (what it inherited), as
+  the flex gap fallback needs a length.
+
 Every other file is byte-identical to upstream. `npm run build` and `npm run check:contrast` work through the
 workspace (`npm run build -w @philomena/philomena-css`).
 

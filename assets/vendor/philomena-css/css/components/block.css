@@ -35,19 +35,12 @@
 }
 
 /* Links in the content take the content link color, or the block's color on a colored block */
-.block .block-content a:where(:not($(content-controls))) {
-  color: var(--link-color);
-  text-decoration: underline;
+.block .block-content {
+  @mixin content-links;
 }
 
-.block .block-header a:where(:not($(bar-controls))) {
-  color: var(--bar-link-color);
-  font-weight: bold;
-  text-decoration: none;
-}
-
-.block .block-header a:where(:not($(bar-controls))):hover {
-  text-decoration: underline;
+.block .block-header {
+  @mixin bar-links;
 }
 
 /* Actions sit at the end of the bar */

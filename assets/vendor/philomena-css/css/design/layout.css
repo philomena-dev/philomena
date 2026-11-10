@@ -50,17 +50,48 @@ h6 {
   font-size: var(--heading-6-size);
 }
 
-/* Headings keep a large distance from what surrounds them, except where they are the label of a component */
-:where(h1, h2, h3, h4, h5, h6):where(:not(.card-header *, th *, td *, .badge *, .tag *, .button *)) {
-  margin-block: var(--heading-spacing);
+/* Headings keep a large distance from what surrounds them, except where they are the label of a component (which
+   sets --heading-rhythm) */
+:where(h1, h2, h3, h4, h5, h6) {
+  margin-block: var(--heading-rhythm, var(--heading-spacing));
 }
 
-:where(h1, h2, h3, h4, h5, h6):where(:not(.card-header *)):where(:first-child) {
+:where(.card-header, th, td, .badge, .tag, .button) {
+  --heading-rhythm: 0;
+}
+
+:where(h1, h2, h3, h4, h5, h6):where(:first-child) {
   margin-top: 0;
 }
 
-:where(h1, h2, h3, h4, h5, h6):where(:not(.card-header *)):where(:last-child) {
+:where(h1, h2, h3, h4, h5, h6):where(:last-child) {
   margin-bottom: 0;
+}
+
+/*
+ * Links take the link style of the container they are in (the content-links and bar-links mixins), except for the
+ * controls that color their own links. A link outside of one keeps the look of the reset: `none` is neither a color
+ * nor a weight, which leaves those unset.
+ */
+
+a {
+  color: var(--link-style-color, none);
+  font-weight: var(--link-style-weight, none);
+  text-decoration: var(--link-style-decoration, none);
+}
+
+a:hover {
+  text-decoration: var(--link-style-hover-decoration, var(--link-style-decoration, none));
+}
+
+.button,
+.nav-link,
+.tag,
+.badge {
+  --link-style-color: initial;
+  --link-style-weight: initial;
+  --link-style-decoration: initial;
+  --link-style-hover-decoration: initial;
 }
 
 /*

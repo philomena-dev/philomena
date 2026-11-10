@@ -4,13 +4,22 @@
  */
 
 /*
- * The controls that color their own links, which the link styles of a container leave alone: in running content,
- * and in a title bar. Used as `a:where(:not($(content-controls)))`.
+ * The link styles of a container, called inside its rule: the links in it take them, except for the controls that
+ * color their own links (see design/layout.css). $color defaults to the content or bar link color.
  */
-/* prettier-ignore */
-$content-controls: .button, .nav-link, .tag a, .badge a, .alert a;
-/* prettier-ignore */
-$bar-controls: .button, .tag a, .badge a;
+@define-mixin content-links $color: var(--link-color) {
+  --link-style-color: $(color);
+  --link-style-weight: initial;
+  --link-style-decoration: underline;
+  --link-style-hover-decoration: initial;
+}
+
+@define-mixin bar-links $color: var(--bar-link-color) {
+  --link-style-color: $(color);
+  --link-style-weight: bold;
+  --link-style-decoration: none;
+  --link-style-hover-decoration: underline;
+}
 
 /* The semantic types that have a .{component}-{type} variant; neutral is the look without a class */
 @define-mixin each-type $variation {
@@ -257,8 +266,8 @@ $bar-controls: .button, .tag a, .badge a;
     border-color: var(--$(type)-bar-color);
   }
 
-  .card.card-$(type) a:where(:not($(content-controls))) {
-    color: var(--$(type)-tint-text-color);
+  .card.card-$(type) {
+    --link-style-color: var(--$(type)-tint-text-color);
   }
 
   .card.card-$(type) .button:not(.button-primary, .button-success, .button-danger, .button-warning, .button-special) {
@@ -281,12 +290,12 @@ $bar-controls: .button, .tag a, .badge a;
     background-color: var(--$(type)-bar-color);
   }
 
-  .block.block-$(type) > .block-header a:where(:not($(bar-controls))) {
-    color: var(--$(type)-bar-text-color);
+  .block.block-$(type) > .block-header {
+    --link-style-color: var(--$(type)-bar-text-color);
   }
 
-  .block.block-$(type) .block-content a:where(:not($(content-controls))) {
-    color: var(--$(type)-tint-text-color);
+  .block.block-$(type) .block-content {
+    --link-style-color: var(--$(type)-tint-text-color);
   }
 }
 
@@ -296,10 +305,10 @@ $bar-controls: .button, .tag a, .badge a;
     border-color: var(--$(type)-bar-color);
   }
 
-  .media-box.media-$(type) > .media-box-header,
-  .media-box.media-$(type) > .media-box-header a:where(:not($(bar-controls))) {
+  .media-box.media-$(type) > .media-box-header {
     color: var(--$(type)-bar-text-color);
     background-color: var(--$(type)-bar-color);
+    --link-style-color: var(--$(type)-bar-text-color);
   }
 }
 

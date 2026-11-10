@@ -182,12 +182,6 @@
     calc(var(--border-radius-inner) - var(--border-width));
 }
 
-.editor .editor-footer a:where(:not($(bar-controls))) {
-  color: var(--bar-link-color);
-  font-weight: bold;
-  text-decoration: none;
-}
-
-.editor .editor-footer a:where(:not($(bar-controls))):hover {
-  text-decoration: underline;
+.editor .editor-footer {
+  @mixin bar-links;
 }

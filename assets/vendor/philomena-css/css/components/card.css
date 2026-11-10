@@ -37,9 +37,8 @@
 }
 
 /* Links in the body take the content link color, or the card's color on a colored card (so do default buttons) */
-.card a:where(:not($(content-controls))) {
-  color: var(--link-color);
-  text-decoration: underline;
+.card {
+  @mixin content-links;
 }
 
 @mixin each-type card-color-variation;

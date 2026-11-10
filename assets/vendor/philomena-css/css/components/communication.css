@@ -121,9 +121,8 @@
   margin-top: var(--spacing-md);
 }
 
-.communication .communication-text a:where(:not($(bar-controls))) {
-  color: var(--link-color);
-  text-decoration: underline;
+.communication .communication-text {
+  @mixin content-links;
 }
 
 /* The options: two groups at the ends of the bar, the time and report on one side, the actions on the other */
@@ -147,17 +146,14 @@
   gap: var(--spacing-sm) var(--spacing-md);
 }
 
-.communication .communication-options a:where(:not($(bar-controls))) {
+.communication .communication-options {
+  @mixin bar-links;
+}
+
+.communication .communication-options a:where(:not(.button)) {
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
-  color: var(--bar-link-color);
-  font-weight: bold;
-  text-decoration: none;
-}
-
-.communication .communication-options a:where(:not($(bar-controls))):hover {
-  text-decoration: underline;
 }
 
 /*
