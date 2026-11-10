@@ -39,7 +39,8 @@ rewritten to state, hover or position through custom properties instead, read by
 - `design/layout.css`, headings: those inside a card header, a table cell, a badge, a tag or a button get
   `--heading-rhythm: 0` instead of being left out by `:not(.card-header *, …)`, a heading that is the first or last
   child sets `--heading-first` or `--heading-last` to zero its margin at that edge, in place of `:where(:first-child)`
-  and `:where(:last-child)`.
+  and `:where(:last-child)`, and the rhythm's `--flow-margin` comes before its own top margin, in place of the rhythm
+  rules that followed the heading rule.
 - `design/layout.css`, focus ring: the containers that clip their links set `--focus-ring-link-offset`, which the
   ring of links and buttons takes as its offset, in place of a rule for their links that outranked the rings of the
   components.
@@ -59,9 +60,8 @@ rewritten to state, hover or position through custom properties instead, read by
 
 The other `:where()`, `:is()` and `:not()` lists keep the higher specificity of their expansion. That changes the
 winner only for rare combinations: a read-only field that is also `.invalid` (the read-only background wins), an
-`<hr>` inside a blockquote (it takes the blockquote's spacing), a heading that is also a flow block (it keeps its
-heading margin), and elements matched by the reset's `[hidden]` rule and a type selector, or by its
-`[contenteditable]` rule and a single class.
+`<hr>` inside a blockquote (it takes the blockquote's spacing), and elements matched by the reset's `[hidden]` rule
+and a type selector, or by its `[contenteditable]` rule and a single class.
 
 Every other file is byte-identical to upstream. `npm run build` and `npm run check:contrast` work through the
 workspace (`npm run build -w @philomena/philomena-css`).

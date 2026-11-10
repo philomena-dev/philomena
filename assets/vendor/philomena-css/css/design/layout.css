@@ -51,9 +51,9 @@ h6 {
 }
 
 /* Headings keep a large distance from what surrounds them, except where they are the label of a component (which
-   sets --heading-rhythm) and at the edges of their parent */
+   sets --heading-rhythm), at the edges of their parent and where the rhythm below spaces them */
 :where(h1, h2, h3, h4, h5, h6) {
-  margin-top: var(--heading-first, var(--heading-rhythm, var(--heading-spacing)));
+  margin-top: var(--flow-margin, var(--heading-first, var(--heading-rhythm, var(--heading-spacing))));
   margin-bottom: var(--heading-last, var(--heading-rhythm, var(--heading-spacing)));
 }
 
