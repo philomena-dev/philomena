@@ -1,5 +1,5 @@
-<div class="column-layout">
-  <div class="column-layout__left">
+<div class="layout-columns">
+  <div class="layout-side">
     <div class="block">
       <div class="block__content">
         <h3>Search Galleries</h3>
@@ -61,7 +61,7 @@
       </div>
     </div>
   </div>
-  <div class="column-layout__main">
+  <div class="layout-main">
     <div class="block">
       <%= if not is_nil(@galleries) and Enum.any?(@galleries) do %>
         <% route = fn p -> ~p"/galleries?#{p}" end %>

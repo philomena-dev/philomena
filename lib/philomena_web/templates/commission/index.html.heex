@@ -6,14 +6,14 @@
   </p>
 </div>
 <br />
-<div class="column-layout">
-  <div class="column-layout__left">
+<div class="layout-columns">
+  <div class="layout-side">
     {render(PhilomenaWeb.CommissionView, "_directory_sidebar.html",
       changeset: @changeset,
       conn: @conn
     )}
   </div>
-  <div class="column-layout__main">
+  <div class="layout-main">
     <%= if not is_nil(@commissions) do %>
       {render(PhilomenaWeb.CommissionView, "_directory_results.html",
         commissions: @commissions,

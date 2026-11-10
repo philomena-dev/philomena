@@ -1,6 +1,6 @@
-<div class="column-layout">
+<div class="layout-columns">
   <%= if @show_sidebar do %>
-    <aside class="column-layout__left" id="activity-side">
+    <aside class="layout-side" id="activity-side">
       <%= if not is_nil(@featured_image) and not PhilomenaWeb.ImageView.filter_or_spoiler_hits?(@conn, @featured_image) do %>
         <div class="text-center">
           <h4 class="remove-top-margin">Featured Image</h4>
@@ -62,7 +62,7 @@
       </div>
     </aside>
   <% end %>
-  <div class="column-layout__main">
+  <div class="layout-main">
     {render(PhilomenaWeb.ImageView, "index.html", conn: @conn, images: @images, size: :thumb)}
     <%= if @show_sidebar and not is_nil(@watched) and Enum.any?(@watched) do %>
       <div class="block">

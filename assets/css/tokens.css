@@ -28,6 +28,11 @@
   }
 }
 
+/* The side column of two-column pages fits the featured image box */
+:root {
+  --layout-side-width: 326px;
+}
+
 @define-mixin philomena-light-colors {
   color-scheme: light;
   --link-color: hsl(from $link-color-light h s $link-lightness-light);

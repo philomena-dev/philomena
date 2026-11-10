@@ -31,37 +31,6 @@ nav {
 
 @mixin even-odd alternating-color;
 
-.column-layout {
-  display: flex;
-}
-
-@media (max-width: $min-desktop-width) {
-  .column-layout {
-    display: block;
-  }
-}
-
-.column-layout__left {
-  flex: 0 0 auto;
-  width: 326px;
-  margin-right: var(--header-spacing);
-  overflow-wrap: break-word;
-}
-
-@media (max-width: $min-desktop-width) {
-  .column-layout__left {
-    margin-right: 0;
-    width: 100%;
-  }
-}
-
-.column-layout__main {
-  flex: 1 1 auto;
-  overflow-wrap: break-word;
-  /* prevent really long words from overflowing things */
-  min-width: 0;
-}
-
 figure {
   display: table;
   text-align: center;

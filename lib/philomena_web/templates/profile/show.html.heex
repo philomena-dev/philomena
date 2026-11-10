@@ -72,8 +72,8 @@
     </div>
   </div>
 <% end %>
-<div class="column-layout">
-  <div class="column-layout__left">
+<div class="layout-columns">
+  <div class="layout-side">
     <div class="block">
       <div class="block__header"><span class="block__header__title">Commissions</span></div>
       {render(PhilomenaWeb.ProfileView, "_commission.html",
@@ -225,7 +225,7 @@
       </div>
     <% end %>
   </div>
-  <div class="column-layout__main">
+  <div class="layout-main">
     {render(PhilomenaWeb.ProfileView, "_statistics.html",
       user: @user,
       statistics: @statistics,

@@ -1,7 +1,7 @@
 <h1>{@commission.user.name}'s Commissions</h1>
-<div class="column-layout">
+<div class="layout-columns">
   <%!-- Side column --%>
-  <div class="column-layout__left">
+  <div class="layout-side">
     {render(PhilomenaWeb.Profile.CommissionView, "_listing_sidebar.html",
       commission: @commission,
       user: @user,
@@ -10,7 +10,7 @@
     )}
   </div>
   <%!-- Main column --%>
-  <div class="column-layout__main">
+  <div class="layout-main">
     <%!-- Commission sheet block --%>
     {render(PhilomenaWeb.Profile.CommissionView, "_listing_sheet.html",
       commission: @commission,
