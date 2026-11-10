@@ -150,6 +150,10 @@
   @mixin bar-links;
 }
 
+.communication .communication-options a:hover {
+  @mixin bar-links-hover;
+}
+
 .communication .communication-options a:where(:not(.button)) {
   display: inline-flex;
   align-items: center;

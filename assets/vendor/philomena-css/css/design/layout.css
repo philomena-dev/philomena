@@ -69,19 +69,15 @@ h6 {
 }
 
 /*
- * Links take the link style of the container they are in (the content-links and bar-links mixins), except for the
- * controls that color their own links. A link outside of one keeps the look of the reset: `none` is neither a color
- * nor a weight, which leaves those unset.
+ * Links take the link style of the innermost container they are in (the content-links and bar-links mixins), except
+ * for the controls that color their own links. A link outside of one keeps the look of the reset: `none` is neither a
+ * color nor a weight, which leaves those unset.
  */
 
 a {
   color: var(--link-style-color, none);
   font-weight: var(--link-style-weight, none);
   text-decoration: var(--link-style-decoration, none);
-}
-
-a:hover {
-  text-decoration: var(--link-style-hover-decoration, var(--link-style-decoration, none));
 }
 
 .button,

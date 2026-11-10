@@ -185,3 +185,7 @@
 .editor .editor-footer {
   @mixin bar-links;
 }
+
+.editor .editor-footer a:hover {
+  @mixin bar-links-hover;
+}

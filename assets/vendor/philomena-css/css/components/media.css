@@ -53,6 +53,10 @@
   @mixin bar-links;
 }
 
+.media-box .media-box-header a:hover {
+  @mixin bar-links-hover;
+}
+
 /*
  * An action row, as the header of Philomena's image thumbnails: .media-box-header.actions holds .media-box-action
  * links (an icon, optionally with a count) and a .media-box-score between the votes. Each action has the color of
