@@ -16,10 +16,10 @@
       <tbody>
         <%= for source_change <- @source_changes do %>
           <tr>
-            <td class="center">
+            <td class="text-center">
               {link(source_change.image_id, to: ~p"/images/#{source_change.image}")}
             </td>
-            <td class="center">
+            <td class="text-center">
               {render(PhilomenaWeb.ImageView, "_image_container.html",
                 image: source_change.image,
                 size: :thumb_tiny,

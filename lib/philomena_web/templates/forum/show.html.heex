@@ -9,7 +9,7 @@
     {link("Forums", to: ~p"/forums")} &raquo; {link(@forum.name, to: ~p"/forums/#{@forum}")}
     <a href={~p"/forums/#{@forum}/topics/new"}><i class="fa fa-fw fa-edit"></i> New Topic</a><a href={
       ~p"/posts?#{[pq: "forum:#{@forum.short_name}"]}"
-    }><i class="fa fa-fw fa-search"></i> Search Posts</a><span class="spacing-left">{@forum.topic_count} topics</span>
+    }><i class="fa fa-fw fa-search"></i> Search Posts</a><span class="ms-lg">{@forum.topic_count} topics</span>
   </div>
   <div class="block__header--sub block__header--light page__header">
     <div class="page__pagination">{pagination}</div>

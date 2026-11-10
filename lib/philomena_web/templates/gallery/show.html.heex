@@ -35,7 +35,7 @@ info = render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @image
       )})</span>
     </div>
     <div class="block__content flex js-imagelist-info">
-      <div class="flex-none thumb-tiny-container spacing-right">
+      <div class="flex-none thumb-tiny-container me-lg">
         {render(PhilomenaWeb.ImageView, "_image_container.html",
           image: @gallery.thumbnail,
           size: :thumb_tiny,

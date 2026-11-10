@@ -164,7 +164,6 @@
   </div>
   <div class="field field--inline flex-wrap">
     {submit("Search", class: "button button--state-primary")}
-    <%!-- = submit_tag "I'm Feeling Poni", class: 'button button--separate-left spacing-right', name: 'random_image' --%>
     <% random_is_selected = to_string(@conn.params["sf"]) =~ ~r/\Arandom(:\d+)?\z/
 
     random_seed =

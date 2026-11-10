@@ -29,7 +29,7 @@ pagination =
         <%= for c <- @commissions do %>
           <div class="block commission">
             <div class="block__content flex flex-nowrap">
-              <div class="flex-none spacing-right">
+              <div class="flex-none me-lg">
                 {render(PhilomenaWeb.UserAttributionView, "_user_avatar.html",
                   object: c,
                   conn: @conn

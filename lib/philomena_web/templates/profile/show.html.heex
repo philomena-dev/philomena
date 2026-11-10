@@ -91,7 +91,7 @@
       <%= for link <- @user.verified_links, should_see_link?(@conn, @user, link) do %>
         <% watchers = if link.tag, do: @watcher_counts[link.tag.id] || 0, else: 0 %>
         <div class={"block__content alternating-color break-word #{link_block_class(link)}"}>
-          <div class="center">
+          <div class="text-center">
             <%= if link.tag do %>
               <div>{render(PhilomenaWeb.TagView, "_tag.html", tag: link.tag, conn: @conn)}</div>
             <% end %>
@@ -133,20 +133,20 @@
           class="block__content flex items-center justify-center alternating-color no-overflow"
           title={award.label}
         >
-          <div class="flex-1 center">
+          <div class="flex-1 text-center">
             <div class="badge">
               {badge_image(award.badge, alt: award.label, width: "32", height: "32")}
             </div>
             <br />{award_title(award)}
           </div>
-          <div class="flex-1 center">
+          <div class="flex-1 text-center">
             {pretty_time(award.awarded_on)}
             <%= if manages_awards?(@conn) do %>
               {user_abbrv(award.awarded_by)}
             <% end %>
           </div>
           <%= if manages_awards?(@conn) do %>
-            <div class="flex-1 center">
+            <div class="flex-1 text-center">
               <a
                 data-confirm="Are you really, really sure?"
                 data-method="delete"

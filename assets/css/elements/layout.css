@@ -14,10 +14,6 @@ nav {
   display: inline-block;
 }
 
-.center {
-  text-align: center;
-}
-
 @media (max-width: $min-desktop-width) {
   .stretched-mobile-links {
     display: flex;
@@ -34,14 +30,6 @@ nav {
 }
 
 @mixin even-odd alternating-color;
-
-.spacing-right {
-  margin-right: 12px;
-}
-
-.spacing-left {
-  margin-left: 12px;
-}
 
 .column-layout {
   display: flex;

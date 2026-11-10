@@ -2,7 +2,7 @@
   <%= if @show_sidebar do %>
     <aside class="column-layout__left" id="activity-side">
       <%= if not is_nil(@featured_image) and not PhilomenaWeb.ImageView.filter_or_spoiler_hits?(@conn, @featured_image) do %>
-        <div class="center">
+        <div class="text-center">
           <h4 class="remove-top-margin">Featured Image</h4>
           <div class="media--featured">
             {render(PhilomenaWeb.ImageView, "_image_box.html",
@@ -13,15 +13,15 @@
           </div>
         </div>
       <% end %>
-      <div class="block block--fixed block--fixed--sub block--success center hidden-below-md">
+      <div class="block block--fixed block--fixed--sub block--success text-center hidden-below-md">
         Enjoy the site? <a href="/pages/donations">Become a patron or donate!</a>
       </div>
-      <div class="block block--fixed block--fixed--sub center hidden-below-md">
+      <div class="block block--fixed block--fixed--sub text-center hidden-below-md">
         Issues? Want to chat? <a href="/pages/contact">Contact us!</a>
       </div>
       <div class="block hidden-below-md">
         <a
-          class="block__header--single-item center"
+          class="block__header--single-item text-center"
           href="/search?q=first_seen_at.gt:3 days ago&amp;sf=wilson_score&amp;sd=desc"
         >Trending Images</a>
         <div class="block__content media-grid">
@@ -33,27 +33,30 @@
             )}
           <% end %>
         </div>
-        <a class="block__header--single-item center" href="/search?q=*&amp;sf=score&amp;sd=desc">All Time Top Scoring</a>
+        <a
+          class="block__header--single-item text-center"
+          href="/search?q=*&amp;sf=score&amp;sd=desc"
+        >All Time Top Scoring</a>
       </div>
       <div class="block hidden-below-md">
-        <a class="block__header--single-item center" href="/channels">Streams</a>
+        <a class="block__header--single-item text-center" href="/channels">Streams</a>
         <%= for channel <- @streams do %>
           {render(PhilomenaWeb.ActivityView, "_channel_strip.html", channel: channel, conn: @conn)}
         <% end %>
       </div>
       <div class="block hidden-below-md">
-        <a class="block__header--single-item center" href="/forums">Forum Activity</a>
+        <a class="block__header--single-item text-center" href="/forums">Forum Activity</a>
         <%= for topic <- @topics do %>
           {render(PhilomenaWeb.ActivityView, "_topic_strip.html", topic: topic, conn: @conn)}
         <% end %>
       </div>
       <div class="block hidden-below-md">
-        <a class="block__header--single-item center" href="/comments">Recent Comments</a>
+        <a class="block__header--single-item text-center" href="/comments">Recent Comments</a>
         <%= for comment <- @comments do %>
           {render(PhilomenaWeb.ActivityView, "_comment_strip.html", comment: comment, conn: @conn)}
         <% end %>
         <a
-          class="block__header--single-item center"
+          class="block__header--single-item text-center"
           href="/search?q=first_seen_at.gt:3 days ago&amp;sf=comment_count&amp;sd=desc"
         >Most Commented-on Images</a>
       </div>
