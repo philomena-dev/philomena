@@ -306,6 +306,8 @@ defmodule PhilomenaWeb.TopicControllerTest do
       assert response =~ "Hidden post body"
       assert response =~ "Restore"
       assert response =~ "Delete Contents"
+      # Restore and Delete Contents are separate links, not one nested in the other
+      refute response =~ ~r{Restore\s*<a}
       assert response =~ "192.0.2.70"
       assert response =~ "post-staff-fingerprint"
 

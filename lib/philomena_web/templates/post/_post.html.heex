@@ -89,12 +89,11 @@
       <%= cond do %>
         <% @post.hidden_from_users and not @post.destroyed_content -> %>
           <%= link(to: ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/hide", data: [confirm: "Are you sure?"], method: "delete", class: "communication__interaction") do %>
-            <i class="fas fa-check"></i>
-            Restore
-            <%= if can?(@conn, :delete, @post) do %>
-              <%= link(to: ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/delete", data: [confirm: "Are you sure?"], method: "post", class: "communication__interaction") do %>
-                <i class="fas fa-times"></i> Delete Contents
-              <% end %>
+            <i class="fas fa-check"></i> Restore
+          <% end %>
+          <%= if can?(@conn, :delete, @post) do %>
+            <%= link(to: ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/delete", data: [confirm: "Are you sure?"], method: "post", class: "communication__interaction") do %>
+              <i class="fas fa-times"></i> Delete Contents
             <% end %>
           <% end %>
         <% not @post.hidden_from_users and not @post.destroyed_content -> %>
