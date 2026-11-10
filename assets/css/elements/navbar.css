@@ -173,6 +173,7 @@ a.header-button:hover {
   --header-field-color: transparent;
   --header-field-hover-color: transparent;
   font-size: var(--header-font-size);
+  overscroll-behavior: contain;
 }
 
 .burger .burger-header {

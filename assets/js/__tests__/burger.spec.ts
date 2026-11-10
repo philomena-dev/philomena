@@ -25,14 +25,13 @@ describe('setupBurgerMenu', () => {
 
   afterEach(() => {
     fireEvent.keyDown(document, { key: 'Escape' });
-    document.body.className = '';
   });
 
   const isOpen = () =>
     panel.classList.contains('open') &&
     overlay.classList.contains('open') &&
     toggle.getAttribute('aria-expanded') === 'true' &&
-    document.body.classList.contains('no-overflow');
+    document.documentElement.classList.contains('no-overflow');
 
   it('opens the panel from the toggle and moves the focus into it', () => {
     fireEvent.click(toggle);
@@ -48,7 +47,7 @@ describe('setupBurgerMenu', () => {
     expect(panel).not.toHaveClass('open');
     expect(overlay).not.toHaveClass('open');
     expect(toggle).toHaveAttribute('aria-expanded', 'false');
-    expect(document.body).not.toHaveClass('no-overflow');
+    expect(document.documentElement).not.toHaveClass('no-overflow');
     expect(document.activeElement).toBe(toggle);
   });
 

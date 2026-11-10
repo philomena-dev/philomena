@@ -19,7 +19,7 @@ export function setupBurgerMenu() {
     for (const part of [panel, overlay]) part?.classList.toggle('open', open);
 
     toggle.setAttribute('aria-expanded', String(open));
-    document.body.classList.toggle('no-overflow', open);
+    document.documentElement.classList.toggle('no-overflow', open);
 
     if (open) {
       $<HTMLElement>(focusable, panel)?.focus();

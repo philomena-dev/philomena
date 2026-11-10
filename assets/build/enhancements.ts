@@ -19,6 +19,7 @@ export const enhancements: Record<string, string> = {
   'css.properties.text-size-adjust': 'only mobile browsers enlarge text, and iOS reads the -webkit- form',
   'css.properties.resize': 'a textarea keeps the resize handle of the browser',
   'css.properties.cursor': 'touch screens show no pointer',
+  'css.properties.overscroll-behavior': 'scrolling past the end of the burger menu does not scroll the page under it',
   'css.selectors.backdrop': 'the floor Safari has no <dialog> to draw a backdrop for',
   'css.selectors.selection': 'iOS Safari shows the selection in a field that hides it, whose caret stays hidden',
   'css.properties.user-select.all': 'a click selects a word of a copyable text rather than all of it',
