@@ -6,6 +6,7 @@ $surface-color-dark: #1d2f20;
 $link-color-dark: #11cf69;
 $link-color-light: #015a02;
 $primary-color: #1e674e;
+$tag-color: #2cb846;
 
 /* Lightness of the framework's role colors that this hue needs for contrast */
 $link-lightness-light: 25%;
