@@ -12,7 +12,9 @@ const hues = readdirSync(themes).filter(name => name.endsWith('.css'));
 
 // The header bars keep the colors of Philomena's themes, light text on a mid-tone bar that the framework's ratio for
 // its own header does not reach
-const headerPairs = ['header text', 'header brand', 'navbar item hovered'];
+const headerPairs = ['light', 'dark'].flatMap(mode =>
+  ['header text', 'header brand', 'navbar item hovered'].map(label => `${mode}: ${label}`),
+);
 
 // The two theme blocks the contrast script reads. data-theme="light" outranks :root, so the light colors are the dark
 // ones with the light rules applied over them. The @supports rules hold display-p3 copies of the sRGB values.
@@ -35,7 +37,7 @@ function themeBlocks(css: string) {
   return block(':root', dark) + block(':root[data-theme="light"]', new Map([...dark, ...lightOnly]));
 }
 
-// The pairs below the minimum ratio, as `mode: label`
+// Every pair the report marks as failing, as `mode: label`
 function failingPairs(report: string) {
   let mode = '';
 
@@ -43,8 +45,15 @@ function failingPairs(report: string) {
     mode = line.match(/^(LIGHT|DARK) THEME/)?.[1].toLowerCase() ?? mode;
     const label = line.match(/^ {2}(.+?) +#\w{6} on #\w{6} +[\d.]+ +FAIL$/)?.[1];
 
-    return label && !headerPairs.includes(label) ? [`${mode}: ${label}`] : [];
+    return label ? [`${mode}: ${label}`] : [];
   });
+}
+
+// The number of failing pairs the report's summary gives, undefined without a summary
+function failureCount(report: string) {
+  const summary = report.match(/^(?:(\d+) pair\(s\) below the minimum|All pairs meet the minimum ratios)$/m);
+
+  return summary ? Number(summary[1] ?? 0) : undefined;
 }
 
 describe('theme contrast', () => {
@@ -64,10 +73,13 @@ describe('theme contrast', () => {
     const stylesheet = path.join(dir, hue);
 
     writeFileSync(stylesheet, themeBlocks(code));
-    const { stdout, stderr } = spawnSync(process.execPath, [contrastScript, stylesheet], { encoding: 'utf8' });
+    const { status, stdout, stderr } = spawnSync(process.execPath, [contrastScript, stylesheet], { encoding: 'utf8' });
+    const failing = failingPairs(stdout);
+    const count = failureCount(stdout);
 
     expect(stderr).toBe('');
-    expect(stdout).toMatch(/LIGHT THEME[\s\S]+DARK THEME[\s\S]+minimum/);
-    expect(failingPairs(stdout)).toEqual([]);
+    expect(count).toBe(failing.length);
+    expect(status).toBe(count === 0 ? 0 : 1);
+    expect(failing.filter(pair => !headerPairs.includes(pair))).toEqual([]);
   });
 });
