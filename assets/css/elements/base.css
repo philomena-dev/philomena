@@ -51,6 +51,10 @@ sub {
   vertical-align: sub;
 }
 
+p {
+  line-height: var(--text-line-height);
+}
+
 /* Running text lists, with bullets or numbers */
 ul,
 ol {

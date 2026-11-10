@@ -5,6 +5,13 @@
   margin-top: 0;
 }
 
+/* A paragraph keeps a distance to its neighbors where the rhythm of a flow container (--flow) does not space it */
+p {
+  --_paragraph-margin: calc((1 - var(--flow, 0)) * var(--spacing-md));
+  margin-top: var(--flow-margin, var(--_paragraph-margin));
+  margin-bottom: var(--_paragraph-margin);
+}
+
 .paragraph {
   hyphens: none;
   margin-bottom: var(--padding-small);
