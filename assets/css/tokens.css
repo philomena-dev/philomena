@@ -43,6 +43,11 @@
   }
 }
 
+/* Controls on phones are at least this tall */
+:root {
+  --touch-target-size: 3rem;
+}
+
 /* The side column of two-column pages fits the featured image box */
 :root {
   --layout-side-width: 326px;

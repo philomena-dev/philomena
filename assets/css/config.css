@@ -22,7 +22,6 @@ $destroyed-content-color-dark: #382c2f;
 $commission-color-dark: #e07b27;
 $danger-color-light: #ebc0bb;
 $warning-color-light: #eee9bc;
-$fave-color-light: #c4b246;
 $assistant-color-light: #eeceed;
 
 /* The lightness of the framework's role colors that css/tokens.css lets a hue set; the framework's by default */

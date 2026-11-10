@@ -1,4 +1,4 @@
-<div class="page-center-column">
+<div class="page-center-column image-frame-image">
   <%= if @image.thumbnails_generated do %>
     {render(PhilomenaWeb.ImageView, "_image_target.html",
       embed_display: false,
@@ -22,7 +22,6 @@
     </div>
   <% end %>
   <%= if !@image.processed and @image.thumbnails_generated do %>
-    <br />
     <div class="alert alert-warning page-narrow" id="image-being-optimized">
       This image is being processed to optimize the filesize. It should finish shortly.
     </div>

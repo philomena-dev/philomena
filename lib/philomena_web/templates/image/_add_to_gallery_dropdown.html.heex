@@ -1,6 +1,12 @@
 <div class="dropdown">
-  <a aria-expanded="false" aria-haspopup="true" data-click-preventdefault="true" href="#"><i class="fa fa-images"></i>
-  <span class="hidden-below-xl">Galleries</span> <i class="fa fa-caret-down"></i></a>
+  <a
+    aria-expanded="false"
+    aria-haspopup="true"
+    class="image-metabar-item"
+    data-click-preventdefault="true"
+    href="#"
+    title="Galleries"
+  ><i class="fa fa-images"></i><span class="hidden-below-xl">Galleries</span><i class="fa fa-caret-down"></i></a>
   <div class="dropdown-menu end add-to-gallery">
     <a class="dropdown-item" href={~p"/galleries?#{[gallery: [include_image: @image.id]]}"}>
       <i class="dropdown-icon fa fa-fw fa-table"></i>Featured in

@@ -7,6 +7,5 @@
 
 /* Legacy properties that differ from the formulas of legacy.css */
 :root[data-theme="light"] {
-  --comment-color: #9273d0;
   --background-odd-color: #f5efde;
 }

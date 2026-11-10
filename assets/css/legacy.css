@@ -2,15 +2,9 @@
  * The theme custom properties that Philomena's stylesheets read besides the framework's tokens, on the framework's
  * three theme selectors.
  */
-
-$fave-color-dark: #a18e27;
-$vote-up-color-dark: #5b9b26;
 $vote-down-color-dark: #da3412;
-$hide-color-dark: #da3412;
 
-$vote-up-color-light: #67af2b;
 $vote-down-color-light: #cf0001;
-$hide-color-light: #cf0001;
 $destroyed-content-color-light: #ffdcdc;
 $commission-color-light: #986f3d;
 
@@ -20,25 +14,17 @@ $commission-color-light: #986f3d;
   --legacy-primary-color: $primary-color-light;
   --legacy-danger-color: $danger-color-light;
   --legacy-warning-color: $warning-color-light;
-  --link-hover-color: $link-hover-color-light;
-  --fave-color: $fave-color-light;
-  --vote-up-color: $vote-up-color-light;
   --vote-down-color: $vote-down-color-light;
-  --hide-color: $hide-color-light;
   --destroyed-content-color: $destroyed-content-color-light;
   --assistant-color: $assistant-color-light;
   --commission-category-color: $commission-color-light;
   --text-light-color: $surface-color-light;
-  --comment-color: var(--link-hover-color);
   --border-color: $burger-divider-color-light;
-  --link-light-color: var(--background-color);
   --primary-light-color: hsl(from $primary-color-light h s calc(l + 5));
   --danger-light-color: hsl(from $danger-color-light h s calc(l + 4));
   --warning-light-color: hsl(from $warning-color-light h s calc(l + 6));
   --rule-important-color: hsl(from $danger-color-light h calc(s + 30) calc(l - 40));
   --link-dark-color: hsl(from $link-color-light h s calc(l - 20));
-  --image-show-link-color: $link-color-light;
-  --image-show-link-hover-color: $link-hover-color-light;
   --background-odd-color: hsl(from $base-color-light h s calc(l + 35));
   --danger-odd-color: hsl(from $danger-color-light h calc(s + 12) calc(l + 3));
   --foreground-half-color: hsl(from $surface-color-light h s calc(l - 45));
@@ -49,7 +35,6 @@ $commission-color-light: #986f3d;
   --input-border-active: hsl(from $base-color-light h s calc(l + 10));
   --commission-category-background: hsl(from $commission-color-light h calc(s + 12) calc(l + 40));
   --commission-category-border: hsl(from $commission-color-light h s calc(l + 20));
-  --downvote-disabled-color: hsl(from $vote-down-color-light h calc(s - 40) calc(l - 20));
   --dnp-warning-hover-color: hsl(from $vote-down-color-light h s calc(l + 10));
   --poll-form-label-background: hsl(from $base-color-light h calc(s - 16) calc(l + 36));
 }
@@ -62,23 +47,15 @@ $commission-color-light: #986f3d;
   --warning-light-color: $warning-color;
   --destroyed-content-color: $destroyed-content-color-dark;
   --border-color: $burger-divider-color-dark;
-  --link-hover-color: $link-hover-color-dark;
-  --fave-color: $fave-color-dark;
-  --vote-up-color: $vote-up-color-dark;
   --vote-down-color: $vote-down-color-dark;
-  --hide-color: $hide-color-dark;
   --assistant-color: $special-color;
   --commission-category-color: $commission-color-dark;
   --text-light-color: $text-color-dark;
-  --comment-color: var(--link-hover-color);
-  --link-light-color: var(--foreground-color);
   --legacy-primary-color: hsl(from $primary-color h calc(s + 4) calc(l + 5));
   --legacy-danger-color: hsl(from $danger-color h s calc(l + 5));
   --legacy-warning-color: hsl(from $warning-color h s calc(l + 5));
   --rule-important-color: hsl(from $danger-color h calc(s + 15) calc(l + 22));
   --link-dark-color: hsl(from $link-color-dark h calc(s - 15) calc(l + 40));
-  --image-show-link-color: hsl(from $link-color-dark h s calc(l + 40));
-  --image-show-link-hover-color: hsl(from $link-hover-color-dark h s calc(l + 40));
   --assistant-border-color: hsl(from $special-color h s calc(l + 8));
   --admin-links-color: hsl(from $vote-down-color-dark h calc(s - 50) calc(l - 28));
   --admin-links-hover-color: hsl(from $vote-down-color-dark h calc(s - 20) calc(l - 20));
@@ -89,7 +66,6 @@ $commission-color-light: #986f3d;
   --input-border-active: hsl(from $base-color-dark h calc(s - 10) calc(l + 2));
   --commission-category-background: hsl(from $commission-color-dark h s calc(l - 36));
   --commission-category-border: hsl(from $commission-color-dark h s calc(l - 25));
-  --downvote-disabled-color: hsl(from $vote-down-color-dark h calc(s - 10) calc(l - 10));
   --dnp-warning-hover-color: hsl(from $vote-down-color-dark h s calc(l + 10));
   --poll-form-label-background: hsl(from $burger-divider-color-dark h s calc(l + 8));
 }

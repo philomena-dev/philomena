@@ -1,55 +1,138 @@
+<%!-- Logged-out visitors get the interaction links too; the JS points them at the login page. --%>
+<% show_interactions? = @can_interact or is_nil(@conn.assigns.current_user)
+vote_counts? = show_vote_counts?(@conn.assigns.current_user) %>
 <div class="block allow-overflow">
   <div class="block-header image-metabar page-center" id={"image_meta_#{@image.id}"}>
-    <div class="stretched-mobile-links">
+    <div class="image-metabar-group">
       <a
-        class="js-prev"
+        class="image-metabar-item js-prev"
         href={~p"/images/#{@image}/navigate?#{[rel: "prev"] ++ scope(@conn)}"}
         title="Previous Image (j)"
-      ><i class="fa fa-chevron-left"></i></a><a
-        class="js-up"
+      ><i class="fa fa-chevron-left"></i></a>
+      <a
+        class="image-metabar-item js-up"
         href={~p"/images/#{@image}/navigate?#{[rel: "find"] ++ scope(@conn)}"}
         title="Find this image in the global image list (i)"
-      ><i class="fa fa-chevron-up"></i></a><a
-        class="js-next"
+      ><i class="fa fa-chevron-up"></i></a>
+      <a
+        class="image-metabar-item js-next"
         href={~p"/images/#{@image}/navigate?#{[rel: "next"] ++ scope(@conn)}"}
         title="Next Image (k)"
-      ><i class="fa fa-chevron-right"></i></a><a
-        class="js-rand"
+      ><i class="fa fa-chevron-right"></i></a>
+      <a
+        class="image-metabar-item js-rand"
         href={~p"/images/random?#{scope(@conn)}"}
         title="Random (r)"
       ><i class="fa fa-random"></i></a>
     </div>
-    <%!-- Logged-out visitors get the interaction links too; the JS points them at the login page. --%>
-    <% show_interactions? = @can_interact or is_nil(@conn.assigns.current_user) %>
-    <% vote_counts? = show_vote_counts?(@conn.assigns.current_user) %>
-    <div class="stretched-mobile-links" phx-no-format>
-      <%= if show_interactions? do %><a class="interaction--fave js-interaction-fave" data-image-id={@image.id} href="#" rel="nofollow"><span class="favorites" data-image-id={@image.id} title="Favorites">{@image.faves_count}</span> <span class="fave-span" title="Fave!"><i class="fa fa-star"></i></span></a><a class="interaction--upvote js-interaction-upvote" data-image-id={@image.id} href="#" rel="nofollow"><%= if vote_counts? do %><span class="upvotes" data-image-id={@image.id} title="Upvotes">{@image.upvotes_count}</span> <% end %>
-          <span class="upvote-span" title="Yay!"><i class="fa fa-arrow-up"></i></span></a><% else %><span><span class="favorites" data-image-id={@image.id} title="Favorites">{@image.faves_count}</span> <i class="fa fa-star"></i></span><span :if={vote_counts?}><span class="upvotes" data-image-id={@image.id} title="Upvotes">{@image.upvotes_count}</span> <i class="fa fa-arrow-up"></i></span><% end %><span class="score" data-image-id={@image.id}>{@image.score}</span><%= if show_interactions? do %><a class="interaction--downvote js-interaction-downvote" data-image-id={@image.id} href="#" rel="nofollow"><span class="downvote-span" title="Neigh!"><i class="fa fa-arrow-down"></i></span>
-          <%= if vote_counts? do %> <span class="downvotes" data-image-id={@image.id} title="Downvotes">{@image.downvotes_count}</span><% end %></a><% else %><span :if={vote_counts?}><i class="fa fa-arrow-down"></i> <span class="downvotes" data-image-id={@image.id} title="Downvotes">{@image.downvotes_count}</span></span><% end %><a class="interaction--comments" href="#comments" title="Comments"><i class="fa fa-comments"></i> <span class="comments_count" data-image-id={@image.id}>{@image.comments_count}</span></a><a :if={show_interactions?} class="interaction--hide js-interaction-hide" data-image-id={@image.id} href="#" rel="nofollow"><span class="hide-span" title="Hide"><i class="fa fa-eye-slash"></i></span></a>
-    </div>
-    <div class="stretched-mobile-links" phx-no-format>
-      <%= if is_nil(@conn.assigns.current_user) or can?(@conn, :subscribe, @image) do %>{render PhilomenaWeb.Image.SubscriptionView, "_subscription.html", watching: @watching, image: @image, conn: @conn}<% end %>{render PhilomenaWeb.ImageView, "_add_to_gallery_dropdown.html", image: @image, user_galleries: @user_galleries, conn: @conn}<a href={~p"/images/#{@image}/related"} title="Related Images"><i class="fa fa-sitemap"></i> <span class="hidden-below-xl">Related</span></a>
-    </div>
-    <div class="stretched-mobile-links">
+    <div class="image-metabar-group">
+      <%= if show_interactions? do %>
+        <a
+          class="image-metabar-item media-box-action fave js-interaction-fave"
+          data-image-id={@image.id}
+          href="#"
+          rel="nofollow"
+          title="Fave!"
+        ><span class="favorites" data-image-id={@image.id} title="Favorites">{@image.faves_count}</span><i class="fa fa-star"></i></a>
+        <a
+          class="image-metabar-item media-box-action upvote js-interaction-upvote"
+          data-image-id={@image.id}
+          href="#"
+          rel="nofollow"
+          title="Yay!"
+        ><span :if={vote_counts?} class="upvotes" data-image-id={@image.id} title="Upvotes">{@image.upvotes_count}</span><i class="fa fa-arrow-up"></i></a>
+      <% else %>
+        <span class="image-metabar-item"><span
+          class="favorites"
+          data-image-id={@image.id}
+          title="Favorites"
+        >{@image.faves_count}</span><i class="fa fa-star"></i></span>
+        <span :if={vote_counts?} class="image-metabar-item"><span
+          class="upvotes"
+          data-image-id={@image.id}
+          title="Upvotes"
+        >{@image.upvotes_count}</span><i class="fa fa-arrow-up"></i></span>
+      <% end %>
+      <span
+        class="image-metabar-item media-box-score score"
+        data-image-id={@image.id}
+        title="Score"
+      >{@image.score}</span>
+      <%= if show_interactions? do %>
+        <a
+          class="image-metabar-item media-box-action downvote js-interaction-downvote"
+          data-image-id={@image.id}
+          href="#"
+          rel="nofollow"
+          title="Neigh!"
+        ><i class="fa fa-arrow-down"></i><span
+          :if={vote_counts?}
+          class="downvotes"
+          data-image-id={@image.id}
+          title="Downvotes"
+        >{@image.downvotes_count}</span></a>
+      <% else %>
+        <span :if={vote_counts?} class="image-metabar-item"><i class="fa fa-arrow-down"></i><span
+          class="downvotes"
+          data-image-id={@image.id}
+          title="Downvotes"
+        >{@image.downvotes_count}</span></span>
+      <% end %>
+      <a class="image-metabar-item media-box-action comments" href="#comments" title="Comments"><i class="fa fa-comments"></i><span
+        class="comments_count"
+        data-image-id={@image.id}
+      >{@image.comments_count}</span></a>
       <a
+        :if={show_interactions?}
+        class="image-metabar-item media-box-action hide js-interaction-hide"
+        data-image-id={@image.id}
+        href="#"
+        rel="nofollow"
+        title="Hide"
+      ><i class="fa fa-eye-slash"></i></a>
+    </div>
+    <div class="image-metabar-group">
+      <%= if is_nil(@conn.assigns.current_user) or can?(@conn, :subscribe, @image) do %>
+        {render(PhilomenaWeb.Image.SubscriptionView, "_subscription.html",
+          watching: @watching,
+          image: @image,
+          conn: @conn
+        )}
+      <% end %>
+      {render(PhilomenaWeb.ImageView, "_add_to_gallery_dropdown.html",
+        image: @image,
+        user_galleries: @user_galleries,
+        conn: @conn
+      )}
+      <a class="image-metabar-item" href={~p"/images/#{@image}/related"} title="Related Images"><i class="fa fa-sitemap"></i><span class="hidden-below-xl">Related</span></a>
+    </div>
+    <div class="image-metabar-group">
+      <a
+        class="image-metabar-item"
         href={"#{pretty_url(@image, false, false)}"}
         rel="nofollow"
         title="View (tags in filename)"
-      ><i class="fa fa-eye"></i> View</a><a
+      ><i class="fa fa-eye"></i>View</a>
+      <a
+        class="image-metabar-item"
         href={"#{pretty_url(@image, true, false)}"}
         rel="nofollow"
         title="View (no tags in filename)"
-      ><i class="fa fa-eye"></i> VS</a><a
+      ><i class="fa fa-eye"></i>VS</a>
+      <a
+        class="image-metabar-item"
         href={"#{pretty_url(@image, false, true)}"}
         rel="nofollow"
         title="Download (tags in filename)"
-      ><i class="fa fa-download"></i> Download</a><a
+      ><i class="fa fa-download"></i>Download</a>
+      <a
+        class="image-metabar-item"
         href={"#{pretty_url(@image, true, true)}"}
         title="Download (no tags in filename)"
-      ><i class="fa fa-download"></i> DS</a>
+      ><i class="fa fa-download"></i>DS</a>
     </div>
   </div>
-  <div class="block-header sub page-center" id="extrameta">
+  <div class="block-header sub page-center image-facts" id="extrameta">
     <div>
       Uploaded {pretty_time(@image.created_at)} {render(
         PhilomenaWeb.ImageView,
@@ -57,24 +140,25 @@
         assigns
       )}
     </div>
-    <span class="image-size">&nbsp;{@image.image_width}x{@image.image_height}<span
-      :if={
-        not is_nil(@image.image_duration) and @image.image_is_animated and
-          @image.image_duration > 0
-      }
-      class="image-size"
-      title={@image.image_duration}
-    >&nbsp;<% dur = trunc(@image.image_duration) %><% ms =
-      trunc((@image.image_duration - dur) * 100) %><% {mm, ss} = {div(dur, 60), rem(dur, 60)} %>{:io_lib.format(
-      "~2..0B:~2..0B.~2..0B",
-      [mm, ss, ms]
-    )}</span> {String.upcase(to_string(@image.image_format))}
-    <% size_kib = div(@image.image_size, 1024) %>
-    <% size_mib = Float.round(size_kib / 1024.0, 2) %>
-    <span title={"#{size_kib} KiB"}><%= if size_mib < 1 do %>
-      {size_kib} KiB
-    <% else %>
-      {size_mib} MiB
-    <% end %></span></span>
+    <% size_kib = div(@image.image_size, 1024)
+    size_mib = Float.round(size_kib / 1024.0, 2) %>
+    <div class="image-size">
+      <span>{@image.image_width}x{@image.image_height}</span>
+      <span
+        :if={
+          not is_nil(@image.image_duration) and @image.image_is_animated and
+            @image.image_duration > 0
+        }
+        title={@image.image_duration}
+      >
+        <% dur = trunc(@image.image_duration)
+        ms = trunc((@image.image_duration - dur) * 100) %>
+        {:io_lib.format("~2..0B:~2..0B.~2..0B", [div(dur, 60), rem(dur, 60), ms])}
+      </span>
+      <span>{String.upcase(to_string(@image.image_format))}</span>
+      <span title={"#{size_kib} KiB"}>{if size_mib < 1,
+        do: "#{size_kib} KiB",
+        else: "#{size_mib} MiB"}</span>
+    </div>
   </div>
 </div>

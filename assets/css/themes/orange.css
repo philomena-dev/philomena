@@ -4,12 +4,3 @@
 @import "@philomena/philomena-css/css/design/tokens.css";
 @import "../tokens.css";
 @import "../legacy.css";
-
-/* Legacy properties that differ from the formulas of legacy.css */
-:root {
-  --comment-color: #b099dd;
-}
-
-:root[data-theme="light"] {
-  --comment-color: #9273d0;
-}

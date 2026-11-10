@@ -1,24 +1,16 @@
-<% watch_path = ~p"/images/#{@image}/subscription"
-watch_class = if @watching, do: "hidden", else: ""
-
-unwatch_path = ~p"/images/#{@image}/subscription"
-unwatch_class = if @watching, do: "", else: "hidden" %><span
-  :if={@conn.assigns.current_user}
-  class="js-subscription-target"
-><a
-  class={"js-subscription-link #{watch_class}"}
+<% subscription_path = ~p"/images/#{@image}/subscription" %>
+<span :if={@conn.assigns.current_user} class="js-subscription-target"><a
+  class={["image-metabar-item js-subscription-link", @watching && "hidden"]}
   data-method="post"
   data-remote="true"
-  href={watch_path}
-  phx-no-format
-><i class="fa fa-bell"></i> Subscribe </a><a
-  class={"js-subscription-link #{unwatch_class}"}
+  href={subscription_path}
+><i class="fa fa-bell"></i>Subscribe</a><a
+  class={["image-metabar-item js-subscription-link", !@watching && "hidden"]}
   data-method="delete"
   data-remote="true"
-  href={unwatch_path}
-  phx-no-format
-><i class="fa fa-bell-slash"></i> Unsubscribe </a></span><a
+  href={subscription_path}
+><i class="fa fa-bell-slash"></i>Unsubscribe</a></span><a
   :if={!@conn.assigns.current_user}
+  class="image-metabar-item"
   href={~p"/sessions/new"}
-  phx-no-format
-><i class="fa fa-bell"></i> Subscribe </a>
+><i class="fa fa-bell"></i>Subscribe</a>

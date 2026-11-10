@@ -229,7 +229,7 @@ defmodule PhilomenaWeb.ImageControllerTest do
       assert response =~ ~r/class="favorites"[^>]*>7</
       assert response =~ ~r/class="upvotes"[^>]*>5</
       assert response =~ ~r/class="downvotes"[^>]*>2</
-      assert response =~ ~r/class="score[^"]*"[^>]*>3</
+      assert response =~ ~r/class="[^"]*\bscore"[^>]*>3</
       assert response =~ "js-interaction-fave"
       assert response =~ ~s(href="/sessions/new"><i class="fa fa-bell">)
       assert response =~ "Featured in"

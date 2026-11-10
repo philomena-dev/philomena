@@ -1,47 +1,115 @@
-@define-mixin interaction-color $name, $col {
-  a.interaction--$(name) {
-    color: var(--$(col)-color);
-  }
+/*
+ * The image page: the meta bar over the image, under it on phones, with the facts of the upload in its second row.
+ * The items of the bar fill its height, so that a hovered or set interaction fills a whole cell.
+ */
 
-  a.interaction--$(name).active,
-  a.interaction--$(name):hover {
-    background: var(--$(col)-color);
-    color: var(--link-light-color);
-  }
+.image-frame {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
 }
 
-@mixin interaction-color fave, fave;
-@mixin interaction-color upvote, vote-up;
-@mixin interaction-color downvote, vote-down;
-@mixin interaction-color hide, hide;
+/* It keeps the distance of a block from the approval notice over it */
+.card + .image-frame {
+  margin-top: var(--block-spacing);
+}
 
-/* The links of the image meta bar fill its height, so that hovered and active interactions fill a whole cell */
 .block-header.image-metabar {
   padding-block: 0;
 }
 
-.image-metabar a,
-.image-metabar .score {
-  display: inline-block;
+.image-metabar-group {
+  display: flex;
+}
+
+.image-metabar-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
   padding: var(--block-header-padding-vertical) var(--block-header-padding-horizontal);
   white-space: nowrap;
 }
 
-/* Narrow screens fit a row of links in each group */
+/* The interactions look like the actions of a thumbnail, which the framework styles inside media boxes only */
+.image-metabar .media-box-action {
+  --action-color: var(--bar-link-color);
+  color: var(--action-color);
+}
+
+.image-metabar .media-box-action.fave {
+  --action-color: var(--tag-spoiler-text-color);
+}
+
+.image-metabar .media-box-action.upvote {
+  --action-color: var(--tag-default-text-color);
+}
+
+.image-metabar .media-box-action.downvote,
+.image-metabar .media-box-action.hide {
+  --action-color: var(--tag-error-text-color);
+}
+
+.image-metabar a.media-box-action:hover,
+.image-metabar a.media-box-action:focus-visible,
+.image-metabar a.media-box-action.active {
+  color: var(--surface-color);
+  background-color: var(--action-color);
+  text-decoration: none;
+}
+
+.image-facts .image_uploader,
+.image-size {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-sm) var(--spacing-md);
+}
+
+.image-facts .image_uploader {
+  column-gap: var(--spacing-lg);
+}
+
+/*
+ * Phones show the image first. Each group of the bar is a row of equal cells, as tall as a touch target; the gallery
+ * menu opens under its row. The facts are a column of lines.
+ */
 @media not all and (min-width: $breakpoint-md) {
-  .image-metabar a,
-  .image-metabar .score {
-    padding-inline: var(--spacing-sm);
+  .image-frame-image {
+    order: -1;
   }
-}
 
-a.interaction--comments {
-  color: var(--comment-color);
-}
+  .block-header.image-metabar {
+    padding: 0;
+    gap: 0;
+  }
 
-a.interaction--comments:hover {
-  background: var(--comment-color);
-  color: var(--background-color);
+  .image-metabar-group {
+    position: relative;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    width: 100%;
+  }
+
+  .image-metabar-group + .image-metabar-group {
+    border-top: var(--border-width) solid var(--tint-faint-color);
+  }
+
+  .image-metabar-item {
+    min-height: var(--touch-target-size);
+    padding-inline: var(--spacing-xs);
+  }
+
+  .image-metabar-group .dropdown > .image-metabar-item {
+    flex: 1;
+  }
+
+  .block-header.image-facts {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
 }
 
 .tag-info__image {
@@ -57,21 +125,11 @@ a.interaction--comments:hover {
   place-content: center;
 }
 
-/* embedded images. kinda like image-container, but this one also shows a text, link to filter page, etc */
+/* The image of the image page and of Markdown embeds, with the notice that shows when a filter hides it */
 .image-show-container {
-  color: var(--foreground-color);
   display: inline-block;
   max-width: 100%;
-  padding-bottom: 6px;
-}
-
-.image-show-container span.spoileredtag,
-.image-show-container span.hiddentag {
-  font-weight: bold;
-}
-
-.image-show-container a {
-  color: var(--image-show-link-color);
+  padding-bottom: var(--spacing-md);
 }
 
 .dnp-warning a {
@@ -81,10 +139,6 @@ a.interaction--comments:hover {
 
 .dnp-warning a:hover {
   color: var(--dnp-warning-hover-color);
-}
-
-.image-show-container:hover a:hover {
-  color: var(--image-show-link-hover-color);
 }
 
 /* This and the one above needed for older browsers for some reason, appears to be a bug */
@@ -130,12 +184,8 @@ a.interaction--comments:hover {
   max-width: 100%;
 }
 
-.image-size {
-  white-space: nowrap;
-}
-
-.js-source-link {
-  overflow-wrap: break-word;
+.image_source__link {
+  overflow-wrap: anywhere;
 }
 
 #image-source > p {
@@ -250,16 +300,12 @@ a.interaction--comments:hover {
   height: 100%;
 }
 
+/* The sources of the image, an icon and a link each */
 .image_sources {
   display: grid;
-  grid-template-columns: 2em auto;
-  grid-template-rows: 1fr;
-}
-
-.image_source__icon,
-.image_source__link {
-  padding: 0.5em;
-  overflow: hidden;
+  grid-template-columns: 2em minmax(0, 1fr);
+  gap: var(--spacing-md);
+  align-items: center;
 }
 
 .image_source__icon {
