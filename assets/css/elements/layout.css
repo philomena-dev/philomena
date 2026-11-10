@@ -10,10 +10,6 @@
   }
 }
 
-nav {
-  display: inline-block;
-}
-
 @media (max-width: $min-desktop-width) {
   .stretched-mobile-links {
     display: flex;
@@ -50,12 +46,6 @@ figure figcaption {
   font-weight: bold;
 }
 
-.theme-preview-trixie {
-  align-self: flex-end; /* place the image next to the theme switch (align it to the bottom of the container) */
-  min-width: 0; /* allow the image to be downsized */
-  padding-left: var(--spacing-md); /* on narrow screens, the image would sit uncomfortably close to the text */
-}
-
 .table-list__label {
   width: 100%;
   display: flex;
@@ -81,50 +71,6 @@ figure figcaption {
 
 .table-list__label .table-list__label__input {
   flex: 1 1 60%;
-}
-
-.permission-choices {
-  display: flex;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.permission-choice__label input {
-  display: none;
-}
-
-.permission-choice__label input:checked .permission-option--yes {
-  border-color: var(--legacy-success-color);
-  background-color: var(--success-light-color);
-}
-
-.permission-choice__label input:checked .permission-option--no {
-  border-color: var(--legacy-danger-color);
-  background-color: var(--danger-light-color);
-}
-
-.permission-choice__label input:hover .permission-option--yes {
-  background-color: var(--success-light-color);
-}
-
-.permission-choice__label input:hover .permission-option--no {
-  background-color: var(--danger-light-color);
-}
-
-.permission-option {
-  text-align: center;
-  border: 1px solid transparent;
-}
-
-.permission-option:not(:last-child) {
-  margin-right: 12px;
-}
-
-.choice-text {
-  display: flex;
-  text-align: center;
-  padding: 4px 16px;
 }
 
 .minimal {

@@ -10,9 +10,6 @@ $image-medium-size: 256px;
 $image-large-size: 512px;
 
 :root {
-  --max-limited-desktop-width: $max-limited-desktop-width;
-  --min-desktop-width: $min-desktop-width;
-  --min-desktop-thumb-width: $min-desktop-thumb-width;
   --border: 1px solid var(--border-color);
   --border-radius-toggle: 0.3rem;
   --border-radius-inner-toggle: 0.2rem;
