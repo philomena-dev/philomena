@@ -37,23 +37,18 @@
           </div>
           {render(PhilomenaWeb.CaptchaView, "_captcha.html", name: "tags", conn: @conn)}
         <% end %>
-        <ul class="horizontal-list">
-          <li>
-            <div class="form-control-submit">
-              {submit("Save tags",
-                class: "button",
-                id: "edit_save_button",
-                data: [disable_with: raw("Saving&hellip;")]
-              )}
-            </div>
-          </li><li>
-            <button
-              class="button js-tag-sauce-toggle"
-              data-click-focus=".js-taginput-plain:not(.hidden), .js-taginput-input"
-              data-click-toggle=".tagsauce, .js-imageform"
-            >Cancel</button>
-          </li>
-        </ul>
+        <div class="button-group separated">
+          {submit("Save tags",
+            class: "button",
+            id: "edit_save_button",
+            data: [disable_with: raw("Saving&hellip;")]
+          )}
+          <button
+            class="button js-tag-sauce-toggle"
+            data-click-focus=".js-taginput-plain:not(.hidden), .js-taginput-input"
+            data-click-toggle=".tagsauce, .js-imageform"
+          >Cancel</button>
+        </div>
         <div class="block js-tagtable" data-target="[name=&quot;image[tag_input]&quot;]">
           {PhilomenaWeb.TagView.quick_tags(@conn)}
         </div>

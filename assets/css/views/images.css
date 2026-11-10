@@ -163,20 +163,6 @@
   padding: var(--spacing-xs) var(--spacing-md) var(--spacing-xs) var(--spacing-xs);
 }
 
-.horizontal-list {
-  margin: 0;
-  padding-left: 0;
-  list-style: none;
-}
-
-.horizontal-list li {
-  display: inline-block;
-}
-
-.horizontal-list li + li {
-  margin-left: 1em;
-}
-
 #js-image-upload-previews {
   display: flex;
   flex-flow: row wrap;
