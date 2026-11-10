@@ -105,7 +105,7 @@ defmodule PhilomenaWeb.AppView do
     class = Keyword.get(args, :class, nil)
     data = Keyword.get(args, :data, [])
 
-    form_for(nil, route, [method: method, class: "button_to"], fn _f ->
+    form_for(nil, route, [method: method, class: "button-to"], fn _f ->
       submit(text, class: class, data: data)
     end)
   end

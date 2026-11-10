@@ -8,7 +8,8 @@
   line-height: var(--text-line-height);
 }
 
-.button_to {
+/* The form of a button that submits to a route (PhilomenaWeb.AppView.button_to/3) flows with text */
+.button-to {
   display: inline;
 }
 

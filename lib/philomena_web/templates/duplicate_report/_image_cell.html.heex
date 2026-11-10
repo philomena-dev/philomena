@@ -12,12 +12,12 @@
   </p>
   <%= if can?(@conn, :accept, @report) and mergeable?(@report) do %>
     <%= if @source do %>
-      <%= form_for @conn, ~p"/duplicate_reports/#{@report}/accept_reverse", [method: "post", class: "button_to js-duplicate-report", data: [remote: "true"]], fn _f -> %>
+      <%= form_for @conn, ~p"/duplicate_reports/#{@report}/accept_reverse", [method: "post", class: "button-to js-duplicate-report", data: [remote: "true"]], fn _f -> %>
         <button class="button me-md" data-disable-with="Loading…" type="submit">Keep Source
         <i class="fa fa-arrow-left"></i></button>
       <% end %>
     <% else %>
-      <%= form_for @conn, ~p"/duplicate_reports/#{@report}/accept", [method: "post", class: "button_to js-duplicate-report", data: [remote: "true"]], fn _f -> %>
+      <%= form_for @conn, ~p"/duplicate_reports/#{@report}/accept", [method: "post", class: "button-to js-duplicate-report", data: [remote: "true"]], fn _f -> %>
         <button class="button me-md" data-disable-with="Loading…" type="submit"><i class="fa fa-arrow-right"></i>
         Keep Target</button>
       <% end %>

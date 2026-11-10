@@ -132,13 +132,13 @@
       <%= if can?(@conn, :accept, @report) do %>
         <div phx-no-format>
           <%= if @report.state == "open" do %><%= form_for @conn, ~p"/duplicate_reports/#{@report}/claim",
-                [method: "post", class: "button_to js-duplicate-report", data: [remote: "true"]], fn _f -> %><button
+                [method: "post", class: "button-to js-duplicate-report", data: [remote: "true"]], fn _f -> %><button
                 class="button me-md" data-disable-with="Loading…" type="submit"
               ><i class="fa fa-clipboard"></i> Claim</button><% end %><% end %><%= if @report.state == "claimed" do %><%= form_for @conn, ~p"/duplicate_reports/#{@report}/claim",
-                [method: "delete", class: "button_to js-duplicate-report", data: [remote: "true"]], fn _f -> %><button
+                [method: "delete", class: "button-to js-duplicate-report", data: [remote: "true"]], fn _f -> %><button
                 class="button me-md" data-disable-with="Loading…" type="submit"
               ><i class="fa fa-clipboard"></i> Release</button><% end %><% end %><%= if @report.state in ~w(open claimed) do %><%= form_for @conn, ~p"/duplicate_reports/#{@report}/reject",
-                [method: "post", class: "button_to js-duplicate-report", data: [remote: "true"]], fn _f -> %><button
+                [method: "post", class: "button-to js-duplicate-report", data: [remote: "true"]], fn _f -> %><button
                 class="button me-md" data-disable-with="Loading…" type="submit"
               ><i class="fa fa-times"></i> Reject</button><% end %><% end %>
         </div>
