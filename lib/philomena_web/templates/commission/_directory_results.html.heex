@@ -28,14 +28,14 @@ pagination =
       <% Enum.any?(@commissions) -> %>
         <%= for c <- @commissions do %>
           <div class="block commission">
-            <div class="block__content flex flex--no-wrap">
-              <div class="flex__fixed spacing-right">
+            <div class="block__content flex flex-nowrap">
+              <div class="flex-none spacing-right">
                 {render(PhilomenaWeb.UserAttributionView, "_user_avatar.html",
                   object: c,
                   conn: @conn
                 )}
               </div>
-              <div class="flex__grow commission__listing_body">
+              <div class="flex-1 commission__listing_body">
                 <span class="commission__listing_artist">{render(
                   PhilomenaWeb.UserAttributionView,
                   "_user.html",

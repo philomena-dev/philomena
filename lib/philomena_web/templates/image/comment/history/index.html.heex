@@ -8,14 +8,14 @@
 </h1>
 <%= for version <- @versions do %>
   <article class="block communication">
-    <div class="block__content communication__content flex flex--no-wrap">
+    <div class="block__content communication__content flex flex-nowrap">
       <div class="communication__body__avatar hidden-below-md">
         {render(PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html",
           object: @comment,
           conn: @conn
         )}
       </div>
-      <div class="flex__grow communication__body">
+      <div class="flex-1 communication__body">
         <div class="communication__body__avatar hidden-from-md">
           {render(PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html",
             object: @comment,
@@ -40,7 +40,7 @@
       </div>
     </div>
     <div class="block__content communication__options">
-      <div class="flex flex--wrap flex--spaced-out">
+      <div class="flex flex-wrap justify-between">
         <div>
           <%= if version.edit_reason not in [nil, ""] do %>
             Reason: {version.edit_reason}
@@ -48,7 +48,7 @@
             No reason given
           <% end %>
         </div>
-        <div class="flex__right">
+        <div class="flex-auto text-right">
           Edited {pretty_time(version.created_at)} by {render(
             PhilomenaWeb.UserAttributionView,
             "_anon_user.html",

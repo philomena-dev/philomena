@@ -34,14 +34,14 @@
       </div>
     </div>
   <% end %>
-  <div class={"block__content communication__content flex flex--no-wrap #{communication_body_class(@comment)}"}>
+  <div class={"block__content communication__content flex flex-nowrap #{communication_body_class(@comment)}"}>
     <div class="communication__body__avatar hidden-below-md">
       {render(PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html",
         object: @comment,
         conn: @conn
       )}
     </div>
-    <div class="flex__grow communication__body">
+    <div class="flex-1 communication__body">
       <div class="communication__body__avatar hidden-from-md">
         {render(PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html",
           object: @comment,
@@ -82,7 +82,7 @@
     </div>
   </div>
   <div class="block__content communication__options">
-    <div class="flex flex--wrap flex--spaced-out">
+    <div class="flex flex-wrap justify-between">
       {render(PhilomenaWeb.CommentView, "_comment_options.html", comment: @comment, conn: @conn)}
     </div>
     <%= if can?(@conn, :hide, @comment) do %>

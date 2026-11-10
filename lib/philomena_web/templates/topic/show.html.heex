@@ -29,19 +29,19 @@
       <a href={~p"/posts?#{[pq: "topic_id:#{@topic.id}"]}"}><i class="fa fa-fw fa-search"></i>
       Search Posts</a>
       <div class="block__header block__header--light page__header">
-        <div class="flex__fixed page__pagination">{pagination}</div>
-        <div class="flex__fixed block__header__item page__options">
+        <div class="flex-none page__pagination">{pagination}</div>
+        <div class="flex-none block__header__item page__options">
           Started by {render(PhilomenaWeb.UserAttributionView, "_anon_user.html",
             object: @topic,
             conn: @conn
           )}
         </div>
         <div class="page__info">
-          <div class="flex flex--center-distributed">
-            <div class="flex__fixed block__header__item">
+          <div class="flex justify-center">
+            <div class="flex-none block__header__item">
               Posted {pretty_time(@topic.created_at)}
             </div>
-            <div class="flex__fixed block__header__item">{@topic.post_count - 1} replies</div>
+            <div class="flex-none block__header__item">{@topic.post_count - 1} replies</div>
             <%= if not @topic.hidden_from_users do %>
               {render(PhilomenaWeb.Topic.SubscriptionView, "_subscription.html",
                 forum: @forum,

@@ -78,7 +78,7 @@
             )}
           </div>
         <% end %>
-        <div class="flex__grow">
+        <div class="flex-1">
           <div class="tag__change">
             <div class="tag__change-info">
               {render(PhilomenaWeb.UserAttributionView, "_anon_user.html",
@@ -90,7 +90,7 @@
                   <i class="fa fa-gavel"></i> Staff Member
                 </div>
               <% end %>
-              <div class="flex__grow hidden-below-md"></div>
+              <div class="flex-1 hidden-below-md"></div>
               <span>{pretty_time(tag_change.created_at)}</span>
               <div class="tag_change-tag-count">
                 <%= if added_tags_count > 0 do %>
@@ -141,7 +141,7 @@
                 )}
               <% end %>
               <%= if reverts_tag_changes?(@conn) do %>
-                <div class="flex flex__grow"></div>
+                <div class="flex flex-1"></div>
                 <a
                   class="button button--state-danger"
                   data-confirm="Are you really, really sure?"
@@ -149,7 +149,7 @@
                   href={~p"/tag_changes/#{tag_change}"}
                 ><i class="fa fa-trash"></i>
                 <span class="hidden-below-md">Delete from history</span><span class="hidden-from-md">Delete</span></a>
-                <div class="flex flex--centered flex--gap-small">
+                <div class="flex items-center flex--gap-small">
                   <span>Revert</span>
                   <input
                     class="fancy-checkbox"

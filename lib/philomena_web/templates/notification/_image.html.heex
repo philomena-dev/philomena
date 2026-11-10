@@ -1,13 +1,13 @@
 <% target = @notification.target %>
 <% source = @notification.source %>
-<div class="flex flex--centered flex__fixed thumb-tiny-container spacing-right">
+<div class="flex items-center flex-none thumb-tiny-container spacing-right">
   {render(PhilomenaWeb.ImageView, "_image_container.html",
     image: target,
     size: :thumb_tiny,
     conn: @conn
   )}
 </div>
-<div class="flex flex--centered flex__grow">
+<div class="flex items-center flex-1">
   <div>
     Someone merged #{source.id} into
     <strong>{link("##{target.id}", to: ~p"/images/#{target}" <> "#comments")}</strong> {pretty_time(
@@ -15,7 +15,7 @@
     )}
   </div>
 </div>
-<div class="flex flex--centered flex--no-wrap">
+<div class="flex items-center flex-nowrap">
   <a
     class="button button--separate-right"
     data-click-hideparent=".notification"

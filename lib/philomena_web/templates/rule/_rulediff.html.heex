@@ -1,5 +1,5 @@
 <%= if not is_nil(@version.previous) do %>
-  <div class="flex flex--column flex--gap-normal">
+  <div class="flex flex-col flex--gap-normal">
     <div class="grid grid--two-columns">
       <%= if @version.previous.name != @version.name or @version.previous.title != @version.title do %>
         <div class="block">
@@ -22,7 +22,7 @@
     <% end %>
   </div>
 <% else %>
-  <div class="flex flex--column flex--gap-normal">
+  <div class="flex flex-col flex--gap-normal">
     <strong><em>This is the initial version.</em></strong><span><strong>{@version.name}</strong>: {@version.title}</span><span><strong>Short Description:</strong> {@version.short_description}</span><strong>Description:</strong>
     <pre><code>{@version.description}</code></pre>
     <strong>Example:</strong>

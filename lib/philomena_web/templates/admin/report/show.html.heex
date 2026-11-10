@@ -1,14 +1,14 @@
 <h1>Showing Report</h1>
 <p>{link_to_target(report_target(@report))}</p>
 <article class="block communication">
-  <div class="block__content communication__content flex flex--no-wrap">
+  <div class="block__content communication__content flex flex-nowrap">
     <div class="communication__body__avatar hidden-below-md">
       {render(PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html",
         object: @report,
         conn: @conn
       )}
     </div>
-    <div class="flex__grow communication__body">
+    <div class="flex-1 communication__body">
       <div class="communication__body__avatar hidden-from-md">
         {render(PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html",
           object: @report,
@@ -34,9 +34,9 @@
     </div>
   </div>
   <div class="block__content communication__options">
-    <div class="flex flex--wrap flex--spaced-out">
+    <div class="flex flex-wrap justify-between">
       <div>Reported {pretty_time(@report.created_at)}</div>
-      <div class="flex__right">
+      <div class="flex-auto text-right">
         {link_to_ip(@conn, @report.ip)} {link_to_fingerprint(@conn, @report.fingerprint)}
       </div>
     </div>

@@ -26,11 +26,11 @@
   )}{error_tag(@f, :vote_method)}
 </div>
 <%= inputs_for @f, :options, fn opt -> %>
-  <div class="field js-poll-option field--inline flex--no-wrap flex--centered">
-    {text_input(opt, :label, class: "input flex__grow js-option-label", placeholder: "Option")}{error_tag(
+  <div class="field js-poll-option field--inline flex-nowrap items-center">
+    {text_input(opt, :label, class: "input flex-1 js-option-label", placeholder: "Option")}{error_tag(
       opt,
       :label
-    )}<label class="input--separate-left flex__fixed flex--centered"><a
+    )}<label class="input--separate-left flex-none items-center"><a
       class="js-option-remove"
       href="#"
       phx-no-format

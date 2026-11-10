@@ -1,24 +1,24 @@
 <%= form_for @changeset, @path, fn f -> %>
-  <div class="flex flex--column">
+  <div class="flex flex-col">
     <%= if @changeset.action do %>
       <div class="alert alert-danger">Please correct the errors below.</div>
     <% end %>
-    <div class="block flex flex--column">
-      <div class="flex flex--gap-normal flex--centered">
+    <div class="block flex flex-col">
+      <div class="flex flex--gap-normal items-center">
         <strong>{label(f, :name)}</strong>
         <p>Must be unique. The name of this rule, usually "Rule #X".</p>
       </div>
       {text_input(f, :name, class: "input")}{error_tag(f, :name)}
     </div>
-    <div class="block flex flex--column">
-      <div class="flex flex--gap-normal flex--centered">
+    <div class="block flex flex-col">
+      <div class="flex flex--gap-normal items-center">
         <strong>{label(f, :title)}</strong>
         <p>The short title shown before the description on the rules page.</p>
       </div>
       {text_input(f, :title, class: "input")}{error_tag(f, :title)}
     </div>
-    <div class="block flex flex--column">
-      <div class="flex flex--gap-normal flex--centered">
+    <div class="block flex flex-col">
+      <div class="flex flex--gap-normal items-center">
         <strong>{label(f, :description)}</strong>
         <p>
           The description of this rule shown on the rules page. Markdown and HTML are supported.
@@ -26,15 +26,15 @@
       </div>
       {textarea(f, :description, class: "input input--text")}{error_tag(f, :description)}
     </div>
-    <div class="block flex flex--column">
-      <div class="flex flex--gap-normal flex--centered">
+    <div class="block flex flex-col">
+      <div class="flex flex--gap-normal items-center">
         <strong>{label(f, :short_description)}</strong>
         <p>The TL;DR of the above, shown alongside the rule in the report reason selector.</p>
       </div>
       {text_input(f, :short_description, class: "input")}{error_tag(f, :short_description)}
     </div>
-    <div class="block flex flex--column">
-      <div class="flex flex--gap-normal flex--centered">
+    <div class="block flex flex-col">
+      <div class="flex flex--gap-normal items-center">
         <strong>{label(f, :example)}</strong>
         <p>Optional. Examples of what would break this rule. Markdown and HTML are supported.</p>
       </div>
@@ -58,8 +58,8 @@
         :internal
       )}
     </div>
-    <div class="block flex flex--column">
-      <div class="block flex flex--gap-small flex--column">
+    <div class="block flex flex-col">
+      <div class="block flex flex--gap-small flex-col">
         <strong>{label(f, :position)}</strong><span>Must be unique. Lower number will display higher in the list. If you intend to swap two rules, edit the other one to a unique position number first.</span><span>Please note that the position is also used as the de-facto rule number, so "position 0" is meant to correspond to "Rule #0".</span>
       </div>
       {number_input(f, :position, class: "input")}{error_tag(f, :position)}

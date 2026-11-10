@@ -1,12 +1,12 @@
-<div class="block__content flex alternating-color flex--centered">
-  <div class="flex__shrink spacing-right thumb-tiny-container">
+<div class="block__content flex alternating-color items-center">
+  <div class="spacing-right thumb-tiny-container">
     {render(PhilomenaWeb.ImageView, "_image_container.html",
       image: @comment.image,
       size: :thumb_tiny,
       conn: @conn
     )}
   </div>
-  <div class="flex__grow">
+  <div class="flex-1">
     <a href={"/#{@comment.image.id}#comment_#{@comment.id}"}>#{@comment.image.id}</a>
     by
     <span class="hyphenate-breaks">{render(PhilomenaWeb.UserAttributionView, "_anon_user.html",

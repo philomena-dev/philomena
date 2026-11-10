@@ -120,7 +120,7 @@
       </tr>
     </table>
   </td>
-  <td class="flex flex--column dupe-report-list__cell" id={"report_options_#{@report.id}"}>
+  <td class="flex flex-col dupe-report-list__cell" id={"report_options_#{@report.id}"}>
     <div class={"dr__status-options #{background_class}"}>
       {String.capitalize(@report.state)}
       <%= if can?(@conn, :accept, @report) and not is_nil(@report.modifier) do %>

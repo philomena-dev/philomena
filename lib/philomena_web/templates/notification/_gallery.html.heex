@@ -1,5 +1,5 @@
 <% gallery = @notification.gallery %>
-<div class="flex flex--centered flex__grow">
+<div class="flex items-center flex-1">
   <div>
     {render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: gallery, conn: @conn)} added images to
     <strong>{link(gallery.title, to: ~p"/galleries/#{gallery}")}</strong> {pretty_time(
@@ -7,7 +7,7 @@
     )}
   </div>
 </div>
-<div class="flex flex--centered flex--no-wrap">
+<div class="flex items-center flex-nowrap">
   <a
     class="button button--separate-right"
     data-click-hideparent=".notification"

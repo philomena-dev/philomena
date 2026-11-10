@@ -156,7 +156,7 @@
           <% end %>
         <% end %>
       <% end %>
-      <div class="flex flex--spaced-out flex--wrap">
+      <div class="flex justify-between flex-wrap">
         <%= if not @image.hidden_from_users do %>
           <%= if @feature_changeset do %>
             <%= form_for @feature_changeset, ~p"/images/#{@image}/feature", [method: "post"], fn _f -> %>
@@ -184,7 +184,7 @@
           <%= form_for @hash_changeset, ~p"/images/#{@image}/hash", [method: "delete"], fn _f -> %>
             <div class="field">
               <p>Allows reuploading the image</p>
-              <div class="flex flex--end-bunched">
+              <div class="flex justify-end">
                 {submit("Clear hash",
                   data: [confirm: "Are you really, really sure?"],
                   class: "button button--state-danger"
@@ -195,7 +195,7 @@
         <% end %>
       </div>
       <br />
-      <div class="flex flex--spaced-out">
+      <div class="flex justify-between">
         <%= if @image.commenting_allowed do %>
           {button_to("Lock commenting", ~p"/images/#{@image}/comment_lock",
             method: "post",
@@ -231,7 +231,7 @@
         <% end %>
       </div>
       <br />
-      <div class="flex flex--spaced-out">
+      <div class="flex justify-between">
         {link("Lock specific tags", to: ~p"/images/#{@image}/tag_lock", class: "button")}
         <%= if not @image.approved and can?(@conn, :approve, @image) do %>
           {button_to("Approve image", ~p"/images/#{@image}/approve",

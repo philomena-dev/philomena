@@ -130,23 +130,23 @@
       <% end %>
       <%= for award <- award_order(@user.awards) do %>
         <div
-          class="block__content flex flex--centered flex--center-distributed alternating-color no-overflow"
+          class="block__content flex items-center justify-center alternating-color no-overflow"
           title={award.label}
         >
-          <div class="flex__grow center">
+          <div class="flex-1 center">
             <div class="badge">
               {badge_image(award.badge, alt: award.label, width: "32", height: "32")}
             </div>
             <br />{award_title(award)}
           </div>
-          <div class="flex__grow center">
+          <div class="flex-1 center">
             {pretty_time(award.awarded_on)}
             <%= if manages_awards?(@conn) do %>
               {user_abbrv(award.awarded_by)}
             <% end %>
           </div>
           <%= if manages_awards?(@conn) do %>
-            <div class="flex__grow center">
+            <div class="flex-1 center">
               <a
                 data-confirm="Are you really, really sure?"
                 data-method="delete"
@@ -173,9 +173,9 @@
     </div>
     <%= if can_read_mod_notes?(@conn, @user) and not hide_staff_tools?(@conn) do %>
       <div class="block">
-        <div class="block__header flex flex--no-wrap">
-          <a class="flex__grow" href={~p"/admin/mod_notes?#{[user_id: @user.id]}"}>Mod Notes</a><a
-            class="flex__right flex__shrink"
+        <div class="block__header flex flex-nowrap">
+          <a class="flex-1" href={~p"/admin/mod_notes?#{[user_id: @user.id]}"}>Mod Notes</a><a
+            class="text-right"
             href={~p"/admin/mod_notes/new?#{[user_id: @user.id]}"}
           ><i class="fa fa-plus"></i> New</a>
         </div>

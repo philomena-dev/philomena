@@ -20,7 +20,7 @@
       </div>
     </div>
   <% end %>
-  <div class="block__content communication__content flex flex--no-wrap">
+  <div class="block__content communication__content flex flex-nowrap">
     <div class="communication__body__avatar hidden-below-md">
       {render(PhilomenaWeb.UserAttributionView, "_user_avatar.html",
         object: %{user: @message.from},
@@ -28,7 +28,7 @@
         class: "avatar--100px"
       )}
     </div>
-    <div class="flex__grow communication__body">
+    <div class="flex-1 communication__body">
       <div class="communication__body__avatar hidden-from-md">
         {render(PhilomenaWeb.UserAttributionView, "_user_avatar.html",
           object: %{user: @message.from},
@@ -56,7 +56,7 @@
     </div>
   </div>
   <div class="block__content communication__options">
-    <div class="flex flex--wrap flex--spaced-out">
+    <div class="flex flex-wrap justify-between">
       <div>Posted {pretty_time(@message.created_at)}</div>
     </div>
   </div>
