@@ -1,10 +1,2 @@
-<%= if !!@object.user and !anonymous?(@object) do %>
-  <%= for {class, label} <- user_labels(@object) do %>
-    <div :if={assigns[:large]} class={"label label--block #{class}"}>{label}</div><div
-      :if={!assigns[:large]}
-      class={"label label--block label--small #{class}"}
-    >
-      {label}
-    </div>
-  <% end %>
-<% end %>
+{if !!@object.user and !anonymous?(@object),
+  do: render(PhilomenaWeb.UserAttributionView, "_user_title.html", assigns)}
