@@ -8,7 +8,7 @@
     "builtin": true,
     "browser": true
   },
-  "ignorePatterns": ["js/vendor/*", "vite.config.ts"],
+  "ignorePatterns": ["js/vendor/*", "vendor/*", "vite.config.ts"],
   "rules": {
     "constructor-super": "error",
     "for-direction": "error",
