@@ -10,11 +10,12 @@
 @import "@fortawesome/fontawesome-free/css/brands.css";
 
 /* The framework's configuration, Philomena's and the default hue's, then the framework's design layer (reset,
-   tokens, base layout) and components */
+   tokens, base layout), utilities and components */
 @import "@philomena/philomena-css/css/config.css";
 @import "./config.css";
 @import "./themes/hues/blue.css";
 @import "@philomena/philomena-css/css/design/index.css";
+@import "@philomena/philomena-css/css/utils/index.css";
 @import "@philomena/philomena-css/css/components/alert.css";
 @import "@philomena/philomena-css/css/components/burger.css";
 @import "@philomena/philomena-css/css/components/counter.css";
@@ -62,7 +63,6 @@
 @import "views/posts";
 @import "views/profiles";
 @import "views/rules";
-@import "views/search";
 @import "views/staff";
 @import "views/stats";
 @import "views/tag_change";

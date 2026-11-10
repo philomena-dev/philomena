@@ -28,7 +28,7 @@
     <%= if not @topic.hidden_from_users or can?(@conn, :hide, @topic) do %>
       <a href={~p"/posts?#{[pq: "topic_id:#{@topic.id}"]}"}><i class="fa fa-fw fa-search"></i>
       Search Posts</a>
-      <div class="flex flex--wrap block__header block__header--light page__header">
+      <div class="block__header block__header--light page__header">
         <div class="flex__fixed page__pagination">{pagination}</div>
         <div class="flex__fixed block__header__item page__options">
           Started by {render(PhilomenaWeb.UserAttributionView, "_anon_user.html",

@@ -356,10 +356,6 @@ span.stat {
   overflow: hidden;
 }
 
-.hidden {
-  display: none !important;
-}
-
 .line-spacing {
   line-height: 30px;
 }

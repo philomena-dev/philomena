@@ -12,7 +12,7 @@ pagination =
 info = render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @images) %>
 <div class={"#{sortable_classes(@conn)}"} id="sortable">
   <div class="block" id="imagelist-container">
-    <section class="block__header flex page__header">
+    <section class="block__header page__header">
       <span class="block__header__title page__title"><span>Viewing gallery
       <strong>{@gallery.title}</strong></span></span>
       <div class="page__pagination">{pagination}</div>
@@ -66,7 +66,7 @@ info = render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @image
         )}
       <% end %>
     </div>
-    <div class="block__header block__header--light flex page__header">
+    <div class="block__header block__header--light page__header">
       <div class="page__pagination">{pagination}</div>
       <span class="block__header__title page__info">{info}</span>
     </div>

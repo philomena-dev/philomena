@@ -36,10 +36,6 @@ nav {
   text-align: center;
 }
 
-.flex {
-  display: flex;
-}
-
 .flex--centered {
   align-items: center;
 }
@@ -91,10 +87,6 @@ nav {
 
 .flex--gap-normal {
   gap: var(--padding-normal);
-}
-
-.grid {
-  display: grid;
 }
 
 .grid--two-columns {

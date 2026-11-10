@@ -51,7 +51,7 @@
     <%!-- Don't render anything. --%>
   <% Enum.any?(@images) -> %>
     <div class="block" id="imagelist-container">
-      <section class="block__header page__header flex">
+      <section class="block__header page__header">
         <span class="block__header__title page__title hide-mobile">Search by uploaded image</span>
       </section>
     </div>
@@ -65,7 +65,7 @@
         )}
       <% end %>
     </div>
-    <div class="block__header block__header--light page__header flex">
+    <div class="block__header block__header--light page__header">
       <span class="block__header__title page__info">{render(
         PhilomenaWeb.PaginationView,
         "_pagination_info.html",
