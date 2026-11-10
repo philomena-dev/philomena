@@ -22,7 +22,7 @@
 @media not all and (min-width: $breakpoint-md) {
   :root {
     --header-height: auto;
-    --header-field-height: 2.5rem;
+    --header-field-height: 3rem;
     --header-spacing-vertical: 0;
     --navbar-item-padding-horizontal: var(--spacing-lg);
   }

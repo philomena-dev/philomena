@@ -91,9 +91,12 @@
   cursor: pointer;
 }
 
+/* An icon button is at least square */
 .header-button {
   display: flex;
+  justify-content: center;
   align-items: center;
+  min-inline-size: var(--header-field-height);
 }
 
 .header-input:focus-visible,
@@ -184,6 +187,15 @@ a.header-button:hover {
   --tint-color: var(--burger-color);
 }
 
+/* The close button is a square of a field's height, large enough to tap */
+.burger .burger-close {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-inline-size: var(--header-field-height);
+  min-block-size: var(--header-field-height);
+}
+
 .burger a.burger-item {
   padding-block: var(--spacing-lg);
 }
@@ -239,6 +251,7 @@ a.header-button:hover {
   .header-search input.header-input {
     flex: 1 1 auto;
     inline-size: auto;
+    min-inline-size: 0;
     max-inline-size: none;
   }
 
