@@ -33,8 +33,6 @@ PostCSS stage (`assets/build/`) does the rest; these are the parts no transform 
   `--heading-rhythm: 0` instead of being left out by `:not(.card-header *, …)`.
 - `components/media.css`: the square image area is `height: 0; padding-bottom: 100%` with the image or video
   positioned over it, as floor browsers lack `aspect-ratio`.
-- `components/forms.css`: the combobox suggestion label takes `gap: var(--input-padding)` (what it inherited), as
-  the flex gap fallback needs a length.
 
 Every other file is byte-identical to upstream. `npm run build` and `npm run check:contrast` work through the
 workspace (`npm run build -w @philomena/philomena-css`).

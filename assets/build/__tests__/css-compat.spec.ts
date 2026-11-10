@@ -12,10 +12,9 @@ describe('css-compat', () => {
   });
 
   it('renders the fallbacks only when forced', () => {
-    const css = '.a { display: flex; gap: 1px }';
+    const css = '@supports not (scrollbar-color: auto) { .a { color: red } }';
 
-    expect(run(css)).toContain('@supports not (list-style-type: "")');
-    expect(run(css, true)).not.toContain('@supports');
-    expect(run(css, true)).toContain('.a > * + * { margin-left: 1px }');
+    expect(run(css)).toBe(css);
+    expect(run(css, true).trim()).toBe('.a { color: red }');
   });
 });

@@ -379,7 +379,7 @@
 .combobox-suggestions .combobox-suggestion-item .combobox-suggestion-item-label {
   display: flex;
   flex-flow: row nowrap;
-  gap: var(--input-padding);
+  gap: inherit;
   align-items: center;
 }
 

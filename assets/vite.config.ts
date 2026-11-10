@@ -29,7 +29,7 @@ export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
 
   return {
     publicDir: 'static',
-    plugins: [cssGate({ forced })],
+    plugins: [cssGate()],
     server: {
       host: '0.0.0.0',
       port: 5173,

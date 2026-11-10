@@ -1,11 +1,10 @@
-import postcss, { type AtRule, type ChildNode, type Container, type Declaration, type Rule } from 'postcss';
+import postcss, { type AtRule, type Container, type Declaration, type Rule } from 'postcss';
 import valueParser from 'postcss-value-parser';
 import selectorParser from 'postcss-selector-parser';
 import type { Plugin } from 'vite';
 import bcd, { type CompatStatement, type Identifier } from '@mdn/browser-compat-data/forLegacyNode';
 import { enhancements } from './enhancements.ts';
 import { floor, lacking } from './floor.ts';
-import { fallbackCondition, isGap } from './postcss-flex-gap.ts';
 import { inKeyframes } from './postcss-floor-selectors.ts';
 
 /** A feature that some piece of CSS needs: a browser-compat-data path, spelt as the CSS spells it */
@@ -154,17 +153,7 @@ const describe = (gaps: Map<string, Set<string>>) =>
     )
     .join('; ');
 
-const same = (a: string, b: string) => a.replace(/[\s'"]/g, '') === b.replace(/[\s'"]/g, '');
-
-function inFallback(node: ChildNode): boolean {
-  const parent = node.parent;
-  if (parent?.type !== 'atrule' && parent?.type !== 'rule') return false;
-
-  const at = parent as AtRule;
-  return (at.type === 'atrule' && at.name === 'supports' && same(at.params, fallbackCondition)) || inFallback(at);
-}
-
-function checkRule(rule: Rule, problems: string[], fallbacks: Set<string> | undefined, guarded: Set<string>) {
+function checkRule(rule: Rule, problems: string[], guarded: Set<string>) {
   const where = rule.selector.slice(0, 120);
 
   if (rule.parent?.type === 'rule') problems.push(`${where}: nested rule (css.selectors.nesting)`);
@@ -199,13 +188,6 @@ function checkRule(rule: Rule, problems: string[], fallbacks: Set<string> | unde
 
     if (left.length) {
       problems.push(`${where} { ${prop} }: ${describe(new Map(left.map(b => [b, own.get(b) as Set<string>])))}`);
-    }
-
-    if (fallbacks && isGap(prop) && !inFallback(rule) && lacking('css.properties.gap.flex_context')?.length) {
-      const grid = rule.some(n => n.type === 'decl' && n.prop === 'display' && /grid/.test(n.value));
-      for (const selector of rule.selectors) {
-        if (!grid && !fallbacks.has(selector)) problems.push(`${selector} { ${prop} }: flex gap without its fallback`);
-      }
     }
   }
 }
@@ -262,25 +244,15 @@ function checkAtRule(rule: AtRule, problems: string[], guarded: Set<string>) {
   if (gaps.size) problems.push(`${where}: ${describe(gaps)}`);
 }
 
-/**
- * The problems that keep `css` from working in every floor browser, one message each. A `forced` build (see
- * css-compat.ts) gives every browser the flex gap fallback, so gaps need none there.
- */
-export function checkCss(css: string, { forced = false } = {}): string[] {
+/** The problems that keep `css` from working in every floor browser, one message each */
+export function checkCss(css: string): string[] {
   const root = postcss.parse(css);
   const problems: string[] = [];
-  const fallbacks = forced ? undefined : new Set<string>();
-
-  root.walkRules(rule => {
-    if (inFallback(rule) && rule.some(n => n.type === 'decl' && n.prop.endsWith('gap') && /^0(px)?$/.test(n.value))) {
-      rule.selectors.forEach(selector => fallbacks?.add(selector));
-    }
-  });
 
   // A feature that a positive @supports tests for is safe inside it: the CSS around the block is the fallback
   (function walk(container: Container, guarded: Set<string>) {
     container.each(node => {
-      if (node.type === 'rule') checkRule(node, problems, fallbacks, guarded);
+      if (node.type === 'rule') checkRule(node, problems, guarded);
       if (node.type === 'atrule') checkAtRule(node, problems, guarded);
       if (
         node.type === 'decl' &&
@@ -306,16 +278,14 @@ export function checkCss(css: string, { forced = false } = {}): string[] {
  * browser of the floor (assets/.browserslistrc) lacks, judged by browser-compat-data. build/enhancements.ts lists
  * the features accepted anyway.
  */
-export default function cssGate({ forced = false } = {}): Plugin {
+export default function cssGate(): Plugin {
   return {
     name: 'philomena-css-gate',
     apply: 'build',
     generateBundle(_, bundle) {
       const problems = Object.values(bundle)
         .filter(file => file.type === 'asset' && file.fileName.endsWith('.css'))
-        .flatMap(file =>
-          checkCss(String(file.type === 'asset' && file.source), { forced }).map(p => `${file.fileName}: ${p}`),
-        );
+        .flatMap(file => checkCss(String(file.type === 'asset' && file.source)).map(p => `${file.fileName}: ${p}`));
 
       if (problems.length) this.error(`CSS the floor browsers can't use:\n  ${problems.join('\n  ')}`);
     },

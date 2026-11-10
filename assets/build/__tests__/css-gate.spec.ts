@@ -31,6 +31,7 @@ describe('css-gate', () => {
     ['padding-block', '.a { padding-block: 0 }', 'css.properties.padding-block'],
     ['translate', '.a { translate: 1px }', 'css.properties.translate'],
     ['@supports selector()', '@supports selector(:hover) { .a { color: red } }', 'css.at-rules.supports.selector'],
+    ['a feature that only a negated @supports tests', '@supports not (inset: 0) { .a { inset: 0 } }', 'inset'],
     ['media ranges', '@media (width >= 1px) { .a { color: red } }', 'range_syntax'],
     ['a selector list that some browser drops', '.a, .b:focus-visible { color: red }', 'split the rule'],
     ['an unprefixed property without its prefix', '.a { user-select: none }', 'css.properties.user-select'],
@@ -39,7 +40,7 @@ describe('css-gate', () => {
     expect(checkCss(css).join('\n')).toContain(problem);
   });
 
-  it('accepts what the floor browsers have and the fallbacks the build emits', () => {
+  it('accepts what the floor browsers have and what the build emits', () => {
     expect(
       checkCss(`
         @namespace xhtml url("http://www.w3.org/1999/xhtml");
@@ -47,7 +48,7 @@ describe('css-gate', () => {
         @media (min-width: 600px) and (prefers-reduced-motion) { .a:not(.b):not(.c) > .d + .e { margin: 0 } }
         .a { -webkit-user-select: none; user-select: none; width: -moz-fit-content; width: fit-content }
         .a.focus-visible { outline: 1px solid; accent-color: red }
-        .a { display: flex; gap: 1px } @supports not (list-style-type: "") { .a { gap: 0 } .a > * + * { margin-left: 1px } }
+        .a { display: flex; gap: 1px }
         .grid { display: grid; gap: 1px; grid-template-columns: repeat(2, minmax(0, 1fr)) }
         ::-webkit-scrollbar { width: 1px } .a { -webkit-line-break: after-white-space; -webkit-unknown: 1 }
         @supports (color: lab(from red l 1 1% / calc(alpha + 0.1))) { :root { --a: lab(from red l a b) } }
@@ -58,10 +59,6 @@ describe('css-gate', () => {
         @supports ((display: grid)) { .a { color: red } } @media (-webkit-min-device-pixel-ratio: 2) { .a { color: red } }
       `),
     ).toEqual([]);
-  });
-
-  it('needs no flex gap fallback in a forced build', () => {
-    expect(checkCss('.a { display: flex; gap: 1px }', { forced: true })).toEqual([]);
   });
 
   it('fails the build on the stylesheets that need what the floor lacks', () => {
