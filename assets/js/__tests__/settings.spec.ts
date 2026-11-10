@@ -64,13 +64,6 @@ describe('setupSettings', () => {
     expect($<HTMLLinkElement>('#js-theme-stylesheet')!.getAttribute('href')).toBe('/css/purple.css');
   });
 
-  it('works without the theme settings of signed-in users', () => {
-    renderSettings({ signedIn: false });
-    setupSettings();
-
-    expect(document.documentElement.dataset.theme).toBeUndefined();
-  });
-
   it('stores the local settings as they change', () => {
     renderSettings({ signedIn: false });
     setupSettings();

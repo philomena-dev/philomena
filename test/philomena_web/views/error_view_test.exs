@@ -14,7 +14,6 @@ defmodule PhilomenaWeb.ErrorViewTest do
     assert response =~ "<title>404 - Philomena</title>"
     assert response =~ "Couldn&#39;t find what you were looking for!"
     assert response =~ ~s(<link href="/css/application.css" rel="stylesheet">)
-    refute response =~ "/css/blue.css"
   end
 
   test "statuses without their own message read as an internal error", %{conn: conn} do

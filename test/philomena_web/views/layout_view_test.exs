@@ -2,7 +2,6 @@ defmodule PhilomenaWeb.LayoutViewTest do
   use PhilomenaWeb.ConnCase, async: true
 
   import Philomena.UsersFixtures
-  alias Philomena.Repo
   alias Philomena.Users.{Settings, User}
   alias PhilomenaWeb.LayoutView
 
@@ -169,8 +168,11 @@ defmodule PhilomenaWeb.LayoutViewTest do
     end
 
     test "signed-in pages load the stylesheet of the theme's color, in its mode", %{conn: conn} do
-      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
-      Repo.update!(Ecto.Changeset.change(Repo.get!(Settings, user.id), theme: "light-purple"))
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+
+      patch(conn, ~p"/settings", %{
+        "user" => %{"settings" => %{"theme_name" => "light", "theme_color" => "purple"}}
+      })
 
       response = html_response(get(conn, ~p"/settings/edit"), 200)
 
