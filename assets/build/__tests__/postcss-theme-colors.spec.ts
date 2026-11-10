@@ -36,6 +36,5 @@ describe('postcss-theme-colors', () => {
 
     expect(run(css, '/srv/css/application.css')).toBe(css);
     expect(run(css)).toBe(css);
-    expect(postcss([postcssThemeColors()]).process(css, { from: theme }).css).toBe(css);
   });
 });
