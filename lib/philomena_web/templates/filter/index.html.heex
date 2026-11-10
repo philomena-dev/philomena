@@ -45,6 +45,7 @@
         <%= for filter <- @my_filters do %>
           {render(PhilomenaWeb.FilterView, "_filter.html", conn: @conn, filter: filter)}
         <% end %>
+        <p :if={Enum.empty?(@my_filters)}>You have not made any filters yet.</p>
       </div>
       <div :if={multiple_pages?(@my_filters)} class="block-header sub">
         {pagination}

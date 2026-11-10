@@ -1,115 +1,113 @@
-<div class="form">
-  <%= form_for @filter, @route, [class: "content"], fn f -> %>
-    {error_summary(@filter)}
-    <div class="form-control">
-      {text_input(f, :name, class: "input-field full-width", placeholder: "Name")}{error_tag(
-        f,
-        :name
-      )}
+<%= form_for @filter, @route, [class: "content"], fn f -> %>
+  {error_summary(@filter)}
+  <div class="form-control">
+    {text_input(f, :name, class: "input-field full-width", placeholder: "Name")}{error_tag(
+      f,
+      :name
+    )}
+  </div>
+  <div class="form-control">
+    <div class="form-message form-message-description">
+      This is a friendly name for this filter - it should be short and descriptive.
     </div>
-    <div class="form-control">
-      <div class="form-message form-message-description">
-        This is a friendly name for this filter - it should be short and descriptive.
-      </div>
-      {textarea(f, :description, class: "input-field full-width", placeholder: "Description")}{error_tag(
-        f,
-        :description
-      )}
+    {textarea(f, :description, class: "input-field full-width", placeholder: "Description")}{error_tag(
+      f,
+      :description
+    )}
+  </div>
+  <div class="form-control">
+    <div class="form-message form-message-description">
+      Here you can describe your filter in a bit more detail.
     </div>
-    <div class="form-control">
-      <div class="form-message form-message-description">
-        Here you can describe your filter in a bit more detail.
-      </div>
-      {label(f, :spoilered_tag_list, "Spoilered Tags")}{render(
-        PhilomenaWeb.TagView,
-        "_tag_editor.html",
-        f: f,
-        name: :spoilered_tag_list,
-        type: "edit"
-      )}{error_tag(
-        f,
-        :spoilered_tag_list
-      )}
+    {label(f, :spoilered_tag_list, "Spoilered Tags")}{render(
+      PhilomenaWeb.TagView,
+      "_tag_editor.html",
+      f: f,
+      name: :spoilered_tag_list,
+      type: "edit"
+    )}{error_tag(
+      f,
+      :spoilered_tag_list
+    )}
+  </div>
+  <div class="form-control">
+    <div class="form-message form-message-description">
+      These tags will spoiler the images they're associated with.
     </div>
-    <div class="form-control">
-      <div class="form-message form-message-description">
-        These tags will spoiler the images they're associated with.
-      </div>
-      {label(f, :spoilered_complex_str, "Complex Spoiler Filter")}{textarea(
-        f,
-        :spoilered_complex_str,
-        class: "input-field full-width",
-        autocapitalize: "none",
-        autocomplete: "off",
-        data: [autocomplete: "multi-tags"],
-        spellcheck: "false"
-      )}{error_tag(f, :spoilered_complex_str)}
+    {label(f, :spoilered_complex_str, "Complex Spoiler Filter")}{textarea(
+      f,
+      :spoilered_complex_str,
+      class: "input-field full-width",
+      autocapitalize: "none",
+      autocomplete: "off",
+      data: [autocomplete: "multi-tags"],
+      spellcheck: "false"
+    )}{error_tag(f, :spoilered_complex_str)}
+  </div>
+  <div class="form-control">
+    <div class="form-message form-message-description">
+      <p>
+        Use the search syntax here to specify an additional filter. For multiple filters, separate with a newline (or use the OR operator). Search fields excepting
+        <code class="code-span">faved_by</code>
+        are supported. See the search syntax guide for more information.
+      </p>
+      <p>
+        <strong>WARNING:</strong>
+        This filter is applied along with your tag filters. Tag filters may spoiler images that you mean to filter more precisely here. Double-check to make sure they don't interfere.
+      </p>
     </div>
-    <div class="form-control">
-      <div class="form-message form-message-description">
-        <p>
-          Use the search syntax here to specify an additional filter. For multiple filters, separate with a newline (or use the OR operator). Search fields excepting
-          <code class="code-span">faved_by</code>
-          are supported. See the search syntax guide for more information.
-        </p>
-        <p>
-          <strong>WARNING:</strong>
-          This filter is applied along with your tag filters. Tag filters may spoiler images that you mean to filter more precisely here. Double-check to make sure they don't interfere.
-        </p>
-      </div>
-      {label(f, :hidden_tag_list, "Hidden Tags")}{render(
-        PhilomenaWeb.TagView,
-        "_tag_editor.html",
-        f: f,
-        name: :hidden_tag_list,
-        type: "edit"
-      )}{error_tag(
-        f,
-        :hidden_tag_list
-      )}
+    {label(f, :hidden_tag_list, "Hidden Tags")}{render(
+      PhilomenaWeb.TagView,
+      "_tag_editor.html",
+      f: f,
+      name: :hidden_tag_list,
+      type: "edit"
+    )}{error_tag(
+      f,
+      :hidden_tag_list
+    )}
+  </div>
+  <div class="form-control">
+    <div class="form-message form-message-description">
+      These tags will hide images entirely from the site; if you go directly to an image, it will spoiler it.
     </div>
-    <div class="form-control">
-      <div class="form-message form-message-description">
-        These tags will hide images entirely from the site; if you go directly to an image, it will spoiler it.
-      </div>
-      {label(f, :hidden_complex_str, "Complex Hide Filter")}{textarea(
-        f,
-        :hidden_complex_str,
-        class: "input-field full-width",
-        autocapitalize: "none",
-        autocomplete: "off",
-        data: [autocomplete: "multi-tags"],
-        spellcheck: "false"
-      )}{error_tag(f, :hidden_complex_str)}
-      <div class="form-message form-message-description">
-        <p>
-          Use the search syntax here to specify an additional filter. For multiple filters, separate with a newline (or use the OR operator). Search fields excepting
-          <code class="code-span">faved_by</code>
-          are supported. See the search syntax guide for more information.
-        </p>
-        <p>
-          <strong>WARNING:</strong>
-          This filter is applied along with your tag filters. Tag filters may hide images that you mean to filter more precisely here. Double-check to make sure they don't interfere.
-        </p>
-      </div>
+    {label(f, :hidden_complex_str, "Complex Hide Filter")}{textarea(
+      f,
+      :hidden_complex_str,
+      class: "input-field full-width",
+      autocapitalize: "none",
+      autocomplete: "off",
+      data: [autocomplete: "multi-tags"],
+      spellcheck: "false"
+    )}{error_tag(f, :hidden_complex_str)}
+    <div class="form-message form-message-description">
+      <p>
+        Use the search syntax here to specify an additional filter. For multiple filters, separate with a newline (or use the OR operator). Search fields excepting
+        <code class="code-span">faved_by</code>
+        are supported. See the search syntax guide for more information.
+      </p>
+      <p>
+        <strong>WARNING:</strong>
+        This filter is applied along with your tag filters. Tag filters may hide images that you mean to filter more precisely here. Double-check to make sure they don't interfere.
+      </p>
     </div>
+  </div>
 
-    <%= cond do %>
-      <% is_nil(input_value(f, :id)) -> %>
-        <div class="form-control">
-          {checkbox_field(f, :public, "Public")}
-          <div class="form-message form-message-description">
-            <strong>You probably do not want to check this unless you know what you are doing - it cannot be changed later</strong>. Public filters can be shared with other users and used by them; if you make changes to a filter, it will update all users of that filter.
-          </div>
+  <%= cond do %>
+    <% is_nil(input_value(f, :id)) -> %>
+      <div class="form-control">
+        {checkbox_field(f, :public, "Public")}
+        <div class="form-message form-message-description">
+          <strong>You probably do not want to check this unless you know what you are doing - it cannot be changed later</strong>. Public filters can be shared with other users and used by them; if you make changes to a filter, it will update all users of that filter.
         </div>
-      <% input_value(f, :public) == true -> %>
-        <div class="form-control">
-          <div class="form-message form-message-description">
-            <strong>Changes made to this filter will affect anyone else using this filter! Check your changes, and make sure your changes don't change the filter's intent.</strong>
-          </div>
+      </div>
+    <% input_value(f, :public) == true -> %>
+      <div class="form-control">
+        <div class="form-message form-message-description">
+          <strong>Changes made to this filter will affect anyone else using this filter! Check your changes, and make sure your changes don't change the filter's intent.</strong>
         </div>
-      <% true -> %>
-    <% end %>
-    <div class="form-control-submit">{submit("Save Filter", class: "button")}</div>
+      </div>
+    <% true -> %>
   <% end %>
-</div>
+  <div class="form-control-submit">{submit("Save Filter", class: "button")}</div>
+<% end %>
