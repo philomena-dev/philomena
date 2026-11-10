@@ -99,8 +99,8 @@ describe('Image upload form', () => {
 
         <input id="image_sources_0_source" name="image[sources][0][source]" type="text" class="js-source-url" />
         <div class="js-tag-block fancy-tag-upload">
-          <textarea id="image_tag_input" name="image[tag_input]" class="input-field full-width tagsinput js-image-tags-input js-taginput js-taginput-plain"></textarea>
-          <div class="js-taginput input-field full-width tagsinput hidden js-taginput-fancy"></div>
+          <textarea id="image_tag_input" name="image[tag_input]" class="input-field full-width js-image-tags-input js-taginput js-taginput-plain"></textarea>
+          <div class="tag-box hidden js-taginput js-taginput-fancy"></div>
         </div>
         <button id="tagsinput-save" type="button" class="button">Save</button>
         <textarea id="image_description" name="image[description]" class="js-image-descr-input"></textarea>
@@ -577,8 +577,8 @@ describe('Image upload form - additional branches', () => {
 
         <input id="image_sources_0_source" name="image[sources][0][source]" type="text" class="js-source-url" />
         <div class="js-tag-block fancy-tag-upload">
-          <textarea id="image_tag_input" name="image[tag_input]" class="input-field full-width tagsinput js-image-tags-input js-taginput js-taginput-plain"></textarea>
-          <div class="js-taginput input-field full-width tagsinput hidden js-taginput-fancy"></div>
+          <textarea id="image_tag_input" name="image[tag_input]" class="input-field full-width js-image-tags-input js-taginput js-taginput-plain"></textarea>
+          <div class="tag-box hidden js-taginput js-taginput-fancy"></div>
         </div>
         <button id="tagsinput-save" type="button" class="button">Save</button>
         <textarea id="image_description" name="image[description]" class="js-image-descr-input"></textarea>

@@ -102,7 +102,7 @@ describe('Fancy tags input', () => {
   it('should allow removing previously added tags by clicking them', () => {
     setupTagsInput(tagBlock);
     addTag(plainInput, 'a');
-    assertNotNull($<HTMLAnchorElement>('span.tag a', fancyInput)).click();
+    assertNotNull($<HTMLButtonElement>('.tag-remove', fancyInput)).click();
     expect($$('span.tag', fancyInput)).toHaveLength(0);
   });
 

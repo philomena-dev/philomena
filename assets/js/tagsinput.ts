@@ -48,7 +48,7 @@ export function setupTagsInput(tagBlock: HTMLDivElement) {
   // Respond to reload event
   textarea.addEventListener('reload', importTags);
 
-  // Respond to [x] clicks in the tag editor
+  // Respond to clicks on the remove buttons of the tags
   tagBlock.addEventListener('click', handleTagClear);
 
   // Respond to key sequences in the input field
@@ -144,7 +144,7 @@ export function setupTagsInput(tagBlock: HTMLDivElement) {
     textarea.value = tags.join(', ');
 
     // Insert the new element
-    const el = `<span class="tag"><span class="tag-name">${escapeHtml(name)}</span><a class="tag-remove" href="#" data-click-focus=".js-taginput-input" data-tag-name="${escapeHtml(name)}" title="Remove">x</a></span>`;
+    const el = `<span class="tag"><span class="tag-name">${escapeHtml(name)}</span><button class="tag-remove" type="button" data-click-focus=".js-taginput-input" data-tag-name="${escapeHtml(name)}" aria-label="Remove ${escapeHtml(name)}">&times;</button></span>`;
     inputField.insertAdjacentHTML('beforebegin', el);
     inputField.value = '';
   }
