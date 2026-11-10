@@ -166,7 +166,7 @@
     --button-danger-hover-background: hsl(from $danger-color h s calc(l + 1));
     --button-danger-hover-border: hsl(from $danger-color h s calc(l - 13));
 
-    --downvote-disabled-color: hsl(from $vote-down-color calc(s - 40) calc(l - 20));
+    --downvote-disabled-color: hsl(from $vote-down-color h calc(s - 40) calc(l - 20));
     --dnp-warning-hover-color: hsl(from $vote-down-color h s calc(l + 10));
     --poll-form-label-background: hsl(from $base-color h calc(s - 16) calc(l + 36));
     --tag-dropdown-hover-background: hsl(from $foreground-color h s calc(l - 10));
