@@ -1,6 +1,4 @@
-<div
-  :for={{class, label} <- user_labels(@object)}
-  class={["label label--block", !assigns[:large] && "label--small", class]}
->
-  {label}
+<% labels = user_labels(@object) %>
+<div :if={labels != []} class={if assigns[:large], do: "badge-group", else: "badge-group compact"}>
+  <span :for={{class, label} <- labels} class={["badge", class]}><span>{label}</span></span>
 </div>

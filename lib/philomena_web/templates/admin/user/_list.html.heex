@@ -20,7 +20,7 @@
             <tr>
               <td phx-no-format>
               {link user.name, to: ~p"/profiles/#{user}"}<%= cond do %>
-                <% user.otp_required_for_login -> %><span class="banner__2fa success"><i class="fas fa-check"></i> 2FA</span> <% user.role != "user" -> %><span class="banner__2fa danger"><i class="fas fa-times"></i> 2FA</span> <% true -> %><% end %>
+                <% user.otp_required_for_login -> %><span class="badge badge-success ms-md"><span><i class="fas fa-check"></i> 2FA</span></span> <% user.role != "user" -> %><span class="badge badge-danger ms-md"><span><i class="fas fa-times"></i> 2FA</span></span> <% true -> %><% end %>
             </td>
               <td>
                 <%= if can?(@conn, :edit, Philomena.Users.User) do %>

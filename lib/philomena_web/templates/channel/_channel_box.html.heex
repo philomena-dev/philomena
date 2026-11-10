@@ -3,9 +3,9 @@
   <a class="media-box__header media-box__header--channel media-box__header--link" href={~p"/channels/#{@channel}"} title={@channel.title}>{@channel.title || @channel.short_name}</a>
   <div class="media-box__header media-box__header--channel">
     <%= if @channel.is_live do %>
-      <div class="me-lg label label--success label--block label--small"><strong>LIVE NOW</strong></div>{@channel.viewers} {pluralize "viewer", "viewers", @channel.viewers}
+      <div class="me-lg badge badge-success"><strong>LIVE NOW</strong></div>{@channel.viewers} {pluralize "viewer", "viewers", @channel.viewers}
     <% else %>
-      <div class="label label--danger label--block label--small"><strong>OFF AIR</strong></div>
+      <div class="badge badge-danger"><strong>OFF AIR</strong></div>
     <% end %>
   </div>
   <div class="media-box__content media-box__content--channel">

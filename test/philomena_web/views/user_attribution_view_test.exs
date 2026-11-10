@@ -151,15 +151,20 @@ defmodule PhilomenaWeb.UserAttributionViewTest do
     defp titled_user(title),
       do: %Philomena.Users.User{name: "Labelled", personal_title: title, role: "user"}
 
-    test "renders labels small by default and full size when large" do
+    test "renders labels as a compact badge group by default and full size when large" do
       object = %{user: titled_user("Artist")}
+      small = render_title("_user_title.html", object: object)
 
-      assert render_title("_user_title.html", object: object) =~
-               ~s(class="label label--block label--small label--primary")
+      assert small =~ ~s(class="badge-group compact")
+      assert small =~ ~s(class="badge badge-primary")
 
       large = render_title("_user_title.html", object: object, large: true)
-      assert large =~ ~s(class="label label--block label--primary")
-      refute large =~ "label--small"
+      assert large =~ ~s(class="badge-group")
+      refute large =~ "compact"
+    end
+
+    test "renders nothing for a user without labels" do
+      assert render_title("_user_title.html", object: %{user: titled_user(nil)}) =~ ~r/\A\s*\z/
     end
 
     test "escapes a personal title" do

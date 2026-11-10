@@ -28,20 +28,6 @@
   align-items: center;
 }
 
-.tag_change-tag-count {
-  display: flex;
-  gap: var(--padding-small);
-}
-
-.tag__change-info > .label--small,
-.tag_change-tag-count > .label--small {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  font-size: 12px;
-  padding: 2px 4px;
-}
-
 .tag__change-image {
   display: flex;
   gap: var(--padding-small);

@@ -13,10 +13,10 @@
     <% end %>
 
     <%= if @channel.is_live do %>
-      <span class="channel-strip__state label label--narrow label--success">LIVE NOW</span>
+      <span class="channel-strip__state badge badge-success"><span>LIVE NOW</span></span>
       <br />{@channel.viewers} {if @channel.viewers == 1, do: "viewer", else: "viewers"}
     <% else %>
-      <span class="channel-strip__state label label--narrow label--danger">OFF AIR</span>
+      <span class="channel-strip__state badge badge-danger"><span>OFF AIR</span></span>
     <% end %>
   </div>
 </div>

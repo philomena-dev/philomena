@@ -1,6 +1,6 @@
 /*
  * Philomena's styles of elements and classes that have no stylesheet of their own: Markdown paragraphs, quotes,
- * spoilers, labels and single-purpose helpers.
+ * spoilers and single-purpose helpers.
  */
 
 /* Slightly dirty, no clean way to strip top margins off headers though */
@@ -158,55 +158,6 @@ blockquote blockquote blockquote blockquote blockquote blockquote {
 
 .button_to {
   display: inline;
-}
-
-/* User titles (admin/mod/assistant) and channel states (live/off air) */
-.label {
-  padding: 6px;
-  overflow-y: hidden;
-}
-
-.label--small {
-  font-size: 9px;
-  overflow: hidden;
-}
-
-.label--block {
-  display: inline-block;
-  margin: 2px 6px 6px 0;
-}
-
-.label--narrow {
-  padding: 0 2px;
-}
-
-.label--success {
-  background: var(--success-light-color);
-  border: 1px solid var(--legacy-success-color);
-}
-
-.label--danger {
-  background: var(--danger-light-color);
-  border: 1px solid var(--legacy-danger-color);
-}
-
-.label--warning {
-  background: var(--warning-light-color);
-  border: 1px solid var(--legacy-warning-color);
-}
-
-.label--purple {
-  background: var(--assistant-color);
-  border: 1px solid var(--assistant-border-color);
-}
-
-.label--primary {
-  background: var(--primary-light-color);
-  border: 1px solid var(--legacy-primary-color);
-}
-
-a.label {
-  color: var(--foreground-color);
 }
 
 .large-text {

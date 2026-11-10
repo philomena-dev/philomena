@@ -13,7 +13,8 @@
       </div>
     <% end %>
     <div class="block-header sub">
-      <a href={~p"/notifications/categories/#{category}"}>View category ({notifications.total_entries})</a>
+      <a href={~p"/notifications/categories/#{category}"}>View category
+      <span class="counter subtle">{notifications.total_entries}</span></a>
     </div>
   </div>
 <% end %>

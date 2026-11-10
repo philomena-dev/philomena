@@ -90,19 +90,6 @@ td.table--stats__sparkline {
   overflow: hidden;
 }
 
-.banner__2fa {
-  margin-left: 8px;
-  padding: 2px;
-}
-
-.banner__2fa .success {
-  background: var(--legacy-success-color);
-}
-
-.banner__2fa .danger {
-  background: var(--legacy-danger-color);
-}
-
 .enable-2fa {
   margin-top: 1em;
 }

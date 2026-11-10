@@ -88,22 +88,22 @@
                   conn: @conn
                 )}
                 <%= if staff?(tag_change) do %>
-                  <div class="label label--small label--success">
-                    <i class="fa fa-gavel"></i> Staff Member
-                  </div>
+                  <span class="badge badge-success">
+                    <span><i class="fa fa-gavel"></i> Staff Member</span>
+                  </span>
                 <% end %>
                 <div class="flex-1 hidden-below-md"></div>
                 <span>{pretty_time(tag_change.created_at)}</span>
-                <div class="tag_change-tag-count">
+                <div class="badge-group">
                   <%= if added_tags_count > 0 do %>
-                    <div class="label label--small label--success">
-                      <i class="fa fa-plus"></i> {added_tags_count} tag(s)
-                    </div>
+                    <span class="badge badge-success">
+                      <span><i class="fa fa-plus"></i> {added_tags_count} tag(s)</span>
+                    </span>
                   <% end %>
                   <%= if removed_tags_count > 0 do %>
-                    <div class="label label--small label--danger">
-                      <i class="fa fa-minus"></i> {removed_tags_count} tag(s)
-                    </div>
+                    <span class="badge badge-danger">
+                      <span><i class="fa fa-minus"></i> {removed_tags_count} tag(s)</span>
+                    </span>
                   <% end %>
                 </div>
               </div>

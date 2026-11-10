@@ -10,11 +10,6 @@
   width: 240px;
 }
 
-.media-box__header--channel .label {
-  vertical-align: middle;
-  line-height: 11px;
-}
-
 .media-box__content--channel {
   height: 180px;
   padding-top: 0;
