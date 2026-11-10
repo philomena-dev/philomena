@@ -127,15 +127,20 @@ a:hover {
 
 /*
  * The reset removes every outline. Anything focusable gets the focus ring back here, at no specificity, so that the
- * components (and you) can restyle it; elements that are clipped by their container draw it inside themselves.
+ * components (and you) can restyle it; links and buttons that are clipped by their container draw it inside
+ * themselves, by the offset the container sets.
  */
 
 :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
   @mixin focus-ring;
 }
 
-:where(.tag, .media-box, .block-header, .tabs, .communication, .table-wrap) :where(a, button):focus-visible {
-  @mixin focus-ring-inset;
+:where(.tag, .media-box, .block-header, .tabs, .communication, .table-wrap) {
+  --focus-ring-link-offset: calc(-1 * var(--focus-outline));
+}
+
+:where(a, button):focus-visible {
+  outline-offset: var(--focus-ring-link-offset, 0);
 }
 
 /*
