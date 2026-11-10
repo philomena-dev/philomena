@@ -6,9 +6,14 @@ import postcss from 'postcss';
 import { preprocessCSS, resolveConfig, type ResolvedConfig } from 'vite';
 
 const assets = path.resolve(import.meta.dirname, '../..');
-const themes = path.join(assets, 'css/themes');
+const cssDir = path.join(assets, 'css');
 const contrastScript = path.join(assets, 'vendor/philomena-css/scripts/contrast.mjs');
-const hues = readdirSync(themes).filter(name => name.endsWith('.css'));
+const stylesheets = [
+  'application.css',
+  ...readdirSync(path.join(cssDir, 'themes'))
+    .filter(name => name.endsWith('.css'))
+    .map(name => `themes/${name}`),
+];
 
 // The header bars keep the colors of Philomena's themes, light text on a mid-tone bar that the framework's ratio for
 // its own header does not reach
@@ -67,10 +72,10 @@ describe('theme contrast', () => {
 
   afterAll(() => rmSync(dir, { recursive: true, force: true }));
 
-  it.each(hues)("gives %s the framework's contrast in both modes", async hue => {
-    const file = path.join(themes, hue);
+  it.each(stylesheets)("gives %s the framework's contrast in both modes", async name => {
+    const file = path.join(cssDir, name);
     const { code } = await preprocessCSS(readFileSync(file, 'utf8'), file, config);
-    const stylesheet = path.join(dir, hue);
+    const stylesheet = path.join(dir, name.replace('/', '-'));
 
     writeFileSync(stylesheet, themeBlocks(code));
     const { status, stdout, stderr } = spawnSync(process.execPath, [contrastScript, stylesheet], { encoding: 'utf8' });
