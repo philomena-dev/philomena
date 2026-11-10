@@ -30,13 +30,13 @@ export class TagSuggestionComponent implements SuggestionComponent {
     const { data } = this;
 
     return [
-      makeEl('div', { className: 'autocomplete__item__content' }, [
+      makeEl('div', { className: 'autocomplete-item-content' }, [
         makeEl('i', { className: 'fa-solid fa-tag' }),
         ' ',
         ...this.renderLabel(),
       ]),
       makeEl('span', {
-        className: 'autocomplete__item__tag__count',
+        className: 'autocomplete-tag-count',
         textContent: `  ${TagSuggestionComponent.renderImageCount(data.images)}`,
       }),
     ];
@@ -59,7 +59,7 @@ export class TagSuggestionComponent implements SuggestionComponent {
       }
 
       return makeEl('b', {
-        className: 'autocomplete__item__tag__match',
+        className: 'autocomplete-tag-match',
         textContent: part.matched,
       });
     });
@@ -103,17 +103,17 @@ export class HistorySuggestionComponent implements SuggestionComponent {
 
   render(): HTMLElement[] {
     return [
-      makeEl('div', { className: 'autocomplete__item__content' }, [
+      makeEl('div', { className: 'autocomplete-item-content' }, [
         makeEl('i', { className: 'fa-solid fa-history' }),
         makeEl('b', {
           textContent: ` ${this.content.slice(0, this.matchLength)}`,
-          className: 'autocomplete__item__history__match',
+          className: 'autocomplete-history-match',
         }),
         makeEl('span', {
           textContent: this.content.slice(this.matchLength),
         }),
       ]),
-      makeEl('div', { className: 'autocomplete__item__history__delete', title: 'Delete this history item' }, [
+      makeEl('div', { className: 'autocomplete-history-delete', title: 'Delete this history item' }, [
         makeEl('i', {
           className: 'fa-solid fa-xmark',
         }),
@@ -136,7 +136,7 @@ export class PropertySuggestionComponent implements SuggestionComponent {
 
   render(): HTMLElement[] {
     return [
-      makeEl('div', { className: 'autocomplete__item__content' }, [
+      makeEl('div', { className: 'autocomplete-item-content' }, [
         makeEl('i', { className: 'fa-solid fa-circle-info' }),
         ' ',
         ...this.#renderSuggestionWithHighlighting(),
@@ -150,7 +150,7 @@ export class PropertySuggestionComponent implements SuggestionComponent {
 
     const resultElements: (HTMLElement | string)[] = [
       makeEl('b', {
-        className: 'autocomplete__item__property__match',
+        className: 'autocomplete-property-match',
         textContent: renderedSuggestion.slice(0, matchedLength),
       }),
     ];
@@ -254,7 +254,7 @@ export class SuggestionsPopupComponent {
       return;
     }
 
-    const selectedClass = 'autocomplete__item--selected';
+    const selectedClass = 'selected';
 
     this.selectedItem?.element.classList.remove(selectedClass);
     this.cursor = index;
@@ -274,7 +274,7 @@ export class SuggestionsPopupComponent {
     }
 
     if (params.tags.length > 0 && params.history.length > 0) {
-      this.container.appendChild(makeEl('hr', { className: 'autocomplete__separator' }));
+      this.container.appendChild(makeEl('hr', { className: 'autocomplete-separator' }));
     }
 
     for (const suggestion of params.tags) {
@@ -282,7 +282,7 @@ export class SuggestionsPopupComponent {
     }
 
     if ((params.tags.length || params.history.length) && params.properties.length) {
-      this.container.appendChild(makeEl('hr', { className: 'autocomplete__separator' }));
+      this.container.appendChild(makeEl('hr', { className: 'autocomplete-separator' }));
     }
 
     for (const suggestion of params.properties) {
@@ -298,7 +298,7 @@ export class SuggestionsPopupComponent {
     const element = makeEl(
       'div',
       {
-        className: `autocomplete__item autocomplete__item__${type}`,
+        className: `autocomplete-item autocomplete-item-${type}`,
       },
       suggestion.render(),
     );
@@ -316,7 +316,7 @@ export class SuggestionsPopupComponent {
       if (
         item.suggestion.type === 'history' &&
         event.target instanceof HTMLElement &&
-        event.target.closest('.autocomplete__item__history__delete')
+        event.target.closest('.autocomplete-history-delete')
       ) {
         const detail: HistoryItemDeleteDetail = {
           suggestion: item.suggestion,

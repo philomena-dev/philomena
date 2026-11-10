@@ -21,50 +21,50 @@
   user-select: none;
 }
 
-.autocomplete__separator {
+.autocomplete-separator {
   margin: 0;
 }
 
-.autocomplete__item {
+.autocomplete-item {
   padding: var(--input-padding);
 }
 
-.autocomplete__item:hover,
-.autocomplete__item--selected {
+.autocomplete-item:hover,
+.autocomplete-item.selected {
   background-color: var(--tint-color);
 }
 
-.autocomplete__item__content {
+.autocomplete-item-content {
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.autocomplete__item__tag,
-.autocomplete__item__history {
+.autocomplete-item-tag,
+.autocomplete-item-history {
   display: flex;
   justify-content: space-between;
   white-space: pre;
 }
 
-.autocomplete__item__tag__match,
-.autocomplete__item__property__match {
+.autocomplete-tag-match,
+.autocomplete-property-match {
   color: var(--text-color);
 }
 
-.autocomplete__item__history {
+.autocomplete-item-history {
   padding: 0;
   color: var(--link-color);
 }
 
-.autocomplete__item__history .autocomplete__item__content {
+.autocomplete-item-history .autocomplete-item-content {
   padding: var(--input-padding);
 }
 
-.autocomplete__item__history__match {
+.autocomplete-history-match {
   color: var(--link-strong-color);
 }
 
-.autocomplete__item__history__delete {
+.autocomplete-history-delete {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -73,13 +73,13 @@
 }
 
 /* Always shown, as touch screens have no hover */
-.autocomplete__item__history__delete:hover {
+.autocomplete-history-delete:hover {
   color: var(--danger-tint-text-color);
   background-color: var(--danger-tint-color);
 }
 
 /* Narrow spaces between the groups of digits */
-.autocomplete__item__tag__count {
+.autocomplete-tag-count {
   word-spacing: -0.25em;
 }
 
