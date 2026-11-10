@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     // `lib` is the ECMAScript level of the browsers in `.browserslistrc`: they
-    // all have ES2021, Safari 14.1 lacks ES2022 (`Array.prototype.at`).
+    // all have ES2021, the floor Safari lacks ES2022 (`Array.prototype.at`).
     //
     // Tests need `@types/node`, which pulls in more of the standard library
     // (`<reference lib="es2020" />` plus some `esnext` parts), so the IDE may

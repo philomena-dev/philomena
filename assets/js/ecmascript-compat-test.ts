@@ -6,7 +6,7 @@
  */
 
 function _ecmascript2022(list: number[]) {
-  // @ts-expect-error Safari 14.1 lacks the ES2022 `Array.prototype.at`, which
-  // is past the `lib` of tsconfig.json.
+  // @ts-expect-error The floor Safari lacks the ES2022 `Array.prototype.at`,
+  // which is past the `lib` of tsconfig.json.
   return list.at(-1);
 }
