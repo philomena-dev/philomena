@@ -25,7 +25,7 @@ header_class =
     class={"media-box__header media-box__header--link-row #{header_class}"}
     data-image-id={@image.id}
   >
-    <a class="interaction--fave" data-image-id={@image.id} href="#" rel="nofollow"><span
+    <a class="interaction--fave js-interaction-fave" data-image-id={@image.id} href="#" rel="nofollow"><span
       class="fave-span"
       title="Fave!"
     ><i class="fa fa-star"></i></span><span
@@ -33,7 +33,7 @@ header_class =
       data-image-id={@image.id}
       title="Favorites"
     >{@image.faves_count}</span></a><a
-      class="interaction--upvote"
+      class="interaction--upvote js-interaction-upvote"
       data-image-id={@image.id}
       href="#"
       rel="nofollow"
@@ -42,7 +42,7 @@ header_class =
       data-image-id={@image.id}
       title="Score"
     >{@image.score}</span><a
-      class="interaction--downvote"
+      class="interaction--downvote js-interaction-downvote"
       data-image-id={@image.id}
       href="#"
       rel="nofollow"
@@ -51,7 +51,7 @@ header_class =
       href={"/#{@image.id}#comments"}
       title="Comments"
     ><i class="fa fa-comments"></i><span class="comments_count" data-image-id={@image.id}>{@image.comments_count}</span></a><a
-      class="interaction--hide"
+      class="interaction--hide js-interaction-hide"
       data-image-id={@image.id}
       href="#"
       rel="nofollow"

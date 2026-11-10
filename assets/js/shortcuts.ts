@@ -35,6 +35,13 @@ function click(selector: string) {
   }
 }
 
+// Interacts with the hovered thumbnail, or else with the image of the image page
+function clickInteraction(kind: string) {
+  const imageId = getHover();
+
+  click(imageId ? `.js-interaction-${kind}[data-image-id="${imageId}"]` : `.image-metabar .js-interaction-${kind}`);
+}
+
 const actions = {
   // go to previous image
   [keys.KeyJ]: () => click('.js-prev'),
@@ -60,15 +67,11 @@ const actions = {
   // open original in a new tab
   [keys.KeyV]: () => openFullViewNewTab(),
 
-  // favourite image
-  [keys.KeyF]() {
-    click(getHover() ? `a.interaction--fave[data-image-id="${getHover()}"]` : '.image-metabar a.interaction--fave');
-  },
+  // favorite image
+  [keys.KeyF]: () => clickInteraction('fave'),
 
   // upvote image
-  [keys.KeyU]() {
-    click(getHover() ? `a.interaction--upvote[data-image-id="${getHover()}"]` : '.image-metabar a.interaction--upvote');
-  },
+  [keys.KeyU]: () => clickInteraction('upvote'),
 };
 
 export function listenForKeys() {

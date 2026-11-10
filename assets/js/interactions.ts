@@ -94,38 +94,38 @@ function setScore(imageId: string, data: ScorePayload) {
 
 function showUpvoted(imageId: string) {
   cacheStatus(imageId, 'voted', 'up');
-  onImage(imageId, '.interaction--upvote', el => el.classList.add('active'));
+  onImage(imageId, '.js-interaction-upvote', el => el.classList.add('active'));
 }
 
 function showDownvoted(imageId: string) {
   cacheStatus(imageId, 'voted', 'down');
-  onImage(imageId, '.interaction--downvote', el => el.classList.add('active'));
+  onImage(imageId, '.js-interaction-downvote', el => el.classList.add('active'));
 }
 
 function showFaved(imageId: string) {
   cacheStatus(imageId, 'faved', '');
-  onImage(imageId, '.interaction--fave', el => el.classList.add('active'));
+  onImage(imageId, '.js-interaction-fave', el => el.classList.add('active'));
 }
 
 function showHidden(imageId: string) {
   cacheStatus(imageId, 'hidden', '');
-  onImage(imageId, '.interaction--hide', el => el.classList.add('active'));
+  onImage(imageId, '.js-interaction-hide', el => el.classList.add('active'));
 }
 
 function resetVoted(imageId: string) {
   uncacheStatus(imageId, 'voted');
-  onImage(imageId, '.interaction--upvote', el => el.classList.remove('active'));
-  onImage(imageId, '.interaction--downvote', el => el.classList.remove('active'));
+  onImage(imageId, '.js-interaction-upvote', el => el.classList.remove('active'));
+  onImage(imageId, '.js-interaction-downvote', el => el.classList.remove('active'));
 }
 
 function resetFaved(imageId: string) {
   uncacheStatus(imageId, 'faved');
-  onImage(imageId, '.interaction--fave', el => el.classList.remove('active'));
+  onImage(imageId, '.js-interaction-fave', el => el.classList.remove('active'));
 }
 
 function resetHidden(imageId: string) {
   uncacheStatus(imageId, 'hidden');
-  onImage(imageId, '.interaction--hide', el => el.classList.remove('active'));
+  onImage(imageId, '.js-interaction-hide', el => el.classList.remove('active'));
 }
 
 function interact(type: EndpointType, imageId: string, method: HttpMethod, data: Record<string, unknown> = {}) {
@@ -169,7 +169,7 @@ function loadInteractions() {
 
   /* Users will blind downvote without this */
   window.booru.imagesWithDownvotingDisabled.forEach((i: string) => {
-    onImage(i, '.interaction--downvote', (node: HTMLElement) => {
+    onImage(i, '.js-interaction-downvote', (node: HTMLElement) => {
       // TODO Use a 'js-' class to target these instead
       const icon = $('i', node) || $('.oc-icon-small', node) || node;
 
@@ -181,31 +181,31 @@ function loadInteractions() {
 
 const targets: Record<string, (imageId: string) => unknown> = {
   /* Active-state targets first */
-  '.interaction--upvote.active'(imageId: string) {
+  '.js-interaction-upvote.active'(imageId: string) {
     interact('vote', imageId, 'DELETE').then(() => resetVoted(imageId));
   },
-  '.interaction--downvote.active'(imageId: string) {
+  '.js-interaction-downvote.active'(imageId: string) {
     if (downvoteRestricted(imageId)) {
       return;
     }
 
     interact('vote', imageId, 'DELETE').then(() => resetVoted(imageId));
   },
-  '.interaction--fave.active'(imageId: string) {
+  '.js-interaction-fave.active'(imageId: string) {
     interact('fave', imageId, 'DELETE').then(() => resetFaved(imageId));
   },
-  '.interaction--hide.active'(imageId: string) {
+  '.js-interaction-hide.active'(imageId: string) {
     interact('hide', imageId, 'DELETE').then(() => resetHidden(imageId));
   },
 
   /* Inactive targets */
-  '.interaction--upvote:not(.active)'(imageId: string) {
+  '.js-interaction-upvote:not(.active)'(imageId: string) {
     interact('vote', imageId, 'POST', { up: true }).then(() => {
       resetVoted(imageId);
       showUpvoted(imageId);
     });
   },
-  '.interaction--downvote:not(.active)'(imageId: string) {
+  '.js-interaction-downvote:not(.active)'(imageId: string) {
     if (downvoteRestricted(imageId)) {
       return;
     }
@@ -215,14 +215,14 @@ const targets: Record<string, (imageId: string) => unknown> = {
       showDownvoted(imageId);
     });
   },
-  '.interaction--fave:not(.active)'(imageId: string) {
+  '.js-interaction-fave:not(.active)'(imageId: string) {
     interact('fave', imageId, 'POST').then(() => {
       resetVoted(imageId);
       showFaved(imageId);
       showUpvoted(imageId);
     });
   },
-  '.interaction--hide:not(.active)'(imageId: string) {
+  '.js-interaction-hide:not(.active)'(imageId: string) {
     interact('hide', imageId, 'POST').then(() => {
       showHidden(imageId);
     });
@@ -253,7 +253,9 @@ function bindInteractions() {
 }
 
 function loggedOutInteractions() {
-  for (const el of $$<HTMLElement>('.interaction--fave,.interaction--upvote,.interaction--downvote,.interaction--hide')) {
+  for (const el of $$<HTMLElement>(
+    '.js-interaction-fave,.js-interaction-upvote,.js-interaction-downvote,.js-interaction-hide',
+  )) {
     el.setAttribute('href', '/sessions/new');
   }
 }

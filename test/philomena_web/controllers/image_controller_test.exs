@@ -214,9 +214,9 @@ defmodule PhilomenaWeb.ImageControllerTest do
       refute response =~ ~s(id="edit-description")
       refute response =~ ~s(id="edit-source")
       refute response =~ ~s(id="edit-tags")
-      refute response =~ "interaction--fave"
-      refute response =~ "interaction--upvote"
-      refute response =~ "interaction--downvote"
+      refute response =~ "js-interaction-fave"
+      refute response =~ "js-interaction-upvote"
+      refute response =~ "js-interaction-downvote"
       assert response =~ ~r/class="favorites"[^>]*>7</
       assert response =~ "Unsubscribe"
     end
@@ -230,7 +230,7 @@ defmodule PhilomenaWeb.ImageControllerTest do
       assert response =~ ~r/class="upvotes"[^>]*>5</
       assert response =~ ~r/class="downvotes"[^>]*>2</
       assert response =~ ~r/class="score[^"]*"[^>]*>3</
-      assert response =~ "interaction--fave"
+      assert response =~ "js-interaction-fave"
       assert response =~ ~s(href="/sessions/new"><i class="fa fa-bell">)
       assert response =~ "Featured in"
       assert response =~ "Sign in to create a gallery"
@@ -243,7 +243,7 @@ defmodule PhilomenaWeb.ImageControllerTest do
 
       response = html_response(get(conn, ~p"/images/#{image}"), 200)
 
-      assert response =~ "interaction--fave"
+      assert response =~ "js-interaction-fave"
       assert response =~ ~s(id="edit-tags")
       assert response =~ ~s(id="uploader-form")
       assert response =~ ~s(action="/images/#{image.id}/comments")

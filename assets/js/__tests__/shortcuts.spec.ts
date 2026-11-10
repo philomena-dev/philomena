@@ -27,14 +27,14 @@ describe('Keyboard shortcuts', () => {
       <div class="image-metabar">
         <a class="js-prev" href="#prev"></a><a class="js-up" href="#up"></a><a class="js-next" href="#next"></a>
         <a class="js-rand" href="#rand"></a>
-        <a class="interaction--fave" data-image-id="1" href="#"></a>
-        <a class="interaction--upvote" data-image-id="1" href="#"></a>
+        <a class="js-interaction-fave" data-image-id="1" href="#"></a>
+        <a class="js-interaction-upvote" data-image-id="1" href="#"></a>
       </div>
       <a class="js-source-link" href="#source"></a>
       <button class="js-tag-sauce-toggle"></button>
       <div class="media-box" data-image-id="2">
-        <a class="interaction--fave" data-image-id="2" href="#"></a>
-        <a class="interaction--upvote" data-image-id="2" href="#"></a>
+        <a class="js-interaction-fave" data-image-id="2" href="#"></a>
+        <a class="js-interaction-upvote" data-image-id="2" href="#"></a>
       </div>
       <div class="image-target" data-uris='{"full": "/full.png"}'></div>
       <input type="text">
@@ -57,8 +57,8 @@ describe('Keyboard shortcuts', () => {
     ['r', '.js-rand'],
     ['s', '.js-source-link'],
     ['l', '.js-tag-sauce-toggle'],
-    ['f', '.image-metabar .interaction--fave'],
-    ['u', '.image-metabar .interaction--upvote'],
+    ['f', '.image-metabar .js-interaction-fave'],
+    ['u', '.image-metabar .js-interaction-upvote'],
   ])('pressing %s clicks %s', (key, selector) => {
     const handler = clicks(selector);
 
@@ -70,8 +70,8 @@ describe('Keyboard shortcuts', () => {
   it('faves and upvotes the thumbnail under the pointer instead of the image page', () => {
     hovered = document.querySelector('.media-box');
     const page = clicks('.image-metabar a');
-    const fave = clicks('.media-box .interaction--fave');
-    const upvote = clicks('.media-box .interaction--upvote');
+    const fave = clicks('.media-box .js-interaction-fave');
+    const upvote = clicks('.media-box .js-interaction-upvote');
 
     press('f');
     press('u');
@@ -84,7 +84,7 @@ describe('Keyboard shortcuts', () => {
   it('treats a hovered thumbnail without an image as no thumbnail', () => {
     hovered = document.querySelector('.media-box');
     hovered!.removeAttribute('data-image-id');
-    const page = clicks('.image-metabar .interaction--fave');
+    const page = clicks('.image-metabar .js-interaction-fave');
 
     press('f');
 
