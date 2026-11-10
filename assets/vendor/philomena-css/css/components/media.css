@@ -54,7 +54,7 @@
 }
 
 .media-box .media-box-header a:hover {
-  @mixin bar-links-hover;
+  @mixin links-hover;
 }
 
 /*

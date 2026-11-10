@@ -21,8 +21,8 @@
   --link-style-hover-decoration: underline;
 }
 
-/* The hover look of the links in a bar, called inside its `a:hover` rule */
-@define-mixin bar-links-hover {
+/* The hover look of the links in a container, called inside its `a:hover` rule */
+@define-mixin links-hover {
   text-decoration: var(--link-style-hover-decoration, var(--link-style-decoration, none));
 }
 

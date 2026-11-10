@@ -44,7 +44,7 @@
 }
 
 .block .block-header a:hover {
-  @mixin bar-links-hover;
+  @mixin links-hover;
 }
 
 /* Actions sit at the end of the bar */

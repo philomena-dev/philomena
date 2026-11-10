@@ -187,5 +187,5 @@
 }
 
 .editor .editor-footer a:hover {
-  @mixin bar-links-hover;
+  @mixin links-hover;
 }

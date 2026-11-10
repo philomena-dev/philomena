@@ -30,7 +30,7 @@ rewritten to state, hover or position through custom properties instead, read by
   `--link-style-*` custom properties (the new `content-links` and `bar-links` mixins) that one `a` rule applies, and
   buttons, nav links, tags and badges reset them, in place of `a:where(:not($(content-controls)))`, whose
   `.tag a`-style arguments floor browsers can't parse. Each bar underlines its hovered links in a `{bar} a:hover`
-  rule (the new `bar-links-hover` mixin), of the specificity upstream's had. Where link containers nest, the
+  rule (the new `links-hover` mixin), of the specificity upstream's had. Where link containers nest, the
   innermost one decides, where upstream the most specific rule did (a block in a colored card, say). A link inside a
   `.button` or `.nav-link` (nested interactive content, invalid HTML) is reset as well. The options bar of
   `communication.css` lays out every link but buttons as `a:where(:not(.button))`, links in a tag or badge there

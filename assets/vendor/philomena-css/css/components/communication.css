@@ -151,7 +151,7 @@
 }
 
 .communication .communication-options a:hover {
-  @mixin bar-links-hover;
+  @mixin links-hover;
 }
 
 .communication .communication-options a:where(:not(.button)) {
