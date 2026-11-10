@@ -37,23 +37,25 @@
   </li>
 </ul>
 <h4>Observed users</h4>
-<table class="table">
-  <thead>
-    <tr>
-      <th>Username</th>
-      <th>Account Used</th>
-      <th>Last Seen</th>
-      <th>Created At</th>
-    </tr>
-  </thead>
-  <tbody>
-    <%= for uip <- @user_ips do %>
+<div class="table-wrap responsive">
+  <table class="table striped">
+    <thead>
       <tr>
-        <td>{link(uip.user.name, to: ~p"/profiles/#{uip.user}")}</td>
-        <td>{uip.uses} times</td>
-        <td>{pretty_time(uip.updated_at)}</td>
-        <td>{pretty_time(uip.user.created_at)}</td>
+        <th>Username</th>
+        <th>Account Used</th>
+        <th>Last Seen</th>
+        <th>Created At</th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <%= for uip <- @user_ips do %>
+        <tr>
+          <td>{link(uip.user.name, to: ~p"/profiles/#{uip.user}")}</td>
+          <td>{uip.uses} times</td>
+          <td>{pretty_time(uip.updated_at)}</td>
+          <td>{pretty_time(uip.user.created_at)}</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

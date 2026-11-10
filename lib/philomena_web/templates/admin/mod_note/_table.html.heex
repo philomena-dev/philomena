@@ -1,29 +1,31 @@
-<table class="table">
-  <thead>
-    <tr>
-      <td>Object</td>
-      <td>Note</td>
-      <td>Time</td>
-      <td>Moderator</td>
-      <td>Actions</td>
-    </tr>
-  </thead>
-  <tbody>
-    <%= for {note, body} <- @mod_notes do %>
+<div class="table-wrap responsive">
+  <table class="table striped">
+    <thead>
       <tr>
-        <td>{link_to_target(note)}</td>
-        <td>{body}</td>
-        <td>{pretty_time(note.created_at)}</td>
-        <td>{link(note.moderator.name, to: ~p"/profiles/#{note.moderator}")}</td>
-        <td>
-          <%= if can?(@conn, :update, note) do %>
-            {link("Edit", to: ~p"/admin/mod_notes/#{note}/edit")} &bull; {link("Delete",
-              to: ~p"/admin/mod_notes/#{note}",
-              data: [confirm: "Are you really, really sure?", method: "delete"]
-            )}
-          <% end %>
-        </td>
+        <td>Object</td>
+        <td>Note</td>
+        <td>Time</td>
+        <td>Moderator</td>
+        <td>Actions</td>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <%= for {note, body} <- @mod_notes do %>
+        <tr>
+          <td>{link_to_target(note)}</td>
+          <td>{body}</td>
+          <td>{pretty_time(note.created_at)}</td>
+          <td>{link(note.moderator.name, to: ~p"/profiles/#{note.moderator}")}</td>
+          <td>
+            <%= if can?(@conn, :update, note) do %>
+              {link("Edit", to: ~p"/admin/mod_notes/#{note}/edit")} &bull; {link("Delete",
+                to: ~p"/admin/mod_notes/#{note}",
+                data: [confirm: "Are you really, really sure?", method: "delete"]
+              )}
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

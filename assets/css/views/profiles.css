@@ -143,3 +143,8 @@ td.table--stats__sparkline {
     height: var(--reduced-communication-avatar-size);
   }
 }
+
+/* An artist link hidden from the public, which only its owner and staff see */
+.alternating-color.private-link {
+  background-color: var(--danger-tint-color);
+}

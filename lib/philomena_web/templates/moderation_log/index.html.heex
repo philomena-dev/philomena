@@ -12,37 +12,39 @@ pagination =
     {pagination}
   </div>
   <div class="block-content">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Moderator</th>
-          <th>Type</th>
-          <th>Body</th>
-          <th>Creation time</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <%= for log <- @moderation_logs do %>
+    <div class="table-wrap responsive">
+      <table class="table striped hover">
+        <thead>
           <tr>
-            <td>
-              {render(PhilomenaWeb.UserAttributionView, "_user.html",
-                object: %{user: log.user},
-                conn: @conn
-              )}
-            </td>
-            <td>{log.type}</td>
-            <td>{log.body}</td>
-            <td>{pretty_time(log.created_at)}</td>
-            <td>
-              <%= link to: log.subject_path do %>
-                <i class="fa fa-eye"></i> View subject
-              <% end %>
-            </td>
+            <th>Moderator</th>
+            <th>Type</th>
+            <th>Body</th>
+            <th>Creation time</th>
+            <th>Actions</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <%= for log <- @moderation_logs do %>
+            <tr>
+              <td>
+                {render(PhilomenaWeb.UserAttributionView, "_user.html",
+                  object: %{user: log.user},
+                  conn: @conn
+                )}
+              </td>
+              <td>{log.type}</td>
+              <td>{log.body}</td>
+              <td>{pretty_time(log.created_at)}</td>
+              <td>
+                <%= link to: log.subject_path do %>
+                  <i class="fa fa-eye"></i> View subject
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   </div>
   <div :if={multiple_pages?(@moderation_logs)} class="block-header sub">
     {pagination}

@@ -94,7 +94,7 @@
       <% end %>
       <%= for link <- @user.verified_links, should_see_link?(@conn, @user, link) do %>
         <% watchers = if link.tag, do: @watcher_counts[link.tag.id] || 0, else: 0 %>
-        <div class={"block-content alternating-color break-word #{link_block_class(link)}"}>
+        <div class={["block-content alternating-color break-word", link_block_class(link)]}>
           <div class="text-center">
             <%= if link.tag do %>
               <div>{render(PhilomenaWeb.TagView, "_tag.html", tag: link.tag, conn: @conn)}</div>
@@ -186,22 +186,24 @@
         </div>
         <%= if Enum.any?(@mod_notes) do %>
           <div class="block-content">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Note</th>
-                  <th>Created</th>
-                </tr>
-              </thead>
-              <tbody>
-                <%= for {mod_note, body} <- @mod_notes do %>
+            <div class="table-wrap responsive">
+              <table class="table striped">
+                <thead>
                   <tr>
-                    <td>{body}</td>
-                    <td>{pretty_time(mod_note.created_at)}</td>
+                    <th>Note</th>
+                    <th>Created</th>
                   </tr>
-                <% end %>
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  <%= for {mod_note, body} <- @mod_notes do %>
+                    <tr>
+                      <td>{body}</td>
+                      <td>{pretty_time(mod_note.created_at)}</td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
           </div>
         <% end %>
       </div>
@@ -216,22 +218,24 @@
       <div class="block">
         <div class="block-header"><span class="block-header-title">Name History</span></div>
         <div class="block-content">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Changed</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= for nc <- @name_changes do %>
+          <div class="table-wrap responsive">
+            <table class="table striped">
+              <thead>
                 <tr>
-                  <td>{nc.name}</td>
-                  <td>{pretty_time(nc.created_at)}</td>
+                  <th>Name</th>
+                  <th>Changed</th>
                 </tr>
-              <% end %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <%= for nc <- @name_changes do %>
+                  <tr>
+                    <td>{nc.name}</td>
+                    <td>{pretty_time(nc.created_at)}</td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     <% end %>

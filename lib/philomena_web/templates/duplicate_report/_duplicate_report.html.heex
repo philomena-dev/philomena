@@ -1,5 +1,4 @@
-<tr class={"#{"duplicate-report-#{@report.id}"}"}>
-  <% background_class = background_class(@report) %>
+<tr class={"duplicate-report-#{@report.id}"}>
   <td class="dupe-report-list__cell dupe-report-list--image">
     {render(PhilomenaWeb.DuplicateReportView, "_image_cell.html",
       image: @report.image,
@@ -17,111 +16,115 @@
     )}
   </td>
   <td class="dr__diff dupe-report-list__cell">
-    <table class="table">
-      <tr>
-        <%= if same_aspect_ratio?(@report) do %>
-          <td class="success">
-            <a href={~p"/duplicate_reports/#{@report}"} phx-no-format>Visual diff </a>(Same aspect ratio)
-          </td>
-        <% else %>
-          <td class="warning">Different aspect ratio</td>
-        <% end %>
-      </tr>
-      <tr>
-        <%= cond do %>
-          <% both_are_edits?(@report) -> %>
-            <td class="warning">Both are edits</td>
-          <% target_is_edit?(@report) -> %>
-            <td class="danger">Target is an edit</td>
-          <% source_is_edit?(@report) -> %>
-            <td class="danger">Source is an edit</td>
-          <% true -> %>
-            <td class="success">Neither is an edit</td>
-        <% end %>
-      </tr>
-      <tr>
-        <%= cond do %>
-          <% both_are_alternate_versions?(@report) -> %>
-            <td class="warning">Both are alternate versions</td>
-          <% target_is_alternate_version?(@report) -> %>
-            <td class="danger">Target is an alternate version</td>
-          <% source_is_alternate_version?(@report) -> %>
-            <td class="danger">Source is an alternate version</td>
-          <% true -> %>
-            <td class="success">Neither is an alternate version</td>
-        <% end %>
-      </tr>
-      <tr>
-        <%= cond do %>
-          <% same_res?(@report) -> %>
-            <td class="success">Same resolution</td>
-          <% higher_res?(@report) -> %>
-            <td class="warning">Target resolution better</td>
-          <% true -> %>
-            <td class="warning">Source resolution better</td>
-        <% end %>
-      </tr>
-      <tr>
-        <%= cond do %>
-          <% same_format?(@report) -> %>
-            <td class="success">Same format {file_types(@report)}</td>
-          <% better_format?(@report) -> %>
-            <td class="warning">Target format better {file_types(@report)}</td>
-          <% true -> %>
-            <td class="warning">Source format better {file_types(@report)}</td>
-        <% end %>
-      </tr>
-      <tr>
-        <%= cond do %>
-          <% same_artist_tags?(@report) -> %>
-            <td class="success">Same artist tags</td>
-          <% more_artist_tags_on_target?(@report) -> %>
-            <td class="warning">More artist tags on target</td>
-          <% more_artist_tags_on_source?(@report) -> %>
-            <td class="warning">More artist tags on source</td>
-          <% true -> %>
-            <td class="danger">Different artist tags</td>
-        <% end %>
-      </tr>
-      <tr>
-        <%= cond do %>
-          <% neither_have_source?(@report) -> %>
-            <td class="warning">Neither have sources</td>
-          <% same_source?(@report) -> %>
-            <td class="success">Same sources</td>
-          <% similar_source?(@report) -> %>
-            <td class="warning">Same hostname</td>
-          <% source_on_target?(@report) -> %>
-            <td class="warning">Target has a source</td>
-          <% source_on_source?(@report) -> %>
-            <td class="warning">Source has a source</td>
-          <% true -> %>
-            <td class="danger">Different sources</td>
-        <% end %>
-      </tr>
-      <tr>
-        <%= if same_rating_tags?(@report) do %>
-          <td class="success">Same rating tags</td>
-        <% else %>
-          <td class="danger">Different rating tags</td>
-        <% end %>
-      </tr>
-      <tr>
-        <%= cond do %>
-          <% not source_approved?(@report) -> %>
-            <td class="danger">Source is not approved</td>
-          <% not target_approved?(@report) -> %>
-            <td class="danger">Target is not approved</td>
-          <% forward_merge?(@report) -> %>
-            <td class="warning">Target newer</td>
-          <% true -> %>
-            <td class="success">Target older</td>
-        <% end %>
-      </tr>
-    </table>
+    <div class="table-wrap">
+      <table class="table">
+        <tbody>
+          <tr>
+            <%= if same_aspect_ratio?(@report) do %>
+              <td class="table-success">
+                <a href={~p"/duplicate_reports/#{@report}"} phx-no-format>Visual diff </a>(Same aspect ratio)
+              </td>
+            <% else %>
+              <td class="table-warning">Different aspect ratio</td>
+            <% end %>
+          </tr>
+          <tr>
+            <%= cond do %>
+              <% both_are_edits?(@report) -> %>
+                <td class="table-warning">Both are edits</td>
+              <% target_is_edit?(@report) -> %>
+                <td class="table-danger">Target is an edit</td>
+              <% source_is_edit?(@report) -> %>
+                <td class="table-danger">Source is an edit</td>
+              <% true -> %>
+                <td class="table-success">Neither is an edit</td>
+            <% end %>
+          </tr>
+          <tr>
+            <%= cond do %>
+              <% both_are_alternate_versions?(@report) -> %>
+                <td class="table-warning">Both are alternate versions</td>
+              <% target_is_alternate_version?(@report) -> %>
+                <td class="table-danger">Target is an alternate version</td>
+              <% source_is_alternate_version?(@report) -> %>
+                <td class="table-danger">Source is an alternate version</td>
+              <% true -> %>
+                <td class="table-success">Neither is an alternate version</td>
+            <% end %>
+          </tr>
+          <tr>
+            <%= cond do %>
+              <% same_res?(@report) -> %>
+                <td class="table-success">Same resolution</td>
+              <% higher_res?(@report) -> %>
+                <td class="table-warning">Target resolution better</td>
+              <% true -> %>
+                <td class="table-warning">Source resolution better</td>
+            <% end %>
+          </tr>
+          <tr>
+            <%= cond do %>
+              <% same_format?(@report) -> %>
+                <td class="table-success">Same format {file_types(@report)}</td>
+              <% better_format?(@report) -> %>
+                <td class="table-warning">Target format better {file_types(@report)}</td>
+              <% true -> %>
+                <td class="table-warning">Source format better {file_types(@report)}</td>
+            <% end %>
+          </tr>
+          <tr>
+            <%= cond do %>
+              <% same_artist_tags?(@report) -> %>
+                <td class="table-success">Same artist tags</td>
+              <% more_artist_tags_on_target?(@report) -> %>
+                <td class="table-warning">More artist tags on target</td>
+              <% more_artist_tags_on_source?(@report) -> %>
+                <td class="table-warning">More artist tags on source</td>
+              <% true -> %>
+                <td class="table-danger">Different artist tags</td>
+            <% end %>
+          </tr>
+          <tr>
+            <%= cond do %>
+              <% neither_have_source?(@report) -> %>
+                <td class="table-warning">Neither have sources</td>
+              <% same_source?(@report) -> %>
+                <td class="table-success">Same sources</td>
+              <% similar_source?(@report) -> %>
+                <td class="table-warning">Same hostname</td>
+              <% source_on_target?(@report) -> %>
+                <td class="table-warning">Target has a source</td>
+              <% source_on_source?(@report) -> %>
+                <td class="table-warning">Source has a source</td>
+              <% true -> %>
+                <td class="table-danger">Different sources</td>
+            <% end %>
+          </tr>
+          <tr>
+            <%= if same_rating_tags?(@report) do %>
+              <td class="table-success">Same rating tags</td>
+            <% else %>
+              <td class="table-danger">Different rating tags</td>
+            <% end %>
+          </tr>
+          <tr>
+            <%= cond do %>
+              <% not source_approved?(@report) -> %>
+                <td class="table-danger">Source is not approved</td>
+              <% not target_approved?(@report) -> %>
+                <td class="table-danger">Target is not approved</td>
+              <% forward_merge?(@report) -> %>
+                <td class="table-warning">Target newer</td>
+              <% true -> %>
+                <td class="table-success">Target older</td>
+            <% end %>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </td>
   <td class="flex flex-col dupe-report-list__cell" id={"report_options_#{@report.id}"}>
-    <div class={"dr__status-options #{background_class}"}>
+    <div class={["dr__status-options", state_class(@report)]}>
       {String.capitalize(@report.state)}
       <%= if can?(@conn, :accept, @report) and not is_nil(@report.modifier) do %>
         by {@report.modifier.name}

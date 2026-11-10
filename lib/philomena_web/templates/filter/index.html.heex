@@ -131,95 +131,99 @@
   <% end %>
 <% end %>
 <h3>Allowed fields</h3>
-<table class="table">
-  <thead>
-    <tr>
-      <th>Field Selector</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Example</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>creator</code></td>
-      <td>Literal</td>
-      <td>Matches the creator of this filter.</td>
-      <td>
-        <code>{link("creator:AppleDash", to: ~p"/filters?#{[fq: "creator:AppleDash"]}")}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>name</code></td>
-      <td>Literal</td>
-      <td>Matches the name of this filter. This is the default field.</td>
-      <td><code>{link("name:default", to: ~p"/filters?#{[fq: "name:default"]}")}</code></td>
-    </tr>
-    <tr>
-      <td><code>description</code></td>
-      <td>Full Text</td>
-      <td>Matches the description of this filter.</td>
-      <td>
-        <code>{link("description:the show's rating",
-          to: ~p"/filters?#{[fq: "description:the show's rating"]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>created_at</code></td>
-      <td>Date/Time Range</td>
-      <td>Matches the creation time of this filter.</td>
-      <td><code>{link("created_at:2015", to: ~p"/filters?#{[fq: "created_at:2015"]}")}</code></td>
-    </tr>
-    <tr>
-      <td><code>id</code></td>
-      <td>Numeric Range</td>
-      <td>Matches the numeric surrogate key for this filter.</td>
-      <td><code>{link("id:1", to: ~p"/filters?#{[fq: "id:1"]}")}</code></td>
-    </tr>
-    <tr>
-      <td><code>spoilered_count</code></td>
-      <td>Numeric Range</td>
-      <td>Matches the number of spoilered tags in this filter.</td>
-      <td>
-        <code>{link("spoilered_count:1", to: ~p"/filters?#{[fq: "spoilered_count:1"]}")}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>hidden_count</code></td>
-      <td>Numeric Range</td>
-      <td>Matches the number of hidden tags in this filter.</td>
-      <td><code>{link("hidden_count:1", to: ~p"/filters?#{[fq: "hidden_count:1"]}")}</code></td>
-    </tr>
-    <tr>
-      <td><code>my</code></td>
-      <td>Meta</td>
-      <td><code>my:filters</code> matches filters you have published if you are signed in.</td>
-      <td><code>{link("my:filters", to: ~p"/filters?#{[fq: "my:filters"]}")}</code></td>
-    </tr>
-    <tr>
-      <td><code>system</code></td>
-      <td>Boolean</td>
-      <td>Matches system filters</td>
-      <td><code>{link("system:true", to: ~p"/filters?#{[fq: "system:true"]}")}</code></td>
-    </tr>
-    <tr>
-      <td><code>public</code></td>
-      <td>Boolean</td>
-      <td>
-        Matches public filters. Note that <code>public:false</code>
-        matches only your own private filters.
-      </td>
-      <td><code>{link("public:false", to: ~p"/filters?#{[fq: "public:false"]}")}</code></td>
-    </tr>
-    <tr>
-      <td><code>user_id</code></td>
-      <td>Literal</td>
-      <td>Matches filters with the specified user_id.</td>
-      <td><code>{link("user_id:307505", to: ~p"/filters?#{[fq: "user_id:307505"]}")}</code></td>
-    </tr>
-  </tbody>
-</table>
+<div class="table-wrap responsive">
+  <table class="table striped">
+    <thead>
+      <tr>
+        <th>Field Selector</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Example</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>creator</code></td>
+        <td>Literal</td>
+        <td>Matches the creator of this filter.</td>
+        <td>
+          <code>{link("creator:AppleDash", to: ~p"/filters?#{[fq: "creator:AppleDash"]}")}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>name</code></td>
+        <td>Literal</td>
+        <td>Matches the name of this filter. This is the default field.</td>
+        <td><code>{link("name:default", to: ~p"/filters?#{[fq: "name:default"]}")}</code></td>
+      </tr>
+      <tr>
+        <td><code>description</code></td>
+        <td>Full Text</td>
+        <td>Matches the description of this filter.</td>
+        <td>
+          <code>{link("description:the show's rating",
+            to: ~p"/filters?#{[fq: "description:the show's rating"]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>created_at</code></td>
+        <td>Date/Time Range</td>
+        <td>Matches the creation time of this filter.</td>
+        <td>
+          <code>{link("created_at:2015", to: ~p"/filters?#{[fq: "created_at:2015"]}")}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>id</code></td>
+        <td>Numeric Range</td>
+        <td>Matches the numeric surrogate key for this filter.</td>
+        <td><code>{link("id:1", to: ~p"/filters?#{[fq: "id:1"]}")}</code></td>
+      </tr>
+      <tr>
+        <td><code>spoilered_count</code></td>
+        <td>Numeric Range</td>
+        <td>Matches the number of spoilered tags in this filter.</td>
+        <td>
+          <code>{link("spoilered_count:1", to: ~p"/filters?#{[fq: "spoilered_count:1"]}")}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>hidden_count</code></td>
+        <td>Numeric Range</td>
+        <td>Matches the number of hidden tags in this filter.</td>
+        <td><code>{link("hidden_count:1", to: ~p"/filters?#{[fq: "hidden_count:1"]}")}</code></td>
+      </tr>
+      <tr>
+        <td><code>my</code></td>
+        <td>Meta</td>
+        <td><code>my:filters</code> matches filters you have published if you are signed in.</td>
+        <td><code>{link("my:filters", to: ~p"/filters?#{[fq: "my:filters"]}")}</code></td>
+      </tr>
+      <tr>
+        <td><code>system</code></td>
+        <td>Boolean</td>
+        <td>Matches system filters</td>
+        <td><code>{link("system:true", to: ~p"/filters?#{[fq: "system:true"]}")}</code></td>
+      </tr>
+      <tr>
+        <td><code>public</code></td>
+        <td>Boolean</td>
+        <td>
+          Matches public filters. Note that <code>public:false</code>
+          matches only your own private filters.
+        </td>
+        <td><code>{link("public:false", to: ~p"/filters?#{[fq: "public:false"]}")}</code></td>
+      </tr>
+      <tr>
+        <td><code>user_id</code></td>
+        <td>Literal</td>
+        <td>Matches filters with the specified user_id.</td>
+        <td><code>{link("user_id:307505", to: ~p"/filters?#{[fq: "user_id:307505"]}")}</code></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 <%= if @conn.params["fq"] do %>
   <p>{link("Back to filters", to: ~p"/filters")}</p>
 <% end %>

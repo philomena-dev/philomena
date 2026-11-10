@@ -47,23 +47,25 @@
   </li>
 </ul>
 <h4>Observed users</h4>
-<table class="table">
-  <thead>
-    <tr>
-      <th>Username</th>
-      <th>Account Used</th>
-      <th>Last Seen</th>
-      <th>Created At</th>
-    </tr>
-  </thead>
-  <tbody>
-    <%= for ufp <- @user_fps do %>
+<div class="table-wrap responsive">
+  <table class="table striped">
+    <thead>
       <tr>
-        <td>{link(ufp.user.name, to: ~p"/profiles/#{ufp.user}")}</td>
-        <td>{ufp.uses} times</td>
-        <td>{pretty_time(ufp.updated_at)}</td>
-        <td>{pretty_time(ufp.user.created_at)}</td>
+        <th>Username</th>
+        <th>Account Used</th>
+        <th>Last Seen</th>
+        <th>Created At</th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <%= for ufp <- @user_fps do %>
+        <tr>
+          <td>{link(ufp.user.name, to: ~p"/profiles/#{ufp.user}")}</td>
+          <td>{ufp.uses} times</td>
+          <td>{pretty_time(ufp.updated_at)}</td>
+          <td>{pretty_time(ufp.user.created_at)}</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

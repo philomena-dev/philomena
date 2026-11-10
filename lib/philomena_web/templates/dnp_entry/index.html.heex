@@ -45,38 +45,40 @@
     {pagination}
   </div>
   <div class="block-content">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Tag</th>
-          <th>Restriction</th>
-          <th class="hidden-below-md">Conditions</th>
-          <%= if @status_column do %>
-            <th>Status</th>
-            <th>Created</th>
-          <% end %>
-          <th>Options</th>
-        </tr>
-      </thead>
-      <tbody>
-        <%= for {body, entry} <- @dnp_entries do %>
+    <div class="table-wrap responsive allow-overflow">
+      <table class="table striped hover">
+        <thead>
           <tr>
-            <td>{render(PhilomenaWeb.TagView, "_tag.html", tag: entry.tag, conn: @conn)}</td>
-            <td>{entry.dnp_type}</td>
-            <td class="hidden-below-md">{body}</td>
+            <th>Tag</th>
+            <th>Restriction</th>
+            <th class="hidden-below-md">Conditions</th>
             <%= if @status_column do %>
-              <td>{pretty_state(entry)}</td>
-              <td>{pretty_time(entry.created_at)}</td>
+              <th>Status</th>
+              <th>Created</th>
             <% end %>
-            <td>
-              <%= link to: ~p"/dnp/#{entry}" do %>
-                <span class="hidden-below-md">More Info</span><span class="hidden-from-md">View</span>
-              <% end %>
-            </td>
+            <th>Options</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <%= for {body, entry} <- @dnp_entries do %>
+            <tr>
+              <td>{render(PhilomenaWeb.TagView, "_tag.html", tag: entry.tag, conn: @conn)}</td>
+              <td>{entry.dnp_type}</td>
+              <td class="hidden-below-md">{body}</td>
+              <%= if @status_column do %>
+                <td>{pretty_state(entry)}</td>
+                <td>{pretty_time(entry.created_at)}</td>
+              <% end %>
+              <td>
+                <%= link to: ~p"/dnp/#{entry}" do %>
+                  <span class="hidden-below-md">More Info</span><span class="hidden-from-md">View</span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   </div>
   <div :if={multiple_pages?(@dnp_entries)} class="block-header">
     {pagination}

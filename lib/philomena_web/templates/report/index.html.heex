@@ -10,27 +10,29 @@
     )}
   </div>
   <div class="block-content">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>State</th>
-          <th>Reported Resource</th>
-          <th>Rule</th>
-          <th>Reason</th>
-          <th>Opened</th>
-        </tr>
-      </thead>
-      <tbody>
-        <%= for r <- @reports do %>
+    <div class="table-wrap responsive">
+      <table class="table striped">
+        <thead>
           <tr>
-            <td class={"#{report_row_class(r)}"}>{pretty_state(r)}</td>
-            <td>{link_to_target(report_target(r))}</td>
-            <td>{r.rule.name} ({r.rule.title})</td>
-            <td>{r.reason}</td>
-            <td>{pretty_time(r.created_at)}</td>
+            <th>State</th>
+            <th>Reported Resource</th>
+            <th>Rule</th>
+            <th>Reason</th>
+            <th>Opened</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <%= for r <- @reports do %>
+            <tr>
+              <td class={report_row_class(r)}>{pretty_state(r)}</td>
+              <td>{link_to_target(report_target(r))}</td>
+              <td>{r.rule.name} ({r.rule.title})</td>
+              <td>{r.reason}</td>
+              <td>{pretty_time(r.created_at)}</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

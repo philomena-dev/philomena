@@ -29,7 +29,7 @@ defmodule PhilomenaWeb.ConversationView do
     if read_by?(user, conversation) do
       nil
     else
-      "warning"
+      "table-warning"
     end
   end
 

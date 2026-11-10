@@ -197,6 +197,7 @@
 
 .tag a {
   color: inherit;
+  text-decoration: none;
 }
 
 .tag__count {

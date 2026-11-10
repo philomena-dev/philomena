@@ -70,93 +70,99 @@
   would not be.
 </p>
 <h3>Allowed fields</h3>
-<table class="table">
-  <thead>
-    <tr>
-      <th>Field Selector</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Example</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>author</code></td>
-      <td>Literal</td>
-      <td>Matches the author of this post. Anonymous authors will never match this term.</td>
-      <td><code>{link("author:Joey", to: ~p"/posts?#{[pq: "author:Joey"]}")}</code></td>
-    </tr>
-    <tr>
-      <td><code>author_id</code></td>
-      <td>Literal</td>
-      <td>
-        Matches posts with the specified author_id. Anonymous users will never match this term.
-      </td>
-      <td><code>{link("author_id:211190", to: ~p"/posts?#{[pq: "author_id:211190"]}")}</code></td>
-    </tr>
-    <tr>
-      <td><code>body</code></td>
-      <td>Full Text</td>
-      <td>Matches the body of this post. This is the default field.</td>
-      <td><code>{link("body:test", to: ~p"/posts?#{[pq: "body:test"]}")}</code></td>
-    </tr>
-    <tr>
-      <td><code>created_at</code></td>
-      <td>Date/Time Range</td>
-      <td>Matches the creation time of this post.</td>
-      <td><code>{link("created_at:2015", to: ~p"/posts?#{[pq: "created_at:2015"]}")}</code></td>
-    </tr>
-    <tr>
-      <td><code>id</code></td>
-      <td>Numeric Range</td>
-      <td>Matches the numeric surrogate key for this post.</td>
-      <td><code>{link("id:1000000", to: ~p"/posts?#{[pq: "id:1000000"]}")}</code></td>
-    </tr>
-    <tr>
-      <td><code>my</code></td>
-      <td>Meta</td>
-      <td><code>my:posts</code> matches posts you have posted if you are signed in.</td>
-      <td><code>{link("my:posts", to: ~p"/posts?#{[pq: "my:posts"]}")}</code></td>
-    </tr>
-    <tr>
-      <td><code>subject</code></td>
-      <td>Full Text</td>
-      <td>Matches the title of the topic.</td>
-      <td>
-        <code>{link("subject:time wasting thread",
-          to: ~p"/posts?#{[pq: "subject:time wasting thread"]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>topic_id</code></td>
-      <td>Literal</td>
-      <td>Matches the numeric surrogate key for the topic this post belongs to.</td>
-      <td><code>{link("topic_id:7000", to: ~p"/posts?#{[pq: "topic_id:7000"]}")}</code></td>
-    </tr>
-    <tr>
-      <td><code>topic_position</code></td>
-      <td>Numeric Range</td>
-      <td>
-        Matches the offset from the beginning of the topic of this post. Positions begin at 0.
-      </td>
-      <td><code>{link("topic_position:0", to: ~p"/posts?#{[pq: "topic_position:0"]}")}</code></td>
-    </tr>
-    <tr>
-      <td><code>updated_at</code></td>
-      <td>Date/Time Range</td>
-      <td>Matches the creation or last edit time of this post.</td>
-      <td>
-        <code>{link("updated_at.gte:2 weeks ago",
-          to: ~p"/posts?#{[pq: "updated_at.gte:2 weeks ago"]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>forum</code></td>
-      <td>Literal</td>
-      <td>Matches the short name for the forum this post belongs to.</td>
-      <td><code>{link("forum:meta", to: ~p"/posts?#{[pq: "forum:meta"]}")}</code></td>
-    </tr>
-  </tbody>
-</table>
+<div class="table-wrap responsive">
+  <table class="table striped">
+    <thead>
+      <tr>
+        <th>Field Selector</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Example</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>author</code></td>
+        <td>Literal</td>
+        <td>Matches the author of this post. Anonymous authors will never match this term.</td>
+        <td><code>{link("author:Joey", to: ~p"/posts?#{[pq: "author:Joey"]}")}</code></td>
+      </tr>
+      <tr>
+        <td><code>author_id</code></td>
+        <td>Literal</td>
+        <td>
+          Matches posts with the specified author_id. Anonymous users will never match this term.
+        </td>
+        <td>
+          <code>{link("author_id:211190", to: ~p"/posts?#{[pq: "author_id:211190"]}")}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>body</code></td>
+        <td>Full Text</td>
+        <td>Matches the body of this post. This is the default field.</td>
+        <td><code>{link("body:test", to: ~p"/posts?#{[pq: "body:test"]}")}</code></td>
+      </tr>
+      <tr>
+        <td><code>created_at</code></td>
+        <td>Date/Time Range</td>
+        <td>Matches the creation time of this post.</td>
+        <td><code>{link("created_at:2015", to: ~p"/posts?#{[pq: "created_at:2015"]}")}</code></td>
+      </tr>
+      <tr>
+        <td><code>id</code></td>
+        <td>Numeric Range</td>
+        <td>Matches the numeric surrogate key for this post.</td>
+        <td><code>{link("id:1000000", to: ~p"/posts?#{[pq: "id:1000000"]}")}</code></td>
+      </tr>
+      <tr>
+        <td><code>my</code></td>
+        <td>Meta</td>
+        <td><code>my:posts</code> matches posts you have posted if you are signed in.</td>
+        <td><code>{link("my:posts", to: ~p"/posts?#{[pq: "my:posts"]}")}</code></td>
+      </tr>
+      <tr>
+        <td><code>subject</code></td>
+        <td>Full Text</td>
+        <td>Matches the title of the topic.</td>
+        <td>
+          <code>{link("subject:time wasting thread",
+            to: ~p"/posts?#{[pq: "subject:time wasting thread"]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>topic_id</code></td>
+        <td>Literal</td>
+        <td>Matches the numeric surrogate key for the topic this post belongs to.</td>
+        <td><code>{link("topic_id:7000", to: ~p"/posts?#{[pq: "topic_id:7000"]}")}</code></td>
+      </tr>
+      <tr>
+        <td><code>topic_position</code></td>
+        <td>Numeric Range</td>
+        <td>
+          Matches the offset from the beginning of the topic of this post. Positions begin at 0.
+        </td>
+        <td>
+          <code>{link("topic_position:0", to: ~p"/posts?#{[pq: "topic_position:0"]}")}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>updated_at</code></td>
+        <td>Date/Time Range</td>
+        <td>Matches the creation or last edit time of this post.</td>
+        <td>
+          <code>{link("updated_at.gte:2 weeks ago",
+            to: ~p"/posts?#{[pq: "updated_at.gte:2 weeks ago"]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>forum</code></td>
+        <td>Literal</td>
+        <td>Matches the short name for the forum this post belongs to.</td>
+        <td><code>{link("forum:meta", to: ~p"/posts?#{[pq: "forum:meta"]}")}</code></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

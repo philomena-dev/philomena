@@ -63,321 +63,325 @@
   <p>No users found!</p>
 <% end %>
 <h3>Allowed fields</h3>
-<table class="table">
-  <thead>
-    <tr>
-      <th>Field</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Example</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Default</td>
-      <td>Literal</td>
-      <td>Matches either the name or email of the user.</td>
-      <td>
-        <code>{link("administrator", to: ~p"/admin/users?#{[uq: [query: "administrator"]]}")}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>id</code></td>
-      <td>Integer</td>
-      <td>Matches the user ID.</td>
-      <td><code>{link("id:123", to: ~p"/admin/users?#{[uq: [query: "id:123"]]}")}</code></td>
-    </tr>
-    <tr>
-      <td><code>name</code></td>
-      <td>Literal</td>
-      <td>Matches the name of the user.</td>
-      <td>
-        <code>{link("name:luna", to: ~p"/admin/users?#{[uq: [query: "name:luna"]]}")}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>slug</code></td>
-      <td>Literal</td>
-      <td>Matches the slug of the user.</td>
-      <td>
-        <code>{link("slug:princess+celestia",
-          to: ~p"/admin/users?#{[uq: [query: "slug:princess+celestia"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>email</code></td>
-      <td>Literal</td>
-      <td>Matches the email of the user.</td>
-      <td>
-        <code>{link("email:admin@example.com",
-          to: ~p"/admin/users?#{[uq: [query: "email:admin@example.com"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>role</code></td>
-      <td>Literal</td>
-      <td>Matches the role of the user.</td>
-      <td>
-        <code>{link("role:admin", to: ~p"/admin/users?#{[uq: [query: "role:admin"]]}")}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>personal_title</code></td>
-      <td>Full Text</td>
-      <td>Matches the personal title of the user's profile.</td>
-      <td>
-        <code>{link("personal_title:pony",
-          to: ~p"/admin/users?#{[uq: [query: "personal_title:pony"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>description</code></td>
-      <td>Full Text</td>
-      <td>Matches the About Me section of the user's profile.</td>
-      <td>
-        <code>{link("description:pony", to: ~p"/admin/users?#{[uq: [query: "description:pony"]]}")}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>custom_avatar</code></td>
-      <td>Boolean</td>
-      <td>Matches whether the user has a custom avatar.</td>
-      <td>
-        <code>{link("custom_avatar:true",
-          to: ~p"/admin/users?#{[uq: [query: "custom_avatar:true"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>created_at</code></td>
-      <td>Date/Time</td>
-      <td>Matches the date and time the user account was created.</td>
-      <td>
-        <code>{link("created_at.lt:2 weeks ago",
-          to: ~p"/admin/users?#{[uq: [query: "created_at.lt:2 weeks ago"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>confirmed</code></td>
-      <td>Boolean</td>
-      <td>Matches whether the user account has been confirmed.</td>
-      <td>
-        <code>{link("confirmed:true", to: ~p"/admin/users?#{[uq: [query: "confirmed:true"]]}")}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>confirmed_at</code></td>
-      <td>Date/Time</td>
-      <td>Matches the date and time the user account was confirmed.</td>
-      <td>
-        <code>{link("confirmed_at.lt:2 weeks ago",
-          to: ~p"/admin/users?#{[uq: [query: "confirmed_at.lt:2 weeks ago"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>verified</code></td>
-      <td>Boolean</td>
-      <td>Matches whether the user has been granted verification.</td>
-      <td>
-        <code>{link("verified:true", to: ~p"/admin/users?#{[uq: [query: "verified:true"]]}")}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>locked</code></td>
-      <td>Boolean</td>
-      <td>Matches whether the user account has been locked.</td>
-      <td>
-        <code>{link("locked:true", to: ~p"/admin/users?#{[uq: [query: "locked:true"]]}")}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>locked_at</code></td>
-      <td>Date/Time</td>
-      <td>Matches the date and time the user account was locked.</td>
-      <td>
-        <code>{link("locked_at:2025", to: ~p"/admin/users?#{[uq: [query: "locked_at:2025"]]}")}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>deleted</code></td>
-      <td>Boolean</td>
-      <td>Matches whether the user account has been deactivated.</td>
-      <td>
-        <code>{link("deleted:true", to: ~p"/admin/users?#{[uq: [query: "deleted:true"]]}")}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>deleted_at</code></td>
-      <td>Date/Time</td>
-      <td>Matches the date and time the user account was deactivated.</td>
-      <td>
-        <code>{link("deleted_at.gt:1 week ago",
-          to: ~p"/admin/users?#{[uq: [query: "deleted_at.gt:1 week ago"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>deleted_by_user_id</code></td>
-      <td>Numeric</td>
-      <td>Matches the user ID of the admin who deleted the user account.</td>
-      <td>
-        <code>{link("deleted_by_user_id:123",
-          to: ~p"/admin/users?#{[uq: [query: "deleted_by_user_id:123"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>deleted_by_user</code></td>
-      <td>Literal</td>
-      <td>Matches the name of the admin who deleted the user account.</td>
-      <td>
-        <code>{link("deleted_by_user:moderator",
-          to: ~p"/admin/users?#{[uq: [query: "deleted_by_user:moderator"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>banned_until</code></td>
-      <td>Date/Time</td>
-      <td>Matches the date and time of any enabled bans on the user.</td>
-      <td>
-        <code>{link("banned_until.gt:0 seconds ago",
-          to: ~p"/admin/users?#{[uq: [query: "banned_until.gt:0 seconds ago"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>otp_required_for_login</code></td>
-      <td>Boolean</td>
-      <td>Matches whether the user has two-factor authentication enabled.</td>
-      <td>
-        <code>{link("otp_required_for_login:true",
-          to: ~p"/admin/users?#{[uq: [query: "otp_required_for_login:true"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>images_count</code></td>
-      <td>Integer</td>
-      <td>Matches the number of uploads the user has made.</td>
-      <td>
-        <code>{link("images_count.gte:200",
-          to: ~p"/admin/users?#{[uq: [query: "images_count.gte:200"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>image_faves_count</code></td>
-      <td>Integer</td>
-      <td>Matches the number of images the user has favourited.</td>
-      <td>
-        <code>{link("image_faves_count.gte:1000",
-          to: ~p"/admin/users?#{[uq: [query: "image_faves_count.gte:1000"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>image_votes_count</code></td>
-      <td>Integer</td>
-      <td>Matches the number of votes the user has cast.</td>
-      <td>
-        <code>{link("image_votes_count.gte:1000",
-          to: ~p"/admin/users?#{[uq: [query: "image_votes_count.gte:1000"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>metadata_updates_count</code></td>
-      <td>Integer</td>
-      <td>Matches the number of metadata updates the user has made.</td>
-      <td>
-        <code>{link("metadata_updates_count.gte:500",
-          to: ~p"/admin/users?#{[uq: [query: "metadata_updates_count.gte:500"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>comments_count</code></td>
-      <td>Integer</td>
-      <td>Matches the number of comments the user has posted.</td>
-      <td>
-        <code>{link("comments_count.gte:100",
-          to: ~p"/admin/users?#{[uq: [query: "comments_count.gte:100"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>posts_count</code></td>
-      <td>Integer</td>
-      <td>Matches the number of forum posts the user has made.</td>
-      <td>
-        <code>{link("posts_count.gte:100",
-          to: ~p"/admin/users?#{[uq: [query: "posts_count.gte:100"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>topics_count</code></td>
-      <td>Integer</td>
-      <td>Matches the number of topics the user has made.</td>
-      <td>
-        <code>{link("topics_count.gte:10",
-          to: ~p"/admin/users?#{[uq: [query: "topics_count.gte:10"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>current_filter_id</code></td>
-      <td>Numeric</td>
-      <td>Matches the ID of the filter the user is currently using.</td>
-      <td>
-        <code>{link("current_filter_id:123",
-          to: ~p"/admin/users?#{[uq: [query: "current_filter_id:123"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>forced_filter_id</code></td>
-      <td>Numeric</td>
-      <td>Matches the ID of the filter that was forced on the user.</td>
-      <td>
-        <code>{link("forced_filter_id:123",
-          to: ~p"/admin/users?#{[uq: [query: "forced_filter_id:123"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>scratchpad</code></td>
-      <td>Full Text</td>
-      <td>Matches the moderation scratchpad content on the user's profile.</td>
-      <td>
-        <code>{link("scratchpad:pony", to: ~p"/admin/users?#{[uq: [query: "scratchpad:pony"]]}")}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>last_renamed_at</code></td>
-      <td>Date/Time</td>
-      <td>Matches the date and time the user was last renamed.</td>
-      <td>
-        <code>{link("last_renamed_at.gt:1 month ago",
-          to: ~p"/admin/users?#{[uq: [query: "last_renamed_at.gt:1 month ago"]]}"
-        )}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>names</code></td>
-      <td>Literal</td>
-      <td>Matches previous names the user has had.</td>
-      <td>
-        <code>{link("names:old_username",
-          to: ~p"/admin/users?#{[uq: [query: "names:old_username"]]}"
-        )}</code>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<div class="table-wrap responsive">
+  <table class="table striped">
+    <thead>
+      <tr>
+        <th>Field</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Example</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Default</td>
+        <td>Literal</td>
+        <td>Matches either the name or email of the user.</td>
+        <td>
+          <code>{link("administrator", to: ~p"/admin/users?#{[uq: [query: "administrator"]]}")}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>id</code></td>
+        <td>Integer</td>
+        <td>Matches the user ID.</td>
+        <td><code>{link("id:123", to: ~p"/admin/users?#{[uq: [query: "id:123"]]}")}</code></td>
+      </tr>
+      <tr>
+        <td><code>name</code></td>
+        <td>Literal</td>
+        <td>Matches the name of the user.</td>
+        <td>
+          <code>{link("name:luna", to: ~p"/admin/users?#{[uq: [query: "name:luna"]]}")}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>slug</code></td>
+        <td>Literal</td>
+        <td>Matches the slug of the user.</td>
+        <td>
+          <code>{link("slug:princess+celestia",
+            to: ~p"/admin/users?#{[uq: [query: "slug:princess+celestia"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>email</code></td>
+        <td>Literal</td>
+        <td>Matches the email of the user.</td>
+        <td>
+          <code>{link("email:admin@example.com",
+            to: ~p"/admin/users?#{[uq: [query: "email:admin@example.com"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>role</code></td>
+        <td>Literal</td>
+        <td>Matches the role of the user.</td>
+        <td>
+          <code>{link("role:admin", to: ~p"/admin/users?#{[uq: [query: "role:admin"]]}")}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>personal_title</code></td>
+        <td>Full Text</td>
+        <td>Matches the personal title of the user's profile.</td>
+        <td>
+          <code>{link("personal_title:pony",
+            to: ~p"/admin/users?#{[uq: [query: "personal_title:pony"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>description</code></td>
+        <td>Full Text</td>
+        <td>Matches the About Me section of the user's profile.</td>
+        <td>
+          <code>{link("description:pony",
+            to: ~p"/admin/users?#{[uq: [query: "description:pony"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>custom_avatar</code></td>
+        <td>Boolean</td>
+        <td>Matches whether the user has a custom avatar.</td>
+        <td>
+          <code>{link("custom_avatar:true",
+            to: ~p"/admin/users?#{[uq: [query: "custom_avatar:true"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>created_at</code></td>
+        <td>Date/Time</td>
+        <td>Matches the date and time the user account was created.</td>
+        <td>
+          <code>{link("created_at.lt:2 weeks ago",
+            to: ~p"/admin/users?#{[uq: [query: "created_at.lt:2 weeks ago"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>confirmed</code></td>
+        <td>Boolean</td>
+        <td>Matches whether the user account has been confirmed.</td>
+        <td>
+          <code>{link("confirmed:true", to: ~p"/admin/users?#{[uq: [query: "confirmed:true"]]}")}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>confirmed_at</code></td>
+        <td>Date/Time</td>
+        <td>Matches the date and time the user account was confirmed.</td>
+        <td>
+          <code>{link("confirmed_at.lt:2 weeks ago",
+            to: ~p"/admin/users?#{[uq: [query: "confirmed_at.lt:2 weeks ago"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>verified</code></td>
+        <td>Boolean</td>
+        <td>Matches whether the user has been granted verification.</td>
+        <td>
+          <code>{link("verified:true", to: ~p"/admin/users?#{[uq: [query: "verified:true"]]}")}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>locked</code></td>
+        <td>Boolean</td>
+        <td>Matches whether the user account has been locked.</td>
+        <td>
+          <code>{link("locked:true", to: ~p"/admin/users?#{[uq: [query: "locked:true"]]}")}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>locked_at</code></td>
+        <td>Date/Time</td>
+        <td>Matches the date and time the user account was locked.</td>
+        <td>
+          <code>{link("locked_at:2025", to: ~p"/admin/users?#{[uq: [query: "locked_at:2025"]]}")}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>deleted</code></td>
+        <td>Boolean</td>
+        <td>Matches whether the user account has been deactivated.</td>
+        <td>
+          <code>{link("deleted:true", to: ~p"/admin/users?#{[uq: [query: "deleted:true"]]}")}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>deleted_at</code></td>
+        <td>Date/Time</td>
+        <td>Matches the date and time the user account was deactivated.</td>
+        <td>
+          <code>{link("deleted_at.gt:1 week ago",
+            to: ~p"/admin/users?#{[uq: [query: "deleted_at.gt:1 week ago"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>deleted_by_user_id</code></td>
+        <td>Numeric</td>
+        <td>Matches the user ID of the admin who deleted the user account.</td>
+        <td>
+          <code>{link("deleted_by_user_id:123",
+            to: ~p"/admin/users?#{[uq: [query: "deleted_by_user_id:123"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>deleted_by_user</code></td>
+        <td>Literal</td>
+        <td>Matches the name of the admin who deleted the user account.</td>
+        <td>
+          <code>{link("deleted_by_user:moderator",
+            to: ~p"/admin/users?#{[uq: [query: "deleted_by_user:moderator"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>banned_until</code></td>
+        <td>Date/Time</td>
+        <td>Matches the date and time of any enabled bans on the user.</td>
+        <td>
+          <code>{link("banned_until.gt:0 seconds ago",
+            to: ~p"/admin/users?#{[uq: [query: "banned_until.gt:0 seconds ago"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>otp_required_for_login</code></td>
+        <td>Boolean</td>
+        <td>Matches whether the user has two-factor authentication enabled.</td>
+        <td>
+          <code>{link("otp_required_for_login:true",
+            to: ~p"/admin/users?#{[uq: [query: "otp_required_for_login:true"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>images_count</code></td>
+        <td>Integer</td>
+        <td>Matches the number of uploads the user has made.</td>
+        <td>
+          <code>{link("images_count.gte:200",
+            to: ~p"/admin/users?#{[uq: [query: "images_count.gte:200"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>image_faves_count</code></td>
+        <td>Integer</td>
+        <td>Matches the number of images the user has favourited.</td>
+        <td>
+          <code>{link("image_faves_count.gte:1000",
+            to: ~p"/admin/users?#{[uq: [query: "image_faves_count.gte:1000"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>image_votes_count</code></td>
+        <td>Integer</td>
+        <td>Matches the number of votes the user has cast.</td>
+        <td>
+          <code>{link("image_votes_count.gte:1000",
+            to: ~p"/admin/users?#{[uq: [query: "image_votes_count.gte:1000"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>metadata_updates_count</code></td>
+        <td>Integer</td>
+        <td>Matches the number of metadata updates the user has made.</td>
+        <td>
+          <code>{link("metadata_updates_count.gte:500",
+            to: ~p"/admin/users?#{[uq: [query: "metadata_updates_count.gte:500"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>comments_count</code></td>
+        <td>Integer</td>
+        <td>Matches the number of comments the user has posted.</td>
+        <td>
+          <code>{link("comments_count.gte:100",
+            to: ~p"/admin/users?#{[uq: [query: "comments_count.gte:100"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>posts_count</code></td>
+        <td>Integer</td>
+        <td>Matches the number of forum posts the user has made.</td>
+        <td>
+          <code>{link("posts_count.gte:100",
+            to: ~p"/admin/users?#{[uq: [query: "posts_count.gte:100"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>topics_count</code></td>
+        <td>Integer</td>
+        <td>Matches the number of topics the user has made.</td>
+        <td>
+          <code>{link("topics_count.gte:10",
+            to: ~p"/admin/users?#{[uq: [query: "topics_count.gte:10"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>current_filter_id</code></td>
+        <td>Numeric</td>
+        <td>Matches the ID of the filter the user is currently using.</td>
+        <td>
+          <code>{link("current_filter_id:123",
+            to: ~p"/admin/users?#{[uq: [query: "current_filter_id:123"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>forced_filter_id</code></td>
+        <td>Numeric</td>
+        <td>Matches the ID of the filter that was forced on the user.</td>
+        <td>
+          <code>{link("forced_filter_id:123",
+            to: ~p"/admin/users?#{[uq: [query: "forced_filter_id:123"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>scratchpad</code></td>
+        <td>Full Text</td>
+        <td>Matches the moderation scratchpad content on the user's profile.</td>
+        <td>
+          <code>{link("scratchpad:pony", to: ~p"/admin/users?#{[uq: [query: "scratchpad:pony"]]}")}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>last_renamed_at</code></td>
+        <td>Date/Time</td>
+        <td>Matches the date and time the user was last renamed.</td>
+        <td>
+          <code>{link("last_renamed_at.gt:1 month ago",
+            to: ~p"/admin/users?#{[uq: [query: "last_renamed_at.gt:1 month ago"]]}"
+          )}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>names</code></td>
+        <td>Literal</td>
+        <td>Matches previous names the user has had.</td>
+        <td>
+          <code>{link("names:old_username",
+            to: ~p"/admin/users?#{[uq: [query: "names:old_username"]]}"
+          )}</code>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

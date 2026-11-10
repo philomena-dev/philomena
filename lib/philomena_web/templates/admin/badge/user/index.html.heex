@@ -7,20 +7,22 @@
     {pagination}
   </div>
   <div class="block-content">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>User</th>
-        </tr>
-      </thead>
-      <tbody>
-        <%= for user <- @users do %>
+    <div class="table-wrap responsive">
+      <table class="table striped">
+        <thead>
           <tr>
-            <td>{link(user.name, to: ~p"/profiles/#{user}")}</td>
+            <th>User</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <%= for user <- @users do %>
+            <tr>
+              <td>{link(user.name, to: ~p"/profiles/#{user}")}</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   </div>
   <div :if={multiple_pages?(@users)} class="block-header sub">
     {pagination}

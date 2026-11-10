@@ -22,50 +22,54 @@
     )}
   </div>
   <div class="block-content">
-    <table class="table table--communication-list">
-      <thead>
-        <tr>
-          <th class="table--communication-list__name">Topic</th>
-          <th class="table--communication-list__stats hidden-below-md">Posts</th>
-          <th class="table--communication-list__last-post">Last Post</th>
-        </tr>
-      </thead>
-      <tbody>
-        <%= for topic <- @topics do %>
+    <div class="table-wrap responsive">
+      <table class="table striped table--communication-list">
+        <thead>
           <tr>
-            <td class="table--communication-list__name">
-              <i :if={topic.sticky} class="fa fa-thumbtack"></i><i
-                :if={topic.locked_at}
-                class="fa fa-lock"
-              ></i><i :if={topic.poll} class="fas fa-poll-h"></i> {link(topic.title,
-                to: ~p"/forums/#{@forum}/topics/#{topic}"
-              )}
-              <div class="small-text">
-                Posted {pretty_time(topic.created_at)} by {render(
-                  PhilomenaWeb.UserAttributionView,
-                  "_anon_user.html",
-                  object: topic,
-                  conn: @conn
-                )}
-              </div>
-            </td>
-            <td class="table--communication-list__stats hidden-below-md">{topic.post_count}</td>
-            <td class="table--communication-list__last-post">
-              <%= if topic.last_post do %>
-                {link("Go to post",
-                  to:
-                    ~p"/forums/#{topic.forum}/topics/#{topic}?#{[post_id: topic.last_post]}" <>
-                      "#post_#{topic.last_post.id}"
-                )} by {render(PhilomenaWeb.UserAttributionView, "_anon_user.html",
-                  object: topic.last_post,
-                  conn: @conn
-                )}<br />{pretty_time(topic.last_post.created_at)}
-              <% end %>
-            </td>
+            <th class="table--communication-list__name">Topic</th>
+            <th class="table--communication-list__stats hidden-below-md numeric">Posts</th>
+            <th class="table--communication-list__last-post">Last Post</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <%= for topic <- @topics do %>
+            <tr>
+              <td class="table--communication-list__name">
+                <i :if={topic.sticky} class="fa fa-thumbtack"></i><i
+                  :if={topic.locked_at}
+                  class="fa fa-lock"
+                ></i><i :if={topic.poll} class="fas fa-poll-h"></i> {link(topic.title,
+                  to: ~p"/forums/#{@forum}/topics/#{topic}"
+                )}
+                <div class="small-text">
+                  Posted {pretty_time(topic.created_at)} by {render(
+                    PhilomenaWeb.UserAttributionView,
+                    "_anon_user.html",
+                    object: topic,
+                    conn: @conn
+                  )}
+                </div>
+              </td>
+              <td class="table--communication-list__stats hidden-below-md numeric">
+                {topic.post_count}
+              </td>
+              <td class="table--communication-list__last-post">
+                <%= if topic.last_post do %>
+                  {link("Go to post",
+                    to:
+                      ~p"/forums/#{topic.forum}/topics/#{topic}?#{[post_id: topic.last_post]}" <>
+                        "#post_#{topic.last_post.id}"
+                  )} by {render(PhilomenaWeb.UserAttributionView, "_anon_user.html",
+                    object: topic.last_post,
+                    conn: @conn
+                  )}<br />{pretty_time(topic.last_post.created_at)}
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   </div>
   <div :if={multiple_pages?(@topics)} class="block-header sub">
     {pagination}

@@ -12,28 +12,30 @@
     {pagination}
   </div>
   <div class="block-content">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Badge</th>
-          <th>Image</th>
-          <th>Options</th>
-        </tr>
-      </thead>
-      <tbody>
-        <%= for badge <- @badges do %>
+    <div class="table-wrap responsive">
+      <table class="table striped hover">
+        <thead>
           <tr>
-            <td>{badge.title}</td>
-            <td>{badge_image(badge, width: 32, height: 32)}</td>
-            <td>
-              {link("Users", to: ~p"/admin/badges/#{badge}/users")} &bull; {link("Edit",
-                to: ~p"/admin/badges/#{badge}/edit"
-              )}
-            </td>
+            <th>Badge</th>
+            <th>Image</th>
+            <th>Options</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <%= for badge <- @badges do %>
+            <tr>
+              <td>{badge.title}</td>
+              <td>{badge_image(badge, width: 32, height: 32)}</td>
+              <td>
+                {link("Users", to: ~p"/admin/badges/#{badge}/users")} &bull; {link("Edit",
+                  to: ~p"/admin/badges/#{badge}/edit"
+                )}
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   </div>
   <div :if={multiple_pages?(@badges)} class="block-header sub">
     {pagination}

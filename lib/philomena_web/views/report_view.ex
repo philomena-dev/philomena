@@ -17,9 +17,9 @@ defmodule PhilomenaWeb.ReportView do
   def image?(changeset), do: not is_nil(get_field(changeset, :image_id))
   def conversation?(changeset), do: not is_nil(get_field(changeset, :conversation_id))
 
-  def report_row_class(%{state: "closed"}), do: "success"
-  def report_row_class(%{state: "in_progress"}), do: "warning"
-  def report_row_class(_report), do: "danger"
+  def report_row_class(%{state: "closed"}), do: "table-success"
+  def report_row_class(%{state: "in_progress"}), do: "table-warning"
+  def report_row_class(_report), do: "table-danger"
 
   def pretty_state(%{state: "closed"}), do: "Closed"
   def pretty_state(%{state: "in_progress"}), do: "In progress"

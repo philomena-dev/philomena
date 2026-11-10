@@ -1,6 +1,6 @@
 /*
- * Philomena's styles of elements and classes that have no stylesheet of their own: Markdown paragraphs, tables,
- * quotes, spoilers, labels and single-purpose helpers.
+ * Philomena's styles of elements and classes that have no stylesheet of their own: Markdown paragraphs, quotes,
+ * spoilers, labels and single-purpose helpers.
  */
 
 /* Slightly dirty, no clean way to strip top margins off headers though */
@@ -31,79 +31,6 @@
 .clearfix {
   clear: both;
   height: 0;
-}
-
-/* Child selectors, as opposed to flat BEM classes, are justified in this case.
- * HTML tables are bulky to begin with; adding .table__row and .table__cell to every
- * item will hinder the development speed and decrease readability. */
-
-table,
-.table {
-  padding-left: 10px;
-  width: 100%;
-  border-collapse: collapse;
-  border: var(--border);
-  overflow-wrap: break-word;
-}
-
-.communication__body__text table,
-.communication__body__text .table {
-  overflow-wrap: anywhere;
-}
-
-table th,
-.table th {
-  font-weight: bold;
-  text-align: left;
-  padding: 5px;
-}
-
-table > thead > tr,
-.table > thead > tr {
-  background: var(--background-color);
-}
-
-table > tbody,
-.table > tbody {
-  border: var(--border);
-}
-
-@media (max-width: $min-desktop-width) {
-  .communication__body__text table {
-    overflow-x: auto;
-  }
-}
-
-/* I know this looks odd, but first one expands to
- .table > ...
- while the other one does the table verbatim.
- The child combinator before tr keeps striping out of nested tables
- (e.g. diff tables rendered inside a .table cell). */
-@mixin even-odd table > tbody > tr;
-@mixin even-odd-element table > tbody > tr;
-
-td {
-  padding: 5px;
-}
-
-.table__tiny-column {
-  width: 50px;
-}
-
-.border-vertical {
-  border-top: 2px solid var(--border-color);
-}
-
-.background-success {
-  background-color: var(--success-light-color);
-}
-
-.background-warning {
-  background-color: var(--warning-light-color);
-}
-
-.background-danger {
-  background-color: var(--danger-light-color);
 }
 
 .walloftext {

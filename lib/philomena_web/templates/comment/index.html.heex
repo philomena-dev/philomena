@@ -61,65 +61,67 @@
   would not be.
 </p>
 <h3>Allowed fields</h3>
-<table class="table">
-  <thead>
-    <tr>
-      <th>Field Selector</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Example</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>author</code></td>
-      <td>Literal</td>
-      <td>Matches the author of this comment. Anonymous authors will never match this term.</td>
-      <td><code>{link("author:Joey", to: ~p"/comments?#{[cq: "author:Joey"]}")}</code></td>
-    </tr>
-    <tr>
-      <td><code>author_id</code></td>
-      <td>Literal</td>
-      <td>
-        Matches comments with the specified author_id. Anonymous users will never match this term.
-      </td>
-      <td>
-        <code>{link("author_id:211190", to: ~p"/comments?#{[cq: "author_id:211190"]}")}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>body</code></td>
-      <td>Full Text</td>
-      <td>Matches the body of this comment. This is the default field.</td>
-      <td><code>{link("body:test", to: ~p"/comments?#{[cq: "body:test"]}")}</code></td>
-    </tr>
-    <tr>
-      <td><code>created_at</code></td>
-      <td>Date/Time Range</td>
-      <td>Matches the creation time of this comment.</td>
-      <td>
-        <code>{link("created_at:2015", to: ~p"/comments?#{[cq: "created_at:2015"]}")}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>id</code></td>
-      <td>Numeric Range</td>
-      <td>Matches the numeric surrogate key for this comment.</td>
-      <td><code>{link("id:1000000", to: ~p"/comments?#{[cq: "id:1000000"]}")}</code></td>
-    </tr>
-    <tr>
-      <td><code>image_id</code></td>
-      <td>Literal</td>
-      <td>Matches the numeric surrogate key for the image this comment belongs to.</td>
-      <td>
-        <code>{link("image_id:1000000", to: ~p"/comments?#{[cq: "image_id:1000000"]}")}</code>
-      </td>
-    </tr>
-    <tr>
-      <td><code>my</code></td>
-      <td>Meta</td>
-      <td><code>my:comments</code> matches comments you have posted if you are signed in.</td>
-      <td><code>{link("my:comments", to: ~p"/comments?#{[cq: "my:comments"]}")}</code></td>
-    </tr>
-  </tbody>
-</table>
+<div class="table-wrap responsive">
+  <table class="table striped">
+    <thead>
+      <tr>
+        <th>Field Selector</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Example</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>author</code></td>
+        <td>Literal</td>
+        <td>Matches the author of this comment. Anonymous authors will never match this term.</td>
+        <td><code>{link("author:Joey", to: ~p"/comments?#{[cq: "author:Joey"]}")}</code></td>
+      </tr>
+      <tr>
+        <td><code>author_id</code></td>
+        <td>Literal</td>
+        <td>
+          Matches comments with the specified author_id. Anonymous users will never match this term.
+        </td>
+        <td>
+          <code>{link("author_id:211190", to: ~p"/comments?#{[cq: "author_id:211190"]}")}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>body</code></td>
+        <td>Full Text</td>
+        <td>Matches the body of this comment. This is the default field.</td>
+        <td><code>{link("body:test", to: ~p"/comments?#{[cq: "body:test"]}")}</code></td>
+      </tr>
+      <tr>
+        <td><code>created_at</code></td>
+        <td>Date/Time Range</td>
+        <td>Matches the creation time of this comment.</td>
+        <td>
+          <code>{link("created_at:2015", to: ~p"/comments?#{[cq: "created_at:2015"]}")}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>id</code></td>
+        <td>Numeric Range</td>
+        <td>Matches the numeric surrogate key for this comment.</td>
+        <td><code>{link("id:1000000", to: ~p"/comments?#{[cq: "id:1000000"]}")}</code></td>
+      </tr>
+      <tr>
+        <td><code>image_id</code></td>
+        <td>Literal</td>
+        <td>Matches the numeric surrogate key for the image this comment belongs to.</td>
+        <td>
+          <code>{link("image_id:1000000", to: ~p"/comments?#{[cq: "image_id:1000000"]}")}</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>my</code></td>
+        <td>Meta</td>
+        <td><code>my:comments</code> matches comments you have posted if you are signed in.</td>
+        <td><code>{link("my:comments", to: ~p"/comments?#{[cq: "my:comments"]}")}</code></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -4,46 +4,48 @@
     <span class="block-header-title">DNP Information</span><%= if can?(@conn, :edit, @dnp_entry) do %>{link "Edit listing", to: ~p"/dnp/#{@dnp_entry}/edit"}<% end %>{link "Back to DNP List", to: ~p"/dnp"}
   </div>
   <div class="block-content">
-    <table class="table">
-      <tbody>
-        <tr>
-          <td>Created:</td>
-          <td>{pretty_time(@dnp_entry.created_at)}</td>
-        </tr>
-        <tr>
-          <td>Tag:</td>
-          <td>{render(PhilomenaWeb.TagView, "_tag.html", tag: @dnp_entry.tag, conn: @conn)}</td>
-        </tr>
-        <tr>
-          <td>Restriction Type:</td>
-          <td>{@dnp_entry.dnp_type}</td>
-        </tr>
-        <tr>
-          <td>Conditions:</td>
-          <td>{@conditions}</td>
-        </tr>
-        <%= if can?(@conn, :show_reason, @dnp_entry) do %>
+    <div class="table-wrap responsive allow-overflow">
+      <table class="table striped">
+        <tbody>
           <tr>
-            <td>Reason:</td>
-            <td>{@reason}</td>
-          </tr>
-        <% end %>
-        <%= if can?(@conn, :show_feedback, @dnp_entry) do %>
-          <tr>
-            <td>Instructions:</td>
-            <td>{@instructions}</td>
+            <td>Created:</td>
+            <td>{pretty_time(@dnp_entry.created_at)}</td>
           </tr>
           <tr>
-            <td>Feedback:</td>
-            <td>{@dnp_entry.feedback}</td>
+            <td>Tag:</td>
+            <td>{render(PhilomenaWeb.TagView, "_tag.html", tag: @dnp_entry.tag, conn: @conn)}</td>
           </tr>
           <tr>
-            <td>Status:</td>
-            <td>{String.capitalize(@dnp_entry.aasm_state)}</td>
+            <td>Restriction Type:</td>
+            <td>{@dnp_entry.dnp_type}</td>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+          <tr>
+            <td>Conditions:</td>
+            <td>{@conditions}</td>
+          </tr>
+          <%= if can?(@conn, :show_reason, @dnp_entry) do %>
+            <tr>
+              <td>Reason:</td>
+              <td>{@reason}</td>
+            </tr>
+          <% end %>
+          <%= if can?(@conn, :show_feedback, @dnp_entry) do %>
+            <tr>
+              <td>Instructions:</td>
+              <td>{@instructions}</td>
+            </tr>
+            <tr>
+              <td>Feedback:</td>
+              <td>{@dnp_entry.feedback}</td>
+            </tr>
+            <tr>
+              <td>Status:</td>
+              <td>{String.capitalize(@dnp_entry.aasm_state)}</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 <%= if can?(@conn, :transition, @dnp_entry) do %>

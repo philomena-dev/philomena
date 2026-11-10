@@ -7,12 +7,12 @@ defmodule PhilomenaWeb.Admin.ArtistLinkView do
     do: Tag.display_order(tags)
 
   def link_state_class(%{aasm_state: state}) when state in ["verified", "link_verified"],
-    do: "success"
+    do: "table-success"
 
   def link_state_class(%{aasm_state: state}) when state in ["unverified", "rejected"],
-    do: "danger"
+    do: "table-danger"
 
-  def link_state_class(%{aasm_state: "contacted"}), do: "warning"
+  def link_state_class(%{aasm_state: "contacted"}), do: "table-warning"
   def link_state_class(_link), do: nil
 
   def link_state_name(%{aasm_state: state}) do
