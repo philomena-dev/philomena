@@ -1,0 +1,19 @@
+/*
+ * Bar charts drawn as SVG: the sparklines of a profile's statistics (PhilomenaWeb.ProfileView.sparkline_data/1) and
+ * the upload chart of the statistics page. A bar is in the accent color, and red under the pointer; .sparkline is
+ * the strip of a small chart, over a base line.
+ */
+
+.sparkline {
+  display: flex;
+  height: var(--size-15);
+  border-bottom: var(--border-width) solid var(--accent-color);
+}
+
+.sparkline-bar {
+  fill: var(--accent-color);
+}
+
+.sparkline-bar:hover {
+  fill: var(--danger-color);
+}

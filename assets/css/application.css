@@ -55,7 +55,6 @@
 @import "elements/base";
 @import "elements/misc";
 @import "elements/avatar";
-@import "elements/barline";
 @import "elements/blocks";
 @import "elements/dropdown";
 @import "elements/forms";
@@ -64,6 +63,7 @@
 @import "elements/media";
 @import "elements/navbar";
 @import "elements/page";
+@import "elements/sparkline";
 @import "elements/tables";
 
 /* Style elements specific to certain pages. */
@@ -84,6 +84,5 @@
 @import "views/profiles";
 @import "views/rules";
 @import "views/staff";
-@import "views/stats";
 @import "views/tag_change";
 @import "views/tags";

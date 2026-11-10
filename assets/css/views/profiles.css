@@ -1,22 +1,13 @@
-.table--stats {
-  min-width: 220px;
-}
-
-@media (max-width: 900px) {
-  .table--stats {
-    margin-left: 0;
-  }
-}
-
-td.table--stats__parameter {
+/* The statistics table of a profile: the name and number of a statistic, then its sparkline over the rest */
+.profile-stat-name {
   width: 20%;
 }
 
-td.table--stats__value {
+.profile-stat-value {
   width: 15%;
 }
 
-td.table--stats__sparkline {
+.profile-stat-sparkline {
   width: 65%;
 }
 

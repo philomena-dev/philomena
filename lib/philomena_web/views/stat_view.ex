@@ -18,7 +18,7 @@ defmodule PhilomenaWeb.StatView do
 
     bar_width = safe_div(graph_width, n_buckets)
 
-    content_tag :svg, class: "upload-stats", viewBox: "0 0 #{graph_width} #{graph_height}" do
+    content_tag :svg, viewBox: "0 0 #{graph_width} #{graph_height}" do
       for {datum, i} <- Enum.with_index(data) do
         bar_height = safe_div(datum["doc_count"], max_docs - min_docs) * graph_height
 
@@ -26,7 +26,7 @@ defmodule PhilomenaWeb.StatView do
         y = graph_height - bar_height
         height = bar_height
 
-        content_tag :rect, width: bar_width, height: height, x: x, y: y, fill: "#000" do
+        content_tag :rect, class: "sparkline-bar", width: bar_width, height: height, x: x, y: y do
           content_tag(:title,
             do: [datum["key_as_string"], " - ", Integer.to_string(datum["doc_count"]), " uploads"]
           )
