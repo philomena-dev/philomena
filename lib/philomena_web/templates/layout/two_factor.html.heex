@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
+    {viewport_meta_tag(@conn)}
+    <title phx-no-format>Two Factor Authentication - Derpibooru</title>
+    <link href={~p"/css/application.css"} rel="stylesheet" />
+    <link href={stylesheet_path(@conn, nil)} rel="stylesheet" />
+    <link
+      href={light_stylesheet_path(@conn)}
+      media="(prefers-color-scheme: light)"
+      rel="stylesheet"
+    />
+    <link href="/favicon.ico" rel="icon" type="image/x-icon" />
+    <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+  </head>
+  <body class="minimal">
+    <div class="minimal__container">{@inner_content}</div>
+  </body>
+</html>

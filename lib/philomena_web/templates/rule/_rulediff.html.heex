@@ -1,0 +1,31 @@
+<%= if not is_nil(@version.previous) do %>
+  <div class="flex flex--column flex--gap-normal">
+    <div class="grid grid--two-columns">
+      <%= if @version.previous.name != @version.name or @version.previous.title != @version.title do %>
+        <div class="block">
+          <strong>{@version.previous.name}</strong>: {@version.previous.title}
+        </div>
+        <div class="block"><strong>{@version.name}</strong>: {@version.title}</div>
+      <% end %>
+      <%= if @version.previous.short_description != @version.short_description do %>
+        <div class="block">
+          <strong>Short Description:</strong> {@version.previous.short_description}
+        </div>
+        <div class="block"><strong>Short Description:</strong> {@version.short_description}</div>
+      <% end %>
+    </div>
+    <%= if @version.differences[:description] do %>
+      <div class="block"><strong>Description:</strong>{@version.differences[:description]}</div>
+    <% end %>
+    <%= if @version.differences[:example] do %>
+      <div class="block"><strong>Example:</strong>{@version.differences[:example]}</div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="flex flex--column flex--gap-normal">
+    <strong><em>This is the initial version.</em></strong><span><strong>{@version.name}</strong>: {@version.title}</span><span><strong>Short Description:</strong> {@version.short_description}</span><strong>Description:</strong>
+    <pre><code>{@version.description}</code></pre>
+    <strong>Example:</strong>
+    <pre><code>{@version.example}</code></pre>
+  </div>
+<% end %>

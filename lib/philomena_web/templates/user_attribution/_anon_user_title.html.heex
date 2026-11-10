@@ -1,0 +1,2 @@
+{if !!@object.user and !anonymous?(@object),
+  do: render(PhilomenaWeb.UserAttributionView, "_user_title.html", assigns)}

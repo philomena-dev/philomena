@@ -1,0 +1,9 @@
+<a
+  :if={present?(@conn.params["hidden"])}
+  href={@route.(Keyword.delete(@params, :hidden))}
+  title="Hide Hidden Images"
+><i class="fa fa-eye-slash"></i> <span class="hide-mobile hide-limited-desktop">Hide Hidden</span></a><a
+  :if={!present?(@conn.params["hidden"])}
+  href={@route.(Keyword.put(@params, :hidden, "1"))}
+  title="Show Hidden Images"
+><i class="fa fa-eye-slash"></i> <span class="hide-mobile hide-limited-desktop">Show Hidden</span></a>

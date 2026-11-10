@@ -47,11 +47,6 @@ config :philomena, Philomena.Native,
   # Never link the C runtime statically, because we are building a `dylib`
   env: [{"RUSTFLAGS", "-C target-feature=-crt-static"}]
 
-config :phoenix, :template_engines,
-  slim: PhoenixSlime.Engine,
-  slime: PhoenixSlime.Engine,
-  slimleex: PhoenixSlime.LiveViewEngine
-
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

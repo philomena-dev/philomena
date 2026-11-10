@@ -1,5 +1,0 @@
-h2 Edit Badge
-
-= render "_form.html", Map.put(assigns, :action, ~p"/admin/badges/#{@badge}")
-
-= link "Back", to: ~p"/admin/badges"

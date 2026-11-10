@@ -28,6 +28,17 @@ defmodule PhilomenaWeb.Profile.SourceChangeControllerTest do
       assert html_response(conn, 200)
     end
 
+    test "paginates for anonymous viewers without an added filter", %{conn: conn} do
+      user = confirmed_user_fixture()
+      source_change!(user, "https://example.com/first-source")
+      source_change!(user, "https://example.com/second-source")
+
+      conn = get(conn, ~p"/profiles/#{user}/source_changes?#{[per_page: 1]}")
+
+      next_page = ~p"/profiles/#{user}/source_changes?#{[page: 2]}"
+      assert html_response(conn, 200) =~ ~s(href="#{next_page}")
+    end
+
     test "lists a user's source changes for moderators", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       user = confirmed_user_fixture()

@@ -1,0 +1,26 @@
+<h1>Notification Area</h1>
+<div class="walloftext">
+  <%= for {category, notifications} <- @notifications, Enum.any?(notifications) do %>
+    <div class="block notification-type-block">
+      <div class="block__header">
+        <span class="block__header__title">{name_of_category(category)}</span>
+      </div>
+      <div>
+        <%= for notification <- notifications do %>
+          <div class="block block--fixed flex notification">
+            {render(PhilomenaWeb.NotificationView, notification_template_path(category),
+              notification: notification,
+              conn: @conn
+            )}
+          </div>
+        <% end %>
+      </div>
+      <div class="block__header block__header--light">
+        <a href={~p"/notifications/categories/#{category}"}>View category ({notifications.total_entries})</a>
+      </div>
+    </div>
+  <% end %>
+  <p>
+    To get notifications on new comments and forum posts, click the 'Subscribe' button in the bar at the top of an image or forum topic. You'll get notifications here for any new posts or comments.
+  </p>
+</div>

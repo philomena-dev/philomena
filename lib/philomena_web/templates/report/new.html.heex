@@ -1,0 +1,65 @@
+<h2>Submit a report</h2>
+<p><strong>{link_to_target(@subject)}</strong></p>
+<div class="image-other">
+  <div class="dnp-warning">
+    <h3>Reporting Tips</h3>
+    <ul>
+      <li>Make sure to report for the correct {link("rule", to: "/rules")}.</li>
+      <li>
+        One report per problem. If it involves multiple things (images, comments, etc), list all of their IDs in the description of a single report.
+      </li>
+      <li>
+        <strong>Do not report someone just because they disagree with you. Abusing the report system is a bannable offense.</strong>
+      </li>
+    </ul>
+    <p>
+      You may only open up to <strong>3 reports</strong>
+      at a time. Please be mindful of what you report.
+    </p>
+  </div>
+  <br />
+  <%= if image?(@changeset) do %>
+    <div class="dnp-warning">
+      <h3>Takedown Policy</h3>
+      <p>
+        <strong>Only an owner of an image's rights (normally the artist) can request a takedown.</strong>
+        If you're the artist, you'll <strong>need</strong>
+        a verified artist link.
+      </p>
+      <p>
+        For more information, please read the {link("takedown policy", to: "/pages/takedowns")}.
+      </p>
+    </div>
+    <br />
+  <% end %>
+  <%= if conversation?(@changeset) do %>
+    <div class="dnp-warning">
+      <h3>Privacy note</h3>
+      <p>The whole conversation will be readable by site staff.</p>
+    </div>
+    <br />
+  <% end %>
+  <%= form_for @changeset, @action, fn f -> %>
+    <div class="field">
+      {select(f, :rule_id, report_categories(@rules),
+        class: "input",
+        prompt: [key: "Select a rule", disabled: true, selected: true],
+        required: true
+      )}
+    </div>
+    <div class="block">
+      {render(PhilomenaWeb.MarkdownView, "_input.html",
+        conn: @conn,
+        f: f,
+        placeholder: "Describe the problem and how it breaks the rule.",
+        name: :reason
+      )}
+    </div>
+    {hidden_input(f, :user_agent, value: get_user_agent(@conn))}{render(
+      PhilomenaWeb.CaptchaView,
+      "_captcha.html",
+      name: "report",
+      conn: @conn
+    )}{submit("Send Report", class: "button")}
+  <% end %>
+</div>

@@ -1,3 +1,0 @@
-a href=~p"/images/random?#{@params}" title="Random Image"
-  i.fa.fa-random>
-  span.hide-mobile.hide-limited-desktop Random Image

@@ -1,0 +1,6 @@
+<div
+  :for={{class, label} <- user_labels(@object)}
+  class={["label label--block", !assigns[:large] && "label--small", class]}
+>
+  {label}
+</div>

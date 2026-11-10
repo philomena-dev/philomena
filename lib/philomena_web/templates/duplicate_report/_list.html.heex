@@ -1,0 +1,16 @@
+<table class="dupe-report-list">
+  <thead>
+    <tr>
+      <th>Source image</th>
+      <th>Target image</th>
+      <th>Diff</th>
+      <th>Status/options</th>
+    </tr>
+  </thead>
+  <tbody>
+    {render(PhilomenaWeb.DuplicateReportView, "_duplicate_reports.html",
+      duplicate_reports: @duplicate_reports,
+      conn: @conn
+    )}
+  </tbody>
+</table>

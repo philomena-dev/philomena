@@ -1,5 +1,0 @@
-h1 Edit Commission Listing
-p
-  = link "Back to commission", to: ~p"/profiles/#{@user}/commission"
-
-= render PhilomenaWeb.Profile.CommissionView, "_form.html", changeset: @changeset, action: ~p"/profiles/#{@user}/commission", conn: @conn

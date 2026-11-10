@@ -45,15 +45,13 @@ defmodule Philomena.MixProject do
       {:phoenix_ecto, "~> 4.6"},
       {:ecto_sql, "~> 3.13"},
       {:postgrex, ">= 0.0.0"},
-      # Must be kept at 3.x because of Slime
+      # Must be kept at 3.x because templates use its form and link helpers
       {:phoenix_html, "~> 3.3"},
       {:phoenix_view, "~> 2.0"},
       {:phoenix_live_reload, "~> 1.6", only: :dev},
+      {:phoenix_live_view, "~> 1.2"},
       {:gettext, "~> 1.0"},
       {:bandit, "~> 1.8"},
-      {:slime, "~> 1.3.1"},
-      {:phoenix_slime, "~> 0.13",
-       github: "slime-lang/phoenix_slime", ref: "ae3b6db721e373f69eab131ad013edf3264b7d09"},
       {:phoenix_pubsub_redis, "~> 3.0"},
       {:ecto_network, "~> 1.6"},
       {:bcrypt_elixir, "~> 3.3"},

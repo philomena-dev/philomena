@@ -1,2 +1,0 @@
-= for report <- @duplicate_reports do
-  = render PhilomenaWeb.DuplicateReportView, "_duplicate_report.html", report: report, conn: @conn

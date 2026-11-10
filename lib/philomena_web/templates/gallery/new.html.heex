@@ -1,0 +1,6 @@
+<h1>Create a Gallery</h1>
+{render(PhilomenaWeb.GalleryView, "_form.html",
+  conn: @conn,
+  changeset: @changeset,
+  action: ~p"/galleries"
+)}

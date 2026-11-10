@@ -1,0 +1,69 @@
+<meta content={generator_name()} name="generator" />
+<meta content="#618fc3" name="theme-color" />
+<meta content="telephone=no" name="format-detection" />
+<%= if opengraph?(@conn) do %>
+  <% image = @conn.assigns.image %>
+  <% filtered = not image.thumbnails_generated %>
+  <% title = "##{image.id} - #{Philomena.Images.tag_list(image)} - Derpibooru" %>
+  <% description =
+    "⭐ #{image.faves_count} ↕️ #{image.score} 💬 #{image.comments_count} • #{image.image_width}x#{image.image_height} #{String.upcase(to_string(image.image_format))}" %>
+  <% {thumb_large, {large_width, large_height}} = ImageView.thumb_url_size(image, false, :large) %>
+  <% thumb_rendered = ImageView.thumb_url(image, false, :rendered) %>
+  <% rendered_type = "image/png" %>
+  <meta content={tag_list(image)} name="keywords" />
+  <meta content={title} name="description" />
+  <meta content="Derpibooru" property="og:site_name" />
+  <meta content={title} property="og:title" />
+  <meta content={description} property="og:description" />
+  <meta content={url(~p"/images/#{image}")} property="og:url" />
+  <meta content="summary_large_image" property="twitter:card" />
+  <meta content={title} property="twitter:title" />
+  <meta content={description} property="twitter:description" />
+  <%= for tag <- artist_tags(image.tags) do %>
+    <meta content={tag.name_in_namespace} property="dc:creator" />
+  <% end %>
+  <%= if image_has_sources(image) do %>
+    <meta content={image_first_source(image)} property="foaf:primaryTopic" />
+  <% end %>
+  <link
+    href={url(~p"/api/v1/json/oembed?#{[url: ~p"/images/#{image}"]}")}
+    rel="alternate"
+    title="oEmbed JSON Profile"
+    type="application/json+oembed"
+  />
+  <link href={url(~p"/images/#{image}")} rel="canonical" />
+  <%= cond do %>
+    <% image.image_mime_type == "video/webm" and not filtered -> %>
+      <meta content="video.other" property="og:type" />
+      <meta content={thumb_rendered} property="og:image" />
+      <meta content={rendered_type} property="og:image:type" />
+      <meta content={image.image_width} property="og:image:width" />
+      <meta content={image.image_height} property="og:image:height" />
+      <meta content={thumb_large} property="og:video" />
+      <meta content={image.image_mime_type} property="og:video:type" />
+      <meta content={large_width} property="og:video:width" />
+      <meta content={large_height} property="og:video:height" />
+      <meta content={thumb_rendered} property="twitter:image" />
+    <% image.image_mime_type == "image/svg+xml" and not filtered -> %>
+      <meta content="website" property="og:type" />
+      <meta content={thumb_rendered} property="og:image" />
+      <meta content={rendered_type} property="og:image:type" />
+      <meta content={image.image_width} property="og:image:width" />
+      <meta content={image.image_height} property="og:image:height" />
+      <meta content={thumb_rendered} property="twitter:image" />
+    <% not filtered -> %>
+      <meta content="website" property="og:type" />
+      <meta content={thumb_large} property="og:image" />
+      <meta content={image.image_mime_type} property="og:image:type" />
+      <meta content={large_width} property="og:image:width" />
+      <meta content={large_height} property="og:image:height" />
+      <meta content={thumb_large} property="twitter:image" />
+    <% true -> %>
+      <meta content="website" property="og:type" />
+  <% end %>
+<% else %>
+  <meta
+    content="Derpibooru is a linear imagebooru which lets you share, find and discover new art and media surrounding the show My Little Pony: Friendship is Magic"
+    name="description"
+  />
+<% end %>

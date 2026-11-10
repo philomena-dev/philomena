@@ -143,4 +143,40 @@ defmodule PhilomenaWeb.UserAttributionViewTest do
       end
     end
   end
+
+  describe "user labels" do
+    defp render_title(template, assigns),
+      do: Phoenix.View.render_to_string(PhilomenaWeb.UserAttributionView, template, assigns)
+
+    defp titled_user(title),
+      do: %Philomena.Users.User{name: "Labelled", personal_title: title, role: "user"}
+
+    test "renders labels small by default and full size when large" do
+      object = %{user: titled_user("Artist")}
+
+      assert render_title("_user_title.html", object: object) =~
+               ~s(class="label label--block label--small label--primary")
+
+      large = render_title("_user_title.html", object: object, large: true)
+      assert large =~ ~s(class="label label--block label--primary")
+      refute large =~ "label--small"
+    end
+
+    test "escapes a personal title" do
+      html = render_title("_user_title.html", object: %{user: titled_user("<script>x</script>")})
+
+      assert html =~ "&lt;script&gt;x&lt;/script&gt;"
+      refute html =~ "<script>"
+    end
+
+    test "shows anonymous-capable labels only for a named, non-anonymous author" do
+      user = titled_user("Artist")
+
+      assert render_title("_anon_user_title.html", object: %Comment{user: user}) =~ "Artist"
+      assert render_title("_anon_user_title.html", object: %Comment{user: nil}) == ""
+
+      assert render_title("_anon_user_title.html", object: %Comment{user: user, anonymous: true}) ==
+               ""
+    end
+  end
 end
