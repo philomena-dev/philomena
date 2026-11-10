@@ -1,6 +1,8 @@
 /*
  * Philomena's own tokens and its values of the framework's. Colors are set on the framework's three theme selectors;
- * the header bars keep the colors of Philomena's themes, with opaque hover colors.
+ * the header bars keep the colors of Philomena's themes, with opaque hover colors. The framework's role colors below
+ * repeat its formulas with the lightness read from config.css, which a hue too bright or too dark for the
+ * framework's fixed lightness sets to keep the contrast of the palette.
  */
 
 :root {
@@ -8,6 +10,16 @@
 }
 
 @define-mixin philomena-light-colors {
+  --link-color: hsl(from $link-color-light h s $link-lightness-light);
+  --link-strong-color: hsl(from $link-color-light h s $link-strong-lightness-light);
+  --placeholder-color: hsl(from $base-color-light h calc(s - 40) $placeholder-lightness-light);
+  --bar-link-color: hsl(from $base-color-light h s $bar-link-lightness-light);
+  --control-border-color: hsl(from $base-color-light h calc(s - 20) $control-border-lightness-light);
+  --focus-color: hsl(from $base-color-light h s $focus-lightness-light);
+  @mixin type-color-light neutral, $base-color-light, -48, $neutral-fill-light;
+  @mixin type-color-light primary, $primary-color, 0, $primary-fill-light;
+  @mixin type-color-light warning, $warning-color, 0, $warning-fill-light;
+  @mixin type-color-light danger, $danger-color, 0, $danger-fill-light;
   --header-color: hsl(from $base-color-light h s calc(l - 9));
   --header-text-color: $surface-color-light;
   --bar-hover-shade-color: hsl(from $base-color-light h s calc(l - 16));
@@ -25,6 +37,15 @@
 }
 
 :root {
+  --link-color: hsl(from $link-color-dark h s $link-lightness-dark);
+  --link-strong-color: hsl(from $link-color-dark h s $link-strong-lightness-dark);
+  --tint-color: hsl(from $base-color-dark h s $tint-lightness-dark);
+  --control-border-color: hsl(from $base-color-dark h s $control-border-lightness-dark);
+  --focus-color: hsl(from $base-color-dark h calc(s + 15) $focus-lightness-dark);
+  @mixin type-color-dark neutral, $base-color-dark, -9, $neutral-fill-dark;
+  @mixin type-color-dark primary, $primary-color, 0, $primary-fill-dark;
+  @mixin type-color-dark warning, $warning-color, 0, $warning-fill-dark;
+  @mixin type-color-dark danger, $danger-color, 0, $danger-fill-dark;
   --header-color: $header-color-dark;
   --header-text-color: $text-color-dark;
   --bar-hover-shade-color: hsl(from $header-color-dark h s calc(l - 8));

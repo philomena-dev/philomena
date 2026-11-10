@@ -7,6 +7,9 @@ $link-color-dark: #ec5f19;
 $link-color-light: #d97441;
 $primary-color: #8c2a0f;
 
+/* Lightness of the framework's role colors that this hue needs for contrast */
+$tint-lightness-dark: 22%;
+
 /* Philomena's header bars and mobile menu */
 $header-color-dark: #893a12;
 $header-field-color-dark: #492110;

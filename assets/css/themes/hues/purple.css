@@ -8,6 +8,12 @@ $link-color-dark: #9747cc;
 $link-color-light: #9241d9;
 $primary-color: #46266b;
 $success-color: #0f330f;
+$tag-official-color: #b4b046;
+
+/* Lightness of the framework's role colors that this hue needs for contrast */
+$placeholder-lightness-light: 38%;
+$link-lightness-dark: 66%;
+$link-strong-lightness-dark: 76%;
 
 /* Philomena's header bars and mobile menu */
 $header-color-dark: #36274e;

@@ -5,9 +5,17 @@ $page-color-dark: #091a11;
 $surface-color-dark: #1d2f20;
 $link-color-dark: #11cf69;
 $link-color-light: #015a02;
-$primary-color: #1a6b51;
-$success-color: #014b01;
-$tag-color: #25c640;
+$primary-color: #1e674e;
+
+/* Lightness of the framework's role colors that this hue needs for contrast */
+$link-lightness-light: 25%;
+$link-strong-lightness-light: 22%;
+$placeholder-lightness-light: 39%;
+$control-border-lightness-light: 37%;
+$focus-lightness-light: 33%;
+$primary-fill-light: 33%;
+$tint-lightness-dark: 19%;
+$primary-fill-dark: 30%;
 
 /* Philomena's header bars and mobile menu */
 $header-color-dark: #287139;

@@ -8,10 +8,9 @@ $link-color-light: #d94141;
 $primary-color: #641f1f;
 $success-color: #2e4e2e;
 $danger-color: #7b3b00;
-$warning-color: #5b5b00;
+$warning-color: #434319;
 $tag-color: #d16767;
 $tag-rating-color: #9dc3e9;
-$tag-spoiler-color: #ddcf53;
 $tag-origin-color: #bbb6eb;
 $tag-oc-color: #dd7ee4;
 $tag-error-color: #ff5566;
@@ -19,6 +18,14 @@ $tag-character-color: #82d0e2;
 $tag-official-color: #d1cf84;
 $tag-fanmade-color: #ebb1d6;
 $tag-species-color: #d2b48c;
+
+/* Lightness of the framework's role colors that this hue needs for contrast */
+$warning-fill-light: 32%;
+$danger-fill-light: 36%;
+$control-border-lightness-dark: 62%;
+$focus-lightness-dark: 64%;
+$warning-fill-dark: 29%;
+$danger-fill-dark: 32%;
 
 /* Philomena's header bars and mobile menu */
 $header-color-dark: #923131;
