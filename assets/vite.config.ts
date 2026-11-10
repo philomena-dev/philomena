@@ -1,15 +1,16 @@
 import fs from 'fs';
 import path from 'path';
-import autoprefixer from 'autoprefixer';
 import postcssMixins from 'postcss-mixins';
 import postcssSimpleVars from 'postcss-simple-vars';
 import postcssRelativeColor from '@csstools/postcss-relative-color-syntax';
 import { defineConfig } from 'vitest/config';
+import cssCompat from './build/css-compat.ts';
 import { buildTarget } from './build/floor.ts';
 import type { ConfigEnv, ViteUserConfig } from 'vitest/config';
 
 export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
   const isDev = command !== 'build' && mode !== 'test';
+  const forced = process.env.CSS_FORCE_FALLBACKS === '1';
   const targets = new Map();
 
   fs.readdirSync(path.resolve(import.meta.dirname, 'css/themes/')).forEach(name => {
@@ -62,7 +63,7 @@ export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
     },
     css: {
       postcss: {
-        plugins: [postcssMixins(), postcssSimpleVars(), postcssRelativeColor(), autoprefixer],
+        plugins: [postcssMixins(), postcssSimpleVars(), postcssRelativeColor(), ...cssCompat({ force: forced })],
       },
     },
     test: {

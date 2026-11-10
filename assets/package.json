@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@csstools/postcss-relative-color-syntax": "^4.0.16",
+    "@csstools/selector-specificity": "^6.0.1",
     "@fortawesome/fontawesome-free": "^7.3.1",
     "@mdn/browser-compat-data": "^8.1.8",
     "@philomena/philomena-css": "*",
@@ -22,8 +23,12 @@
     "browserslist": "^4.29.5",
     "cross-env": "^10.1.0",
     "normalize.css": "^8.0.1",
+    "postcss": "^8.5.32",
+    "postcss-logical": "^9.0.2",
     "postcss-mixins": "^12.1.2",
+    "postcss-selector-parser": "^7.2.0",
     "postcss-simple-vars": "^7.0.1",
+    "postcss-value-parser": "^4.2.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.6"
   },
