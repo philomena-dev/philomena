@@ -15,11 +15,11 @@ export const classTwin = (selector: string) =>
   ).processSync(selector);
 
 /**
- * Writes every rule for `:focus-visible` with the `.focus-visible` class of the polyfill loaded by js/app.ts, which
- * floor browsers match, followed by a native twin of the same specificity, which current browsers match before the
- * polyfill runs and without scripts. A floor browser drops a whole rule that names `:focus-visible`, so the native
- * twin takes only the selectors that use it. A rule that only negates `:focus-visible` stays native, which floor
- * browsers drop.
+ * Writes every rule for `:focus-visible` with the `.focus-visible` class of the polyfill that js/focus-visible.ts
+ * applies where `:focus-visible` is missing, which floor browsers match, followed by a native twin of the same
+ * specificity, which current browsers match. A floor browser drops a whole rule that names `:focus-visible`, so the
+ * native twin takes only the selectors that use it. A rule that only negates `:focus-visible` stays native, which
+ * floor browsers drop.
  */
 const postcssFloorFocusVisible: PluginCreator<void> = () => ({
   postcssPlugin: 'philomena-floor-focus-visible',

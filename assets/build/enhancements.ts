@@ -8,7 +8,8 @@ export const enhancements: Record<string, string> = {
   // The gate accepts a :focus-visible rule only beside its twin
   'css.selectors.focus-visible':
     'floor browsers match the .focus-visible twin of each rule (build/postcss-floor-focus-visible.ts), a class that ' +
-    'the focus-visible polyfill loaded by js/app.ts sets, and drop a rule that negates it',
+    'the focus-visible polyfill sets, which js/focus-visible.ts applies where :focus-visible is missing, and drop ' +
+    'a rule that negates it',
   'css.properties.accent-color': 'native checkboxes and radios keep the browser color',
   'css.properties.color-scheme': 'Firefox before 96 draws native controls in their light look on dark themes',
   'css.properties.field-sizing': 'a field keeps the size its rows and size attributes give it',

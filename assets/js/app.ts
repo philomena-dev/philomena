@@ -4,8 +4,7 @@
 // Import new files and add their exported setup function to the functions array below.
 
 import './ujs';
-// Sets the .focus-visible class that floor browsers match in place of :focus-visible
-import 'focus-visible';
+import { polyfillFocusVisible } from './focus-visible';
 
 import { whenReady } from './utils/dom';
 
@@ -37,6 +36,8 @@ import { hideStaffTools } from './staffhider';
 import { pollOptionCreator } from './poll';
 import { warnAboutPMs } from './pmwarning';
 import { imageSourcesCreator } from './sources';
+
+polyfillFocusVisible();
 
 whenReady(
   loadBooruData,
