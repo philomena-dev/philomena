@@ -10,6 +10,7 @@
 }
 
 @define-mixin philomena-light-colors {
+  color-scheme: light;
   --link-color: hsl(from $link-color-light h s $link-lightness-light);
   --link-strong-color: hsl(from $link-color-light h s $link-strong-lightness-light);
   --placeholder-color: hsl(from $base-color-light h calc(s - 40) $placeholder-lightness-light);
@@ -38,6 +39,7 @@
 }
 
 :root {
+  color-scheme: dark;
   --link-color: hsl(from $link-color-dark h s $link-lightness-dark);
   --link-strong-color: hsl(from $link-color-dark h s $link-strong-lightness-dark);
   --tint-color: hsl(from $base-color-dark h s $tint-lightness-dark);

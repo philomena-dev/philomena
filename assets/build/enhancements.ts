@@ -6,6 +6,7 @@
  */
 export const enhancements: Record<string, string> = {
   'css.properties.accent-color': 'native checkboxes and radios keep the browser color',
+  'css.properties.color-scheme': 'Firefox before 96 draws native controls in their light look on dark themes',
   'css.properties.field-sizing': 'a field keeps the size its rows and size attributes give it',
   'css.properties.scrollbar-color': 'Chromium and Safari take the ::-webkit-scrollbar rules under @supports not',
   'css.properties.scrollbar-width': 'Chromium and Safari take the ::-webkit-scrollbar rules under @supports not',
