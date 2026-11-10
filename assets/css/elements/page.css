@@ -16,8 +16,10 @@ body {
 }
 
 @media (min-width: $breakpoint-md) {
+  /* Centered pages inset the header bars and wide content from the screen edges by the same gutter */
   .page-centered {
-    --header-spacing-horizontal: calc(2 * var(--spacing-lg));
+    --page-spacing-horizontal: calc(2 * var(--spacing-lg));
+    --header-spacing-horizontal: var(--page-spacing-horizontal);
   }
 
   .page-content {
@@ -53,7 +55,7 @@ body {
   }
 
   .page-centered .page-wide.page-content {
-    padding-inline: var(--header-spacing-horizontal);
+    padding-inline: var(--page-spacing-horizontal);
   }
 }
 
