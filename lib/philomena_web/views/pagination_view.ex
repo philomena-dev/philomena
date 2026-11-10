@@ -44,7 +44,7 @@ defmodule PhilomenaWeb.PaginationView do
     |> Enum.filter(&(&1 >= min and &1 != number and &1 <= max))
   end
 
-  # Most listings paginate without extra query parameters
+  # Most listings paginate without extra query parameters, passing none or nil
   def render("_pagination.html" = template, assigns),
-    do: render_template(template, Map.put_new(assigns, :params, []))
+    do: render_template(template, Map.put(assigns, :params, assigns[:params] || []))
 end

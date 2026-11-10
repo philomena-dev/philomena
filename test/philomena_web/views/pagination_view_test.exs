@@ -29,7 +29,16 @@ defmodule PhilomenaWeb.PaginationViewTest do
     assert html =~ ~s(<a class="js-next" href="/images?page=3">)
   end
 
-  test "renders nothing for a search that fits on one page" do
-    assert render_pagination(1, 1, params: [q: "safe"]) == ""
+  test "keeps the listing's query parameters in page links" do
+    assert render_pagination(1, 2, params: [q: "safe"]) =~
+             ~s(<a class="js-next" href="/images?page=2&amp;q=safe">)
+  end
+
+  test "treats nil parameters as none" do
+    assert render_pagination(1, 2, params: nil) =~ ~s(<a class="js-next" href="/images?page=2">)
+  end
+
+  test "renders nothing for a listing that fits on one page" do
+    assert render_pagination(1, 1) == ""
   end
 end
