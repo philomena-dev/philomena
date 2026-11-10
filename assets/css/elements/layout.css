@@ -18,19 +18,6 @@ nav {
   text-align: center;
 }
 
-.flex--gap-small {
-  gap: var(--padding-small);
-}
-
-.flex--gap-normal {
-  gap: var(--padding-normal);
-}
-
-.grid--two-columns {
-  grid-template-columns: auto auto;
-  gap: var(--padding-normal);
-}
-
 @media (max-width: $min-desktop-width) {
   .stretched-mobile-links {
     display: flex;
