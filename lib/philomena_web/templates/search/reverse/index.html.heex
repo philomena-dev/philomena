@@ -51,11 +51,11 @@
     <%!-- Don't render anything. --%>
   <% Enum.any?(@images) -> %>
     <div class="block" id="imagelist-container">
-      <section class="block__header page__header">
-        <span class="block__header__title page__title hidden-below-md">Search by uploaded image</span>
+      <section class="block-header page__header">
+        <span class="block-header-title page__title hidden-below-md">Search by uploaded image</span>
       </section>
     </div>
-    <div class="block__content media-list">
+    <div class="block-content media-list">
       <%= for image <- @images do %>
         {render(PhilomenaWeb.ImageView, "_image_box.html",
           image: image,
@@ -65,8 +65,8 @@
         )}
       <% end %>
     </div>
-    <div class="block__header block__header--light page__header">
-      <span class="block__header__title page__info">{render(
+    <div class="block-header sub page__header">
+      <span class="block-header-title page__info">{render(
         PhilomenaWeb.PaginationView,
         "_pagination_info.html",
         page: @images

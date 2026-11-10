@@ -62,12 +62,12 @@ const actions = {
 
   // favourite image
   [keys.KeyF]() {
-    click(getHover() ? `a.interaction--fave[data-image-id="${getHover()}"]` : '.block__header a.interaction--fave');
+    click(getHover() ? `a.interaction--fave[data-image-id="${getHover()}"]` : '.image-metabar a.interaction--fave');
   },
 
   // upvote image
   [keys.KeyU]() {
-    click(getHover() ? `a.interaction--upvote[data-image-id="${getHover()}"]` : '.block__header a.interaction--upvote');
+    click(getHover() ? `a.interaction--upvote[data-image-id="${getHover()}"]` : '.image-metabar a.interaction--upvote');
   },
 };
 

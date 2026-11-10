@@ -1,11 +1,4 @@
-.notification-type-block:not(:last-child) {
-  margin-bottom: 20px;
-}
-
-.notification {
-  margin-bottom: 0;
-}
-
-.notification:not(:last-child) {
-  border-bottom: 0;
+/* The notifications of a category are rows of its block */
+.notification + .notification {
+  border-top: var(--border-width) solid var(--tint-color);
 }

@@ -6,8 +6,8 @@
   <a href={(~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}?#{[post_id: @post.id]}" <> "#post_#{@post.id}")}>{@post.topic.title}</a>
 </h1>
 <%= for version <- @versions do %>
-  <article class="block communication">
-    <div class="block__content flex flex-nowrap communication__content">
+  <article class="block allow-overflow communication">
+    <div class="block-content flex flex-nowrap communication__content">
       <div class="communication__body__avatar hidden-below-md">
         {render(PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html",
           object: @post,
@@ -38,7 +38,7 @@
         <div class="communication__body__text">{version.difference}</div>
       </div>
     </div>
-    <div class="block__content communication__options">
+    <div class="block-content communication__options">
       <div class="flex flex-wrap justify-between">
         <div>
           <%= if version.edit_reason not in [nil, ""] do %>

@@ -1,7 +1,7 @@
 <h1>Showing Report</h1>
 <p>{link_to_target(report_target(@report))}</p>
-<article class="block communication">
-  <div class="block__content communication__content flex flex-nowrap">
+<article class="block allow-overflow communication">
+  <div class="block-content communication__content flex flex-nowrap">
     <div class="communication__body__avatar hidden-below-md">
       {render(PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html",
         object: @report,
@@ -33,7 +33,7 @@
       <div class="communication__body__text">{@body}</div>
     </div>
   </div>
-  <div class="block__content communication__options">
+  <div class="block-content communication__options">
     <div class="flex flex-wrap justify-between">
       <div>Reported {pretty_time(@report.created_at)}</div>
       <div class="flex-auto text-right">

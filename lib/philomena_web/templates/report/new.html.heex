@@ -39,7 +39,7 @@
     </div>
     <br />
   <% end %>
-  <%= form_for @changeset, @action, fn f -> %>
+  <%= form_for @changeset, @action, [class: "content"], fn f -> %>
     <div class="field">
       {select(f, :rule_id, report_categories(@rules),
         class: "input",

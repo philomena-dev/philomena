@@ -1,8 +1,8 @@
 <div class="block">
-  <div class="block__header" phx-no-format>
-    <span class="block__header__title">Available Items and Prices</span><%= if current?(@user, @conn.assigns.current_user) do %>{link "Add an item", to: ~p"/profiles/#{@user}/commission/items/new"}<% end %>
+  <div class="block-header" phx-no-format>
+    <span class="block-header-title">Available Items and Prices</span><%= if current?(@user, @conn.assigns.current_user) do %>{link "Add an item", to: ~p"/profiles/#{@user}/commission/items/new"}<% end %>
   </div>
-  <div class="block__content">
+  <div class="block-content">
     <%= if not Enum.any?(@commission.items) do %>
       <%= if current?(@user, @conn.assigns.current_user) do %>
         <p>You have not added any items to your commissions sheet yet.</p>

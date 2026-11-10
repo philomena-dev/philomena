@@ -21,7 +21,7 @@
   </div>
 <% end %>
 <div class="block">
-  <div class="block__header page__header">
+  <div class="block-header page__header">
     <div class="page__pagination">{pagination}</div>
     <%= if @conn.cookies["chan_nsfw"] == "true" do %>
       <a data-method="delete" href={~p"/channels/nsfw"}><i class="fa fa-eye-slash"></i>
@@ -31,7 +31,7 @@
       Show NSFW streams</a>
     <% end %>
   </div>
-  <div class="block__content">
+  <div class="block-content">
     <div class="media-list">
       <%= for channel <- @channels || [] do %>
         {render(PhilomenaWeb.ChannelView, "_channel_box.html",
@@ -42,7 +42,7 @@
       <% end %>
     </div>
   </div>
-  <div class="block__header page__header">
+  <div class="block-header page__header">
     <div class="page__pagination">{pagination}</div>
   </div>
 </div>

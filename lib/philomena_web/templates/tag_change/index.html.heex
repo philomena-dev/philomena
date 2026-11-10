@@ -44,130 +44,132 @@
   </div>
   <br />
 <% end %>
-<div class="block__header">
-  <div class="page__pagination">{pagination}</div>
-</div>
-<%= if reverts_tag_changes?(@conn) do %>
-  <div class="block__header block__header--light block__header--sub">
-    <a data-click-checkall=".tag-changes-form"><i class="fa fa-check"></i> Toggle all</a>
-  </div>
-<% end %>
-<%= form_for :tag_changes, ~p"/tag_changes/revert", [class: "tag-changes-form"], fn _f -> %>
-  <div class="block__content tag__changes">
-    <div class="block block--fixed block--warning">
-      <h4>
-        <i class="fa fa-triangle-exclamation"></i>
-        <strong>Do not undo staff member tag changes!</strong>
-      </h4>
-      <p>
-        Ask them if you believe their changes are wrong. Staff members usually have a good reason to change tags. There might also be additional context, which you either can't see, or simply are unaware of.
-      </p>
+<%= form_for :tag_changes, ~p"/tag_changes/revert", [class: "content tag-changes-form"], fn _f -> %>
+  <div class="block allow-overflow">
+    <div class="block-header">
+      <div class="page__pagination">{pagination}</div>
     </div>
-    <%= for tag_change <- @tag_changes do %>
-      <% {added_tags, removed_tags} = split_tags(tag_change) %>
-      <% added_tags_count = Enum.count(added_tags) %>
-      <% removed_tags_count = Enum.count(removed_tags) %>
-      <% non_retained = non_retained_tags(tag_change) %>
-      <div class={"tag__change-block #{user_block_class(tag_change)}"}>
-        <%= unless assigns[:hide_image] do %>
-          <div class="tag__change-image">
-            {render(PhilomenaWeb.ImageView, "_image_container.html",
-              image: tag_change.image,
-              size: :thumb_tiny,
-              conn: @conn
-            )}
-          </div>
-        <% end %>
-        <div class="flex-1">
-          <div class="tag__change">
-            <div class="tag__change-info">
-              {render(PhilomenaWeb.UserAttributionView, "_anon_user.html",
-                object: tag_change,
-                conn: @conn
-              )}
-              <%= if staff?(tag_change) do %>
-                <div class="label label--small label--success">
-                  <i class="fa fa-gavel"></i> Staff Member
-                </div>
-              <% end %>
-              <div class="flex-1 hidden-below-md"></div>
-              <span>{pretty_time(tag_change.created_at)}</span>
-              <div class="tag_change-tag-count">
-                <%= if added_tags_count > 0 do %>
-                  <div class="label label--small label--success">
-                    <i class="fa fa-plus"></i> {added_tags_count} tag(s)
-                  </div>
-                <% end %>
-                <%= if removed_tags_count > 0 do %>
-                  <div class="label label--small label--danger">
-                    <i class="fa fa-minus"></i> {removed_tags_count} tag(s)
-                  </div>
-                <% end %>
-              </div>
-            </div>
-          </div>
-          <div class="tag__change-tags">
-            <%= if added_tags_count > 0 do %>
-              <div class="added">
-                <i class="fa fa-plus"></i>
-                <div class="tag-list">
-                  <%= for tag <- added_tags do %>
-                    <div class={"#{non_retained_class(non_retained, tag)}"}>
-                      {render(PhilomenaWeb.TagView, "_tag.html", tag: tag, conn: @conn)}
-                    </div>
-                  <% end %>
-                </div>
-              </div>
-            <% end %>
-            <%= if removed_tags_count > 0 do %>
-              <div class="removed">
-                <i class="fa fa-minus"></i>
-                <div class="tag-list">
-                  <%= for tag <- removed_tags do %>
-                    <div class={"#{non_retained_class(non_retained, tag)}"}>
-                      {render(PhilomenaWeb.TagView, "_tag.html", tag: tag, conn: @conn)}
-                    </div>
-                  <% end %>
-                </div>
-              </div>
-            <% end %>
-          </div>
-          <%= if reverts_tag_changes?(@conn) or can?(@conn, :show, :identity_metadata) do %>
-            <div class="tag__change-tools">
-              <%= if can?(@conn, :show, :identity_metadata) do %>
-                {link_to_ip(@conn, tag_change.ip)} {link_to_fingerprint(
-                  @conn,
-                  tag_change.fingerprint
-                )}
-              <% end %>
-              <%= if reverts_tag_changes?(@conn) do %>
-                <div class="flex flex-1"></div>
-                <a
-                  class="button button--state-danger"
-                  data-confirm="Are you really, really sure?"
-                  data-method="delete"
-                  href={~p"/tag_changes/#{tag_change}"}
-                ><i class="fa fa-trash"></i>
-                <span class="hidden-below-md">Delete from history</span><span class="hidden-from-md">Delete</span></a>
-                <div class="flex items-center gap-md">
-                  <span>Revert</span>
-                  <input
-                    class="fancy-checkbox"
-                    name="ids[]"
-                    type="checkbox"
-                    value={tag_change.id}
-                  />
-                </div>
-              <% end %>
-            </div>
-          <% end %>
-        </div>
+    <%= if reverts_tag_changes?(@conn) do %>
+      <div class="block-header sub">
+        <a data-click-checkall=".tag-changes-form"><i class="fa fa-check"></i> Toggle all</a>
       </div>
     <% end %>
-  </div>
-  <p>* Crossed out tags were reverted and thus are not retained</p>
-  <div class="block__header block__header--light">
-    <div class="page__pagination">{pagination}</div>
+    <div class="block-content tag__changes">
+      <div class="block block--fixed block--warning">
+        <h4>
+          <i class="fa fa-triangle-exclamation"></i>
+          <strong>Do not undo staff member tag changes!</strong>
+        </h4>
+        <p>
+          Ask them if you believe their changes are wrong. Staff members usually have a good reason to change tags. There might also be additional context, which you either can't see, or simply are unaware of.
+        </p>
+      </div>
+      <%= for tag_change <- @tag_changes do %>
+        <% {added_tags, removed_tags} = split_tags(tag_change) %>
+        <% added_tags_count = Enum.count(added_tags) %>
+        <% removed_tags_count = Enum.count(removed_tags) %>
+        <% non_retained = non_retained_tags(tag_change) %>
+        <div class={"tag__change-block #{user_block_class(tag_change)}"}>
+          <%= unless assigns[:hide_image] do %>
+            <div class="tag__change-image">
+              {render(PhilomenaWeb.ImageView, "_image_container.html",
+                image: tag_change.image,
+                size: :thumb_tiny,
+                conn: @conn
+              )}
+            </div>
+          <% end %>
+          <div class="flex-1">
+            <div class="tag__change">
+              <div class="tag__change-info">
+                {render(PhilomenaWeb.UserAttributionView, "_anon_user.html",
+                  object: tag_change,
+                  conn: @conn
+                )}
+                <%= if staff?(tag_change) do %>
+                  <div class="label label--small label--success">
+                    <i class="fa fa-gavel"></i> Staff Member
+                  </div>
+                <% end %>
+                <div class="flex-1 hidden-below-md"></div>
+                <span>{pretty_time(tag_change.created_at)}</span>
+                <div class="tag_change-tag-count">
+                  <%= if added_tags_count > 0 do %>
+                    <div class="label label--small label--success">
+                      <i class="fa fa-plus"></i> {added_tags_count} tag(s)
+                    </div>
+                  <% end %>
+                  <%= if removed_tags_count > 0 do %>
+                    <div class="label label--small label--danger">
+                      <i class="fa fa-minus"></i> {removed_tags_count} tag(s)
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+            <div class="tag__change-tags">
+              <%= if added_tags_count > 0 do %>
+                <div class="added">
+                  <i class="fa fa-plus"></i>
+                  <div class="tag-list">
+                    <%= for tag <- added_tags do %>
+                      <div class={"#{non_retained_class(non_retained, tag)}"}>
+                        {render(PhilomenaWeb.TagView, "_tag.html", tag: tag, conn: @conn)}
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+              <%= if removed_tags_count > 0 do %>
+                <div class="removed">
+                  <i class="fa fa-minus"></i>
+                  <div class="tag-list">
+                    <%= for tag <- removed_tags do %>
+                      <div class={"#{non_retained_class(non_retained, tag)}"}>
+                        {render(PhilomenaWeb.TagView, "_tag.html", tag: tag, conn: @conn)}
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+            <%= if reverts_tag_changes?(@conn) or can?(@conn, :show, :identity_metadata) do %>
+              <div class="tag__change-tools">
+                <%= if can?(@conn, :show, :identity_metadata) do %>
+                  {link_to_ip(@conn, tag_change.ip)} {link_to_fingerprint(
+                    @conn,
+                    tag_change.fingerprint
+                  )}
+                <% end %>
+                <%= if reverts_tag_changes?(@conn) do %>
+                  <div class="flex flex-1"></div>
+                  <a
+                    class="button button--state-danger"
+                    data-confirm="Are you really, really sure?"
+                    data-method="delete"
+                    href={~p"/tag_changes/#{tag_change}"}
+                  ><i class="fa fa-trash"></i>
+                  <span class="hidden-below-md">Delete from history</span><span class="hidden-from-md">Delete</span></a>
+                  <div class="flex items-center gap-md">
+                    <span>Revert</span>
+                    <input
+                      class="fancy-checkbox"
+                      name="ids[]"
+                      type="checkbox"
+                      value={tag_change.id}
+                    />
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+      <p>* Crossed out tags were reverted and thus are not retained</p>
+    </div>
+    <div class="block-header sub">
+      <div class="page__pagination">{pagination}</div>
+    </div>
   </div>
   <%= if reverts_tag_changes?(@conn) do %>
     {submit("Revert selected", class: "button", data: [confirm: "Are you really, really sure?"])}<br /><br />

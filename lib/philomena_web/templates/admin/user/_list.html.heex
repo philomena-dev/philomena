@@ -1,8 +1,8 @@
 <div class="block">
-  <div class="block__header page__header">
+  <div class="block-header page__header">
     <div class="page__pagination">{@pagination}</div>
   </div>
-  <div class="block__content">
+  <div class="block-content">
     <table class="table">
       <thead>
         <tr>
@@ -67,10 +67,10 @@
       </tbody>
     </table>
   </div>
-  <div class="block__header block__header--light page__header">
+  <div class="block-header sub page__header">
     <div class="page__pagination">{@pagination}</div>
     <div class="page__info">
-      <span class="block__header__title">{render(
+      <span class="block-header-title">{render(
         PhilomenaWeb.PaginationView,
         "_pagination_info.html",
         page: @users

@@ -1,5 +1,5 @@
 <% changeset = @changeset || Ecto.Changeset.change(@image) %>
-<div class="js-sourcesauce" phx-no-format>
+<div class="js-sourcesauce content" phx-no-format>
   <% has_sources = Enum.any?(@image.sources) %>
   <%= form_for changeset, ~p"/images/#{@image}/sources", [method: "put", class: "hidden", id: "source-form", data: [remote: "true"]], fn f -> %>
     <%= if @changeset && can?(@conn, :edit_metadata, @image) && !@conn.assigns.current_ban do %>
@@ -20,16 +20,16 @@
     <% end %>
   <% end %>
   <div class="block" id="image-source">
-    <div class="block__header flex">
-      <span class="block__header__title"><i class="fas fa-link"></i>
+    <div class="block-header">
+      <span class="block-header-title"><i class="fas fa-link"></i>
         <%= if !has_sources || length(@image.sources) == 1 do %>Source <% else %>Sources <% end %></span>
-      <div class="block__header__buttons">
+      <div class="block-header-actions">
         <%= if @changeset do %><a accessKey="s" class="button button--inline" data-click-focus=".js-image-source" data-click-hide="#image-source" data-click-show="#source-form" id="edit-source" title="Edit source"><i class="fas fa-edit"></i><%= if has_sources do %>Add/Edit <% else %>Add <% end %></a><% end %>
         <%= if @source_change_count > 0 do %><a class="button button--link button--inline" href={~p"/images/#{@image}/source_changes"} title="Source history"><i class="fa fa-history"></i> <span class="hidden-below-md">History</span> ({@source_change_count})</a><% end %>
         <%= if can?(@conn, :hide, @image) and not hide_staff_tools?(@conn) do %><a class="button button--state-danger button--inline" data-confirm="Are you really, really sure?" data-method="delete" href={~p"/images/#{@image}/source_history"} title="Wipe sources"><i class="fas fa-eraser"></i> Wipe</a><% end %>
       </div>
     </div>
-    <div class="block__content flex flex-wrap flex-col">
+    <div class="block-content">
       <div class="image_sources">
         <%= if has_sources do %>
           <% [first_source | sources] = @image.sources %>

@@ -6,11 +6,11 @@
   </p>
 <% end %>
 <%= if can?(@conn, :create, Philomena.Rules.Rule) do %>
-  <div class="block">
+  <p>
     <%= link to: ~p"/rules/new", class: "button button--state-primary" do %>
       <span class="small-text"><i class="fa fa-plus"></i> Create New Rule</span>
     <% end %>
-  </div>
+  </p>
 <% end %>
 <%= for rule <- @rules do %>
   {render(PhilomenaWeb.RuleView, "_rule.html", conn: @conn, rule: rule, show_timestamp: false)}

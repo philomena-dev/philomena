@@ -1,4 +1,4 @@
-<%= form_for @changeset, ~p"/forums/#{@forum}/topics", fn f -> %>
+<%= form_for @changeset, ~p"/forums/#{@forum}/topics", [class: "content"], fn f -> %>
   <%= if @changeset.action do %>
     <div class="alert alert-danger">
       <p>Oops, something went wrong! Please check the errors below.</p>
@@ -22,7 +22,7 @@
           "Please read the site rules before posting and use ||spoilers|| for NSFW stuff in SFW forums."
       )}
     <% end %>
-    <div class="block__content communication-edit__wrap">
+    <div class="block-content communication-edit__wrap">
       {render(PhilomenaWeb.MarkdownView, "_anon_checkbox.html",
         conn: @conn,
         f: f,
@@ -37,7 +37,7 @@
         </div>
       <% end %>
     </div>
-    <div class="block__content communication-edit__actions">
+    <div class="block-content communication-edit__actions">
       {submit("Post", class: "button", data: [disable_with: raw("Posting&hellip;")])}
     </div>
   </div>

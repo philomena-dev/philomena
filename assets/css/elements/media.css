@@ -41,9 +41,11 @@
   gap: var(--padding-small);
 }
 
+/* Thumbnail links are not underlined, also inside block content */
 .media-box {
   overflow: hidden;
   border: var(--media-border);
+  --link-style-decoration: none;
 }
 
 /* Shift the image list by 1 element introduced due to

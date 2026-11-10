@@ -6,8 +6,10 @@
     route: route,
     conn: @conn
   ) %>
-{render(PhilomenaWeb.SourceChangeView, "index.html",
-  conn: @conn,
-  source_changes: @source_changes,
-  pagination: pagination
-)}
+<div class="block">
+  {render(PhilomenaWeb.SourceChangeView, "index.html",
+    conn: @conn,
+    source_changes: @source_changes,
+    pagination: pagination
+  )}
+</div>

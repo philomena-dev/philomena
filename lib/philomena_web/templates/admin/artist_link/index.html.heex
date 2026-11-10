@@ -25,9 +25,9 @@
     params: [lq: @conn.params["lq"]],
     conn: @conn
   ) %>
-<div class="block">
-  <div class="block__header">
-    <span class="block__header__title">Display only:</span>{link("Pending",
+<div class="block allow-overflow">
+  <div class="block-header">
+    <span class="block-header-title">Display only:</span>{link("Pending",
       to: ~p"/admin/artist_links"
     )} {link("Verified", to: ~p"/admin/artist_links?#{[lq: [states: ~w(verified)]]}")} {link(
       "Rejected",
@@ -37,7 +37,7 @@
     )}
     <div class="page__pagination">{pagination}</div>
   </div>
-  <div class="block__content">
+  <div class="block-content">
     <table class="table">
       <thead>
         <tr>
@@ -103,7 +103,7 @@
       </tbody>
     </table>
   </div>
-  <div class="block__header block__header--light">
+  <div class="block-header sub">
     <div class="page__pagination">{pagination}</div>
   </div>
 </div>

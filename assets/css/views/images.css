@@ -33,6 +33,17 @@
 @mixin interaction-color downvote, vote-down;
 @mixin interaction-color hide, hide;
 
+/* The links of the image meta bar fill its height, so that hovered and active interactions fill a whole cell */
+.block-header.image-metabar {
+  padding-block: 0;
+}
+
+.image-metabar a,
+.image-metabar .score {
+  display: inline-block;
+  padding: var(--block-header-padding-vertical) var(--block-header-padding-horizontal);
+}
+
 a.interaction--comments {
   color: var(--comment-color);
 }

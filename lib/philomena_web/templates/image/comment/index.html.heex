@@ -3,10 +3,10 @@
 pagination =
   render(PhilomenaWeb.PaginationView, "_pagination.html", page: @comments, route: route) %>
 <div class="block">
-  <div class="block__header page__header">
+  <div class="block-header page__header">
     <div class="page__pagination">{pagination}</div>
     <div class="page__info">
-      <span class="block__header__title">{@image.comments_count} {pluralize(
+      <span class="block-header-title">{@image.comments_count} {pluralize(
         "comment",
         "comments",
         @image.comments_count
@@ -20,7 +20,7 @@ pagination =
   {render(PhilomenaWeb.CommentView, "_comment.html", comment: comment, body: body, conn: @conn)}
 <% end %>
 <div class="block">
-  <div class="block__header block__header--light page__header">
+  <div class="block-header sub page__header">
     <div class="page__pagination">{pagination}</div>
   </div>
 </div>

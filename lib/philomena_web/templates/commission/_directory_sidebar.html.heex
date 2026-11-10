@@ -1,6 +1,6 @@
 <div class="block">
-  <div class="block__header"><span class="block__header__title">Search</span></div>
-  <div class="block__content">
+  <div class="block-header"><span class="block-header-title">Search</span></div>
+  <div class="block-content">
     <%= form_for @changeset, ~p"/commissions", [as: :commission, method: "get", class: "hform"], fn f -> %>
       <div class="field">{label(f, :categories, "Art Categories:")}</div>
       <%= for {name, _value} <- categories() do %>

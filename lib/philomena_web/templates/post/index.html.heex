@@ -29,28 +29,26 @@
         conn: @conn
       ) %>
     <%= for {body, post} <- @posts do %>
-      <div>
-        <h3>
-          {link(post.topic.forum.name, to: ~p"/forums/#{post.topic.forum}")} &raquo; {link(
-            post.topic.title,
-            to: ~p"/forums/#{post.topic.forum}/topics/#{post.topic}"
-          )} &raquo; <% post_link =
-            ~p"/forums/#{post.topic.forum}/topics/#{post.topic}?#{[post_id: post.id]}" <>
-              "#post_#{post.id}" %>
-          <%= if post.topic_position == 0 do %>
-            {link("Topic Opener", to: post_link)}
-          <% else %>
-            {link("Post #{post.topic_position}", to: post_link)}
-          <% end %>
-        </h3>
-        {render(PhilomenaWeb.PostView, "_post.html", body: body, post: post, conn: @conn)}
-      </div>
+      <h3>
+        {link(post.topic.forum.name, to: ~p"/forums/#{post.topic.forum}")} &raquo; {link(
+          post.topic.title,
+          to: ~p"/forums/#{post.topic.forum}/topics/#{post.topic}"
+        )} &raquo; <% post_link =
+          ~p"/forums/#{post.topic.forum}/topics/#{post.topic}?#{[post_id: post.id]}" <>
+            "#post_#{post.id}" %>
+        <%= if post.topic_position == 0 do %>
+          {link("Topic Opener", to: post_link)}
+        <% else %>
+          {link("Post #{post.topic_position}", to: post_link)}
+        <% end %>
+      </h3>
+      {render(PhilomenaWeb.PostView, "_post.html", body: body, post: post, conn: @conn)}
     <% end %>
     <div class="block">
-      <div class="block__header block__header--light page__header">
+      <div class="block-header sub page__header">
         <div class="page__pagination">{pagination}</div>
         <div class="page__info">
-          <span class="block__header__title">{render(
+          <span class="block-header-title">{render(
             PhilomenaWeb.PaginationView,
             "_pagination_info.html",
             page: @posts,

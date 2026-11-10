@@ -1,4 +1,4 @@
-<%= form_for @changeset, ~p"/conversations/#{@conversation}/messages", fn f -> %>
+<%= form_for @changeset, ~p"/conversations/#{@conversation}/messages", [class: "content"], fn f -> %>
   <div class="block">
     <div class="communication-edit__wrap">
       {render(PhilomenaWeb.MarkdownView, "_input.html",
@@ -8,7 +8,7 @@
         action_text: "Reply"
       )}
     </div>
-    <div class="block__content communication-edit__actions">
+    <div class="block-content communication-edit__actions">
       {submit("Send",
         class: "button",
         autocomplete: "off",

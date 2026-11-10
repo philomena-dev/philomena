@@ -11,13 +11,13 @@
       conn: @conn
     ) %>
   <div class="block">
-    <div class="block__header page__header">
+    <div class="block-header page__header">
       <div class="page__pagination">{pagination}</div>
       <div class="page__info">
         <a href={~p"/conversations/new"}><i class="fa fa-paper-plane"></i> Create New Conversation</a>
       </div>
     </div>
-    <div class="block__content">
+    <div class="block-content">
       <table class="table table--communication-list">
         <thead>
           <tr>
@@ -56,7 +56,7 @@
         </tbody>
       </table>
     </div>
-    <div class="block__header block__header--light page__header">
+    <div class="block-header sub page__header">
       <div class="page__pagination">{pagination}</div>
     </div>
   </div>

@@ -1,7 +1,7 @@
 <h1>Viewing details of {@rule.name}</h1>
-<div class="block">
+<p>
   <a href={~p"/rules"}><i class="fa fa-chevron-left"></i> Back to Rules List</a>
-</div>
+</p>
 <br />{render(PhilomenaWeb.RuleView, "_rule.html", conn: @conn, rule: @rule, show_timestamp: true)}
 <h2>Revision History</h2>
 <%= if Enum.count(@versions) == 0 do %>

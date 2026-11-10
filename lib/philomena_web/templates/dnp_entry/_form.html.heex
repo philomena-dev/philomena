@@ -34,15 +34,15 @@
     </ul>
   </div>
 <% end %>
-<%= form_for @changeset, @action, fn f -> %>
+<%= form_for @changeset, @action, [class: "content"], fn f -> %>
   <%= if @changeset.action do %>
     <div class="alert alert-danger">
       <p>Oops, something went wrong! Please check the errors below.</p>
     </div>
   <% end %>
   <div class={"block js-dnp-form #{form_class(@changeset)}"}>
-    <div class="block__header"><span class="block__header__title">DNP Request Form</span></div>
-    <div class="block__content">
+    <div class="block-header"><span class="block-header-title">DNP Request Form</span></div>
+    <div class="block-content">
       <%!-- Option (set by script depending on the option chosen above) --%>
       <strong>Type</strong>
       <div class="field">

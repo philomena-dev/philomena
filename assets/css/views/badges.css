@@ -12,3 +12,11 @@
 .badges > .badge > img {
   max-width: unset;
 }
+
+/* The awards that do not fit the row open in a column under the caret */
+.badges .dropdown__content {
+  padding: var(--spacing-sm);
+  background-color: var(--tint-color);
+  border-radius: var(--border-radius-inner);
+  box-shadow: var(--menu-shadow);
+}

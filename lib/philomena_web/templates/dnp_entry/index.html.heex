@@ -2,8 +2,8 @@
 <%!-- Information block --%>
 <h3>Information</h3>
 <div class="block">
-  <div class="block__header"><span class="block__header__title">About</span></div>
-  <div class="block__content">
+  <div class="block-header"><span class="block-header-title">About</span></div>
+  <div class="block-content">
     <p>
       This is a list of artists who have asked us to place a restriction on the uploading of their artwork. These restrictions can include anything from requesting that no edits of their work be allowed, to requesting that no uploads be allowed unless uploaded by the artists themselves.
     </p>
@@ -14,8 +14,8 @@
 </div>
 <br />
 <div class="block">
-  <div class="block__header"><span class="block__header__title">Manage My Listings</span></div>
-  <div class="block__content">
+  <div class="block-header"><span class="block-header-title">Manage My Listings</span></div>
+  <div class="block-content">
     <%= cond do %>
       <% not is_nil(@current_user) and Enum.any?(@linked_tags) -> %>
         {link("Create an entry", to: ~p"/dnp/new")}<br />{link("My Listings",
@@ -32,7 +32,7 @@
   </div>
 </div>
 <h3>The List</h3>
-<div class="block">
+<div class="block allow-overflow">
   <% route = fn p -> ~p"/dnp?#{p}" end %>
   <% pagination =
     render(PhilomenaWeb.PaginationView, "_pagination.html",
@@ -40,11 +40,11 @@
       route: route,
       conn: @conn
     ) %>
-  <div class="block__header page__header">
-    <span class="block__header__title page__title">The DNP List</span>
+  <div class="block-header page__header">
+    <span class="block-header-title page__title">The DNP List</span>
     <div class="page__pagination">{pagination}</div>
   </div>
-  <div class="block__content">
+  <div class="block-content">
     <table class="table">
       <thead>
         <tr>
@@ -78,7 +78,7 @@
       </tbody>
     </table>
   </div>
-  <div class="block__header page__header">
+  <div class="block-header page__header">
     <div class="page__pagination">{pagination}</div>
   </div>
 </div>

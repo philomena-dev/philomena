@@ -3,15 +3,15 @@
   render(PhilomenaWeb.PaginationView, "_pagination.html", page: @images, route: route) %>
 <h1>Approval Queue</h1>
 <div class="block">
-  <div class="block__header">
+  <div class="block-header">
     <div class="page__pagination">{pagination}</div>
   </div>
   <%= if Enum.any?(@images) do %>
     {render(PhilomenaWeb.Admin.ApprovalView, "_approvals.html", images: @images, conn: @conn)}
   <% else %>
-    No images are pending approval. Good job!
+    <div class="block-content">No images are pending approval. Good job!</div>
   <% end %>
-  <div class="block__header block__header--light">
+  <div class="block-header sub">
     <div class="page__pagination">{pagination}</div>
   </div>
 </div>

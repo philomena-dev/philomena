@@ -1,6 +1,6 @@
-<article class="block communication" id={"comment_#{@comment.id}"}>
+<article class="block allow-overflow communication" id={"comment_#{@comment.id}"}>
   <%= if not @comment.approved and not @comment.hidden_from_users do %>
-    <div class="block__content communication__content">
+    <div class="block-content communication__content">
       <div class="block block--fixed block--danger">
         <p>
           <i class="fas fa-exclamation-triangle"></i>
@@ -34,7 +34,7 @@
       </div>
     </div>
   <% end %>
-  <div class={"block__content communication__content flex flex-nowrap #{communication_body_class(@comment)}"}>
+  <div class={"block-content communication__content flex flex-nowrap #{communication_body_class(@comment)}"}>
     <div class="communication__body__avatar hidden-below-md">
       {render(PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html",
         object: @comment,
@@ -81,7 +81,7 @@
       </div>
     </div>
   </div>
-  <div class="block__content communication__options">
+  <div class="block-content communication__options">
     <div class="flex flex-wrap justify-between">
       {render(PhilomenaWeb.CommentView, "_comment_options.html", comment: @comment, conn: @conn)}
     </div>

@@ -1,12 +1,10 @@
 <h1>Deactivate Account</h1>
 <% contact_email = "ops@derpibooru.org" %>
-<div class="block">
-  <div class="block__content warning">
-    <p class="walloftext">
-      Deactivating your account will prevent you from logging into your account. If you ever wish to re-activate your account later on, you may do so at any time. If you wish to wipe your personally identifiable data as well, please contact
-      <a href={"mailto:#{contact_email}"}>{contact_email}</a>
-    </p>
-  </div>
+<div class="alert alert-warning">
+  <p>
+    Deactivating your account will prevent you from logging into your account. If you ever wish to re-activate your account later on, you may do so at any time. If you wish to wipe your personally identifiable data as well, please contact
+    <a href={"mailto:#{contact_email}"}>{contact_email}</a>
+  </p>
 </div>
 <div class="deactivations__button-container">
   {button_to("Back", ~p"/registrations/edit", class: "button")}{button_to(

@@ -8,8 +8,8 @@ pagination =
     params: [commission: @conn.params["commission"]]
   ) %>
 <div class="block">
-  <div class="block__header page__header">
-    <span class="block__header__title page__title">Open Commissions</span>
+  <div class="block-header page__header">
+    <span class="block-header-title page__title">Open Commissions</span>
     <div class="page__pagination">{pagination}</div>
     <div class="page__options">
       <%= cond do %>
@@ -23,12 +23,12 @@ pagination =
       <% end %>
     </div>
   </div>
-  <div class="block__content">
+  <div class="block-content">
     <%= cond do %>
       <% Enum.any?(@commissions) -> %>
         <%= for c <- @commissions do %>
           <div class="block commission">
-            <div class="block__content flex flex-nowrap">
+            <div class="block-content flex flex-nowrap">
               <div class="flex-none me-lg">
                 {render(PhilomenaWeb.UserAttributionView, "_user_avatar.html",
                   object: c,
@@ -85,7 +85,7 @@ pagination =
         <p>We couldn't find any commission listings to display. Sorry!</p>
     <% end %>
   </div>
-  <div class="block__header page__header">
+  <div class="block-header page__header">
     <div class="page__pagination">{pagination}</div>
   </div>
 </div>

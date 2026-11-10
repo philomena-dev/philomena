@@ -36,10 +36,10 @@
       )}
     <% end %>
     <div class="block">
-      <div class="block__header block__header--light page__header">
+      <div class="block-header sub page__header">
         <div class="page__pagination">{pagination}</div>
         <div class="page__info">
-          <span class="block__header__title">{render(
+          <span class="block-header-title">{render(
             PhilomenaWeb.PaginationView,
             "_pagination_info.html",
             page: @comments,

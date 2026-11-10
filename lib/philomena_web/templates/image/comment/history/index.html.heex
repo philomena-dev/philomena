@@ -7,8 +7,8 @@
   )}on image <a href={~p"/images/#{@comment.image}"}>#{@comment.image_id}</a>
 </h1>
 <%= for version <- @versions do %>
-  <article class="block communication">
-    <div class="block__content communication__content flex flex-nowrap">
+  <article class="block allow-overflow communication">
+    <div class="block-content communication__content flex flex-nowrap">
       <div class="communication__body__avatar hidden-below-md">
         {render(PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html",
           object: @comment,
@@ -39,7 +39,7 @@
         <div class="communication__body__text">{version.difference}</div>
       </div>
     </div>
-    <div class="block__content communication__options">
+    <div class="block-content communication__options">
       <div class="flex flex-wrap justify-between">
         <div>
           <%= if version.edit_reason not in [nil, ""] do %>

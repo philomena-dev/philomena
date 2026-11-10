@@ -1,7 +1,7 @@
 <div class="layout-columns">
   <div class="layout-side">
     <div class="block">
-      <div class="block__content">
+      <div class="block-content">
         <h3>Search Galleries</h3>
         <%= form_for @changeset, ~p"/galleries", [as: :gallery, method: "get", class: "hform"], fn f -> %>
           <div class="field">{label(f, :title, "Title")}</div>
@@ -56,7 +56,7 @@
       </div>
     </div>
     <div class="block">
-      <div class="block__header">
+      <div class="block-header">
         <a href="/galleries/new" title="Create Gallery">Create Gallery</a>
       </div>
     </div>
@@ -71,19 +71,19 @@
             route: route,
             params: [gallery: @conn.params["gallery"]]
           ) %>
-        <div class="block__header page__header">
+        <div class="block-header page__header">
           <div class="page__pagination">{pagination}</div>
         </div>
-        <div class="block__content media-list">
+        <div class="block-content media-list">
           <%= for gallery <- @galleries do %>
             {render(PhilomenaWeb.GalleryView, "_gallery.html", gallery: gallery, conn: @conn)}
           <% end %>
         </div>
-        <div class="block__header block__header--light page__header">
+        <div class="block-header sub page__header">
           <div class="page__pagination">{pagination}</div>
         </div>
       <% else %>
-        <div class="block__content">
+        <div class="block-content">
           <div class="block block--fixed block--no-margin block--warning">
             No galleries found!
           </div>

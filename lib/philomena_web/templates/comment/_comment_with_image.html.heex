@@ -1,5 +1,5 @@
-<article class="block communication" id={"comment_#{@comment.id}"}>
-  <div class={"block__content communication__content flex flex-nowrap #{communication_body_class(@comment)}"}>
+<article class="block allow-overflow communication" id={"comment_#{@comment.id}"}>
+  <div class={"block-content communication__content flex flex-nowrap #{communication_body_class(@comment)}"}>
     <div class="communication__body__avatar hidden-below-md">
       <div class="post-image-container">
         {render(PhilomenaWeb.ImageView, "_image_container.html",
@@ -52,7 +52,7 @@
       </div>
     </div>
   </div>
-  <div class="block__content communication__options">
+  <div class="block-content communication__options">
     <div class="flex flex-wrap justify-between">
       {render(PhilomenaWeb.CommentView, "_comment_options.html", comment: @comment, conn: @conn)}
     </div>

@@ -30,17 +30,17 @@
       params: [dq: @conn.params["dq"]]
     ) %>
   <div class="block">
-    <div class="block__header page__header">
+    <div class="block-header page__header">
       <div class="page__pagination">{pagination}</div>
     </div>
-    {render(PhilomenaWeb.DuplicateReportView, "_list.html",
-      duplicate_reports: @duplicate_reports,
-      conn: @conn
-    )}
-    <div class="block">
-      <div class="block__header block__header--light page__header">
-        <div class="page__pagination">{pagination}</div>
-      </div>
+    <div class="block-content">
+      {render(PhilomenaWeb.DuplicateReportView, "_list.html",
+        duplicate_reports: @duplicate_reports,
+        conn: @conn
+      )}
+    </div>
+    <div class="block-header sub page__header">
+      <div class="page__pagination">{pagination}</div>
     </div>
   </div>
 <% end %>

@@ -15,10 +15,10 @@
     ],
     spellcheck: "false"
   )}
-  <div class="block">
-    <div class="block__header flex">
+  <div class="block allow-overflow">
+    <div class="block-header">
       <a data-search-prepend="-">NOT</a>
-      <div class="dropdown block__header__dropdown-tab">
+      <div class="dropdown">
         <a>Search terms
         <span data-click-preventdefault="true"><i class="fa fa-caret-down"></i></span></a>
         <div class="dropdown__content">
@@ -102,7 +102,7 @@
         </div>
       </div>
       <%= if @conn.assigns.current_user do %>
-        <div class="dropdown block__header__dropdown-tab">
+        <div class="dropdown">
           <a>Belonging to&hellip;
           <span data-click-preventdefault="true"><i class="fa fa-caret-down"></i></span></a>
           <div class="dropdown__content">
@@ -116,11 +116,11 @@
           </div>
         </div>
       <% end %>
-      <div class="flex-auto text-right">
+      <div class="block-header-actions">
         <a data-click-toggle="#js-search-tags" href="#">Quick tags</a><a href="/pages/search_syntax">Help</a>
       </div>
     </div>
-    <div class="block__content">
+    <div class="block-content">
       <div class="hidden walloftext" data-search-help="boolean">
         <strong class="js-search-help-subject"></strong>
         is a Boolean-valued field. It only accepts the values <code>true</code>

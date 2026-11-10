@@ -1,4 +1,4 @@
-<%= form_for @changeset, ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}", fn f -> %>
+<%= form_for @changeset, ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}", [class: "content"], fn f -> %>
   <%= if @changeset.action do %>
     <div class="alert alert-danger">
       <p>Oops, something went wrong! Please check the errors below.</p>
@@ -14,14 +14,14 @@
             "Please read the site rules before posting and use ||spoilers|| for NSFW stuff in SFW forums."
         )}
       </div>
-      <div class="block__content field">
+      <div class="block-content field">
         {text_input(f, :edit_reason, class: "input input--wide", placeholder: "Reason for edit")}{error_tag(
           f,
           :edit_reason
         )}
       </div>
     </div>
-    <div class="block__content communication-edit__actions">
+    <div class="block-content communication-edit__actions">
       {submit("Edit", class: "button", data: [disable_with: raw("Posting&hellip;")])}
     </div>
   </div>

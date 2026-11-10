@@ -1,7 +1,4 @@
 #imagespns {
-  border: var(--border);
-  padding: 2px 10px;
-  background: var(--background-odd-color);
   text-align: center;
 }
 

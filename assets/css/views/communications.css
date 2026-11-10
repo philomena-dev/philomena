@@ -11,6 +11,11 @@ td.table--communication-list__options {
   width: 35%;
 }
 
+/* Communications are blocks with dense rows; the body pads each of its parts instead */
+.communication {
+  --block-content-padding: var(--spacing-md);
+}
+
 .communication:target {
   border: 1px solid var(--input-border-active);
 }
@@ -114,9 +119,12 @@ span.communication__sender__stats,
   margin-right: 12px;
 }
 
-/* Override padding from block__content, so we can do it on a per-element basis */
-.communication__content {
+.communication .communication__content {
   padding: 0;
+}
+
+.communication .communication__options {
+  --link-style-decoration: none;
 }
 
 .communication__body__avatar,

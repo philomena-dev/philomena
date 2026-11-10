@@ -1,5 +1,5 @@
-<div class="block block__header">
-  <div class="flex flex-wrap image-metabar page-center" id={"image_meta_#{@image.id}"}>
+<div class="block allow-overflow">
+  <div class="block-header image-metabar page-center" id={"image_meta_#{@image.id}"}>
     <div class="stretched-mobile-links">
       <a
         class="js-prev"
@@ -24,7 +24,7 @@
     <% vote_counts? = show_vote_counts?(@conn.assigns.current_user) %>
     <div class="stretched-mobile-links" phx-no-format>
       <%= if show_interactions? do %><a class="interaction--fave" data-image-id={@image.id} href="#" rel="nofollow"><span class="favorites" data-image-id={@image.id} title="Favorites">{@image.faves_count}</span> <span class="fave-span" title="Fave!"><i class="fa fa-star"></i></span></a><a class="interaction--upvote" data-image-id={@image.id} href="#" rel="nofollow"><%= if vote_counts? do %><span class="upvotes" data-image-id={@image.id} title="Upvotes">{@image.upvotes_count}</span> <% end %>
-          <span class="upvote-span" title="Yay!"><i class="fa fa-arrow-up"></i></span></a><% else %><span><span class="favorites" data-image-id={@image.id} title="Favorites">{@image.faves_count}</span> <i class="fa fa-star"></i></span><span :if={vote_counts?}><span class="upvotes" data-image-id={@image.id} title="Upvotes">{@image.upvotes_count}</span> <i class="fa fa-arrow-up"></i></span><% end %><span class="score block__header__title" data-image-id={@image.id}>{@image.score}</span><%= if show_interactions? do %><a class="interaction--downvote" data-image-id={@image.id} href="#" rel="nofollow"><span class="downvote-span" title="Neigh!"><i class="fa fa-arrow-down"></i></span>
+          <span class="upvote-span" title="Yay!"><i class="fa fa-arrow-up"></i></span></a><% else %><span><span class="favorites" data-image-id={@image.id} title="Favorites">{@image.faves_count}</span> <i class="fa fa-star"></i></span><span :if={vote_counts?}><span class="upvotes" data-image-id={@image.id} title="Upvotes">{@image.upvotes_count}</span> <i class="fa fa-arrow-up"></i></span><% end %><span class="score" data-image-id={@image.id}>{@image.score}</span><%= if show_interactions? do %><a class="interaction--downvote" data-image-id={@image.id} href="#" rel="nofollow"><span class="downvote-span" title="Neigh!"><i class="fa fa-arrow-down"></i></span>
           <%= if vote_counts? do %> <span class="downvotes" data-image-id={@image.id} title="Downvotes">{@image.downvotes_count}</span><% end %></a><% else %><span :if={vote_counts?}><i class="fa fa-arrow-down"></i> <span class="downvotes" data-image-id={@image.id} title="Downvotes">{@image.downvotes_count}</span></span><% end %><a class="interaction--comments" href="#comments" title="Comments"><i class="fa fa-comments"></i> <span class="comments_count" data-image-id={@image.id}>{@image.comments_count}</span></a><a :if={show_interactions?} class="interaction--hide" data-image-id={@image.id} href="#" rel="nofollow"><span class="hide-span" title="Hide"><i class="fa fa-eye-slash"></i></span></a>
     </div>
     <div class="stretched-mobile-links" phx-no-format>
@@ -49,10 +49,7 @@
       ><i class="fa fa-download"></i> DS</a>
     </div>
   </div>
-  <div
-    class="image-metabar flex flex-wrap block__header--user-credit page-center"
-    id="extrameta"
-  >
+  <div class="block-header sub page-center" id="extrameta">
     <div>
       Uploaded {pretty_time(@image.created_at)} {render(
         PhilomenaWeb.ImageView,

@@ -17,6 +17,21 @@
   right: 0;
 }
 
+/* A menu that opens from a block header is a column of the header's links */
+.block-header .dropdown__content {
+  background-color: var(--tint-color);
+  border-radius: 0 0 var(--border-radius-inner) var(--border-radius-inner);
+  box-shadow: var(--menu-shadow);
+}
+
+.block-header .dropdown__content > a {
+  padding: var(--spacing-sm) var(--block-header-padding-horizontal);
+}
+
+.block-header .dropdown__content > a:hover {
+  background-color: var(--tint-faint-color);
+}
+
 /* Our child should be a block element */
 .dropdown .dropdown__content > *:not(.hidden) {
   display: block;

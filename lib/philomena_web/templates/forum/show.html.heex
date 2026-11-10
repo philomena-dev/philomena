@@ -5,16 +5,16 @@
   ) %>
 <h1>{@forum.name}</h1>
 <div class="block">
-  <div class="block__header">
+  <div class="block-header">
     {link("Forums", to: ~p"/forums")} &raquo; {link(@forum.name, to: ~p"/forums/#{@forum}")}
     <a href={~p"/forums/#{@forum}/topics/new"}><i class="fa fa-fw fa-edit"></i> New Topic</a><a href={
       ~p"/posts?#{[pq: "forum:#{@forum.short_name}"]}"
     }><i class="fa fa-fw fa-search"></i> Search Posts</a><span class="ms-lg">{@forum.topic_count} topics</span>
   </div>
-  <div class="block__header--sub block__header--light page__header">
+  <div class="block-header sub page__header">
     <div class="page__pagination">{pagination}</div>
     <div class="page__info">
-      <span class="block__header__title">{@forum.description}</span>{render(
+      <span class="block-header-title">{@forum.description}</span>{render(
         PhilomenaWeb.Forum.SubscriptionView,
         "_subscription.html",
         forum: @forum,
@@ -23,7 +23,7 @@
       )}
     </div>
   </div>
-  <div class="block__content">
+  <div class="block-content">
     <table class="table table--communication-list">
       <thead>
         <tr>
@@ -69,7 +69,7 @@
       </tbody>
     </table>
   </div>
-  <div class="block__header block__header--light page__header">
+  <div class="block-header sub page__header">
     <div class="page__pagination">{pagination}</div>
   </div>
 </div>

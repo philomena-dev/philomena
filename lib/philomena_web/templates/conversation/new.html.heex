@@ -1,8 +1,8 @@
 <h1>New Conversation</h1>
 <div class="block">
-  <div class="block__header">
+  <div class="block-header">
     {link("Conversations", to: ~p"/conversations")} &raquo;
-    <span class="block__header__title">New Conversation</span>
+    <span class="block-header-title">New Conversation</span>
   </div>
 </div>
 <%= if not @trusted? do %>
@@ -16,7 +16,7 @@
     </p>
   </div>
 <% end %>
-<%= form_for @changeset, ~p"/conversations", fn f -> %>
+<%= form_for @changeset, ~p"/conversations", [class: "content"], fn f -> %>
   <%= if @changeset.action do %>
     <div class="alert alert-danger">
       <p>Oops, something went wrong! Please check the errors below.</p>
@@ -36,18 +36,20 @@
       :title
     )}
   </div>
-  <%= inputs_for f, :messages, fn fm -> %>
-    <div>
-      {render(PhilomenaWeb.MarkdownView, "_input.html",
-        changeset: @changeset,
-        conn: @conn,
-        f: fm,
-        action_icon: "pencil-alt",
-        action_text: "Compose"
-      )}
+  <div class="block">
+    <%= inputs_for f, :messages, fn fm -> %>
+      <div>
+        {render(PhilomenaWeb.MarkdownView, "_input.html",
+          changeset: @changeset,
+          conn: @conn,
+          f: fm,
+          action_icon: "pencil-alt",
+          action_text: "Compose"
+        )}
+      </div>
+    <% end %>
+    <div class="block-content communication-edit__actions">
+      {submit("Send", class: "button", autocomplete: "off", data: [disable_with: "Sending..."])}
     </div>
-  <% end %>
-  <div class="block__content communication-edit__actions">
-    {submit("Send", class: "button", autocomplete: "off", data: [disable_with: "Sending..."])}
   </div>
 <% end %>

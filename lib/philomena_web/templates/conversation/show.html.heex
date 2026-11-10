@@ -10,7 +10,7 @@ pagination =
 other = other_party(@current_user, @conversation) %>
 <h1>{@conversation.title}</h1>
 <div class="block">
-  <div class="block__header">
+  <div class="block-header">
     {link("Message Center", to: ~p"/conversations")} &raquo; {link(@conversation.title,
       to: ~p"/conversations/#{@conversation}"
     )} Conversation with {render(PhilomenaWeb.UserAttributionView, "_user.html",
@@ -18,8 +18,8 @@ other = other_party(@current_user, @conversation) %>
       conn: @conn
     )}
   </div>
-  <div class="block__header--sub block__header--light page__header">
-    <span class="block__header__title page__title">{@messages.total_entries} {pluralize(
+  <div class="block-header sub page__header">
+    <span class="block-header-title page__title">{@messages.total_entries} {pluralize(
       "message",
       "messages",
       @messages.total_entries
@@ -39,7 +39,7 @@ other = other_party(@current_user, @conversation) %>
   )}
 <% end %>
 <div class="block">
-  <div class="block__header block__header--light page__header">
+  <div class="block-header sub page__header">
     <div class="page__pagination">{pagination}</div>
   </div>
 </div>

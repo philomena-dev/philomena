@@ -1,6 +1,6 @@
-<article class="block communication">
+<article class="block allow-overflow communication">
   <%= if not @message.approved do %>
-    <div class="block__content communication__content">
+    <div class="block-content communication__content">
       <div class="block block--fixed block--danger">
         <p>
           <i class="fas fa-exclamation-triangle"></i>
@@ -20,7 +20,7 @@
       </div>
     </div>
   <% end %>
-  <div class="block__content communication__content flex flex-nowrap">
+  <div class="block-content communication__content flex flex-nowrap">
     <div class="communication__body__avatar hidden-below-md">
       {render(PhilomenaWeb.UserAttributionView, "_user_avatar.html",
         object: %{user: @message.from},
@@ -55,7 +55,7 @@
       <% end %>
     </div>
   </div>
-  <div class="block__content communication__options">
+  <div class="block-content communication__options">
     <div class="flex flex-wrap justify-between">
       <div>Posted {pretty_time(@message.created_at)}</div>
     </div>

@@ -20,10 +20,10 @@
     route: route,
     params: [eq: @conn.params["eq"]]
   ) %>
-<div class="block">
-  <div class="block__header">
+<div class="block allow-overflow">
+  <div class="block-header">
     <div class="page__pagination">{pagination}</div>
-    <span class="block__header__title">Display only:</span>{link("All Entries",
+    <span class="block-header-title">Display only:</span>{link("All Entries",
       to:
         ~p"/admin/dnp_entries?#{[eq: [states: ~W(requested claimed listed rescinded acknowledged closed)]]}"
     )} {link("All Open",
@@ -36,7 +36,7 @@
       to: ~p"/admin/dnp_entries?#{[eq: [states: ~W(closed)]]}"
     )}
   </div>
-  <div class="block__content">
+  <div class="block-content">
     <table class="table">
       <thead>
         <tr>
@@ -111,7 +111,7 @@
       </tbody>
     </table>
   </div>
-  <div class="block__header block__header--light">
+  <div class="block-header sub">
     <div class="page__pagination">{pagination}</div>
   </div>
 </div>

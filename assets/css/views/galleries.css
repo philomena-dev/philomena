@@ -1,3 +1,48 @@
+/* The gallery list of the add to gallery menu */
+.block__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-bottom: var(--border);
+}
+
+.block__list:not(:last-child) {
+  margin-bottom: 6px;
+}
+
+.block__list a.block__list__link {
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
+  border: var(--border);
+  margin-bottom: -1px; /* collapse borders */
+  background: var(--background-color);
+}
+
+/* The galleries in the scrolling part of the list are cut to its width */
+.block__list li a.block__list__link {
+  width: 244px;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+}
+
+.block__list a.block__list__link.primary {
+  background: var(--primary-light-color);
+  border-color: var(--legacy-primary-color);
+}
+
+.block__list a.block__list__link:hover,
+.block__list a.block__list__link.active {
+  background: var(--success-light-color);
+  border-color: var(--legacy-success-color);
+}
+
+.block__list a.block__list__link.active:hover {
+  background: var(--danger-light-color);
+  border-color: var(--legacy-danger-color);
+}
+
 .media-box--js-sortable-chosen .media-box__header {
   background: var(--legacy-primary-color);
 }
@@ -22,21 +67,6 @@
   grid-column: 1 / 1;
 }
 
-.input--search-gallery-list {
-  border: var(--border);
-  width: 250px;
-  padding: 0 4px;
-  line-height: 28px;
-  font-family: var(--font-family-base);
-}
-
-.input--search-gallery-list,
-.add-to-gallery-list ul a.block__list__link {
-  overflow: hidden;
-  text-align: center;
-  text-overflow: ellipsis;
-}
-
 .add-to-gallery-list ::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 6px #cccccc;
   background-color: var(--background-color);
@@ -54,13 +84,6 @@
 .add-to-gallery-list ul {
   max-height: 132px;
   overflow: hidden auto; /* Scrollbar customization is only available in WebKit; Gecko and IE have wider bars that cause horizontal overflow */
-}
-
-/* Limit the width of ul items inside gallery list (.add-to-gallery-list includes .block__list__link elements
- * that are not part of the list, hence nested selector) */
-
-.add-to-gallery-list li a.block__list__link {
-  width: 244px; /* input--search-gallery-list width - 6px scrollbar */
 }
 
 .dragging {

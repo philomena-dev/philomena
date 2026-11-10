@@ -3,7 +3,7 @@
 <% tags_class = if changeset.action, do: "hidden", else: "" %>
 <% tags = display_order(@image.tags) %>
 <% tag_input = Enum.map_join(tags, ", ", & &1.name) %>
-<div class="js-tagsauce" id="image_tags_and_source">
+<div class="js-tagsauce content" id="image_tags_and_source">
   <div class={"js-imageform #{form_class}"}>
     <%= if @changeset && can?(@conn, :edit_metadata, @image) && !@conn.assigns.current_ban do %>
       <%= if Enum.any?(@image.locked_tags) do %>
@@ -66,10 +66,10 @@
       <p>You can't edit the tags on this image.</p>
     <% end %>
   </div>
-  <div class={"block tagsauce #{tags_class}"}>
-    <div class="block__header flex">
-      <span class="block__header__title"><i class="fas fa-tag"></i> Tags</span>
-      <div class="block__header__buttons">
+  <div class={"block allow-overflow tagsauce #{tags_class}"}>
+    <div class="block-header">
+      <span class="block-header-title"><i class="fas fa-tag"></i> Tags</span>
+      <div class="block-header-actions">
         <%= if @changeset do %>
           <a
             accessKey="t"
@@ -94,7 +94,7 @@
         <% end %>
       </div>
     </div>
-    <div class="block__content">
+    <div class="block-content">
       {render(PhilomenaWeb.TagView, "_tag_list.html", tags: tags, conn: @conn)}
     </div>
   </div>

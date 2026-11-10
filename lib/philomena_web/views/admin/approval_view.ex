@@ -13,15 +13,15 @@ defmodule PhilomenaWeb.Admin.ApprovalView do
     )
   end
 
-  def class_for_image(%{processed: false}), do: "block--warning"
-  def class_for_image(%{thumbnails_generated: false}), do: "block--warning"
+  def class_for_image(%{processed: false}), do: "alert alert-warning"
+  def class_for_image(%{thumbnails_generated: false}), do: "alert alert-warning"
 
   def class_for_image(%{image_is_animated: a, image_duration: d, image_format: "png"})
       when a or d > 0.04,
-      do: "block--danger"
+      do: "alert alert-danger"
 
-  def class_for_image(%{image_format: "svg"}), do: "block--warning"
-  def class_for_image(%{image_format: f}) when f in ["webm", "gif"], do: "block--danger"
+  def class_for_image(%{image_format: "svg"}), do: "alert alert-warning"
+  def class_for_image(%{image_format: f}) when f in ["webm", "gif"], do: "alert alert-danger"
   def class_for_image(_), do: ""
 
   def warning_text(%{processed: false}), do: "(not processed)"
