@@ -82,7 +82,7 @@
 <% end %>
 <div class="layout-columns">
   <div class="layout-side">
-    <div class="block">
+    <div :if={@user.commission || current?(@user, @conn.assigns.current_user)} class="block">
       <div class="block-header"><span class="block-header-title">Commissions</span></div>
       {render(PhilomenaWeb.ProfileView, "_commission.html",
         user: @user,
@@ -91,13 +91,15 @@
       )}
     </div>
     <div class="block allow-overflow">
-      <%= if current?(@user, @conn.assigns.current_user) or manages_links?(@conn, @user) do %>
-        <div class="block-header">
-          <a href={~p"/profiles/#{@user}/artist_links/new"}>Artist Links</a>
+      <div class="block-header">
+        <span class="block-header-title">Artist Links</span>
+        <div
+          :if={current?(@user, @conn.assigns.current_user) or manages_links?(@conn, @user)}
+          class="block-header-actions"
+        >
+          <a href={~p"/profiles/#{@user}/artist_links/new"}><i class="fa fa-plus"></i> New</a>
         </div>
-      <% else %>
-        <div class="block-header"><span class="block-header-title">Artist Links</span></div>
-      <% end %>
+      </div>
       <%= for link <- @user.verified_links, should_see_link?(@conn, @user, link) do %>
         <% watchers = if link.tag, do: @watcher_counts[link.tag.id] || 0, else: 0 %>
         <div class={["block-content alternating-color break-word", link_block_class(link)]}>
@@ -133,11 +135,15 @@
       <% end %>
     </div>
     <div class="block">
-      <%= if manages_awards?(@conn) and not hide_staff_tools?(@conn) do %>
-        <div class="block-header"><a href={~p"/profiles/#{@user}/awards/new"}>Badges</a></div>
-      <% else %>
-        <div class="block-header"><span class="block-header-title">Badges</span></div>
-      <% end %>
+      <div class="block-header">
+        <span class="block-header-title">Badges</span>
+        <div
+          :if={manages_awards?(@conn) and not hide_staff_tools?(@conn)}
+          class="block-header-actions"
+        >
+          <a href={~p"/profiles/#{@user}/awards/new"}><i class="fa fa-plus"></i> Award</a>
+        </div>
+      </div>
       <%= for award <- award_order(@user.awards) do %>
         <div
           class="block-content flex items-center justify-center alternating-color"
@@ -167,13 +173,15 @@
         </div>
       <% end %>
     </div>
-    <div class="block">
+    <div
+      :if={@user.description not in [nil, ""] or can?(@conn, :edit_description, @user)}
+      class="block"
+    >
       <div class="block-header">
-        <%= if can?(@conn, :edit_description, @user) do %>
-          <a href={~p"/profiles/#{@user}/description/edit"}>About Me</a>
-        <% else %>
-          <span class="block-header-title">About Me</span>
-        <% end %>
+        <span class="block-header-title">About Me</span>
+        <div :if={can?(@conn, :edit_description, @user)} class="block-header-actions">
+          <a href={~p"/profiles/#{@user}/description/edit"}><i class="fa fa-edit"></i> Edit</a>
+        </div>
       </div>
       {render(PhilomenaWeb.ProfileView, "_about_me.html",
         user: @user,
@@ -215,7 +223,10 @@
       </div>
       <div class="block">
         <div class="block-header">
-          <a href={~p"/profiles/#{@user}/scratchpad/edit"}>Moderation Scratchpad</a>
+          <span class="block-header-title">Moderation Scratchpad</span>
+          <div class="block-header-actions">
+            <a href={~p"/profiles/#{@user}/scratchpad/edit"}><i class="fa fa-edit"></i> Edit</a>
+          </div>
         </div>
         <div class="block-content markdown">{@scratchpad}</div>
       </div>
