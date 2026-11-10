@@ -46,7 +46,8 @@ function trimmed(selector: Selector) {
   return selector;
 }
 
-function pad(selector: Selector, target: { a: number; b: number; c: number }) {
+/** Adds selectors that match nothing to `selector` until it has the specificity `target` */
+export function pad(selector: Selector, target: { a: number; b: number; c: number }) {
   const own = selectorSpecificity(selector);
   const make = { a: parser.id, b: parser.className, c: parser.tag };
 

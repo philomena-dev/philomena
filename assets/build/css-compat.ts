@@ -28,8 +28,9 @@ export default function cssCompat(): AcceptedPlugin[] {
     postcssFloorValues(),
     // Matched by the focus-visible polyfill, loaded by js/app.ts
     postcssFocusVisible({ preserve: false, disablePolyfillReadyClass: true }),
-    postcssFloorReset(),
     postcssFloorSelectors(),
+    // Rewrites the reset before the floor-selectors plugin runs and raises selectors after it
+    postcssFloorReset(),
     postcssFloorSupports(),
     // Reads .browserslistrc
     autoprefixer(),
