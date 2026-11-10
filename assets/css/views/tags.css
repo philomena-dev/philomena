@@ -89,7 +89,7 @@
 }
 
 /* The columns of a quick tag table tab */
-.quick-tag-table__tab > div {
+.quick-tag-table-tab > div {
   display: inline-block;
   padding: 0 var(--spacing-md);
   vertical-align: top;
@@ -97,7 +97,7 @@
   border-right: var(--border-width) solid var(--tint-color);
 }
 
-.quick-tag-table__tab > div:last-child {
+.quick-tag-table-tab > div:last-child {
   border-right: none;
 }
 
