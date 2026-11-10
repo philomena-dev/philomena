@@ -7,6 +7,7 @@ describe('css-gate', () => {
     ['nested at-rules', '.a { @media (min-width: 1px) { color: red } }', 'css.selectors.nesting'],
     ['an unknown pseudo-class', '.a:hovering { color: red }', 'no floor browser matches'],
     ['an unknown function', '.a { width: size(1px) }', 'css.types.size'],
+    ['linear() easing, not the linear keyword', '.a { transition: color 1s linear(0, 1) }', 'linear-function'],
     ['@supports font-tech()', '@supports font-tech(color-colrv1) { .a { color: red } }', 'supports.font-tech'],
     ['@layer', '@layer base { .a { color: red } }', 'css.at-rules.layer'],
     ['color-mix()', '.a { color: color-mix(in srgb, red, blue) }', 'color-mix'],

@@ -129,7 +129,9 @@ function valueNeeds(prop: string, value: string, grid = false): Need[] {
     if (node.type === 'function' && node.value) {
       const name = node.value.toLowerCase();
       const bare = unprefixed(name);
-      const own = bcd.css.properties[base]?.[bare]?.__compat && `css.properties.${base}.${bare}`;
+      // An entry of the property by the same name may be a keyword, such as the linear of transition
+      const entry = bcd.css.properties[base]?.[bare]?.__compat;
+      const own = entry?.description?.includes(`<code>${bare}()</code>`) && `css.properties.${base}.${bare}`;
       const spelling = prefixed(name) ? name : undefined;
       needs.push({ path: own || (functions[bare] ?? `css.types.${bare}`), spelling });
       if (node.nodes[0]?.value === 'from' && functions[name]) {
