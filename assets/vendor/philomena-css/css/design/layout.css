@@ -61,16 +61,11 @@ h6 {
   --heading-rhythm: 0;
 }
 
-* {
-  --heading-first: initial;
-  --heading-last: initial;
-}
-
-:first-child {
+:where(h1, h2, h3, h4, h5, h6):first-child {
   --heading-first: 0;
 }
 
-:last-child {
+:where(h1, h2, h3, h4, h5, h6):last-child {
   --heading-last: 0;
 }
 

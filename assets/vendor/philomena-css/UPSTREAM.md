@@ -37,9 +37,9 @@ rewritten to state, hover or position through custom properties instead, read by
   included. The media box color variants no longer give the bar's background to its links, which sit on that same
   background.
 - `design/layout.css`, headings: those inside a card header, a table cell, a badge, a tag or a button get
-  `--heading-rhythm: 0` instead of being left out by `:not(.card-header *, …)`, and the first and last child of an
-  element set `--heading-first` and `--heading-last` to zero the margin at that edge, in place of
-  `:where(:first-child)` and `:where(:last-child)`.
+  `--heading-rhythm: 0` instead of being left out by `:not(.card-header *, …)`, a heading that is the first or last
+  child sets `--heading-first` or `--heading-last` to zero its margin at that edge, in place of `:where(:first-child)`
+  and `:where(:last-child)`.
 - `design/layout.css`, focus ring: the containers that clip their links set `--focus-ring-link-offset`, which the
   ring of links and buttons takes as its offset, in place of a rule for their links that outranked the rings of the
   components.
