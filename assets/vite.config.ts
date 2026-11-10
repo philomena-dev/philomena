@@ -5,6 +5,7 @@ import postcssMixins from 'postcss-mixins';
 import postcssSimpleVars from 'postcss-simple-vars';
 import postcssRelativeColor from '@csstools/postcss-relative-color-syntax';
 import { defineConfig } from 'vitest/config';
+import { buildTarget } from './build/floor.ts';
 import type { ConfigEnv, ViteUserConfig } from 'vitest/config';
 
 export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
@@ -40,7 +41,7 @@ export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
       },
     },
     build: {
-      target: ['es2019', 'chrome80', 'firefox69', 'edge80', 'safari15', 'ios15', 'opera63'],
+      target: buildTarget,
       outDir: path.resolve(import.meta.dirname, '../priv/static'),
       emptyOutDir: false,
       sourcemap: isDev,
@@ -73,7 +74,7 @@ export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
       setupFiles: './test/vitest-setup.ts',
       coverage: {
         reporter: ['text', 'html'],
-        include: ['js/**/*.{js,ts}'],
+        include: ['js/**/*.{js,ts}', 'build/**/*.ts'],
         exclude: ['js/app.ts', '**/__tests__/**'],
         thresholds: {
           statements: 0,
@@ -87,6 +88,12 @@ export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
             lines: 100,
           },
           '**/utils/**/*.ts': {
+            statements: 100,
+            branches: 100,
+            functions: 100,
+            lines: 100,
+          },
+          'build/**/*.ts': {
             statements: 100,
             branches: 100,
             functions: 100,

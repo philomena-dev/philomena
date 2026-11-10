@@ -1,26 +1,16 @@
 {
   "compilerOptions": {
-    // XXX: Tests need `@types/node`, which pulls in a newer ES standard lib:
+    // `lib` is the ECMAScript level of the browsers in `.browserslistrc`: they
+    // all have ES2020, Safari 14 lacks ES2021 (`WeakRef`).
     //
-    // `node` <- `es2020`
-    //
-    // `@types/node` has this `<reference lib="es2020" />`:
-    // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/562ab89f5b7b6ec777941f9578b7c81eff10c5af/types/node/index.d.ts#L28C5-L28C31
-    //
-    // This `<reference>` makes our `lib` declaration of the ES standard library
-    // version *almost* entirely useless. We still implicitly get `es2020` from
-    // `node`'s types, so IDE may suggest you some features from the node's
-    // version of supported ES standard.
-    //
-    // Unfortunately there seems to be no way to configure separate tsconfig
-    // just for application files in the IDE to make sure IDE suggests only the
-    // features of maximum ECMA standard version that we support. However, as a
-    // workaround we have a separate `tsconfig.build.json` that we use for our
-    // final builds and on CI. That `tsconfig` doesn't include `vitest/globals`
-    // or `node`, and consequently the `es2020` lib. This way we still have a
-    // check that we don't depend on ES features higher than our support target.
-    "lib": ["ES2019", "DOM", "DOM.Iterable"],
-    "target": "ES2019",
+    // Tests need `@types/node`, which pulls in more of the standard library
+    // (`<reference lib="es2020" />` plus some `esnext` parts), so the IDE may
+    // suggest features that the browsers lack. There seems to be no way to give
+    // the IDE a separate tsconfig for application files, so the final build and
+    // CI use `tsconfig.build.json`, which leaves out `vitest/globals` and `node`
+    // and so checks that the app depends on nothing past this level.
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "target": "ES2020",
     "types": ["vitest/globals", "node"],
 
     "paths": { "*": ["./js/*"] },
@@ -43,5 +33,5 @@
     // before this can be enabled
     // "noUncheckedIndexedAccess": true
   },
-  "include": ["./js/**/*", "./test/**/*"]
+  "include": ["./js/**/*", "./test/**/*", "./build/**/*"]
 }
