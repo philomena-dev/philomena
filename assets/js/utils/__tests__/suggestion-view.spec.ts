@@ -13,7 +13,6 @@ import { assertNotNull } from '../assert.ts';
 import { $, $$ } from '../dom.ts';
 import { literalProperty, numericProperty } from '../../autocomplete/properties/maps';
 import { MatchedPropertyParts, SuggestedProperty } from '../../autocomplete/properties';
-import { getRandomIntBetween } from '../../../test/randomness.ts';
 
 const mockedMatchedPropertyParts: MatchedPropertyParts = {
   propertyName: 's',
@@ -102,22 +101,20 @@ describe('Suggestions', () => {
       );
     });
 
-    it('should compensate for scroll position of the parent element', () => {
+    it('should be placed under the field in page coordinates, wherever the page and the field scrolled', () => {
       [popup, input] = mockBaseSuggestionsPopup(true);
 
-      const popupContainer = $<HTMLElement>('.autocomplete');
+      const popupContainer = assertNotNull($<HTMLElement>('.autocomplete'));
 
-      assert(input.parentElement);
-      assert(popupContainer);
-
-      input.parentElement.scrollTop = getRandomIntBetween(100, 200);
+      vi.spyOn(input, 'getBoundingClientRect').mockReturnValue({ left: 30, bottom: 50 } as DOMRect);
+      vi.stubGlobal('scrollX', 5);
+      vi.stubGlobal('scrollY', 100);
       popup.showForElement(input);
 
-      expect(popupContainer.style.top).toBe(`${input.offsetTop - input.parentElement.scrollTop}px`);
+      expect(popupContainer.style.left).toBe('35px');
+      expect(popupContainer.style.top).toBe('150px');
 
-      popup.showForElement(document.documentElement);
-
-      expect(popupContainer.style.top).toBe(`${input.offsetTop}px`);
+      vi.unstubAllGlobals();
     });
 
     it('should not be displayed when input is detached from document', () => {

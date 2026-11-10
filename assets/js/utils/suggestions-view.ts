@@ -423,16 +423,11 @@ export class SuggestionsPopupComponent {
       return;
     }
 
-    this.container.style.position = 'absolute';
-    this.container.style.left = `${targetElement.offsetLeft}px`;
+    // The popup is a child of the body, so it is placed in page coordinates
+    const { left, bottom } = targetElement.getBoundingClientRect();
 
-    let topPosition = targetElement.offsetTop + targetElement.offsetHeight;
-
-    if (targetElement.parentElement) {
-      topPosition -= targetElement.parentElement.scrollTop;
-    }
-
-    this.container.style.top = `${topPosition}px`;
+    this.container.style.left = `${left + window.scrollX}px`;
+    this.container.style.top = `${bottom + window.scrollY}px`;
     this.container.classList.remove('hidden');
   }
 
