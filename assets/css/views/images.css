@@ -132,15 +132,6 @@
   padding-bottom: var(--spacing-md);
 }
 
-.dnp-warning a {
-  color: var(--vote-down-color);
-  font-weight: bold;
-}
-
-.dnp-warning a:hover {
-  color: var(--dnp-warning-hover-color);
-}
-
 /* This and the one above needed for older browsers for some reason, appears to be a bug */
 .image-target {
   max-width: 100%;
@@ -219,17 +210,6 @@
   margin-left: 1em;
 }
 
-.dnp-warning {
-  padding: 0.5em;
-  border: 3px solid var(--vote-down-color);
-  background: var(--admin-links-color);
-}
-
-.dnp-warning h4 {
-  margin-top: 0.3em;
-  margin-bottom: 0.2em;
-}
-
 .derpy__2fa {
   width: 25%;
   min-width: 200px;
@@ -243,8 +223,8 @@
 #js-image-upload-previews {
   display: flex;
   flex-flow: row wrap;
-  justify-content: flex-start;
   align-items: center;
+  gap: var(--spacing-md);
 }
 
 #js-image-upload-previews:empty {
@@ -260,7 +240,6 @@
 /* The images a scraper found: a hidden radio button each, the chosen image framed and the others faded */
 #js-image-upload-previews .scraper-preview-label {
   cursor: pointer;
-  margin: 0 var(--spacing-md) var(--spacing-md) 0;
 }
 
 #js-image-upload-previews .scraper-preview-frame {

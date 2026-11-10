@@ -3,7 +3,7 @@
   {error_summary(@changeset)}
   <%= if @current_user.otp_required_for_login do %>
     <%= if !@changeset.action and get_flash(@conn, :totp_backup_codes) do %>
-      <div class="dnp-warning">
+      <div class="card card-danger">
         <h4>Important - Save The Below Codes</h4>
         <p>
           The backup codes shown in the green box below are necessary to regain access to your account in the event of you losing access to your authenticator app (such as loss, theft, or damage to your phone). It is extremely important that you write them down and store them in a safe, secure place. If you lose access to you authenticator app and do not have one or more of the above codes, we will be unable to help you regain access to your account.
@@ -125,7 +125,7 @@
     <p>
       Note that the 6-digit codes are limited to a single use within their lifespan of 30 seconds, so if you use a code to enable the feature here, you won't be able to immediately use the same code to log in or to disable the feature. You have to wait for a new code to be generated.
     </p>
-    <div class="dnp-warning">
+    <div class="card card-danger">
       <h4>Warning - Authenticator Backup Codes</h4>
       <p>
         Once you enable 2FA on your account, you will be provided with a list of backup codes that can be used to access your account in the event of you losing access to your authenticator app. You will only be provided with these codes once, so please ensure that you have a way to safely and securely record them before enabling 2FA on your account. If you lose access to your authenticator app and do not have your backup codes, you will be locked out of your account permanently, and we will be unable to assist you.
