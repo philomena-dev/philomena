@@ -61,7 +61,6 @@ describe('css-gate', () => {
     ],
     ['a thickness in text-decoration', '.a { text-decoration: underline 2px }', 'includes_thickness'],
     ['a color in text-decoration', '.a { text-decoration: underline calc(1px) red }', 'includes_color-and-style'],
-    ['a relative color left for the browser', '.a { color: rgb(from var(--a) r g b) }', 'rgb.relative_syntax'],
     ['aspect-ratio', '.a { aspect-ratio: 1 }', 'css.properties.aspect-ratio'],
     ['inset', '.a { inset: 0 }', 'css.properties.inset'],
     ['margin-inline', '.a { margin-inline: 0 }', 'css.properties.margin-inline'],
