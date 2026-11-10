@@ -112,8 +112,8 @@ pre code {
   white-space: pre-wrap;
 }
 
-/* Checkboxes and radio buttons keep the browser's look, except the framework's controls (`*-input`), drawn in CSS */
-[type="checkbox"]:not([class*="-input"]),
-[type="radio"]:not([class*="-input"]) {
+/* Checkboxes and radio buttons keep the browser's look, except the framework's controls, drawn in CSS */
+[type="checkbox"]:not(.form-checkbox-input):not(.form-switch-input):not(.menu-check-input),
+[type="radio"]:not(.form-radio-input):not(.menu-check-input) {
   appearance: revert;
 }
