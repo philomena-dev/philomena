@@ -3,7 +3,11 @@
   options. Leave any options you don't want to use blank. Only registered users will be able to vote.
 </p>
 <div class="field field--block">
-  {text_input(@f, :title, class: "input input--wide", placeholder: "Poll title", maxlength: 140)}{error_tag(
+  {text_input(@f, :title,
+    class: "input-field full-width",
+    placeholder: "Poll title",
+    maxlength: 140
+  )}{error_tag(
     @f,
     :title
   )}
@@ -11,7 +15,7 @@
 <p class="fieldlabel">End date</p>
 <div class="field field--block">
   {text_input(@f, :active_until,
-    class: "input input--wide",
+    class: "input-field full-width",
     placeholder: "2 weeks from now",
     maxlength: 255
   )}{error_tag(@f, :active_until)}
@@ -21,16 +25,17 @@
 </p>
 <p class="fieldlabel">Voting method:</p>
 <div class="field field--block">
-  {select(@f, :vote_method, [-: "", "Single option": :single, "Multiple options": :multiple],
-    class: "input"
-  )}{error_tag(@f, :vote_method)}
+  {select_field(@f, :vote_method, -: "", "Single option": :single, "Multiple options": :multiple)}{error_tag(
+    @f,
+    :vote_method
+  )}
 </div>
 <%= inputs_for @f, :options, fn opt -> %>
   <div class="field js-poll-option field--inline flex-nowrap items-center">
-    {text_input(opt, :label, class: "input flex-1 js-option-label", placeholder: "Option")}{error_tag(
+    {text_input(opt, :label, class: "input-field flex-1 js-option-label", placeholder: "Option")}{error_tag(
       opt,
       :label
-    )}<label class="input--separate-left flex-none items-center"><a
+    )}<label class="ms-md flex-none items-center"><a
       class="js-option-remove"
       href="#"
       phx-no-format

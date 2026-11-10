@@ -14,7 +14,7 @@
         for={input_id(f, :states, state)}
       >{label}</label>
     <% end %>
-    {select(f, :sd, sorts(), class: "input input--separate-right")}{submit("Search",
+    {select_field(f, :sd, sorts(), class: "me-md")}{submit("Search",
       class: "button button-primary"
     )}
   </div>

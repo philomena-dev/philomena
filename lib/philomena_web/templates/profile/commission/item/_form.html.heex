@@ -5,7 +5,7 @@
     </div>
   <% end %>
   <div class="field">
-    {label(f, :item_type, "Type of item:")} {select(f, :item_type, types(), class: "input")}{error_tag(
+    {label(f, :item_type, "Type of item:")} {select_field(f, :item_type, types())}{error_tag(
       f,
       :item_type
     )}
@@ -13,7 +13,7 @@
   <br />
   <div class="field">
     {label(f, :base_price, "Base Price:")} {number_input(f, :base_price,
-      class: "input",
+      class: "input-field",
       placeholder: "20.00",
       step: "any",
       min: 0
@@ -22,21 +22,22 @@
   <br />
   <div class="field">
     {label(f, :example_image_id, "ID of example image:")} {number_input(f, :example_image_id,
-      class: "input",
+      class: "input-field",
       placeholder: "1345604"
     )}{error_tag(f, :example_image_id)}
   </div>
   <br />
   <div class="field">
     {label(f, :description, "Short description:")} {text_input(f, :description,
-      class: "input input--wide",
+      class: "input-field full-width",
       placeholder: "Description"
     )}{error_tag(f, :description)}
   </div>
   <br />
   <div class="field">
     {label(f, :add_ons, "Add-ons (optional):")} {textarea(f, :add_ons,
-      class: "input input--wide input--text",
+      class: "input-field full-width",
+      rows: 6,
       placeholder: "Additional character: $10.00"
     )}{error_tag(f, :add_ons)}
   </div>

@@ -6,19 +6,20 @@
     </div>
   <% end %>
   <div class="field">
-    {label(f, :badge_id, "Badge type")} {select(f, :badge_id, badge_options,
-      class: "input",
+    {label(f, :badge_id, "Badge type")} {select_field(f, :badge_id, badge_options,
       data: [change_selectvalue: "#award_label"]
     )}{error_tag(f, :badge_id)}
   </div>
   <div class="field">
     {label(f, :label, "Label (Public)")} {text_input(f, :label,
-      class: "input input--wide",
+      class: "input-field full-width",
       value: first_badge_label(badge_options)
     )}{error_tag(f, :label)}
   </div>
   <div class="field">
-    {label(f, :reason, "Reason (Private)")} {text_input(f, :reason, class: "input input--wide")}{error_tag(
+    {label(f, :reason, "Reason (Private)")} {text_input(f, :reason,
+      class: "input-field full-width"
+    )}{error_tag(
       f,
       :reason
     )}
@@ -28,7 +29,7 @@
       f,
       :badge_name,
       "Badge name (overrides default name if set, leave blank for default badge name)"
-    )} {text_input(f, :badge_name, class: "input input--wide")}{error_tag(f, :badge_name)}
+    )} {text_input(f, :badge_name, class: "input-field full-width")}{error_tag(f, :badge_name)}
   </div>
   <div class="field">
     {submit("Save", class: "button", data: [disable_with: raw("Saving&hellip;")])}

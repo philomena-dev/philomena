@@ -6,14 +6,18 @@
     </div>
   <% end %>
   <div class="field">
-    {password_input(f, :password, class: "input", placeholder: "New password", minlength: 12)}{error_tag(
+    {password_input(f, :password,
+      class: "input-field",
+      placeholder: "New password",
+      minlength: 12
+    )}{error_tag(
       f,
       :password
     )}
   </div>
   <div class="field">
     {password_input(f, :password_confirmation,
-      class: "input",
+      class: "input-field",
       placeholder: "Confirm new password",
       minlength: 12
     )}{error_tag(f, :password_confirmation)}

@@ -11,7 +11,7 @@
       Upload a file from your computer, or provide a link to the page containing the image and click Fetch.
     </p>
     <div class="field">
-      {file_input(f, :image, class: "input js-scraper")}{error_tag(f, :uploaded_image)}{error_tag(
+      {file_input(f, :image, class: "input-field js-scraper")}{error_tag(f, :uploaded_image)}{error_tag(
         f,
         :image_width
       )}{error_tag(f, :image_height)}{error_tag(f, :image_mime_type)}
@@ -19,7 +19,7 @@
     <div class="field field--inline">
       {url_input(f, :url,
         name: "url",
-        class: "input input--wide js-scraper",
+        class: "input-field full-width js-scraper",
         placeholder: "Link a deviantART page, a Tumblr post, or the image directly"
       )}<button
         class="button ms-md"
@@ -40,7 +40,7 @@
       min: 0,
       max: 1,
       step: 0.01,
-      class: "input"
+      class: "input-field"
     )}{error_tag(f, :distance)}
   </div>
   {error_tag(f, :limit)}

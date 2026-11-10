@@ -23,7 +23,7 @@
             </ul>
             <%= form_for :comment, ~p"/images/#{@comment.image_id}/comments/#{@comment}/hide", [class: "togglable-delete-form hidden flex", id: "inline-reject-form-comment-#{@comment.id}"], fn f -> %>
               {text_input(f, :deletion_reason,
-                class: "input input--wide",
+                class: "input-field full-width",
                 placeholder: "Deletion Reason",
                 id: "inline-reject-reason-comment-#{@comment.id}",
                 required: true
@@ -96,7 +96,7 @@
           <div class="communication__info js-staff-action"> {link_to_ip(@conn, @comment.ip)} </div>
           <div class="communication__info js-staff-action"> {link_to_fingerprint(@conn, @comment.fingerprint)} </div>
         <% end %>
-        <%= form_for :comment, ~p"/images/#{@comment.image_id}/comments/#{@comment}/hide", [class: "togglable-delete-form hidden flex", id: "inline-del-form-comment-#{@comment.id}"], fn f -> %>{text_input f, :deletion_reason, class: "input input--wide", placeholder: "Deletion Reason", id: "inline-del-reason-comment-#{@comment.id}", required: true}{submit "Delete", class: "button"}<% end %>
+        <%= form_for :comment, ~p"/images/#{@comment.image_id}/comments/#{@comment}/hide", [class: "togglable-delete-form hidden flex", id: "inline-del-form-comment-#{@comment.id}"], fn f -> %>{text_input f, :deletion_reason, class: "input-field full-width", placeholder: "Deletion Reason", id: "inline-del-reason-comment-#{@comment.id}", required: true}{submit "Delete", class: "button"}<% end %>
       </div>
     <% end %>
   </div>

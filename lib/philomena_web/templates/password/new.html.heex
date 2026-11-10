@@ -4,7 +4,7 @@
 </p>
 <%= form_for :user, ~p"/passwords", fn f -> %>
   <div class="field">
-    {email_input(f, :email, class: "input", placeholder: "Email", required: true)}
+    {email_input(f, :email, class: "input-field", placeholder: "Email", required: true)}
   </div>
   {render(PhilomenaWeb.CaptchaView, "_captcha.html", name: "password", conn: @conn)}{submit(
     "Send instructions to reset password",

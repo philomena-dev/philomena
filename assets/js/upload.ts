@@ -284,7 +284,7 @@ export function setupImageUpload() {
   };
 
   const disableUploadButton = () => {
-    const submitButton = $<HTMLButtonElement>('.button.input--separate-top');
+    const submitButton = $<HTMLButtonElement>('.js-upload-submit');
 
     if (!submitButton) {
       return;

@@ -26,9 +26,10 @@
     {textarea(form, field_name,
       class:
         add_classes(
-          "input input--wide input--text input--resize-vertical js-toolbar-input js-preview-input",
+          "input-field full-width js-toolbar-input js-preview-input",
           input_classes
         ),
+      rows: 6,
       placeholder: field_placeholder,
       required: required?(is_required)
     )}{error_tag(form, field_name)}

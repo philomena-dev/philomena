@@ -14,19 +14,17 @@
   </div>
   <div class="field">
     {label(f, :short_name, "Short name")} {text_input(f, :short_name,
-      class: "input",
+      class: "input-field",
       placeholder: "Short name",
       required: true
     )}
   </div>
   <div class="field">
-    {label(f, :type, "Type")} {select(f, :type, ["PicartoChannel", "PiczelChannel"],
-      class: "input"
-    )}
+    {label(f, :type, "Type")} {select_field(f, :type, ["PicartoChannel", "PiczelChannel"])}
   </div>
   <div class="field">
     {label(f, :artist_tag, "Artist tag")} {text_input(f, :artist_tag,
-      class: "input",
+      class: "input-field",
       placeholder: "Artist tag",
       spellcheck: "false"
     )}

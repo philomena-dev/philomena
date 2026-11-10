@@ -99,13 +99,13 @@ describe('Image upload form', () => {
 
         <input id="image_sources_0_source" name="image[sources][0][source]" type="text" class="js-source-url" />
         <div class="js-tag-block fancy-tag-upload">
-          <textarea id="image_tag_input" name="image[tag_input]" class="input input--wide tagsinput js-image-tags-input js-taginput js-taginput-plain"></textarea>
-          <div class="js-taginput input input--wide tagsinput hidden js-taginput-fancy"></div>
+          <textarea id="image_tag_input" name="image[tag_input]" class="input-field full-width tagsinput js-image-tags-input js-taginput js-taginput-plain"></textarea>
+          <div class="js-taginput input-field full-width tagsinput hidden js-taginput-fancy"></div>
         </div>
         <button id="tagsinput-save" type="button" class="button">Save</button>
         <textarea id="image_description" name="image[description]" class="js-image-descr-input"></textarea>
         <div class="actions">
-          <button class="button input--separate-top" type="submit">Upload</button>
+          <button class="button js-upload-submit" type="submit">Upload</button>
         </div>
        </form>`,
     );
@@ -119,7 +119,7 @@ describe('Image upload form', () => {
     sourceEl = assertNotNull($<HTMLInputElement>('.js-source-url'));
     descrEl = assertNotNull($<HTMLTextAreaElement>('.js-image-descr-input'));
     fetchButton = assertNotNull($<HTMLButtonElement>('#js-scraper-preview'));
-    submitButton = assertNotNull($<HTMLButtonElement>('.actions > .button'));
+    submitButton = assertNotNull($<HTMLButtonElement>('.js-upload-submit'));
     fetchMock.resetMocks();
   });
 
@@ -577,13 +577,13 @@ describe('Image upload form - additional branches', () => {
 
         <input id="image_sources_0_source" name="image[sources][0][source]" type="text" class="js-source-url" />
         <div class="js-tag-block fancy-tag-upload">
-          <textarea id="image_tag_input" name="image[tag_input]" class="input input--wide tagsinput js-image-tags-input js-taginput js-taginput-plain"></textarea>
-          <div class="js-taginput input input--wide tagsinput hidden js-taginput-fancy"></div>
+          <textarea id="image_tag_input" name="image[tag_input]" class="input-field full-width tagsinput js-image-tags-input js-taginput js-taginput-plain"></textarea>
+          <div class="js-taginput input-field full-width tagsinput hidden js-taginput-fancy"></div>
         </div>
         <button id="tagsinput-save" type="button" class="button">Save</button>
         <textarea id="image_description" name="image[description]" class="js-image-descr-input"></textarea>
         <div class="actions">
-          <button class="button input--separate-top" type="submit">Upload</button>
+          <button class="button js-upload-submit" type="submit">Upload</button>
         </div>
        </form>`,
     );

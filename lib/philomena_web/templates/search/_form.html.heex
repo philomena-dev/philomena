@@ -1,7 +1,7 @@
 <h1>Search</h1>
 <%= form_for :search, ~p"/search", [id: "searchform", method: "get", class: "js-search-form", enforce_utf8: false], fn f -> %>
   {text_input(f, :q,
-    class: "input input--wide js-search-field",
+    class: "input-field full-width js-search-field",
     placeholder: "Search terms are chained with commas",
     autocapitalize: "none",
     name: :q,
@@ -206,13 +206,13 @@
       "Deleted Only": "deleted",
       "Deleted/Merged Only": "only"
     ] %>
-    {select(f, :sf, sort_fields,
-      class: "input input--separate-left",
+    {select_field(f, :sf, sort_fields,
+      class: "ms-md",
       name: "sf",
       autocomplete: "off",
       selected: @conn.params["sf"]
-    )}{select(f, :sd, sort_directions,
-      class: "input input--separate-left",
+    )}{select_field(f, :sd, sort_directions,
+      class: "ms-md",
       name: "sd",
       autocomplete: "off",
       selected: @conn.params["sd"]
@@ -221,8 +221,8 @@
       {hidden_input(f, :hidden, name: "hidden", value: @conn.params["hidden"])}
     <% end %>
     <%= if hides_images?(@conn) do %>
-      {select(f, :del, sort_hidden,
-        class: "input input--separate-left",
+      {select_field(f, :del, sort_hidden,
+        class: "ms-md",
         name: "del",
         autocomplete: "off",
         selected: @conn.params["del"]

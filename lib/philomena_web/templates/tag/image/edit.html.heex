@@ -24,7 +24,10 @@
           <div id="js-image-upload-previews"></div>
           <p>Upload a file from your computer</p>
           <div class="field">
-            {file_input(f, :image, class: "input js-scraper")}{error_tag(f, :image_mime_type)}
+            {file_input(f, :image, class: "input-field js-scraper")}{error_tag(
+              f,
+              :image_mime_type
+            )}
           </div>
           <div class="field-error-js hidden js-scraper"></div>
           <br />{submit("Update tag image", class: "button")}

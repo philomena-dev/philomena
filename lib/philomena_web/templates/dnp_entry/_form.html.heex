@@ -46,7 +46,7 @@
       <%!-- Option (set by script depending on the option chosen above) --%>
       <strong>Type</strong>
       <div class="field">
-        {select(f, :dnp_type, selectable_types(), class: "js-dnp-type input input--wide")}{error_tag(
+        {select_field(f, :dnp_type, selectable_types(), full_width: true)}{error_tag(
           f,
           :dnp_type
         )}
@@ -55,7 +55,7 @@
       <strong>Artist Tag</strong>
       <p>Select the artist tag you would like to request a DNP entry for</p>
       <div class="field">
-        {select(f, :tag_id, selectable_options(@selectable_tags), class: "input")}{error_tag(
+        {select_field(f, :tag_id, selectable_options(@selectable_tags))}{error_tag(
           f,
           :tag_id
         )}
@@ -67,7 +67,7 @@
         If you selected "Other", or have other conditions applicable to your request, please enter them here. If someone always has permission to upload your artwork, enter their name here. (Optional)
       </p>
       <div class="field">
-        {textarea(f, :conditions, class: "input input--wide", placeholder: "Conditions")}{error_tag(
+        {textarea(f, :conditions, class: "input-field full-width", placeholder: "Conditions")}{error_tag(
           f,
           :conditions
         )}
@@ -77,7 +77,11 @@
       <strong>Reason For Request</strong>
       <p>Please indicate the reason why you would like your artwork to be removed. (Required)</p>
       <div class="field">
-        {textarea(f, :reason, class: "input input--wide", placeholder: "Reason", required: true)}{error_tag(
+        {textarea(f, :reason,
+          class: "input-field full-width",
+          placeholder: "Reason",
+          required: true
+        )}{error_tag(
           f,
           :reason
         )}
@@ -99,7 +103,7 @@
         If you would like existing artwork to be removed under this request, please provide instructions, such as "Remove all art with my artist tag that contain the "edit" tag." (Optional)
       </p>
       <div class="field">
-        {textarea(f, :instructions, class: "input input--wide", placeholder: "Instructions")}{error_tag(
+        {textarea(f, :instructions, class: "input-field full-width", placeholder: "Instructions")}{error_tag(
           f,
           :instructions
         )}
@@ -111,7 +115,7 @@
         If you have any additional feedback for the site staff, you may enter it here. (Optional)
       </p>
       <div class="field">
-        {textarea(f, :feedback, class: "input input--wide", placeholder: "Feedback")}{error_tag(
+        {textarea(f, :feedback, class: "input-field full-width", placeholder: "Feedback")}{error_tag(
           f,
           :feedback
         )}

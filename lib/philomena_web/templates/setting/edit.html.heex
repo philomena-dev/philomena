@@ -55,7 +55,7 @@
               :watched_images_query_str,
               "Watch list search string (images found by this search are added to your watched images list)"
             )}{textarea(fs, :watched_images_query_str,
-              class: "input input--wide",
+              class: "input-field full-width",
               autocapitalize: "none",
               spellcheck: "false"
             )}{error_tag(fs, :watched_images_query_str)}
@@ -66,7 +66,7 @@
               :watched_images_exclude_str,
               "Watch list filter string (any images found by this search are removed from your watched images list)"
             )}{textarea(fs, :watched_images_exclude_str,
-              class: "input input--wide",
+              class: "input-field full-width",
               autocapitalize: "none",
               spellcheck: "false"
             )}{error_tag(fs, :watched_images_exclude_str)}
@@ -94,7 +94,7 @@
                 url(
                   ~p"/api/v1/rss/watched?#{[key: @conn.assigns.current_user.authentication_token]}"
                 ),
-              class: "input input--wide"
+              class: "input-field full-width"
             )}
           </div>
           <br />Do not share this URL with anyone, it may allow an attacker to compromise your account.
@@ -136,16 +136,16 @@
             "The number of images per page that are displayed on image listings " <> \
             "and searches, up to a maximum of 50. For 1080p monitors, try 24.",
             [ \
-              number_input(fs, :images_per_page, min: 1, max: 50, step: 1, class: "input"), \
+              number_input(fs, :images_per_page, min: 1, max: 50, step: 1, class: "input-field"), \
               label(fs, :images_per_page), \
               error_tag(fs, :images_per_page) \
             ] \
           )}
-          <div class="field">{select fs, :theme_name, themes(), class: "input"} <label>Theme</label> {error_tag fs, :theme_name}</div>
-          <div class="field">{select fs, :theme_color, theme_colors(), class: "input"} <label>Theme color</label> {error_tag fs, :theme_color}</div>
+          <div class="field">{select_field fs, :theme_name, themes()} <label>Theme</label> {error_tag fs, :theme_name}</div>
+          <div class="field">{select_field fs, :theme_color, theme_colors()} <label>Theme color</label> {error_tag fs, :theme_color}</div>
           <div class="alert alert-warning">Don't forget to save the settings to apply the theme!</div>
           <div class="hidden" data-theme-paths={JSON.encode!(theme_paths())} id="js-theme-paths"></div>
-          <div class="field">{select fs, :scale_large_images, scale_options(), class: "input"} {label fs, :scale_large_images} {error_tag fs, :scale_large_images}</div>
+          <div class="field">{select_field fs, :scale_large_images, scale_options()} {label fs, :scale_large_images} {error_tag fs, :scale_large_images}</div>
           <% delay_home_images = if staff?(@conn.assigns.current_user), do: :staff_delay_home_images, else: :delay_home_images %>
           {field_with_help( \
             "Hide images without thumbnails on the homepage and for the first 3 minutes after upload (to allow for last-minute tag changes)",
@@ -175,7 +175,7 @@
           )}{field_with_help( \
             "The number of comments per page that are displayed on image pages.",
             [ \
-              number_input(fs, :comments_per_page, min: 1, max: 100, step: 1, class: "input"),
+              number_input(fs, :comments_per_page, min: 1, max: 100, step: 1, class: "input-field"),
               label(fs, :comments_per_page),
               error_tag(fs, :comments_per_page),
             ] \
@@ -354,7 +354,7 @@
               step: 1,
               value:
                 @conn.cookies["autocomplete_search_history_max_suggestions_when_typing"] || 3,
-              class: "input"
+              class: "input-field"
             )} {label(
               f,
               :autocomplete_search_history_max_suggestions_when_typing,

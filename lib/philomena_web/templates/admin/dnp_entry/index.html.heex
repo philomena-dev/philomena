@@ -2,7 +2,7 @@
 <%= form_for @changeset, ~p"/admin/dnp_entries", [as: :eq, method: "get", class: "hform"], fn f -> %>
   <div class="field">
     {text_input(f, :text,
-      class: "input hform__text",
+      class: "input-field hform__text",
       placeholder: "Search query",
       autocapitalize: "none",
       spellcheck: "false"

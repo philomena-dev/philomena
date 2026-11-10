@@ -5,7 +5,7 @@
     <%= form_for @changeset, ~p"/images/#{@image}/uploader", [class: "hidden", id: "uploader-form", data: [remote: "true", method: "put"]], fn f -> %>
       {label(f, :username, "Uploader")} {text_input(f, :username,
         value: username(@image.user),
-        class: "input input--short input--small"
+        class: "input-field"
       )} {submit("Save Changes",
         class: "button button-size-badge",
         data: [disable_with: raw("Saving&hellip;")]

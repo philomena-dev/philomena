@@ -5,28 +5,27 @@
     </div>
   <% end %>
   <div class="field">
-    {label(f, :name, "Name:")} {text_input(f, :name, class: "input input--wide")}{error_tag(
+    {label(f, :name, "Name:")} {text_input(f, :name, class: "input-field full-width")}{error_tag(
       f,
       :name
     )}
   </div>
   <div class="field">
-    {label(f, :short_name, "Slug:")} {text_input(f, :short_name, class: "input input--wide")}{error_tag(
+    {label(f, :short_name, "Slug:")} {text_input(f, :short_name, class: "input-field full-width")}{error_tag(
       f,
       :short_name
     )}
   </div>
   <div class="field">
     {label(f, :description, "Description:")} {textarea(f, :description,
-      class: "input input--wide"
+      class: "input-field full-width"
     )}{error_tag(f, :description)}
   </div>
   <div class="field">
-    {label(f, :access_level, "Access level:")} {select(
+    {label(f, :access_level, "Access level:")} {select_field(
       f,
       :access_level,
-      ["normal", "assistant", "staff"],
-      class: "input"
+      ["normal", "assistant", "staff"]
     )}{error_tag(f, :access_level)}
   </div>
   {submit("Save Forum", class: "button")}

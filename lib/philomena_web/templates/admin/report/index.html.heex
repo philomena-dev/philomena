@@ -49,7 +49,7 @@
 <%= form_for @changeset, ~p"/admin/reports", [as: "rq", method: "get", class: "hform"], fn f -> %>
   <div class="field">
     {text_input(f, :query,
-      class: "input hform__text",
+      class: "input-field hform__text",
       placeholder: "Search reports",
       autocapitalize: "none",
       spellcheck: "false",

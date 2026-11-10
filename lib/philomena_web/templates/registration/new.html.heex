@@ -9,7 +9,7 @@
     Non-anonymous posts permanently show your username as of posting time, and may appear on search engines; choose wisely.
   </div>
   <div class="field">
-    {text_input(f, :name, class: "input", placeholder: "Username", required: true)}{error_tag(
+    {text_input(f, :name, class: "input-field", placeholder: "Username", required: true)}{error_tag(
       f,
       :name
     )}
@@ -19,7 +19,7 @@
   </div>
   <div class="field">
     {email_input(f, :email,
-      class: "input",
+      class: "input-field",
       placeholder: "Email",
       required: true,
       pattern: ~S/[^@,;\s]+@[^@,;\s]+\.[^@,;\s]+/
@@ -30,7 +30,7 @@
   </div>
   <div class="field">
     {password_input(f, :password,
-      class: "input",
+      class: "input-field",
       placeholder: "Password",
       required: true,
       minlength: 12
@@ -38,7 +38,7 @@
   </div>
   <div class="field">
     {password_input(f, :password_confirmation,
-      class: "input",
+      class: "input-field",
       placeholder: "Confirm password",
       required: true,
       minlength: 12

@@ -25,13 +25,13 @@
   <div class="field">
     <div class="fieldlabel">Specify any user's exact name here, case-sensitive</div>
     {text_input(f, :recipient,
-      class: "input input--wide",
+      class: "input-field full-width",
       placeholder: "Recipient",
       required: true
     )}{error_tag(f, :to)}
   </div>
   <div class="field">
-    {text_input(f, :title, class: "input input--wide", placeholder: "Title", required: true)}{error_tag(
+    {text_input(f, :title, class: "input-field full-width", placeholder: "Title", required: true)}{error_tag(
       f,
       :title
     )}

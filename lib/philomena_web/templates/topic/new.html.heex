@@ -6,7 +6,10 @@
   <% end %>
   <h1>Create a Topic</h1>
   <div class="field">
-    {text_input(f, :title, class: "input input--wide", placeholder: "Title")}{error_tag(f, :title)}{error_tag(
+    {text_input(f, :title, class: "input-field full-width", placeholder: "Title")}{error_tag(
+      f,
+      :title
+    )}{error_tag(
       f,
       :slug
     )}

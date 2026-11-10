@@ -6,14 +6,16 @@
   <% end %>
   <div class="field">
     {label(f, :information, "General Information:")} {textarea(f, :information,
-      class: "input input--wide input--text",
+      class: "input-field full-width",
+      rows: 6,
       placeholder: "A general overview about your commissions.",
       required: true
     )}{error_tag(f, :information)}
   </div>
   <div class="field">
     {label(f, :contact, "Contact Information:")} {textarea(f, :contact,
-      class: "input input--wide input--text",
+      class: "input-field full-width",
+      rows: 6,
       placeholder:
         "How you would like potential customers to contact you (PM, Discord, Email, etc). Remember that this information will be publicly visible.",
       required: true
@@ -25,7 +27,8 @@
       :will_create,
       "Content you are particularly interested in drawing or creating (optional):"
     )} {textarea(f, :will_create,
-      class: "input input--wide input--text",
+      class: "input-field full-width",
+      rows: 6,
       placeholder: "List specific content you are willing to accept commissions for."
     )}{error_tag(f, :will_create)}
   </div>
@@ -33,7 +36,8 @@
     {label(f, :will_not_create, "Content you will not draw or create (optional):")} {textarea(
       f,
       :will_not_create,
-      class: "input input--wide input--text",
+      class: "input-field full-width",
+      rows: 6,
       placeholder: "List specific content you are not willing to accept commissions for."
     )}{error_tag(f, :will_not_create)}
   </div>
@@ -47,7 +51,7 @@
   </div>
   <div class="field">
     {label(f, :sheet_image_id, "Image ID of your commissions sheet (optional but recommended):")}
-    <br />{number_input(f, :sheet_image_id, class: "input", placeholder: "1227409")}{error_tag(
+    <br />{number_input(f, :sheet_image_id, class: "input-field", placeholder: "1227409")}{error_tag(
       f,
       :sheet_image_id
     )}

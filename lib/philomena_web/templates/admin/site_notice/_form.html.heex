@@ -8,7 +8,7 @@
     {label(f, :title, "Title (the bold bit) for the site notice; keep this short:")} {text_input(
       f,
       :title,
-      class: "input input--wide",
+      class: "input-field full-width",
       placeholder: "Title",
       required: true
     )}{error_tag(
@@ -18,7 +18,7 @@
   </div>
   <div class="field">
     {label(f, :text, "Main body of the site notice:")} {text_input(f, :text,
-      class: "input input--wide",
+      class: "input-field full-width",
       placeholder: "Text",
       required: true
     )}{error_tag(f, :text)}
@@ -26,13 +26,13 @@
   <h3>Link <small>(optional; leave these two fields blank for no link)</small></h3>
   <div class="field">
     {label(f, :link_text, "Text which will contain the link:")} {text_input(f, :link_text,
-      class: "input input--wide",
+      class: "input-field full-width",
       placeholder: "Link text"
     )}{error_tag(f, :link_text)}
   </div>
   <div class="field">
     {label(f, :link, "Link which the site notice should take users to:")} {text_input(f, :link,
-      class: "input input--wide",
+      class: "input-field full-width",
       placeholder: "Link"
     )}{error_tag(f, :link)}
   </div>
@@ -41,7 +41,7 @@
     {label(f, :start_date, "Start time for the site notice (usually \"now\"):")} {text_input(
       f,
       :start_date,
-      class: "input input--wide",
+      class: "input-field full-width",
       required: true
     )}{error_tag(f, :start_date)}
   </div>
@@ -49,7 +49,7 @@
     {label(f, :finish_date, "Finish time for the site notice (e.g. \"2 weeks from now\"):")} {text_input(
       f,
       :finish_date,
-      class: "input input--wide",
+      class: "input-field full-width",
       required: true
     )}{error_tag(f, :finish_date)}
   </div>

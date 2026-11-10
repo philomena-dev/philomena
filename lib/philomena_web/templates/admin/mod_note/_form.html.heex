@@ -5,7 +5,10 @@
     </div>
   <% end %>
   <div class="field">
-    {label(f, :body, "Note")} {text_input(f, :body, class: "input input--wide", required: true)}{error_tag(
+    {label(f, :body, "Note")} {text_input(f, :body,
+      class: "input-field full-width",
+      required: true
+    )}{error_tag(
       f,
       :body
     )}

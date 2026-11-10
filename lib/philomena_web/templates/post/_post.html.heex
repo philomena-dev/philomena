@@ -23,7 +23,7 @@
             </ul>
             <%= form_for :post, ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/hide", [class: "togglable-delete-form hidden flex", id: "inline-reject-form-post-#{@post.id}"], fn f -> %>
               {text_input(f, :deletion_reason,
-                class: "input input--wide",
+                class: "input-field full-width",
                 placeholder: "Deletion Reason",
                 id: "inline-reject-reason-post-#{@post.id}",
                 required: true
@@ -112,7 +112,7 @@
       <% end %>
       <%= form_for :post, ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/hide", [class: "togglable-delete-form hidden flex", id: "inline-del-form-post-#{@post.id}"], fn f -> %>
         {text_input(f, :deletion_reason,
-          class: "input input--wide",
+          class: "input-field full-width",
           placeholder: "Deletion Reason",
           id: "inline-del-reason-post-#{@post.id}",
           required: true

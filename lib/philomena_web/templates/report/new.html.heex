@@ -41,8 +41,7 @@
   <% end %>
   <%= form_for @changeset, @action, [class: "content"], fn f -> %>
     <div class="field">
-      {select(f, :rule_id, report_categories(@rules),
-        class: "input",
+      {select_field(f, :rule_id, report_categories(@rules),
         prompt: [key: "Select a rule", disabled: true, selected: true],
         required: true
       )}

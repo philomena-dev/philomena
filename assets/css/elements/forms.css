@@ -11,80 +11,9 @@
   padding: 3px;
 }
 
-.input {
-  box-sizing: border-box;
-  padding: 6px;
-  border: 1px solid var(--input-border);
-  font-size: 14px;
-  font-family: var(--font-family-monospace);
-  color: var(--input-text-color);
-  background: var(--input-color);
-  max-width: 100%; /* prevent resizable inputs from overflowing the container */
-}
-
-.input::placeholder {
-  opacity: 0.54;
-  color: inherit;
-}
-
-.input[required]:invalid {
-  box-shadow: none;
-}
-
-.input:focus {
-  outline: none;
-  border: 1px solid var(--input-border-active);
-  background: var(--input-color-active);
-}
-
-.input--wide {
-  width: 100%;
-}
-
-.input--short {
-  max-width: 30em;
-}
-
-.input--small {
-  padding: 0 3px;
-}
-
-.input--text {
-  min-height: 8.6em;
-}
-
-.input--separate-left {
-  margin-left: 5px;
-}
-
-.input--separate-right {
-  margin-right: 5px;
-}
-
-.input--separate-top {
-  margin-top: 5px;
-}
-
-.input--decoy {
-  display: inline-block;
-  width: 0;
-  height: 0;
-  border: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-.input--resize-vertical {
-  resize: vertical;
-}
-
 .checkbox {
   margin: 0.2em 0 0 0.4em;
   padding: 0;
-}
-
-textarea {
-  height: 4em;
 }
 
 .field,
@@ -155,6 +84,11 @@ span.help-block {
   margin-left: 5px;
 }
 
+/* The field padding of the framework comes after its select rule, which keeps room for the chevron */
+.form-control-select > .form-select-input:not([type="color"]) {
+  padding-right: var(--padding-value);
+}
+
 /* A <details> opened by its <summary>, a button with a caret that points down while it is open */
 .disclosure > summary:before {
   content: "";
@@ -172,32 +106,6 @@ span.help-block {
 
 .disclosure[open] > summary {
   margin-bottom: var(--spacing-md);
-}
-
-select.input,
-select.input:focus {
-  -moz-appearance: none;
-  appearance: none;
-  background:
-    linear-gradient(45deg, transparent 50%, var(--foreground-color) 50%) calc(100% - 15px) 12px / 5px 5px no-repeat,
-    linear-gradient(135deg, var(--foreground-color) 50%, transparent 50%) calc(100% - 10px) 12px / 5px 5px no-repeat;
-  padding-right: 25px;
-}
-
-select.input option,
-select.input:focus option {
-  background-color: var(--input-color);
-}
-
-select.input:hover option,
-select.input:focus:hover option {
-  background-color: var(--input-color-active);
-}
-
-select.input:hover,
-select.input:focus:hover {
-  cursor: pointer;
-  background-color: var(--input-color-active);
 }
 
 /* The error summary at the top of a form keeps its fields at a distance */

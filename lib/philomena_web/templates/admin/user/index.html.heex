@@ -2,7 +2,7 @@
 <%= form_for @changeset, ~p"/admin/users", [as: :uq, method: "get", class: "hform"], fn f -> %>
   <div class="field">
     {text_input(f, :query,
-      class: "hform__text input",
+      class: "hform__text input-field",
       placeholder: "Search query",
       spellcheck: "false"
     )} {submit("Search", class: "button hform__button")}
@@ -28,11 +28,11 @@
       Descending: :desc,
       Ascending: :asc
     ] %>
-    {select(f, :sf, sort_fields, class: "input", autocomplete: "off")}{select(
+    {select_field(f, :sf, sort_fields, autocomplete: "off")}{select_field(
       f,
       :sd,
       sort_directions,
-      class: "input input--separate-left",
+      class: "ms-md",
       autocomplete: "off"
     )}
   </div>

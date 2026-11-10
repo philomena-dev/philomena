@@ -3,7 +3,7 @@
   <div class="field">
     <h4>Please enter your 2FA code</h4>
     {text_input(f, :twofactor_token,
-      class: "input",
+      class: "input-field",
       placeholder: "6-digit code",
       required: true,
       autofocus: true,
@@ -11,7 +11,7 @@
     )}
   </div>
   <div class="field">
-    {checkbox(f, :remember_me, class: "input", checked: true)} {label(
+    {checkbox(f, :remember_me, checked: true)} {label(
       f,
       :remember_me,
       "Remember this device"

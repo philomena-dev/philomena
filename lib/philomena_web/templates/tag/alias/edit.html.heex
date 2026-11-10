@@ -8,7 +8,7 @@
   <div class="field">
     {label(f, "Alias target:")} {text_input(f, :target_tag,
       value: alias_target(@tag),
-      class: "input"
+      class: "input-field"
     )}{error_tag(f, :target_tag)}{error_tag(f, :tag)}{error_tag(f, :aliased_tag)}
   </div>
   <div class="field">{submit("Alias tag", class: "button")}</div>

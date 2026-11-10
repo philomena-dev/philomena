@@ -27,14 +27,14 @@
             Upload a file from your computer, or provide a link to the page containing the image and click Fetch.
           </p>
           <div class="field">
-            {file_input(f, :avatar, class: "input js-scraper")}{error_tag(f, :avatar_size)}{error_tag(
+            {file_input(f, :avatar, class: "input-field js-scraper")}{error_tag(f, :avatar_size)}{error_tag(
               f,
               :avatar_width
             )}{error_tag(f, :avatar_height)}{error_tag(f, :avatar_mime_type)}
           </div>
           <div class="field field--inline">
             {url_input(f, :scraper_url,
-              class: "input input--wide js-scraper",
+              class: "input-field full-width js-scraper",
               placeholder: "Link a deviantART page, a Tumblr post, or the image directly"
             )}<button
               class="button ms-md"

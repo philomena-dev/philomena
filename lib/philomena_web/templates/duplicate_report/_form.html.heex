@@ -2,11 +2,11 @@
   {hidden_input(f, :image_id, value: @image.id)}
   <div class="field">
     Delete this image and redirect to {number_input(f, :duplicate_of_image_id,
-      class: "input",
+      class: "input-field",
       min: 0,
       placeholder: "image number.",
       required: true
-    )}{text_input(f, :reason, class: "input input--separate-left", placeholder: "Explanation")}
+    )}{text_input(f, :reason, class: "input-field ms-md", placeholder: "Explanation")}
   </div>
   <div class="actions">
     {submit("Report Duplicate", class: "button", data: [disable_with: raw("Saving&hellip;")])}

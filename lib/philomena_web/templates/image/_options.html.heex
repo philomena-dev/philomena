@@ -45,7 +45,7 @@
       <p>
         <strong>Small thumbnail</strong>
         <input
-          class="input"
+          class="input-field"
           cols="10"
           id="embed_small_thumbnail_tag"
           readonly="readonly"
@@ -58,7 +58,7 @@
       <p>
         <strong>Thumbnail</strong>
         <input
-          class="input"
+          class="input-field"
           cols="10"
           id="embed_thumbnail_tag"
           readonly="readonly"
@@ -70,7 +70,7 @@
       <p>
         <strong>Preview</strong>
         <input
-          class="input"
+          class="input-field"
           cols="10"
           id="embed_preview_tag"
           readonly="readonly"
@@ -83,7 +83,7 @@
       <p>
         <strong>Full size BBcode</strong>
         <a data-click-copy="#bbcode_embed_full_tag" href="#"><i class="fa fa-clipboard"></i> Copy</a><br /><textarea
-          class="input input--wide input--separate-top"
+          class="input-field full-width mt-md"
           cols="100"
           id="bbcode_embed_full_tag"
           readonly="readonly"
@@ -94,7 +94,7 @@
         <strong>Thumbnailed BBcode</strong>
         <a data-click-copy="#bbcode_embed_thumbnail_tag" href="#"><i class="fa fa-clipboard"></i>
         Copy</a><br /><textarea
-          class="input input--wide input--separate-top"
+          class="input-field full-width mt-md"
           cols="100"
           id="bbcode_embed_thumbnail_tag"
           readonly="readonly"
@@ -109,10 +109,10 @@
         <%= form_for @file_changeset, ~p"/images/#{@image}/file", [method: "put", multipart: true], fn f -> %>
           <div id="js-image-upload-previews"></div>
           <p>Upload a file from your computer</p>
-          <div class="field">{file_input(f, :image, class: "input js-scraper")}</div>
+          <div class="field">{file_input(f, :image, class: "input-field js-scraper")}</div>
           <div class="field field--inline">
             {url_input(f, :scraper_url,
-              class: "input input--wide js-scraper",
+              class: "input-field full-width js-scraper",
               placeholder: "Link a deviantART page, a Tumblr post, or the image directly"
             )}<button
               class="button ms-md"
@@ -143,7 +143,7 @@
             {label(f, :deletion_reason, "Deletion reason (cannot be empty)")}
             <div class="field field--inline">
               {text_input(f, :deletion_reason,
-                class: "input input--wide",
+                class: "input-field full-width",
                 placeholder: "Rule violation",
                 required: true
               )}{submit("Delete", class: "button button-danger ms-md")}
@@ -156,7 +156,7 @@
             {label(f, :deletion_reason, "Deletion reason (cannot be empty)")}
             <div class="field field--inline">
               {text_input(f, :deletion_reason,
-                class: "input input--wide",
+                class: "input-field full-width",
                 placeholder: "Rule violation",
                 required: true
               )}{submit("Change deletion reason",

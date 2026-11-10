@@ -117,26 +117,26 @@
               <% else %>
                 <%= form_for :topic, ~p"/forums/#{@forum}/topics/#{@topic}/lock", [method: :post, class: "hform"], fn f -> %>
                   <div class="field">
-                    {text_input f, :lock_reason, class: "input hform__text", placeholder: "Lock reason", required: true}
+                    {text_input f, :lock_reason, class: "input-field hform__text", placeholder: "Lock reason", required: true}
                     <%= submit class: "hform__button button" do %><i class="fas fa-lock"></i> Lock <% end %>
                   </div>
                 <% end %>
               <% end %>
               <%= form_for @topic_changeset, ~p"/forums/#{@forum}/topics/#{@topic}", [method: :put, class: "hform"], fn f -> %>
                 <div class="field">
-                  {text_input f, :title, class: "input hform__text", placeholder: "New Title"}
+                  {text_input f, :title, class: "input-field hform__text", placeholder: "New Title"}
                   <%= submit class: "hform__button button" do %><i class="fas fa-pen"></i> Set Title <% end %>
                 </div>
               <% end %>
               <%= form_for :topic, ~p"/forums/#{@forum}/topics/#{@topic}/move", [method: :post, class: "hform"], fn f -> %>
                 <div class="field">
-                  {select f, :target_forum, Enum.map(@conn.assigns.forums, &{&1.name, &1.short_name}), class: "input hform__text"}
+                  {select_field f, :target_forum, Enum.map(@conn.assigns.forums, &{&1.name, &1.short_name}), class: "hform__text"}
                   <%= submit class: "hform__button button" do %><i class="fas fa-truck"></i> Move <% end %>
                 </div>
               <% end %>
               <%= form_for :topic, ~p"/forums/#{@forum}/topics/#{@topic}/hide", [method: :post, class: "hform"], fn f -> %>
                 <div class="field">
-                  {text_input f, :deletion_reason, class: "input hform__text", placeholder: "Deletion reason", required: true}
+                  {text_input f, :deletion_reason, class: "input-field hform__text", placeholder: "Deletion reason", required: true}
                   <%= submit class: "hform__button button" do %><i class="fas fa-trash"></i> Delete <% end %>
                 </div>
               <% end %>

@@ -12,7 +12,10 @@
         "Please read the site rules before posting and use ||spoilers|| for above-rating stuff."
     )}
     <div class="block-content field">
-      {text_input(f, :edit_reason, class: "input input--wide", placeholder: "Reason for edit")}{error_tag(
+      {text_input(f, :edit_reason,
+        class: "input-field full-width",
+        placeholder: "Reason for edit"
+      )}{error_tag(
         f,
         :edit_reason
       )}

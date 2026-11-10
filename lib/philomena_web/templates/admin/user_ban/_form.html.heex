@@ -10,14 +10,18 @@
       f,
       :reason,
       "Reason (shown to the banned user, and to staff on the user's profile page):"
-    )} {text_input(f, :reason, class: "input input--wide", placeholder: "Reason", required: true)}{error_tag(
+    )} {text_input(f, :reason,
+      class: "input-field full-width",
+      placeholder: "Reason",
+      required: true
+    )}{error_tag(
       f,
       :reason
     )}
   </div>
   <div class="field">
     {label(f, :note, "Admin-only note:")} {text_input(f, :note,
-      class: "input input--wide",
+      class: "input-field full-width",
       placeholder: "Note"
     )}
   </div>
@@ -27,7 +31,7 @@
       :valid_until,
       "End time relative to now, in simple English (e.g. \"1 week from now\"):"
     )} {text_input(f, :valid_until,
-      class: "input input--wide",
+      class: "input-field full-width",
       placeholder: "Until",
       required: true
     )}{error_tag(f, :valid_until)}

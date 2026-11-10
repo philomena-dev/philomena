@@ -4,7 +4,7 @@
     {text_input(f, :tq,
       name: :tq,
       value: @conn.params["tq"] || "*",
-      class: "input hform__text",
+      class: "input-field hform__text",
       placeholder: "Search tags",
       autocapitalize: "none",
       autocomplete: if(@conn.cookies["enable_search_ac"], do: "on", else: "off"),

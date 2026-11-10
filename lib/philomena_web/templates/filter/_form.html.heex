@@ -4,13 +4,16 @@
       <div id="error_explanation">Oops, something went wrong! Please check the errors below.</div>
     <% end %>
     <div class="field">
-      {text_input(f, :name, class: "input input--wide", placeholder: "Name")}{error_tag(f, :name)}
+      {text_input(f, :name, class: "input-field full-width", placeholder: "Name")}{error_tag(
+        f,
+        :name
+      )}
     </div>
     <div class="fieldlabel">
       This is a friendly name for this filter - it should be short and descriptive.
     </div>
     <div class="field">
-      {textarea(f, :description, class: "input input--wide", placeholder: "Description")}{error_tag(
+      {textarea(f, :description, class: "input-field full-width", placeholder: "Description")}{error_tag(
         f,
         :description
       )}
@@ -33,7 +36,7 @@
       {label(f, :spoilered_complex_str, "Complex Spoiler Filter")}<br />{textarea(
         f,
         :spoilered_complex_str,
-        class: "input input--wide",
+        class: "input-field full-width",
         autocapitalize: "none",
         autocomplete: "off",
         data: [autocomplete: "multi-tags"],
@@ -70,7 +73,7 @@
       {label(f, :hidden_complex_str, "Complex Hide Filter")}<br />{textarea(
         f,
         :hidden_complex_str,
-        class: "input input--wide",
+        class: "input-field full-width",
         autocapitalize: "none",
         autocomplete: "off",
         data: [autocomplete: "multi-tags"],

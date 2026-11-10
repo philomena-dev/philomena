@@ -48,6 +48,7 @@ defmodule PhilomenaWeb do
       use Gettext, backend: PhilomenaWeb.Gettext
 
       import PhilomenaWeb.ErrorHelpers
+      import PhilomenaWeb.FormHelpers
 
       # Wrong way around for convenience
       import PhilomenaWeb.AppView

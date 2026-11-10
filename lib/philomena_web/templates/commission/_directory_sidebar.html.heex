@@ -18,12 +18,12 @@
       <% end %>
       <br />
       <div class="field">{label(f, :item_type, "Commission Type:")}</div>
-      <div class="field">{select(f, :item_type, types(), class: "input")}</div>
+      <div class="field">{select_field(f, :item_type, types())}</div>
       <br />
       <div class="field">{label(f, :price_min, "Price:")}</div>
       <div class="field">
         {number_input(f, :price_min,
-          class: "input input--short",
+          class: "input-field",
           placeholder: "At Least",
           step: "any",
           min: 0
@@ -31,7 +31,7 @@
       </div>
       <div class="field">
         {number_input(f, :price_max,
-          class: "input input--short",
+          class: "input-field",
           placeholder: "At Most",
           step: "any",
           min: 0
@@ -40,7 +40,7 @@
       <br />
       <div class="field">{label(f, :keywords, "Search:")}</div>
       <div class="field">
-        {text_input(f, :keywords, class: "input input--short", placeholder: "Keywords")}
+        {text_input(f, :keywords, class: "input-field", placeholder: "Keywords")}
       </div>
       {submit("Search", class: "button")}
     <% end %>

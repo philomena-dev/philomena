@@ -7,45 +7,42 @@
           <div class="field">{label(f, :title, "Title")}</div>
           <div class="field">
             {text_input(f, :title,
-              class: "input hform__text",
+              class: "input-field hform__text",
               placeholder: "Gallery title (* as wildcard)"
             )}
           </div>
           <div class="field">{label(f, :description, "Description")}</div>
           <div class="field">
             {textarea(f, :description,
-              class: "input hform__text",
+              class: "input-field hform__text",
               placeholder: "Gallery description"
             )}
           </div>
           <div class="field">{label(f, :creator, "Creator")}</div>
           <div class="field">
             {text_input(f, :creator,
-              class: "input hform__text",
+              class: "input-field hform__text",
               placeholder: "Gallery creator (exact match)"
             )}
           </div>
           <div class="field">{label(f, :include_image, "Include image")}</div>
           <div class="field">
             {number_input(f, :include_image,
-              class: "input hform__text",
+              class: "input-field hform__text",
               placeholder: "Image ID (e.g. 100)"
             )}
           </div>
           <div class="field">{label(f, :sf, "Sort by")}</div>
           <div class="field">
-            {select(
+            {select_field(
               f,
               :sf,
-              [
-                "Creation date": "created_at",
-                "Modification date": "updated_at",
-                "Image count": "image_count",
-                "Subscriber count": "subscriber_count",
-                Relevance: "_score"
-              ],
-              class: "input"
-            )} {select(f, :sd, [Descending: "desc", Ascending: "asc"], class: "input")}
+              "Creation date": "created_at",
+              "Modification date": "updated_at",
+              "Image count": "image_count",
+              "Subscriber count": "subscriber_count",
+              Relevance: "_score"
+            )} {select_field(f, :sd, Descending: "desc", Ascending: "asc")}
           </div>
           <div class="error">{error_tag(f, :include_image)}</div>
           <div class="error">{error_tag(f, :sf)}</div>

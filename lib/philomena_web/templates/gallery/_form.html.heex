@@ -6,7 +6,7 @@
   <% end %>
   <div class="field">
     {label(f, :title, "Choose a title displayed in gallery preview")}{text_input(f, :title,
-      class: "input input--wide",
+      class: "input-field full-width",
       placeholder: "Title",
       required: true
     )}{error_tag(f, :title)}
@@ -16,14 +16,17 @@
       f,
       :spoiler_warning,
       "If you are going to have NSFW images in the gallery, leave a warning for users who may not want to see it"
-    )}{text_input(f, :spoiler_warning, class: "input input--wide", placeholder: "Spoiler warning")}{error_tag(
+    )}{text_input(f, :spoiler_warning,
+      class: "input-field full-width",
+      placeholder: "Spoiler warning"
+    )}{error_tag(
       f,
       :spoiler_warning
     )}
   </div>
   <div class="field">
     {label(:description, "Describe the gallery in a few words")}{textarea(f, :description,
-      class: "input input--wide",
+      class: "input-field full-width",
       placeholder: "Description"
     )}{error_tag(f, :description)}
   </div>
@@ -32,7 +35,7 @@
       f,
       :thumbnail_id,
       value: input_value(f, :thumbnail_id) || @conn.params["with_image"],
-      class: "input",
+      class: "input-field",
       placeholder: "Image ID (e.g. 100)",
       min: 0
     )}{error_tag(f, :thumbnail_id)}

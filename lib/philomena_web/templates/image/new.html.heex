@@ -19,7 +19,7 @@
       Upload a file from your computer, or provide a link to the page containing the image and click Fetch.
     </p>
     <div class="field">
-      {file_input(f, :image, class: "input js-scraper")}{error_tag(f, :image)}{error_tag(
+      {file_input(f, :image, class: "input-field js-scraper")}{error_tag(f, :image)}{error_tag(
         f,
         :image_size
       )}{error_tag(f, :image_width)}{error_tag(f, :image_height)}{error_tag(f, :image_name)}{error_tag(
@@ -29,7 +29,7 @@
     </div>
     <div class="field field--inline">
       {url_input(f, :scraper_url,
-        class: "input input--wide js-scraper",
+        class: "input-field full-width js-scraper",
         placeholder: "Link a deviantART page, a Tumblr post, or the image directly"
       )}<button
         class="button ms-md"
@@ -50,10 +50,13 @@
   </p>
   <%= inputs_for f, :sources, fn fs -> %>
     <div class="field js-image-source field--inline flex-nowrap items-center">
-      {text_input(fs, :source, class: "input flex-1 js-source-url", placeholder: "Source URL")}{error_tag(
+      {text_input(fs, :source,
+        class: "input-field flex-1 js-source-url",
+        placeholder: "Source URL"
+      )}{error_tag(
         fs,
         :source
-      )}<label class="input--separate-left flex-none items-center"><a
+      )}<label class="ms-md flex-none items-center"><a
         class="js-source-remove"
         href="#"
       ><i class="fa fa-trash"></i> Delete</a></label>
@@ -115,6 +118,6 @@
     label: "Post anonymously"
   )}{render(PhilomenaWeb.CaptchaView, "_captcha.html", name: "image", conn: @conn)}
   <div class="actions">
-    {submit("Upload", class: "button input--separate-top", autocomplete: "off")}
+    {submit("Upload", class: "button mt-md js-upload-submit", autocomplete: "off")}
   </div>
 <% end %>

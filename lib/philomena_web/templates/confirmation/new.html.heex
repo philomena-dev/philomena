@@ -1,7 +1,7 @@
 <h1>Resend confirmation instructions</h1>
 <%= form_for :user, ~p"/confirmations", fn f -> %>
   <div class="field">
-    {email_input(f, :email, placeholder: "Email", class: "input", required: true)}
+    {email_input(f, :email, placeholder: "Email", class: "input-field", required: true)}
   </div>
   {render(PhilomenaWeb.CaptchaView, "_captcha.html", name: "confirmation", conn: @conn)}
   <div>{submit("Resend confirmation instructions", class: "button")}</div>
