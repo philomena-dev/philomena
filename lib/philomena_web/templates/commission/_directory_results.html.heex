@@ -25,7 +25,7 @@ pagination =
     <%= cond do %>
       <% Enum.any?(@commissions) -> %>
         <%= for c <- @commissions do %>
-          <div class="block commission">
+          <div class="block">
             <div class="block-content flex flex-nowrap">
               <div class="flex-none me-lg">
                 {render(PhilomenaWeb.UserAttributionView, "_user_avatar.html",
@@ -33,15 +33,15 @@ pagination =
                   conn: @conn
                 )}
               </div>
-              <div class="flex-1 commission__listing_body">
-                <span class="commission__listing_artist">{render(
+              <div class="flex-1 wrap-anywhere">
+                <strong class="text-lg">{render(
                   PhilomenaWeb.UserAttributionView,
                   "_user.html",
                   object: c,
                   badges: true,
                   conn: @conn
-                )}</span>
-                <div class="commission__listing__body_text">
+                )}</strong>
+                <div>
                   <% {min, max} = Enum.min_max_by(c.items, &Decimal.to_float(&1.base_price)) %>
                   <p>
                     <strong>Price Range:</strong>

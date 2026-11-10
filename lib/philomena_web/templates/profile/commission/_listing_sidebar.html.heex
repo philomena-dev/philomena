@@ -1,7 +1,7 @@
 <%!-- General information block --%>
 <div class="block">
   <div class="block-header"><span class="block-header-title">General information</span></div>
-  <div class="block-content commission__block_body">
+  <div class="block-content">
     <strong>Profile:</strong> {render(PhilomenaWeb.UserAttributionView, "_user.html",
       object: @commission,
       conn: @conn
@@ -20,20 +20,22 @@
 <%!-- Contact information block --%>
 <div class="block">
   <div class="block-header"><span class="block-header-title">Contact information</span></div>
-  <div class="block-content commission__block_body markdown">{@rendered.contact}</div>
+  <div class="block-content markdown">{@rendered.contact}</div>
 </div>
 <%!-- Categories block --%>
 <div class="block">
   <div class="block-header"><span class="block-header-title">Art Categories</span></div>
   <div class="block-content">
-    <span :for={cat <- @commission.categories} class="commission__category">{cat}</span>
+    <div class="badge-group">
+      <span :for={cat <- @commission.categories} class="badge badge-warning"><span>{cat}</span></span>
+    </div>
   </div>
 </div>
 <%!-- Will create block --%>
 <%= if @commission.will_create not in [nil, ""] do %>
   <div class="block">
     <div class="block-header"><span class="block-header-title">Will draw/create</span></div>
-    <div class="block-content commission__block_body markdown">{@rendered.will_create}</div>
+    <div class="block-content markdown">{@rendered.will_create}</div>
   </div>
 <% end %>
 <%!-- Will not create block --%>
@@ -42,7 +44,7 @@
     <div class="block-header">
       <span class="block-header-title">Will not draw/create</span>
     </div>
-    <div class="block-content commission__block_body markdown">{@rendered.will_not_create}</div>
+    <div class="block-content markdown">{@rendered.will_not_create}</div>
   </div>
 <% end %>
 <%!-- Options block --%>

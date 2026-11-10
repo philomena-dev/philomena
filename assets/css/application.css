@@ -46,6 +46,7 @@
 @import "@philomena/philomena-css/css/components/tag.css";
 @import "./tokens.css";
 @import "./legacy.css";
+@import "./utils.css";
 
 /* Files containing common properties, such as variable definitions. */
 @import "common/measurements";
@@ -71,7 +72,6 @@
 @import "views/approval";
 @import "views/awards";
 @import "views/channels";
-@import "views/commissions";
 @import "views/communications";
 @import "views/duplicates";
 @import "views/galleries";

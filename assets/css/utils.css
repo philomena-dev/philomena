@@ -1,0 +1,13 @@
+/*
+ * Philomena's utilities, beside the framework's and named as in Tailwind: like the framework's, they are !important.
+ */
+
+/* Long words and links break anywhere rather than widen their container */
+.wrap-anywhere {
+  overflow-wrap: anywhere !important;
+}
+
+/* Long words are hyphenated where they break */
+.hyphens-auto {
+  hyphens: auto !important;
+}
