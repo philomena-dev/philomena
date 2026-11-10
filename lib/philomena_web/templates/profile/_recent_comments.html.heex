@@ -8,9 +8,10 @@
     </div>
     <div class="block-content">
       <%= for {body, comment} <- @comments, can?(@conn, :show, comment.image) do %>
-        {render(PhilomenaWeb.CommentView, "_comment_with_image.html",
+        {render(PhilomenaWeb.CommentView, "_comment.html",
           comment: comment,
           body: body,
+          image: comment.image,
           conn: @conn
         )}
       <% end %>

@@ -38,7 +38,7 @@ function commentPosted(response: Response) {
 
 function loadParentPost(event: Event, target: HTMLElement) {
   // Find the comment containing the link that was clicked
-  const fullComment = assertType(target.closest('article.block'), HTMLElement);
+  const fullComment = assertType(target.closest('article.communication'), HTMLElement);
   // Look for a potential image and comment ID
   const href = assertNotNull(target.getAttribute('href'));
   const commentMatches = /(\w+)#comment_(\w+)$/.exec(href);
@@ -180,7 +180,7 @@ function setupComments() {
 
   // Define clickable elements and the function to execute on click
   delegate(document, 'click', {
-    'article[id*="comment"] .communication__body__text a[href]': leftClick((e: Event, link: HTMLElement) => {
+    'article[id*="comment"] .communication-text a[href]': leftClick((e: Event, link: HTMLElement) => {
       loadParentPost(e, link);
     }),
     '#comments .pagination a[href]': leftClick((e: Event, link: HTMLElement) => {

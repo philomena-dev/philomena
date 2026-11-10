@@ -3,6 +3,11 @@
  * spoilers and single-purpose helpers.
  */
 
+/* Labels of what only staff sees */
+.comment_deleted {
+  color: var(--danger-tint-text-color);
+}
+
 /* Slightly dirty, no clean way to strip top margins off headers though */
 .remove-top-margin {
   margin-top: 0;
@@ -14,18 +19,6 @@
   margin-top: var(--padding-small);
   margin-left: 2px;
   line-height: 1.35em;
-}
-
-.communication__body__text .paragraph {
-  margin-bottom: var(--padding-normal);
-  overflow-wrap: break-word;
-}
-
-@media (max-width: $min-desktop-width) {
-  .communication__body__text pre {
-    /* 32px = page padding(4px * 2) + pre padding(10px * 2) + borders(1px * 4) */
-    max-width: calc(98vw - var(--spacing-md) * 2 - 32px);
-  }
 }
 
 .clearfix {

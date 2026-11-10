@@ -1,43 +1,78 @@
-<div>
-  Posted {pretty_time(@post.created_at)} <a
-    class="communication__interaction"
-    href={~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/reports/new"}
-    phx-no-format
-  ><i class="fa fa-flag"></i> Report </a>
-  <%= if not is_nil(@post.edited_at) and can?(@conn, :show, @post) do %>
-    <br /><a href={~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/history"}>Edited {pretty_time(
-      @post.edited_at
-    )}
-    <%= if @post.edit_reason not in [nil, ""] do %>
-      because: {@post.edit_reason}
-    <% end %></a>
+<% staff? = can?(@conn, :hide, @post) and not hide_staff_tools?(@conn)
+deletable? = not @post.hidden_from_users and not @post.destroyed_content
+
+link_path =
+  ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}?#{[post_id: @post.id]}" <>
+    "#post_#{@post.id}"
+
+safe_author = markdown_safe_author(@post)
+quote_body = if @post.hidden_from_users, do: "", else: @post.body %>
+<div class="communication-options">
+  <div>
+    <span>Posted {pretty_time(@post.created_at)}</span>
+    <a href={~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/reports/new"}><i class="fa fa-flag"></i>
+    Report</a>
+    <a
+      :if={not is_nil(@post.edited_at) and can?(@conn, :show, @post)}
+      href={~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/history"}
+    >
+      <span>
+        Edited {pretty_time(@post.edited_at)}
+        <%= if @post.edit_reason not in [nil, ""] do %>
+          because: {@post.edit_reason}
+        <% end %>
+      </span>
+    </a>
+    <%= if staff? do %>
+      <%= if @post.hidden_from_users and not @post.destroyed_content do %>
+        <%= link(to: ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/hide", data: [confirm: "Are you sure?"], method: "delete") do %>
+          <i class="fas fa-check"></i> Restore
+        <% end %>
+        <%= if can?(@conn, :delete, @post) do %>
+          <%= link(to: ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/delete", data: [confirm: "Are you sure?"], method: "post") do %>
+            <i class="fas fa-times"></i> Delete Contents
+          <% end %>
+        <% end %>
+      <% end %>
+      <a
+        :if={deletable?}
+        class="togglable-delete-form-link"
+        data-click-toggle={"#inline-del-form-post-#{@post.id}"}
+        href="#"
+      ><i class="fa fa-times"></i> Delete</a>
+      <%= if can?(@conn, :show, :identity_metadata) do %>
+        {link_to_ip(@conn, @post.ip)}
+        {link_to_fingerprint(@conn, @post.fingerprint)}
+      <% end %>
+    <% end %>
+  </div>
+  <div>
+    <a href={link_path} title="Link to post"><i class="fa fa-link"></i> Link</a>
+    <a
+      class="post-reply post-reply-quote"
+      data-author={safe_author}
+      data-post={quote_body}
+      data-reply-url={link_path}
+      href={link_path}
+    ><i class="fa fa-quote-right"></i> Quote</a>
+    <a class="post-reply" data-author={safe_author} data-reply-url={link_path} href={link_path}>
+      <i class="fa fa-reply"></i> Reply
+    </a>
+    <a
+      :if={can?(@conn, :edit, @post)}
+      href={~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/edit"}
+    >
+      <i class="fas fa-edit"></i> Edit
+    </a>
+  </div>
+  <%= if staff? and deletable? do %>
+    <%= form_for :post, ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/hide", [class: "togglable-delete-form hidden flex", id: "inline-del-form-post-#{@post.id}"], fn f -> %>
+      {text_input(f, :deletion_reason,
+        class: "input-field full-width",
+        placeholder: "Deletion Reason",
+        id: "inline-del-reason-post-#{@post.id}",
+        required: true
+      )}{submit("Delete", class: "button")}
+    <% end %>
   <% end %>
-</div>
-<div>
-  <% link_path =
-    ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}?#{[post_id: @post.id]}" <>
-      "#post_#{@post.id}" %>
-  <% safe_author = markdown_safe_author(@post) %>
-  <% quote_body = if @post.hidden_from_users, do: "", else: @post.body %>
-  <a class="communication__interaction" href={link_path} title="Link to post" phx-no-format><i class="fa fa-link"></i> Link </a><a
-    class="communication__interaction post-reply post-reply-quote"
-    data-author={safe_author}
-    data-post={quote_body}
-    data-reply-url={link_path}
-    href={link_path}
-    phx-no-format
-  ><i class="fa fa-quote-right"></i> Quote </a><a
-    class="communication__interaction post-reply"
-    data-author={safe_author}
-    data-reply-url={link_path}
-    href={link_path}
-    phx-no-format
-  ><i class="fa fa-reply"></i> Reply </a><span
-    :if={can?(@conn, :edit, @post)}
-    class="owner-options"
-  ><strong><a
-    class="communication__interaction"
-    href={~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/edit"}
-    phx-no-format
-  ><i class="fas fa-edit"></i> Edit </a></strong></span>
 </div>

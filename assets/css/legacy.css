@@ -5,7 +5,6 @@
 $vote-down-color-dark: #da3412;
 
 $vote-down-color-light: #cf0001;
-$destroyed-content-color-light: #ffdcdc;
 $commission-color-light: #986f3d;
 
 @define-mixin legacy-light-colors {
@@ -14,8 +13,6 @@ $commission-color-light: #986f3d;
   --legacy-primary-color: $primary-color-light;
   --legacy-danger-color: $danger-color-light;
   --legacy-warning-color: $warning-color-light;
-  --vote-down-color: $vote-down-color-light;
-  --destroyed-content-color: $destroyed-content-color-light;
   --assistant-color: $assistant-color-light;
   --commission-category-color: $commission-color-light;
   --text-light-color: $surface-color-light;
@@ -32,7 +29,6 @@ $commission-color-light: #986f3d;
   --assistant-border-color: hsl(from $assistant-color-light h s calc(l - 8));
   --admin-links-color: hsl(from $vote-down-color-light h calc(s - 20) calc(l + 50));
   --admin-links-hover-color: hsl(from $vote-down-color-light h calc(s - 30) calc(l + 30));
-  --input-border-active: hsl(from $base-color-light h s calc(l + 10));
   --commission-category-background: hsl(from $commission-color-light h calc(s + 12) calc(l + 40));
   --commission-category-border: hsl(from $commission-color-light h s calc(l + 20));
   --poll-form-label-background: hsl(from $base-color-light h calc(s - 16) calc(l + 36));
@@ -44,9 +40,7 @@ $commission-color-light: #986f3d;
   --primary-light-color: $primary-color;
   --danger-light-color: $danger-color;
   --warning-light-color: $warning-color;
-  --destroyed-content-color: $destroyed-content-color-dark;
   --border-color: $burger-divider-color-dark;
-  --vote-down-color: $vote-down-color-dark;
   --assistant-color: $special-color;
   --commission-category-color: $commission-color-dark;
   --text-light-color: $text-color-dark;
@@ -62,7 +56,6 @@ $commission-color-light: #986f3d;
   --danger-odd-color: hsl(from $danger-color h calc(s - 2) calc(l - 11));
   --foreground-half-color: hsl(from $surface-color-dark h s calc(l + 50));
   --sparkline-color: hsl(from $base-color-dark h s calc(l + 5));
-  --input-border-active: hsl(from $base-color-dark h calc(s - 10) calc(l + 2));
   --commission-category-background: hsl(from $commission-color-dark h s calc(l - 36));
   --commission-category-border: hsl(from $commission-color-dark h s calc(l - 25));
   --poll-form-label-background: hsl(from $burger-divider-color-dark h s calc(l + 8));

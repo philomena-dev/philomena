@@ -19,6 +19,5 @@ $image-large-size: 512px;
   --image-medium-size: $image-medium-size;
   --image-large-size: $image-large-size;
   --header-spacing: 12px;
-  --reduced-communication-avatar-size: 50px;
   --transition-long-animation-duration: 0.3s;
 }

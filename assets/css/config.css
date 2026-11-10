@@ -18,7 +18,6 @@ $link-hover-color-dark: #b099dd;
 $link-hover-color-light: #9273d0;
 
 /* Inputs read only by css/legacy.css, shared unless the hue sets its own */
-$destroyed-content-color-dark: #382c2f;
 $commission-color-dark: #e07b27;
 $danger-color-light: #ebc0bb;
 $warning-color-light: #eee9bc;

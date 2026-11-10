@@ -303,6 +303,7 @@ defmodule PhilomenaWeb.TopicControllerTest do
 
       assert response =~ "Rule violation"
       assert response =~ "Post Moderator"
+      assert response =~ ~s(class="communication allow-overflow deleted")
       assert response =~ "Hidden post body"
       assert response =~ "Restore"
       assert response =~ "Delete Contents"

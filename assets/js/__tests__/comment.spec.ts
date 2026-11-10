@@ -87,9 +87,9 @@ describe('comment.ts setupComments', () => {
     const comments = $<HTMLDivElement>('#comments')!;
     comments.dataset.loaded = 'true';
     comments.innerHTML = `
-       <article class="block fetched-comment"></article>
-      <article class="block" id="comment_1">
-         <div class="communication__body__text">
+       <article class="communication fetched-comment"></article>
+      <article class="communication" id="comment_1">
+         <div class="communication-text">
            <a class="active_reply_link" href="/123#comment_456">parent</a>
          </div>
        </article>
@@ -109,13 +109,13 @@ describe('comment.ts setupComments', () => {
     const comments = $<HTMLDivElement>('#comments')!;
     comments.dataset.loaded = 'true';
     comments.innerHTML = `
-      <article class="block fetched-comment subthread" id="comment_1"></article>
-      <article class="block fetched-comment subthread" id="comment_2">
-        <div class="communication__body__text">
+      <article class="communication fetched-comment subthread" id="comment_1"></article>
+      <article class="communication fetched-comment subthread" id="comment_2">
+        <div class="communication-text">
           <a class="active_reply_link" href="/123#comment_456">parent</a>
         </div>
       </article>
-      <article class="block subthread" id="comment_3"></article>
+      <article class="communication subthread" id="comment_3"></article>
     `;
 
     setupComments();
@@ -244,14 +244,14 @@ describe('comment.ts setupComments', () => {
     const comments = $<HTMLDivElement>('#comments')!;
     comments.dataset.loaded = 'true';
     comments.innerHTML = `
-      <article class="block" id="comment_1">
-        <div class="communication__body__text">
+      <article class="communication" id="comment_1">
+        <div class="communication-text">
           <a id="reply" href="/999#comment_111">parent</a>
         </div>
       </article>
     `;
 
-    mockFetchHtml('<article class="block"><time></time></article>');
+    mockFetchHtml('<article class="communication"><time></time></article>');
 
     setupComments();
 
@@ -260,7 +260,7 @@ describe('comment.ts setupComments', () => {
 
     await waitFor(() => {
       // inserted parent is marked as fetched and subthread
-      const fetched = $<HTMLElement>('article.block.fetched-comment', comments);
+      const fetched = $<HTMLElement>('article.communication.fetched-comment', comments);
       expect(fetched).toBeTruthy();
       expect(fetched!).toHaveClass('subthread');
       // clicked link becomes active
@@ -370,8 +370,8 @@ describe('comment.ts setupComments', () => {
     const comments = $<HTMLDivElement>('#comments')!;
     comments.dataset.loaded = 'true';
     comments.innerHTML = `
-      <article class="block" id="comment_1">
-        <div class="communication__body__text">
+      <article class="communication" id="comment_1">
+        <div class="communication-text">
           <a id="bad" href="/123#no_comment_marker">bad</a>
         </div>
       </article>
@@ -392,14 +392,14 @@ describe('comment.ts setupComments', () => {
     const comments = $<HTMLDivElement>('#comments')!;
     comments.dataset.loaded = 'true';
     comments.innerHTML = `
-      <article class="block" id="comment_1">
-        <div class="communication__body__text">
+      <article class="communication" id="comment_1">
+        <div class="communication-text">
           <a id="good" href="/123#comment_456">parent</a>
         </div>
       </article>
     `;
 
-    mockFetchHtml('<article class="block fetched-comment"><time></time></article>');
+    mockFetchHtml('<article class="communication fetched-comment"><time></time></article>');
 
     setupComments();
     vi.mocked(fetchHtml).mockClear();

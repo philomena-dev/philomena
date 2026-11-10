@@ -43,7 +43,6 @@ $block-header-link-text-color-dark: #dbdb00;
 $notice-color-dark: #3b3b3b;
 
 /* Read only by css/legacy.css */
-$destroyed-content-color-dark: #412f2f;
 $commission-color-dark: #e02727;
 $primary-color-light: #f9c6c1;
 $danger-color-light: #ebbbbb;

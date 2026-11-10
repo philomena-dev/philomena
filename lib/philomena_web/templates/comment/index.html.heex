@@ -29,9 +29,10 @@
         conn: @conn
       ) %>
     <%= for {body, comment} <- @comments do %>
-      {render(PhilomenaWeb.CommentView, "_comment_with_image.html",
+      {render(PhilomenaWeb.CommentView, "_comment.html",
         body: body,
         comment: comment,
+        image: comment.image,
         conn: @conn
       )}
     <% end %>

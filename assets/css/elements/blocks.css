@@ -2,23 +2,24 @@
  * Philomena's additions to the framework's blocks.
  */
 
-/* A block whose menus open beyond its edges does not clip; its first and last rows round their own corners */
-.block.allow-overflow {
+/* A block or communication whose menus open beyond its edges does not clip; its edge rows round their corners */
+:is(.block, .communication).allow-overflow {
   overflow: visible;
 }
 
-.block.allow-overflow > :first-child {
+:is(.block, .communication).allow-overflow > :first-child {
   border-top-left-radius: calc(var(--border-radius-outer) - var(--border-width));
   border-top-right-radius: calc(var(--border-radius-outer) - var(--border-width));
 }
 
-.block.allow-overflow > :last-child {
+:is(.block, .communication).allow-overflow > :last-child {
   border-bottom-left-radius: calc(var(--border-radius-outer) - var(--border-width));
   border-bottom-right-radius: calc(var(--border-radius-outer) - var(--border-width));
 }
 
 /* Images in user content stay inside their block */
 .block-content img,
-.tab-panel img {
+.tab-panel img,
+.communication-text img {
   max-width: 100%;
 }
