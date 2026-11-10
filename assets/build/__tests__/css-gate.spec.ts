@@ -25,7 +25,6 @@ describe('css-gate', () => {
     [':focus-visible', '.a:focus-visible { color: red }', 'css.selectors.focus-visible'],
     [':not() lists', '.a:not(.b, .c) { color: red }', 'not.selector_list'],
     ['complex :not()', '.a:not(.b .c) { color: red }', 'not.selector_list'],
-    ['flex gap', '.a { display: flex; gap: 1px }', 'flex gap without its fallback'],
     ['aspect-ratio', '.a { aspect-ratio: 1 }', 'css.properties.aspect-ratio'],
     ['inset', '.a { inset: 0 }', 'css.properties.inset'],
     ['margin-inline', '.a { margin-inline: 0 }', 'css.properties.margin-inline'],

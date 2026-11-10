@@ -2,5 +2,7 @@ since 2020-09-01
 chrome >= 85
 edge >= 85
 firefox >= 81
-safari >= 14
-ios_saf >= 14
+safari >= 14.1
+ios_saf >= 14.5
+not safari < 14.1
+not ios_saf < 14.5

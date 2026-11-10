@@ -8,8 +8,8 @@ describe('floor', () => {
     });
     expect(() => oldest(['netscape 4'])).toThrow('does not map');
 
-    expect(floor).toMatchObject({ chrome: '85', edge: '85', firefox: '81', safari: '14', safari_ios: '14.0' });
-    expect(buildTarget).toEqual(expect.arrayContaining(['chrome85', 'edge85', 'firefox81', 'safari14', 'ios14.0']));
+    expect(floor).toMatchObject({ chrome: '85', edge: '85', firefox: '81', safari: '14.1', safari_ios: '14.5' });
+    expect(buildTarget).toEqual(expect.arrayContaining(['chrome85', 'edge85', 'firefox81', 'safari14.1', 'ios14.5']));
   });
 
   it('names the floor browsers that lack a feature as the CSS spells it', () => {
