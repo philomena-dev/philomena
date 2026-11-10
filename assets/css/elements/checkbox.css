@@ -48,7 +48,7 @@ input[type="checkbox"].fancy-checkbox {
   display: none;
 }
 
-.checkbox-button:has(input:checked) {
+.checkbox-button__checkbox:checked + .checkbox-button {
   background-color: var(--button-success-background-color);
   border-color: var(--button-success-border-color);
 }

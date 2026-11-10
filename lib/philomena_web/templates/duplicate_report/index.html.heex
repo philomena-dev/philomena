@@ -2,13 +2,17 @@
 <%= form_for @changeset, ~p"/duplicate_reports", [as: :dq, method: :get], fn f -> %>
   <div class="field field field--inline">
     <%= for {label, state} <- states() do %>
-      <label class="checkbox-button button button--separate-right"><input
+      <input
         checked={Enum.member?(f.data.states, state)}
         class="checkbox-button__checkbox"
+        id={input_id(f, :states, state)}
         name={"#{input_name(f, :states)}[]"}
         type="checkbox"
         value={state}
-      /><span class="checkbox-button__label">{label}</span></label>
+      /><label
+        class="checkbox-button button button--separate-right"
+        for={input_id(f, :states, state)}
+      >{label}</label>
     <% end %>
     {select(f, :sd, sorts(), class: "input input--separate-right")}{submit("Search",
       class: "button button--state-primary"
