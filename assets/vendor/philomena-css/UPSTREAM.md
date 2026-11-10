@@ -60,8 +60,8 @@ rewritten to state, hover or position through custom properties instead, read by
 
 The other `:where()`, `:is()` and `:not()` lists keep the higher specificity of their expansion. That changes the
 winner only for rare combinations: a read-only field that is also `.invalid` (the read-only background wins), an
-`<hr>` inside a blockquote (it takes the blockquote's spacing), and elements matched by the reset's `[hidden]` rule
-and a type selector, or by its `[contenteditable]` rule and a single class.
+`<hr>` inside a `.blockquote` element (it takes the blockquote's spacing), and elements matched by the reset's
+`[hidden]` rule and a type selector, or by its `[contenteditable]` rule and a single class.
 
 Every other file is byte-identical to upstream. `npm run build` and `npm run check:contrast` work through the
 workspace (`npm run build -w @philomena/philomena-css`).
