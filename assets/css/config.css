@@ -13,13 +13,13 @@ $header-admin-color-light: #ffcfcf;
 $header-admin-hover-color-light: #ff9c9c;
 $burger-color-light: #f7f7f7;
 $unread-message-color: #ff8800;
+$notice-color-dark: #07070a;
 $link-hover-color-dark: #b099dd;
 $link-hover-color-light: #9273d0;
 
 /* Inputs read only by css/legacy.css, shared unless the hue sets its own */
 $destroyed-content-color-dark: #382c2f;
 $commission-color-dark: #e07b27;
-$notice-color-dark: #07070a;
 $danger-color-light: #ebc0bb;
 $warning-color-light: #eee9bc;
 $fave-color-light: #c4b246;

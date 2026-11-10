@@ -15,6 +15,7 @@
 @import "./config.css";
 @import "./themes/hues/blue.css";
 @import "@philomena/philomena-css/css/design/index.css";
+@import "@philomena/philomena-css/css/components/alert.css";
 @import "@philomena/philomena-css/css/components/separator.css";
 @import "./tokens.css";
 @import "./legacy.css";
@@ -36,6 +37,7 @@
 @import "elements/header";
 @import "elements/layout";
 @import "elements/media";
+@import "elements/page";
 @import "elements/toggle";
 
 /* Style elements specific to certain pages. */

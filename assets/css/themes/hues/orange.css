@@ -10,7 +10,7 @@ $primary-color: #8c2a0f;
 /* Lightness of the framework's role colors that this hue needs for contrast */
 $tint-lightness-dark: 22%;
 
-/* Philomena's header bars and mobile menu */
+/* Philomena's header bars, notices and mobile menu */
 $header-color-dark: #893a12;
 $header-field-color-dark: #492110;
 $header-secondary-color-dark: #44291d;
@@ -20,11 +20,11 @@ $burger-divider-color-dark: #44291d;
 $burger-divider-color-light: #f1e2d9;
 $link-hover-color-dark: #ec1919;
 $link-hover-color-light: #d0b173;
+$block-header-link-text-color-dark: #ec5f19;
 
 /* Read only by css/legacy.css */
 $meta-color-dark: #2a1c19;
 $block-header-color-dark: #44291d;
-$block-header-link-text-color-dark: #ec5f19;
 $block-header-light-color-dark: #44291d;
 $block-header-light-link-text-color-dark: #ec5f19;
 $media-box-color-dark: #40312a;

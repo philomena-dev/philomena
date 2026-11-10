@@ -41,7 +41,7 @@
     <div class={"#{container_class(@current_user)}"} id="container">
       {render(PhilomenaWeb.LayoutView, "_header.html", assigns)}{render(
         PhilomenaWeb.LayoutView,
-        "_flash_warnings.html",
+        "_notices.html",
         assigns
       )}
       <main class={"#{layout_class(@conn)}"} id="content">{@inner_content}</main>

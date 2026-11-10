@@ -22,22 +22,16 @@ function commentPosted(response: Response) {
   const commentEditTab = $<HTMLAnchorElement>('#js-comment-form a[data-click-tab="write"]');
   const commentEditForm = assertType($('#js-comment-form'), HTMLFormElement);
   const container = document.getElementById('comments')!;
-  const requestOk = response.ok;
 
   commentEditTab?.click();
   commentEditForm.reset();
 
-  if (requestOk) {
-    response.text().then(text => {
-      if (text.includes('<div class="flash flash--warning">')) {
-        window.location.reload();
-      } else {
-        displayComments(container, text);
-      }
-    });
-  } else {
+  // A comment that was not posted redirects back or fails; the reloaded page shows why at its top
+  if (!response.ok || response.redirected) {
     window.location.reload();
-    window.scrollTo(0, 0); // Error message is displayed at the top of the page (flash)
+    window.scrollTo(0, 0);
+  } else {
+    response.text().then(text => displayComments(container, text));
   }
 }
 

@@ -20,7 +20,7 @@ $tint-lightness-dark: 19%;
 $neutral-fill-dark: 34%;
 $primary-fill-dark: 29%;
 
-/* Philomena's header bars and mobile menu */
+/* Philomena's header bars, notices and mobile menu */
 $header-color-dark: #857604;
 $header-field-color-dark: #52491c;
 $header-secondary-color-dark: #4f420a;
@@ -29,11 +29,11 @@ $burger-color-dark: #393828;
 $burger-divider-color-dark: #4f420a;
 $burger-divider-color-light: #e8d8a8;
 $link-hover-color-light: #d09873;
+$block-header-link-text-color-dark: #ffdc18;
 
 /* Read only by css/legacy.css */
 $meta-color-dark: #2a2919;
 $block-header-color-dark: #4f420a;
-$block-header-link-text-color-dark: #ffdc18;
 $block-header-light-color-dark: #4f420a;
 $block-header-light-link-text-color-dark: #ffdc18;
 $media-box-color-dark: #504d31;

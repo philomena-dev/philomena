@@ -1,0 +1,19 @@
+/* The notices under the header bars: square alerts from edge to edge, their text in line with the bar items */
+.page-notices {
+  --border-radius-inner: 0;
+  --alert-padding-horizontal: calc(var(--header-spacing-horizontal) + var(--navbar-item-padding-horizontal));
+}
+
+/* The site notices staff set keep a dark bar of their own */
+.alert.site-notice {
+  color: var(--header-text-color);
+  background-color: var(--notice-color);
+}
+
+.alert.site-notice a {
+  color: var(--notice-link-color);
+}
+
+.alert.site-notice a:hover {
+  color: var(--notice-link-hover-color);
+}

@@ -36,6 +36,9 @@
   --burger-hover-color: $base-color-light;
   --burger-hover-text-color: $surface-color-light;
   --burger-divider-color: $burger-divider-color-light;
+  --notice-color: hsl(from $base-color-light h s calc(l - 32));
+  --notice-link-color: hsl(from $base-color-light h calc(s - 16) calc(l + 31));
+  --notice-link-hover-color: hsl(from $base-color-light h calc(s - 5) calc(l + 20));
 }
 
 :root {
@@ -65,6 +68,9 @@
   --burger-hover-text-color: $text-color-dark;
   --burger-divider-color: $burger-divider-color-dark;
   --unread-message-color: $unread-message-color;
+  --notice-color: $notice-color-dark;
+  --notice-link-color: hsl(from $block-header-link-text-color-dark h calc(s - 20) calc(l + 8));
+  --notice-link-hover-color: hsl(from $block-header-link-text-color-dark h calc(s - 20) l);
 }
 
 @media (prefers-color-scheme: light) {

@@ -152,27 +152,10 @@ describe('comment.ts setupComments', () => {
     });
   });
 
-  it('reloads page on server warning after comment post', async () => {
-    mockCommentsDom();
-    const comments = $<HTMLDivElement>('#comments')!;
-    comments.dataset.loaded = 'true';
-
-    const reloadSpy = vi.spyOn(window.location, 'reload');
-
-    setupComments();
-
-    const form = $<HTMLFormElement>('#js-comment-form')!;
-    const event = new CustomEvent('fetchcomplete', {
-      detail: { ok: true, text: async () => '<div class="flash flash--warning">warn</div>' },
-      bubbles: true,
-    });
-    Object.defineProperty(event, 'target', { value: form });
-    document.dispatchEvent(event);
-
-    await waitFor(() => expect(reloadSpy).toHaveBeenCalled());
-  });
-
-  it('reloads and scrolls on failed comment post', async () => {
+  it.each([
+    ['redirected back', { ok: true, redirected: true }],
+    ['refused', { ok: false, redirected: false }],
+  ])('reloads and scrolls up when a comment post is %s', async (_, response) => {
     mockCommentsDom();
     const comments = $<HTMLDivElement>('#comments')!;
     comments.dataset.loaded = 'true';
@@ -184,7 +167,7 @@ describe('comment.ts setupComments', () => {
 
     const form = $<HTMLFormElement>('#js-comment-form')!;
     const event = new CustomEvent('fetchcomplete', {
-      detail: { ok: false, text: async () => '' },
+      detail: { ...response, text: async () => '' },
       bubbles: true,
     });
     Object.defineProperty(event, 'target', { value: form });
