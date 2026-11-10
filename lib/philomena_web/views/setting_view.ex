@@ -70,15 +70,14 @@ defmodule PhilomenaWeb.SettingView do
           ]
         end,
         content_tag :div, class: "field-help-content hidden" do
-          [
-            # The `title` is static and doesn't include dynamic user input.
-            # sobelow_skip ["XSS.Raw"]
-            raw(text_to_html(title)),
-            tag(:hr)
-          ]
+          [help_text(title), tag(:hr)]
         end
       ])
 
     content_tag(:div, content, class: "field", title: title)
   end
+
+  # The `title` is static and doesn't include dynamic user input.
+  # sobelow_skip ["XSS.Raw"]
+  defp help_text(title), do: raw(text_to_html(title))
 end
