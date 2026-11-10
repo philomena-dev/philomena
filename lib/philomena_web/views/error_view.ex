@@ -10,13 +10,6 @@ defmodule PhilomenaWeb.ErrorView do
     500 => {"Internal Error", "Couldn't process your request!"}
   }
 
-  # By default, Phoenix returns the status message from
-  # the template name. For example, "404.html" becomes
-  # "Not Found".
-  def template_not_found(template, _assigns) do
-    Phoenix.Controller.status_message_from_template(template)
-  end
-
   def render(template, assigns) when template != "show.html" do
     {short_msg, long_msg} = @codes[assigns.status] || @codes[500]
 
