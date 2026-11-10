@@ -60,41 +60,9 @@ span.communication__sender__stats,
   margin-left: 6px;
 }
 
-.communication-edit__actions {
-  margin-top: -4px; /* Dirty! 1px to override the border, 3px to negate input margin */
-  padding-top: 0;
-}
-
 .avatar-svg {
   max-width: 100%;
   max-height: 100%;
-}
-
-.communication__toolbar {
-  margin-bottom: 6px;
-}
-
-.communication__toolbar__button {
-  background-color: var(--meta-color);
-  border: 1px solid var(--meta-border-color);
-  color: var(--foreground-color);
-  margin: 1px;
-  padding: 4px;
-  border-radius: 0;
-  cursor: pointer;
-  min-width: 30px;
-}
-
-.communication__toolbar__button:hover {
-  background-color: var(--input-color-active);
-}
-
-.communication__toolbar__button:focus,
-.communication__toolbar__button:hover,
-.communication__toolbar__button:active,
-.communication__toolbar__button:visited {
-  border-color: var(--input-border-active);
-  outline: 0;
 }
 
 .hyphenate-breaks {

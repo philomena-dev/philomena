@@ -34,18 +34,20 @@
       :title
     )}
   </div>
-  <div class="block">
-    <%= inputs_for f, :messages, fn fm -> %>
-      {render(PhilomenaWeb.MarkdownView, "_input.html",
-        changeset: @changeset,
-        conn: @conn,
-        f: fm,
-        action_icon: "pencil-alt",
-        action_text: "Compose"
-      )}
-    <% end %>
-    <div class="block-content communication-edit__actions">
-      {submit("Send", class: "button", autocomplete: "off", data: [disable_with: "Sending..."])}
+  <div class="form-control-wrap">
+    <div class="block">
+      <%= inputs_for f, :messages, fn fm -> %>
+        {render(PhilomenaWeb.MarkdownView, "_input.html",
+          changeset: @changeset,
+          conn: @conn,
+          f: fm,
+          action_icon: "pencil-alt",
+          action_text: "Compose"
+        )}
+      <% end %>
+      <div class="block-content form-control-submit">
+        {submit("Send", class: "button", autocomplete: "off", data: [disable_with: "Sending..."])}
+      </div>
     </div>
   </div>
 <% end %>

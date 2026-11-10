@@ -32,6 +32,11 @@
   padding-right: var(--padding-value);
 }
 
+/* The editor rings its frame through :has(), which the floor browsers lack; its textarea rings itself instead */
+.editor .editor-input:focus-visible {
+  @mixin focus-ring-inset;
+}
+
 /* A <details> opened by its <summary>, a button with a caret that points down while it is open */
 .disclosure > summary:before {
   content: "";

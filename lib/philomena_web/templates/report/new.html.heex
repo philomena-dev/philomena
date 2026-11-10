@@ -46,19 +46,22 @@
         required: true
       )}
     </div>
-    <div class="block">
-      {render(PhilomenaWeb.MarkdownView, "_input.html",
-        conn: @conn,
-        f: f,
-        placeholder: "Describe the problem and how it breaks the rule.",
-        name: :reason
-      )}
+    <div class="form-control-wrap">
+      <div class="block">
+        {render(PhilomenaWeb.MarkdownView, "_input.html",
+          conn: @conn,
+          f: f,
+          placeholder: "Describe the problem and how it breaks the rule.",
+          name: :reason
+        )}
+      </div>
     </div>
     {hidden_input(f, :user_agent, value: get_user_agent(@conn))}{render(
       PhilomenaWeb.CaptchaView,
       "_captcha.html",
       name: "report",
       conn: @conn
-    )}{submit("Send Report", class: "button")}
+    )}
+    <div class="form-control-submit">{submit("Send Report", class: "button")}</div>
   <% end %>
 </div>

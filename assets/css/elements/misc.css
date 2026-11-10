@@ -204,10 +204,6 @@ blockquote blockquote blockquote blockquote blockquote blockquote {
   white-space: pre-wrap;
 }
 
-.editor-syntax-reference {
-  margin-bottom: 6px;
-}
-
 /* We need to use $variables here because @media tags
  * do not work with CSS3 custom properties (variables) */
 @mixin image-alt-size tiny, $image-tiny-size;

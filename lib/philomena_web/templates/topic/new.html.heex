@@ -10,32 +10,34 @@
       :slug
     )}
   </div>
-  <div class="block">
-    <%= inputs_for f, :posts, fn fp -> %>
-      {render(PhilomenaWeb.MarkdownView, "_input.html",
-        conn: @conn,
-        f: fp,
-        action_icon: "pencil-alt",
-        action_text: "First Post",
-        placeholder:
-          "Please read the site rules before posting and use ||spoilers|| for NSFW stuff in SFW forums."
-      )}
-    <% end %>
-    <div class="block-content communication-edit__wrap">
-      {render(PhilomenaWeb.MarkdownView, "_anon_checkbox.html",
-        conn: @conn,
-        f: f,
-        label: "Post anonymously"
-      )}
-      <%= inputs_for f, :poll, fn fp -> %>
-        <details class="disclosure">
-          <summary class="button">Add a poll</summary>
-          {render(PhilomenaWeb.Topic.PollView, "_form.html", Map.put(assigns, :f, fp))}
-        </details>
+  <div class="form-control-wrap">
+    <div class="block">
+      <%= inputs_for f, :posts, fn fp -> %>
+        {render(PhilomenaWeb.MarkdownView, "_input.html",
+          conn: @conn,
+          f: fp,
+          action_icon: "pencil-alt",
+          action_text: "First Post",
+          placeholder:
+            "Please read the site rules before posting and use ||spoilers|| for NSFW stuff in SFW forums."
+        )}
       <% end %>
-    </div>
-    <div class="block-content communication-edit__actions">
-      {submit("Post", class: "button", data: [disable_with: raw("Posting&hellip;")])}
+      <div class="block-content">
+        {render(PhilomenaWeb.MarkdownView, "_anon_checkbox.html",
+          conn: @conn,
+          f: f,
+          label: "Post anonymously"
+        )}
+        <%= inputs_for f, :poll, fn fp -> %>
+          <details class="disclosure form-control-wrap content">
+            <summary class="button">Add a poll</summary>
+            {render(PhilomenaWeb.Topic.PollView, "_form.html", Map.put(assigns, :f, fp))}
+          </details>
+        <% end %>
+      </div>
+      <div class="block-content form-control-submit">
+        {submit("Post", class: "button", data: [disable_with: raw("Posting&hellip;")])}
+      </div>
     </div>
   </div>
 <% end %>

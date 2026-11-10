@@ -17,22 +17,14 @@
   Preview</a>
 </div>
 <div class="tab-panel selected" data-tab="write">
-  {render(PhilomenaWeb.MarkdownView, "_help.html", conn: @conn)}{render(
-    PhilomenaWeb.MarkdownView,
-    "_toolbar.html",
-    conn: @conn
-  )}
-  <div class="form-control">
-    {textarea(form, field_name,
-      class:
-        add_classes(
-          "input-field full-width js-toolbar-input js-preview-input",
-          input_classes
-        ),
-      rows: 6,
+  {render(PhilomenaWeb.MarkdownView, "_help.html", conn: @conn)}
+  <div class="editor">
+    {render(PhilomenaWeb.MarkdownView, "_toolbar.html", conn: @conn)}{textarea(form, field_name,
+      class: add_classes("editor-input js-toolbar-input js-preview-input", input_classes),
       placeholder: field_placeholder,
       required: required?(is_required)
-    )}{error_tag(form, field_name)}
+    )}
   </div>
+  {error_tag(form, field_name)}
 </div>
 <div class="tab-panel js-preview-content" data-tab="preview"></div>
