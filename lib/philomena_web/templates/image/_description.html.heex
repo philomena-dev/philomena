@@ -1,19 +1,16 @@
 <div class="block">
   <div class="block-header">
     <span class="block-header-title"><i class="fas fa-file-lines"></i> Description</span>
-    <%= if @changeset && can?(@conn, :edit_description, @image) do %>
-      <div class="block-header-actions">
-        <a
-          accessKey="d"
-          data-click-focus="#description"
-          data-click-hide=".image-description"
-          data-click-show="#description-form"
-          href="#"
-          id="edit-description"
-          title="Edit description"
-        ><i class="fas fa-edit"></i> Edit</a>
-      </div>
-    <% end %>
+    <a
+      :if={@changeset && can?(@conn, :edit_description, @image)}
+      accessKey="d"
+      data-click-focus="#description"
+      data-click-hide=".image-description"
+      data-click-show="#description-form"
+      href="#"
+      id="edit-description"
+      title="Edit description"
+    ><i class="fas fa-edit"></i> Edit</a>
   </div>
   <div class="block-content">
     <p>

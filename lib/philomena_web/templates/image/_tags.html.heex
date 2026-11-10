@@ -65,29 +65,25 @@
   <div class={"block allow-overflow tagsauce #{tags_class}"}>
     <div class="block-header">
       <span class="block-header-title"><i class="fas fa-tag"></i> Tags</span>
-      <div class="block-header-actions">
-        <%= if @changeset do %>
-          <a
-            accessKey="t"
-            class="js-tag-sauce-toggle"
-            data-click-focus=".js-taginput-plain:not(.hidden), .js-taginput-input"
-            data-click-toggle=".tagsauce, .js-imageform"
-            id="edit-tags"
-            title="Edit tags"
-          ><i class="fas fa-edit"></i> Edit</a>
-        <% end %>
-        <%= if @tag_change_count > 0 do %>
-          <a
-            href={~p"/images/#{@image}/tag_changes"}
-            title="Tag history"
-          ><i class="fa fa-history"></i> <span class="hidden-below-md">History</span>
-          ({@tag_change_count} {pluralize("change", "changes", @tag_change_count)}, {@tag_change_tag_count} {pluralize(
-            "tag",
-            "tags",
-            @tag_change_tag_count
-          )})</a>
-        <% end %>
-      </div>
+      <a
+        :if={@changeset}
+        accessKey="t"
+        class="js-tag-sauce-toggle"
+        data-click-focus=".js-taginput-plain:not(.hidden), .js-taginput-input"
+        data-click-toggle=".tagsauce, .js-imageform"
+        id="edit-tags"
+        title="Edit tags"
+      ><i class="fas fa-edit"></i> Edit</a>
+      <a
+        :if={@tag_change_count > 0}
+        href={~p"/images/#{@image}/tag_changes"}
+        title="Tag history"
+      ><i class="fa fa-history"></i> <span class="hidden-below-md">History</span>
+      ({@tag_change_count} {pluralize("change", "changes", @tag_change_count)}, {@tag_change_tag_count} {pluralize(
+        "tag",
+        "tags",
+        @tag_change_tag_count
+      )})</a>
     </div>
     <div class="block-content">
       {render(PhilomenaWeb.TagView, "_tag_list.html", tags: tags, conn: @conn)}
