@@ -34,19 +34,19 @@
           <a href="/search?q=*&amp;sf=score&amp;sd=desc">All Time Top Scoring</a>
         </div>
       </div>
-      <div class="block hidden-below-md">
+      <div class="block striped hidden-below-md">
         <div class="block-header justify-center"><a href="/channels">Streams</a></div>
         <%= for channel <- @streams do %>
           {render(PhilomenaWeb.ActivityView, "_channel_strip.html", channel: channel, conn: @conn)}
         <% end %>
       </div>
-      <div class="block hidden-below-md">
+      <div class="block striped hidden-below-md">
         <div class="block-header justify-center"><a href="/forums">Forum Activity</a></div>
         <%= for topic <- @topics do %>
           {render(PhilomenaWeb.ActivityView, "_topic_strip.html", topic: topic, conn: @conn)}
         <% end %>
       </div>
-      <div class="block hidden-below-md">
+      <div class="block striped hidden-below-md">
         <div class="block-header justify-center"><a href="/comments">Recent Comments</a></div>
         <%= for comment <- @comments do %>
           {render(PhilomenaWeb.ActivityView, "_comment_strip.html", comment: comment, conn: @conn)}

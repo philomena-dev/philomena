@@ -1,8 +1,3 @@
-/* Rows of a block that alternate as the rows of a striped table do (the block header is the first child) */
-.alternating-color:nth-child(odd) {
-  background-color: var(--stripe-color);
-}
-
 figure {
   display: table;
   text-align: center;

@@ -1,5 +1,5 @@
 <%= if Enum.any?(@posts) do %>
-  <div class="block">
+  <div class="block striped">
     <div class="block-header">
       <span class="block-header-title">Recent Forum Posts</span><% true_prefix =
         if can_reveal_anon?(@conn), do: "true_", else: "" %>{link("View all",
@@ -7,7 +7,7 @@
       )}
     </div>
     <%= for post <- @posts do %>
-      <div class="block-content alternating-color">
+      <div class="block-content">
         Post {link(pretty_time(post.created_at),
           to:
             ~p"/forums/#{post.topic.forum}/topics/#{post.topic}?#{[post_id: post]}" <>

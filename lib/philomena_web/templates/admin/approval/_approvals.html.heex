@@ -9,7 +9,7 @@
   </div>
 </div>
 <%= for image <- @images do %>
-  <div class="block-content alternating-color">
+  <div class="block-content">
     <div class="approval-row">
       <div class="approval-main">
         <span>{link(">>#{image.id}", to: ~p"/images/#{image}")}</span>

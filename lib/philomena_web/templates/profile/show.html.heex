@@ -90,7 +90,7 @@
         conn: @conn
       )}
     </div>
-    <div class="block allow-overflow">
+    <div class="block striped allow-overflow">
       <div class="block-header">
         <span class="block-header-title">Artist Links</span>
         <div
@@ -102,7 +102,7 @@
       </div>
       <%= for link <- @user.verified_links, should_see_link?(@conn, @user, link) do %>
         <% watchers = if link.tag, do: @watcher_counts[link.tag.id] || 0, else: 0 %>
-        <div class={["block-content alternating-color wrap-anywhere", link_block_class(link)]}>
+        <div class={["block-content wrap-anywhere", link_block_class(link)]}>
           <div class="text-center">
             <%= if link.tag do %>
               <div>{render(PhilomenaWeb.TagView, "_tag.html", tag: link.tag, conn: @conn)}</div>
@@ -134,7 +134,7 @@
         </div>
       <% end %>
     </div>
-    <div class="block">
+    <div class="block striped">
       <div class="block-header">
         <span class="block-header-title">Badges</span>
         <div
@@ -146,7 +146,7 @@
       </div>
       <%= for award <- award_order(@user.awards) do %>
         <div
-          class="block-content flex items-center justify-center alternating-color"
+          class="block-content flex items-center justify-center"
           title={award.label}
         >
           <div class="flex-1 text-center">

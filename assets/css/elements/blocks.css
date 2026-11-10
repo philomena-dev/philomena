@@ -17,6 +17,11 @@
   border-bottom-right-radius: calc(var(--border-radius-outer) - var(--border-width));
 }
 
+/* The rows of a striped block alternate as those of a striped table do; its header bar is the first child */
+.block.striped > .block-content:nth-child(odd) {
+  background-color: var(--stripe-color);
+}
+
 /* Images in user content stay inside their block */
 .block-content img,
 .tab-panel img {

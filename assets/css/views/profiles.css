@@ -12,6 +12,6 @@
 }
 
 /* An artist link hidden from the public, which only its owner and staff see */
-.alternating-color.artist-link-private {
+.block.striped > .block-content.artist-link-private {
   background-color: var(--danger-tint-color);
 }
