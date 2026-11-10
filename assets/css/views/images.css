@@ -42,6 +42,15 @@
 .image-metabar .score {
   display: inline-block;
   padding: var(--block-header-padding-vertical) var(--block-header-padding-horizontal);
+  white-space: nowrap;
+}
+
+/* Narrow screens fit a row of links in each group */
+@media not all and (min-width: $breakpoint-md) {
+  .image-metabar a,
+  .image-metabar .score {
+    padding-inline: var(--spacing-sm);
+  }
 }
 
 a.interaction--comments {
