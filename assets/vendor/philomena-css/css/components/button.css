@@ -66,8 +66,7 @@
   --_pointer-shade: var(--_hover-shade);
 }
 
-.button:disabled,
-.button.pressed {
+.button:disabled {
   --_pointer-shade: initial;
 }
 

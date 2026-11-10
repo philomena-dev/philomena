@@ -51,8 +51,8 @@ rewritten to state, hover or position through custom properties instead, read by
   its browser margin back, takes `var(--flow-margin, 1em)`.
 - `components/input-field.css`, `components/forms.css` (radio buttons) and `components/button.css`: the hover state
   sets `--_hover-border-color`, `--_radio-hover-border-color` or `--_pointer-shade`, which the rules that color the
-  border or shade read, and disabled, read-only or pressed controls reset it, in place of `:where(:not(:disabled, …))`
-  and `:not(:disabled, .pressed)` on the hover rule.
+  border or shade read, and disabled or read-only controls reset it, in place of `:where(:not(:disabled, …))` and
+  `:not(:disabled, .pressed)` on the hover rule; a pressed button sets its shade itself.
 - `components/media.css`: the square image area is `height: 0; padding-bottom: 100%` with the image or video
   positioned over it, as floor browsers lack `aspect-ratio`.
 - `components/button.css`: `.justify-start` and `.justify-end` align the button content with `flex-start` and
