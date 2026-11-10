@@ -33,6 +33,8 @@ rest; these are the parts no transform can produce:
   `--heading-rhythm: 0` instead of being left out by `:not(.card-header *, …)`.
 - `components/media.css`: the square image area is `height: 0; padding-bottom: 100%` with the image or video
   positioned over it, as floor browsers lack `aspect-ratio`.
+- `components/button.css`: `.justify-start` and `.justify-end` align the button content with `flex-start` and
+  `flex-end`, which are the same in its left-to-right row, as floor browsers lack `start` and `end` in flex layout.
 
 Every other file is byte-identical to upstream. `npm run build` and `npm run check:contrast` work through the
 workspace (`npm run build -w @philomena/philomena-css`).

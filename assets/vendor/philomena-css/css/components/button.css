@@ -82,7 +82,7 @@
 }
 
 .button.justify-start .button-content {
-  justify-content: start;
+  justify-content: flex-start;
 }
 
 .button.justify-center .button-content {
@@ -90,7 +90,7 @@
 }
 
 .button.justify-end .button-content {
-  justify-content: end;
+  justify-content: flex-end;
 }
 
 .button.full-width {
