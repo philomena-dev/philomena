@@ -2,7 +2,7 @@
 intent = render_intent(@conn, @image, @size)
 webm? = match?({:image, _, _}, intent) and @image.image_mime_type == "video/webm" %>
 <div
-  class={["image-container", to_string(@size), assigns[:class]]}
+  class={["image-container", image_container_class(@size), assigns[:class]]}
   {[data: image_container_data(@conn, @image, @size)]}
 >
   <%= case intent do %>

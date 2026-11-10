@@ -170,6 +170,12 @@ defmodule PhilomenaWeb.ImageView do
     Application.get_env(:philomena, :image_url_root)
   end
 
+  @doc """
+  The modifier of a thumbnail's container for its size: a tiny thumbnail is a fixed square.
+  """
+  def image_container_class(:thumb_tiny), do: "tiny"
+  def image_container_class(_size), do: nil
+
   def image_container_data(conn, image, size) do
     [
       image_id: image.id,

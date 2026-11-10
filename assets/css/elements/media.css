@@ -42,7 +42,7 @@
   max-height: 100%;
 }
 
-.image-container.thumb_tiny {
+.image-container.tiny {
   flex: none;
   width: var(--media-box-tiny-width);
   height: var(--media-box-tiny-width);
