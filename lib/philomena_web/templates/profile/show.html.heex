@@ -102,7 +102,7 @@
       </div>
       <%= for link <- @user.verified_links, should_see_link?(@conn, @user, link) do %>
         <% watchers = if link.tag, do: @watcher_counts[link.tag.id] || 0, else: 0 %>
-        <div class={["block-content alternating-color break-word", link_block_class(link)]}>
+        <div class={["block-content alternating-color wrap-anywhere", link_block_class(link)]}>
           <div class="text-center">
             <%= if link.tag do %>
               <div>{render(PhilomenaWeb.TagView, "_tag.html", tag: link.tag, conn: @conn)}</div>

@@ -154,10 +154,6 @@
   height: auto;
 }
 
-.image_source__link {
-  overflow-wrap: anywhere;
-}
-
 .interaction-user-list-item {
   display: inline-block;
   padding: var(--spacing-xs) var(--spacing-md) var(--spacing-xs) var(--spacing-xs);

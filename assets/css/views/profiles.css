@@ -11,10 +11,6 @@
   width: 65%;
 }
 
-.break-word {
-  overflow-wrap: break-word;
-}
-
 /* An artist link hidden from the public, which only its owner and staff see */
 .alternating-color.artist-link-private {
   background-color: var(--danger-tint-color);

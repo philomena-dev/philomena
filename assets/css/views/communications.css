@@ -39,7 +39,3 @@ td.table--communication-list__options {
     min-height: var(--touch-target-size);
   }
 }
-
-.hyphenate-breaks {
-  hyphens: auto;
-}
