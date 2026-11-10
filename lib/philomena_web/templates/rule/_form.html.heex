@@ -1,7 +1,7 @@
 <%= form_for @changeset, @path, fn f -> %>
   <div class="flex flex--column">
     <%= if @changeset.action do %>
-      <div class="alert alert--danger">Please correct the errors below.</div>
+      <div class="alert alert-danger">Please correct the errors below.</div>
     <% end %>
     <div class="block flex flex--column">
       <div class="flex flex--gap-normal flex--centered">
