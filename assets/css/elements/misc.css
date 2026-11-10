@@ -1,4 +1,7 @@
-/* Philomena's classes that have no stylesheet of their own */
+/*
+ * Philomena's styles of elements and classes that have no stylesheet of their own: paragraphs, tables, quotes,
+ * spoilers, labels and single-purpose helpers.
+ */
 
 /* Slightly dirty, no clean way to strip top margins off headers though */
 .remove-top-margin {

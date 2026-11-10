@@ -1,6 +1,6 @@
 /*
- * The theme custom properties of the stylesheets that predate the framework, on the framework's three theme
- * selectors. Nothing new reads them; they go away with their last consumer.
+ * The theme custom properties that Philomena's stylesheets read besides the framework's tokens, on the framework's
+ * three theme selectors.
  */
 
 $fave-color-dark: #a18e27;
