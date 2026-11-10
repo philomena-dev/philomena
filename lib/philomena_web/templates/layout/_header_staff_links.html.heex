@@ -10,19 +10,29 @@
     </div>
   <% end %>
   <%= if @pending_approval_count do %>
-    <%= link to: ~p"/admin/approvals", class: "header__link", title: "Approval Queue" do %>Q <span class="header__counter__admin">{@pending_approval_count}</span><% end %>
+    <%= link to: ~p"/admin/approvals", class: "header__link", title: "Approval Queue" do %>
+      Q <span class="header__counter__admin">{@pending_approval_count}</span>
+    <% end %>
   <% end %>
   <%= if @duplicate_report_count do %>
-    <%= link to: ~p"/duplicate_reports", class: "header__link", title: "Duplicates" do %>D <span class="header__counter__admin">{@duplicate_report_count}</span><% end %>
+    <%= link to: ~p"/duplicate_reports", class: "header__link", title: "Duplicates" do %>
+      D <span class="header__counter__admin">{@duplicate_report_count}</span>
+    <% end %>
   <% end %>
   <%= if @report_count do %>
-    <%= link to: ~p"/admin/reports", class: "header__link", title: "Reports" do %>R <span class="header__counter__admin">{@report_count}</span><% end %>
+    <%= link to: ~p"/admin/reports", class: "header__link", title: "Reports" do %>
+      R <span class="header__counter__admin">{@report_count}</span>
+    <% end %>
   <% end %>
   <%= if @artist_link_count do %>
-    <%= link to: ~p"/admin/artist_links", class: "header__link", title: "Artist Links" do %>L <span class="header__counter__admin">{@artist_link_count}</span><% end %>
+    <%= link to: ~p"/admin/artist_links", class: "header__link", title: "Artist Links" do %>
+      L <span class="header__counter__admin">{@artist_link_count}</span>
+    <% end %>
   <% end %>
   <%= if @dnp_entry_count do %>
-    <%= link to: ~p"/admin/dnp_entries", class: "header__link", title: "DNP Requests" do %>S <span class="header__counter__admin">{@dnp_entry_count}</span><% end %>
+    <%= link to: ~p"/admin/dnp_entries", class: "header__link", title: "DNP Requests" do %>
+      S <span class="header__counter__admin">{@dnp_entry_count}</span>
+    <% end %>
   <% end %>
   <%= if manages_bans?(@conn) do %>
     <div class="dropdown hide-mobile">

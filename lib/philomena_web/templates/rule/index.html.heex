@@ -1,10 +1,17 @@
 <h1>Site Rules</h1>
 <%= if @last_updated_at do %>
-  <p><i class="fa fa-clock"></i> The rules were last updated <strong>{pretty_time @last_updated_at}</strong></p>
+  <p>
+    <i class="fa fa-clock"></i>
+    The rules were last updated <strong>{pretty_time(@last_updated_at)}</strong>
+  </p>
 <% end %>
 <%= if can?(@conn, :create, Philomena.Rules.Rule) do %>
   <div class="block">
-    <%= link to: ~p"/rules/new", class: "button button--state-primary" do %><span class="small-text"><i class="fa fa-plus"></i> Create New Rule</span> <% end %>
+    <%= link to: ~p"/rules/new", class: "button button--state-primary" do %>
+      <span class="small-text"><i class="fa fa-plus"></i> Create New Rule</span>
+    <% end %>
   </div>
 <% end %>
-<%= for rule <- @rules do %>{render PhilomenaWeb.RuleView, "_rule.html", conn: @conn, rule: rule, show_timestamp: false}<% end %>
+<%= for rule <- @rules do %>
+  {render(PhilomenaWeb.RuleView, "_rule.html", conn: @conn, rule: rule, show_timestamp: false)}
+<% end %>

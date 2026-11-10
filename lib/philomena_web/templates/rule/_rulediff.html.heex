@@ -2,11 +2,15 @@
   <div class="flex flex--column flex--gap-normal">
     <div class="grid grid--two-columns">
       <%= if @version.previous.name != @version.name or @version.previous.title != @version.title do %>
-        <div class="block"><strong>{@version.previous.name}</strong>: {@version.previous.title}</div>
+        <div class="block">
+          <strong>{@version.previous.name}</strong>: {@version.previous.title}
+        </div>
         <div class="block"><strong>{@version.name}</strong>: {@version.title}</div>
       <% end %>
       <%= if @version.previous.short_description != @version.short_description do %>
-        <div class="block"><strong>Short Description:</strong> {@version.previous.short_description}</div>
+        <div class="block">
+          <strong>Short Description:</strong> {@version.previous.short_description}
+        </div>
         <div class="block"><strong>Short Description:</strong> {@version.short_description}</div>
       <% end %>
     </div>

@@ -1,12 +1,28 @@
 <tr class={"#{"duplicate-report-#{@report.id}"}"}>
   <% background_class = background_class(@report) %>
-  <td class="dupe-report-list__cell dupe-report-list--image">{render PhilomenaWeb.DuplicateReportView, "_image_cell.html", image: @report.image, source: true, report: @report, conn: @conn}</td>
-  <td class="dupe-report-list__cell dupe-report-list--image">{render PhilomenaWeb.DuplicateReportView, "_image_cell.html", image: @report.duplicate_of_image, source: false, report: @report, conn: @conn}</td>
+  <td class="dupe-report-list__cell dupe-report-list--image">
+    {render(PhilomenaWeb.DuplicateReportView, "_image_cell.html",
+      image: @report.image,
+      source: true,
+      report: @report,
+      conn: @conn
+    )}
+  </td>
+  <td class="dupe-report-list__cell dupe-report-list--image">
+    {render(PhilomenaWeb.DuplicateReportView, "_image_cell.html",
+      image: @report.duplicate_of_image,
+      source: false,
+      report: @report,
+      conn: @conn
+    )}
+  </td>
   <td class="dr__diff dupe-report-list__cell">
     <table class="table">
       <tr>
         <%= if same_aspect_ratio?(@report) do %>
-          <td class="success"><a href={~p"/duplicate_reports/#{@report}"} phx-no-format>Visual diff </a>(Same aspect ratio)</td>
+          <td class="success">
+            <a href={~p"/duplicate_reports/#{@report}"} phx-no-format>Visual diff </a>(Same aspect ratio)
+          </td>
         <% else %>
           <td class="warning">Different aspect ratio</td>
         <% end %>
@@ -107,17 +123,37 @@
   <td class="flex flex--column dupe-report-list__cell" id={"report_options_#{@report.id}"}>
     <div class={"dr__status-options #{background_class}"}>
       {String.capitalize(@report.state)}
-      <%= if can?(@conn, :accept, @report) and not is_nil(@report.modifier) do %>by {@report.modifier.name}<% end %>
+      <%= if can?(@conn, :accept, @report) and not is_nil(@report.modifier) do %>
+        by {@report.modifier.name}
+      <% end %>
       <%= if can?(@conn, :accept, @report) do %>
         <div>
           <%= if @report.state == "open" do %>
-            <%= form_for @conn, ~p"/duplicate_reports/#{@report}/claim", [method: "post", class: "button_to js-duplicate-report", data: [remote: "true"]], fn _f -> %><button class="button button--separate-right" data-disable-with="Loading…" type="submit"><i class="fa fa-clipboard"></i> Claim</button><% end %>
+            <%= form_for @conn, ~p"/duplicate_reports/#{@report}/claim", [method: "post", class: "button_to js-duplicate-report", data: [remote: "true"]], fn _f -> %>
+              <button
+                class="button button--separate-right"
+                data-disable-with="Loading…"
+                type="submit"
+              ><i class="fa fa-clipboard"></i> Claim</button>
+            <% end %>
           <% end %>
           <%= if @report.state == "claimed" do %>
-            <%= form_for @conn, ~p"/duplicate_reports/#{@report}/claim", [method: "delete", class: "button_to js-duplicate-report", data: [remote: "true"]], fn _f -> %><button class="button button--separate-right" data-disable-with="Loading…" type="submit"><i class="fa fa-clipboard"></i> Release</button><% end %>
+            <%= form_for @conn, ~p"/duplicate_reports/#{@report}/claim", [method: "delete", class: "button_to js-duplicate-report", data: [remote: "true"]], fn _f -> %>
+              <button
+                class="button button--separate-right"
+                data-disable-with="Loading…"
+                type="submit"
+              ><i class="fa fa-clipboard"></i> Release</button>
+            <% end %>
           <% end %>
           <%= if @report.state in ~w(open claimed) do %>
-            <%= form_for @conn, ~p"/duplicate_reports/#{@report}/reject", [method: "post", class: "button_to js-duplicate-report", data: [remote: "true"]], fn _f -> %><button class="button button--separate-right" data-disable-with="Loading…" type="submit"><i class="fa fa-times"></i> Reject</button><% end %>
+            <%= form_for @conn, ~p"/duplicate_reports/#{@report}/reject", [method: "post", class: "button_to js-duplicate-report", data: [remote: "true"]], fn _f -> %>
+              <button
+                class="button button--separate-right"
+                data-disable-with="Loading…"
+                type="submit"
+              ><i class="fa fa-times"></i> Reject</button>
+            <% end %>
           <% end %>
         </div>
       <% end %>
@@ -125,7 +161,9 @@
     <div class="dr__status-options">
       <div>
         Reported {pretty_time(@report.created_at)}
-        <%= if can?(@conn, :accept, @report) and @report.user do %>by  {link @report.user.name, to: ~p"/profiles/#{@report.user}"}<% end %>
+        <%= if can?(@conn, :accept, @report) and @report.user do %>
+          by {link(@report.user.name, to: ~p"/profiles/#{@report.user}")}
+        <% end %>
       </div>
       {escape_nl2br(@report.reason)}
     </div>

@@ -12,12 +12,14 @@
     <%= for donation <- @donations do %>
       <tr>
         <td>
-          <%= if donation.user do %>{link donation.user.name, to: ~p"/profiles/#{donation.user}"}<% end %>
+          <%= if donation.user do %>
+            {link(donation.user.name, to: ~p"/profiles/#{donation.user}")}
+          <% end %>
         </td>
         <td>{donation.email}</td>
         <td>{donation.amount}</td>
         <td title={donation.note}>{String.slice(donation.note, 0, 30)}</td>
-        <td>{pretty_time donation.created_at}</td>
+        <td>{pretty_time(donation.created_at)}</td>
       </tr>
     <% end %>
   </tbody>

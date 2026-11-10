@@ -11,13 +11,23 @@
   <tbody>
     <%= for filter <- @filters do %>
       <tr>
-        <td>{link filter.name, to: ~p"/filters/#{filter}"}</td>
+        <td>{link(filter.name, to: ~p"/filters/#{filter}")}</td>
         <td>
           <%= cond do %>
-            <% filter.system -> %>System <% filter.public -> %>Public <% true -> %>Private <% end %>
+            <% filter.system -> %>
+              System
+            <% filter.public -> %>
+              Public
+            <% true -> %>
+              Private
+          <% end %>
         </td>
         <td>
-          <%= if filter.user do %>{link filter.user.name, to: ~p"/profiles/#{filter.user}"}<% else %>No user associated <% end %>
+          <%= if filter.user do %>
+            {link(filter.user.name, to: ~p"/profiles/#{filter.user}")}
+          <% else %>
+            No user associated
+          <% end %>
         </td>
         <td>{length(filter.spoilered_tag_ids)}</td>
         <td>{length(filter.hidden_tag_ids)}</td>

@@ -7,5 +7,10 @@
       <th>Status/options</th>
     </tr>
   </thead>
-  <tbody>{render PhilomenaWeb.DuplicateReportView, "_duplicate_reports.html", duplicate_reports: @duplicate_reports, conn: @conn}</tbody>
+  <tbody>
+    {render(PhilomenaWeb.DuplicateReportView, "_duplicate_reports.html",
+      duplicate_reports: @duplicate_reports,
+      conn: @conn
+    )}
+  </tbody>
 </table>

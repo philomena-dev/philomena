@@ -4,7 +4,13 @@
       <span class="block__header__title">{@title}</span><%= if assigns[:view_all_path] do %>{link("View all", to: assigns[:view_all_path])}<% end %>
     </div>
     <div class="block__content media-list">
-      <%= for image <- @images do %>{render PhilomenaWeb.ImageView, "_image_box.html", image: image, size: :thumb, conn: @conn}<% end %>
+      <%= for image <- @images do %>
+        {render(PhilomenaWeb.ImageView, "_image_box.html",
+          image: image,
+          size: :thumb,
+          conn: @conn
+        )}
+      <% end %>
     </div>
   </div>
 <% end %>

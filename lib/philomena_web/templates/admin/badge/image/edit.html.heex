@@ -6,6 +6,11 @@
     </div>
   <% end %>
   <h4>Image</h4>
-  <div class="field">{label f, :image, "Upload SVG image:"} {file_input f, :image, class: "input input--wide"}{error_tag f, :image}{error_tag f, :image_mime_type}</div>
-  {submit "Save Badge", class: "button", data: [disable_with: raw("Saving&hellip;")]}
+  <div class="field">
+    {label(f, :image, "Upload SVG image:")} {file_input(f, :image, class: "input input--wide")}{error_tag(
+      f,
+      :image
+    )}{error_tag(f, :image_mime_type)}
+  </div>
+  {submit("Save Badge", class: "button", data: [disable_with: raw("Saving&hellip;")])}
 <% end %>

@@ -1,8 +1,22 @@
 <h1>Fingerprint Bans</h1>
 <% route = fn p -> ~p"/admin/fingerprint_bans?#{p}" end %>
-<% pagination = if @fingerprint_bans, do: render(PhilomenaWeb.PaginationView, "_pagination.html", page: @fingerprint_bans, route: route, params: page_params(@conn.params)) %>
+<% pagination =
+  if @fingerprint_bans,
+    do:
+      render(PhilomenaWeb.PaginationView, "_pagination.html",
+        page: @fingerprint_bans,
+        route: route,
+        params: page_params(@conn.params)
+      ) %>
 <%= form_for @changeset, ~p"/admin/fingerprint_bans", [method: "get", class: "hform"], fn f -> %>
-  <div class="field">{text_input f, :bq, name: :bq, class: "hform__text input", placeholder: "Search", spellcheck: "false"}{error_tag f, :bq}{submit "Search", class: "button hform__button"}</div>
+  <div class="field">
+    {text_input(f, :bq,
+      name: :bq,
+      class: "hform__text input",
+      placeholder: "Search",
+      spellcheck: "false"
+    )}{error_tag(f, :bq)}{submit("Search", class: "button hform__button")}
+  </div>
 <% end %>
 <div class="block">
   <div class="block__header">
@@ -24,9 +38,9 @@
       <tbody>
         <%= for ban <- @fingerprint_bans || [] do %>
           <tr>
-            <td>{link ban.fingerprint, to: ~p"/fingerprint_profiles/#{ban.fingerprint}"}</td>
-            <td>{pretty_time ban.created_at} {user_abbrv ban.banning_user}</td>
-            <td class={"#{ban_row_class(ban)}"}>{pretty_time ban.valid_until}</td>
+            <td>{link(ban.fingerprint, to: ~p"/fingerprint_profiles/#{ban.fingerprint}")}</td>
+            <td>{pretty_time(ban.created_at)} {user_abbrv(ban.banning_user)}</td>
+            <td class={"#{ban_row_class(ban)}"}>{pretty_time(ban.valid_until)}</td>
             <td>
               {ban.reason}
               <%= if present?(ban.note) do %>
@@ -35,8 +49,13 @@
             </td>
             <td>{ban.generated_ban_id}</td>
             <td>
-              {link "Edit", to: ~p"/admin/fingerprint_bans/#{ban}/edit"}
-              <%= if @current_user.role == "admin" do %>&bull; {link "Destroy", to: ~p"/admin/fingerprint_bans/#{ban}", data: [confirm: "Are you really, really sure?", method: "delete"]} <% end %>
+              {link("Edit", to: ~p"/admin/fingerprint_bans/#{ban}/edit")}
+              <%= if @current_user.role == "admin" do %>
+                &bull; {link("Destroy",
+                  to: ~p"/admin/fingerprint_bans/#{ban}",
+                  data: [confirm: "Are you really, really sure?", method: "delete"]
+                )}
+              <% end %>
             </td>
           </tr>
         <% end %>

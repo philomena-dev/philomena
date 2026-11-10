@@ -1,7 +1,13 @@
 <h1>Your Reports</h1>
 <div class="block">
   <div class="block__header">
-    <span class="block__header__title">Reports</span><% route = fn p -> ~p"/reports?#{p}" end %>{render PhilomenaWeb.PaginationView, "_pagination.html", page: @reports, route: route, conn: @conn}
+    <span class="block__header__title">Reports</span><% route = fn p -> ~p"/reports?#{p}" end %>{render(
+      PhilomenaWeb.PaginationView,
+      "_pagination.html",
+      page: @reports,
+      route: route,
+      conn: @conn
+    )}
   </div>
   <div class="block__content">
     <table class="table">

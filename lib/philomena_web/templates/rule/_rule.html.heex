@@ -4,13 +4,24 @@
 <article class={"#{"rule#{modifiers}"}"} id={"#{@rule.position}"}>
   <header class="rule__header">
     <h2 class="rule__title">
-      <%= if admin_only_rule do %>{@rule.name}<% else %>{@rule.name}: {@rule.title}<% end %>
+      <%= if admin_only_rule do %>
+        {@rule.name}
+      <% else %>
+        {@rule.name}: {@rule.title}
+      <% end %>
     </h2>
     <%= if @rule.highlight or admin_only_rule do %>
       <div class="rule__badges">
-        <%= if @rule.highlight do %><span class="rule__badge rule__badge--important"><i class="fa fa-exclamation-triangle"></i> Important</span> <% end %>
-        <%= if @rule.hidden do %><span class="rule__badge rule__badge--admin"><i class="fa fa-eye-slash"></i> Hidden</span> <% end %>
-        <%= if @rule.internal do %><span class="rule__badge rule__badge--admin"><i class="fa fa-gear"></i> Internal</span> <% end %>
+        <%= if @rule.highlight do %>
+          <span class="rule__badge rule__badge--important"><i class="fa fa-exclamation-triangle"></i>
+          Important</span>
+        <% end %>
+        <%= if @rule.hidden do %>
+          <span class="rule__badge rule__badge--admin"><i class="fa fa-eye-slash"></i> Hidden</span>
+        <% end %>
+        <%= if @rule.internal do %>
+          <span class="rule__badge rule__badge--admin"><i class="fa fa-gear"></i> Internal</span>
+        <% end %>
       </div>
     <% end %>
   </header>
@@ -27,12 +38,29 @@
     </div>
   <% end %>
   <footer class="rule__footer">
-    <%= unless @show_timestamp do %><a class="button button--state-primary" href={"##{@rule.position}"} title="Link to Rule"><span class="small-text"><i class="fa fa-fw fa-link"></i></span></a><% end %>
-    <%= if @rule.example != "" do %><a class="button button--state-primary" data-click-toggle={".js-rule-example-toggle-#{@rule.id}"} href="#" title="View Examples"><span class="small-text"><i class="fa fa-eye"></i> <span>View Examples</span></span></a><% end %>
     <%= unless @show_timestamp do %>
-      <%= link to: ~p"/rules/#{@rule}", class: "button button--state-primary" do %><span class="small-text"><i class="fa fa-circle-info"></i> More Details</span> <% end %>
+      <a class="button button--state-primary" href={"##{@rule.position}"} title="Link to Rule"><span class="small-text"><i class="fa fa-fw fa-link"></i></span></a>
     <% end %>
-    <%= if can?(@conn, :edit, @rule) do %><a class="button button--state-warning" href={~p"/rules/#{@rule}/edit"} title="Edit Rule"><span class="small-text"><i class="fa fa-edit"></i> Edit</span></a><% end %>
-    <%= if @show_timestamp do %><span class="rule__timestamp small-text"><i class="fa fa-clock"></i> Last updated {pretty_time @rule.updated_at}</span><% end %>
+    <%= if @rule.example != "" do %>
+      <a
+        class="button button--state-primary"
+        data-click-toggle={".js-rule-example-toggle-#{@rule.id}"}
+        href="#"
+        title="View Examples"
+      ><span class="small-text"><i class="fa fa-eye"></i> <span>View Examples</span></span></a>
+    <% end %>
+    <%= unless @show_timestamp do %>
+      <%= link to: ~p"/rules/#{@rule}", class: "button button--state-primary" do %>
+        <span class="small-text"><i class="fa fa-circle-info"></i> More Details</span>
+      <% end %>
+    <% end %>
+    <%= if can?(@conn, :edit, @rule) do %>
+      <a class="button button--state-warning" href={~p"/rules/#{@rule}/edit"} title="Edit Rule"><span class="small-text"><i class="fa fa-edit"></i>
+      Edit</span></a>
+    <% end %>
+    <%= if @show_timestamp do %>
+      <span class="rule__timestamp small-text"><i class="fa fa-clock"></i>
+      Last updated {pretty_time(@rule.updated_at)}</span>
+    <% end %>
   </footer>
 </article>

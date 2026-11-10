@@ -6,13 +6,20 @@
     </ul>
   </div>
   <%= if @filter.user do %>
-    <p class="filter-maintainer">This filter is maintained by {render PhilomenaWeb.UserAttributionView, "_user.html", object: @filter, conn: @conn}</p>
+    <p class="filter-maintainer">
+      This filter is maintained by {render(PhilomenaWeb.UserAttributionView, "_user.html",
+        object: @filter,
+        conn: @conn
+      )}
+    </p>
   <% end %>
   <p class="filter-description">{@filter.description}</p>
   <%= if length(@spoilered_tags) > 0 or !!@filter.spoilered_complex_str do %>
     <h5>This filter spoilers...</h5>
     <div class="tag-list">
-      <%= for tag <- @spoilered_tags do %>{render PhilomenaWeb.TagView, "_tag.html", tag: tag, conn: @conn}<% end %>
+      <%= for tag <- @spoilered_tags do %>
+        {render(PhilomenaWeb.TagView, "_tag.html", tag: tag, conn: @conn)}
+      <% end %>
     </div>
     <pre class="spoiler-filter-code">{@filter.spoilered_complex_str}</pre>
   <% else %>
@@ -21,7 +28,9 @@
   <%= if length(@hidden_tags) > 0 or !!@filter.hidden_complex_str do %>
     <h5>This filter hides...</h5>
     <div class="tag-list">
-      <%= for tag <- @hidden_tags do %>{render PhilomenaWeb.TagView, "_tag.html", tag: tag, conn: @conn}<% end %>
+      <%= for tag <- @hidden_tags do %>
+        {render(PhilomenaWeb.TagView, "_tag.html", tag: tag, conn: @conn)}
+      <% end %>
     </div>
     <pre class="spoiler-filter-code">{@filter.hidden_complex_str}</pre>
   <% else %>

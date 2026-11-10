@@ -12,9 +12,9 @@
   <tbody>
     <%= for b <- @bans do %>
       <tr>
-        <td>{pretty_time b.created_at}</td>
-        <td>{pretty_time b.valid_until}</td>
-        <td class="hide-mobile">{distance_of_time_in_words b.created_at, b.valid_until}</td>
+        <td>{pretty_time(b.created_at)}</td>
+        <td>{pretty_time(b.valid_until)}</td>
+        <td class="hide-mobile">{distance_of_time_in_words(b.created_at, b.valid_until)}</td>
         <%= if active?(b) do %>
           <td class="success">Yes</td>
         <% else %>

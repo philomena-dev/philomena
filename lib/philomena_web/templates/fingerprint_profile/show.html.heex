@@ -1,21 +1,50 @@
-<h1>{@fingerprint}'s fingerprint profile </h1>
+<h1>{@fingerprint}'s fingerprint profile</h1>
 <ul>
-  <li>{link "View images this fingerprint has uploaded", to: ~p"/search?#{[q: "fingerprint:#{@fingerprint}"]}"}</li>
-  <li>{link "View comments this fingerprint has posted", to: ~p"/comments?#{[cq: "fingerprint:#{@fingerprint}"]}"}</li>
-  <li>{link "View posts this fingerprint has made", to: ~p"/posts?#{[pq: "fingerprint:#{@fingerprint}"]}"}</li>
+  <li>
+    {link("View images this fingerprint has uploaded",
+      to: ~p"/search?#{[q: "fingerprint:#{@fingerprint}"]}"
+    )}
+  </li>
+  <li>
+    {link("View comments this fingerprint has posted",
+      to: ~p"/comments?#{[cq: "fingerprint:#{@fingerprint}"]}"
+    )}
+  </li>
+  <li>
+    {link("View posts this fingerprint has made",
+      to: ~p"/posts?#{[pq: "fingerprint:#{@fingerprint}"]}"
+    )}
+  </li>
 </ul>
-{render PhilomenaWeb.BanView, "_bans.html", bans: @fingerprint_bans, conn: @conn}
+{render(PhilomenaWeb.BanView, "_bans.html", bans: @fingerprint_bans, conn: @conn)}
 <h2>Administration Options</h2>
 <ul>
-  <li>{link "View tag changes", to: ~p"/fingerprint_profiles/#{@fingerprint}/tag_changes"}</li>
-  <li>{link "View source URL history", to: ~p"/fingerprint_profiles/#{@fingerprint}/source_changes"}</li>
-  <li>{link "View reports this fingerprint has made", to: ~p"/admin/reports?#{[rq: [query: "fingerprint:#{@fingerprint}"]]}"}</li>
-  <li>{link "View fingerprint ban history", to: ~p"/admin/fingerprint_bans?#{[fingerprint: @fingerprint]}"}</li>
-  <li>{link "Ban this sucker", to: ~p"/admin/fingerprint_bans/new?#{[fingerprint: @fingerprint]}"}</li>
+  <li>{link("View tag changes", to: ~p"/fingerprint_profiles/#{@fingerprint}/tag_changes")}</li>
+  <li>
+    {link("View source URL history", to: ~p"/fingerprint_profiles/#{@fingerprint}/source_changes")}
+  </li>
+  <li>
+    {link("View reports this fingerprint has made",
+      to: ~p"/admin/reports?#{[rq: [query: "fingerprint:#{@fingerprint}"]]}"
+    )}
+  </li>
+  <li>
+    {link("View fingerprint ban history",
+      to: ~p"/admin/fingerprint_bans?#{[fingerprint: @fingerprint]}"
+    )}
+  </li>
+  <li>
+    {link("Ban this sucker", to: ~p"/admin/fingerprint_bans/new?#{[fingerprint: @fingerprint]}")}
+  </li>
 </ul>
 <h2>Actions</h2>
 <ul>
-  <li>{link "Revert all tag changes", to: ~p"/fingerprint_profiles/#{@fingerprint}/tag_changes/revert", data: [confirm: "Are you really, really sure?", method: "create"]}</li>
+  <li>
+    {link("Revert all tag changes",
+      to: ~p"/fingerprint_profiles/#{@fingerprint}/tag_changes/revert",
+      data: [confirm: "Are you really, really sure?", method: "create"]
+    )}
+  </li>
 </ul>
 <h4>Observed users</h4>
 <table class="table">
@@ -30,10 +59,10 @@
   <tbody>
     <%= for ufp <- @user_fps do %>
       <tr>
-        <td>{link ufp.user.name, to: ~p"/profiles/#{ufp.user}"}</td>
-        <td>{ufp.uses} times </td>
-        <td>{pretty_time ufp.updated_at} </td>
-        <td>{pretty_time ufp.user.created_at} </td>
+        <td>{link(ufp.user.name, to: ~p"/profiles/#{ufp.user}")}</td>
+        <td>{ufp.uses} times</td>
+        <td>{pretty_time(ufp.updated_at)}</td>
+        <td>{pretty_time(ufp.user.created_at)}</td>
       </tr>
     <% end %>
   </tbody>

@@ -1,3 +1,5 @@
 <div :for={slice <- Enum.chunk_every(@shipping[@tab], 10)}>
-  <%= for tag <- slice do %>{tag_link tag, tag.name}<br /><% end %>
+  <%= for tag <- slice do %>
+    {tag_link(tag, tag.name)}<br />
+  <% end %>
 </div>

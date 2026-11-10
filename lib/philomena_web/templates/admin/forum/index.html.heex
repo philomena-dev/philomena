@@ -9,10 +9,10 @@
   <tbody>
     <%= for forum <- @forums do %>
       <tr>
-        <td>{link forum.name, to: ~p"/forums/#{forum}"}</td>
-        <td class="text-right">{link "Edit", to: ~p"/admin/forums/#{forum}/edit"}</td>
+        <td>{link(forum.name, to: ~p"/forums/#{forum}")}</td>
+        <td class="text-right">{link("Edit", to: ~p"/admin/forums/#{forum}/edit")}</td>
       </tr>
     <% end %>
   </tbody>
 </table>
-{link "New Forum", to: ~p"/admin/forums/new"}
+{link("New Forum", to: ~p"/admin/forums/new")}

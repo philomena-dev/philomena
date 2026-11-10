@@ -6,7 +6,11 @@
     <%= if not Enum.any?(@commission.items) do %>
       <%= if current?(@user, @conn.assigns.current_user) do %>
         <p>You have not added any items to your commissions sheet yet.</p>
-        <p>Your listing will not appear in search results until you {link "list at least one item", to: ~p"/profiles/#{@user}/commission/items/new"}. </p>
+        <p>
+          Your listing will not appear in search results until you {link("list at least one item",
+            to: ~p"/profiles/#{@user}/commission/items/new"
+          )}.
+        </p>
       <% else %>
         <p>This artist has not added any items yet. Please check back later.</p>
       <% end %>
@@ -30,16 +34,30 @@
               <%= if item.example_image do %>
                 <div class="media-list media-list--small-fixed-size">
                   <div class="media-box">
-                    <div class="media-box__content media-box__content--small">{render PhilomenaWeb.ImageView, "_image_container.html", image: item.example_image, size: :thumb_small, conn: @conn}</div>
+                    <div class="media-box__content media-box__content--small">
+                      {render(PhilomenaWeb.ImageView, "_image_container.html",
+                        image: item.example_image,
+                        size: :thumb_small,
+                        conn: @conn
+                      )}
+                    </div>
                   </div>
                 </div>
-              <% else %>(No example)<% end %>
+              <% else %>
+                (No example)
+              <% end %>
             </td>
             <td><strong>{item.item_type}</strong><br /><br />{description}</td>
             <td>${Decimal.round(item.base_price, 2)}</td>
             <td>{add_ons}</td>
             <%= if can?(@conn, :edit, @commission) do %>
-              <td>{link "Edit item", to: ~p"/profiles/#{@user}/commission/items/#{item}/edit"}<br /><br />{link "Delete item", to: ~p"/profiles/#{@user}/commission/items/#{item}", data: [confirm: "Are you really, really sure?", method: "delete"]}</td>
+              <td>
+                {link("Edit item", to: ~p"/profiles/#{@user}/commission/items/#{item}/edit")}<br /><br />{link(
+                  "Delete item",
+                  to: ~p"/profiles/#{@user}/commission/items/#{item}",
+                  data: [confirm: "Are you really, really sure?", method: "delete"]
+                )}
+              </td>
             <% end %>
           </tr>
         <% end %>

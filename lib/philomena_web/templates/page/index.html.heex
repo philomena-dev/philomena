@@ -8,9 +8,9 @@
   <tbody>
     <%= for static_page <- @static_pages do %>
       <tr>
-        <td>{link static_page.title, to: ~p"/pages/#{static_page}"}</td>
+        <td>{link(static_page.title, to: ~p"/pages/#{static_page}")}</td>
       </tr>
     <% end %>
   </tbody>
 </table>
-<br />{link "New static page", to: ~p"/pages/new"}
+<br />{link("New static page", to: ~p"/pages/new")}

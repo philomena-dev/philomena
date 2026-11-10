@@ -12,7 +12,7 @@
         </tr>
         <tr>
           <td>Tag:</td>
-          <td>{render PhilomenaWeb.TagView, "_tag.html", tag: @dnp_entry.tag, conn: @conn}</td>
+          <td>{render(PhilomenaWeb.TagView, "_tag.html", tag: @dnp_entry.tag, conn: @conn)}</td>
         </tr>
         <tr>
           <td>Restriction Type:</td>
@@ -48,9 +48,44 @@
 </div>
 <%= if can?(@conn, :transition, @dnp_entry) do %>
   <%= case @dnp_entry.aasm_state do %>
-    <% s when s in ["requested", "claimed"] -> %>{link "Claim", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "claimed"]}", data: [method: "post", confirm: "Are you really, really sure?"]} &bull; {link "Approve", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "listed"]}", data: [method: "post", confirm: "Are you really, really sure?"]} &bull; {link "Close", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "closed"]}", data: [method: "post", confirm: "Are you really, really sure?"]} <% "listed" -> %>{link "Rescind", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "rescinded"]}", data: [method: "post", confirm: "Are you really, really sure?"]} &bull; {link "Close", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "closed"]}", data: [method: "post", confirm: "Are you really, really sure?"]}<% s when s in ["rescinded", "acknowledged"] -> %>{link "Claim", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "acknowledged"]}", data: [method: "post", confirm: "Are you really, really sure?"]} &bull; {link "Close", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "closed"]}", data: [method: "post", confirm: "Are you really, really sure?"]}<% _state -> %>{link "Claim", to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "claimed"]}", data: [method: "post", confirm: "Are you really, really sure?"]} <% end %>
+    <% s when s in ["requested", "claimed"] -> %>
+      {link("Claim",
+        to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "claimed"]}",
+        data: [method: "post", confirm: "Are you really, really sure?"]
+      )} &bull; {link("Approve",
+        to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "listed"]}",
+        data: [method: "post", confirm: "Are you really, really sure?"]
+      )} &bull; {link("Close",
+        to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "closed"]}",
+        data: [method: "post", confirm: "Are you really, really sure?"]
+      )}
+    <% "listed" -> %>
+      {link("Rescind",
+        to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "rescinded"]}",
+        data: [method: "post", confirm: "Are you really, really sure?"]
+      )} &bull; {link("Close",
+        to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "closed"]}",
+        data: [method: "post", confirm: "Are you really, really sure?"]
+      )}
+    <% s when s in ["rescinded", "acknowledged"] -> %>
+      {link("Claim",
+        to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "acknowledged"]}",
+        data: [method: "post", confirm: "Are you really, really sure?"]
+      )} &bull; {link("Close",
+        to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "closed"]}",
+        data: [method: "post", confirm: "Are you really, really sure?"]
+      )}
+    <% _state -> %>
+      {link("Claim",
+        to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "claimed"]}",
+        data: [method: "post", confirm: "Are you really, really sure?"]
+      )}
+  <% end %>
 <% end %>
 <%= if assigns[:mod_notes] do %>
   <h4>Mod Notes</h4>
-  {render PhilomenaWeb.Admin.ModNoteView, "_table.html", mod_notes: @mod_notes, conn: @conn}{link "Add New Note", to: ~p"/admin/mod_notes/new?#{[dnp_entry_id: @dnp_entry.id]}"}
+  {render(PhilomenaWeb.Admin.ModNoteView, "_table.html", mod_notes: @mod_notes, conn: @conn)}{link(
+    "Add New Note",
+    to: ~p"/admin/mod_notes/new?#{[dnp_entry_id: @dnp_entry.id]}"
+  )}
 <% end %>

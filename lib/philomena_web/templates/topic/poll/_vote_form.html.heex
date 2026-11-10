@@ -2,9 +2,15 @@
   <h4 class="poll__header">Poll: {@poll.title}</h4>
   <div class="poll-form__options">
     <% input_type = input_type(@poll)
-input_name = input_name(@poll)
-require_answer? = require_answer?(@poll) %>
-    <label :for={option <- @poll.options} class="poll-form__options__label"><input class="button--separate-right" name={input_name} required={require_answer?} type={input_type} value={option.id} /> <span>{option.label}</span></label>
+    input_name = input_name(@poll)
+    require_answer? = require_answer?(@poll) %>
+    <label :for={option <- @poll.options} class="poll-form__options__label"><input
+      class="button--separate-right"
+      name={input_name}
+      required={require_answer?}
+      type={input_type}
+      value={option.id}
+    /> <span>{option.label}</span></label>
   </div>
   <div class="poll-form__status">
     <p>Voting ends {pretty_time(@poll.active_until)}</p>

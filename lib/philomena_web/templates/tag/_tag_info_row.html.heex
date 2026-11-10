@@ -1,6 +1,10 @@
 <div class={"block__content js-imagelist-info flex #{tags_row_class(@conn)}"}>
   <div class="flex__fixed tag-info__image thumb-tiny-container spacing-right">
-    <%= if @tag.image do %><img alt="spoiler image" src={tag_image(@tag)} /><% else %>no spoiler image<% end %>
+    <%= if @tag.image do %>
+      <img alt="spoiler image" src={tag_image(@tag)} />
+    <% else %>
+      no spoiler image
+    <% end %>
   </div>
   <div class="flex__grow" phx-no-format>
     {render PhilomenaWeb.TagView, "_tag.html", tag: @tag, conn: @conn} {link "Tag changes", to: ~p"/tags/#{@tag}/tag_changes", class: "detail-link"}<%= if manages_tags?(@conn) do %>{link "Edit details", to: ~p"/tags/#{@tag}/edit", class: "detail-link"}{link "Usage", to: ~p"/tags/#{@tag}/details", class: "detail-link"}<% end %><%= if manages_dnp?(@conn) do %>{link "Create new DNP entry", to: ~p"/dnp/new?#{[tag_id: @tag.id]}", class: "detail-link"}<% end %>

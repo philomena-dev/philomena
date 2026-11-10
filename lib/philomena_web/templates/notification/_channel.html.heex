@@ -1,4 +1,23 @@
 <div class="flex flex--centered flex__grow">
-  <div><strong>{link @notification.channel.title, to: ~p"/channels/#{@notification.channel}"}</strong> went live {pretty_time @notification.updated_at} </div>
+  <div>
+    <strong>{link(@notification.channel.title, to: ~p"/channels/#{@notification.channel}")}</strong>
+    went live {pretty_time(@notification.updated_at)}
+  </div>
 </div>
-<div class="flex flex--centered flex--no-wrap"><a class="button button--separate-right" data-click-hideparent=".notification" data-method="post" data-remote="true" href={~p"/channels/#{@notification.channel}/read"} title="Delete"><i class="fa fa-trash"></i></a><a class="button" data-click-hideparent=".notification" data-method="delete" data-remote="true" href={~p"/channels/#{@notification.channel}/subscription"} title="Unsubscribe"><i class="fa fa-bell-slash"></i></a></div>
+<div class="flex flex--centered flex--no-wrap">
+  <a
+    class="button button--separate-right"
+    data-click-hideparent=".notification"
+    data-method="post"
+    data-remote="true"
+    href={~p"/channels/#{@notification.channel}/read"}
+    title="Delete"
+  ><i class="fa fa-trash"></i></a><a
+    class="button"
+    data-click-hideparent=".notification"
+    data-method="delete"
+    data-remote="true"
+    href={~p"/channels/#{@notification.channel}/subscription"}
+    title="Unsubscribe"
+  ><i class="fa fa-bell-slash"></i></a>
+</div>

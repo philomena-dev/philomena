@@ -1,2 +1,6 @@
 <h1>New site notice</h1>
-{render PhilomenaWeb.Admin.SiteNoticeView, "_form.html", changeset: @changeset, action: ~p"/admin/site_notices", conn: @conn}
+{render(PhilomenaWeb.Admin.SiteNoticeView, "_form.html",
+  changeset: @changeset,
+  action: ~p"/admin/site_notices",
+  conn: @conn
+)}

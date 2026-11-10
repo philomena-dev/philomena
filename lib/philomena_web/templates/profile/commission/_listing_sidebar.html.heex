@@ -2,11 +2,17 @@
 <div class="block">
   <div class="block__header"><span class="block__header__title">General information</span></div>
   <div class="block__content commission__block_body">
-    <strong>Profile:</strong> {render PhilomenaWeb.UserAttributionView, "_user.html", object: @commission, conn: @conn}<br /><strong>Status:</strong> {if @commission.open, do: "Open", else: "Closed"}<br />
+    <strong>Profile:</strong> {render(PhilomenaWeb.UserAttributionView, "_user.html",
+      object: @commission,
+      conn: @conn
+    )}<br /><strong>Status:</strong> {if @commission.open, do: "Open", else: "Closed"}<br />
     <%= if Enum.any?(@commission.items) do %>
       <strong>Price Range:</strong>
-      <% {min, max} = Enum.min_max_by(@commission.items, &Decimal.to_float(&1.base_price)) %>
-      ${Decimal.round(min.base_price, 2) |> Decimal.to_string()} - ${Decimal.round(max.base_price, 2) |> Decimal.to_string()} USD
+      <% {min, max} = Enum.min_max_by(@commission.items, &Decimal.to_float(&1.base_price)) %> ${Decimal.round(
+        min.base_price,
+        2
+      )
+      |> Decimal.to_string()} - ${Decimal.round(max.base_price, 2) |> Decimal.to_string()} USD
     <% end %>
     <br /><br />{@rendered.information}
   </div>
@@ -19,7 +25,9 @@
 <%!-- Categories block --%>
 <div class="block">
   <div class="block__header"><span class="block__header__title">Art Categories</span></div>
-  <div class="block__content"><span :for={cat <- @commission.categories} class="commission__category">{cat}</span></div>
+  <div class="block__content">
+    <span :for={cat <- @commission.categories} class="commission__category">{cat}</span>
+  </div>
 </div>
 <%!-- Will create block --%>
 <%= if @commission.will_create not in [nil, ""] do %>
@@ -31,7 +39,9 @@
 <%!-- Will not create block --%>
 <%= if @commission.will_not_create not in [nil, ""] do %>
   <div class="block">
-    <div class="block__header"><span class="block__header__title">Will not draw/create</span></div>
+    <div class="block__header">
+      <span class="block__header__title">Will not draw/create</span>
+    </div>
     <div class="block__content commission__block_body">{@rendered.will_not_create}</div>
   </div>
 <% end %>
@@ -47,8 +57,14 @@
 <div class="block">
   <div class="block__header"><span class="block__header__title">Options</span></div>
   <div class="block__content">
-    <%= if can?(@conn, :edit, @commission) do %>{link "Edit this listing", to: ~p"/profiles/#{@user}/commission/edit"}<br />{link "Delete this listing", to: ~p"/profiles/#{@user}/commission", data: [confirm: "Are you really, really sure about that?", method: "delete"]}<br /><% end %>
-    {link "Report this listing", to: ~p"/profiles/#{@user}/commission/reports/new"}
+    <%= if can?(@conn, :edit, @commission) do %>
+      {link("Edit this listing", to: ~p"/profiles/#{@user}/commission/edit")}<br />{link(
+        "Delete this listing",
+        to: ~p"/profiles/#{@user}/commission",
+        data: [confirm: "Are you really, really sure about that?", method: "delete"]
+      )}<br />
+    <% end %>
+    {link("Report this listing", to: ~p"/profiles/#{@user}/commission/reports/new")}
   </div>
 </div>
 <%!-- Share block --%>
@@ -56,6 +72,15 @@
   <div class="block__header"><span class="block__header__title">Share this listing</span></div>
   <div class="block__content">
     <% url = url(~p"/profiles/#{@user}/commission") %>
-    <div class="field"><label for="commission_url">URL</label> <a data-click-copy="#commission_url" href="#"><i class="fa fa-clipboard"></i> Copy</a> {text_input :commission, :commission_url, value: url, class: "input input--wide input--separate-top", readonly: true}</div>
+    <div class="field">
+      <label for="commission_url">URL</label>
+      <a data-click-copy="#commission_url" href="#"><i class="fa fa-clipboard"></i> Copy</a> {text_input(
+        :commission,
+        :commission_url,
+        value: url,
+        class: "input input--wide input--separate-top",
+        readonly: true
+      )}
+    </div>
   </div>
 </div>

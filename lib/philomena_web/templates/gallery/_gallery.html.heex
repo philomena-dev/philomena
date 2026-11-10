@@ -3,6 +3,11 @@
   <a class="media-box__header media-box__header--link" href={link} title={@gallery.title}>{@gallery.title}</a>
   <div class="media-box__content media-box__content--large">
     <div class="media-box__overlay">{@gallery.spoiler_warning}</div>
-    {render PhilomenaWeb.ImageView, "_image_container.html", image: @gallery.thumbnail, size: :thumb, conn: @conn, link: link}
+    {render(PhilomenaWeb.ImageView, "_image_container.html",
+      image: @gallery.thumbnail,
+      size: :thumb,
+      conn: @conn,
+      link: link
+    )}
   </div>
 </div>

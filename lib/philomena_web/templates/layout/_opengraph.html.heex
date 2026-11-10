@@ -5,7 +5,8 @@
   <% image = @conn.assigns.image %>
   <% filtered = not image.thumbnails_generated %>
   <% title = "##{image.id} - #{Philomena.Images.tag_list(image)} - Derpibooru" %>
-  <% description = "⭐ #{image.faves_count} ↕️ #{image.score} 💬 #{image.comments_count} • #{image.image_width}x#{image.image_height} #{String.upcase(to_string(image.image_format))}" %>
+  <% description =
+    "⭐ #{image.faves_count} ↕️ #{image.score} 💬 #{image.comments_count} • #{image.image_width}x#{image.image_height} #{String.upcase(to_string(image.image_format))}" %>
   <% {thumb_large, {large_width, large_height}} = ImageView.thumb_url_size(image, false, :large) %>
   <% thumb_rendered = ImageView.thumb_url(image, false, :rendered) %>
   <% rendered_type = "image/png" %>
@@ -24,7 +25,12 @@
   <%= if image_has_sources(image) do %>
     <meta content={image_first_source(image)} property="foaf:primaryTopic" />
   <% end %>
-  <link href={url(~p"/api/v1/json/oembed?#{[url: ~p"/images/#{image}"]}")} rel="alternate" title="oEmbed JSON Profile" type="application/json+oembed" />
+  <link
+    href={url(~p"/api/v1/json/oembed?#{[url: ~p"/images/#{image}"]}")}
+    rel="alternate"
+    title="oEmbed JSON Profile"
+    type="application/json+oembed"
+  />
   <link href={url(~p"/images/#{image}")} rel="canonical" />
   <%= cond do %>
     <% image.image_mime_type == "video/webm" and not filtered -> %>
@@ -56,5 +62,8 @@
       <meta content="website" property="og:type" />
   <% end %>
 <% else %>
-  <meta content="Derpibooru is a linear imagebooru which lets you share, find and discover new art and media surrounding the show My Little Pony: Friendship is Magic" name="description" />
+  <meta
+    content="Derpibooru is a linear imagebooru which lets you share, find and discover new art and media surrounding the show My Little Pony: Friendship is Magic"
+    name="description"
+  />
 <% end %>

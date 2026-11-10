@@ -1,8 +1,25 @@
 <h1>Source changes by {@fingerprint}</h1>
 <% route = fn p -> ~p"/fingerprint_profiles/#{@fingerprint}/source_changes?#{p}" end %>
 <% params = if @conn.params["added"], do: [added: @conn.params["added"]] %>
-<% pagination = render PhilomenaWeb.PaginationView, "_pagination.html", page: @source_changes, route: route, conn: @conn, params: params %>
+<% pagination =
+  render(PhilomenaWeb.PaginationView, "_pagination.html",
+    page: @source_changes,
+    route: route,
+    conn: @conn,
+    params: params
+  ) %>
 <div class="block">
-  <div class="block__header"><span class="block__header__title">Display only:</span>{link "Removed", to: ~p"/fingerprint_profiles/#{@fingerprint}/source_changes?#{[added: 0]}"}{link "Added", to: ~p"/fingerprint_profiles/#{@fingerprint}/source_changes?#{[added: 1]}"}{link "All", to: ~p"/fingerprint_profiles/#{@fingerprint}/source_changes"}</div>
-  {render PhilomenaWeb.SourceChangeView, "index.html", conn: @conn, source_changes: @source_changes, pagination: pagination}
+  <div class="block__header">
+    <span class="block__header__title">Display only:</span>{link("Removed",
+      to: ~p"/fingerprint_profiles/#{@fingerprint}/source_changes?#{[added: 0]}"
+    )}{link("Added", to: ~p"/fingerprint_profiles/#{@fingerprint}/source_changes?#{[added: 1]}")}{link(
+      "All",
+      to: ~p"/fingerprint_profiles/#{@fingerprint}/source_changes"
+    )}
+  </div>
+  {render(PhilomenaWeb.SourceChangeView, "index.html",
+    conn: @conn,
+    source_changes: @source_changes,
+    pagination: pagination
+  )}
 </div>
