@@ -1,0 +1,23 @@
+<h1>Duplicate Reports</h1>
+<%= form_for @changeset, ~p"/duplicate_reports", [as: :dq, method: :get], fn f -> %>
+  <div class="field field field--inline">
+    <%= for {label, state} <- states() do %><label class="checkbox-button button button--separate-right"><input checked={Enum.member?(f.data.states, state)} class="checkbox-button__checkbox" name={"#{input_name(f, :states)}[]"} type="checkbox" value={state} /><span class="checkbox-button__label">{label}</span></label><% end %>
+    {select f, :sd, sorts(), class: "input input--separate-right"}{submit "Search", class: "button button--state-primary"}
+  </div>
+  <div class="errors">{error_tag f, :states}{error_tag f, :sd}</div>
+<% end %>
+<%= if @duplicate_reports do %>
+  <% route = fn p -> ~p"/duplicate_reports?#{p}" end %>
+  <% pagination = render PhilomenaWeb.PaginationView, "_pagination.html", page: @duplicate_reports, route: route, conn: @conn, params: [dq: @conn.params["dq"]] %>
+  <div class="block">
+    <div class="block__header page__header">
+      <div class="page__pagination">{pagination}</div>
+    </div>
+    {render PhilomenaWeb.DuplicateReportView, "_list.html", duplicate_reports: @duplicate_reports, conn: @conn}
+    <div class="block">
+      <div class="block__header block__header--light page__header">
+        <div class="page__pagination">{pagination}</div>
+      </div>
+    </div>
+  </div>
+<% end %>

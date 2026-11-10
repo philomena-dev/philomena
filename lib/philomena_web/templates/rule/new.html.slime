@@ -1,3 +1,0 @@
-h1 Creating a new rule
-
-= render PhilomenaWeb.RuleView, "_form.html", changeset: @changeset, path: ~p"/rules"

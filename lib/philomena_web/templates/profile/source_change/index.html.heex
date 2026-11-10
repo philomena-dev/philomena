@@ -1,0 +1,9 @@
+<h1>Source changes by <a href={~p"/profiles/#{@user}"}>{@user.name}</a></h1>
+<% route = fn p -> ~p"/profiles/#{@user}/source_changes?#{p}" end %>
+<% params = if @conn.params["added"], do: [added: @conn.params["added"]] %>
+<% pagination = render PhilomenaWeb.PaginationView, "_pagination.html", page: @source_changes, route: route, conn: @conn, params: params %>
+<div class="block">
+  <div class="block__header"><span class="block__header__title">Display only:</span>{link "Removed", to: ~p"/profiles/#{@user}/source_changes?#{[added: 0]}"}{link "Added", to: ~p"/profiles/#{@user}/source_changes?#{[added: 1]}"}{link "All", to: ~p"/profiles/#{@user}/source_changes"}</div>
+  <div class="block__header block__header--light"><span class="block__header__title page__info">Listing changes for {@image_count} {pluralize("image", "images", @image_count)}</span></div>
+  {render PhilomenaWeb.SourceChangeView, "index.html", conn: @conn, source_changes: @source_changes, pagination: pagination}
+</div>

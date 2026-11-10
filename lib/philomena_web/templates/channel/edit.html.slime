@@ -1,3 +1,0 @@
-h1 Editing Channel
-
-= render PhilomenaWeb.ChannelView, "_form.html", changeset: @changeset, action: ~p"/channels/#{@channel}", conn: @conn

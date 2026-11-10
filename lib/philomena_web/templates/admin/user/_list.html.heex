@@ -1,0 +1,58 @@
+<div class="block">
+  <div class="block__header page__header">
+    <div class="page__pagination">{@pagination}</div>
+  </div>
+  <div class="block__content">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Activated</th>
+          <th>Role</th>
+          <th>Created</th>
+          <th>Options</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for user <- @users do %>
+          <tr>
+            <td phx-no-format>
+              {link user.name, to: ~p"/profiles/#{user}"}<%= cond do %>
+                <% user.otp_required_for_login -> %><span class="banner__2fa success"><i class="fas fa-check"></i> 2FA</span> <% user.role != "user" -> %><span class="banner__2fa danger"><i class="fas fa-times"></i> 2FA</span> <% true -> %><% end %>
+            </td>
+            <td>
+              <%= if can?(@conn, :edit, Philomena.Users.User) do %>{user.email}<% else %><i>N/A</i><% end %>
+            </td>
+            <td>
+              <%= cond do %>
+                <% user.deleted_at -> %><strong>Deactivated</strong> {pretty_time user.deleted_at}<% user.confirmed_at -> %>Active <% true -> %><strong>Unconfirmed</strong> <% end %>
+            </td>
+            <td>{String.capitalize(user.role)}</td>
+            <td>{pretty_time user.created_at}</td>
+            <td>
+              <%= if can?(@conn, :edit, user) do %>
+                <%= link to: ~p"/admin/users/#{user}/edit" do %><i class="fa fa-fw fa-user-edit"></i>Edit <% end %>
+              <% end %>
+              <%!-- = if user.deleted_at do --%>
+              <%!-- => link_to 'Reactivate', admin_user_activation_path(user), data: { confirm: t('are_you_sure') }, method: :create --%>
+              <%!-- - else --%>
+              <%!-- => link_to 'Deactivate', admin_user_activation_path(user), data: { confirm: t('are_you_sure') }, method: :delete --%>
+              <%!-- ' &bull; --%>
+              <%= if can?(@conn, :index, Philomena.Bans.User) do %>
+                <%= link to: ~p"/admin/user_bans/new?#{[user_id: user.id]}" do %><i class="fa fa-fw fa-ban"></i>Ban <% end %>
+              <% end %>
+              <%= if can?(@conn, :create_links, user) do %>
+                <%= link to: ~p"/profiles/#{user}/artist_links/new" do %><i class="fa fa-fw fa-link"></i>Add link <% end %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="block__header block__header--light page__header">
+    <div class="page__pagination">{@pagination}</div>
+    <div class="page__info"><span class="block__header__title">{render PhilomenaWeb.PaginationView, "_pagination_info.html", page: @users}</span></div>
+  </div>
+</div>

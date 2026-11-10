@@ -1,0 +1,26 @@
+<h1>Notification Area</h1>
+<div class="walloftext">
+  <%= cond do %>
+    <% Enum.any?(@notifications) -> %>
+      <% route = fn p -> ~p"/notifications/categories/#{@category}?#{p}" end %>
+      <% pagination = render PhilomenaWeb.PaginationView, "_pagination.html", page: @notifications, route: route, conn: @conn %>
+      <div class="block notification-type-block">
+        <div class="block__header"><span class="block__header__title">{name_of_category(@category)}</span></div>
+        <div class="block__header block__header__sub">
+          <div class="page__pagination">{pagination}</div>
+        </div>
+        <div>
+          <%= for notification <- @notifications do %>
+            <div class="block block--fixed flex notification">{render PhilomenaWeb.NotificationView, notification_template_path(@category), notification: notification, conn: @conn}</div>
+          <% end %>
+        </div>
+        <div class="block__header block__header--light">
+          <div class="page__pagination">{pagination}</div>
+        </div>
+      </div>
+    <% true -> %>
+      <p>You currently have no notifications of this category.</p>
+      <p>To get notifications on new comments and forum posts, click the 'Subscribe' button in the bar at the top of an image or forum topic. </p>
+  <% end %>
+  <a class="button" href={~p"/notifications"}>View all notifications</a>
+</div>

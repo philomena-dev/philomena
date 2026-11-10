@@ -1,5 +1,0 @@
-h1
-  ' Editing
-  = @rule.name
-
-= render PhilomenaWeb.RuleView, "_form.html", changeset: @changeset, path: ~p"/rules/#{@rule}"

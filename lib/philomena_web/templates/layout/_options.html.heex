@@ -1,0 +1,8 @@
+<%= if @current_user do %>
+  <%= if @current_user.settings.borderless_tags do %>
+    <link href={~p"/css/options/tag-no-border.css"} rel="stylesheet" />
+  <% end %>
+  <%= if @current_user.settings.rounded_tags do %>
+    <link href={~p"/css/options/tag-rounded-border.css"} rel="stylesheet" />
+  <% end %>
+<% end %>

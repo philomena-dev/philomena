@@ -1,0 +1,17 @@
+<h2>IP History for {@user.name}</h2>
+<% route = fn p -> ~p"/profiles/#{@user}/ip_history?#{p}" end %>
+<% pagination = render PhilomenaWeb.PaginationView, "_pagination.html", page: @user_ips, route: route, conn: @conn %>
+<div class="page__pagination">{pagination}</div>
+<ul>
+  <%= for uip <- @user_ips do %>
+    <li>
+      {link_to_ip @conn, uip.ip}
+      <ul>
+        <%= for u <- Map.get(@other_users, uip.ip, []) do %>
+          <li>{link u.user.name, to: ~p"/profiles/#{u.user}"} ({u.uses} uses, last used {pretty_time(u.updated_at)}) </li>
+        <% end %>
+      </ul>
+    </li>
+  <% end %>
+</ul>
+<div class="page__pagination">{pagination}</div>

@@ -1,0 +1,7 @@
+<% comment = @notification.comment %>
+<% image = @notification.image %>
+<div class="flex flex--centered flex__fixed thumb-tiny-container spacing-right">{render PhilomenaWeb.ImageView, "_image_container.html", image: image, size: :thumb_tiny, conn: @conn}</div>
+<div class="flex flex--centered flex__grow">
+  <div>{render PhilomenaWeb.UserAttributionView, "_anon_user.html", object: comment, conn: @conn} commented on <strong>{link "##{image.id}", to: ~p"/images/#{image}" <> "#comments"}</strong> {pretty_time @notification.updated_at} </div>
+</div>
+<div class="flex flex--centered flex--no-wrap"><a class="button button--separate-right" data-click-hideparent=".notification" data-method="post" data-remote="true" href={~p"/images/#{image}/read"} title="Delete"><i class="fa fa-trash"></i></a><a class="button" data-click-hideparent=".notification" data-method="delete" data-remote="true" href={~p"/images/#{image}/subscription"} title="Unsubscribe"><i class="fa fa-bell-slash"></i></a></div>

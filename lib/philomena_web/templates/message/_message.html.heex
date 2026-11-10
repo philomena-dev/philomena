@@ -1,0 +1,33 @@
+<article class="block communication">
+  <%= if not @message.approved do %>
+    <div class="block__content communication__content">
+      <div class="block block--fixed block--danger">
+        <p><i class="fas fa-exclamation-triangle"></i> This private message is pending approval from a staff member. </p>
+        <%= if can?(@conn, :approve, @message) do %>
+          <p>
+            <ul class="horizontal-list">
+              <li>
+                <%= link(to: ~p"/conversations/#{@conversation}/messages/#{@message}/approve", data: [confirm: "Are you sure?"], method: "post", class: "button") do %><i class="fas fa-check"></i> Approve <% end %>
+              </li>
+            </ul>
+          </p>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+  <div class="block__content communication__content flex flex--no-wrap">
+    <div class="communication__body__avatar hide-mobile">{render PhilomenaWeb.UserAttributionView, "_user_avatar.html", object: %{user: @message.from}, conn: @conn, class: "avatar--100px"}</div>
+    <div class="flex__grow communication__body">
+      <div class="communication__body__avatar hide-desktop">{render PhilomenaWeb.UserAttributionView, "_user_avatar.html", object: %{user: @message.from}, conn: @conn, class: "avatar--100px"}</div>
+      <div class="communication__body__sender"><span class="communication__body__sender-name">{render PhilomenaWeb.UserAttributionView, "_user.html", object: %{user: @message.from}, badges: true, conn: @conn}</span><br />{render PhilomenaWeb.UserAttributionView, "_user_title.html", object: %{user: @message.from}, conn: @conn}</div>
+      <%= if @message.approved or can?(@conn, :approve, @message) or @message.from_id == @conn.assigns.current_user.id do %>
+        <div class="communication__body__text">{@body}</div>
+      <% end %>
+    </div>
+  </div>
+  <div class="block__content communication__options">
+    <div class="flex flex--wrap flex--spaced-out">
+      <div>Posted {pretty_time(@message.created_at)}</div>
+    </div>
+  </div>
+</article>
