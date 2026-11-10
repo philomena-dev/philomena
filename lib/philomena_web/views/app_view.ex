@@ -230,11 +230,8 @@ defmodule PhilomenaWeb.AppView do
     if image_has_sources(image), do: Enum.at(image.sources, 0).source, else: ""
   end
 
-  def get_flash(%{assigns: %{flash: nil}}), do: %{}
-  def get_flash(%{assigns: %{flash: flash}}), do: flash
-  def get_flash(_), do: %{}
+  def get_flash(%{assigns: %{flash: flash}}, key) when is_map(flash),
+    do: Phoenix.Flash.get(flash, key)
 
-  def get_flash(%{assigns: %{flash: nil}}, _key), do: %{}
-  def get_flash(%{assigns: %{flash: flash}}, key), do: Phoenix.Flash.get(flash, key)
-  def get_flash(_, _key), do: %{}
+  def get_flash(_conn, _key), do: nil
 end
