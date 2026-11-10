@@ -33,28 +33,28 @@
 
 /* The interactions look like the actions of a thumbnail, which the framework styles inside media boxes only */
 .image-metabar .media-box-action {
-  --action-color: var(--bar-link-color);
-  color: var(--action-color);
+  --_color: var(--bar-link-color);
+  color: var(--_color);
 }
 
 .image-metabar .media-box-action.fave {
-  --action-color: var(--tag-spoiler-text-color);
+  --_color: var(--tag-spoiler-text-color);
 }
 
 .image-metabar .media-box-action.upvote {
-  --action-color: var(--tag-default-text-color);
+  --_color: var(--tag-default-text-color);
 }
 
 .image-metabar .media-box-action.downvote,
 .image-metabar .media-box-action.hide {
-  --action-color: var(--tag-error-text-color);
+  --_color: var(--tag-error-text-color);
 }
 
 .image-metabar a.media-box-action:hover,
 .image-metabar a.media-box-action:focus-visible,
 .image-metabar a.media-box-action.active {
   color: var(--surface-color);
-  background-color: var(--action-color);
+  background-color: var(--_color);
   text-decoration: none;
 }
 

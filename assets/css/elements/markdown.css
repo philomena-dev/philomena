@@ -28,24 +28,24 @@ $markdown: .communication-text, .markdown;
 
 /* Images stay inside the container; one whose alternative text names a size is no larger than it */
 :is($(markdown)) img {
-  max-width: min(100%, var(--image-size, 100%));
-  max-height: var(--image-size, none);
+  max-width: min(100%, var(--_size, 100%));
+  max-height: var(--_size, none);
 }
 
 :is($(markdown)) img[alt="tiny"] {
-  --image-size: 64px;
+  --_size: 64px;
 }
 
 :is($(markdown)) img[alt="small"] {
-  --image-size: 128px;
+  --_size: 128px;
 }
 
 :is($(markdown)) img[alt="medium"] {
-  --image-size: 256px;
+  --_size: 256px;
 }
 
 :is($(markdown)) img[alt="large"] {
-  --image-size: 512px;
+  --_size: 512px;
 }
 
 /* Code, as the framework's code span and code block; a block wraps its lines */
