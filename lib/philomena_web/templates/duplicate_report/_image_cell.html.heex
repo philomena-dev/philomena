@@ -1,18 +1,11 @@
-<div class="flex flex-col justify-between items-center flex-nowrap text-center dr__image-cell">
-  <p>
-    <%= if is_nil(@image) do %>
-      (Image now hard-deleted)
-    <% else %>
-      #{@image.id}
-    <% end %>
-  </p>
-  <div class="dupe-report-list--image-container">
-    {render(PhilomenaWeb.ImageView, "_image_container.html",
-      image: @image,
-      size: :thumb_small,
-      conn: @conn
-    )}
-  </div>
+<div class="flex flex-col justify-between items-center flex-nowrap text-center">
+  <p>#{@image.id}</p>
+  {render(PhilomenaWeb.ImageView, "_image_container.html",
+    image: @image,
+    size: :thumb_small,
+    class: "dupe-report-image",
+    conn: @conn
+  )}
   <p>{@image.image_width}x{@image.image_height}</p>
   <p>
     {render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @image, conn: @conn)}

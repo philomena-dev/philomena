@@ -3,25 +3,17 @@ target_url = comparison_url(@conn, @duplicate_report.duplicate_of_image)
 
 {width, height} =
   largest_dimensions([@duplicate_report.image, @duplicate_report.duplicate_of_image]) %>
-<div class="comparison--navigation">
-  <a
-    class="button button-success comparison--navigation__button"
-    href={source_url}
-    target="_blank"
-  >Open source file</a>
-  <a
-    class="button button-success comparison--navigation__button"
-    href={target_url}
-    target="_blank"
-  >Open target file</a>
-  <div class="comparison--navigation__gap"></div>
-  <a class="button comparison--navigation__button" href="#subtractive">Subtractive</a>
-  <a class="button comparison--navigation__button" href="#swipe">Swipe</a>
-  <a class="button comparison--navigation__button" href="#onion-skin">Onion skin</a>
+<div class="button-group separated">
+  <a class="button button-success js-comparison-button" href={source_url} target="_blank">Open source file</a>
+  <a class="button button-success js-comparison-button" href={target_url} target="_blank">Open target file</a>
+  <div class="flex-1"></div>
+  <a class="button js-comparison-button" href="#subtractive">Subtractive</a>
+  <a class="button js-comparison-button" href="#swipe">Swipe</a>
+  <a class="button js-comparison-button" href="#onion-skin">Onion skin</a>
 </div>
 <h1>Difference</h1>
 <div class="difference" id="subtractive">
-  <svg class="difference__image" height={height} viewBox={"0 0 #{width} #{height}"}><defs>
+  <svg class="difference__image" height={height} width={width} viewBox={"0 0 #{width} #{height}"}><defs>
     <filter id="overlay-diff">
       <feImage
         crossorigin="anonymous"
@@ -55,7 +47,7 @@ target_url = comparison_url(@conn, @duplicate_report.duplicate_of_image)
 </div>
 <h1>Swipe</h1>
 <div class="swipe" id="swipe">
-  <svg class="swipe__image" height={height} viewBox={"0 0 #{width} #{height}"}><defs>
+  <svg class="swipe__image" height={height} width={width} viewBox={"0 0 #{width} #{height}"}><defs>
     <pattern height="16" id="checkerboard" patternUnits="userSpaceOnUse" width="16">
       <rect fill="#ffffff44" height="8" width="8" x="0" y="0"></rect>
       <rect fill="#00000044" height="8" width="8" x="0" y="8"></rect>
@@ -91,7 +83,7 @@ target_url = comparison_url(@conn, @duplicate_report.duplicate_of_image)
 </div>
 <h1>Onion Skin</h1>
 <div class="onion-skin" id="onion-skin">
-  <svg class="onion-skin__image" height={height} viewBox={"0 0 #{width} #{height}"}><defs>
+  <svg class="onion-skin__image" height={height} width={width} viewBox={"0 0 #{width} #{height}"}><defs>
     <pattern height="16" id="checkerboard" patternUnits="userSpaceOnUse" width="16">
       <rect fill="#ffffff44" height="8" width="8" x="0" y="0"></rect>
       <rect fill="#00000044" height="8" width="8" x="0" y="8"></rect>
@@ -104,8 +96,8 @@ target_url = comparison_url(@conn, @duplicate_report.duplicate_of_image)
   </image>
   <image crossorigin="anonymous" height="100%" id="target" width="100%" xlink:href={target_url}>
   </image></svg>
-  <div class="onion-skin__slider-box">
-    <input class="onion-skin__slider" max="1" min="0" step="0.01" type="range" /><button class="button onion-skin__button">0%</button><button class="button onion-skin__button">100%</button>
+  <div class="onion-skin__controls">
+    <input class="slider flex-1 js-onion-skin-slider" max="1" min="0" step="0.01" type="range" /><button class="button js-onion-skin-button">0%</button><button class="button js-onion-skin-button">100%</button>
   </div>
 </div>
 <a class="button" data-click-toggle="#comparison-help" href="#">Toggle help</a>
