@@ -198,7 +198,6 @@ a.header-button:hover {
 .burger .header-input {
   flex: 1 1 auto;
   block-size: auto;
-  padding-inline-start: 0;
 }
 
 /* The secondary bar wraps where the staff links do not fit beside the sections, a row of bar height each */

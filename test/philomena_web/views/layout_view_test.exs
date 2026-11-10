@@ -195,6 +195,7 @@ defmodule PhilomenaWeb.LayoutViewTest do
       assert burger =~ ~s(data-method="delete" href="/sessions")
       assert burger =~ ~s(id="filter-burger-menu")
       assert burger =~ ~s(id="spoiler-burger-menu")
+      assert burger =~ ~s(<label for="spoiler-burger-menu">Spoilers</label>)
 
       for label <-
             ["Random", "Post Search", "Tag Changes", "Rankings", "Donate", "Watched"] ++

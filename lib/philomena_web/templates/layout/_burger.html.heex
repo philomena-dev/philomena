@@ -37,23 +37,23 @@
       )}
       <%= form_for @user_changeset, ~p"/filters/current", [class: "burger-item", id: "filter-burger-form"], fn f -> %>
         <span class="burger-icon"><i class="fa-fw"></i></span>
+        <label for="filter-burger-menu">Filter</label>
         {select(f, :current_filter_id, @available_filters,
           name: "id",
           id: "filter-burger-menu",
           class: "header-input",
           data: [change_submit: "#filter-burger-form"],
-          autocomplete: "off",
-          "aria-label": "Filter"
+          autocomplete: "off"
         )}
       <% end %>
       <%= form_for @spoiler_changeset, ~p"/filters/spoiler_type", [class: "burger-item", id: "spoiler-burger-form"], fn f -> %>
         <span class="burger-icon"><i class="fa-fw"></i></span>
+        <label for="spoiler-burger-menu">Spoilers</label>
         {select(f, :spoiler_type, @spoiler_types,
           id: "spoiler-burger-menu",
           class: "header-input",
           data: [change_submit: "#spoiler-burger-form"],
-          autocomplete: "off",
-          "aria-label": "Spoilers"
+          autocomplete: "off"
         )}
       <% end %>
       <hr class="burger-divider" />
