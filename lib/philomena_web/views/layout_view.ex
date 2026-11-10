@@ -9,8 +9,6 @@ defmodule PhilomenaWeb.LayoutView do
   alias Philomena.Users.Settings
   alias Plug.Conn
 
-  @themes Settings.themes()
-
   def layout_class(conn) do
     conn.assigns[:layout_class] || "layout--narrow"
   end
@@ -92,18 +90,18 @@ defmodule PhilomenaWeb.LayoutView do
   their pages follow the system's color scheme.
   """
   def theme_mode(nil), do: nil
-  def theme_mode(user), do: user |> user_theme() |> String.split("-") |> hd()
+  def theme_mode(user), do: user |> user_theme() |> Settings.split_theme() |> elem(0)
 
   def user_stylesheet_path(user), do: user |> user_theme() |> theme_stylesheet_path()
 
   @doc "The stylesheet of a theme such as `dark-purple`: the one of its color, for both modes."
   def theme_stylesheet_path(theme) do
-    [_mode, color] = String.split(theme, "-")
+    {_name, color} = Settings.split_theme(theme)
     static_path(PhilomenaWeb.Endpoint, "/css/#{color}.css")
   end
 
-  defp user_theme(%{settings: %{theme: theme}}) when theme in @themes, do: theme
-  defp user_theme(_user), do: "dark-blue"
+  defp user_theme(%{settings: %{theme: theme}}), do: theme
+  defp user_theme(_user), do: %Settings{}.theme
 
   def hide_staff_tools_attribute(conn),
     do: if(conn.cookies["hide_staff_tools"] == "true", do: "true", else: "false")

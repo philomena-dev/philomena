@@ -14,6 +14,16 @@ defmodule PhilomenaWeb.SettingControllerTest do
       assert response =~ "Editing Settings - Derpibooru"
     end
 
+    test "selects the default theme for a stored theme that is no longer offered", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      Repo.update!(Ecto.Changeset.change(Repo.get!(Settings, user.id), theme: "default"))
+
+      response = html_response(get(conn, ~p"/settings/edit"), 200)
+
+      assert response =~ ~s(<option selected value="dark">Dark</option>)
+      assert response =~ ~s(<option selected value="blue">Blue</option>)
+    end
+
     test "renders the form for logged-in users", %{conn: conn} do
       %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
