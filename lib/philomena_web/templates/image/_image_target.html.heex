@@ -15,8 +15,7 @@
       )}
     </p>
     <span class="js-filter-explanation"></span> {link("your current filter",
-      to: ~p"/filters/#{@conn.assigns.current_filter}",
-      class: "filter-link"
+      to: ~p"/filters/#{@conn.assigns.current_filter}"
     )}.
   </div>
   <%= if size == :full and not embed_display do %>

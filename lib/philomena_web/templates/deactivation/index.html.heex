@@ -6,7 +6,7 @@
     <a href={"mailto:#{contact_email}"}>{contact_email}</a>
   </p>
 </div>
-<div class="deactivations__button-container">
+<div class="flex gap-md">
   {button_to("Back", ~p"/registrations/edit", class: "button")}{button_to(
     "Confirm",
     ~p"/deactivations",

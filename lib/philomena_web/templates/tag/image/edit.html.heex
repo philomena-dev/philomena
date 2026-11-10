@@ -16,7 +16,7 @@
       <%= form_for @changeset, ~p"/tags/#{@tag}/image", [method: "put", multipart: true, class: "content"], fn f -> %>
         {error_summary(@changeset)}
         <h4>Select an image</h4>
-        <div class="image-other">
+        <div>
           <div id="js-image-upload-previews"></div>
           <p>Upload a file from your computer</p>
           <div class="form-control">

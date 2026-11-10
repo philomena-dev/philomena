@@ -18,7 +18,7 @@
       class: "button button-primary"
     )}
   </div>
-  <div class="errors">{error_tag(f, :states)}{error_tag(f, :sd)}</div>
+  <div>{error_tag(f, :states)}{error_tag(f, :sd)}</div>
 <% end %>
 <%= if @duplicate_reports do %>
   <% route = fn p -> ~p"/duplicate_reports?#{p}" end %>

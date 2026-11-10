@@ -58,7 +58,7 @@
       data: [autocomplete: "properties"]
     )}{submit("Search", class: "button")}
   </div>
-  <div class="error">{error_tag(f, :query)}</div>
+  <div>{error_tag(f, :query)}</div>
 <% end %>
 <div class="form-control">
   <label for="rq[query]">Searchable fields: id, created_at, reason, state, open, user, user_id, admin, admin_id, ip, fingerprint, reportable_type, reportable_id, image_id
