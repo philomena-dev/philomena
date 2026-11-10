@@ -48,7 +48,7 @@ describe('the vendored framework', () => {
     expect(checkCss(css)).toEqual([]);
   });
 
-  // css/elements/misc.css spaces paragraphs where the rhythm does not, from these two properties
+  // css/elements/base.css spaces paragraphs where the rhythm does not, from these two properties
   it('marks the children of flow containers and leaves the flow margin invalid elsewhere', () => {
     const root = postcss.parse(css);
     const universal = declaring(root, '--flow', 'initial');
