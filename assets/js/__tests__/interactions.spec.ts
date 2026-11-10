@@ -72,6 +72,7 @@ describe('interactions', () => {
     expect($('a.interaction--fave')!.getAttribute('href')).toBe('/sessions/new');
     expect($('a.interaction--upvote')!.getAttribute('href')).toBe('/sessions/new');
     expect($('a.interaction--downvote')!.getAttribute('href')).toBe('/sessions/new');
+    expect($('a.interaction--hide')!.getAttribute('href')).toBe('/sessions/new');
   });
 
   it('fires POST interact for inactive upvote and updates score/classes', async () => {

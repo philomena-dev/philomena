@@ -253,7 +253,7 @@ function bindInteractions() {
 }
 
 function loggedOutInteractions() {
-  for (const el of $$<HTMLElement>('.interaction--fave,.interaction--upvote,.interaction--downvote')) {
+  for (const el of $$<HTMLElement>('.interaction--fave,.interaction--upvote,.interaction--downvote,.interaction--hide')) {
     el.setAttribute('href', '/sessions/new');
   }
 }
