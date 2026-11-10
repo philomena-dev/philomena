@@ -60,11 +60,6 @@ span.communication__sender__stats,
   margin-left: 6px;
 }
 
-.avatar-svg {
-  max-width: 100%;
-  max-height: 100%;
-}
-
 .hyphenate-breaks {
   hyphens: auto;
 }

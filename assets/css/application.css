@@ -17,6 +17,7 @@
 @import "@philomena/philomena-css/css/design/index.css";
 @import "@philomena/philomena-css/css/utils/index.css";
 @import "@philomena/philomena-css/css/components/alert.css";
+@import "@philomena/philomena-css/css/components/avatar.css";
 @import "@philomena/philomena-css/css/components/badge.css";
 @import "@philomena/philomena-css/css/components/block.css";
 @import "@philomena/philomena-css/css/components/burger.css";
@@ -47,6 +48,7 @@
 /* General style elements that are used throughout the project. */
 @import "elements/base";
 @import "elements/misc";
+@import "elements/avatar";
 @import "elements/barline";
 @import "elements/blocks";
 @import "elements/dropdown";

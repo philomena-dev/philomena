@@ -98,39 +98,6 @@ td.table--stats__sparkline {
   overflow-wrap: break-word;
 }
 
-.avatar--28px {
-  width: 28px;
-  height: 28px;
-}
-
-.avatar--50px {
-  width: 50px;
-  height: 50px;
-}
-
-.avatar--100px {
-  width: 100px;
-  height: 100px;
-}
-
-.avatar--125px {
-  width: 125px;
-  height: 125px;
-}
-
-/* Mobile layout fixes */
-@media (max-width: $min-desktop-width) {
-  .avatar--100px {
-    width: var(--reduced-communication-avatar-size);
-    height: var(--reduced-communication-avatar-size);
-  }
-
-  .avatar--125px {
-    width: var(--reduced-communication-avatar-size);
-    height: var(--reduced-communication-avatar-size);
-  }
-}
-
 /* An artist link hidden from the public, which only its owner and staff see */
 .alternating-color.private-link {
   background-color: var(--danger-tint-color);

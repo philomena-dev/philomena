@@ -24,16 +24,14 @@
     <div class="communication__body__avatar hidden-below-md">
       {render(PhilomenaWeb.UserAttributionView, "_user_avatar.html",
         object: %{user: @message.from},
-        conn: @conn,
-        class: "avatar--100px"
+        conn: @conn
       )}
     </div>
     <div class="flex-1 communication__body">
       <div class="communication__body__avatar hidden-from-md">
         {render(PhilomenaWeb.UserAttributionView, "_user_avatar.html",
           object: %{user: @message.from},
-          conn: @conn,
-          class: "avatar--100px"
+          conn: @conn
         )}
       </div>
       <div class="communication__body__sender">

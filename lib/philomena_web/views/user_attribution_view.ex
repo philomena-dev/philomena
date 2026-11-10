@@ -22,7 +22,7 @@ defmodule PhilomenaWeb.UserAttributionView do
     do: AnonymousName.generate(object, reveal_anon?)
 
   def user_avatar(object, opts \\ []) do
-    class = Keyword.get(opts, :class) || "avatar--100px"
+    class = Keyword.get(opts, :class) || "avatar-md"
     no_profile_link = Keyword.get(opts, :no_profile_link) || false
 
     anon = anonymous_user?(object)
@@ -41,7 +41,7 @@ defmodule PhilomenaWeb.UserAttributionView do
         {:a, href: ~p"/profiles/#{object.user}"}
       end
 
-    attrs = Keyword.put(attrs, :class, "image-constrained #{class}")
+    attrs = Keyword.put(attrs, :class, "avatar square #{class}")
 
     content_tag(tag, content, attrs)
   end

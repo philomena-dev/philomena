@@ -144,6 +144,42 @@ defmodule PhilomenaWeb.UserAttributionViewTest do
     end
   end
 
+  describe "user_avatar/2" do
+    alias Philomena.Users.User
+    alias PhilomenaWeb.UserAttributionView
+
+    defp avatar(object, opts \\ []),
+      do: object |> UserAttributionView.user_avatar(opts) |> Phoenix.HTML.safe_to_string()
+
+    test "links an uploaded avatar to the profile as a square framework avatar" do
+      user = %User{name: "Pictured", slug: "pictured", avatar: "pictured.png"}
+      html = avatar(%{user: user})
+
+      assert html =~
+               ~r{\A<a class="avatar square avatar-md" href="/profiles/pictured"><img src="[^"]*/pictured.png">}
+    end
+
+    test "generates an inline picture for a user without an avatar and for an anonymous author" do
+      user = %User{name: "Unpictured", slug: "unpictured"}
+
+      assert avatar(%{user: user}) =~
+               ~r{\A<a class="avatar square avatar-md" href="/profiles/unpictured"><svg }
+
+      assert avatar(%Comment{user: user, anonymous: true}) =~
+               ~r{\A<div class="avatar square avatar-md"><svg }
+    end
+
+    test "takes a size class and can leave out the profile link" do
+      html =
+        avatar(%{user: %User{name: "Small", slug: "small"}},
+          class: "avatar-xs",
+          no_profile_link: true
+        )
+
+      assert html =~ ~r{\A<div class="avatar square avatar-xs"><svg }
+    end
+  end
+
   describe "user labels" do
     defp render_title(template, assigns),
       do: Phoenix.View.render_to_string(PhilomenaWeb.UserAttributionView, template, assigns)
