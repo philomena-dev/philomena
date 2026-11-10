@@ -112,10 +112,8 @@ pre code {
   white-space: pre-wrap;
 }
 
-/* Native controls, until their forms take the framework's classes */
-select,
-[type="checkbox"],
-[type="radio"] {
-  -webkit-appearance: revert;
+/* Checkboxes and radio buttons keep the browser's look, except the framework's controls (`*-input`), drawn in CSS */
+[type="checkbox"]:not([class*="-input"]),
+[type="radio"]:not([class*="-input"]) {
   appearance: revert;
 }
