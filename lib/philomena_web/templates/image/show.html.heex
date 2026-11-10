@@ -13,7 +13,7 @@
   <%= if @conn.assigns.advert do %>
     {render(PhilomenaWeb.AdvertView, "_box.html", advert: @conn.assigns.advert, conn: @conn)}
   <% end %>
-  <div class="image-description content">
+  <div class="js-image-description content">
     {render(PhilomenaWeb.ImageView, "_description.html",
       image: @image,
       body: @description,

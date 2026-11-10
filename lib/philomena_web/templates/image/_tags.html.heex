@@ -46,7 +46,7 @@
           <button
             class="button js-tag-sauce-toggle"
             data-click-focus=".js-taginput-plain:not(.hidden), .js-taginput-input"
-            data-click-toggle=".tagsauce, .js-imageform"
+            data-click-toggle=".js-tagsauce, .js-imageform"
           >Cancel</button>
         </div>
         <div class="block js-tagtable" data-target="[name=&quot;image[tag_input]&quot;]">
@@ -57,7 +57,7 @@
       <p>You can't edit the tags on this image.</p>
     <% end %>
   </div>
-  <div class={"block allow-overflow tagsauce #{tags_class}"}>
+  <div class={"block allow-overflow js-tagsauce #{tags_class}"}>
     <div class="block-header">
       <span class="block-header-title"><i class="fas fa-tag"></i> Tags</span>
       <a
@@ -65,7 +65,7 @@
         accessKey="t"
         class="js-tag-sauce-toggle"
         data-click-focus=".js-taginput-plain:not(.hidden), .js-taginput-input"
-        data-click-toggle=".tagsauce, .js-imageform"
+        data-click-toggle=".js-tagsauce, .js-imageform"
         id="edit-tags"
         title="Edit tags"
       ><i class="fas fa-edit"></i> Edit</a>

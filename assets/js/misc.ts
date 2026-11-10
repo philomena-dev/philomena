@@ -10,7 +10,7 @@ let touchMoved = false;
 
 function formResult({ target, detail }: FetchcompleteEvent) {
   const elements: Record<string, string> = {
-    '#description-form': '.image-description',
+    '#description-form': '.js-image-description',
     '#uploader-form': '.image-uploader',
   };
 
@@ -48,10 +48,10 @@ function revealSpoiler(event: MouseEvent | TouchEvent) {
 
   if (spoiler) {
     if (showContainer) {
-      const imageShow = assertNotNull($<HTMLDivElement>('.image-show', showContainer));
+      const imageShow = assertNotNull($<HTMLDivElement>('.js-image-show', showContainer));
 
-      if (!imageShow.classList.contains('hidden') && imageShow.classList.contains('spoiler-pending')) {
-        imageShow.classList.remove('spoiler-pending');
+      if (!imageShow.classList.contains('hidden') && imageShow.classList.contains('js-spoiler-pending')) {
+        imageShow.classList.remove('js-spoiler-pending');
         return;
       }
     }
@@ -67,7 +67,7 @@ function revealSpoiler(event: MouseEvent | TouchEvent) {
 
   if (imgspoiler) {
     imgspoiler.classList.remove('imgspoiler');
-    imgspoiler.classList.add('imgspoiler-revealed');
+    imgspoiler.classList.add('js-imgspoiler-revealed');
 
     if (event.type === 'touchend' && !event.defaultPrevented) {
       event.preventDefault();

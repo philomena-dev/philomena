@@ -39,14 +39,14 @@ describe('misc.ts setupEvents', () => {
 
       expect(fireEvent.touchEnd($<HTMLElement>('img', linked)!)).toBe(false);
       expect(linked.className).toBe('spoiler revealed');
-      expect($('.imgspoiler-revealed', linked)).toBeTruthy();
+      expect($('.js-imgspoiler-revealed', linked)).toBeTruthy();
 
       fireEvent.click(unlinked);
       expect(unlinked.className).toBe('spoiler revealed');
-      expect(unlinked.querySelectorAll('.imgspoiler-revealed')).toHaveLength(1);
+      expect(unlinked.querySelectorAll('.js-imgspoiler-revealed')).toHaveLength(1);
 
       expect(fireEvent.touchEnd($<HTMLElement>('#second')!)).toBe(false);
-      expect(unlinked.querySelectorAll('.imgspoiler-revealed')).toHaveLength(2);
+      expect(unlinked.querySelectorAll('.js-imgspoiler-revealed')).toHaveLength(2);
     });
 
     it('ignores the touch that ends a scroll', () => {
@@ -65,26 +65,26 @@ describe('misc.ts setupEvents', () => {
       document.body.innerHTML = `
         <span class="spoiler">
           <div class="image-show-container">
-            <div class="image-show spoiler-pending"><span class="imgspoiler"><img></span></div>
+            <div class="js-image-show js-spoiler-pending"><span class="imgspoiler"><img></span></div>
           </div>
         </span>
       `;
       const spoiler = $<HTMLElement>('.spoiler')!;
-      const imageShow = $<HTMLElement>('.image-show')!;
+      const imageShow = $<HTMLElement>('.js-image-show')!;
 
       fireEvent.click($<HTMLElement>('img')!);
-      expect(imageShow.classList).not.toContain('spoiler-pending');
+      expect(imageShow.classList).not.toContain('js-spoiler-pending');
       expect(spoiler.className).toBe('spoiler');
 
       fireEvent.click($<HTMLElement>('img')!);
       expect(spoiler.className).toBe('spoiler revealed');
-      expect($('.imgspoiler-revealed')).toBeTruthy();
+      expect($('.js-imgspoiler-revealed')).toBeTruthy();
     });
 
     it('reveals a spoiler around an embedded image that is filtered out', () => {
       document.body.innerHTML = `
         <span class="spoiler">
-          <div class="image-show-container"><div class="image-show hidden spoiler-pending"></div></div>
+          <div class="image-show-container"><div class="js-image-show hidden js-spoiler-pending"></div></div>
         </span>
       `;
 
@@ -111,12 +111,12 @@ describe('misc.ts setupEvents', () => {
   it('shows what an edit form answered in place of the form', async () => {
     setupEvents();
     document.body.innerHTML = `
-      <div class="image-description hidden">old</div>
+      <div class="js-image-description hidden">old</div>
       <form id="description-form"><input type="submit" disabled></form>
       <form id="other-form"></form>
     `;
     const form = $<HTMLFormElement>('#description-form')!;
-    const result = $<HTMLElement>('.image-description')!;
+    const result = $<HTMLElement>('.js-image-description')!;
 
     fireEvent(
       $<HTMLFormElement>('#other-form')!,
