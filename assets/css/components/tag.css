@@ -1,0 +1,49 @@
+/* The corners of tags are a token, which css/options/tag-rounded-border.css sets */
+.tag {
+  border-radius: var(--tag-border-radius);
+}
+
+/* The columns of a quick tag table tab */
+.quick-tag-table-tab > div {
+  display: inline-block;
+  padding: 0 var(--spacing-md);
+  vertical-align: top;
+  border-left: var(--border-width) solid var(--tint-color);
+  border-right: var(--border-width) solid var(--tint-color);
+}
+
+.quick-tag-table-tab > div:last-child {
+  border-right: none;
+}
+
+/* A tag's spoiler image, in a bordered square as large as a tiny thumbnail */
+.tag-info__image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--media-box-tiny-width);
+  height: var(--media-box-tiny-width);
+  overflow: hidden;
+  font-size: var(--text-size-sm);
+  text-align: center;
+  border: var(--border-width) solid var(--tint-color);
+}
+
+.tag-info__image img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* Tag descriptions in static pages */
+.tag-info__category {
+  margin-left: var(--spacing-xl);
+}
+
+.tag-info__heading {
+  margin: var(--spacing-md) 0;
+}
+
+.tag-info__list {
+  margin: 0;
+  padding-left: calc(2 * var(--spacing-xl));
+}

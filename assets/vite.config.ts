@@ -36,13 +36,6 @@ export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
       // The workspace root is the repository: serve only the assets and the packages, fonts included
       fs: { allow: [import.meta.dirname, path.resolve(import.meta.dirname, '../node_modules')] },
     },
-    resolve: {
-      alias: {
-        common: path.resolve(import.meta.dirname, 'css/common/'),
-        views: path.resolve(import.meta.dirname, 'css/views/'),
-        elements: path.resolve(import.meta.dirname, 'css/elements/'),
-      },
-    },
     build: {
       target: buildTarget,
       outDir: path.resolve(import.meta.dirname, '../priv/static'),

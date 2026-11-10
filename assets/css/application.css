@@ -16,6 +16,9 @@
 @import "./themes/hues/blue.css";
 @import "@philomena/philomena-css/css/design/index.css";
 @import "@philomena/philomena-css/css/utils/index.css";
+
+/* Every component but accordion, card-forms, clamp, collapsible, content, loading-indicator, popup and progress,
+   which Philomena does not use */
 @import "@philomena/philomena-css/css/components/alert.css";
 @import "@philomena/philomena-css/css/components/avatar.css";
 @import "@philomena/philomena-css/css/components/badge.css";
@@ -45,40 +48,36 @@
 @import "@philomena/philomena-css/css/components/table.css";
 @import "@philomena/philomena-css/css/components/tabs.css";
 @import "@philomena/philomena-css/css/components/tag.css";
+
+/* Philomena's tokens, its base element styles and utilities, then its components and the styles of single pages */
 @import "./tokens.css";
+@import "./design/mixins.css";
+@import "./design/base.css";
 @import "./utils.css";
-
-/* Files containing common properties, such as variable definitions. */
-@import "common/mixins";
-
-/* General style elements that are used throughout the project. */
-@import "elements/base";
-@import "elements/misc";
-@import "elements/avatar";
-@import "elements/blocks";
-@import "elements/dropdown";
-@import "elements/forms";
-@import "elements/layout";
-@import "elements/markdown";
-@import "elements/media";
-@import "elements/navbar";
-@import "elements/page";
-@import "elements/sparkline";
-@import "elements/tables";
-
-/* Style elements specific to certain pages. */
-@import "views/adverts";
-@import "views/approval";
-@import "views/awards";
-@import "views/communications";
-@import "views/duplicates";
-@import "views/galleries";
-@import "views/images";
-@import "views/notifications";
-@import "views/polls";
-@import "views/posts";
-@import "views/profiles";
-@import "views/rules";
-@import "views/staff";
-@import "views/tag_change";
-@import "views/tags";
+@import "./components/autocomplete.css";
+@import "./components/avatar.css";
+@import "./components/award.css";
+@import "./components/block.css";
+@import "./components/communication.css";
+@import "./components/diff.css";
+@import "./components/dropdown.css";
+@import "./components/forms.css";
+@import "./components/markdown.css";
+@import "./components/media.css";
+@import "./components/navbar.css";
+@import "./components/page.css";
+@import "./components/poll.css";
+@import "./components/sparkline.css";
+@import "./components/table.css";
+@import "./components/tag.css";
+@import "./views/adverts.css";
+@import "./views/approval.css";
+@import "./views/duplicates.css";
+@import "./views/galleries.css";
+@import "./views/images.css";
+@import "./views/notifications.css";
+@import "./views/profiles.css";
+@import "./views/rules.css";
+@import "./views/staff.css";
+@import "./views/tag-changes.css";
+@import "./views/threads.css";

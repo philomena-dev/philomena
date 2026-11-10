@@ -1,16 +1,3 @@
-/* Tables of forums, topics and conversations: a large name, narrow counts and a wide column of details */
-.thread-list-name {
-  font-size: var(--text-size-xl);
-}
-
-.thread-list-stat {
-  width: 6%;
-}
-
-.thread-list-detail {
-  width: 35%;
-}
-
 /* Communications keep Philomena's dense rows */
 .communication {
   --block-content-padding: var(--spacing-md);

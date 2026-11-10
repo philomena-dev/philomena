@@ -4,7 +4,3 @@
   grid-auto-rows: 1fr;
   overflow-wrap: anywhere;
 }
-
-body[data-hide-staff-tools="true"] .js-staff-action {
-  display: none;
-}

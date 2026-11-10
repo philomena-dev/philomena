@@ -1,6 +1,6 @@
 /*
  * The elements that the framework's reset leaves unstyled and that are used outside its components: links, text
- * semantics, paragraphs, lists and images.
+ * semantics, paragraphs, lists, images and figures; running text and the site's icon.
  */
 
 /* Links are in the link color, underlined under the pointer; components set their own link styles */
@@ -83,4 +83,41 @@ ol {
 
 img {
   vertical-align: bottom;
+}
+
+/* Running text, also in the HTML of static pages and rules: the base size in the line height of text */
+.walloftext {
+  font-size: var(--text-size-base);
+  line-height: var(--text-line-height);
+}
+
+/* Figures in rendered Markdown are centered, with a bold caption */
+figure {
+  display: table;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+figure img {
+  width: 100%;
+  height: auto;
+  max-width: 400px;
+  display: inline-block;
+}
+
+figure figcaption {
+  display: block;
+  font-weight: bold;
+}
+
+/* The site's icon as a glyph */
+i.favicon-home {
+  background-image: url("/favicon.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  min-width: 1em;
+  height: 1em;
+  display: inline-block;
 }
