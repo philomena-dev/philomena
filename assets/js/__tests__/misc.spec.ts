@@ -98,12 +98,12 @@ describe('misc.ts setupEvents', () => {
     store.set('hide_score', true);
     document.body.innerHTML = `
       <div id="extrameta"></div>
-      <span class="upvotes"></span><span class="score"></span><span class="downvotes"></span>
+      <span class="js-upvote-count"></span><span class="js-score"></span><span class="js-downvote-count"></span>
     `;
 
     setupEvents();
 
-    for (const selector of ['#extrameta', '.upvotes', '.score', '.downvotes']) {
+    for (const selector of ['#extrameta', '.js-upvote-count', '.js-score', '.js-downvote-count']) {
       expect($<HTMLElement>(selector)!.classList).toContain('hidden');
     }
   });

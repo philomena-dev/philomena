@@ -33,28 +33,33 @@ vote_counts? = show_vote_counts?(@conn.assigns.current_user) %>
           href="#"
           rel="nofollow"
           title="Fave!"
-        ><span class="favorites" data-image-id={@image.id} title="Favorites">{@image.faves_count}</span><i class="fa fa-star"></i></a>
+        ><span class="js-fave-count" data-image-id={@image.id} title="Favorites">{@image.faves_count}</span><i class="fa fa-star"></i></a>
         <a
           class="image-metabar-item media-box-action upvote js-interaction-upvote"
           data-image-id={@image.id}
           href="#"
           rel="nofollow"
           title="Yay!"
-        ><span :if={vote_counts?} class="upvotes" data-image-id={@image.id} title="Upvotes">{@image.upvotes_count}</span><i class="fa fa-arrow-up"></i></a>
+        ><span
+          :if={vote_counts?}
+          class="js-upvote-count"
+          data-image-id={@image.id}
+          title="Upvotes"
+        >{@image.upvotes_count}</span><i class="fa fa-arrow-up"></i></a>
       <% else %>
         <span class="image-metabar-item"><span
-          class="favorites"
+          class="js-fave-count"
           data-image-id={@image.id}
           title="Favorites"
         >{@image.faves_count}</span><i class="fa fa-star"></i></span>
         <span :if={vote_counts?} class="image-metabar-item"><span
-          class="upvotes"
+          class="js-upvote-count"
           data-image-id={@image.id}
           title="Upvotes"
         >{@image.upvotes_count}</span><i class="fa fa-arrow-up"></i></span>
       <% end %>
       <span
-        class="image-metabar-item media-box-score score"
+        class="image-metabar-item media-box-score js-score"
         data-image-id={@image.id}
         title="Score"
       >{@image.score}</span>
@@ -67,21 +72,20 @@ vote_counts? = show_vote_counts?(@conn.assigns.current_user) %>
           title="Neigh!"
         ><i class="fa fa-arrow-down"></i><span
           :if={vote_counts?}
-          class="downvotes"
+          class="js-downvote-count"
           data-image-id={@image.id}
           title="Downvotes"
         >{@image.downvotes_count}</span></a>
       <% else %>
         <span :if={vote_counts?} class="image-metabar-item"><i class="fa fa-arrow-down"></i><span
-          class="downvotes"
+          class="js-downvote-count"
           data-image-id={@image.id}
           title="Downvotes"
         >{@image.downvotes_count}</span></span>
       <% end %>
-      <a class="image-metabar-item media-box-action comments" href="#comments" title="Comments"><i class="fa fa-comments"></i><span
-        class="comments_count"
-        data-image-id={@image.id}
-      >{@image.comments_count}</span></a>
+      <a class="image-metabar-item media-box-action comments" href="#comments" title="Comments"><i class="fa fa-comments"></i><span data-image-id={
+        @image.id
+      }>{@image.comments_count}</span></a>
       <a
         :if={show_interactions?}
         class="image-metabar-item media-box-action hide js-interaction-hide"

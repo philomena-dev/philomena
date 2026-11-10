@@ -7,7 +7,7 @@
       rel="nofollow"
       title="Fave!"
     ><i class="fa fa-star"></i><span
-      class="favorites"
+      class="js-fave-count"
       data-image-id={@image.id}
       title="Favorites"
     >{@image.faves_count}</span></a>
@@ -18,7 +18,7 @@
       rel="nofollow"
       title="Yay!"
     ><i class="fa fa-arrow-up"></i></a>
-    <span class="media-box-score score" data-image-id={@image.id} title="Score">{@image.score}</span>
+    <span class="media-box-score js-score" data-image-id={@image.id} title="Score">{@image.score}</span>
     <a
       class="media-box-action downvote js-interaction-downvote"
       data-image-id={@image.id}
@@ -26,10 +26,9 @@
       rel="nofollow"
       title="Neigh!"
     ><i class="fa fa-arrow-down"></i></a>
-    <a class="media-box-action comments" href={"/#{@image.id}#comments"} title="Comments"><i class="fa fa-comments"></i><span
-      class="comments_count"
-      data-image-id={@image.id}
-    >{@image.comments_count}</span></a>
+    <a class="media-box-action comments" href={"/#{@image.id}#comments"} title="Comments"><i class="fa fa-comments"></i><span data-image-id={
+      @image.id
+    }>{@image.comments_count}</span></a>
     <a
       class="media-box-action hide js-interaction-hide"
       data-image-id={@image.id}

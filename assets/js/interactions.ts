@@ -75,16 +75,16 @@ function uncacheStatus(imageId: string, interactionType: InteractionType) {
 }
 
 function setScore(imageId: string, data: ScorePayload) {
-  onImage(imageId, '.score', el => {
+  onImage(imageId, '.js-score', el => {
     el.textContent = String(data.score);
   });
-  onImage(imageId, '.favorites', el => {
+  onImage(imageId, '.js-fave-count', el => {
     el.textContent = String(data.faves);
   });
-  onImage(imageId, '.upvotes', el => {
+  onImage(imageId, '.js-upvote-count', el => {
     el.textContent = String(data.upvotes);
   });
-  onImage(imageId, '.downvotes', el => {
+  onImage(imageId, '.js-downvote-count', el => {
     el.textContent = String(data.downvotes);
   });
 }

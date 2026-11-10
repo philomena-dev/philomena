@@ -43,10 +43,10 @@ function setupDom({ withList = false } = {}) {
     <a class="js-interaction-downvote" data-image-id="42"><i></i></a>
     <a class="js-interaction-fave" data-image-id="42"><i></i></a>
     <a class="js-interaction-hide" data-image-id="42"><i></i></a>
-    <span class="score" data-image-id="42"></span>
-    <span class="favorites" data-image-id="42"></span>
-    <span class="upvotes" data-image-id="42"></span>
-    <span class="downvotes" data-image-id="42"></span>
+    <span class="js-score" data-image-id="42"></span>
+    <span class="js-fave-count" data-image-id="42"></span>
+    <span class="js-upvote-count" data-image-id="42"></span>
+    <span class="js-downvote-count" data-image-id="42"></span>
   </div>`;
 }
 
@@ -87,8 +87,8 @@ describe('interactions', () => {
 
     expect(fetchJson).toHaveBeenCalled();
     await new Promise(r => setTimeout(r, 0));
-    expect($('.score')!.textContent).toBe('10');
-    expect($('.upvotes')!.textContent).toBe('11');
+    expect($('.js-score')!.textContent).toBe('10');
+    expect($('.js-upvote-count')!.textContent).toBe('11');
     expect(upvote.classList.contains('active')).toBe(true);
   });
 
@@ -170,8 +170,8 @@ describe('interactions', () => {
 
     await new Promise(r => setTimeout(r, 0));
     expect(upvote.classList.contains('active')).toBe(false);
-    expect($('.score')!.textContent).toBe('5');
-    expect($('.upvotes')!.textContent).toBe('4');
+    expect($('.js-score')!.textContent).toBe('5');
+    expect($('.js-upvote-count')!.textContent).toBe('4');
   });
 
   it('fires POST interact for inactive fave and updates classes', async () => {

@@ -83,7 +83,7 @@ export function setupEvents() {
   }
 
   if (store.get('hide_score')) {
-    $$<HTMLElement>('.upvotes,.score,.downvotes').forEach(s => hideEl(s));
+    $$<HTMLElement>('.js-upvote-count,.js-score,.js-downvote-count').forEach(s => hideEl(s));
   }
 
   document.addEventListener('fetchcomplete', formResult);

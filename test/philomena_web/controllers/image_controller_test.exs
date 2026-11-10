@@ -217,7 +217,7 @@ defmodule PhilomenaWeb.ImageControllerTest do
       refute response =~ "js-interaction-fave"
       refute response =~ "js-interaction-upvote"
       refute response =~ "js-interaction-downvote"
-      assert response =~ ~r/class="favorites"[^>]*>7</
+      assert response =~ ~r/class="js-fave-count"[^>]*>7</
       assert response =~ "Unsubscribe"
     end
 
@@ -226,10 +226,10 @@ defmodule PhilomenaWeb.ImageControllerTest do
 
       response = html_response(get(conn, ~p"/images/#{image}"), 200)
 
-      assert response =~ ~r/class="favorites"[^>]*>7</
-      assert response =~ ~r/class="upvotes"[^>]*>5</
-      assert response =~ ~r/class="downvotes"[^>]*>2</
-      assert response =~ ~r/class="[^"]*\bscore"[^>]*>3</
+      assert response =~ ~r/class="js-fave-count"[^>]*>7</
+      assert response =~ ~r/class="js-upvote-count"[^>]*>5</
+      assert response =~ ~r/class="js-downvote-count"[^>]*>2</
+      assert response =~ ~r/class="[^"]*\bjs-score"[^>]*>3</
       assert response =~ "js-interaction-fave"
       assert response =~ ~s(href="/sessions/new"><i class="fa fa-bell">)
       assert response =~ "Featured in"
