@@ -62,6 +62,11 @@ p:last-child {
   margin-bottom: calc((1 - var(--flow, 0)) * var(--spacing-md));
 }
 
+/* An alert spaces its paragraphs as a flow container does */
+.alert > * {
+  --flow: 1;
+}
+
 /* Running text lists, with bullets or numbers */
 ul,
 ol {

@@ -223,3 +223,8 @@ select.input:focus:hover {
   cursor: pointer;
   background-color: var(--input-color-active);
 }
+
+/* The error summary at the top of a form keeps its fields at a distance */
+form > .alert {
+  margin-bottom: var(--spacing-md);
+}
