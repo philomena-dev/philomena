@@ -1,6 +1,6 @@
 /*
  * The elements that the framework's reset leaves unstyled and that are used outside its components: links, text
- * semantics, lists, rules, code, and the native form controls of forms without the framework's classes.
+ * semantics, paragraphs, lists, images, code, and native checkboxes and radio buttons.
  */
 
 /* Links are in the link color, underlined under the pointer; components set their own link styles */
@@ -67,13 +67,6 @@ ul {
 
 ol {
   list-style: decimal;
-}
-
-/* As the framework's separator */
-hr {
-  height: 0;
-  margin: var(--block-spacing) 0;
-  border-top: var(--border-width) solid var(--tint-color);
 }
 
 img {

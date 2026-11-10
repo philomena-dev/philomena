@@ -9,12 +9,13 @@
 @import "@fortawesome/fontawesome-free/css/regular.css";
 @import "@fortawesome/fontawesome-free/css/brands.css";
 
-/* The framework's configuration, Philomena's and the default hue's, then the framework's design layer: reset,
-   tokens, base layout */
+/* The framework's configuration, Philomena's and the default hue's, then the framework's design layer (reset,
+   tokens, base layout) and components */
 @import "@philomena/philomena-css/css/config.css";
 @import "./config.css";
 @import "./themes/hues/blue.css";
 @import "@philomena/philomena-css/css/design/index.css";
+@import "@philomena/philomena-css/css/components/separator.css";
 @import "./tokens.css";
 @import "./legacy.css";
 
