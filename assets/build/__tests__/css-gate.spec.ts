@@ -22,7 +22,17 @@ describe('css-gate', () => {
     [':has()', '.a:has(.b) { color: red }', 'css.selectors.has'],
     [':is()', ':is(.a, .b) { color: red }', 'css.selectors.is'],
     [':where()', ':where(.a) { color: red }', 'css.selectors.where'],
-    [':focus-visible', '.a:focus-visible { color: red }', 'css.selectors.focus-visible'],
+    [':focus-visible alone', '.a:focus-visible { color: red }', 'without its .focus-visible twin'],
+    [
+      ':focus-visible beside a twin that differs',
+      '.a.focus-visible { color: red } .a:focus-visible { color: blue }',
+      'without its .focus-visible twin',
+    ],
+    [
+      ':focus-visible beside a twin elsewhere',
+      '@media print { .a.focus-visible { color: red } } .a:focus-visible { color: red }',
+      'without its .focus-visible twin',
+    ],
     [':not() lists', '.a:not(.b, .c) { color: red }', 'not.selector_list'],
     ['complex :not()', '.a:not(.b .c) { color: red }', 'not.selector_list'],
     ['alignment to the writing mode in a flex container', '.a { justify-content: start }', 'justify-content.start'],
@@ -33,7 +43,8 @@ describe('css-gate', () => {
     ['translate', '.a { translate: 1px }', 'css.properties.translate'],
     ['a feature that only a negated @supports tests', '@supports not (inset: 0) { .a { inset: 0 } }', 'inset'],
     ['media ranges', '@media (width >= 1px) { .a { color: red } }', 'range_syntax'],
-    ['a selector list that some browser drops', '.a, .b:focus-visible { color: red }', 'split the rule'],
+    ['a selector list that some browser drops', '.a, .b:fullscreen { color: red }', 'split the rule'],
+    [':focus-visible beside other selectors', '.a, .b:focus-visible { color: red }', 'split the rule'],
     ['an unprefixed property without its prefix', '.a { user-select: none }', 'css.properties.user-select'],
     ['an unknown property', '.a { colour: red }', 'css.properties.colour'],
   ])('rejects %s', (_, css, problem) => {
@@ -47,7 +58,7 @@ describe('css-gate', () => {
         * xhtml|* { all: unset; display: revert }
         @media (min-width: 600px) and (prefers-reduced-motion) { .a:not(.b):not(.c) > .d + .e { margin: 0 } }
         .a { -webkit-user-select: none; user-select: none; width: -moz-fit-content; width: fit-content }
-        .a.focus-visible { outline: 1px solid; accent-color: red }
+        .a.focus-visible, .b { outline: 1px solid; accent-color: red } .a:focus-visible { outline: 1px solid; accent-color: red }
         .a { display: flex; gap: 1px }
         .grid { display: grid; gap: 1px; grid-template-columns: repeat(2, minmax(0, 1fr)) }
         ::-webkit-scrollbar { width: 1px } .a { -webkit-line-break: after-white-space; -webkit-unknown: 1 }

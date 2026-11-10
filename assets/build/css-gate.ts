@@ -5,6 +5,7 @@ import type { Plugin } from 'vite';
 import bcd, { type CompatStatement, type Identifier } from '@mdn/browser-compat-data/forLegacyNode';
 import { enhancements } from './enhancements.ts';
 import { floor, lacking } from './floor.ts';
+import { classTwin } from './postcss-floor-focus-visible.ts';
 import { inKeyframes } from './postcss-floor-selectors.ts';
 
 /** A feature that some piece of CSS needs: a browser-compat-data path, spelled as the CSS spells it */
@@ -153,6 +154,22 @@ const describe = (gaps: Map<string, Set<string>>) =>
     )
     .join('; ');
 
+/** What `rule` declares, under each of its selectors */
+const signatures = (rule: Rule, selectors = rule.selectors) =>
+  selectors.map(selector => `${selector} { ${rule.nodes.map(String).join('; ')} }`);
+
+/** A rule for :focus-visible needs a class twin that is the same but for `.focus-visible`, which floor browsers match */
+function checkFocusVisible(rule: Rule, problems: string[], twins: Map<Container | undefined, Set<string>>) {
+  const natives = rule.selectors.filter(selector => classTwin(selector) !== selector);
+  const where = rule.selector.slice(0, 120);
+
+  if (natives.length < rule.selectors.length) {
+    problems.push(`${where}: floor browsers drop the whole list for :focus-visible, split the rule`);
+  } else if (!signatures(rule, natives.map(classTwin)).every(twin => twins.get(rule.parent)?.has(twin))) {
+    problems.push(`${where}: :focus-visible without its .focus-visible twin (css.selectors.focus-visible)`);
+  }
+}
+
 function checkRule(rule: Rule, problems: string[], guarded: Set<string>) {
   const where = rule.selector.slice(0, 120);
 
@@ -248,11 +265,19 @@ function checkAtRule(rule: AtRule, problems: string[], guarded: Set<string>) {
 export function checkCss(css: string): string[] {
   const root = postcss.parse(css);
   const problems: string[] = [];
+  // The rules of each container by their signatures, where a rule for :focus-visible looks for its twin
+  const twins = new Map<Container | undefined, Set<string>>();
+  root.walkRules(rule => {
+    const rules = twins.get(rule.parent) ?? new Set<string>();
+    twins.set(rule.parent, rules);
+    for (const signature of signatures(rule)) rules.add(signature);
+  });
 
   // A feature that a positive @supports tests for is safe inside it: the CSS around the block is the fallback
   (function walk(container: Container, guarded: Set<string>) {
     container.each(node => {
       if (node.type === 'rule') checkRule(node, problems, guarded);
+      if (node.type === 'rule' && /:focus-visible/i.test(node.selector)) checkFocusVisible(node, problems, twins);
       if (node.type === 'atrule') checkAtRule(node, problems, guarded);
       if (
         node.type === 'decl' &&

@@ -1,7 +1,7 @@
 import autoprefixer from 'autoprefixer';
-import postcssFocusVisible from 'postcss-focus-visible';
 import postcssLogical, { type pluginOptions } from 'postcss-logical';
 import type { AcceptedPlugin } from 'postcss';
+import postcssFloorFocusVisible from './postcss-floor-focus-visible.ts';
 import postcssFloorReset from './postcss-floor-reset.ts';
 import postcssFloorSelectors from './postcss-floor-selectors.ts';
 import postcssFloorSupports from './postcss-floor-supports.ts';
@@ -26,8 +26,7 @@ export default function cssCompat(): AcceptedPlugin[] {
   return [
     logical(),
     postcssFloorValues(),
-    // Matched by the focus-visible polyfill, loaded by js/app.ts
-    postcssFocusVisible({ preserve: false, disablePolyfillReadyClass: true }),
+    postcssFloorFocusVisible(),
     postcssFloorSelectors(),
     // Rewrites the reset before the floor-selectors plugin runs and raises selectors after it
     postcssFloorReset(),

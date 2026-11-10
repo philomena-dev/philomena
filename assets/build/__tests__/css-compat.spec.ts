@@ -9,4 +9,10 @@ describe('css-compat', () => {
       '.a { margin-left: 1px; margin-right: 2px; text-align: start }',
     );
   });
+
+  it('keeps native :focus-visible after its class twin, both at the same specificity', () => {
+    expect(run('.a {} :where(a, .b):focus-visible { outline: 0 }')).toBe(
+      '.a {} a.focus-visible, .b.focus-visible { outline: 0 } a:focus-visible, .b:focus-visible { outline: 0 }',
+    );
+  });
 });

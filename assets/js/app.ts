@@ -4,7 +4,7 @@
 // Import new files and add their exported setup function to the functions array below.
 
 import './ujs';
-// Sets the .focus-visible class that the stylesheets use in place of :focus-visible
+// Sets the .focus-visible class that floor browsers match in place of :focus-visible
 import 'focus-visible';
 
 import { whenReady } from './utils/dom';

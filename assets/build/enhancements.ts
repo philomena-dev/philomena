@@ -1,10 +1,14 @@
 /**
  * The features the CSS keeps although a browser of the floor lacks them, as browser-compat-data paths (a path also
- * covers the values and other subfeatures under it), each with the reason why its absence leaves the look intact.
- * The CSS gate accepts them and the floor-selectors plugin keeps the selectors among them. Add an entry only for an
- * enhancement: nothing whose absence changes the layout or leaves a component unstyled.
+ * covers the values and other subfeatures under it), each with the reason why its absence leaves the look intact or
+ * what stands in for it. The CSS gate accepts them and the floor-selectors plugin keeps the selectors among them. Add
+ * an entry only for an enhancement: nothing whose absence changes the layout or leaves a component unstyled.
  */
 export const enhancements: Record<string, string> = {
+  // The gate accepts a :focus-visible rule only beside its twin
+  'css.selectors.focus-visible':
+    'floor browsers match the .focus-visible twin of each rule (build/postcss-floor-focus-visible.ts), a class that ' +
+    'the focus-visible polyfill loaded by js/app.ts sets',
   'css.properties.accent-color': 'native checkboxes and radios keep the browser color',
   'css.properties.color-scheme': 'Firefox before 96 draws native controls in their light look on dark themes',
   'css.properties.field-sizing': 'a field keeps the size its rows and size attributes give it',
