@@ -35,8 +35,6 @@ $image-large-size: 512px;
   --image-medium-size: $image-medium-size;
   --image-large-size: $image-large-size;
   --header-spacing: 12px;
-  --block-header-height: 32px;
-  --block-header-sub-height: 26px;
   --reduced-communication-avatar-size: 50px;
   --checkbox-size: 1.25rem;
   --checkbox-border-width: 1px;

@@ -33,9 +33,6 @@ $block-header-link-text-color-dark: #ffdc18;
 
 /* Read only by css/legacy.css */
 $meta-color-dark: #2a2919;
-$block-header-color-dark: #4f420a;
-$block-header-light-color-dark: #4f420a;
-$block-header-light-link-text-color-dark: #ffdc18;
 $media-box-color-dark: #504d31;
 $autocomplete-history-color-dark: #e9c600;
 $primary-color-light: #f9f0ab;

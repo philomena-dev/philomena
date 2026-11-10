@@ -45,9 +45,6 @@ $notice-color-dark: #3b3b3b;
 /* Read only by css/legacy.css */
 $destroyed-content-color-dark: #412f2f;
 $meta-color-dark: #411d1d;
-$block-header-color-dark: #812d2d;
-$block-header-light-color-dark: #7a3030;
-$block-header-light-link-text-color-dark: #dbdb00;
 $media-box-color-dark: #7c2424;
 $commission-color-dark: #e02727;
 $autocomplete-history-color-dark: #d2d207;

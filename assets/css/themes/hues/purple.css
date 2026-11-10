@@ -29,9 +29,6 @@ $block-header-link-text-color-dark: #a96fdb;
 /* Read only by css/legacy.css */
 $destroyed-content-color-dark: #332025;
 $meta-color-dark: #22192a;
-$block-header-color-dark: #3a314e;
-$block-header-light-color-dark: #2d253c;
-$block-header-light-link-text-color-dark: #8f72c4;
 $media-box-color-dark: #311e49;
 $autocomplete-history-color-dark: #b577eb;
 $primary-color-light: #dec1f9;
