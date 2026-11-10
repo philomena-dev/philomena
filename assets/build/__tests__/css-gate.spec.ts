@@ -30,7 +30,6 @@ describe('css-gate', () => {
     ['margin-inline', '.a { margin-inline: 0 }', 'css.properties.margin-inline'],
     ['padding-block', '.a { padding-block: 0 }', 'css.properties.padding-block'],
     ['translate', '.a { translate: 1px }', 'css.properties.translate'],
-    ['@supports selector()', '@supports selector(:hover) { .a { color: red } }', 'css.at-rules.supports.selector'],
     ['a feature that only a negated @supports tests', '@supports not (inset: 0) { .a { inset: 0 } }', 'inset'],
     ['media ranges', '@media (width >= 1px) { .a { color: red } }', 'range_syntax'],
     ['a selector list that some browser drops', '.a, .b:focus-visible { color: red }', 'split the rule'],
@@ -56,7 +55,7 @@ describe('css-gate', () => {
         [type="a" i] { outline: 0 } .a:-moz-focusring { outline: 0 } ::-webkit-details-marker { display: none }
         :root { --a: rgba(0, 0, 0, 0.5); color: var(--a, hsla(0, 0%, 0%, 1)); width: calc((1px + 2px) * 2) }
         .a { background: -webkit-linear-gradient(red, blue) }
-        @supports ((display: grid)) { .a { color: red } } @media (-webkit-min-device-pixel-ratio: 2) { .a { color: red } }
+        @supports ((display: grid)) or selector(:hover) { .a { color: red } } @media (-webkit-min-device-pixel-ratio: 2) { .a { color: red } }
       `),
     ).toEqual([]);
   });

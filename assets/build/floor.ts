@@ -2,31 +2,16 @@ import { resolve } from 'path';
 import browserslist from 'browserslist';
 import bcd, { type Identifier, type SimpleSupportStatement } from '@mdn/browser-compat-data/forLegacyNode';
 
-/**
- * How the browserslist families of .browserslistrc map to browser-compat-data (`data`, what the CSS gate judges) and
- * to Vite's build targets (`target`). A family without `data` is not judged: browser-compat-data has no record of it.
- * Samsung Internet is left out of the judgment on purpose: the oldest version the `since` line brings in, 13.0, is a
- * Chromium 83, which lacks features (flex gap, the `revert` keyword) that the explicit floors have.
- */
-const families: Record<string, { data?: string; target?: string }> = {
+// The browserslist families of .browserslistrc, by their browser-compat-data name and Vite build target name
+const families: Record<string, { data: string; target: string }> = {
   chrome: { data: 'chrome', target: 'chrome' },
   edge: { data: 'edge', target: 'edge' },
   firefox: { data: 'firefox', target: 'firefox' },
   safari: { data: 'safari', target: 'safari' },
   ios_saf: { data: 'safari_ios', target: 'ios' },
-  opera: { data: 'opera', target: 'opera' },
-  and_chr: { data: 'chrome_android' },
-  and_ff: { data: 'firefox_android' },
-  android: { data: 'webview_android' },
-  op_mob: { data: 'opera_android' },
-  samsung: {},
-  and_qq: {},
-  and_uc: {},
-  baidu: {},
-  kaios: {},
 };
 
-/** The oldest version of every browser family in the list, `ios_saf 14.0-14.4` as `14.0` */
+/** The oldest version of every browser family in the list, `ios_saf 14.5-14.8` as `14.5` */
 export function oldest(list: string[]): Record<string, string> {
   const result: Record<string, string> = {};
 
@@ -48,13 +33,11 @@ const resolved = Object.entries(oldest(browserslist(undefined, { path: resolve(i
  * build lowers its output for them and the CSS gate checks it against them.
  */
 export const floor: Record<string, string> = Object.fromEntries(
-  resolved.flatMap(([family, version]) => (families[family].data ? [[families[family].data, version]] : [])),
+  resolved.map(([family, version]) => [families[family].data, version]),
 );
 
 /** The floor as `build.target`, which `build.cssTarget` defaults to */
-export const buildTarget = resolved.flatMap(([family, version]) =>
-  families[family].target ? [families[family].target + version] : [],
-);
+export const buildTarget = resolved.map(([family, version]) => families[family].target + version);
 
 /** The browser-compat-data entry at a dotted path such as `css.selectors.has` */
 export function feature(path: string): Identifier | undefined {
@@ -65,16 +48,14 @@ export function feature(path: string): Identifier | undefined {
   return node?.__compat ? node : undefined;
 }
 
+// Browser versions have at most a major and a minor part
+function value(version: string) {
+  const [major, minor = 0] = version.replace('≤', '').split('.').map(Number);
+  return major * 1000 + minor;
+}
+
 function versionAtMost(version: string, limit: string) {
-  const a = version.replace('≤', '').split('.').map(Number);
-  const b = limit.split('.').map(Number);
-
-  for (let i = 0; i < Math.max(a.length, b.length); i++) {
-    const d = (a[i] ?? 0) - (b[i] ?? 0);
-    if (d !== 0) return d < 0;
-  }
-
-  return true;
+  return value(version) <= value(limit);
 }
 
 function supports(statement: SimpleSupportStatement, version: string, name: string, spelling: string) {

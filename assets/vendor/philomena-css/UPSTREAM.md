@@ -19,9 +19,9 @@ Repository plumbing and the documentation site: `.github/`, `.husky/`, `docs/`, 
   `prettier-plugin-astro`, `stylelint` and `stylelint-config-recommended` devDependencies
 - removed `packageManager`
 
-The CSS, so that Philomena's build can bring it down to the browsers of `assets/.browserslistrc` (Safari 14,
-Chrome 85, Firefox 81), whose selectors have neither `:where()` nor complex `:not()` arguments. Philomena's
-PostCSS stage (`assets/build/`) does the rest; these are the parts no transform can produce:
+The CSS, so that Philomena's build can bring it down to the browsers of `assets/.browserslistrc`, whose oldest
+Chrome has neither `:where()` nor complex `:not()` arguments. Philomena's PostCSS stage (`assets/build/`) does the
+rest; these are the parts no transform can produce:
 
 - `design/mixins.css`, `design/layout.css` and the link rules of `components/card.css`, `block.css`,
   `collapsible.css`, `editor.css`, `media.css` and `communication.css`: a container sets its link style as

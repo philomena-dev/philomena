@@ -13,7 +13,7 @@ export const enhancements: Record<string, string> = {
   'css.properties.text-size-adjust': 'only mobile browsers enlarge text, and iOS reads the -webkit- form',
   'css.properties.resize': 'a textarea keeps the resize handle of the browser',
   'css.properties.cursor': 'touch screens show no pointer',
-  'css.selectors.backdrop': 'Safari 14 has no <dialog> to draw a backdrop for',
+  'css.selectors.backdrop': 'the floor Safari has no <dialog> to draw a backdrop for',
   'css.properties.user-select.all': 'a click selects a word of a copyable text rather than all of it',
   'css.properties.font-synthesis': 'the icon font has every weight and style it is used in, nothing to synthesize',
   // The framework's anchored popups, under @supports (position-anchor: …)
