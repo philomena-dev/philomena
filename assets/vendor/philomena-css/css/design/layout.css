@@ -51,21 +51,27 @@ h6 {
 }
 
 /* Headings keep a large distance from what surrounds them, except where they are the label of a component (which
-   sets --heading-rhythm) */
+   sets --heading-rhythm) and at the edges of their parent */
 :where(h1, h2, h3, h4, h5, h6) {
-  margin-block: var(--heading-rhythm, var(--heading-spacing));
+  margin-top: var(--heading-first, var(--heading-rhythm, var(--heading-spacing)));
+  margin-bottom: var(--heading-last, var(--heading-rhythm, var(--heading-spacing)));
 }
 
 :where(.card-header, th, td, .badge, .tag, .button) {
   --heading-rhythm: 0;
 }
 
-:where(h1, h2, h3, h4, h5, h6):where(:first-child) {
-  margin-top: 0;
+* {
+  --heading-first: initial;
+  --heading-last: initial;
 }
 
-:where(h1, h2, h3, h4, h5, h6):where(:last-child) {
-  margin-bottom: 0;
+:first-child {
+  --heading-first: 0;
+}
+
+:last-child {
+  --heading-last: 0;
 }
 
 /*
