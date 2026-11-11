@@ -30,8 +30,11 @@ defmodule PhilomenaWeb.ActivityControllerTest do
   describe "GET /" do
     test "renders the homepage on an empty site for anonymous users", %{conn: conn} do
       conn = get(conn, ~p"/")
+      response = html_response(conn, 200)
 
-      assert html_response(conn, 200) =~ "Homepage - Derpibooru"
+      assert response =~ "Homepage - Derpibooru"
+      # No trending images leaves no empty row under the bar
+      refute response =~ "media-list small grid-cols-2"
     end
 
     test "shows recent images, comments, and forum topics", %{conn: conn} do
