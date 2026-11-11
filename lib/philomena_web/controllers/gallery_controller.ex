@@ -70,8 +70,10 @@ defmodule PhilomenaWeb.GalleryController do
     end
   end
 
-  def new(conn, _params) do
-    with {:ok, changeset} <- Galleries.new_gallery(conn.assigns.actor) do
+  def new(conn, params) do
+    attrs = %{"thumbnail_id" => params["with_image"]}
+
+    with {:ok, changeset} <- Galleries.new_gallery(conn.assigns.actor, attrs) do
       render(conn, "new.html", title: "New Gallery", changeset: changeset)
     end
   end

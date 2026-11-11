@@ -30,7 +30,6 @@
     {label(f, :thumbnail_id, "Set an existing image as the gallery cover")}{number_input(
       f,
       :thumbnail_id,
-      value: input_value(f, :thumbnail_id) || @conn.params["with_image"],
       class: "input-field",
       placeholder: "Image ID (e.g. 100)",
       min: 0
