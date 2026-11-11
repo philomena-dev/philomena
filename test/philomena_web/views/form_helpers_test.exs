@@ -63,6 +63,21 @@ defmodule PhilomenaWeb.FormHelpersTest do
       assert html =~ ~s(id="revert_5")
       assert html =~ ~s(<label class="form-checkbox-label" for="revert_5">)
     end
+
+    test "points the label at a box with a checked value" do
+      html =
+        :commission
+        |> FormHelpers.checkbox_field(:Anthro, "Anthro",
+          checked_value: "Anthro",
+          hidden_input: false
+        )
+        |> safe_to_string()
+
+      assert html =~
+               ~s(id="commission_Anthro" name="commission[Anthro]" type="checkbox" value="Anthro")
+
+      assert html =~ ~s(<label class="form-checkbox-label" for="commission_Anthro">)
+    end
   end
 
   describe "collection_checkboxes/4" do

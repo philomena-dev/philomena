@@ -39,7 +39,8 @@ defmodule PhilomenaWeb.FormHelpers do
   """
   def checkbox_field(form, field, label_text, opts \\ []) do
     {class, opts} = Keyword.pop(opts, :class)
-    id = Keyword.get_lazy(opts, :id, fn -> input_id(form, field) end)
+    opts = Keyword.put_new_lazy(opts, :id, fn -> input_id(form, field) end)
+    id = opts[:id]
 
     box =
       content_tag(
