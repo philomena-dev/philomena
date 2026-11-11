@@ -69,6 +69,11 @@ defmodule PhilomenaWeb.Profile.ArtistLinkControllerTest do
 
       assert response =~ "New Artist Link - Derpibooru"
       assert response =~ "Request Artist Link"
+
+      for id <- ~w(artist_link_tag_name artist_link_uri) do
+        assert response =~ ~s(<label for="#{id}">)
+        assert response =~ ~r/<input [^>]*id="#{id}"/
+      end
     end
 
     test "redirects banned users with the ban flash", %{conn: conn} do

@@ -206,6 +206,8 @@ defmodule PhilomenaWeb.GalleryControllerTest do
 
       assert response =~ "New Gallery - Derpibooru"
       assert response =~ "Create a Gallery"
+      assert response =~ ~s(<label for="gallery_description">)
+      assert response =~ ~r/<textarea [^>]*id="gallery_description"/
     end
 
     test "prefills the cover from with_image unless it is not text", %{conn: conn} do

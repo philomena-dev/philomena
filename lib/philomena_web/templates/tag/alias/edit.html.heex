@@ -2,7 +2,7 @@
 <%= form_for @changeset, ~p"/tags/#{@tag}/alias", [method: "put", class: "content"], fn f -> %>
   {error_summary(@changeset)}
   <div class="form-control">
-    {label(f, "Alias target:")} {text_input(f, :target_tag,
+    {label(f, :target_tag, "Alias target:")} {text_input(f, :target_tag,
       value: alias_target(@tag),
       class: "input-field"
     )}{error_tag(f, :target_tag)}{error_tag(f, :tag)}{error_tag(f, :aliased_tag)}
