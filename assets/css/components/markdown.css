@@ -16,6 +16,13 @@ $markdown: .communication-text, .markdown;
   --flow: 1;
 }
 
+/* A table that scrolls on narrow screens leaves its Markdown cells room for a few words per line */
+@media not all and (min-width: $breakpoint-md) {
+  .table-wrap.responsive .markdown {
+    min-inline-size: 12em;
+  }
+}
+
 /* Blocks of text follow each other at the distance of paragraphs, with nothing at the edges of the container */
 :is($(markdown)) > :where(p, .paragraph, ul, ol, blockquote, pre, table, hr) {
   margin-top: 0;
