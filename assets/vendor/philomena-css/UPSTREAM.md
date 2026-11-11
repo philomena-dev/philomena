@@ -83,6 +83,9 @@ rewritten to state, hover or position through custom properties instead, read by
   positioned over it, as floor browsers lack `aspect-ratio`.
 - `components/button.css`: `.justify-start` and `.justify-end` align the button content with `flex-start` and
   `flex-end`, which are the same in its left-to-right row, as floor browsers lack `start` and `end` in flex layout.
+- `components/input-field.css`: the fallback for browsers without `:user-invalid` marks only fields with a
+  `[placeholder]`, as a select or a field without one never shows a placeholder and would turn red when the page loads.
+  Floor browsers lack `:user-invalid`, so the build drops its rules and keeps this fallback for every browser.
 
 The other `:where()`, `:is()` and `:not()` lists keep the higher specificity of their expansion. That changes the
 winner only for rare combinations: a read-only field that is also `.invalid` (the read-only background wins), an

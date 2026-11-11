@@ -67,4 +67,19 @@ describe('the vendored framework', () => {
     });
     expect(declaring(root, '--flow', '1').selectors).toEqual(expect.arrayContaining(['.content>*', '.card>*']));
   });
+
+  // Without :user-invalid on the floor, a select or an empty required field must not be red when the page loads
+  it('marks only scripted invalid fields and edited fields with a placeholder', () => {
+    const selectors = postcss
+      .parse(css)
+      .nodes.filter((node): node is Rule => node.type === 'rule' && node.selector.startsWith('.input-field'))
+      .filter(rule => rule.some(d => 'prop' in d && d.value === 'var(--danger-tint-color)'))
+      .map(rule => rule.selector);
+
+    // Unconditional, as the build settles the @supports block
+    expect(selectors).toEqual([
+      '.input-field:not([type=color]).invalid',
+      '.input-field[placeholder]:not([type=color]):invalid:not(:placeholder-shown)',
+    ]);
+  });
 });
