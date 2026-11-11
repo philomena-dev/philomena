@@ -109,6 +109,8 @@ for (const theme of ['light', 'dark']) {
   const page = color('page-bg-color', black);
   const card = color('surface-color', page);
   const header = color('header-color', page);
+  const headerField = color('header-field-color', header);
+  const hoveredHeaderField = color('header-field-hover-color', header);
   const well = color('well-color', card);
   const deepWell = color('well-deep-color', card);
   const tint = color('tint-color', card);
@@ -157,6 +159,9 @@ for (const theme of ['light', 'dark']) {
     ['link on hover', color('link-color', hover), hover],
     ['header text', color('header-text-color', header), header],
     ['header brand', color('header-brand-color', header), header],
+    ['header field text', color('header-text-color', headerField), headerField],
+    ['header field placeholder', color('header-placeholder-color', headerField), headerField],
+    ['header field text hovered', color('header-text-color', hoveredHeaderField), hoveredHeaderField],
     [
       'navbar item hovered',
       color('header-text-color', color('hover-shade-color', header)),

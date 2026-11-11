@@ -94,6 +94,7 @@
   --bar-hover-shade-color: hsl(from $base-color-light h s calc(l - 16));
   --header-field-color: $base-color-light;
   --header-field-hover-color: hsl(from $base-color-light h s calc(l - 7));
+  --header-placeholder-color: rgb(from $surface-color-light r g b / 0.54);
   --header-secondary-color: hsl(from $base-color-light h calc(s - 25) calc(l + 30));
   --header-secondary-hover-color: hsl(from $base-color-light h calc(s - 25) calc(l + 23));
   --header-admin-color: $header-admin-color-light;
@@ -125,6 +126,7 @@
   --bar-hover-shade-color: hsl(from $header-color-dark h s calc(l - 8));
   --header-field-color: $header-field-color-dark;
   --header-field-hover-color: hsl(from $header-color-dark h s calc(l - 12));
+  --header-placeholder-color: rgb(from $text-color-dark r g b / 0.54);
   --header-secondary-color: $header-secondary-color-dark;
   --header-secondary-hover-color: hsl(from $header-secondary-color-dark h s calc(l - 4));
   --header-admin-color: $header-admin-color-dark;

@@ -26,7 +26,7 @@
       aria-label="Search"
       autocapitalize="none"
       autocomplete={if(@conn.cookies["enable_search_ac"], do: "on", else: "off")}
-      class="header-input"
+      class="header-field-input"
       data-autocomplete="multi-tags"
       data-autocomplete-condition="enable_search_ac"
       data-autocomplete-history-id="search-history"
@@ -49,16 +49,16 @@
     <%= if hides_images?(@conn) do %>
       {select(f, :del, [{"-D", ""}, {"+D", 1}, {"*D", "deleted"}, {"DO", "only"}],
         name: "del",
-        class: "header-input js-staff-action",
+        class: "header-field-input js-staff-action",
         autocomplete: "off",
         "aria-label": "Deleted images"
       )}
     <% end %>
-    <button class="header-button" title="Search" type="submit"><i class="fas fa-fw fa-search"></i></button>
-    <a class="header-button" href="/search/reverse" title="Search using an image">
+    <button class="header-field-button" title="Search" type="submit"><i class="fas fa-fw fa-search"></i></button>
+    <a class="header-field-button" href="/search/reverse" title="Search using an image">
       <i class="fas fa-fw fa-camera"></i>
     </a>
-    <a class="header-button" href="/pages/search_syntax" title="Search syntax help">
+    <a class="header-field-button" href="/pages/search_syntax" title="Search syntax help">
       <i class="fas fa-fw fa-question"></i>
     </a>
   <% end %>
@@ -89,7 +89,7 @@
         {select(f, :current_filter_id, @available_filters,
           name: "id",
           id: "filter-quick-menu",
-          class: "header-input",
+          class: "header-field-input",
           data: [change_submit: "#filter-quick-form"],
           autocomplete: "off",
           "aria-label": "Filter"
@@ -98,7 +98,7 @@
       <%= form_for @spoiler_changeset, ~p"/filters/spoiler_type", [class: "header-field hidden-below-xl", id: "spoiler-quick-form"], fn f -> %>
         {select(f, :spoiler_type, @spoiler_types,
           id: "spoiler-quick-menu",
-          class: "header-input",
+          class: "header-field-input",
           data: [change_submit: "#spoiler-quick-form"],
           autocomplete: "off",
           "aria-label": "Spoilers"

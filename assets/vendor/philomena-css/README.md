@@ -159,6 +159,11 @@ The framework is plain CSS, so some structure is on you:
   of secondary items there with `.hidden-below-lg` or `.hidden-below-xl`. A `.header` runs from edge to edge of the screen,
   so it keeps only the bottom line of the inset shadow; `.navbar.flush` does the same for a bar outside a header. `.header.borderless` has no line along its bottom, for a header with a
   navbar (or another bar) stacked right under it.
+- **Header fields.** A `.header-field` in a header or navbar is a row of joined controls in the bar's field color
+  (`--header-field-color`, `--header-field-hover-color`, `--header-placeholder-color`, `--header-field-height`
+  high), such as a search or a quick select: `.header-field-input` text inputs and selects (which draw their own
+  arrow) and square `.header-field-button` icon buttons. In a navbar, mark it `.navbar-pinned` to keep it on narrow
+  screens.
 - **Color variants** are always `{component}-{type}`: `.button-primary`, `.alert-danger`, `.progress-success`,
   `.table-warning` (on a table, a row or a cell), `.media-danger` (on a media box or an overlay),
   `.dropdown-danger` on a dropdown item, and so on.

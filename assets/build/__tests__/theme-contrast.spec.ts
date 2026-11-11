@@ -15,10 +15,17 @@ const stylesheets = [
     .map(name => `themes/${name}`),
 ];
 
-// The header bars keep the colors of Philomena's themes, light text on a mid-tone bar that the framework's ratio for
-// its own header does not reach
+// The header bars keep the colors of Philomena's themes, light text on a mid-tone bar and its fields that the
+// framework's ratio for its own header does not reach
 const headerPairs = ['light', 'dark'].flatMap(mode =>
-  ['header text', 'header brand', 'navbar item hovered'].map(label => `${mode}: ${label}`),
+  [
+    'header text',
+    'header brand',
+    'navbar item hovered',
+    'header field text',
+    'header field placeholder',
+    'header field text hovered',
+  ].map(label => `${mode}: ${label}`),
 );
 
 // The two theme blocks the contrast script reads. data-theme="light" outranks :root, so the light colors are the dark

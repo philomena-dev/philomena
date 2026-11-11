@@ -158,6 +158,10 @@ $_syntax-punctuation: #6b6d78;
   --header-border-color: hsl(from $base-color-light h s 30%);
   --header-text-color: #ffffff;
   --header-brand-color: hsl(from $base-color-light h s 89%);
+  /* Fields on the header, wells in the bar */
+  --header-field-color: hsl(from $base-color-light h s 31%);
+  --header-field-hover-color: hsl(from $base-color-light h s 27%);
+  --header-placeholder-color: hsl(from $base-color-light h s 80%);
   /* Labels and veils over media */
   --overlay-color: rgba(0, 0, 0, 0.7);
   --overlay-text-color: #ffffff;
@@ -237,6 +241,9 @@ $_syntax-punctuation: #6b6d78;
   --header-border-color: hsl(from $base-color-dark h s 25%);
   --header-text-color: #ffffff;
   --header-brand-color: hsl(from $base-color-dark h calc(s + 20) 88%);
+  --header-field-color: hsl(from $base-color-dark h calc(s + 20) 22%);
+  --header-field-hover-color: hsl(from $base-color-dark h calc(s + 20) 18%);
+  --header-placeholder-color: hsl(from $base-color-dark h calc(s + 20) 72%);
   --overlay-color: rgba(0, 0, 0, 0.7);
   --overlay-text-color: #ffffff;
   --veil-color: rgba(0, 0, 0, 0.6);
@@ -312,6 +319,7 @@ $_syntax-punctuation: #6b6d78;
   /* The gap between the items of a group: buttons, badges, tags, media boxes */
   --group-gap: var(--spacing-md);
   --header-height: 3.25rem;
+  --header-field-height: 2.25rem;
   --header-spacing-horizontal: var(--spacing-md);
   --header-spacing-vertical: var(--spacing-md);
   --header-brand-font-size: 1.25rem;

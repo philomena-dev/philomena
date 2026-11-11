@@ -69,89 +69,23 @@
 }
 
 /*
- * Fields on a bar: the search and the quick selects. A .header-field holds a row of .header-input controls (a text
- * field or a select) and .header-button icons, joined, in the bar's field color.
+ * Fields on a bar, the framework's .header-field: the search and the quick selects. A select keeps the width of its
+ * options, up to a filter name of a few words, and a link button is in the link hover color under the pointer.
  */
 
-.header-field {
-  display: flex;
-  align-self: center;
-  margin-inline: var(--spacing-md);
-  border-radius: var(--border-radius-inner);
-  overflow: hidden;
-}
-
-.header-input,
-.header-button {
-  box-sizing: border-box;
-  padding-inline: var(--spacing-md);
-  color: var(--header-text-color);
-  background-color: var(--header-field-color);
-  text-decoration: none;
-  cursor: pointer;
-}
-
-/* An icon button is at least square */
-.header-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-inline-size: var(--header-field-height);
-}
-
-.header-input:focus-visible,
-.header-button:focus-visible {
-  @mixin focus-ring-inset;
-}
-
-input.header-input {
-  cursor: text;
-  text-overflow: ellipsis;
-}
-
-input.header-input::placeholder {
-  color: inherit;
-  opacity: 0.54;
-}
-
-/* Webkit paints autofilled fields in its own colors */
-input.header-input:-webkit-autofill {
-  -webkit-text-fill-color: var(--header-text-color);
-  box-shadow: inset 0 0 0 100em var(--header-field-color);
-}
-
-/* A select draws its arrow in the text color, out of the way of its text */
-select.header-input {
+.header-field select.header-field-input {
+  flex-shrink: 0;
   max-inline-size: 15em;
-  padding-inline-end: calc(var(--spacing-md) + 1em);
-  text-overflow: ellipsis;
-  background-image:
-    linear-gradient(45deg, transparent 50%, currentcolor 50%),
-    linear-gradient(135deg, currentcolor 50%, transparent 50%);
-  background-position:
-    right calc(var(--spacing-md) + 0.35em) center,
-    right var(--spacing-md) center;
-  background-size: 0.35em 0.35em;
-  background-repeat: no-repeat;
 }
 
-select.header-input option,
-select.header-input optgroup {
-  background-color: var(--header-field-color);
-}
-
-select.header-input:hover,
-.header-button:hover {
-  background-color: var(--header-field-hover-color);
-}
-
-a.header-button:hover {
+a.header-field-button:hover {
   color: var(--search-icon-hover-color);
 }
 
-.header-field > .header-input,
-.header-field > .header-button {
-  block-size: var(--header-field-height);
+/* Webkit paints autofilled fields in its own colors */
+input.header-field-input:-webkit-autofill {
+  -webkit-text-fill-color: var(--header-text-color);
+  box-shadow: inset 0 0 0 100em var(--header-field-color);
 }
 
 /* The search follows the site's navbar and pushes the user's navbar to the end */
@@ -159,7 +93,7 @@ a.header-button:hover {
   margin-inline-end: auto;
 }
 
-.header-search input.header-input {
+.header-search input.header-field-input {
   inline-size: 18vw;
   max-inline-size: 21rem;
 }
@@ -216,7 +150,13 @@ a.header-button:hover {
   padding-block: 0;
 }
 
-.burger form.burger-item .header-input {
+.burger form.burger-item > .header-field {
+  flex: 1 1 auto;
+  block-size: auto;
+  margin-inline: 0;
+}
+
+.burger form.burger-item .header-field-input {
   flex: 1 1 auto;
   padding-block: var(--spacing-lg);
 }
@@ -253,10 +193,9 @@ a.header-button:hover {
     margin-block-end: var(--spacing-md);
   }
 
-  .header-search input.header-input {
+  .header-search input.header-field-input {
     flex: 1 1 auto;
     inline-size: auto;
-    min-inline-size: 0;
     max-inline-size: none;
   }
 

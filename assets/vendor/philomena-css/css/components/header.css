@@ -58,3 +58,83 @@
   font-weight: bold;
   margin-inline-start: var(--spacing-sm);
 }
+
+/*
+ * A field on the bar, such as a search or a quick select: a row of controls joined into one, in the field color of
+ * the header. It holds .header-field-input controls (a text input, or a select that draws its own arrow) and
+ * .header-field-button icon buttons:
+ *   <form class="header-field" role="search">
+ *     <input class="header-field-input" type="search" name="q" placeholder="Search" aria-label="Search">
+ *     <button class="header-field-button" type="submit" aria-label="Search">…</button>
+ *   </form>
+ * It works in a .header and in a .navbar, where .navbar-pinned keeps it below the md breakpoint.
+ */
+
+.header-field {
+  display: flex;
+  align-self: center;
+  min-inline-size: 0;
+  block-size: var(--header-field-height);
+  margin-inline: var(--spacing-md);
+  border-radius: var(--border-radius-inner);
+  overflow: hidden;
+}
+
+.header-field .header-field-input,
+.header-field .header-field-button {
+  box-sizing: border-box;
+  padding-inline: var(--spacing-md);
+  color: var(--header-text-color);
+  background-color: var(--header-field-color);
+  transition: background-color 0.1s;
+}
+
+/* The ring is in the text color, which stands out on the field */
+.header-field .header-field-input:focus-visible,
+.header-field .header-field-button:focus-visible {
+  @mixin focus-ring-inset var(--header-text-color);
+}
+
+.header-field .header-field-input {
+  min-inline-size: 0;
+  text-overflow: ellipsis;
+}
+
+.header-field .header-field-input::placeholder {
+  color: var(--header-placeholder-color);
+}
+
+/* A select draws its arrow in the text color, at the end */
+.header-field select.header-field-input {
+  padding-inline-end: calc(var(--spacing-md) + 1em);
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentcolor 50%),
+    linear-gradient(135deg, currentcolor 50%, transparent 50%);
+  background-position:
+    right calc(var(--spacing-md) + 0.35em) center,
+    right var(--spacing-md) center;
+  background-size: 0.35em 0.35em;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+.header-field select.header-field-input option,
+.header-field select.header-field-input optgroup {
+  background-color: var(--header-field-color);
+}
+
+/* An icon button is at least square */
+.header-field .header-field-button {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  align-items: center;
+  min-inline-size: var(--header-field-height);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.header-field select.header-field-input:hover,
+.header-field .header-field-button:hover {
+  background-color: var(--header-field-hover-color);
+}
