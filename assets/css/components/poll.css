@@ -74,6 +74,6 @@
   }
 
   .poll .poll-choice {
-    min-height: var(--touch-target-size);
+    @mixin touch-target;
   }
 }

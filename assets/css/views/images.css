@@ -97,8 +97,15 @@
   }
 
   .image-metabar-item {
-    min-height: var(--touch-target-size);
+    min-block-size: var(--touch-target-size);
     padding-inline: var(--spacing-xs);
+  }
+
+  /* The cells share their row, unlike the square links of a block header, whose rule this matches in specificity */
+  .block .block-header.image-metabar .image-metabar-group a.image-metabar-item {
+    display: flex;
+    min-inline-size: auto;
+    margin-block: 0;
   }
 
   .image-metabar-group .dropdown > .image-metabar-item {

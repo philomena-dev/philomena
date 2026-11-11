@@ -85,9 +85,9 @@
   }
 
   .tag-change-tools > a:not(.button) {
+    @mixin touch-target;
     display: flex;
     align-items: center;
-    min-block-size: var(--touch-target-size);
   }
 }
 

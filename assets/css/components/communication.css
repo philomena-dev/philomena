@@ -24,7 +24,7 @@
   }
 
   .communication .communication-options a {
-    min-height: var(--touch-target-size);
+    @mixin touch-target;
   }
 
   .communication .communication-author-name a {

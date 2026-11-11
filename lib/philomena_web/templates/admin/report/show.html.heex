@@ -18,7 +18,8 @@
   <h4>Mod Notes</h4>
   {render(PhilomenaWeb.Admin.ModNoteView, "_table.html", mod_notes: @mod_notes, conn: @conn)}{link(
     "Add New Note",
-    to: ~p"/admin/mod_notes/new?#{[report_id: @report.id]}"
+    to: ~p"/admin/mod_notes/new?#{[report_id: @report.id]}",
+    class: "touch-link"
   )}
 <% end %>
 <p>

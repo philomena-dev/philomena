@@ -14,20 +14,19 @@
 }
 
 /* Phones make the links of a block's bar touch targets, and those that are its items, not words of its text, reach
-   over its padding; buttons, menu items, pages and the cells of the image page's bar have their own size */
+   over its padding; buttons, menu items and pages have their own size */
 @media not all and (min-width: $breakpoint-md) {
   .block .block-header > a:not(.button),
   .block .block-header-actions > a:not(.button),
-  .block .block-header .dropdown > a:not(.image-metabar-item) {
+  .block .block-header .dropdown > a {
     margin-block: calc(-1 * var(--block-header-padding-vertical));
   }
 
-  .block .block-header a:not(.button):not(.dropdown-item):not(.pagination-link):not(.image-metabar-item) {
+  .block .block-header a:not(.button):not(.dropdown-item):not(.pagination-link) {
+    @mixin touch-target;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: var(--spacing-sm);
-    min-block-size: var(--touch-target-size);
-    min-inline-size: var(--touch-target-size);
   }
 }

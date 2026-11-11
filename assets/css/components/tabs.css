@@ -5,8 +5,7 @@
 /* Phones make tabs at least square touch targets */
 @media not all and (min-width: $breakpoint-md) {
   .tabs .tab {
+    @mixin touch-target;
     justify-content: center;
-    min-block-size: var(--touch-target-size);
-    min-inline-size: var(--touch-target-size);
   }
 }

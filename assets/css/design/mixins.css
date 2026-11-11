@@ -5,6 +5,12 @@
   padding-block: var(--touch-padding-vertical);
 }
 
+/* On phones, a control that stands apart: at least as large as a touch target both ways */
+@define-mixin touch-target {
+  min-block-size: var(--touch-target-size);
+  min-inline-size: var(--touch-target-size);
+}
+
 /* A checkerboard of 8px squares behind an image, so that its transparent parts show */
 @define-mixin checkerboard {
   background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAGUlEQVR42mP474AKGdDhCFGALoChYWQoAACpW7+B5lv5BwAAAABJRU5ErkJggg==");

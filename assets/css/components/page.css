@@ -142,9 +142,9 @@ body {
   }
 
   .page-footer-column a {
+    @mixin touch-target;
     display: flex;
     align-items: center;
-    min-block-size: var(--touch-target-size);
   }
 }
 

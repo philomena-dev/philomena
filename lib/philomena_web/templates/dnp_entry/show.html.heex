@@ -53,33 +53,41 @@
     <% s when s in ["requested", "claimed"] -> %>
       {link("Claim",
         to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "claimed"]}",
+        class: "touch-link",
         data: [method: "post", confirm: "Are you really, really sure?"]
       )} &bull; {link("Approve",
         to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "listed"]}",
+        class: "touch-link",
         data: [method: "post", confirm: "Are you really, really sure?"]
       )} &bull; {link("Close",
         to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "closed"]}",
+        class: "touch-link",
         data: [method: "post", confirm: "Are you really, really sure?"]
       )}
     <% "listed" -> %>
       {link("Rescind",
         to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "rescinded"]}",
+        class: "touch-link",
         data: [method: "post", confirm: "Are you really, really sure?"]
       )} &bull; {link("Close",
         to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "closed"]}",
+        class: "touch-link",
         data: [method: "post", confirm: "Are you really, really sure?"]
       )}
     <% s when s in ["rescinded", "acknowledged"] -> %>
       {link("Claim",
         to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "acknowledged"]}",
+        class: "touch-link",
         data: [method: "post", confirm: "Are you really, really sure?"]
       )} &bull; {link("Close",
         to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "closed"]}",
+        class: "touch-link",
         data: [method: "post", confirm: "Are you really, really sure?"]
       )}
     <% _state -> %>
       {link("Claim",
         to: ~p"/admin/dnp_entries/#{@dnp_entry}/transition?#{[state: "claimed"]}",
+        class: "touch-link",
         data: [method: "post", confirm: "Are you really, really sure?"]
       )}
   <% end %>
@@ -88,6 +96,7 @@
   <h4>Mod Notes</h4>
   {render(PhilomenaWeb.Admin.ModNoteView, "_table.html", mod_notes: @mod_notes, conn: @conn)}{link(
     "Add New Note",
-    to: ~p"/admin/mod_notes/new?#{[dnp_entry_id: @dnp_entry.id]}"
+    to: ~p"/admin/mod_notes/new?#{[dnp_entry_id: @dnp_entry.id]}",
+    class: "touch-link"
   )}
 <% end %>

@@ -2,8 +2,7 @@
    under the whole bar, across its width */
 @media not all and (min-width: $breakpoint-md) {
   .dropdown > [aria-haspopup] {
-    min-block-size: var(--touch-target-size);
-    min-inline-size: var(--touch-target-size);
+    @mixin touch-target;
   }
 
   .dropdown .dropdown-item {
