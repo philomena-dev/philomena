@@ -32,7 +32,7 @@
 </div>
 <%= repeatable_inputs_for @f, :options, fn opt -> %>
   <div class="form-control form-control-buttons flex-nowrap items-center js-poll-option">
-    {text_input(opt, :label, class: "input-field flex-1 js-option-label", placeholder: "Option")}{error_tag(
+    {text_input(opt, :label, class: "input-field flex-1", placeholder: "Option")}{error_tag(
       opt,
       :label
     )}<label class="flex-none"><a

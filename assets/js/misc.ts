@@ -67,7 +67,6 @@ function revealSpoiler(event: MouseEvent | TouchEvent) {
 
   if (imgspoiler) {
     imgspoiler.classList.remove('imgspoiler');
-    imgspoiler.classList.add('js-imgspoiler-revealed');
 
     if (event.type === 'touchend' && !event.defaultPrevented) {
       event.preventDefault();

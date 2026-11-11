@@ -109,13 +109,13 @@ describe('comment.ts setupComments', () => {
     const comments = $<HTMLDivElement>('#comments')!;
     comments.dataset.loaded = 'true';
     comments.innerHTML = `
-      <article class="communication js-fetched-comment js-subthread" id="comment_1"></article>
-      <article class="communication js-fetched-comment js-subthread" id="comment_2">
+      <article class="communication js-fetched-comment" id="comment_1"></article>
+      <article class="communication js-fetched-comment" id="comment_2">
         <div class="communication-text">
           <a class="js-active-reply-link" href="/123#comment_456">parent</a>
         </div>
       </article>
-      <article class="communication js-subthread" id="comment_3"></article>
+      <article class="communication" id="comment_3"></article>
     `;
 
     setupComments();
@@ -259,10 +259,8 @@ describe('comment.ts setupComments', () => {
     fireEvent.click(link, { button: 0 });
 
     await waitFor(() => {
-      // inserted parent is marked as fetched and js-subthread
-      const fetched = $<HTMLElement>('article.communication.js-fetched-comment', comments);
-      expect(fetched).toBeTruthy();
-      expect(fetched!).toHaveClass('js-subthread');
+      // inserted parent is marked as fetched
+      expect($<HTMLElement>('article.communication.js-fetched-comment', comments)).toBeTruthy();
       // clicked link becomes active
       expect(link).toHaveClass('js-active-reply-link');
       // helpers called

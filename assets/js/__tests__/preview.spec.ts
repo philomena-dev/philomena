@@ -251,31 +251,6 @@ describe('preview.ts setupPreviews', () => {
     expect(fetchJson).not.toHaveBeenCalled();
   });
 
-  it('uses description textarea fallback when input is missing', async () => {
-    document.body.innerHTML = `
-      <a href="#" data-click-tab="preview">Preview</a>
-      <a href="#" data-click-tab="write" class="not-selected"></a>
-      <textarea class="js-preview-description"></textarea>
-      <div class="js-preview-loading hidden"></div>
-      <div class="js-preview-idle"></div>
-      <div class="tab-panel selected js-preview-content"></div>
-    `;
-
-    const desc = $<HTMLTextAreaElement>('.js-preview-description')!;
-    const previewBtn = $<HTMLAnchorElement>('a[data-click-tab="preview"]')!;
-    desc.value = 'From description';
-
-    mockSuccessfulPreview('<p>desc</p>');
-
-    setupPreviews();
-
-    fireEvent.click(previewBtn);
-    await waitFor(() => expect(fetchJson).toHaveBeenCalledTimes(1));
-
-    // Ensure body came from description textarea
-    expect(vi.mocked(fetchJson).mock.calls[0][2]).toEqual({ body: 'From description', anonymous: false });
-  });
-
   it('does not click write tab when it is already selected', () => {
     const { textarea } = makeBaseDom();
     textarea.value = '';

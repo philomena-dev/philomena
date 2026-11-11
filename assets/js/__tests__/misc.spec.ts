@@ -39,14 +39,14 @@ describe('misc.ts setupEvents', () => {
 
       expect(fireEvent.touchEnd($<HTMLElement>('img', linked)!)).toBe(false);
       expect(linked.className).toBe('spoiler revealed');
-      expect($('.js-imgspoiler-revealed', linked)).toBeTruthy();
+      expect($('.imgspoiler', linked)).toBeNull();
 
       fireEvent.click(unlinked);
       expect(unlinked.className).toBe('spoiler revealed');
-      expect(unlinked.querySelectorAll('.js-imgspoiler-revealed')).toHaveLength(1);
+      expect(unlinked.querySelectorAll('.imgspoiler')).toHaveLength(1);
 
       expect(fireEvent.touchEnd($<HTMLElement>('#second')!)).toBe(false);
-      expect(unlinked.querySelectorAll('.js-imgspoiler-revealed')).toHaveLength(2);
+      expect(unlinked.querySelectorAll('.imgspoiler')).toHaveLength(0);
     });
 
     it('ignores the touch that ends a scroll', () => {
@@ -78,7 +78,7 @@ describe('misc.ts setupEvents', () => {
 
       fireEvent.click($<HTMLElement>('img')!);
       expect(spoiler.className).toBe('spoiler revealed');
-      expect($('.js-imgspoiler-revealed')).toBeTruthy();
+      expect($('.imgspoiler')).toBeNull();
     });
 
     it('reveals a spoiler around an embedded image that is filtered out', () => {

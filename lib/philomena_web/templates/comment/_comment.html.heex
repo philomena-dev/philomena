@@ -12,12 +12,12 @@
           <i class="fas fa-check"></i> Approve
         <% end %>
         <a
-          class="button js-togglable-delete-form-link"
+          class="button"
           data-click-toggle={"#inline-reject-form-comment-#{@comment.id}"}
           href="#"
         ><i class="fa fa-times"></i> Reject</a>
       </div>
-      <%= form_for :comment, ~p"/images/#{@comment.image_id}/comments/#{@comment}/hide", [class: "js-togglable-delete-form hidden flex", id: "inline-reject-form-comment-#{@comment.id}"], fn f -> %>
+      <%= form_for :comment, ~p"/images/#{@comment.image_id}/comments/#{@comment}/hide", [class: "hidden flex", id: "inline-reject-form-comment-#{@comment.id}"], fn f -> %>
         {text_input(f, :deletion_reason,
           class: "input-field full-width",
           placeholder: "Deletion Reason",

@@ -62,7 +62,7 @@ info = render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @image
         )} (created {pretty_time(@gallery.created_at)})
       </span>
     </div>
-    <div class="block-content flex js-imagelist-info">
+    <div class="block-content flex">
       {render(PhilomenaWeb.ImageView, "_image_container.html",
         image: @gallery.thumbnail,
         size: :thumb_tiny,

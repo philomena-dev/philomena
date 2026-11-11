@@ -81,11 +81,7 @@ function resizeTextarea(e: Event) {
 }
 
 function setupPreviews() {
-  let textarea = $<HTMLTextAreaElement>('.js-preview-input');
-
-  if (!textarea) {
-    textarea = $<HTMLTextAreaElement>('.js-preview-description');
-  }
+  const textarea = $<HTMLTextAreaElement>('.js-preview-input');
 
   const previewButton = $<HTMLAnchorElement>('a[data-click-tab="preview"]');
   const previewLoading = $<HTMLElement>('.js-preview-loading');

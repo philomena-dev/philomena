@@ -45,7 +45,7 @@ function loadParentPost(event: Event, target: HTMLElement) {
 
   // If the clicked link is already active, just clear the parent comments
   if (target.classList.contains('js-active-reply-link')) {
-    clearParentPost(target, fullComment);
+    clearParentPost(fullComment);
     event.preventDefault();
     return;
   }
@@ -57,7 +57,7 @@ function loadParentPost(event: Event, target: HTMLElement) {
     fetchHtml(`/images/${imageId}/comments/${commentId}`)
       .then(handleError)
       .then(data => {
-        clearParentPost(target, fullComment);
+        clearParentPost(fullComment);
         insertParentPost(data, target, fullComment);
       });
 
@@ -66,9 +66,6 @@ function loadParentPost(event: Event, target: HTMLElement) {
 }
 
 function insertParentPost(data: string, clickedLink: HTMLElement, fullComment: HTMLElement) {
-  // Add the 'js-subthread' class to the comment with the clicked link
-  fullComment.classList.add('js-subthread');
-
   // Parse the HTML into an element so we can decorate it before insertion
   const tpl = document.createElement('template');
   tpl.innerHTML = data.trim();
@@ -76,25 +73,19 @@ function insertParentPost(data: string, clickedLink: HTMLElement, fullComment: H
 
   if (!newEl) return;
 
-  // Mark the inserted parent comment
-  newEl.classList.add('js-subthread');
   newEl.classList.add('js-fetched-comment');
-
-  // Insert parent comment before the full comment
   fullComment.insertAdjacentElement('beforebegin', newEl);
 
   // Execute timeago on the new comment - it was not present when first run
   timeAgo(newEl.getElementsByTagName('time'));
 
-  // Add class js-active-reply-link to the clicked link
   clickedLink.classList.add('js-active-reply-link');
 
   // Filter images (if any) in the loaded comment
   filterNode(newEl);
 }
 
-function clearParentPost(_clickedLink: HTMLElement, fullComment: HTMLElement) {
-  // Remove any previous siblings with the class js-fetched-comment
+function clearParentPost(fullComment: HTMLElement) {
   let prevEl = fullComment.previousElementSibling;
 
   while (prevEl && prevEl.classList.contains('js-fetched-comment')) {
@@ -102,14 +93,8 @@ function clearParentPost(_clickedLink: HTMLElement, fullComment: HTMLElement) {
     prevEl = fullComment.previousElementSibling;
   }
 
-  // Remove class js-active-reply-link from all links in the comment
   for (const link of fullComment.getElementsByClassName('js-active-reply-link')) {
     assertType(link, HTMLElement).classList.remove('js-active-reply-link');
-  }
-
-  // If this full comment isn't a fetched comment, remove the js-subthread class.
-  if (!fullComment.classList.contains('js-fetched-comment')) {
-    fullComment.classList.remove('js-subthread');
   }
 }
 
