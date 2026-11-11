@@ -16,10 +16,10 @@ defmodule PhilomenaWeb.ScraperCachePlug do
   end
 
   defp normalize_dist(%{"distance" => distance}) when is_binary(distance) do
-    ("0" <> distance)
-    |> Float.parse()
-    |> elem(0)
-    |> Float.to_string()
+    case Float.parse("0" <> distance) do
+      {distance, _rest} -> Float.to_string(distance)
+      :error -> normalize_dist(nil)
+    end
   end
 
   defp normalize_dist(_dist) do

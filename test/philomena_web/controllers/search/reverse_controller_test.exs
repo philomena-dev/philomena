@@ -120,6 +120,11 @@ defmodule PhilomenaWeb.Search.ReverseControllerTest do
 
       assert html_response(conn, 200) =~ "Reverse Search"
 
+      # A distance beyond the float range falls back to the default.
+      conn = get(build_conn(), ~p"/search/reverse?distance=1e400")
+
+      assert html_response(conn, 200) =~ "Reverse Search"
+
       # The scraper fetches only into an image param that is a map, so a string sends no request.
       conn =
         post(build_conn(), ~p"/search/reverse", %{"image" => "x", "url" => "http://a.test/b.png"})
