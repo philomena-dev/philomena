@@ -89,6 +89,42 @@ $markdown: .communication-text, .markdown;
   background: none;
 }
 
+/* Tables carry no class: they take the look of a striped framework table, framed by the table */
+:is($(markdown)) table:not([class]) {
+  width: 100%;
+  border: var(--border-width) solid var(--tint-color);
+  border-collapse: collapse;
+  overflow-wrap: anywhere;
+}
+
+:is($(markdown)) table:not([class]) th,
+:is($(markdown)) table:not([class]) td {
+  padding: var(--table-cell-padding-vertical) var(--table-cell-padding-horizontal);
+  text-align: start;
+}
+
+:is($(markdown)) table:not([class]) thead th {
+  padding-block: var(--table-header-padding-vertical);
+  font-weight: bold;
+  background-color: var(--tint-color);
+}
+
+:is($(markdown)) table:not([class]) tbody tr + tr {
+  border-top: var(--border-width) solid var(--tint-color);
+}
+
+:is($(markdown)) table:not([class]) tbody tr:nth-child(even) {
+  background-color: var(--stripe-color);
+}
+
+/* Narrow screens scroll a wide table sideways */
+@media not all and (min-width: $breakpoint-md) {
+  :is($(markdown)) table:not([class]) {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
 /* Hidden spoiler text hides the chrome of its code, and an embedded image or video as a block in its color */
 .spoiler:not(:hover):not(:focus):not(:focus-within):not(.revealed) code {
   background: none;

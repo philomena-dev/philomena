@@ -2,43 +2,10 @@
  * Philomena's additions to the framework's tables.
  */
 
-/* Tables in rendered Markdown carry no class: they take the look of a striped framework table, framed by the table */
-table:not([class]) {
-  width: 100%;
-  border: var(--border-width) solid var(--tint-color);
-  border-collapse: collapse;
-  overflow-wrap: anywhere;
-}
-
-table:not([class]) th,
-table:not([class]) td {
-  padding: var(--table-cell-padding-vertical) var(--table-cell-padding-horizontal);
-  text-align: start;
-}
-
-table:not([class]) thead th {
-  padding-block: var(--table-header-padding-vertical);
-  font-weight: bold;
-  background-color: var(--tint-color);
-}
-
-table:not([class]) tbody tr + tr {
-  border-top: var(--border-width) solid var(--tint-color);
-}
-
-table:not([class]) tbody tr:nth-child(even) {
-  background-color: var(--stripe-color);
-}
-
-/* Narrow screens scroll a wide table sideways, and make the links of a cell touch targets */
+/* Narrow screens make the links of a cell touch targets */
 @media not all and (min-width: $breakpoint-md) {
   .table td > a:not(.button),
   .table td > :is(strong, em, .code-span) > a {
     @mixin touch-link;
-  }
-
-  table:not([class]) {
-    display: block;
-    overflow-x: auto;
   }
 }
