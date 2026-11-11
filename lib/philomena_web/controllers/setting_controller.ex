@@ -99,10 +99,10 @@ defmodule PhilomenaWeb.SettingController do
        when is_binary(name) and is_binary(color),
        do: Map.put(settings, "theme", "#{name}-#{color}")
 
-  # Parts that are not strings: the nil theme fails validation, the re-rendered form leaves them out
+  # Parts that are not strings fail validation through the nil theme
   defp put_theme(%{"theme_name" => name, "theme_color" => color} = settings)
        when name != nil and color != nil,
-       do: settings |> Map.drop(["theme_name", "theme_color"]) |> Map.put("theme", nil)
+       do: Map.put(settings, "theme", nil)
 
   defp put_theme(settings), do: Map.put(settings, "theme", %Settings{}.theme)
 

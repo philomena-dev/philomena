@@ -515,6 +515,28 @@ defmodule PhilomenaWeb.TopicControllerTest do
       assert Repo.aggregate(from(t in Topic, where: t.user_id == ^user.id), :count) == 0
     end
 
+    test "re-renders a first post that is not text as blank and keeps the poll", %{
+      conn: conn,
+      forum: forum
+    } do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+
+      conn =
+        post(conn, ~p"/forums/#{forum}/topics", %{
+          "topic" => %{
+            "title" => "A brand new topic",
+            "posts" => %{"0" => %{"body" => %{"x" => "1"}}},
+            "poll" => %{"title" => "Kept poll title"}
+          }
+        })
+
+      response = html_response(conn, 200)
+      assert response =~ "Oops, something went wrong! Please check the errors below."
+      assert response =~ ~s(value="A brand new topic")
+      assert response =~ ~r{name="topic\[posts\]\[0\]\[body\]"[^>]*>\n</textarea>}
+      assert response =~ ~s(value="Kept poll title")
+    end
+
     test "redirects banned users with the ban flash", %{conn: conn, forum: forum} do
       %{conn: conn} = register_and_log_in_banned_user(%{conn: conn})
 

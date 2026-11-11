@@ -7,6 +7,37 @@ defmodule PhilomenaWeb.FormHelpersTest do
 
   defp form(params \\ %{}), do: Phoenix.HTML.FormData.to_form(params, as: :user)
 
+  describe "form_for/4" do
+    test "renders submitted strings and lists of strings, and nothing for other values" do
+      params = %{
+        "title" => "Kept",
+        "name" => %{"x" => "1"},
+        "tags" => ["a", "b"],
+        "ids" => [%{"x" => "1"}]
+      }
+
+      html =
+        params
+        |> FormHelpers.form_for("/search", [as: :user], fn f ->
+          [
+            Phoenix.HTML.Form.text_input(f, :title),
+            Phoenix.HTML.Form.text_input(f, :name),
+            Phoenix.HTML.Form.multiple_select(f, :tags, ~w(a b c)),
+            FormHelpers.select_field(f, :ids, ~w(1 2))
+          ]
+        end)
+        |> safe_to_string()
+
+      assert html =~ ~s(<input id="user_title" name="user[title]" type="text" value="Kept">)
+      assert html =~ ~s(<input id="user_name" name="user[name]" type="text">)
+
+      assert html =~
+               ~s(<option selected value="a">a</option><option selected value="b">b</option><option value="c">c</option>)
+
+      assert html =~ ~s(<option value="1">1</option><option value="2">2</option>)
+    end
+  end
+
   describe "select_field/4" do
     test "wraps the select with the chevron and keeps the given options" do
       html =

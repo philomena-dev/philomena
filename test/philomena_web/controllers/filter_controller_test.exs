@@ -248,6 +248,20 @@ defmodule PhilomenaWeb.FilterControllerTest do
       assert Repo.aggregate(Filter, :count) == 1
     end
 
+    test "re-renders a name that is not text as blank and keeps the other values", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+
+      conn =
+        post(conn, ~p"/filters", %{
+          "filter" => %{"name" => %{"x" => "1"}, "description" => "Kept description"}
+        })
+
+      response = html_response(conn, 200)
+      assert response =~ "Oops, something went wrong! Please check the errors below."
+      refute response =~ ~r/name="filter\[name\]"[^>]* value=/
+      assert response =~ "Kept description"
+    end
+
     test "without a fingerprint redirects to / with the authorization flash", %{conn: conn} do
       %{conn: conn} = register_and_log_in_user(%{conn: conn})
       name = unique_filter_name()

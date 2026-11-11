@@ -1,10 +1,19 @@
 defmodule PhilomenaWeb.FormHelpers do
   @moduledoc """
-  Form controls in the markup of the framework's form components, which the plain
-  `Phoenix.HTML.Form` helpers cannot emit.
+  The form builder of the templates, and form controls in the markup of the framework's form
+  components, which the plain `Phoenix.HTML.Form` helpers cannot emit.
   """
 
   use Phoenix.HTML
+
+  alias PhilomenaWeb.FormData
+
+  @doc """
+  `Phoenix.HTML.Form.form_for/4` over `PhilomenaWeb.FormData.renderable/1` of the form.
+  """
+  def form_for(form_data, action, options \\ [], fun) do
+    Phoenix.HTML.Form.form_for(form_data, action, options, &fun.(FormData.renderable(&1)))
+  end
 
   @doc """
   A select with the framework's chevron. `full_width: true` stretches it over its column;
