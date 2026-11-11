@@ -48,6 +48,8 @@ defmodule PhilomenaQuery.Ecto.RelativeDate do
     {:ok, input}
   end
 
+  def cast(_input), do: :error
+
   @doc false
   def load(datetime) do
     datetime =
