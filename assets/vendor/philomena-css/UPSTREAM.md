@@ -7,7 +7,8 @@
 ## Pending upstream
 
 Pull requests against upstream `main` that are merged over the commit above. They merge cleanly in any order. A pull
-request leaves this list once the commit above includes it.
+request leaves this list once the commit above includes it. Each entry lists the files it changes outside the left-out
+`docs/`.
 
 - https://github.com/Meow/PhilomenaCSS/pull/1, branch `fix/component-polish`, commits `c64307e`, `63bd3d9`,
   `262a99e`, `2f75426`, `fa3d203` and `6884f0f`: `README.md`, `css/components/input-field.css`,
@@ -42,21 +43,21 @@ The CSS, so that Philomena's build can bring it down to the browsers of `assets/
 Chrome has neither `:where()` nor complex `:not()` arguments. Philomena's PostCSS stage (`assets/build/`) does the
 rest. It expands `:where()` and `:is()` into alternatives of their own specificity and splits `:not(a, b)` into one
 `:not()` per argument, so a rule written at low specificity to let others win would outrank them; these rules are
-rewritten to state, hover or position through custom properties instead, read by a rule of the old rank:
+rewritten to state, hover or position through custom properties instead, read by a rule of upstream's rank:
 
-- `design/mixins.css`, `design/layout.css` and the link rules of `components/card.css`, `block.css`,
-  `collapsible.css`, `editor.css`, `media.css` and `communication.css`: a container sets its link style as
-  `--link-style-*` custom properties (the new `content-links` and `bar-links` mixins) that one `a` rule applies, and
-  the controls of `$content-controls` and `$bar-controls` reset them (buttons, nav links, tags, badges, dropdown
-  items, pagination links and tabs), in place of `a:where(:not($(content-controls)))`, whose `.tag a`-style arguments
-  floor browsers can't parse. The reset is one list for both kinds of container, so a nav link or a tab in a bar keeps
-  its own style too. Each bar underlines its hovered links in a `{bar} a:hover` rule (the new `links-hover` mixin), of
-  the specificity upstream's had. Where link containers nest, the innermost one decides, where upstream the most
-  specific rule did (a block in a colored card, say). A link inside a `.button` or `.nav-link` (nested interactive
-  content, invalid HTML) is reset as well. The options bar of `communication.css` lays out every link but buttons,
-  dropdown items and pagination links as `a:where(:not(.button, .dropdown-item, .pagination-link))`, links in a tag or
-  badge there included. The media box color variants no longer give the bar's background to its links, which sit on
-  that same background.
+- `design/mixins.css`, `design/layout.css` and the link rules of `components/card.css`, `block.css`, `collapsible.css`,
+  `editor.css`, `media.css` and `communication.css`: a container sets its link style as `--link-style-*` custom
+  properties (the `content-links` and `bar-links` mixins) that one `a` rule applies, and the controls of
+  `$content-controls` and `$bar-controls` but alerts, whose `.alert a` rule outranks that `a` rule, reset them (buttons,
+  nav links, tags, badges, dropdown items, pagination links and tabs), in place of `a:where(:not($(content-controls)))`,
+  whose `.tag a`-style arguments floor browsers can't parse. The reset is one list for both kinds of container, so a nav
+  link or a tab in a bar keeps its own style too. Each bar underlines its hovered links in a `{bar} a:hover` rule (the
+  `links-hover` mixin), of the specificity upstream's had. Where link containers nest, the innermost one decides, where
+  upstream the most specific rule did (a block in a colored card, say). A link inside a `.button` or `.nav-link` (nested
+  interactive content, invalid HTML) is reset as well. The options bar of `communication.css` lays out every link but
+  buttons, dropdown items and pagination links as `a:where(:not(.button, .dropdown-item, .pagination-link))`, links in a
+  tag or badge there included. The media box color variants give their bar's background to the bar alone, not to its
+  links as well, which sit on it.
 - `design/layout.css`, headings: those inside a card header, a table cell, a badge, a tag or a button get
   `--heading-rhythm: 0` instead of being left out by `:not(.card-header *, …)`, a heading that is the first or last
   child sets `--heading-first` or `--heading-last` to zero its margin at that edge, in place of `:where(:first-child)`
