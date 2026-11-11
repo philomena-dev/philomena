@@ -4,7 +4,7 @@ defmodule PhilomenaWeb.ImageController do
   alias PhilomenaWeb.ImageScope
   alias PhilomenaWeb.NotificationCountPlug
   alias PhilomenaWeb.MarkdownRenderer
-  alias PhilomenaWeb.RateLimitedResponse
+  alias PhilomenaWeb.RefusalResponse
   alias Philomena.Images
   alias Philomena.Interactions
 
@@ -27,7 +27,7 @@ defmodule PhilomenaWeb.ImageController do
 
     render(conn, "index.html",
       title: "Images",
-      layout_class: "layout--wide",
+      layout_class: "page-wide",
       images: images,
       interactions: interactions,
       scope: ImageScope.scope(conn)
@@ -71,7 +71,7 @@ defmodule PhilomenaWeb.ImageController do
       interactions: page.interactions,
       watching: page.watching,
       can_interact: page.can_interact,
-      layout_class: "layout--wide",
+      layout_class: "page-wide",
       title: "##{image.id} - #{Images.tag_list(image)}"
     ]
 
@@ -101,7 +101,7 @@ defmodule PhilomenaWeb.ImageController do
         render(conn, "new.html", changeset: changeset)
 
       {:error, :rate_limited} ->
-        RateLimitedResponse.call(conn, "You may only upload images once every 5 seconds.")
+        RefusalResponse.call(conn, "You may only upload images once every 5 seconds.")
 
       error ->
         error

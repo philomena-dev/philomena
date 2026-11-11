@@ -11,53 +11,53 @@
       conn: @conn
     ) %>
   <div class="block">
-    <div class="block__header page__header">
-      <div class="page__pagination">{pagination}</div>
-      <div class="page__info">
-        <a href={~p"/conversations/new"}><i class="fa fa-paper-plane"></i> Create New Conversation</a>
+    <div class="block-header">
+      {pagination}
+      <a href={~p"/conversations/new"}><i class="fa fa-paper-plane"></i> Create New Conversation</a>
+    </div>
+    <div class="block-content">
+      <div class="table-wrap responsive">
+        <table class="table striped hover thread-list">
+          <thead>
+            <tr>
+              <th>Conversation</th>
+              <th>With</th>
+              <th>Options</th>
+            </tr>
+          </thead>
+          <tbody>
+            <%= for c <- @conversations do %>
+              <tr class={conversation_class(@conn.assigns.current_user, c)}>
+                <td class="thread-list-name">
+                  {link(c.title, to: ~p"/conversations/#{c}")}
+                  <div class="text-xs hidden-below-md">
+                    {c.message_count} {pluralize("message", "messages", c.message_count)}; started {pretty_time(
+                      c.created_at
+                    )}, last message {pretty_time(c.last_message_at)}
+                  </div>
+                </td>
+                <td class="thread-list-stat">
+                  {render(PhilomenaWeb.UserAttributionView, "_user.html",
+                    object: %{user: other_party(@current_user, c)},
+                    conn: @conn
+                  )}
+                </td>
+                <td class="thread-list-detail">
+                  {link("Last message", to: last_message_path(c, c.message_count))} &bull; {link(
+                    "Hide",
+                    to: ~p"/conversations/#{c}/hide",
+                    data: [method: "post"],
+                    data: [confirm: "Are you really, really sure?"]
+                  )}
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
       </div>
     </div>
-    <div class="block__content">
-      <table class="table table--communication-list">
-        <thead>
-          <tr>
-            <th class="table--communication-list__name">Conversation</th>
-            <th class="table--communication-list__stats">With</th>
-            <th class="table--communication-list__options">Options</th>
-          </tr>
-        </thead>
-        <tbody>
-          <%= for c <- @conversations do %>
-            <tr class={"#{conversation_class(@conn.assigns.current_user, c)}"}>
-              <td class="table--communication-list__name">
-                {link(c.title, to: ~p"/conversations/#{c}")}
-                <div class="small-text hide-mobile">
-                  {c.message_count} {pluralize("message", "messages", c.message_count)}; started {pretty_time(
-                    c.created_at
-                  )}, last message {pretty_time(c.last_message_at)}
-                </div>
-              </td>
-              <td class="table--communication-list__stats">
-                {render(PhilomenaWeb.UserAttributionView, "_user.html",
-                  object: %{user: other_party(@current_user, c)},
-                  conn: @conn
-                )}
-              </td>
-              <td class="table--communication-list__options">
-                {link("Last message", to: last_message_path(c, c.message_count))} &bull; {link(
-                  "Hide",
-                  to: ~p"/conversations/#{c}/hide",
-                  data: [method: "post"],
-                  data: [confirm: "Are you really, really sure?"]
-                )}
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-    <div class="block__header block__header--light page__header">
-      <div class="page__pagination">{pagination}</div>
+    <div :if={multiple_pages?(@conversations)} class="block-header sub">
+      {pagination}
     </div>
   </div>
 <% end %>

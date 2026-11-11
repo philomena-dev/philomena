@@ -1,52 +1,63 @@
+<%!-- The menu opens on hover once tags.ts has picked its items --%>
 <div
-  class="tag dropdown"
-  data-tag-category={"#{@tag.category}"}
+  class="dropdown manual"
   data-tag-id={"#{@tag.id}"}
   data-tag-name={"#{@tag.name}"}
   data-tag-slug={"#{@tag.slug}"}
 >
-  <%!-- The order of tag states and dropdown links is important for tags.ts --%>
-  <span><a class="tag__name" href={pretty_tag_path(@tag)} title={"#{@tag.short_description}"}>{@tag.name}</a></span><span class="tag__count">{@tag.images_count}</span>
-  <div class="dropdown__content">
+  <span class={tag_class(@tag)} aria-haspopup="true">
+    <a class="tag-name" href={pretty_tag_path(@tag)} title={"#{@tag.short_description}"}>{@tag.name}</a>
+    <span class="tag-count">{@tag.images_count}</span>
+  </span>
+  <%!-- tags.ts finds the menu items in this order --%>
+  <div class="dropdown-menu">
     <a
-      class="tag__dropdown__link hidden"
+      class="dropdown-item hidden"
       data-method="delete"
       data-remote="true"
       data-tag-action="unwatch"
       href={~p"/tags/#{@tag}/watch"}
-    ><i class="fa fa-bookmark tag__dropdown-icon"></i> Unwatch</a><a
-      class="tag__dropdown__link hidden"
+    ><i class="dropdown-icon fa fa-fw fa-bookmark"></i>Unwatch</a>
+    <a
+      class="dropdown-item hidden"
       data-method="post"
       data-remote="true"
       data-tag-action="watch"
       href={~p"/tags/#{@tag}/watch"}
-    ><i class="fa fa-bookmark tag__dropdown-icon"></i> Watch</a><a
-      class="tag__dropdown__link hidden"
+    ><i class="dropdown-icon fa fa-fw fa-bookmark"></i>Watch</a>
+    <a
+      class="dropdown-item hidden"
       data-method="delete"
       data-remote="true"
       data-tag-action="unspoiler"
       href={~p"/filters/spoiler?#{[tag: @tag]}"}
-    ><i class="fa fa-eye-low-vision tag__dropdown-icon"></i> Unspoiler</a><a
-      class="tag__dropdown__link hidden"
+    ><i class="dropdown-icon fa fa-fw fa-eye-low-vision"></i>Unspoiler</a>
+    <a
+      class="dropdown-item hidden"
       data-method="post"
       data-remote="true"
       data-tag-action="spoiler"
       href={~p"/filters/spoiler?#{[tag: @tag]}"}
-    ><i class="fa fa-eye-low-vision tag__dropdown-icon"></i> Spoiler</a><a
-      class="tag__dropdown__link hidden"
+    ><i class="dropdown-icon fa fa-fw fa-eye-low-vision"></i>Spoiler</a>
+    <a
+      class="dropdown-item hidden"
       data-method="delete"
       data-remote="true"
       data-tag-action="unhide"
       href={~p"/filters/hide?#{[tag: @tag]}"}
-    ><i class="fa fa-ban tag__dropdown-icon"></i> Unhide</a><a
-      class="tag__dropdown__link hidden"
+    ><i class="dropdown-icon fa fa-fw fa-ban"></i>Unhide</a>
+    <a
+      class="dropdown-item hidden"
       data-method="post"
       data-remote="true"
       data-tag-action="hide"
       href={~p"/filters/hide?#{[tag: @tag]}"}
-    ><i class="fa fa-ban tag__dropdown-icon"></i> Hide</a><a
-      class="tag__dropdown__link hidden"
-      href="/sessions/new"
-    >Sign in to Watch</a><a class="tag__dropdown__link hidden" href="/filters">Filter</a>
+    ><i class="dropdown-icon fa fa-fw fa-ban"></i>Hide</a>
+    <a class="dropdown-item hidden" href="/sessions/new">
+      <i class="dropdown-icon fa fa-fw fa-right-to-bracket"></i>Sign in to Watch
+    </a>
+    <a class="dropdown-item hidden" href="/filters">
+      <i class="dropdown-icon fa fa-fw fa-filter"></i>Filter
+    </a>
   </div>
 </div>

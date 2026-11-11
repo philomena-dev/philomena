@@ -1,0 +1,172 @@
+/*
+ * The page: the header bars, the notices, the content and the footer, which stays at the bottom of short pages. The
+ * content is .page-narrow, .page-medium or .page-wide, as the controller chooses; .page-centered on the body is the
+ * user's setting that centers the narrower pages, and .page-center and .page-center-column center blocks with them.
+ */
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.page-content {
+  flex: 1 0 auto;
+  margin-block: var(--spacing-lg);
+  padding-inline: var(--spacing-sm);
+}
+
+@media (min-width: $breakpoint-md) {
+  /* Centered pages inset the header bars and wide content from the screen edges by the same gutter */
+  .page-centered {
+    --_gutter: calc(2 * var(--spacing-lg));
+    --header-spacing-horizontal: var(--_gutter);
+  }
+
+  .page-content {
+    padding-inline: var(--spacing-lg) 0;
+  }
+
+  .page-wide.page-content {
+    padding-inline: var(--spacing-lg);
+  }
+
+  /* Also inside a padded page, which is narrower than the screen */
+  .page-narrow,
+  .page-medium {
+    box-sizing: border-box;
+    inline-size: min(96vw, 100%);
+  }
+
+  .page-narrow {
+    max-inline-size: 980px;
+  }
+
+  .page-medium {
+    max-inline-size: 1330px;
+  }
+
+  .page-centered .page-narrow,
+  .page-centered .page-medium {
+    margin-inline: auto;
+  }
+
+  .page-centered .page-content {
+    padding-inline: 0;
+  }
+
+  .page-centered .page-wide.page-content {
+    padding-inline: var(--_gutter);
+  }
+}
+
+.page-centered .page-center {
+  justify-content: center;
+  margin-inline: auto;
+}
+
+.page-centered .page-center-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* A page outside the site's frame (an error, the two factor sign-in): a card in the middle of the screen */
+.page-minimal {
+  align-items: center;
+  justify-content: center;
+  padding: var(--content-spacing);
+}
+
+.page-minimal > .card {
+  box-sizing: border-box;
+  inline-size: 100%;
+  max-inline-size: var(--layout-narrow-width);
+}
+
+/* The notices under the header bars: square alerts from edge to edge, their text in line with the bar items */
+.page-notices {
+  --border-radius-inner: 0;
+  --alert-padding-horizontal: calc(var(--header-spacing-horizontal) + var(--navbar-item-padding-horizontal));
+}
+
+/* The site notices staff set keep a dark bar of their own */
+.alert.site-notice {
+  color: var(--header-text-color);
+  background-color: var(--notice-color);
+}
+
+.alert.site-notice a {
+  color: var(--notice-link-color);
+}
+
+.alert.site-notice a:hover {
+  color: var(--notice-link-hover-color);
+}
+
+/* The footer: columns of links in a row over the version line, wrapped on phones and stacked on the narrowest */
+.page-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg);
+  font-size: var(--text-size-sm);
+  color: var(--muted-text-color);
+  background-color: var(--surface-color);
+}
+
+.page-footer-columns {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--spacing-md) var(--spacing-xl);
+}
+
+.page-footer-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.page-footer-column h5 {
+  margin-block: var(--spacing-xs);
+}
+
+.page-footer-info {
+  text-align: center;
+}
+
+@media not all and (min-width: $breakpoint-md) {
+  .page-footer {
+    font-size: var(--text-size-base);
+    line-height: var(--text-line-height);
+  }
+
+  .page-footer-column a {
+    @mixin touch-target;
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* The narrowest phones stack the columns, each a heading over two columns of links */
+@media not all and (min-width: $breakpoint-sm) {
+  .page-footer-columns {
+    display: grid;
+    gap: var(--spacing-lg);
+  }
+
+  .page-footer-column {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--spacing-lg);
+  }
+
+  .page-footer-column h5 {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Staff can hide their tools on the pages they browse */
+body[data-hide-staff-tools="true"] .staff-action {
+  display: none;
+}

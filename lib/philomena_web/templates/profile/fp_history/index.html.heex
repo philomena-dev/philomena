@@ -6,7 +6,7 @@
     route: route,
     conn: @conn
   ) %>
-<div class="page__pagination">{pagination}</div>
+{pagination}
 <ul>
   <%= for user_fingerprint <- @user_fingerprints do %>
     <li>
@@ -23,4 +23,4 @@
     </li>
   <% end %>
 </ul>
-<div class="page__pagination">{pagination}</div>
+{pagination}

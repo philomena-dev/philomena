@@ -1,5 +1,5 @@
 <h1>Sign in</h1>
-<%= form_for @conn, ~p"/sessions", [as: :user], fn f -> %>
+<%= form_for @conn, ~p"/sessions", [as: :user, class: "content"], fn f -> %>
   <%= if @error_message do %>
     <div class="alert alert-danger">
       <p>{@error_message}</p>
@@ -7,25 +7,25 @@
     <p>{link("Resend unlock instructions", to: ~p"/unlocks/new")}</p>
     <p>{link("Resend confirmation email", to: ~p"/confirmations/new")}</p>
   <% end %>
-  <p>{link("Forgot your password?", to: ~p"/passwords/new")}</p>
-  <div class="field">
+  <p>{link("Forgot your password?", to: ~p"/passwords/new", class: "touch-link")}</p>
+  <div class="form-control">
     {email_input(f, :email,
-      class: "input",
+      class: "input-field",
       required: true,
       placeholder: "Email",
       autofocus: true,
       pattern: ~S/[^@,;\s]+@[^@,;\s]+\.[^@,;\s]+/
     )}{error_tag(f, :email)}
   </div>
-  <div class="field">
-    {password_input(f, :password, class: "input", required: true, placeholder: "Password")}{error_tag(
+  <div class="form-control">
+    {password_input(f, :password, class: "input-field", required: true, placeholder: "Password")}{error_tag(
       f,
       :password
     )}
   </div>
-  <div class="field">{checkbox(f, :remember_me)} {label(f, :remember_me, "Remember me")}</div>
+  {checkbox_field(f, :remember_me, "Remember me")}
   {render(PhilomenaWeb.CaptchaView, "_captcha.html", name: "session", conn: @conn)}
-  <div class="actions">{submit("Sign in", class: "button")}</div>
+  <div class="form-control-submit">{submit("Sign in", class: "button")}</div>
 <% end %>
 <p>
   <strong>Haven't read the <a href="/rules">site rules</a>

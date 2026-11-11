@@ -81,11 +81,7 @@ function resizeTextarea(e: Event) {
 }
 
 function setupPreviews() {
-  let textarea = $<HTMLTextAreaElement>('.js-preview-input');
-
-  if (!textarea) {
-    textarea = $<HTMLTextAreaElement>('.js-preview-description');
-  }
+  const textarea = $<HTMLTextAreaElement>('.js-preview-input');
 
   const previewButton = $<HTMLAnchorElement>('a[data-click-tab="preview"]');
   const previewLoading = $<HTMLElement>('.js-preview-loading');
@@ -119,14 +115,14 @@ function setupPreviews() {
 
   if (previewAnon) {
     previewAnon.addEventListener('click', () => {
-      if (previewContent.classList.contains('hidden')) return;
+      if (!previewContent.classList.contains('selected')) return;
 
       updatePreview();
     });
   }
 
   delegate(document, 'click', {
-    '.post-reply': (event: Event, link: HTMLElement) => {
+    '.js-post-reply': (event: Event, link: HTMLElement) => {
       commentReply(link.dataset.author || '', link.getAttribute('href') || '', textarea!, link.dataset.post);
       event.preventDefault();
     },

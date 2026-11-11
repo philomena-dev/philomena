@@ -19,6 +19,8 @@ defmodule PhilomenaWeb.Image.DescriptionControllerTest do
     response = html_response(conn, 200)
 
     assert response =~ "An updated description"
+    # Block-level Markdown output cannot sit inside a paragraph
+    refute response =~ ~r/<p>\s*<div class="paragraph">/
     refute response =~ "Derpibooru"
     assert Repo.reload!(image).description == "An updated description"
   end

@@ -1,12 +1,12 @@
-<div class="flex flex--centered flex__grow">
+<div class="flex items-center flex-1 wrap-anywhere">
   <div>
     <strong>{link(@notification.channel.title, to: ~p"/channels/#{@notification.channel}")}</strong>
     went live {pretty_time(@notification.updated_at)}
   </div>
 </div>
-<div class="flex flex--centered flex--no-wrap">
+<div class="flex items-center flex-nowrap">
   <a
-    class="button button--separate-right"
+    class="button me-md"
     data-click-hideparent=".notification"
     data-method="post"
     data-remote="true"

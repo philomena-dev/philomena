@@ -43,8 +43,11 @@ defmodule PhilomenaWeb.Tag.AliasControllerTest do
       tag = tag_fixture()
       conn = log_in_user(conn, admin_user_fixture())
       conn = get(conn, ~p"/tags/#{tag}/alias/edit")
+      response = html_response(conn, 200)
 
-      assert html_response(conn, 200) =~ "Editing Tag Alias"
+      assert response =~ "Editing Tag Alias"
+      assert response =~ ~s(<label for="tag_target_tag">)
+      assert response =~ ~r/<input [^>]*id="tag_target_tag"/
     end
 
     test "renders the edit form for a Tag-admin role_map moderator", %{conn: conn} do

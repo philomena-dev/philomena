@@ -1,0 +1,503 @@
+/*
+ * Design tokens, emitted as custom properties (names are at most four words):
+ *  --{name}-color   colors; the dark theme's values are set on :root, the light theme's by the light-colors mixin,
+ *                   which is emitted for the system preference (unless data-theme="dark") and for data-theme="light"
+ *  --{name}-font    font families
+ *  --z-{name}       layering
+ *  everything else  sizes, spacing, radii and other values, some of them change at a breakpoint
+ *
+ * The palette follows Philomena's: a few structural colors, and a type-color mixin that derives every role of a
+ * semantic color (neutral, primary, success, warning, danger, special) from one hue, so that buttons, badges,
+ * alerts, cards, blocks, tables and media boxes all use the same tokens:
+ *  --{type}-color / -text-color / -border-color   a strong fill (counters, switches, the current page), its text and
+ *                                                  the border of a control in the color
+ *  --{type}-button-color / -button-text-color      a button's fill and its text
+ *  --{type}-button-hover-color / -active-color     the shade laid over a hovered and a pressed button: black on the
+ *                                                  dark theme, the button's own hue on the light one, so that a pale
+ *                                                  button gets deeper and not grey
+ *  --{type}-tint-color / -tint-text-color          a tinted surface (alerts, badges, table rows) and the text on it
+ *  --{type}-bar-color / -bar-text-color            the title bar of a colored card, block, media box or table
+ *  --{type}-wash-color                             the body of a colored card
+ *  --{type}-affix-color                            the prefix and suffix of a badge, the hover of a pagination link
+ * Tag categories get --tag-{category}-color / -text-color / -affix-color from the tag-color mixin.
+ *
+ * Colors derived from another color use relative color syntax on $variables, which is computed into a static
+ * color at build time. Use $variables and not var(--variables) as the origin, a var() can't be computed and
+ * would be left for the browser, which the supported browsers don't understand.
+ *
+ * Contrast rules (WCAG 2 ratios, checked by scripts/contrast.mjs):
+ *  - text and labels are at least 4.5:1 from their background, including placeholders, muted text, links and
+ *    syntax colors (most pairs are well above, body text is over 9:1)
+ *  - the borders of controls and focus rings are at least 4.5:1 from the surfaces they separate; containers have
+ *    subtle borders in the tint of their title bar and sharp inset lines for emphasis instead
+ *  - the text of a button is at least 4.5:1 from its fill (the fills themselves sit closer to the card on the dark
+ *    theme, on purpose)
+ *  - everything else (the page under the cards, inputs, badges, alerts, code) keeps Philomena's tones
+ * The lightness of a derived color is absolute (`hsl(from $color h s 35%)`) so that the ratio holds for other
+ * hues as well, give or take a little; the saturation shifts keep the chrome calmer than the base color.
+ */
+
+/* Syntax highlighting hues, darkened on the light code background and lightened on the dark one */
+$_syntax-command: #7a3e9d;
+$_syntax-flag: #1b6b93;
+$_syntax-string: #2e7d32;
+$_syntax-number: #b25000;
+$_syntax-key: #1b6b93;
+$_syntax-punctuation: #6b6d78;
+
+/*
+ * The roles of a semantic color, per theme. $sat shifts the saturation of every role (the dark theme mutes the
+ * success green), $fill is the lightness of the strong fill (green is bright, so it sits lower). The lightness
+ * values are tuned so that the text roles are 4.5:1+ on their background. A button has its own fill and text: on
+ * the dark theme they are the strong fill, on the light theme a pale tint with dark text, as a pagination, because
+ * a fill dark enough for light text is heavy on a white card.
+ */
+@define-mixin type-color-light $type, $color, $sat: 0, $fill: 41% {
+  --$(type)-color: hsl(from $color h calc(s + $sat) $(fill));
+  --$(type)-text-color: hsl(from $color h calc(s + $sat) 98%);
+  --$(type)-button-text-color: hsl(from $color h calc(s + $sat) 18%);
+  --$(type)-tint-color: hsl(from $color h calc(s + $sat) 90%);
+  --$(type)-tint-text-color: hsl(from $color h calc(s + $sat) 28%);
+  --$(type)-bar-color: hsl(from $color h calc(s + $sat) 82%);
+  --$(type)-bar-text-color: hsl(from $color h calc(s + $sat) 20%);
+  --$(type)-wash-color: hsl(from $color h calc(s + $sat - 15) 92%);
+  --$(type)-affix-color: hsl(from $color h calc(s + $sat + 20) 82%);
+}
+
+/* The fill, shades and border of a colored button on the light theme; the default button has its own */
+@define-mixin button-color-light $type, $color {
+  --$(type)-border-color: hsl(from $color h s 53%);
+  --$(type)-button-color: hsl(from $color h calc(s + 15) 88%);
+  --$(type)-button-hover-color: hsl(from $color h calc(s + 20) 38% / 0.2);
+  --$(type)-button-active-color: hsl(from $color h calc(s + 20) 34% / 0.4);
+}
+
+@define-mixin type-color-dark $type, $color, $sat: 0, $fill: 35% {
+  --$(type)-color: hsl(from $color h calc(s + $sat) $(fill));
+  --$(type)-text-color: hsl(from $color h calc(s + $sat) 88%);
+  --$(type)-border-color: hsl(from $color h calc(s + $sat) calc($(fill) + 18%));
+  --$(type)-button-color: hsl(from $color h calc(s + $sat) $(fill));
+  --$(type)-button-text-color: hsl(from $color h calc(s + $sat) 88%);
+  --$(type)-button-hover-color: rgba(0, 0, 0, 0.18);
+  --$(type)-button-active-color: rgba(0, 0, 0, 0.35);
+  --$(type)-tint-color: hsl(from $color h calc(s + $sat) 22%);
+  --$(type)-tint-text-color: hsl(from $color h calc(s + $sat) 84%);
+  --$(type)-bar-color: hsl(from $color h calc(s + $sat) 30%);
+  --$(type)-bar-text-color: hsl(from $color h calc(s + $sat) 90%);
+  --$(type)-wash-color: hsl(from $color h calc(s + $sat - 15) 12%);
+  --$(type)-affix-color: hsl(from $color h calc(s + $sat + 25) 12%);
+}
+
+/* A tag category: a tint of the hue with bold text in the hue (darkened on the light theme, lightened on the
+   dark one so that it reads) and a stronger shade for the count and the optional border */
+@define-mixin tag-color-light $category, $color {
+  --tag-$(category)-color: hsl(from $color h calc(s - 20) 86%);
+  --tag-$(category)-text-color: hsl(from $color h s 28%);
+  --tag-$(category)-affix-color: hsl(from $color h calc(s - 20) 70%);
+}
+
+@define-mixin tag-color-dark $category, $color {
+  --tag-$(category)-color: hsl(from $color h s 18%);
+  --tag-$(category)-text-color: hsl(from $color h s min(l + 14, 100));
+  --tag-$(category)-affix-color: hsl(from $color h s 27%);
+}
+
+/* Every tag category, for the theme whose tag-color-{theme} mixin is named */
+@define-mixin tag-colors $theme {
+  @mixin tag-color-$(theme) default, $tag-color;
+  @mixin tag-color-$(theme) rating, $tag-rating-color;
+  @mixin tag-color-$(theme) spoiler, $tag-spoiler-color;
+  @mixin tag-color-$(theme) origin, $tag-origin-color;
+  @mixin tag-color-$(theme) oc, $tag-oc-color;
+  @mixin tag-color-$(theme) error, $tag-error-color;
+  @mixin tag-color-$(theme) character, $tag-character-color;
+  @mixin tag-color-$(theme) official, $tag-official-color;
+  @mixin tag-color-$(theme) fanmade, $tag-fanmade-color;
+  @mixin tag-color-$(theme) species, $tag-species-color;
+  @mixin tag-color-$(theme) body, $tag-body-color;
+}
+
+/* The light theme's colors, emitted for the system preference and for data-theme="light" */
+@define-mixin light-colors {
+  /* The page, the surfaces on it and the text */
+  --page-bg-color: $page-color-light;
+  --surface-color: $surface-color-light;
+  --text-color: $text-color-light;
+  --muted-text-color: hsl(from $text-color-light h s 34%);
+  --placeholder-color: hsl(from $base-color-light h calc(s - 40) 40%);
+  --link-color: hsl(from $link-color-light h s 39%);
+  --link-strong-color: hsl(from $link-color-light h s 35%);
+  /* Tints of the base color: title bars and container borders, sub bars, the wells inputs and code sit in,
+     overlays for stripes and hover, links on bars, and the accent of blockquote bars */
+  --tint-color: hsl(from $base-color-light h s 88%);
+  --tint-faint-color: hsl(from $base-color-light h calc(s - 20) 94%);
+  --well-color: hsl(from $base-color-light h calc(s - 20) 96%);
+  --well-deep-color: hsl(from $base-color-light h calc(s - 20) 90%);
+  --stripe-color: hsl(from $base-color-light h s 50% / 0.1);
+  --hover-color: hsl(from $base-color-light h s 50% / 0.14);
+  --bar-link-color: hsl(from $base-color-light h s 30%);
+  --accent-color: hsl(from $base-color-light h s 65%);
+  /* Controls: the 4.5:1 border of inputs, focus rings, the feedback shades of buttons */
+  --control-border-color: hsl(from $base-color-light h calc(s - 20) 42%);
+  --focus-color: hsl(from $base-color-light h s 39%);
+  --hover-shade-color: rgba(0, 0, 0, 0.12);
+  --bar-hover-shade-color: rgba(0, 0, 0, 0.28);
+  --active-shade-color: rgba(0, 0, 0, 0.25);
+  /* Shadows and the inset emphasis lines of containers */
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  --inset-highlight-color: rgba(255, 255, 255, 0.6);
+  --inset-shadow-color: rgba(0, 0, 0, 0.1);
+  --raised-inset-color: var(--inset-shadow-color);
+  --raised-shadow-color: hsl(from $base-color-light h s 93%);
+  --container-shadow-color: var(--raised-shadow-color);
+  /* Scrollbars */
+  --scrollbar-thumb-color: hsl(from $base-color-light h calc(s - 20) 62%);
+  --scrollbar-track-color: hsl(from $base-color-light h calc(s - 20) 92%);
+  /* The site header, Philomena's dark bar */
+  --header-color: hsl(from $base-color-light h s 38%);
+  --header-border-color: hsl(from $base-color-light h s 30%);
+  --header-text-color: #ffffff;
+  --header-brand-color: hsl(from $base-color-light h s 89%);
+  /* Fields on the header, wells in the bar */
+  --header-field-color: hsl(from $base-color-light h s 31%);
+  --header-field-hover-color: hsl(from $base-color-light h s 27%);
+  --header-placeholder-color: hsl(from $base-color-light h s 80%);
+  /* Labels and veils over media */
+  --overlay-color: rgba(0, 0, 0, 0.7);
+  --overlay-text-color: #ffffff;
+  --veil-color: rgba(0, 0, 0, 0.6);
+  --veil-text-color: #ffffff;
+  /* Syntax highlighting */
+  --syntax-command-color: hsl(from $_syntax-command h s 37%);
+  --syntax-flag-color: hsl(from $_syntax-flag h s 32%);
+  --syntax-string-color: hsl(from $_syntax-string h s 28%);
+  --syntax-number-color: hsl(from $_syntax-number h s 30%);
+  --syntax-key-color: hsl(from $_syntax-key h s 32%);
+  --syntax-punctuation-color: hsl(from $_syntax-punctuation h s 37%);
+  /* The semantic types and the tag categories */
+  /* Each strong fill is as light as its hue allows with light text at 4.5:1: green is bright, red and purple are not.
+     Neutral is close to grey, so that it differs from primary */
+  @mixin type-color-light neutral, $base-color-light, -48, 43%;
+  @mixin type-color-light primary, $primary-color;
+  @mixin type-color-light success, $success-color, 0, 32%;
+  @mixin type-color-light warning, $warning-color;
+  @mixin type-color-light danger, $danger-color, 0, 48%;
+  @mixin type-color-light special, $special-color, 0, 45%;
+  --neutral-border-color: hsl(from $base-color-light h calc(s - 48) 53%);
+  /* The default button is the color of the page with a border and shades in the base color */
+  --neutral-button-border-color: hsl(from $base-color-light h calc(s - 5) 62%);
+  --neutral-button-color: $page-color-light;
+  --neutral-button-hover-color: hsl(from $base-color-light h s 45% / 0.16);
+  --neutral-button-active-color: hsl(from $base-color-light h s 40% / 0.34);
+  @mixin button-color-light primary, $primary-color;
+  @mixin button-color-light success, $success-color;
+  @mixin button-color-light warning, $warning-color;
+  @mixin button-color-light danger, $danger-color;
+  @mixin button-color-light special, $special-color;
+  @mixin tag-colors light;
+}
+
+:root {
+  /* Layering, from the page up: what is in flow, then what floats over it, then what covers the page */
+  --z-focus: 3;
+  --z-input-symbol: 4;
+  --z-header: 5;
+  --z-menu: 6;
+  --z-suggestions: 7;
+  --z-suggestions-header: 8;
+  --z-popup: 9;
+  --z-sidebar-overlay: 10;
+  --z-sidebar: 11;
+  /* The dark theme's colors, the default; see the light-colors mixin for what each group is */
+  --page-bg-color: $page-color-dark;
+  --surface-color: $surface-color-dark;
+  --text-color: $text-color-dark;
+  --muted-text-color: hsl(from $text-color-dark h s 69%);
+  --placeholder-color: hsl(from $base-color-dark h calc(s - 15) 60%);
+  --link-color: hsl(from $link-color-dark h s 61%);
+  --link-strong-color: hsl(from $link-color-dark h s 72%);
+  --tint-color: hsl(from $base-color-dark h s 25%);
+  --tint-faint-color: hsl(from $base-color-dark h calc(s - 5) 19%);
+  --well-color: hsl(from $base-color-dark h calc(s - 5) 11%);
+  --well-deep-color: hsl(from $base-color-dark h calc(s - 5) 9%);
+  --stripe-color: hsl(from $base-color-dark h calc(s + 20) 60% / 0.1);
+  --hover-color: hsl(from $base-color-dark h calc(s + 20) 60% / 0.12);
+  --bar-link-color: hsl(from $base-color-dark h calc(s + 20) 78%);
+  --accent-color: hsl(from $base-color-dark h calc(s + 10) 55%);
+  --control-border-color: hsl(from $base-color-dark h s 59%);
+  --focus-color: hsl(from $base-color-dark h calc(s + 15) 61%);
+  --hover-shade-color: rgba(0, 0, 0, 0.18);
+  --bar-hover-shade-color: rgba(0, 0, 0, 0.18);
+  --active-shade-color: rgba(0, 0, 0, 0.35);
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  --inset-highlight-color: rgba(255, 255, 255, 0.08);
+  --inset-shadow-color: rgba(0, 0, 0, 0.35);
+  --raised-inset-color: transparent;
+  --raised-shadow-color: rgba(0, 0, 0, 0.3);
+  --container-shadow-color: rgba(0, 0, 0, 0.55);
+  --scrollbar-thumb-color: hsl(from $base-color-dark h s 40%);
+  --scrollbar-track-color: hsl(from $base-color-dark h calc(s - 5) 13%);
+  --header-color: hsl(from $base-color-dark h calc(s + 20) 30%);
+  --header-border-color: hsl(from $base-color-dark h s 25%);
+  --header-text-color: #ffffff;
+  --header-brand-color: hsl(from $base-color-dark h calc(s + 20) 88%);
+  --header-field-color: hsl(from $base-color-dark h calc(s + 20) 22%);
+  --header-field-hover-color: hsl(from $base-color-dark h calc(s + 20) 18%);
+  --header-placeholder-color: hsl(from $base-color-dark h calc(s + 20) 72%);
+  --overlay-color: rgba(0, 0, 0, 0.7);
+  --overlay-text-color: #ffffff;
+  --veil-color: rgba(0, 0, 0, 0.6);
+  --veil-text-color: #ffffff;
+  --syntax-command-color: hsl(from $_syntax-command h s 73%);
+  --syntax-flag-color: hsl(from $_syntax-flag h s 70%);
+  --syntax-string-color: hsl(from $_syntax-string h s 68%);
+  --syntax-number-color: hsl(from $_syntax-number h s 70%);
+  --syntax-key-color: hsl(from $_syntax-key h s 70%);
+  --syntax-punctuation-color: hsl(from $_syntax-punctuation h s 73%);
+
+  @mixin type-color-dark neutral, $base-color-dark, -9;
+  --neutral-button-border-color: hsl(from $base-color-dark h calc(s - 9) 53%);
+  @mixin type-color-dark primary, $primary-color;
+  @mixin type-color-dark success, $success-color, -20, 32%;
+  @mixin type-color-dark warning, $warning-color;
+  @mixin type-color-dark danger, $danger-color;
+  @mixin type-color-dark special, $special-color;
+  @mixin tag-colors dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    @mixin light-colors;
+  }
+}
+
+:root[data-theme="light"] {
+  @mixin light-colors;
+}
+
+:root {
+  /* Font sizes, as in Philomena: 14px text, which every rem in the framework is a multiple of, 16px in the header
+     and its navbar, and headings from 1.75rem down to the text size */
+  --base-font-size: 14px;
+  --header-font-size: 16px;
+  --heading-1-size: 1.75rem;
+  --heading-2-size: 1.5rem;
+  --heading-3-size: 1.35rem;
+  --heading-4-size: 1.2rem;
+  --heading-5-size: 1.1rem;
+  --heading-6-size: 1rem;
+  --base-font: verdana, arial, helvetica, sans-serif;
+  --mono-font: "Source Code Pro", "Consolas", monospace;
+  /* Line heights, as in Philomena: tight for the page and headings, looser for paragraphs and other running text */
+  --base-line-height: 1.15;
+  --heading-line-height: 1.15;
+  --text-line-height: 1.35;
+  /* The spacing scale: every padding, margin and gap in the framework is one of these steps, and so are the
+     .m-{key} and .p-{key} utilities (css/utils/spacing.css) */
+  --spacing-0: 0;
+  --spacing-tiny: 0.1rem;
+  --spacing-small: 0.25rem;
+  --spacing-medium: 0.4rem;
+  --spacing-large: 0.8rem;
+  --spacing-huge: 1.2rem;
+  --spacing-xs: var(--spacing-tiny);
+  --spacing-sm: var(--spacing-small);
+  --spacing-md: var(--spacing-medium);
+  --spacing-lg: var(--spacing-large);
+  --spacing-xl: var(--spacing-huge);
+  /* Rhythm: significant blocks (cards, tables, alerts, code blocks) and headings keep a large distance, controls
+     (buttons, badges, form controls) a medium one */
+  --block-spacing: var(--spacing-lg);
+  --heading-spacing: var(--spacing-lg);
+  /* The border radii: outer for cards and other blocks, inner for the controls inside them, large for badges */
+  --border-radius-inner: 0.2rem;
+  --border-radius-outer: 0.3rem;
+  --border-radius-large: 0.5rem;
+  /* Border widths: the regular one for borders and dividers, the thick one for emphasis (popups, table header rules) */
+  --border-width: 1px;
+  --border-thick-width: 2px;
+  /* The gap between the items of a group: buttons, badges, tags, media boxes */
+  --group-gap: var(--spacing-md);
+  --header-height: 3.25rem;
+  --header-field-height: 2.25rem;
+  --header-spacing-horizontal: var(--spacing-md);
+  --header-spacing-vertical: var(--spacing-md);
+  --header-brand-font-size: 1.25rem;
+  --content-spacing: var(--spacing-lg);
+  --content-container-max-width: 1280px;
+  --button-padding-horizontal: var(--spacing-md);
+  --button-padding-vertical: var(--spacing-sm);
+  --button-font-size: 1rem;
+  --button-content-gap: var(--spacing-xs);
+  --grid-column-gap: 0;
+  --grid-auto-column-width: 12rem;
+  --popup-max-width: 400px;
+  --popup-wide-max-width: 40em;
+  --card-padding: var(--spacing-lg);
+  --card-header-padding-vertical: var(--spacing-md);
+  /* The drop shadow of menus (dropdowns, navbar menus, combobox suggestions): it is as far down as it is blurred and
+     pulled in a little, so that none of it falls on the trigger above the menu */
+  --menu-shadow: 0 var(--spacing-lg) var(--spacing-lg) calc(-1 * var(--spacing-sm)) var(--shadow-color);
+  /* The bevel, a very subtle polished edge lit from the top left corner: a raised piece (containers, bars, buttons,
+     badges) has a light line along its top and left and a dark one along its bottom and right, a well (inputs,
+     pressed buttons) the reverse. Both are one pixel inside the border and have the same two layers, so that one
+     can transition into the other */
+  --emphasis-shadow: inset 1px 1px 0 var(--inset-highlight-color), inset -1px -1px 0 var(--raised-inset-color);
+  --well-shadow: inset 1px 1px 0 var(--inset-shadow-color), inset -1px -1px 0 var(--inset-highlight-color);
+  /* The bevel of a piece with a strong fill (a navbar, a counter), where the light theme's highlight is too bright */
+  --fill-bevel-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.14), inset -1px -1px 0 rgba(0, 0, 0, 0.14);
+  /* The dark line of a raised piece is inside its bottom and right edges on the light theme (--raised-inset-color)
+     and outside them on the dark theme (--raised-shadow-color). The light theme has a very light line in the base
+     color outside instead, lighter than the borders */
+  --raised-shadow: 1px 1px 0 var(--raised-shadow-color);
+  /* The same line for containers (cards, blocks, tables, media boxes ...), stronger on the dark theme */
+  --container-shadow: 1px 1px 0 var(--container-shadow-color);
+  /* The same for a bar that runs from edge to edge of the screen: only its bottom line, the other sides have no edge */
+  --edge-shadow: inset 0 -1px 0 var(--inset-shadow-color);
+  --block-header-padding-vertical: var(--spacing-md);
+  --block-header-padding-horizontal: var(--spacing-lg);
+  --block-content-padding: var(--spacing-lg);
+  /* Blockquotes: a bar on the start side, a gap to the text; nested quotes add a bar each, from the seventh level
+     on the gap is small so that deep threads do not run out of room */
+  --blockquote-bar-width: var(--spacing-md);
+  --blockquote-gap: var(--spacing-lg);
+  --blockquote-deep-gap: var(--spacing-sm);
+  --blockquote-nested-gap: var(--spacing-lg);
+  /* Media boxes and lists: the list fills the row with boxes at least --media-box-width wide, Philomena's thumbnail
+     size (--media-box-small-width on small screens and in .small lists) */
+  --media-box-width: 250px;
+  --media-box-small-width: 150px;
+  --media-header-padding-vertical: var(--spacing-sm);
+  --media-header-padding-horizontal: var(--spacing-sm);
+  --media-header-font-size: 0.875em;
+  --media-header-small-font-size: 0.7857em;
+  --media-overlay-padding: var(--spacing-xs) var(--spacing-sm);
+  --media-overlay-inset-horizontal: var(--spacing-lg);
+  --media-overlay-inset-vertical: var(--spacing-sm);
+  --media-overlay-gap: var(--spacing-sm);
+  --media-spoiler-blur: 1rem;
+  --alert-padding-vertical: var(--spacing-md);
+  --alert-padding-horizontal: var(--spacing-lg);
+  --alert-gap: var(--spacing-md);
+  --popup-box-shadow: 1rem;
+  --input-padding: var(--spacing-sm);
+  --color-input-width: 4rem;
+  --color-input-height: 2.5rem;
+  --form-control-spacing: var(--spacing-md);
+  /* The label column of a horizontal form control */
+  --form-label-width: 30%;
+  --focus-outline: 0.1875em;
+  /* How much unavailable controls and muted content are faded */
+  --faded-opacity: 0.6;
+  --collapsible-padding: var(--spacing-lg);
+  --form-checkbox-width: 1em;
+  --form-checkbox-height: 1em;
+  --form-switch-width: 2.5em;
+  --form-switch-height: 1.25em;
+  --form-radio-select-icon: 50%;
+  --form-select-icon-size: 1em;
+  --form-select-icon-padding: var(--spacing-xs);
+  --table-cell-padding-vertical: var(--spacing-sm);
+  --table-cell-padding-horizontal: var(--spacing-md);
+  --table-header-padding-vertical: var(--spacing-md);
+  --code-padding-vertical: var(--spacing-0);
+  --code-padding-horizontal: var(--spacing-sm);
+  --code-block-padding: var(--spacing-md);
+  --code-block-font-size: 0.875em;
+  --code-line-height: var(--text-line-height);
+  --code-small-font-size: 0.75em;
+  --progress-bar-height: 0.75em;
+  --loading-revolution-time: 5s;
+  --badge-padding-vertical: var(--spacing-sm);
+  --badge-padding-horizontal: var(--spacing-md);
+  --badge-font-size: 0.875rem;
+  /* Counters: the size of a badge, smaller when pinned to a corner */
+  --counter-corner-font-size: 0.7rem;
+  /* Tags are borderless; set --tag-border to a width (such as .0625rem) to draw one, the padding shrinks to keep the height */
+  --tag-border: 0px;
+  --tag-border-radius: var(--border-radius-inner);
+  --tag-padding-vertical: var(--spacing-md);
+  --tag-padding-horizontal: var(--spacing-md);
+  --tag-gap: var(--spacing-0);
+  --tag-font-size: 1em;
+  /* The tag box, an editable tag list in the input material */
+  --tag-box-padding: var(--spacing-md);
+  --tag-box-min-height: 7.5em;
+  --tag-box-max-height: 50vh;
+  --nav-spacing: var(--spacing-xs);
+  --nav-link-padding-horizontal: var(--spacing-md);
+  --nav-link-padding-vertical: var(--spacing-sm);
+  /* The navbar: its items, and the items and the icon column of its dropdown menus */
+  --navbar-item-padding-vertical: var(--spacing-lg);
+  --navbar-item-padding-horizontal: var(--spacing-md);
+  --navbar-menu-min-width: 12rem;
+  --navbar-menu-padding-vertical: var(--spacing-md);
+  --navbar-menu-padding-horizontal: var(--spacing-lg);
+  --navbar-menu-icon-width: 2.5em;
+  /* A clamp cuts its text off after six lines, any length works; a communication follows it unless set */
+  --clamp-max-height: calc(6em * var(--text-line-height));
+  --communication-max-height: var(--clamp-max-height);
+  --communication-name-font-size: 15px;
+  /* Avatars, Philomena's sizes */
+  --avatar-xs-size: 28px;
+  --avatar-sm-size: 50px;
+  --avatar-md-size: 100px;
+  --avatar-lg-size: 125px;
+  /* The burger menu, dropdown menus, sliders and the layout helpers */
+  --burger-width: 16rem;
+  --dropdown-min-width: 10rem;
+  --slider-width: 12rem;
+  /* The editor: the least height of its textarea, and the size of a toolbar button */
+  --editor-min-height: 8rem;
+  --editor-button-size: 1.75rem;
+  --slider-track-height: var(--spacing-md);
+  --slider-thumb-size: 1.25em;
+  --layout-side-width: 22rem;
+  --side-tabs-width: 14rem;
+  --side-tabs-toggle-size: 2.75rem;
+  /* More than a row of side tabs is ever tall: the height their slide is measured from */
+  --side-tabs-row-max-height: 6rem;
+  --layout-narrow-width: 50rem;
+  --accordion-header-padding-vertical: var(--spacing-md);
+  --accordion-padding: var(--spacing-lg);
+  --accordion-line-height: var(--text-line-height);
+  /* Scrollbars: thin, in the tints of the theme */
+  --scrollbar-size: 0.6rem;
+  /* The text scale of the .text-{key} utilities, around the base size; 3xl is the size of a first heading */
+  --text-size-xs: 0.75rem;
+  --text-size-sm: 0.875rem;
+  --text-size-base: 1rem;
+  --text-size-lg: 1.125rem;
+  --text-size-xl: 1.25rem;
+  --text-size-2xl: 1.5rem;
+  --text-size-3xl: 1.75rem;
+  --size-10: 1em;
+  --size-15: 1.5em;
+  --size-20: 2em;
+  --size-100: 10em;
+}
+
+@media not all and (min-width: $breakpoint-md) {
+  :root {
+    --media-box-width: var(--media-box-small-width);
+  }
+}
+
+@media (min-width: $breakpoint-md) {
+  :root {
+    --button-padding-vertical: var(--spacing-md);
+  }
+}
+
+@media (min-width: $breakpoint-lg) {
+  :root {
+    --button-padding-horizontal: var(--spacing-lg);
+    --navbar-item-padding-horizontal: var(--spacing-lg);
+  }
+}
+
+@media (min-width: $breakpoint-xl) {
+  :root {
+    --input-padding: var(--spacing-md);
+  }
+}

@@ -6,20 +6,14 @@
     {viewport_meta_tag(@conn)}
     <title phx-no-format>{@status} - Philomena</title>
     <link href={~p"/css/application.css"} rel="stylesheet" />
-    <link href={stylesheet_path(@conn, nil)} rel="stylesheet" />
-    <link
-      href={light_stylesheet_path(@conn)}
-      media="(prefers-color-scheme: light)"
-      rel="stylesheet"
-    />
     <link href="/favicon.ico" rel="icon" type="image/x-icon" />
     <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
   </head>
-  <body class="minimal">
-    <div class="minimal__message">
-      <h1 class="minimal__message__header"><i class="fa fw favicon-home"></i> Philomena</h1>
+  <body class="page-minimal">
+    <main class="card">
+      <h1 class="card-header"><i class="fa-fw favicon-home"></i> Philomena</h1>
       <h3>{@short_msg}</h3>
       <p>{@long_msg}</p>
-    </div>
+    </main>
   </body>
 </html>

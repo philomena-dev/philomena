@@ -1,14 +1,62 @@
-<nav id="burger">
-  <a href="/"><i class="fa-fw favicon-home"></i> Home</a>
-  <a href="/images/new"><i class="fa fa-fw fa-upload"></i> Upload</a>
-  <a href="/forums"><i class="fas fa-fw fa-pen-square"></i> Forums</a>
-  <a href="/tags"><i class="fa fa-fw fa-tag"></i> Tags</a>
-  <a href="/tag_changes"><i class="fa fa-fw fa-tags"></i> Tag Changes</a>
-  <a href="/search?q=first_seen_at.gt:3 days ago&amp;sf=wilson_score&amp;sd=desc"><i class="fas fa-fw fa-poll"></i>
-  Rankings</a> <a href="/filters"><i class="fa fa-fw fa-filter"></i> Filters</a>
-  <a href="/galleries"><i class="fa fa-fw fa-image"></i> Galleries</a>
-  <a href="/comments"><i class="fa fa-fw fa-comments"></i> Comments</a>
-  <a href="/commissions"><i class="fa fa-fw fa-address-card"></i> Commissions</a>
-  <a href="/channels"><i class="fa fa-fw fa-podcast"></i> Channels</a>
-  <a href="/pages/donations"><i class="fa fa-fw fa-heart"></i> Donate</a>
-</nav>
+<div class="burger" id="burger" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="burger-header">
+    <span><i class="fa-fw favicon-home"></i> Derpibooru</span>
+    <button class="burger-close js-burger-close" title="Close" type="button">
+      <i class="fa fa-fw fa-times"></i>
+    </button>
+  </div>
+  <nav aria-label="Site">
+    {render(PhilomenaWeb.LayoutView, "_burger_links.html",
+      conn: @conn,
+      links: [%{icon: "fa fa-upload", label: "Upload", path: ~p"/images/new"}]
+    )}
+    <%= for section <- site_sections(@conn) do %>
+      {render(PhilomenaWeb.LayoutView, "_burger_links.html", conn: @conn, links: [section])}
+      {render(PhilomenaWeb.LayoutView, "_burger_links.html",
+        conn: @conn,
+        links: section.pages,
+        nested: true
+      )}
+    <% end %>
+    {render(PhilomenaWeb.LayoutView, "_burger_links.html",
+      conn: @conn,
+      links: [
+        %{
+          icon: "fas fa-poll",
+          label: "Rankings",
+          path: "/search?q=first_seen_at.gt:3 days ago&sf=wilson_score&sd=desc"
+        },
+        %{icon: "fa fa-heart", label: "Donate", path: ~p"/pages/donations"}
+      ]
+    )}
+    <hr class="burger-divider" />
+    <%= if @current_user do %>
+      {render(PhilomenaWeb.LayoutView, "_burger_links.html",
+        conn: @conn,
+        links: [%{icon: "fa fa-filter", label: "Filters", path: ~p"/filters"}]
+      )}
+      {render(PhilomenaWeb.LayoutView, "_quick_selects.html", Map.put(assigns, :burger, true))}
+      <hr class="burger-divider" />
+      {render(PhilomenaWeb.LayoutView, "_burger_links.html",
+        conn: @conn,
+        links: user_links(@current_user)
+      )}
+    <% else %>
+      {render(PhilomenaWeb.LayoutView, "_burger_links.html",
+        conn: @conn,
+        links: [
+          %{icon: "fa fa-filter", label: "Filters (#{@current_filter.name})", path: ~p"/filters"},
+          %{icon: "fa fa-cogs", label: "Settings", path: ~p"/settings/edit"}
+        ]
+      )}
+    <% end %>
+    <div :if={staff?(@conn)} class="staff-action">
+      <hr class="burger-divider" />
+      {render(PhilomenaWeb.LayoutView, "_burger_links.html",
+        conn: @conn,
+        links: admin_links(@conn) ++ ban_links(@conn)
+      )}
+    </div>
+  </nav>
+</div>
+<div class="burger-overlay js-burger-close"></div>

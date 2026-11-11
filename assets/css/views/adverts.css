@@ -1,32 +1,26 @@
-#imagespns {
-  border: var(--border);
-  padding: 2px 10px;
-  background: var(--background-odd-color);
+/* The advert box of image pages: a small caption over the banner, centered */
+.spns {
   text-align: center;
 }
 
-#imagespns .subtext {
-  font-size: 10px;
-}
-
-#imagespns .spnstxt {
-  font-size: 10px;
+.spns-text {
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--text-size-xs);
   text-transform: uppercase;
-  color: var(--foreground-half-color);
-  margin: 2px;
-  margin-bottom: 4px;
+  color: var(--muted-text-color);
 }
 
-#imagespns img {
-  max-width: 100%;
-  height: auto;
-}
-
-#imagespns__link {
+.spns-link {
   display: flex;
   justify-content: center;
 }
 
-.table--adverts__image {
+.spns-link img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* The adverts table of the administration keeps a column as wide as a banner */
+.advert-image-column {
   width: 730px;
 }

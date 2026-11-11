@@ -1,0 +1,27 @@
+/* The framework's palette */
+$base-color-dark: #785b99;
+$base-color-light: #9664bf;
+$page-color-dark: #15121a;
+$surface-color-dark: #1d1924;
+$text-color-dark: #dadada;
+$link-color-dark: #9747cc;
+$link-color-light: #9241d9;
+$primary-color: #46266b;
+$success-color: #0f330f;
+$tag-official-color: #b4b046;
+
+/* Lightness of the framework's role colors that this hue needs for contrast */
+$placeholder-lightness-light: 38%;
+$link-lightness-dark: 66%;
+$link-strong-lightness-dark: 76%;
+
+/* Philomena's header bars, notices and mobile menu */
+$header-color-dark: #36274e;
+$header-field-color-dark: #241c2c;
+$header-secondary-color-dark: #251c36;
+$burger-color-dark: #312839;
+$burger-divider-color-dark: #332941;
+$burger-divider-color-light: #dacfe3;
+$link-hover-color-dark: #cbb5f8;
+$link-hover-color-light: #cf73d0;
+$block-header-link-text-color-dark: #a96fdb;

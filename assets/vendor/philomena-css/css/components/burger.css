@@ -1,0 +1,120 @@
+/*
+ * A burger menu: a panel that slides in from the start side of the screen over a dimmed page, for navigation on small
+ * screens. It opens with .open on the panel (and on the overlay), or without a script through a hidden checkbox:
+ *   <input class="burger-toggle" type="checkbox" id="burger">
+ *   <label class="button" for="burger">Menu</label>
+ *   <nav class="burger">
+ *     <div class="burger-header">Menu <label class="burger-close" for="burger" aria-label="Close">×</label></div>
+ *     <a class="burger-item" href="…"><span class="burger-icon">…</span>Images</a>
+ *     <hr class="burger-divider">
+ *   </nav>
+ *   <label class="burger-overlay" for="burger"></label>
+ * The checkbox has to come before the panel and the overlay, as their sibling, and the label that opens the menu
+ * right after it (it shows the focus of the checkbox). Clicking the overlay closes the menu. Closing on Escape,
+ * keeping the focus inside and stopping the page from scrolling behind it need a script.
+ */
+
+.burger-toggle {
+  @mixin hidden-toggle;
+}
+
+/* The checkbox is the tab stop of the label after it, which shows its focus */
+.burger-toggle:focus-visible + label {
+  @mixin focus-ring-offset;
+}
+
+.burger {
+  position: fixed;
+  margin: 0;
+  z-index: var(--z-sidebar);
+  inset-block: 0;
+  inset-inline-start: 0;
+  display: flex;
+  flex-flow: column;
+  box-sizing: border-box;
+  inline-size: var(--burger-width);
+  max-inline-size: 85vw;
+  overflow-y: auto;
+  color: var(--text-color);
+  background-color: var(--surface-color);
+  border-inline-end: var(--border-width) solid var(--tint-color);
+  box-shadow: 0 0 var(--spacing-xl) var(--shadow-color);
+  visibility: hidden;
+  transform: translateX(-100%);
+  transition:
+    transform 0.2s ease-out,
+    visibility 0s 0.2s;
+}
+
+.burger.open,
+.burger-toggle:checked ~ .burger {
+  visibility: visible;
+  transform: none;
+  transition:
+    transform 0.2s ease-out,
+    visibility 0s;
+}
+
+.burger-overlay {
+  position: fixed;
+  margin: 0;
+  z-index: var(--z-sidebar-overlay);
+  inset: 0;
+  background-color: var(--veil-color);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-out;
+}
+
+.burger-overlay.open,
+.burger-toggle:checked ~ .burger-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media print {
+  .burger,
+  .burger-overlay {
+    display: none;
+  }
+}
+
+.burger .burger-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background-color: var(--tint-color);
+}
+
+.burger .burger-close {
+  padding: 0 var(--spacing-sm);
+  border-radius: var(--border-radius-inner);
+  color: var(--bar-link-color);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.burger .burger-item {
+  @mixin menu-item;
+}
+
+.burger .burger-item:hover,
+.burger .burger-item:focus-visible,
+.burger .burger-item.current,
+.burger .burger-close:hover {
+  background-color: var(--tint-faint-color);
+}
+
+.burger .burger-item:focus-visible {
+  @mixin focus-ring-inset;
+}
+
+.burger .burger-icon {
+  @mixin menu-icon;
+}
+
+.burger .burger-divider {
+  @mixin menu-divider;
+}

@@ -1,8 +1,4 @@
 :root {
-  --borderless-tags: 1;
-}
-
-.tag {
-  border-width: 0;
-  line-height: calc(1em + 12px);
+  /* stylelint-disable-next-line length-zero-no-unit -- the tag reads it in calc(), where a bare 0 is invalid */
+  --tag-border: 0px;
 }

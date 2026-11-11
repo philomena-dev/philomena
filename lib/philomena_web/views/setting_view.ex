@@ -1,6 +1,7 @@
 defmodule PhilomenaWeb.SettingView do
   use PhilomenaWeb, :view
   alias Philomena.Users.Settings
+  alias PhilomenaWeb.LayoutView
 
   def themes do
     [
@@ -16,9 +17,7 @@ defmodule PhilomenaWeb.SettingView do
   end
 
   def theme_paths do
-    Map.new(Settings.themes(), fn name ->
-      {name, static_path(PhilomenaWeb.Endpoint, "/css/#{name}.css")}
-    end)
+    Map.new(Settings.themes(), &{&1, LayoutView.theme_stylesheet_path(&1)})
   end
 
   def scale_options do
@@ -33,17 +32,14 @@ defmodule PhilomenaWeb.SettingView do
   def staff?(_), do: false
 
   def tab_class(conn, tab_id, opts \\ []) do
-    if is_active_tab(conn, tab_id, opts), do: "", else: "hidden"
+    if is_active_tab(conn, tab_id, opts), do: "selected"
   end
 
   def tab_link(conn, display_name, tab_id, opts \\ []) do
-    default = Keyword.get(opts, :default, false)
-    class = if is_active_tab(conn, tab_id, opts), do: "selected", else: ""
-
     link(display_name,
       to: "?tab=#{tab_id}",
-      data: [click_tab: tab_id, tab_default: default],
-      class: class
+      data: [click_tab: tab_id, tab_default: Keyword.get(opts, :default, false)],
+      class: ["tab", tab_class(conn, tab_id, opts)]
     )
   end
 
@@ -58,23 +54,31 @@ defmodule PhilomenaWeb.SettingView do
     end
   end
 
-  def field_with_help(title, children) do
-    content =
-      children
-      |> Enum.intersperse(" ")
-      |> Enum.concat([
-        content_tag :span, class: "field-help-button" do
-          [
-            content_tag(:i, "", class: "fa-regular fa-question-circle"),
-            " Help"
-          ]
-        end,
-        content_tag :div, class: "field-help-content hidden" do
-          [help_text(title), tag(:hr)]
-        end
-      ])
+  def field_with_help(help, control) do
+    row =
+      content_tag(
+        :div,
+        [
+          control,
+          content_tag(
+            :button,
+            [content_tag(:i, "", class: "fa-regular fa-question-circle"), " Help"],
+            class: "button button-size-badge js-help-toggle",
+            type: "button"
+          )
+        ],
+        class: "flex flex-wrap items-center gap-md"
+      )
 
-    content_tag(:div, content, class: "field", title: title)
+    content_tag(
+      :div,
+      [
+        row,
+        content_tag(:div, help_text(help), class: "form-message form-message-description hidden")
+      ],
+      class: "form-control",
+      title: help
+    )
   end
 
   # The `title` is static and doesn't include dynamic user input.

@@ -1,0 +1,105 @@
+/*
+ * Controls in menu items. An item of a dropdown or of a navbar menu can be a <label> that holds a control, so that
+ * the whole row toggles it:
+ *  - a checkbox or radio drawn in CSS: <input class="menu-check-input" type="checkbox"> followed by
+ *    <span class="menu-check-box"></span>. The box is square for a checkbox and round for a radio.
+ *  - a switch: <input class="form-switch-input" type="checkbox"> (css/components/forms.css).
+ * .menu-end on the control (the box, or the switch) puts it at the end of the row, after the text; without it the
+ * control sits where it is in the markup, usually in front.
+ */
+
+.menu-check-input {
+  @mixin hidden-toggle;
+}
+
+.menu-check-box {
+  position: relative;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  inline-size: var(--form-checkbox-width);
+  block-size: var(--form-checkbox-height);
+  border: var(--border-width) solid var(--control-border-color);
+  border-radius: var(--border-radius-inner);
+  background-color: var(--well-color);
+  transition: border-color 0.1s;
+}
+
+.menu-check-input[type="radio"] + .menu-check-box {
+  border-radius: 50%;
+}
+
+.menu-check-input:checked + .menu-check-box {
+  border-color: var(--primary-border-color);
+  background-color: var(--primary-color);
+}
+
+/* The check mark: a shape cut out of a filled square, which stays crisp at any font size and zoom */
+.menu-check-input:checked + .menu-check-box:after {
+  content: "";
+  position: absolute;
+  inset: 15%;
+  background-color: var(--primary-text-color);
+  clip-path: polygon(12% 48%, 0% 62%, 38% 96%, 100% 22%, 86% 8%, 37% 68%);
+}
+
+/* The dot of a radio */
+.menu-check-input[type="radio"]:checked + .menu-check-box:after {
+  inset: 25%;
+  border-radius: 50%;
+  clip-path: none;
+}
+
+.menu-check-input:focus-visible + .menu-check-box {
+  @mixin focus-ring-offset;
+}
+
+.menu-check-input:disabled + .menu-check-box {
+  @mixin faded;
+}
+
+.menu-end {
+  margin-inline-start: auto;
+}
+
+/* In a navbar menu the control is a cell of the row, like the icon and the text */
+.navbar .navbar-menu-item > .menu-end,
+.navbar .navbar-menu-item > .menu-check-box {
+  align-self: center;
+  margin-inline: var(--navbar-menu-padding-horizontal);
+}
+
+/* The box reacts to the pointer over its row, as the form controls do */
+label:hover > .menu-check-input:where(:not(:disabled, :checked)) + .menu-check-box {
+  border-color: var(--text-color);
+}
+
+/* A label as a menu item does not select its text on a double click */
+label.dropdown-item,
+label.navbar-menu-item {
+  user-select: none;
+}
+
+/* A row whose control is disabled is faded and italic, as a disabled button, and does not react to the pointer */
+/* Add .disabled to the row for browsers without :has(), where only the control fades */
+/* The two are separate rules, since such a browser drops a whole rule that has :has() in its selector */
+label.dropdown-item.disabled,
+label.navbar-menu-item.disabled {
+  pointer-events: none;
+  font-style: italic;
+  @mixin faded;
+}
+
+label.dropdown-item:has(:disabled),
+label.navbar-menu-item:has(:disabled) {
+  pointer-events: none;
+  font-style: italic;
+  @mixin faded;
+}
+
+label.disabled > :is(.menu-check-box, .form-switch-input:disabled) {
+  opacity: 1;
+}
+
+label:has(:disabled) > :is(.menu-check-box, .form-switch-input:disabled) {
+  opacity: 1;
+}

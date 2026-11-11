@@ -1,11 +1,11 @@
-<div class="block__content profile-about">
-  <%= cond do %>
-    <% @user.description not in [nil, ""] -> %>
-      {@about_me}
-    <% current?(@user, @conn.assigns.current_user) -> %>
+<%= cond do %>
+  <% @user.description not in [nil, ""] -> %>
+    <div class="block-content markdown">{@about_me}</div>
+  <% current?(@user, @conn.assigns.current_user) -> %>
+    <div class="block-content markdown">
       <em>Want to {link("add some info about yourself?",
         to: ~p"/profiles/#{@user}/description/edit"
       )}</em>
-    <% true -> %>
-  <% end %>
-</div>
+    </div>
+  <% true -> %>
+<% end %>

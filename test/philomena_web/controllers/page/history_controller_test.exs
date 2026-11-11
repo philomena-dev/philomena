@@ -29,22 +29,22 @@ defmodule PhilomenaWeb.Page.HistoryControllerTest do
       # markdown source. A word changed in place highlights the deleted word on
       # the old-line row and the inserted word on the new-line row.
       assert response =~ ~s(<table class="diff">)
-      assert response =~ ~s(<del class="diff__hl">original</del>)
-      assert response =~ ~s(<ins class="diff__hl">updated</ins>)
+      assert response =~ ~s(<del class="diff-mark">original</del>)
+      assert response =~ ~s(<ins class="diff-mark">updated</ins>)
 
       # Versions list newest-first, and each row shows the change that edit
       # made: the edit diff belongs to the editor's row (above the creator's).
       editor_at = elem(:binary.match(response, editor.name), 0)
       creator_at = elem(:binary.match(response, creator.name), 0)
-      edit_diff_at = elem(:binary.match(response, ~s(<del class="diff__hl">original</del>)), 0)
+      edit_diff_at = elem(:binary.match(response, ~s(<del class="diff-mark">original</del>)), 0)
       assert editor_at < edit_diff_at
       assert edit_diff_at < creator_at
 
       # The creation version diffs against the empty document, so the original
       # body shows as a whole inserted line.
       assert response =~
-               ~s(<tr class="diff__row diff__row--ins"><td class="diff__gutter"></td>) <>
-                 ~s(<td class="diff__gutter">1</td><td class="diff__text">The original text</td></tr>)
+               ~s(<tr class="diff-row inserted"><td class="diff-gutter"></td>) <>
+                 ~s(<td class="diff-gutter">1</td><td class="diff-text">The original text</td></tr>)
     end
 
     test "renders the initial version for a never-edited page", %{conn: conn} do
@@ -57,8 +57,8 @@ defmodule PhilomenaWeb.Page.HistoryControllerTest do
       assert response =~ page.title
       # The sole (creation) version diffs against the empty document.
       assert response =~
-               ~s(<tr class="diff__row diff__row--ins"><td class="diff__gutter"></td>) <>
-                 ~s(<td class="diff__gutter">1</td><td class="diff__text">Test page body</td></tr>)
+               ~s(<tr class="diff-row inserted"><td class="diff-gutter"></td>) <>
+                 ~s(<td class="diff-gutter">1</td><td class="diff-text">Test page body</td></tr>)
     end
 
     test "redirects with the not-found flash for an unknown slug", %{conn: conn} do

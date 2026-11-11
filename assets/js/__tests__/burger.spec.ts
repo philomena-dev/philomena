@@ -1,0 +1,139 @@
+import { fireEvent } from '@testing-library/dom';
+import { setupBurgerMenu } from '../burger';
+
+let resize: () => void;
+
+vi.stubGlobal(
+  'ResizeObserver',
+  class {
+    constructor(callback: () => void) {
+      resize = callback;
+    }
+
+    observe() {}
+  },
+);
+
+describe('setupBurgerMenu', () => {
+  let toggle: HTMLButtonElement;
+  let panel: HTMLElement;
+  let overlay: HTMLElement;
+
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <button class="js-burger-toggle" aria-controls="burger" aria-expanded="false">Menu</button>
+      <div class="burger" id="burger" role="dialog" aria-modal="true" aria-label="Menu">
+        <button class="burger-close js-burger-close">Close</button>
+        <nav>
+          <a class="burger-item" href="/images">Images</a>
+          <form><input type="hidden" name="_csrf_token"><select><option>Default</option></select></form>
+          <a class="burger-item" href="/sessions">Logout</a>
+          <div class="staff-action"><a class="burger-item" href="/admin/site_notices">Site Notices</a></div>
+        </nav>
+      </div>
+      <div class="burger-overlay js-burger-close"></div>
+    `;
+    toggle = document.querySelector('.js-burger-toggle')!;
+    panel = document.querySelector('.burger')!;
+    overlay = document.querySelector('.burger-overlay')!;
+    setupBurgerMenu();
+  });
+
+  afterEach(() => {
+    fireEvent.keyDown(document, { key: 'Escape' });
+  });
+
+  // jsdom lays nothing out, so every element has no boxes until it is given one
+  const render = (element: HTMLElement) =>
+    vi.spyOn(element, 'getClientRects').mockReturnValue([new DOMRect()] as unknown as DOMRectList);
+
+  const isOpen = () =>
+    panel.classList.contains('open') &&
+    overlay.classList.contains('open') &&
+    toggle.getAttribute('aria-expanded') === 'true' &&
+    document.documentElement.classList.contains('no-overflow');
+
+  it('opens the panel from the toggle and moves the focus into it', () => {
+    fireEvent.click(toggle);
+
+    expect(isOpen()).toBe(true);
+    expect(document.activeElement).toBe(panel.querySelector('.burger-close'));
+  });
+
+  it.each(['.burger-close', '.burger-overlay'])('closes from %s and gives the focus back to the toggle', closer => {
+    fireEvent.click(toggle);
+    fireEvent.click(document.querySelector(closer)!);
+
+    expect(panel).not.toHaveClass('open');
+    expect(overlay).not.toHaveClass('open');
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(document.documentElement).not.toHaveClass('no-overflow');
+    expect(document.activeElement).toBe(toggle);
+  });
+
+  it('closes when the screen grows wide enough to hide the toggle', () => {
+    const rects = render(toggle);
+    fireEvent.click(toggle);
+
+    resize();
+    expect(isOpen()).toBe(true);
+
+    rects.mockRestore();
+    resize();
+    expect(panel).not.toHaveClass('open');
+    expect(document.documentElement).not.toHaveClass('no-overflow');
+  });
+
+  it('closes on Escape, leaving the focus where it is when it has left the panel', () => {
+    const outside = document.createElement('input');
+    document.body.append(outside);
+
+    fireEvent.click(toggle);
+    outside.focus();
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(panel).not.toHaveClass('open');
+    expect(document.activeElement).toBe(outside);
+  });
+
+  it.each([
+    ['shown', 'Site Notices'],
+    ['hidden', 'Logout'],
+  ])('keeps Tab and Shift+Tab going round the rendered controls with staff tools %s', (staffTools, lastLabel) => {
+    const controls = [...panel.querySelectorAll<HTMLElement>('button, a, select')];
+    const rendered = controls.filter(control => staffTools === 'shown' || !control.closest('.staff-action'));
+    rendered.forEach(render);
+    const [close, images] = rendered;
+    const last = rendered[rendered.length - 1];
+    expect(last).toHaveTextContent(lastLabel);
+    fireEvent.click(toggle);
+
+    last.focus();
+    expect(fireEvent.keyDown(document, { key: 'Tab' })).toBe(false);
+    expect(document.activeElement).toBe(close);
+
+    expect(fireEvent.keyDown(document, { key: 'Tab', shiftKey: true })).toBe(false);
+    expect(document.activeElement).toBe(last);
+
+    images.focus();
+    expect(fireEvent.keyDown(document, { key: 'Tab' })).toBe(true);
+    expect(document.activeElement).toBe(images);
+
+    toggle.focus();
+    expect(fireEvent.keyDown(document, { key: 'Tab' })).toBe(false);
+    expect(document.activeElement).toBe(close);
+  });
+
+  it('leaves keys alone while the panel is closed', () => {
+    toggle.focus();
+
+    expect(fireEvent.keyDown(document, { key: 'Tab' })).toBe(true);
+    expect(document.activeElement).toBe(toggle);
+  });
+
+  it('does nothing on a page without a burger menu', () => {
+    document.body.innerHTML = '';
+
+    expect(() => setupBurgerMenu()).not.toThrow();
+  });
+});

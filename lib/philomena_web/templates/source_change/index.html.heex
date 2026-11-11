@@ -1,9 +1,9 @@
-<div class="block">
-  <div class="block__header">
-    <div class="page__pagination">{@pagination}</div>
-  </div>
-  <div class="block__content">
-    <table class="table">
+<div :if={multiple_pages?(@source_changes)} class="block-header">
+  {@pagination}
+</div>
+<div class="block-content">
+  <div class="table-wrap responsive">
+    <table class="table striped">
       <thead>
         <tr>
           <th colspan="2">Image</th>
@@ -16,10 +16,10 @@
       <tbody>
         <%= for source_change <- @source_changes do %>
           <tr>
-            <td class="center">
+            <td>
               {link(source_change.image_id, to: ~p"/images/#{source_change.image}")}
             </td>
-            <td class="center">
+            <td>
               {render(PhilomenaWeb.ImageView, "_image_container.html",
                 image: source_change.image,
                 size: :thumb_tiny,
@@ -28,12 +28,12 @@
             </td>
             <td>{source_change.source_url}</td>
             <%= if source_change.added do %>
-              <td class="success">Added</td>
+              <td class="table-success">Added</td>
             <% else %>
-              <td class="danger">Removed</td>
+              <td class="table-danger">Removed</td>
             <% end %>
             <td>{pretty_time(source_change.created_at)}</td>
-            <td class={"#{user_column_class(source_change)}"}>
+            <td class={user_column_class(source_change)}>
               {render(PhilomenaWeb.UserAttributionView, "_anon_user.html",
                 object: source_change,
                 conn: @conn
@@ -54,7 +54,7 @@
       </tbody>
     </table>
   </div>
-  <div class="block__header block__header--light">
-    <div class="page__pagination">{@pagination}</div>
-  </div>
+</div>
+<div :if={multiple_pages?(@source_changes)} class="block-header sub">
+  {@pagination}
 </div>

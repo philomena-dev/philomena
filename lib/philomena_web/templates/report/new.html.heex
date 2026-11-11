@@ -1,7 +1,7 @@
 <h2>Submit a report</h2>
 <p><strong>{link_to_target(@subject)}</strong></p>
-<div class="image-other">
-  <div class="dnp-warning">
+<div>
+  <div class="card card-danger">
     <h3>Reporting Tips</h3>
     <ul>
       <li>Make sure to report for the correct {link("rule", to: "/rules")}.</li>
@@ -19,7 +19,7 @@
   </div>
   <br />
   <%= if image?(@changeset) do %>
-    <div class="dnp-warning">
+    <div class="card card-danger">
       <h3>Takedown Policy</h3>
       <p>
         <strong>Only an owner of an image's rights (normally the artist) can request a takedown.</strong>
@@ -33,33 +33,35 @@
     <br />
   <% end %>
   <%= if conversation?(@changeset) do %>
-    <div class="dnp-warning">
+    <div class="card card-danger">
       <h3>Privacy note</h3>
       <p>The whole conversation will be readable by site staff.</p>
     </div>
     <br />
   <% end %>
-  <%= form_for @changeset, @action, fn f -> %>
-    <div class="field">
-      {select(f, :rule_id, report_categories(@rules),
-        class: "input",
+  <%= form_for @changeset, @action, [class: "content"], fn f -> %>
+    <div class="form-control">
+      {select_field(f, :rule_id, report_categories(@rules),
         prompt: [key: "Select a rule", disabled: true, selected: true],
         required: true
       )}
     </div>
-    <div class="block">
-      {render(PhilomenaWeb.MarkdownView, "_input.html",
-        conn: @conn,
-        f: f,
-        placeholder: "Describe the problem and how it breaks the rule.",
-        name: :reason
-      )}
+    <div class="form-control-wrap">
+      <div class="block">
+        {render(PhilomenaWeb.MarkdownView, "_input.html",
+          conn: @conn,
+          f: f,
+          placeholder: "Describe the problem and how it breaks the rule.",
+          name: :reason
+        )}
+      </div>
     </div>
     {hidden_input(f, :user_agent, value: get_user_agent(@conn))}{render(
       PhilomenaWeb.CaptchaView,
       "_captcha.html",
       name: "report",
       conn: @conn
-    )}{submit("Send Report", class: "button")}
+    )}
+    <div class="form-control-submit">{submit("Send Report", class: "button")}</div>
   <% end %>
 </div>

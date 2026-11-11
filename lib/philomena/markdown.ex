@@ -20,7 +20,7 @@ defmodule Philomena.Markdown do
   @doc """
   Renders a line-by-line diff between two Markdown sources as an HTML table.
   Each line becomes a row with old/new line-number gutters, changed lines get
-  word-level `<del class="diff__hl">` / `<ins class="diff__hl">` highlights,
+  word-level `<del class="diff-mark">` / `<ins class="diff-mark">` highlights,
   and long unchanged runs collapse into "N unchanged lines" separator rows.
   The source text is HTML-escaped during rendering, so the output is safe.
   """

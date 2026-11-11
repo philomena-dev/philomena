@@ -1,0 +1,34 @@
+/*
+ * A disclosure: a <details> that its <summary> opens and closes, usually a .button, with a caret that turns while it
+ * is open. The rest of the <details> is the content, under the summary:
+ *   <details class="disclosure">
+ *     <summary class="button">Advanced options</summary>
+ *     <div class="content">…</div>
+ *   </details>
+ */
+
+.disclosure > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  @mixin hug-content;
+  cursor: pointer;
+  user-select: none;
+}
+
+.disclosure > summary:before {
+  content: "";
+  flex: 0 0 auto;
+  border: 0.3em solid transparent;
+  border-inline-start-color: currentcolor;
+  border-inline-end-width: 0;
+  transition: transform 0.1s;
+}
+
+.disclosure[open] > summary {
+  margin-bottom: var(--spacing-md);
+}
+
+.disclosure[open] > summary:before {
+  transform: rotate(90deg);
+}

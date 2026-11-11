@@ -1,77 +1,59 @@
 /**
- * Hamburger menu.
+ * The burger menu. The navbar's burger button opens the panel over its veil; the veil, the close button and Escape
+ * close it again, and so does a screen wide enough to hide the button. While it is open the page behind it does not
+ * scroll and Tab keeps the focus inside it.
  */
 
 import { $, $$ } from './utils/dom';
-import { assertType, assertNotNull } from './utils/assert';
 
-function switchClasses(element: HTMLElement, oldClass: string, newClass: string) {
-  element.classList.remove(oldClass);
-  element.classList.add(newClass);
-}
+const focusable = 'a[href], button, select, input:not([type="hidden"])';
 
-function open(burger: HTMLElement, content: HTMLElement, body: HTMLElement, root: HTMLElement) {
-  switchClasses(content, 'close', 'open');
-  switchClasses(burger, 'close', 'open');
+export function setupBurgerMenu() {
+  const toggle = $<HTMLButtonElement>('.js-burger-toggle');
+  const panel = $<HTMLElement>('.burger');
 
-  root.classList.add('no-overflow-x');
-  body.classList.add('no-overflow');
-}
+  if (!toggle || !panel) return;
 
-function close(burger: HTMLElement, content: HTMLElement, body: HTMLElement, root: HTMLElement) {
-  switchClasses(content, 'open', 'close');
-  switchClasses(burger, 'open', 'close');
+  const overlay = $<HTMLElement>('.burger-overlay');
 
-  /* the CSS animation closing the menu finishes in 300ms */
-  setTimeout(() => {
-    root.classList.remove('no-overflow-x');
-    body.classList.remove('no-overflow');
-  }, 300);
-}
+  const setOpen = (open: boolean) => {
+    for (const part of [panel, overlay]) part?.classList.toggle('open', open);
 
-function copyUserLinksTo(burger: HTMLElement) {
-  const copy = (links: HTMLCollection) => {
-    burger.appendChild(document.createElement('hr'));
+    toggle.setAttribute('aria-expanded', String(open));
+    document.documentElement.classList.toggle('no-overflow', open);
 
-    for (const link of links) {
-      const burgerLink = assertType(link.cloneNode(true), HTMLElement);
-      burgerLink.className = '';
-      burger.appendChild(burgerLink);
+    if (open) {
+      $<HTMLElement>(focusable, panel)?.focus();
+    } else if (panel.contains(document.activeElement)) {
+      toggle.focus();
     }
   };
 
-  $$<HTMLElement>('.js-burger-links').forEach(container => copy(container.children));
-}
+  // Tab and Shift+Tab go round the panel's rendered controls instead of leaving it
+  const keepFocus = (event: KeyboardEvent) => {
+    const controls = $$<HTMLElement>(focusable, panel).filter(control => control.getClientRects().length > 0);
+    const [first, last] = [controls[0], controls[controls.length - 1]];
 
-export function setupBurgerMenu() {
-  // Burger menu should exist on all pages.
-  const burger = assertNotNull($<HTMLElement>('#burger'));
-  const toggle = assertNotNull($<HTMLElement>('#js-burger-toggle'));
-  const content = assertNotNull($<HTMLElement>('#container'));
-  const body = document.body;
-  const root = document.documentElement;
-
-  copyUserLinksTo(burger);
-
-  document.addEventListener('click', event => {
-    if (!(event.target instanceof Node)) {
-      return;
-    }
-
-    if (toggle.contains(event.target)) {
+    if (document.activeElement === (event.shiftKey ? first : last) || !panel.contains(document.activeElement)) {
       event.preventDefault();
-
-      if (content.classList.contains('open')) {
-        close(burger, content, body, root);
-      } else {
-        open(burger, content, body, root);
-      }
-
-      return;
+      (event.shiftKey ? last : first).focus();
     }
+  };
 
-    if (content.contains(event.target) && content.classList.contains('open')) {
-      close(burger, content, body, root);
-    }
+  toggle.addEventListener('click', () => setOpen(true));
+
+  new ResizeObserver(() => {
+    if (toggle.getClientRects().length === 0) setOpen(false);
+  }).observe(toggle);
+
+  for (const closer of $$('.js-burger-close')) {
+    closer.addEventListener('click', () => setOpen(false));
+  }
+
+  document.addEventListener('keydown', event => {
+    if (!panel.classList.contains('open')) return;
+
+    if (event.key === 'Escape') setOpen(false);
+    if (event.key === 'Tab') keepFocus(event);
   });
 }

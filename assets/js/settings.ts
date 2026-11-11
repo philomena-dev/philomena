@@ -16,12 +16,12 @@ function setupThemeSettings() {
   );
   const styleSheet = assertNotNull($<HTMLLinkElement>('#js-theme-stylesheet'));
 
-  // Theme preview
+  // Theme preview: the stylesheet holds the colors of both modes, data-theme picks one
   const themePreviewCallback = () => {
-    const themeName = assertNotUndefined(themeSelect.options[themeSelect.selectedIndex].value);
-    const themeColor = assertNotUndefined(themeColorSelect.options[themeColorSelect.selectedIndex].value);
+    const themeName = themeSelect.value;
 
-    styleSheet.href = themePaths[`${themeName}-${themeColor}`];
+    document.documentElement.dataset.theme = themeName;
+    styleSheet.href = themePaths[`${themeName}-${themeColorSelect.value}`];
   };
 
   themeSelect.addEventListener('change', themePreviewCallback);
@@ -29,8 +29,8 @@ function setupThemeSettings() {
 }
 
 function setupAutocompleteSettings() {
-  const autocompleteSettings = assertNotNull($<HTMLElement>('.autocomplete-settings'));
-  const autocompleteSearchHistorySettings = assertNotNull($<HTMLElement>('.autocomplete-search-history-settings'));
+  const autocompleteSettings = assertNotNull($<HTMLElement>('.js-autocomplete-settings'));
+  const autocompleteSearchHistorySettings = assertNotNull($<HTMLElement>('.js-autocomplete-search-history-settings'));
   const enableSearchAutocomplete = assertNotNull($<HTMLInputElement>('#user_enable_search_ac'));
   const userSearchHistoryHidden = assertNotNull($<HTMLInputElement>('#user_autocomplete_search_history_hidden'));
 
@@ -50,13 +50,13 @@ function setupHelpExpansions() {
       return;
     }
 
-    const helpButton = event.target.closest('.field-help-button');
+    const help = event.target.closest('.js-help-toggle')?.closest('.form-control')?.querySelector('.form-message');
 
-    if (!helpButton || !helpButton.nextElementSibling) {
+    if (!help) {
       return;
     }
 
-    helpButton.nextElementSibling.classList.toggle('hidden');
+    help.classList.toggle('hidden');
   });
 }
 

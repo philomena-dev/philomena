@@ -1,0 +1,220 @@
+/*
+ * The header bars: the header with the site's navbar and the search, the secondary bar under it with the sections of
+ * the site and the staff links, and the burger menu that holds all of it on narrow screens. Each bar keeps the
+ * colors of the theme's bar: it sets the tokens that the framework's navbar, menus, counters and burger read.
+ */
+
+/* What the framework paints in page colors takes the bar's colors (menus, hovered items, counters), with no lines */
+.header,
+.navbar.secondary,
+.navbar-staff {
+  --header-brand-color: var(--header-text-color);
+  --surface-color: var(--header-color);
+  --active-shade-color: var(--bar-hover-shade-color);
+  --tint-color: transparent;
+  /* stylelint-disable-next-line length-zero-no-unit -- a length, which the navbar negates in calc() */
+  --border-width: 0px;
+  --fill-bevel-shadow: none;
+}
+
+/* Menu items take the hover color of their bar, and the icon column is a slot without a strip of its own */
+.navbar .navbar-menu {
+  --tint-faint-color: var(--bar-hover-shade-color);
+  --well-color: transparent;
+  --neutral-color: transparent;
+  --muted-text-color: currentcolor;
+  --neutral-text-color: currentcolor;
+}
+
+/* The item of an open menu has the hover color, as its menu has the bar color */
+.navbar .navbar-dropdown > .navbar-item {
+  --surface-color: var(--bar-hover-shade-color);
+}
+
+/* The header scrolls with the page and keeps the page's text color; its navbars and fields color their contents */
+.header {
+  position: static;
+  color: var(--text-color);
+  --link-style-hover-decoration: none;
+}
+
+.header .navbar {
+  --text-color: var(--header-text-color);
+}
+
+.navbar.secondary {
+  --header-color: var(--header-secondary-color);
+  --header-text-color: var(--text-color);
+  --bar-hover-shade-color: var(--header-secondary-hover-color);
+  padding-inline: var(--header-spacing-horizontal);
+}
+
+/* The staff links, at the end of the secondary bar */
+.navbar .navbar-staff {
+  --header-color: var(--header-admin-color);
+  --bar-hover-shade-color: var(--header-admin-hover-color);
+  display: flex;
+  margin-inline-start: auto;
+  background-color: var(--header-color);
+}
+
+/* The envelope of unread conversations */
+.navbar .navbar-icon.unread {
+  color: var(--unread-message-color);
+}
+
+/* The notification counter shows only while there are notifications */
+.counter[data-notification-count="0"] {
+  display: none;
+}
+
+/*
+ * Fields on a bar, the framework's .header-field: the search and the quick selects. A select keeps the width of its
+ * options, up to a filter name of a few words, and a link button is in the link hover color under the pointer.
+ */
+
+.header-field select.header-field-input {
+  flex-shrink: 0;
+  max-inline-size: 15em;
+}
+
+a.header-field-button:hover {
+  color: var(--search-icon-hover-color);
+}
+
+/* Webkit paints autofilled fields in its own colors */
+input.header-field-input:-webkit-autofill {
+  -webkit-text-fill-color: var(--header-text-color);
+  box-shadow: inset 0 0 0 100em var(--header-field-color);
+}
+
+/* The search follows the site's navbar and pushes the user's navbar to the end */
+.header-search {
+  margin-inline-end: auto;
+}
+
+.header-search input.header-field-input {
+  inline-size: 18vw;
+  max-inline-size: 21rem;
+}
+
+/*
+ * The burger menu, in --burger-color with --burger-divider-color lines: items take --burger-hover-color and
+ * --burger-hover-text-color under the pointer. Its fields are rows of their own, which take the colors of the row.
+ */
+
+.burger {
+  --surface-color: var(--burger-color);
+  --tint-faint-color: var(--burger-hover-color);
+  --tint-color: var(--burger-divider-color);
+  --active-shade-color: transparent;
+  --muted-text-color: currentcolor;
+  --bar-link-color: currentcolor;
+  --header-text-color: currentcolor;
+  --header-field-color: transparent;
+  --header-field-hover-color: transparent;
+  font-size: var(--header-font-size);
+  overscroll-behavior: contain;
+}
+
+.burger .burger-header {
+  --tint-color: var(--burger-color);
+}
+
+/* The close button is a square of a field's height, large enough to tap */
+.burger .burger-close {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-inline-size: var(--header-field-height);
+  min-block-size: var(--header-field-height);
+}
+
+.burger a.burger-item {
+  padding-block: var(--spacing-lg);
+}
+
+/* The icons are a column as wide as a fixed-width icon, which also indents the rows that have none */
+.burger .burger-icon {
+  inline-size: 1.25em;
+}
+
+.burger .burger-item:hover,
+.burger .burger-item.current,
+.burger .burger-close:hover {
+  color: var(--burger-hover-text-color);
+}
+
+/* A quick select fills the rest of its row and is as high as a link row, so that all of it can be tapped */
+.burger form.burger-item {
+  padding-block: 0;
+}
+
+.burger form.burger-item > .header-field {
+  flex: 1 1 auto;
+  block-size: auto;
+  margin-inline: 0;
+}
+
+.burger form.burger-item .header-field-input {
+  flex: 1 1 auto;
+  padding-block: var(--spacing-lg);
+}
+
+/* The page does not scroll behind the open burger menu (assets/js/burger.ts) */
+.no-overflow {
+  overflow: hidden;
+}
+
+/* The secondary bar wraps where the staff links do not fit beside the sections, a row of bar height each */
+@media (min-width: $breakpoint-md) {
+  .navbar.secondary {
+    flex-wrap: wrap;
+  }
+
+  .navbar.secondary .navbar-item {
+    min-block-size: var(--header-secondary-height);
+  }
+
+  .navbar .navbar-staff {
+    margin-inline-end: var(--spacing-lg);
+  }
+}
+
+/* On narrow screens the search is a row of its own under the pinned items, and the staff links share the bar */
+@media not all and (min-width: $breakpoint-md) {
+  .header {
+    flex-wrap: wrap;
+  }
+
+  .header-search {
+    order: 1;
+    flex: 1 1 100%;
+    margin-block-end: var(--spacing-md);
+  }
+
+  .header-search input.header-field-input {
+    flex: 1 1 auto;
+    inline-size: auto;
+    max-inline-size: none;
+  }
+
+  .navbar .navbar-staff {
+    flex: 1 1 auto;
+  }
+
+  .navbar-staff > .navbar-item {
+    flex: 1 1 auto;
+  }
+
+  /* Items are at least square touch targets */
+  .navbar .navbar-item {
+    justify-content: center;
+    min-inline-size: var(--touch-target-size);
+  }
+
+  /* Long names in the menu wrap instead of widening it */
+  .burger .burger-item {
+    overflow-wrap: anywhere;
+  }
+}

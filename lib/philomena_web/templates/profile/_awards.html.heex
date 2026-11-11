@@ -1,12 +1,12 @@
-<div class="badges" phx-no-format>
+<span class="awards" phx-no-format>
   <% awards = award_order(@awards) %>
   <% {awards, overflow} = Enum.split(awards, 10) %>
-  <%= for award <- awards do %><% title = [award_title(award), award.label] |> Enum.join(" - ") %><div class="badge">{badge_image(award.badge, alt: title, title: title, width: "18", height: "18")}</div><% end %><div :if={Enum.any?(overflow)} class="dropdown">
-    <i class="fa fa-caret-down"></i>
-    <div class="dropdown__content block__header">
-      <div class="badges flex--column">
-        <%= for award <- overflow do %><% title = [award_title(award), award.label] |> Enum.join(" - ") %><div class="badge">{badge_image(award.badge, alt: title, title: title, width: "18", height: "18")}</div><% end %>
-      </div>
-    </div>
-  </div>
-</div>
+  <%= for award <- awards do %><% title = [award_title(award), award.label] |> Enum.join(" - ") %><span class="award">{badge_image(award.badge, alt: title, title: title, width: "18", height: "18")}</span><% end %><span :if={Enum.any?(overflow)} class="dropdown">
+    <button aria-expanded="false" aria-haspopup="true" class="cursor-pointer" title="More badges" type="button"><i class="fa fa-caret-down"></i></button>
+    <span class="dropdown-menu end">
+      <span class="awards">
+        <%= for award <- overflow do %><% title = [award_title(award), award.label] |> Enum.join(" - ") %><span class="award">{badge_image(award.badge, alt: title, title: title, width: "18", height: "18")}</span><% end %>
+      </span>
+    </span>
+  </span>
+</span>

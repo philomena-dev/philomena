@@ -1,30 +1,40 @@
 <% display_mod_tools? = can?(@conn, :hide, @image) %>
-<div id="image_options_area">
-  <div class="block__header block__header--js-tabbed">
-    <a data-click-tab="reporting" data-load-tab={~p"/images/#{@image}/reporting"} href="#"><i class="fa fa-exclamation-triangle"></i>
-    Report</a><a data-click-tab="sharing" href="#"><i class="fa fa-share"></i> Share</a><a
+<div class="block" id="image_options_area">
+  <div class="tabs">
+    <a
+      class="tab"
+      data-click-tab="reporting"
+      data-load-tab={~p"/images/#{@image}/reporting"}
+      href="#"
+    ><i class="fa fa-exclamation-triangle"></i> Report</a><a
+      class="tab"
+      data-click-tab="sharing"
+      href="#"
+    ><i class="fa fa-share"></i> Share</a><a
+      class="tab"
       data-click-tab="favoriters"
       data-load-tab={~p"/images/#{@image}/favorites"}
       href="#"
     ><i class="fa fa-star"></i> List favoriters</a>
     <%= if display_mod_tools? and not hide_staff_tools?(@conn) do %>
-      <a data-click-tab="replace" href="#"><i class="fa fa-upload"></i> Replace</a><a
+      <a class="tab" data-click-tab="replace" href="#"><i class="fa fa-upload"></i> Replace</a><a
+        class="tab"
         data-click-tab="administration"
         href="#"
       ><i class="fa fa-toolbox"></i>
       Manage
       <%= if present?(@image.scratchpad) do %>
-        <i class="fa fa-sticky-note fa--important"></i><i class="fa fa-exclamation fa--important"></i>
+        <i class="fa fa-sticky-note text-warning"></i><i class="fa fa-exclamation text-warning"></i>
       <% end %></a>
     <% end %>
   </div>
-  <div class="block__tab hidden" data-tab="favoriters">
+  <div class="tab-panel" data-tab="favoriters">
     <p>Loading...</p>
   </div>
-  <div class="block__tab hidden" data-tab="reporting">
+  <div class="tab-panel" data-tab="reporting">
     <p>Loading...</p>
   </div>
-  <div class="block__tab hidden" data-tab="sharing">
+  <div class="tab-panel" data-tab="sharing">
     <div id="embed_options">
       <% source_link =
         if image_has_sources(@image),
@@ -32,48 +42,53 @@
           else: " (Original source unknown at time of posting)" %>
       <% medium_url = thumb_url(@image, false, select_version(@image, :medium)) %>
       <h5>Derpibooru</h5>
-      <p>
+      <p class="flex flex-wrap items-center gap-md">
         <strong>Small thumbnail</strong>
-        <input
-          class="input"
-          cols="10"
-          id="embed_small_thumbnail_tag"
-          readonly="readonly"
-          type="text"
-          value={">>#{@image.id}s"}
-        />
-        <a data-click-copy="#embed_small_thumbnail_tag" href="#"><i class="fa fa-clipboard"></i>
-        Copy</a>
+        <span class="copyable-text">
+          <input
+            class="input-field copyable-text-data"
+            id="embed_small_thumbnail_tag"
+            readonly="readonly"
+            size="10"
+            type="text"
+            value={">>#{@image.id}s"}
+          /><a class="button" data-click-copy="#embed_small_thumbnail_tag" href="#"><i class="fa fa-clipboard"></i>
+          Copy</a>
+        </span>
       </p>
-      <p>
+      <p class="flex flex-wrap items-center gap-md">
         <strong>Thumbnail</strong>
-        <input
-          class="input"
-          cols="10"
-          id="embed_thumbnail_tag"
-          readonly="readonly"
-          type="text"
-          value={">>#{@image.id}t"}
-        />
-        <a data-click-copy="#embed_thumbnail_tag" href="#"><i class="fa fa-clipboard"></i> Copy</a>
+        <span class="copyable-text">
+          <input
+            class="input-field copyable-text-data"
+            id="embed_thumbnail_tag"
+            readonly="readonly"
+            size="10"
+            type="text"
+            value={">>#{@image.id}t"}
+          /><a class="button" data-click-copy="#embed_thumbnail_tag" href="#"><i class="fa fa-clipboard"></i>
+          Copy</a>
+        </span>
       </p>
-      <p>
+      <p class="flex flex-wrap items-center gap-md">
         <strong>Preview</strong>
-        <input
-          class="input"
-          cols="10"
-          id="embed_preview_tag"
-          readonly="readonly"
-          type="text"
-          value={">>#{@image.id}p"}
-        />
-        <a data-click-copy="#embed_preview_tag" href="#"><i class="fa fa-clipboard"></i> Copy</a>
+        <span class="copyable-text">
+          <input
+            class="input-field copyable-text-data"
+            id="embed_preview_tag"
+            readonly="readonly"
+            size="10"
+            type="text"
+            value={">>#{@image.id}p"}
+          /><a class="button" data-click-copy="#embed_preview_tag" href="#"><i class="fa fa-clipboard"></i>
+          Copy</a>
+        </span>
       </p>
       <h5>BBCode</h5>
       <p>
         <strong>Full size BBcode</strong>
         <a data-click-copy="#bbcode_embed_full_tag" href="#"><i class="fa fa-clipboard"></i> Copy</a><br /><textarea
-          class="input input--wide input--separate-top"
+          class="input-field full-width mt-md"
           cols="100"
           id="bbcode_embed_full_tag"
           readonly="readonly"
@@ -84,7 +99,7 @@
         <strong>Thumbnailed BBcode</strong>
         <a data-click-copy="#bbcode_embed_thumbnail_tag" href="#"><i class="fa fa-clipboard"></i>
         Copy</a><br /><textarea
-          class="input input--wide input--separate-top"
+          class="input-field full-width mt-md"
           cols="100"
           id="bbcode_embed_thumbnail_tag"
           readonly="readonly"
@@ -94,18 +109,18 @@
     </div>
   </div>
   <%= if display_mod_tools? do %>
-    <div class="block__tab hidden" data-tab="replace">
+    <div class="tab-panel" data-tab="replace">
       <%= if @file_changeset do %>
-        <%= form_for @file_changeset, ~p"/images/#{@image}/file", [method: "put", multipart: true], fn f -> %>
-          <div id="js-image-upload-previews"></div>
+        <%= form_for @file_changeset, ~p"/images/#{@image}/file", [method: "put", multipart: true, class: "content"], fn f -> %>
+          <div class="upload-previews" id="js-image-upload-previews"></div>
           <p>Upload a file from your computer</p>
-          <div class="field">{file_input(f, :image, class: "input js-scraper")}</div>
-          <div class="field field--inline">
+          <div class="form-control">{file_input(f, :image, class: "input-field js-scraper")}</div>
+          <div class="form-input-group">
             {url_input(f, :scraper_url,
-              class: "input input--wide js-scraper",
+              class: "input-field js-scraper",
               placeholder: "Link a deviantART page, a Tumblr post, or the image directly"
             )}<button
-              class="button button--separate-left"
+              class="button"
               data-disable-with="Fetch"
               disabled
               id="js-scraper-preview"
@@ -113,14 +128,19 @@
               type="button"
             >Fetch</button>
           </div>
-          <div class="field-error-js hidden js-scraper"></div>
-          {submit("Save changes", class: "button", data: [disable_with: raw("Replacing&hellip;")])}
+          <div class="alert alert-warning hidden js-scraper"></div>
+          <div class="form-control-submit">
+            {submit("Save changes",
+              class: "button",
+              data: [disable_with: raw("Replacing&hellip;")]
+            )}
+          </div>
         <% end %>
       <% end %>
     </div>
-    <div class="block__tab hidden" data-tab="administration">
-      <div class="block block--danger">
-        <a class="button button--link" href={~p"/images/#{@image}/scratchpad/edit"}><i class="far fa-edit"></i></a>
+    <div class="tab-panel" data-tab="administration">
+      <div class="alert alert-danger">
+        <a href={~p"/images/#{@image}/scratchpad/edit"} title="Edit mod notes"><i class="far fa-edit"></i></a>
         <%= if present?(@image.scratchpad) do %>
           <strong>Mod notes:</strong> {escape_nl2br(@image.scratchpad)}
         <% else %>
@@ -129,73 +149,79 @@
       </div>
       <%= if not @image.hidden_from_users do %>
         <%= if @hide_changeset do %>
-          <%= form_for @hide_changeset, ~p"/images/#{@image}/delete", [method: "post"], fn f -> %>
+          <%= form_for @hide_changeset, ~p"/images/#{@image}/delete", [method: "post", class: "content"], fn f -> %>
             {label(f, :deletion_reason, "Deletion reason (cannot be empty)")}
-            <div class="field field--inline">
+            <div class="form-input-group">
               {text_input(f, :deletion_reason,
-                class: "input input--wide",
+                class: "input-field",
                 placeholder: "Rule violation",
                 required: true
-              )}{submit("Delete", class: "button button--state-danger button--separate-left")}
+              )}{submit("Delete", class: "button button-danger")}
             </div>
           <% end %>
         <% end %>
       <% else %>
         <%= if @hide_changeset do %>
-          <%= form_for @hide_changeset, ~p"/images/#{@image}/delete", [method: "put"], fn f -> %>
+          <%= form_for @hide_changeset, ~p"/images/#{@image}/delete", [method: "put", class: "content"], fn f -> %>
             {label(f, :deletion_reason, "Deletion reason (cannot be empty)")}
-            <div class="field field--inline">
+            <div class="form-input-group">
               {text_input(f, :deletion_reason,
-                class: "input input--wide",
+                class: "input-field",
                 placeholder: "Rule violation",
                 required: true
               )}{submit("Change deletion reason",
-                class: "button button--state-danger button--separate-left"
+                class: "button button-danger"
               )}
             </div>
           <% end %>
         <% end %>
       <% end %>
-      <div class="flex flex--spaced-out flex--wrap">
+      <div class="flex justify-between flex-wrap">
         <%= if not @image.hidden_from_users do %>
           <%= if @feature_changeset do %>
             <%= form_for @feature_changeset, ~p"/images/#{@image}/feature", [method: "post"], fn _f -> %>
-              <div class="field">
+              <div class="form-control">
                 <p>Marks the image as featured</p>
-                {submit("Feature",
-                  data: [confirm: "Are you really, really sure?"],
-                  class: "button button--state-success"
-                )}
+                <div class="form-control-submit">
+                  {submit("Feature",
+                    data: [confirm: "Are you really, really sure?"],
+                    class: "button button-success"
+                  )}
+                </div>
               </div>
             <% end %>
           <% end %>
         <% else %>
           {button_to("Restore", ~p"/images/#{@image}/delete",
             method: "delete",
-            class: "button button--state-success"
+            class: "button button-success"
           )}
         <% end %>
         <%= if @repair_changeset do %>
           <%= form_for @repair_changeset, ~p"/images/#{@image}/repair", [method: "post"], fn _f -> %>
-            <div class="field">{submit("Repair", class: "button button--state-success")}</div>
+            <div class="form-control-submit">
+              {submit("Repair", class: "button button-success")}
+            </div>
           <% end %>
         <% end %>
         <%= if @hash_changeset do %>
           <%= form_for @hash_changeset, ~p"/images/#{@image}/hash", [method: "delete"], fn _f -> %>
-            <div class="field">
+            <div class="form-control">
               <p>Allows reuploading the image</p>
-              <div class="flex flex--end-bunched">
-                {submit("Clear hash",
-                  data: [confirm: "Are you really, really sure?"],
-                  class: "button button--state-danger"
-                )}
+              <div class="flex justify-end">
+                <div class="form-control-submit">
+                  {submit("Clear hash",
+                    data: [confirm: "Are you really, really sure?"],
+                    class: "button button-danger"
+                  )}
+                </div>
               </div>
             </div>
           <% end %>
         <% end %>
       </div>
       <br />
-      <div class="flex flex--spaced-out">
+      <div class="flex justify-between">
         <%= if @image.commenting_allowed do %>
           {button_to("Lock commenting", ~p"/images/#{@image}/comment_lock",
             method: "post",
@@ -231,19 +257,19 @@
         <% end %>
       </div>
       <br />
-      <div class="flex flex--spaced-out">
+      <div class="flex justify-between">
         {link("Lock specific tags", to: ~p"/images/#{@image}/tag_lock", class: "button")}
         <%= if not @image.approved and can?(@conn, :approve, @image) do %>
           {button_to("Approve image", ~p"/images/#{@image}/approve",
             method: "post",
-            class: "button button--state-success",
+            class: "button button-success",
             data: [confirm: "Are you sure?"]
           )}
         <% end %>
         <%= if @image.hidden_from_users and can?(@conn, :destroy, @image) do %>
           {button_to("Destroy image", ~p"/images/#{@image}/destroy",
             method: "post",
-            class: "button button--state-danger",
+            class: "button button-danger",
             data: [confirm: "This action is IRREVERSIBLE. Are you sure?"]
           )}
         <% end %>

@@ -1,37 +1,39 @@
 <% textarea_options = [
   class:
-    "input input--wide tagsinput js-image-tags-input js-taginput js-taginput-plain js-taginput-#{@name}",
+    "input-field full-width js-image-tags-input js-taginput js-taginput-plain js-taginput-#{@name}",
   placeholder: "Add tags separated with commas",
+  rows: 7,
   autocomplete: "off"
 ]
 
 html_options = Keyword.merge(textarea_options, assigns[:extra] || []) %>
-<div class={"js-tag-block #{"fancy-tag-#{@type}"}"}>
+<div class={"js-tag-block self-stretch mb-sm js-fancy-tag-#{@type}"}>
   {textarea(@f, @name, html_options)}
   <div
-    class="js-taginput input input--wide tagsinput hidden js-taginput-fancy"
+    class="tag-box hidden js-taginput js-taginput-fancy"
     data-click-focus={".js-taginput-input.js-taginput-#{@name}"}
   >
     <input
       autocapitalize="none"
       autocomplete="off"
-      class={"input #{"js-taginput-input js-taginput-#{@name}"}"}
+      class={"input-field js-taginput-input js-taginput-#{@name}"}
       data-autocomplete="single-tag"
       data-autocomplete-max-suggestions="5"
       id={"taginput-fancy-#{@name}"}
       placeholder="add a tag"
+      size="12"
       spellcheck="false"
       type="text"
     />
   </div>
 </div>
 <button
-  class="button button--state-primary button--bold js-taginput-show"
+  class="button button-primary js-taginput-show"
   data-click-focus={".js-taginput-input.js-taginput-#{@name}"}
   data-click-hide=".js-taginput-plain,.js-taginput-show"
   data-click-show=".js-taginput-fancy,.js-taginput-hide"
 >Fancy Editor</button><button
-  class="hidden button button--state-primary button--bold js-taginput-hide"
+  class="hidden button button-primary js-taginput-hide"
   data-click-focus={".js-taginput-plain.js-taginput-#{@name}"}
   data-click-hide=".js-taginput-fancy,.js-taginput-hide"
   data-click-show=".js-taginput-plain,.js-taginput-show"

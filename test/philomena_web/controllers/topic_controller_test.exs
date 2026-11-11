@@ -196,6 +196,9 @@ defmodule PhilomenaWeb.TopicControllerTest do
 
       refute staff_tools_hidden_response =~ "Anonymous Topic Author"
       assert staff_tools_hidden_response =~ ~r/Background Pony #[0-9A-F]{4}/
+      # The post's staff tools carry the class that the setting hides
+      assert staff_tools_hidden_response =~
+               ~s(<a class="staff-action" data-click-toggle="#inline-del-form-post-)
     end
 
     test "renders pending-post approval controls for moderators and Topic assistants",
@@ -303,9 +306,12 @@ defmodule PhilomenaWeb.TopicControllerTest do
 
       assert response =~ "Rule violation"
       assert response =~ "Post Moderator"
+      assert response =~ ~s(class="communication allow-overflow deleted")
       assert response =~ "Hidden post body"
       assert response =~ "Restore"
       assert response =~ "Delete Contents"
+      # Restore and Delete Contents are separate links, not one nested in the other
+      refute response =~ ~r{Restore\s*<a}
       assert response =~ "192.0.2.70"
       assert response =~ "post-staff-fingerprint"
 
@@ -500,7 +506,13 @@ defmodule PhilomenaWeb.TopicControllerTest do
           "topic" => %{
             "title" => "abc",
             "anonymous" => "false",
-            "posts" => %{"0" => %{"body" => "First post body"}}
+            "posts" => %{"0" => %{"body" => "First post body"}},
+            "poll" => %{
+              "title" => "",
+              "active_until" => "",
+              "vote_method" => "",
+              "options" => %{"0" => %{"label" => ""}, "1" => %{"label" => ""}}
+            }
           }
         })
 
@@ -509,7 +521,31 @@ defmodule PhilomenaWeb.TopicControllerTest do
       response = html_response(conn, 200)
       assert response =~ "Oops, something went wrong! Please check the errors below."
       assert response =~ "Create a Topic"
+      # The blank poll is dropped, and a blank option row is rendered for the script to copy.
+      assert response =~ ~s(id="topic_poll_options_0_label")
       assert Repo.aggregate(from(t in Topic, where: t.user_id == ^user.id), :count) == 0
+    end
+
+    test "re-renders a first post that is not text as blank and keeps the poll", %{
+      conn: conn,
+      forum: forum
+    } do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+
+      conn =
+        post(conn, ~p"/forums/#{forum}/topics", %{
+          "topic" => %{
+            "title" => "A brand new topic",
+            "posts" => %{"0" => %{"body" => %{"x" => "1"}}},
+            "poll" => %{"title" => "Kept poll title"}
+          }
+        })
+
+      response = html_response(conn, 200)
+      assert response =~ "Oops, something went wrong! Please check the errors below."
+      assert response =~ ~s(value="A brand new topic")
+      assert response =~ ~r{name="topic\[posts\]\[0\]\[body\]"[^>]*>\n</textarea>}
+      assert response =~ ~s(value="Kept poll title")
     end
 
     test "redirects banned users with the ban flash", %{conn: conn, forum: forum} do

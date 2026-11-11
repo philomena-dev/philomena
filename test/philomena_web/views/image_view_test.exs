@@ -60,6 +60,12 @@ defmodule PhilomenaWeb.ImageViewTest do
     end
   end
 
+  test "image_container_class/1 makes only a tiny thumbnail a fixed square" do
+    assert ImageView.image_container_class(:thumb_tiny) == "tiny"
+    assert ImageView.image_container_class(:thumb_small) == nil
+    assert ImageView.image_container_class(:full) == nil
+  end
+
   describe "hides_images?/1" do
     test "is false for anonymous and regular viewers", %{conn: conn} do
       assert ImageView.hides_images?(viewer_conn(conn, nil)) == false

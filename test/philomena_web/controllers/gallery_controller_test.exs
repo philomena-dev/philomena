@@ -206,6 +206,18 @@ defmodule PhilomenaWeb.GalleryControllerTest do
 
       assert response =~ "New Gallery - Derpibooru"
       assert response =~ "Create a Gallery"
+      assert response =~ ~s(<label for="gallery_description">)
+      assert response =~ ~r/<textarea [^>]*id="gallery_description"/
+    end
+
+    test "prefills the cover from with_image unless it is not text", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+
+      response = html_response(get(conn, ~p"/galleries/new?with_image=5"), 200)
+      assert response =~ ~r/name="gallery\[thumbnail_id\]"[^>]* value="5"/
+
+      response = html_response(get(conn, "/galleries/new?with_image[x]=1"), 200)
+      refute response =~ ~r/name="gallery\[thumbnail_id\]"[^>]* value=/
     end
 
     test "redirects banned users with the ban flash", %{conn: conn} do

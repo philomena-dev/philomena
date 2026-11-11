@@ -1,26 +1,17 @@
-// Add helper to fix event listeners on a given target
+// Removes the event listeners that a test adds to the target after the test
 
 export function fixEventListeners(t: EventTarget) {
-  let eventListeners: Record<string, unknown[]>;
+  const added: Parameters<EventTarget['addEventListener']>[] = [];
+  const addEventListener = t.addEventListener;
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
   beforeAll(() => {
-    eventListeners = {};
-    const oldAddEventListener = t.addEventListener;
-
-    t.addEventListener = function (type: string, listener: any, options: any): void {
-      eventListeners[type] = eventListeners[type] || [];
-      eventListeners[type].push(listener);
-      return oldAddEventListener(type, listener, options);
+    t.addEventListener = (...args: Parameters<EventTarget['addEventListener']>) => {
+      added.push(args);
+      addEventListener.apply(t, args);
     };
   });
 
   afterEach(() => {
-    for (const key in eventListeners) {
-      for (const listener of eventListeners[key]) {
-        (t.removeEventListener as any)(key, listener);
-      }
-    }
-    eventListeners = {};
+    for (const args of added.splice(0)) t.removeEventListener(...args);
   });
 }

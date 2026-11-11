@@ -1,9 +1,9 @@
-<div class="block__content alternating-color">
+<div class="block-content">
   <%= if @topic.sticky do %>
     <i class="fa fa-thumbtack"></i>
   <% end %>
   <%= if @topic.last_post do %>
-    <span class="hyphenate-breaks">{render PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @topic.last_post, conn: @conn}</span>{link(
+    <span class="hyphens-auto">{render PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @topic.last_post, conn: @conn}</span>{link(
       "replied to",
       to:
         ~p"/forums/#{@topic.forum}/topics/#{@topic}?#{[post_id: @topic.last_post]}" <>

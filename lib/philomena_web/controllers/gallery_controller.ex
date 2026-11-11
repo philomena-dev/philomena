@@ -20,7 +20,7 @@ defmodule PhilomenaWeb.GalleryController do
           title: "Galleries",
           galleries: galleries,
           changeset: changeset,
-          layout_class: "layout--wide"
+          layout_class: "page-wide"
         )
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -30,7 +30,7 @@ defmodule PhilomenaWeb.GalleryController do
           title: "Galleries",
           galleries: nil,
           changeset: changeset,
-          layout_class: "layout--wide"
+          layout_class: "page-wide"
         )
 
       error ->
@@ -55,7 +55,7 @@ defmodule PhilomenaWeb.GalleryController do
         |> assign(:clientside_data, gallery_images: gallery_json)
         |> render("show.html",
           title: "Showing Gallery",
-          layout_class: "layout--wide",
+          layout_class: "page-wide",
           watching: page.watching,
           gallery: page.gallery,
           gallery_prev: page.gallery_prev,
@@ -70,8 +70,10 @@ defmodule PhilomenaWeb.GalleryController do
     end
   end
 
-  def new(conn, _params) do
-    with {:ok, changeset} <- Galleries.new_gallery(conn.assigns.actor) do
+  def new(conn, params) do
+    attrs = %{"thumbnail_id" => params["with_image"]}
+
+    with {:ok, changeset} <- Galleries.new_gallery(conn.assigns.actor, attrs) do
       render(conn, "new.html", title: "New Gallery", changeset: changeset)
     end
   end

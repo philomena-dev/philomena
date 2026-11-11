@@ -64,13 +64,16 @@ defmodule Philomena.GalleriesTest do
     Scope.new(default_filter(), @pagination)
   end
 
-  describe "new_gallery/1" do
+  describe "new_gallery/2" do
     test "an anonymous actor is unauthorized" do
       assert Galleries.new_gallery(actor(nil)) == {:error, :unauthorized}
     end
 
-    test "a signed-in actor gets the new-gallery changeset" do
-      assert {:ok, %Ecto.Changeset{}} = Galleries.new_gallery(actor(confirmed_user_fixture()))
+    test "a signed-in actor gets the new-gallery changeset prefilled with the attributes" do
+      assert {:ok, changeset} =
+               Galleries.new_gallery(actor(confirmed_user_fixture()), %{"thumbnail_id" => "5"})
+
+      assert Ecto.Changeset.get_change(changeset, :thumbnail_id) == 5
     end
 
     test "a banned actor is rejected even while carrying a fingerprint" do

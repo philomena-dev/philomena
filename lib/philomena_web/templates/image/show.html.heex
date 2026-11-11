@@ -1,18 +1,19 @@
-{render(PhilomenaWeb.ImageView, "_image_approval_banner.html", image: @image, conn: @conn)}{render(
-  PhilomenaWeb.ImageView,
-  "_image_meta.html",
-  image: @image,
-  watching: @watching,
-  user_galleries: @user_galleries,
-  changeset: @uploader_changeset,
-  can_interact: @can_interact,
-  conn: @conn
-)}{render(PhilomenaWeb.ImageView, "_image_page.html", image: @image, conn: @conn)}
-<div class="layout--narrow">
+{render(PhilomenaWeb.ImageView, "_image_approval_banner.html", image: @image, conn: @conn)}
+<div class="image-frame">
+  {render(PhilomenaWeb.ImageView, "_image_meta.html",
+    image: @image,
+    watching: @watching,
+    user_galleries: @user_galleries,
+    changeset: @uploader_changeset,
+    can_interact: @can_interact,
+    conn: @conn
+  )}{render(PhilomenaWeb.ImageView, "_image_page.html", image: @image, conn: @conn)}
+</div>
+<div class="page-narrow content">
   <%= if @conn.assigns.advert do %>
     {render(PhilomenaWeb.AdvertView, "_box.html", advert: @conn.assigns.advert, conn: @conn)}
   <% end %>
-  <div class="image-description">
+  <div class="js-image-description content">
     {render(PhilomenaWeb.ImageView, "_description.html",
       image: @image,
       body: @description,
@@ -57,7 +58,12 @@
       )}
     <% true -> %>
   <% end %>
-  <div data-current-url={~p"/images/#{@image}/comments"} data-loaded="true" id="comments">
+  <div
+    class="content"
+    data-current-url={~p"/images/#{@image}/comments"}
+    data-loaded="true"
+    id="comments"
+  >
     {render(PhilomenaWeb.Image.CommentView, "index.html",
       image: @image,
       comments: @comments,

@@ -403,7 +403,7 @@ defmodule Philomena.Images do
     with :ok <- verify_not_banned(actor),
          :ok <- authorize(actor, action, image),
          :ok <- Filtering.verify_not_forced(actor, image) do
-      change_image(%{image | sources: sources_for_edit(image.sources)})
+      change_image(image)
     else
       _error -> nil
     end
@@ -418,9 +418,6 @@ defmodule Philomena.Images do
         nil
     end
   end
-
-  defp sources_for_edit([]), do: [%Source{}]
-  defp sources_for_edit(sources), do: sources
 
   defp async_upload(image, upload) do
     {:ok, upload_pid} =
@@ -1486,7 +1483,7 @@ defmodule Philomena.Images do
   def new_image(%Actor{} = actor) do
     with :ok <- verify_not_banned(actor),
          :ok <- authorize(actor, :new, Image) do
-      {:ok, change_image(%Image{sources: [%Source{}]})}
+      {:ok, change_image(%Image{})}
     end
   end
 

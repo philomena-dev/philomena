@@ -105,7 +105,7 @@ defmodule PhilomenaWeb.AppView do
     class = Keyword.get(args, :class, nil)
     data = Keyword.get(args, :data, [])
 
-    form_for(nil, route, [method: method, class: "button_to"], fn _f ->
+    form_for(nil, route, [method: method, class: "button-to"], fn _f ->
       submit(text, class: class, data: data)
     end)
   end
@@ -133,7 +133,7 @@ defmodule PhilomenaWeb.AppView do
     |> to_string()
   end
 
-  def link_to_ip(_conn, nil), do: content_tag(:code, "null")
+  def link_to_ip(_conn, nil), do: content_tag(:code, "null", class: "code-span")
 
   def link_to_ip(_conn, ip) do
     link(to: "/ip_profiles/#{ip}") do
@@ -145,7 +145,7 @@ defmodule PhilomenaWeb.AppView do
     end
   end
 
-  def link_to_fingerprint(_conn, nil), do: content_tag(:code, "null")
+  def link_to_fingerprint(_conn, nil), do: content_tag(:code, "null", class: "code-span")
 
   def link_to_fingerprint(_conn, fp) do
     link(to: "/fingerprint_profiles/#{fp}") do
@@ -157,8 +157,9 @@ defmodule PhilomenaWeb.AppView do
     end
   end
 
-  def communication_body_class(%{destroyed_content: true}), do: "communication--destroyed"
-  def communication_body_class(_communication), do: nil
+  # Listings that failed to load have no page
+  def multiple_pages?(%{total_pages: pages}), do: pages > 1
+  def multiple_pages?(nil), do: false
 
   def hide_staff_tools?(conn),
     do: conn.cookies["hide_staff_tools"] == "true"
@@ -172,69 +173,14 @@ defmodule PhilomenaWeb.AppView do
 
   def present?(object), do: not blank?(object)
 
-  # This and related functions are taken from
-  # https://github.com/adam12/phoenix_mtm
-  # Copied due to the package no longer being actively updated
-  # and screwing up our dependencies.
-  # Credit goes to the respective authors.
-  def collection_checkboxes(form, field, collection, opts \\ []) do
-    name = input_name(form, field) <> "[]"
-    selected = Keyword.get(opts, :selected, [])
-    input_opts = Keyword.get(opts, :input_opts, [])
-    label_opts = Keyword.get(opts, :label_opts, [])
-    mapper = Keyword.get(opts, :mapper, &mapper_unwrapped/6)
-    wrapper = Keyword.get(opts, :wrapper, & &1)
-
-    inputs =
-      Enum.map(collection, fn {label_content, value} ->
-        id = input_id(form, field) <> "_#{value}"
-
-        input_opts =
-          input_opts
-          |> Keyword.put(:type, "checkbox")
-          |> Keyword.put(:id, id)
-          |> Keyword.put(:name, name)
-          |> Keyword.put(:value, "#{value}")
-          |> put_selected(selected, value)
-
-        label_opts = label_opts ++ [for: id]
-
-        mapper.(form, field, input_opts, label_content, label_opts, opts)
-        |> wrapper.()
-      end)
-
-    html_escape(
-      inputs ++
-        hidden_input(form, field, name: name, value: "")
-    )
-  end
-
-  defp put_selected(opts, selected, value) do
-    if Enum.member?(selected, value) do
-      Keyword.put(opts, :checked, true)
-    else
-      opts
-    end
-  end
-
-  defp mapper_unwrapped(form, field, input_opts, label_content, label_opts, _opts) do
-    [
-      tag(:input, input_opts),
-      label(form, field, "#{label_content}", label_opts)
-    ]
-  end
-
   def image_has_sources(image), do: Enum.count(image.sources) > 0
 
   def image_first_source(image) do
     if image_has_sources(image), do: Enum.at(image.sources, 0).source, else: ""
   end
 
-  def get_flash(%{assigns: %{flash: nil}}), do: %{}
-  def get_flash(%{assigns: %{flash: flash}}), do: flash
-  def get_flash(_), do: %{}
+  def get_flash(%{assigns: %{flash: flash}}, key) when is_map(flash),
+    do: Phoenix.Flash.get(flash, key)
 
-  def get_flash(%{assigns: %{flash: nil}}, _key), do: %{}
-  def get_flash(%{assigns: %{flash: flash}}, key), do: Phoenix.Flash.get(flash, key)
-  def get_flash(_, _key), do: %{}
+  def get_flash(_conn, _key), do: nil
 end

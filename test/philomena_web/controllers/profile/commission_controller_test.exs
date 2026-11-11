@@ -39,6 +39,10 @@ defmodule PhilomenaWeb.Profile.CommissionControllerTest do
       assert response =~ artist.name
       assert response =~ "Custom commission info"
       assert response =~ item.item_type
+      # The share field's label and copy button address the input by its id.
+      assert response =~ ~s(<label for="commission_url">)
+      assert response =~ ~s(data-click-copy="#commission_url")
+      assert response =~ ~r/<input [^>]*id="commission_url"/
     end
 
     test "renders the commission sheet for logged-in users", %{conn: conn} do
@@ -136,6 +140,9 @@ defmodule PhilomenaWeb.Profile.CommissionControllerTest do
 
       assert response =~ "New Commission - Derpibooru"
       assert response =~ "New Commission Listing"
+      # The category checkboxes are a group named by its caption
+      assert response =~ ~s(<span id="commission_categories_label">Art Categories:</span>)
+      assert response =~ ~s(aria-labelledby="commission_categories_label")
     end
 
     test "redirects with the authorization flash when a commission already exists",

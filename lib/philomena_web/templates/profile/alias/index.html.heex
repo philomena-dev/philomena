@@ -4,28 +4,30 @@
   margin. Use this data only in supplement to other evidence when considering bans.
 </p>
 <br /><br />
-<table class="table">
-  <thead>
-    <tr>
-      <td>User</td>
-      <td>Method</td>
-      <td>Creation Date</td>
-      <td>Ban Status</td>
-    </tr>
-  </thead>
-  <tbody>
-    {render(PhilomenaWeb.Profile.AliasView, "_aliases.html",
-      aliases: @both_matches,
-      type: "IP + FP",
-      conn: @conn
-    )}{render(PhilomenaWeb.Profile.AliasView, "_aliases.html",
-      aliases: @ip_matches,
-      type: "IP",
-      conn: @conn
-    )}{render(PhilomenaWeb.Profile.AliasView, "_aliases.html",
-      aliases: @fp_matches,
-      type: "FP",
-      conn: @conn
-    )}
-  </tbody>
-</table>
+<div class="table-wrap responsive">
+  <table class="table striped">
+    <thead>
+      <tr>
+        <td>User</td>
+        <td>Method</td>
+        <td>Creation Date</td>
+        <td>Ban Status</td>
+      </tr>
+    </thead>
+    <tbody>
+      {render(PhilomenaWeb.Profile.AliasView, "_aliases.html",
+        aliases: @both_matches,
+        type: "IP + FP",
+        conn: @conn
+      )}{render(PhilomenaWeb.Profile.AliasView, "_aliases.html",
+        aliases: @ip_matches,
+        type: "IP",
+        conn: @conn
+      )}{render(PhilomenaWeb.Profile.AliasView, "_aliases.html",
+        aliases: @fp_matches,
+        type: "FP",
+        conn: @conn
+      )}
+    </tbody>
+  </table>
+</div>

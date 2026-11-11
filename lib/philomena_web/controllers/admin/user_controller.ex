@@ -11,7 +11,7 @@ defmodule PhilomenaWeb.Admin.UserController do
       {:ok, users, changeset} ->
         render(conn, "index.html",
           title: "Admin - Users",
-          layout_class: "layout--medium",
+          layout_class: "page-medium",
           users: users,
           changeset: changeset
         )
@@ -19,7 +19,7 @@ defmodule PhilomenaWeb.Admin.UserController do
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "index.html",
           title: "Admin - Users",
-          layout_class: "layout--medium",
+          layout_class: "page-medium",
           users: nil,
           changeset: changeset
         )

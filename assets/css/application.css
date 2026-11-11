@@ -1,62 +1,89 @@
 @charset "UTF-8";
 /*
- * Main stylesheet file.
- *
- * This generates the base file for the stylesheets used throughout the project.
- * Themes should be contained within the "themes" folder, and only contain
- * color variations, and optional CSS changes.
- *
+ * The site stylesheet, in the default theme: the blue hue, dark or light as the system prefers. The stylesheets of
+ * css/themes/ load after it for signed-in users and hold the colors of one hue, for the mode <html data-theme> names.
  */
 
 @import "@fortawesome/fontawesome-free/css/fontawesome.css";
 @import "@fortawesome/fontawesome-free/css/solid.css";
 @import "@fortawesome/fontawesome-free/css/regular.css";
 @import "@fortawesome/fontawesome-free/css/brands.css";
-@import "normalize.css";
 
-/* Import the dark blue theme to act as a fallback. */
-@import "themes/dark-blue";
+/* The framework's configuration, Philomena's and the default hue's, then the framework's design layer (reset,
+   tokens, base layout), utilities and components */
+@import "@philomena/philomena-css/css/config.css";
+@import "./config.css";
+@import "./themes/hues/blue.css";
+@import "@philomena/philomena-css/css/design/index.css";
+@import "@philomena/philomena-css/css/utils/index.css";
 
-/* Files containing common properties, such as variable definitions. */
-@import "common/measurements";
-@import "common/mixins";
+/* Every component but accordion, card-forms, clamp, collapsible, content, loading-indicator and popup, which
+   Philomena does not use */
+@import "@philomena/philomena-css/css/components/alert.css";
+@import "@philomena/philomena-css/css/components/avatar.css";
+@import "@philomena/philomena-css/css/components/badge.css";
+@import "@philomena/philomena-css/css/components/block.css";
+@import "@philomena/philomena-css/css/components/blockquote.css";
+@import "@philomena/philomena-css/css/components/burger.css";
+@import "@philomena/philomena-css/css/components/button.css";
+@import "@philomena/philomena-css/css/components/card.css";
+@import "@philomena/philomena-css/css/components/code-block.css";
+@import "@philomena/philomena-css/css/components/code-span.css";
+@import "@philomena/philomena-css/css/components/communication.css";
+@import "@philomena/philomena-css/css/components/copyable-text.css";
+@import "@philomena/philomena-css/css/components/counter.css";
+@import "@philomena/philomena-css/css/components/disclosure.css";
+@import "@philomena/philomena-css/css/components/dropdown.css";
+@import "@philomena/philomena-css/css/components/editor.css";
+@import "@philomena/philomena-css/css/components/forms.css";
+@import "@philomena/philomena-css/css/components/header.css";
+@import "@philomena/philomena-css/css/components/input-field.css";
+@import "@philomena/philomena-css/css/components/media.css";
+@import "@philomena/philomena-css/css/components/menu.css";
+@import "@philomena/philomena-css/css/components/nav.css";
+@import "@philomena/philomena-css/css/components/navbar.css";
+@import "@philomena/philomena-css/css/components/pagination.css";
+@import "@philomena/philomena-css/css/components/progress.css";
+@import "@philomena/philomena-css/css/components/separator.css";
+@import "@philomena/philomena-css/css/components/slider.css";
+@import "@philomena/philomena-css/css/components/spoiler.css";
+@import "@philomena/philomena-css/css/components/table.css";
+@import "@philomena/philomena-css/css/components/tabs.css";
+@import "@philomena/philomena-css/css/components/tag.css";
 
-/* General style elements that are used throughout the project. */
-@import "elements/base";
-@import "elements/barline";
-@import "elements/blocks";
-@import "elements/burger";
-@import "elements/button";
-@import "elements/checkbox";
-@import "elements/dropdown";
-@import "elements/forms";
-@import "elements/header";
-@import "elements/layout";
-@import "elements/media";
-@import "elements/text";
-@import "elements/toggle";
-
-/* Style elements specific to certain pages. */
-@import "views/adverts";
-@import "views/approval";
-@import "views/badges";
-@import "views/channels";
-@import "views/comments";
-@import "views/commissions";
-@import "views/communications";
-@import "views/duplicates";
-@import "views/filters";
-@import "views/galleries";
-@import "views/images";
-@import "views/notifications";
-@import "views/pages";
-@import "views/pagination";
-@import "views/polls";
-@import "views/posts";
-@import "views/profiles";
-@import "views/rules";
-@import "views/search";
-@import "views/staff";
-@import "views/stats";
-@import "views/tag_change";
-@import "views/tags";
+/* Philomena's tokens, its base element styles and utilities, then its components and the styles of single pages */
+@import "./tokens.css";
+@import "./design/mixins.css";
+@import "./design/base.css";
+@import "./utils.css";
+@import "./components/autocomplete.css";
+@import "./components/avatar.css";
+@import "./components/award.css";
+@import "./components/block.css";
+@import "./components/button.css";
+@import "./components/communication.css";
+@import "./components/diff.css";
+@import "./components/dropdown.css";
+@import "./components/forms.css";
+@import "./components/markdown.css";
+@import "./components/media.css";
+@import "./components/navbar.css";
+@import "./components/page.css";
+@import "./components/pagination.css";
+@import "./components/poll.css";
+@import "./components/sparkline.css";
+@import "./components/table.css";
+@import "./components/tabs.css";
+@import "./components/tag.css";
+@import "./views/activity.css";
+@import "./views/adverts.css";
+@import "./views/approval.css";
+@import "./views/duplicates.css";
+@import "./views/galleries.css";
+@import "./views/images.css";
+@import "./views/notifications.css";
+@import "./views/profiles.css";
+@import "./views/rules.css";
+@import "./views/staff.css";
+@import "./views/tag-changes.css";
+@import "./views/threads.css";

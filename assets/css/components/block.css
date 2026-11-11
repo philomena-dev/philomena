@@ -1,0 +1,34 @@
+/*
+ * Philomena's additions to the framework's blocks.
+ */
+
+/* The rows of a striped block alternate as those of a striped table do; its header bar is the first child */
+.block.striped > .block-content:nth-child(odd) {
+  background-color: var(--stripe-color);
+}
+
+/* Images in user content stay inside their block */
+.block-content img,
+.tab-panel img {
+  max-width: 100%;
+}
+
+/* Phones make the links of a block's bar touch targets, and those that are its items, not words of its text, reach
+   over its padding; buttons, menu items and pages have their own size */
+@media not all and (min-width: $breakpoint-md) {
+  .block .block-header > a:not(.button),
+  .block .block-header > .link-button,
+  .block .block-header-actions > a:not(.button),
+  .block .block-header .dropdown > a {
+    margin-block: calc(-1 * var(--block-header-padding-vertical));
+  }
+
+  .block .block-header a:not(.button):not(.dropdown-item):not(.pagination-link),
+  .block .block-header .link-button {
+    @mixin touch-target;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+  }
+}

@@ -1,0 +1,22 @@
+.cursor-default {
+  cursor: default !important;
+}
+
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
+.cursor-help {
+  cursor: help !important;
+}
+
+/* Text selection: none for labels of controls and other text that should not be picked up by a drag or a double
+   click, all for values that are copied as a whole */
+
+.user-select-none {
+  user-select: none !important;
+}
+
+.user-select-all {
+  user-select: all !important;
+}

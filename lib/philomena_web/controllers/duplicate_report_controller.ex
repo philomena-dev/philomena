@@ -16,7 +16,7 @@ defmodule PhilomenaWeb.DuplicateReportController do
         title: "Duplicate Reports",
         duplicate_reports: duplicate_reports,
         changeset: changeset,
-        layout_class: "layout--wide"
+        layout_class: "page-wide"
       )
     end
   end
@@ -27,7 +27,7 @@ defmodule PhilomenaWeb.DuplicateReportController do
       render(conn, "show.html",
         title: "Showing Duplicate Report",
         duplicate_report: duplicate_report,
-        layout_class: "layout--wide"
+        layout_class: "page-wide"
       )
     end
   end

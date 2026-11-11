@@ -26,7 +26,7 @@ defmodule PhilomenaWeb.ActivityController do
         streams: page.streams,
         topics: page.topics,
         interactions: page.interactions,
-        layout_class: "layout--wide",
+        layout_class: "page-wide",
         show_sidebar: show_sidebar?(conn.assigns.current_user)
       )
     end

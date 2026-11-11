@@ -45,7 +45,7 @@ function showHelp(helpBoxes: HTMLDivElement[], typeName: string, subject: string
   }
 }
 
-function onSearchAdd(_event: Event, target: HTMLAnchorElement) {
+function onSearchAdd(_event: Event, target: HTMLElement) {
   // Load form
   const { input, helpBoxes } = getAssociatedData(target);
 
@@ -66,7 +66,7 @@ function onSearchAdd(_event: Event, target: HTMLAnchorElement) {
   }
 }
 
-function onSearchPrepend(_event: Event, target: HTMLAnchorElement) {
+function onSearchPrepend(_event: Event, target: HTMLElement) {
   // Load form
   const { input } = getAssociatedData(target);
 
@@ -79,7 +79,7 @@ function onSearchPrepend(_event: Event, target: HTMLAnchorElement) {
 
 export function setupSearch() {
   delegate(document, 'click', {
-    'form.js-search-form a[data-search-add][data-search-show-help]': leftClick(onSearchAdd),
-    'form.js-search-form a[data-search-prepend]': leftClick(onSearchPrepend),
+    'form.js-search-form [data-search-add][data-search-show-help]': leftClick(onSearchAdd),
+    'form.js-search-form [data-search-prepend]': leftClick(onSearchPrepend),
   });
 }

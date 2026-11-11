@@ -14,6 +14,16 @@ defmodule PhilomenaWeb.SettingControllerTest do
       assert response =~ "Editing Settings - Derpibooru"
     end
 
+    test "selects the default theme for a stored theme that is no longer offered", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+      Repo.update!(Ecto.Changeset.change(Repo.get!(Settings, user.id), theme: "default"))
+
+      response = html_response(get(conn, ~p"/settings/edit"), 200)
+
+      assert response =~ ~s(<option selected value="dark">Dark</option>)
+      assert response =~ ~s(<option selected value="blue">Blue</option>)
+    end
+
     test "renders the form for logged-in users", %{conn: conn} do
       %{conn: conn} = register_and_log_in_user(%{conn: conn})
 
@@ -116,10 +126,46 @@ defmodule PhilomenaWeb.SettingControllerTest do
       assert Repo.get!(Settings, user.id).images_per_page == user.settings.images_per_page
     end
 
-    test "crashes when the user parameter is missing", %{conn: conn} do
-      assert_raise Phoenix.ActionClauseError, fn ->
-        patch(conn, ~p"/settings", %{})
-      end
+    test "rejects theme parts that are not strings", %{conn: conn} do
+      %{conn: conn, user: user} = register_and_log_in_user(%{conn: conn})
+
+      conn =
+        patch(conn, ~p"/settings", %{
+          "user" => %{"settings" => %{"theme_name" => %{"x" => "1"}, "theme_color" => "green"}}
+        })
+
+      assert html_response(conn, 200) =~ "Content Settings"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Your settings could not be saved!"
+
+      assert Repo.get!(Settings, user.id).theme == user.settings.theme
+    end
+
+    test "rejects settings that are not a map", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+
+      conn = patch(conn, ~p"/settings", %{"user" => %{"settings" => "x"}})
+
+      assert html_response(conn, 200) =~ "Content Settings"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
+               "Your settings could not be saved!"
+    end
+
+    test "sets no cookie for a local setting that is not a string", %{conn: conn} do
+      conn =
+        patch(conn, ~p"/settings", %{
+          "user" => %{"autocomplete_search_history_max_suggestions_when_typing" => %{"x" => "1"}}
+        })
+
+      assert redirected_to(conn) == ~p"/settings/edit"
+      refute conn.resp_cookies["autocomplete_search_history_max_suggestions_when_typing"]
+    end
+
+    test "answers 400 when the user parameter is missing or not a map", %{conn: conn} do
+      assert_error_sent 400, fn -> patch(conn, ~p"/settings", %{}) end
+      assert_error_sent 400, fn -> patch(conn, ~p"/settings", %{"user" => "x"}) end
     end
   end
 end

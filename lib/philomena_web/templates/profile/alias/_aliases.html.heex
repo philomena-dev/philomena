@@ -4,21 +4,21 @@
     <td>{@type}</td>
     <%= cond do %>
       <% younger_than_7_days?(u) -> %>
-        <td class="danger">{pretty_time(u.created_at)}</td>
+        <td class="table-danger">{pretty_time(u.created_at)}</td>
       <% younger_than_14_days?(u) -> %>
-        <td class="warning">{pretty_time(u.created_at)}</td>
+        <td class="table-warning">{pretty_time(u.created_at)}</td>
       <% true -> %>
-        <td class="success">{pretty_time(u.created_at)}</td>
+        <td class="table-success">{pretty_time(u.created_at)}</td>
     <% end %>
     <%= cond do %>
       <% not is_nil(u.deleted_at) -> %>
-        <td class="danger">Account disabled</td>
+        <td class="table-danger">Account disabled</td>
       <% currently_banned?(u) -> %>
-        <td class="danger">Currently banned</td>
+        <td class="table-danger">Currently banned</td>
       <% previously_banned?(u) -> %>
-        <td class="danger">Previously banned</td>
+        <td class="table-danger">Previously banned</td>
       <% true -> %>
-        <td class="success">Never banned</td>
+        <td class="table-success">Never banned</td>
     <% end %>
   </tr>
 <% end %>

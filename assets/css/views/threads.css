@@ -1,0 +1,28 @@
+/* Tables of forums, topics and conversations: a large name, narrow counts and a wide column of details */
+.thread-list-name {
+  font-size: var(--text-size-xl);
+}
+
+.thread-list-stat {
+  width: 6%;
+}
+
+.thread-list-detail {
+  width: 35%;
+}
+
+/* Phones stack the cells of a row, the name over the details, and leave out the header row */
+@media not all and (min-width: $breakpoint-md) {
+  .thread-list thead {
+    display: none;
+  }
+
+  .thread-list tr {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .thread-list td {
+    width: auto;
+  }
+}

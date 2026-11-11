@@ -1,4 +1,5 @@
 import { normalizedKeyboardKey, keys } from './utils/keyboard';
+import { asRecord } from './utils/types';
 
 /**
  * Markdown toolbar
@@ -273,21 +274,43 @@ function escapeSelection(textarea: HTMLTextAreaElement, options: Partial<SyntaxH
 function clickHandler(event: MouseEvent) {
   if (!(event.target instanceof HTMLElement)) return;
 
-  const button = event.target.closest<HTMLElement>('.communication__toolbar__button');
-  const toolbar = button?.closest<HTMLElement>('.communication__toolbar');
+  const button = event.target.closest<HTMLElement>('.editor-button');
+  const editor = button?.closest<HTMLElement>('.editor');
 
-  if (!button || !toolbar?.parentElement) return;
+  if (!button || !editor) return;
 
-  // There may be multiple toolbars present on the page,
-  // in the case of image pages with description edit active
-  // we target the textarea that shares the same parent as the toolbar
-  const textarea = $<HTMLTextAreaElement>('.js-toolbar-input', toolbar.parentElement),
+  // An image page may hold several editors, each with its own textarea
+  const textarea = $<HTMLTextAreaElement>('.js-toolbar-input', editor),
     id = button.dataset.syntaxId;
 
   if (!textarea || !id) return;
 
   markdownSyntax[id].action(textarea, markdownSyntax[id].options);
   textarea.focus();
+}
+
+// The toolbar is one tab stop; the arrow keys, Home and End move the focus between its buttons
+function toolbarKeyHandler(event: KeyboardEvent) {
+  const toolbar = event.currentTarget;
+
+  if (!(toolbar instanceof HTMLElement) || !(event.target instanceof HTMLButtonElement)) return;
+
+  const buttons = $$<HTMLButtonElement>('.editor-button', toolbar);
+  const current = buttons.indexOf(event.target);
+  const last = buttons.length - 1;
+  const next = asRecord({
+    [keys.ArrowRight]: current === last ? 0 : current + 1,
+    [keys.ArrowLeft]: current === 0 ? last : current - 1,
+    Home: 0,
+    End: last,
+  })[normalizedKeyboardKey(event)];
+
+  if (next === undefined) return;
+
+  event.preventDefault();
+  buttons[current].tabIndex = -1;
+  buttons[next].tabIndex = 0;
+  buttons[next].focus();
 }
 
 function canAcceptShortcut(event: KeyboardEvent): boolean {
@@ -326,8 +349,9 @@ function shortcutHandler(event: KeyboardEvent) {
 }
 
 function setupToolbar() {
-  $$<HTMLElement>('.communication__toolbar').forEach(toolbar => {
+  $$<HTMLElement>('.editor-toolbar').forEach(toolbar => {
     toolbar.addEventListener('click', clickHandler);
+    toolbar.addEventListener('keydown', toolbarKeyHandler);
   });
   $$<HTMLTextAreaElement>('.js-toolbar-input').forEach(textarea => {
     textarea.addEventListener('keydown', shortcutHandler);

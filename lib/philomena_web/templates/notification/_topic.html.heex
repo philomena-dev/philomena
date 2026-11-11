@@ -1,15 +1,15 @@
 <% topic = @notification.topic %>
 <% forum = topic.forum %>
-<div class="flex flex--centered flex__grow">
+<div class="flex items-center flex-1 wrap-anywhere">
   <div>
     {render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: topic, conn: @conn)} posted a new topic titled
     <strong>{link(topic.title, to: ~p"/forums/#{forum}/topics/#{topic}")}</strong>
     in {link(forum.name, to: ~p"/forums/#{forum}")} {pretty_time(@notification.updated_at)}
   </div>
 </div>
-<div class="flex flex--centered flex--no-wrap">
+<div class="flex items-center flex-nowrap">
   <a
-    class="button button--separate-right"
+    class="button me-md"
     data-click-hideparent=".notification"
     data-method="post"
     data-remote="true"

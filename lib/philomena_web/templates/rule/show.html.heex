@@ -1,7 +1,7 @@
 <h1>Viewing details of {@rule.name}</h1>
-<div class="block">
+<p>
   <a href={~p"/rules"}><i class="fa fa-chevron-left"></i> Back to Rules List</a>
-</div>
+</p>
 <br />{render(PhilomenaWeb.RuleView, "_rule.html", conn: @conn, rule: @rule, show_timestamp: true)}
 <h2>Revision History</h2>
 <%= if Enum.count(@versions) == 0 do %>
@@ -9,28 +9,30 @@
     Revision history for this rule is unavailable, as this is the initial version of this rule. Once this rule is updated, differences between revisions will be shown here.
   </p>
 <% else %>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>User</th>
-        <th>When</th>
-        <th>Difference</th>
-      </tr>
-    </thead>
-    <tbody>
-      <%= for version <- @versions do %>
+  <div class="table-wrap responsive">
+    <table class="table">
+      <thead>
         <tr>
-          <td>
-            <%= if version.user do %>
-              {link(version.user.name, to: ~p"/profiles/#{version.user}")}
-            <% else %>
-              System
-            <% end %>
-          </td>
-          <td>{pretty_time(version.created_at)}</td>
-          <td>{render(PhilomenaWeb.RuleView, "_rulediff.html", version: version)}</td>
+          <th>User</th>
+          <th>When</th>
+          <th>Difference</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <%= for version <- @versions do %>
+          <tr>
+            <td>
+              <%= if version.user do %>
+                {link(version.user.name, to: ~p"/profiles/#{version.user}")}
+              <% else %>
+                System
+              <% end %>
+            </td>
+            <td>{pretty_time(version.created_at)}</td>
+            <td>{render(PhilomenaWeb.RuleView, "_rulediff.html", version: version)}</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 <% end %>

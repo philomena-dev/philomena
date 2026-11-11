@@ -153,7 +153,7 @@ export const searchTypeToPropertiesMap = new Map<string, Map<string, PropertyTyp
   ['cq', commentSearchProperties],
   ['fq', filterSearchProperties],
   ['pq', forumSearchProperties],
-  ['rq', reportSearchProperties],
+  ['rq[query]', reportSearchProperties],
   ['tq', tagSearchProperties],
   ['q', imageSearchProperties],
 ]);

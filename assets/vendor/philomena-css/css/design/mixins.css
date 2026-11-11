@@ -1,0 +1,377 @@
+/*
+ * Mixins shared by the components (postcss-mixins). They are called at the top level with the full selector,
+ * because the sources are written without nesting.
+ */
+
+/*
+ * The link styles of a container, called inside its rule: the links in it take them, except for the controls that
+ * color their own links (see design/layout.css). $color defaults to the content or bar link color.
+ */
+@define-mixin content-links $color: var(--link-color) {
+  --link-style-color: $(color);
+  --link-style-weight: initial;
+  --link-style-decoration: underline;
+  --link-style-hover-decoration: initial;
+}
+
+@define-mixin bar-links $color: var(--bar-link-color) {
+  --link-style-color: $(color);
+  --link-style-weight: bold;
+  --link-style-decoration: none;
+  --link-style-hover-decoration: underline;
+}
+
+/* The hover look of the links in a container, called inside its `a:hover` rule */
+@define-mixin links-hover {
+  text-decoration: var(--link-style-hover-decoration, var(--link-style-decoration, none));
+}
+
+/* The semantic types that have a .{component}-{type} variant; neutral is the look without a class */
+@define-mixin each-type $variation {
+  @mixin $(variation) primary;
+  @mixin $(variation) success;
+  @mixin $(variation) warning;
+  @mixin $(variation) danger;
+  @mixin $(variation) special;
+}
+
+/*
+ * The focus ring, called inside a :focus-visible rule: around the element, a little away from it (for small
+ * controls), or inset (for elements that are clipped by their container). $color defaults to the focus color.
+ */
+@define-mixin focus-ring $color: var(--focus-color) {
+  outline: var(--focus-outline) solid $(color);
+}
+
+@define-mixin focus-ring-offset $color: var(--focus-color) {
+  outline: var(--focus-outline) solid $(color);
+  outline-offset: var(--spacing-xs);
+}
+
+@define-mixin focus-ring-inset $color: var(--focus-color) {
+  outline: var(--focus-outline) solid $(color);
+  outline-offset: calc(-1 * var(--focus-outline));
+}
+
+/* A checkbox that drives a script-free toggle (burger menu, clamp): out of sight, but still focusable */
+@define-mixin hidden-toggle {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/*
+ * The parts the menus share (dropdown, burger menu, the menus of a navbar), called inside their rules: an item of a
+ * menu, the icon slot in front of its text, and the rule between groups of items.
+ */
+@define-mixin menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+@define-mixin menu-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  color: var(--muted-text-color);
+}
+
+@define-mixin menu-divider {
+  margin: 0;
+  border: 0;
+  border-top: var(--border-width) solid var(--tint-color);
+}
+
+/* An element that is as wide as its content instead of filling its row, also as a flex or grid item */
+@define-mixin hug-content {
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  align-self: flex-start;
+}
+
+/*
+ * The bevel of a raised piece (--emphasis-shadow) as a layer over $selector, so that it also runs over the bars and
+ * fills of its children, which would cover an inset shadow of the piece itself. $selector has to be positioned.
+ */
+@define-mixin bevel $selector {
+  $(selector):after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: var(--emphasis-shadow);
+    pointer-events: none;
+  }
+}
+
+/*
+ * .allow-overflow on a container that clips its children ($selector, rounded with the outer radius), so that a menu
+ * or popup inside can open beyond its edges: the first and last child round their own corners instead.
+ */
+@define-mixin allow-overflow $selector {
+  $(selector).allow-overflow {
+    overflow: visible;
+  }
+
+  $(selector).allow-overflow > :first-child {
+    border-start-start-radius: calc(var(--border-radius-outer) - var(--border-width));
+    border-start-end-radius: calc(var(--border-radius-outer) - var(--border-width));
+  }
+
+  $(selector).allow-overflow > :last-child {
+    border-end-start-radius: calc(var(--border-radius-outer) - var(--border-width));
+    border-end-end-radius: calc(var(--border-radius-outer) - var(--border-width));
+  }
+}
+
+/* Unavailable controls and muted content are faded by the same amount */
+@define-mixin faded {
+  opacity: var(--faded-opacity);
+}
+
+/* Links inside $selector */
+@define-mixin content-link-style $selector {
+  $(selector) a {
+    color: var(--link-color);
+    text-decoration: underline;
+  }
+}
+
+/* Margins and paddings at the start and the end of the line, as utilities (they are !important) */
+@define-mixin margin-start $selector, $size {
+  $(selector) {
+    margin-inline-start: $(size) !important;
+  }
+}
+
+@define-mixin margin-end $selector, $size {
+  $(selector) {
+    margin-inline-end: $(size) !important;
+  }
+}
+
+@define-mixin padding-start $selector, $size {
+  $(selector) {
+    padding-inline-start: $(size) !important;
+  }
+}
+
+@define-mixin padding-end $selector, $size {
+  $(selector) {
+    padding-inline-end: $(size) !important;
+  }
+}
+
+/*
+ * Color variants of the components, from the roles of a type color (see css/design/tokens.css). The class is always
+ * {component}-{type}: .button-{type}, .badge-{type}, .alert-{type}, .counter-{type}, .pagination-{type}, .card-{type},
+ * .block-{type}, .progress-{type}, .table-{type} (on a table, a row or a cell) and .media-{type} (on a box or an overlay).
+ * The types are neutral (the default look), primary, success, warning, danger and special.
+ */
+@define-mixin button-color-variation $type {
+  .button.button-$(type) {
+    color: var(--$(type)-button-text-color);
+    background-color: var(--$(type)-button-color);
+    --_border-color: var(--$(type)-border-color);
+    --_hover-shade: var(--$(type)-button-hover-color);
+    --_active-shade: var(--$(type)-button-active-color);
+  }
+}
+
+@define-mixin alert-color-variation $type {
+  .alert.alert-$(type) {
+    background-color: var(--$(type)-tint-color);
+  }
+
+  .alert.alert-$(type) a,
+  .alert.alert-$(type) .alert-icon {
+    color: var(--$(type)-tint-text-color);
+  }
+}
+
+@define-mixin badge-color-variation $type {
+  .badge.badge-$(type) {
+    color: var(--$(type)-tint-text-color);
+    background-color: var(--$(type)-tint-color);
+  }
+
+  .badge.badge-$(type) .badge-prefix,
+  .badge.badge-$(type) .badge-suffix {
+    background-color: var(--$(type)-affix-color);
+  }
+}
+
+@define-mixin counter-color-variation $type {
+  .counter.counter-$(type) {
+    color: var(--$(type)-text-color);
+    background-color: var(--$(type)-color);
+  }
+}
+
+@define-mixin pagination-color-variation $type {
+  .pagination.pagination-$(type) {
+    color: var(--$(type)-tint-text-color);
+    background-color: var(--$(type)-tint-color);
+    border-color: var(--$(type)-border-color);
+  }
+
+  .pagination.pagination-$(type) a.pagination-link:hover,
+  .pagination.pagination-$(type) a.pagination-link:focus-visible {
+    background-color: var(--$(type)-affix-color);
+  }
+
+  .pagination.pagination-$(type) .pagination-link.current {
+    color: var(--$(type)-text-color);
+    background-color: var(--$(type)-color);
+  }
+}
+
+/* Progress bars: .progress.progress-{type} fills the bar with the type's color */
+@define-mixin progress-color-variation $type {
+  .progress.progress-$(type) .progress-bar {
+    background-color: var(--$(type)-color);
+  }
+}
+
+/* Tag categories: .tag.tag-{category} from the --tag-{category}-* color tokens */
+@define-mixin tag-category-variation $category {
+  .tag.tag-$(category) {
+    --_text: var(--tag-$(category)-text-color);
+    --_bg: var(--tag-$(category)-color);
+    --_affix: var(--tag-$(category)-affix-color);
+  }
+}
+
+/* Tables: .table-{type} on the table colors the header, footer and frame, on a tr, th or td that row or cell */
+@define-mixin table-color-variation $type {
+  .table.table-$(type) > thead th,
+  .table.table-$(type) > thead td,
+  .table.table-$(type) > tfoot th,
+  .table.table-$(type) > tfoot td {
+    color: var(--$(type)-bar-text-color);
+    background-color: var(--$(type)-bar-color);
+    border-color: var(--$(type)-bar-color);
+  }
+
+  .table-wrap:has(> .table.table-$(type)) {
+    border-color: var(--$(type)-bar-color);
+  }
+
+  .table tr.table-$(type) > th,
+  .table tr.table-$(type) > td,
+  .table th.table-$(type),
+  .table td.table-$(type) {
+    color: var(--text-color);
+    background-color: var(--$(type)-tint-color);
+  }
+
+  .table tr.table-$(type) a,
+  .table th.table-$(type) a,
+  .table td.table-$(type) a {
+    color: var(--$(type)-tint-text-color);
+  }
+}
+
+/* Cards: .card.card-{type} colors the header band, the border, the body wash, the links in the body and the
+   default buttons. Controls that color their own links are left alone. */
+@define-mixin card-color-variation $type {
+  .card.card-$(type) {
+    border-color: var(--$(type)-bar-color);
+    background-color: var(--$(type)-wash-color);
+  }
+
+  .card.card-$(type) > .card-header {
+    color: var(--$(type)-bar-text-color);
+    background-color: var(--$(type)-bar-color);
+    border-color: var(--$(type)-bar-color);
+  }
+
+  .card.card-$(type) {
+    --link-style-color: var(--$(type)-tint-text-color);
+  }
+
+  .card.card-$(type) .button:not(.button-primary, .button-success, .button-danger, .button-warning, .button-special) {
+    color: var(--$(type)-button-text-color);
+    background-color: var(--$(type)-button-color);
+    --_border-color: var(--$(type)-border-color);
+    --_hover-shade: var(--$(type)-button-hover-color);
+    --_active-shade: var(--$(type)-button-active-color);
+  }
+}
+
+/* Blocks: .block.block-{type} colors the header bar, the border and the links in the content */
+@define-mixin block-color-variation $type {
+  .block.block-$(type) {
+    border-color: var(--$(type)-bar-color);
+  }
+
+  .block.block-$(type) > .block-header {
+    color: var(--$(type)-bar-text-color);
+    background-color: var(--$(type)-bar-color);
+  }
+
+  .block.block-$(type) > .block-header {
+    --link-style-color: var(--$(type)-bar-text-color);
+  }
+
+  .block.block-$(type) .block-content {
+    --link-style-color: var(--$(type)-tint-text-color);
+  }
+}
+
+/* Media boxes: .media-box.media-{type} colors the title bar and the border */
+@define-mixin media-color-variation $type {
+  .media-box.media-$(type) {
+    border-color: var(--$(type)-bar-color);
+  }
+
+  .media-box.media-$(type) > .media-box-header {
+    color: var(--$(type)-bar-text-color);
+    background-color: var(--$(type)-bar-color);
+    --link-style-color: var(--$(type)-bar-text-color);
+  }
+}
+
+/* Media overlays: .media-box-overlay.media-{type} takes the type's fill and text */
+@define-mixin media-overlay-color-variation $type {
+  .media-box .media-box-overlay.media-$(type),
+  .media-box .media-box-overlays > .media-$(type) {
+    color: var(--$(type)-text-color);
+    background-color: var(--$(type)-color);
+  }
+}
+
+/*
+ * Joins a row of elements into one: only the outer corners stay rounded and the borders between them collapse.
+ * $selector matches the elements in the row, the optional $sub-selector targets a part of each element instead
+ * (for example `> .form-select-input`).
+ */
+/* prettier-ignore */
+@define-mixin combined-border-radius $selector, $sub-selector: {
+  $(selector):first-child:not(:last-child)$(sub-selector) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  $(selector):last-child:not(:first-child)$(sub-selector) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  $(selector):not(:first-child):not(:last-child)$(sub-selector) {
+    border-radius: 0;
+  }
+
+  $(selector):not(:first-child)$(sub-selector) {
+    border-left: 0 !important;
+  }
+
+  $(selector):not(:last-child)$(sub-selector) {
+    border-right: 0 !important;
+  }
+}

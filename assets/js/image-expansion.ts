@@ -136,7 +136,7 @@ export function pickAndResize(elem: ImageTargetElement) {
            width="${imageWidth}" height="${imageHeight}">
         <source src="${uris.webm}" type="video/webm">
         <source src="${uris.mp4}" type="video/mp4">
-        <p class="block block--fixed block--warning">
+        <p class="alert alert-warning">
           Your browser supports neither MP4/H264 nor
           WebM/VP8! Please update it to the latest version.
         </p>
@@ -148,7 +148,7 @@ export function pickAndResize(elem: ImageTargetElement) {
       `<video controls ${autoplay} loop ${muted} playsinline id="image-display">
         <source src="${uri}" type="video/webm">
         <source src="${uri.replace(/webm$/, 'mp4')}" type="video/mp4">
-        <p class="block block--fixed block--warning">
+        <p class="alert alert-warning">
           Your browser supports neither MP4/H264 nor
           WebM/VP8! Please update it to the latest version.
         </p>

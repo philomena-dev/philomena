@@ -1,0 +1,175 @@
+/*
+ * The elements that the framework's reset leaves unstyled and that are used outside its components: links and
+ * buttons drawn as links, text semantics, paragraphs, lists, images and figures; running text, the site's icon and
+ * the focus ring of floor browsers without a script.
+ */
+
+/* Links are in the link color, underlined under the pointer; components set their own link styles */
+body {
+  --link-style-color: var(--link-color);
+  --link-style-hover-decoration: underline;
+}
+
+/* Links that stand alone, in navigational lists and in code are underlined only under the pointer */
+.touch-link,
+.block.striped > .block-content,
+.table th,
+.table td,
+.block .notification,
+.card.tag-change,
+.staff-grid .card,
+.commission-listing,
+.staff-action > .card,
+.code-span {
+  --link-style-decoration: none;
+  --link-style-hover-decoration: underline;
+}
+
+/* Paragraphs and Markdown are prose wherever they are */
+p,
+.markdown {
+  --link-style-decoration: underline;
+  --link-style-hover-decoration: initial;
+}
+
+/* The framework underlines every link of a table */
+.table a {
+  text-decoration: var(--link-style-decoration, none);
+}
+
+/* A button drawn as a link of its container */
+.link-button {
+  color: var(--link-style-color, none);
+  font-weight: var(--link-style-weight, none);
+  text-decoration: var(--link-style-decoration, none);
+  cursor: pointer;
+}
+
+a:hover,
+.link-button:hover {
+  @mixin links-hover;
+}
+
+strong,
+b {
+  font-weight: bold;
+}
+
+em,
+i {
+  font-style: italic;
+}
+
+u,
+ins {
+  text-decoration: underline;
+}
+
+s,
+del {
+  text-decoration: line-through;
+}
+
+small {
+  font-size: smaller;
+}
+
+sup,
+sub {
+  font-size: smaller;
+  line-height: 0;
+}
+
+sup {
+  vertical-align: super;
+}
+
+sub {
+  vertical-align: sub;
+}
+
+/* Paragraphs keep a medium distance to their neighbors, and none to the edges of a flow container (--flow) */
+p {
+  margin-top: var(--flow-margin, calc((1 - var(--flow, 0)) * var(--spacing-md)));
+  margin-bottom: var(--spacing-md);
+  line-height: var(--text-line-height);
+}
+
+p:last-child {
+  margin-bottom: calc((1 - var(--flow, 0)) * var(--spacing-md));
+}
+
+/* On narrow screens a long word in a heading, such as a user's name, breaks rather than widen the page */
+@media not all and (min-width: $breakpoint-md) {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Running text lists, with bullets or numbers */
+ul,
+ol {
+  padding-left: calc(2 * var(--spacing-xl));
+}
+
+ul {
+  list-style: disc;
+}
+
+ol {
+  list-style: decimal;
+}
+
+img {
+  vertical-align: bottom;
+}
+
+/* Running text, also in the HTML of static pages and rules: the base size in the line height of text */
+.walloftext {
+  font-size: var(--text-size-base);
+  line-height: var(--text-line-height);
+}
+
+/* Figures in rendered Markdown are centered, with a bold caption */
+figure {
+  display: table;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+figure img {
+  width: 100%;
+  height: auto;
+  max-width: 400px;
+  display: inline-block;
+}
+
+figure figcaption {
+  display: block;
+  font-weight: bold;
+}
+
+/* The site's icon as a glyph */
+i.favicon-home {
+  background-image: url("/favicon.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  min-width: 1em;
+  height: 1em;
+  display: inline-block;
+}
+
+/* Floor browsers lack :focus-visible, and without a script the polyfill sets no .js-focus-visible on the root to
+   match its .focus-visible class: every focus is ringed instead */
+@supports not selector(:focus-visible) {
+  html:not(.js-focus-visible) :focus {
+    @mixin focus-ring;
+  }
+}

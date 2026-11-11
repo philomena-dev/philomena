@@ -1,7 +1,7 @@
 <% tag_input = Enum.map_join(@image.locked_tags, ", ", & &1.name) %>
 <h1>Editing locked tags on image #{@image.id}</h1>
-<%= form_for @changeset, ~p"/images/#{@image}/tag_lock", fn f -> %>
-  <div class="field">
+<%= form_for @changeset, ~p"/images/#{@image}/tag_lock", [class: "content"], fn f -> %>
+  <div class="form-control">
     {render(PhilomenaWeb.TagView, "_tag_editor.html",
       f: f,
       name: :tag_input,
@@ -9,7 +9,7 @@
       extra: [value: tag_input]
     )}{error_tag(f, :tag_input)}
   </div>
-  <div class="actions">
+  <div class="form-control-submit">
     {submit("Update",
       class: "button",
       autocomplete: "off",

@@ -11,7 +11,7 @@ defmodule PhilomenaWeb.Page.HistoryController do
            StaticPages.list_page_history(conn.assigns.actor, slug) do
       render(conn, "index.html",
         title: "Revision History for Page `#{page.title}'",
-        layout_class: "layout--wide",
+        layout_class: "page-wide",
         static_page: page,
         versions: generate_differences(versions)
       )

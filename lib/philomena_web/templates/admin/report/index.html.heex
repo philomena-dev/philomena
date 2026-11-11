@@ -10,19 +10,19 @@
       ) %>
 <h1>Reports</h1>
 <%= if Enum.any?(@my_reports) do %>
-  <div class="block">
-    <div class="block__header"><span class="block__header__title">Your Reports</span></div>
-    <div class="block__content">
+  <div class="block allow-overflow">
+    <div class="block-header"><span class="block-header-title">Your Reports</span></div>
+    <div class="block-content">
       {render(PhilomenaWeb.Admin.ReportView, "_reports.html", reports: @my_reports, conn: @conn)}
     </div>
   </div>
 <% end %>
 <%= if Enum.any?(@system_reports) do %>
-  <div class="block">
-    <div class="block__header block--danger">
-      <span class="block__header__title">System Reports</span>
+  <div class="block block-danger allow-overflow">
+    <div class="block-header">
+      <span class="block-header-title">System Reports</span>
     </div>
-    <div class="block__content">
+    <div class="block-content">
       {render(PhilomenaWeb.Admin.ReportView, "_reports.html",
         reports: @system_reports,
         conn: @conn
@@ -30,37 +30,37 @@
     </div>
   </div>
 <% end %>
-<div class="block">
-  <div class="block__header">
-    <span class="block__header__title">All Reports</span>
-    <div class="page__pagination">{pagination}</div>
+<div class="block allow-overflow">
+  <div class="block-header">
+    <span class="block-header-title">All Reports</span>
+    {pagination}
   </div>
-  <div class="block__content">
+  <div class="block-content">
     <%= if not is_nil(@reports) and Enum.any?(@reports) do %>
       {render(PhilomenaWeb.Admin.ReportView, "_reports.html", reports: @reports, conn: @conn)}
     <% else %>
       <p>We couldn't find any reports for you, sorry!</p>
     <% end %>
   </div>
-  <div class="block__header block__header--light">
-    <div class="page__pagination">{pagination}</div>
+  <div :if={multiple_pages?(@reports)} class="block-header sub">
+    {pagination}
   </div>
 </div>
-<%= form_for @changeset, ~p"/admin/reports", [as: "rq", method: "get", class: "hform"], fn f -> %>
-  <div class="field">
+<%= form_for @changeset, ~p"/admin/reports", [as: "rq", method: "get", class: "content"], fn f -> %>
+  <div class="form-input-group short">
     {text_input(f, :query,
-      class: "input hform__text",
+      class: "input-field",
       placeholder: "Search reports",
       autocapitalize: "none",
       spellcheck: "false",
       autocomplete: if(@conn.cookies["enable_search_ac"], do: "on", else: "off"),
       inputmode: "search",
       data: [autocomplete: "properties"]
-    )}{submit("Search", class: "hform__button button")}
+    )}{submit("Search", class: "button")}
   </div>
-  <div class="error">{error_tag(f, :query)}</div>
+  <div>{error_tag(f, :query)}</div>
 <% end %>
-<div class="field">
-  <label for="rq[query]">Searchable fields: id, created_at, reason, state, open, user, user_id, admin, admin_id, ip, fingerprint, reportable_type, reportable_id, image_id
+<div class="form-control">
+  <label for="rq_query">Searchable fields: id, created_at, reason, state, open, user, user_id, admin, admin_id, ip, fingerprint, reportable_type, reportable_id, image_id
   <br />Report reason is used if you don't specify a field.</label>
 </div>

@@ -43,14 +43,14 @@ function scrapeUrl(url: string): Promise<ScraperResponse | ScraperError> {
 function elementForEmbeddedImage({ camo_url, type }: ScraperImage): HTMLImageElement | HTMLVideoElement {
   // The upload was fetched from the scraper and is a path name
   if (typeof camo_url === 'string') {
-    return makeEl('img', { className: 'scraper-preview--image', src: camo_url });
+    return makeEl('img', { className: 'scraper-preview-image', src: camo_url });
   }
 
   // The upload was fetched from a file input and is an ArrayBuffer
   const objectUrl = URL.createObjectURL(new Blob([camo_url], { type }));
   const tagName = new DataView(camo_url).getUint32(0) === MATROSKA_MAGIC ? 'video' : 'img';
 
-  return makeEl(tagName, { className: 'scraper-preview--image', src: objectUrl });
+  return makeEl(tagName, { className: 'scraper-preview-image', src: objectUrl });
 }
 
 function getStringOrDefault(elements: (string | null | undefined)[], defaultValue: string): string {
@@ -85,13 +85,13 @@ export function setupImageUpload() {
 
     images.forEach((image, index) => {
       const img = elementForEmbeddedImage(image);
-      const imgWrap = makeEl('span', { className: 'scraper-preview--image-wrapper' });
+      const imgWrap = makeEl('span', { className: 'scraper-preview-frame' });
       imgWrap.appendChild(img);
 
-      const label = makeEl('label', { className: 'scraper-preview--label' });
+      const label = makeEl('label', { className: 'scraper-preview-label' });
       const radio = makeEl('input', {
         type: 'radio',
-        className: 'scraper-preview--input',
+        className: 'scraper-preview-input',
       });
 
       if (image.url) {
@@ -230,12 +230,15 @@ export function setupImageUpload() {
 
     if (!buttonAfter) return;
 
-    const errorElement = makeEl('span', { className: 'help-block tag-error', innerText: message });
+    const errorElement = makeEl('span', {
+      className: 'form-message form-message-error js-tag-error',
+      innerText: message,
+    });
     buttonAfter.insertAdjacentElement('beforebegin', errorElement);
   };
 
   const clearTagErrors = () => {
-    $$('.tag-error').forEach(el => el.remove());
+    $$('.js-tag-error').forEach(el => el.remove());
   };
 
   const ratingsTags = ['safe', 'suggestive', 'questionable', 'explicit', 'semi-grimdark', 'grimdark', 'grotesque'];
@@ -284,7 +287,7 @@ export function setupImageUpload() {
   };
 
   const disableUploadButton = () => {
-    const submitButton = $<HTMLButtonElement>('.button.input--separate-top');
+    const submitButton = $<HTMLButtonElement>('.js-upload-submit');
 
     if (!submitButton) {
       return;
@@ -325,7 +328,7 @@ export function setupImageUpload() {
       // Let the form submission complete
     } else {
       // Scroll to view validation errors
-      assertNotNull($('.fancy-tag-upload')).scrollIntoView();
+      assertNotNull($('.js-fancy-tag-upload')).scrollIntoView();
 
       // Prevent the form from being submitted
       event.preventDefault();

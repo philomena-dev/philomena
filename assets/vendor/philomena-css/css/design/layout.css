@@ -1,0 +1,220 @@
+html {
+  font-size: var(--base-font-size);
+  font-family: var(--base-font);
+}
+
+@media not print {
+  html {
+    background-color: var(--page-bg-color);
+  }
+}
+
+body {
+  min-height: 100vh;
+  font-family: var(--base-font);
+  color: var(--text-color);
+  line-height: var(--base-line-height);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: var(--heading-line-height);
+  font-weight: normal;
+}
+
+h1 {
+  font-size: var(--heading-1-size);
+}
+
+h2 {
+  font-size: var(--heading-2-size);
+}
+
+h3 {
+  font-size: var(--heading-3-size);
+}
+
+h4 {
+  font-size: var(--heading-4-size);
+}
+
+h5 {
+  font-size: var(--heading-5-size);
+}
+
+h6 {
+  font-size: var(--heading-6-size);
+}
+
+/* Headings keep a large distance from what surrounds them, except where they are the label of a component (which
+   sets --heading-rhythm), at the edges of their parent and where the rhythm below spaces them */
+:where(h1, h2, h3, h4, h5, h6) {
+  margin-top: var(--flow-margin, var(--heading-first, var(--heading-rhythm, var(--heading-spacing))));
+  margin-bottom: var(--heading-last, var(--heading-rhythm, var(--heading-spacing)));
+}
+
+:where(.card-header, th, td, .badge, .tag, .button) {
+  --heading-rhythm: 0;
+}
+
+:where(h1, h2, h3, h4, h5, h6):first-child {
+  --heading-first: 0;
+}
+
+:where(h1, h2, h3, h4, h5, h6):last-child {
+  --heading-last: 0;
+}
+
+/*
+ * Links take the link style of the innermost container they are in (the content-links and bar-links mixins), except
+ * for the controls that color their own links. A link outside of one keeps the look of the reset: `none` is neither a
+ * color nor a weight, which leaves those unset.
+ */
+
+a {
+  color: var(--link-style-color, none);
+  font-weight: var(--link-style-weight, none);
+  text-decoration: var(--link-style-decoration, none);
+}
+
+.button,
+.nav-link,
+.tag,
+.badge,
+.dropdown-item,
+.pagination-link,
+.tab {
+  --link-style-color: initial;
+  --link-style-weight: initial;
+  --link-style-decoration: initial;
+  --link-style-hover-decoration: initial;
+}
+
+/*
+ * Scrollbars are thin and in the tints of the theme, on the page and inside everything that scrolls. scrollbar-color
+ * is inherited, so the root is enough; the ::-webkit-scrollbar rules are for browsers that do not have it yet.
+ */
+
+:root {
+  scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
+}
+
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: var(--scrollbar-size);
+    height: var(--scrollbar-size);
+    background-color: var(--scrollbar-track-color);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb-color);
+    border-radius: var(--scrollbar-size);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background-color: var(--scrollbar-track-color);
+  }
+}
+
+/* Small scrolling boxes inside the components get the thin variant */
+:where(.code-block, .table-wrap, .tag-box, .combobox-suggestions, .collapsible, .burger, .docs-source) {
+  scrollbar-width: thin;
+}
+
+/*
+ * The reset removes every outline. Anything focusable gets the focus ring back here, at no specificity, so that the
+ * components (and you) can restyle it; links and buttons that are clipped by their container draw it inside
+ * themselves, by the offset the container sets.
+ */
+
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  @mixin focus-ring;
+}
+
+:where(.tag, .media-box, .block-header, .tabs, .communication, .table-wrap) {
+  --focus-ring-link-offset: calc(-1 * var(--focus-outline));
+}
+
+:where(a, button):focus-visible {
+  outline-offset: var(--focus-ring-link-offset, 0);
+}
+
+/*
+ * Rhythm. Significant blocks that follow each other in normal flow keep a large distance, a run of alerts a medium
+ * one, and so do running text and controls: a paragraph or list from what follows it, a group of controls (or a
+ * single button) from the text and blocks around it. Only the children of the framework's flow containers are
+ * spaced, a flex or grid parent of your own lays its children out with its gap. The rules below mark the children
+ * of a flow container (--flow) and set the distance to the previous sibling, each kind in a property of its own; the
+ * universal rule applies the distance of the last kind that matched, as --flow-margin. The margin has no specificity,
+ * so any margin of your own wins.
+ */
+/* prettier-ignore */
+$flow-containers: body, main, .content, .card, .block-content, .tab-panel, .collapsible-inner, .accordion-item-body, .popup, .card-forms-section, .layout-main, .layout-side, .alert, .alert-text;
+/* prettier-ignore */
+$flow-blocks: .card, .block, .communication, blockquote, .blockquote, .media-list, .table-wrap, .alert, .code-block, .collapsible.visible, .disclosure, .tag-box, .accordion, .form-control-group, .editor, .side-tabs, .content;
+/* prettier-ignore */
+$flow-groups: .button-group, .badge-group, .tag-list, .pagination, .pagination-bar;
+$flow-text: p, ul, ol;
+
+* {
+  --flow: initial;
+  --flow-block-gap: initial;
+  --flow-alert-gap: initial;
+  --flow-text-gap: initial;
+  --flow-form-gap: initial;
+  --flow-margin: calc(
+    var(--flow) * var(--flow-form-gap, var(--flow-text-gap, var(--flow-alert-gap, var(--flow-block-gap))))
+  );
+  margin-top: var(--flow-margin);
+}
+
+/* The reset gives <pre> its browser margins back */
+:where(pre) {
+  margin-top: var(--flow-margin, 1em);
+}
+
+:where($(flow-containers)) > * {
+  --flow: 1;
+}
+
+:where($(flow-blocks)) + :where($(flow-blocks)) {
+  --flow-block-gap: var(--block-spacing);
+}
+
+:where(.alert) + :where(.alert) {
+  --flow-alert-gap: var(--alert-gap);
+}
+
+:where($(flow-text)) + :where($(flow-text), .button, $(flow-groups), $(flow-blocks)) {
+  --flow-text-gap: var(--spacing-md);
+}
+
+/* A button after a button is inline with it, so it is not spaced */
+:where(.button, $(flow-groups)) + :where($(flow-text), $(flow-groups), $(flow-blocks)) {
+  --flow-text-gap: var(--spacing-md);
+}
+
+:where($(flow-blocks)) + :where($(flow-text), .button, $(flow-groups)) {
+  --flow-text-gap: var(--spacing-md);
+}
+
+/* Form controls that are stacked without a .form-control-group, the submit row after them and the blocks among them
+   (an alert over a field) keep the form distance */
+/* prettier-ignore */
+:where(.form-control-wrap, .form-control, $(flow-blocks)) + :where(.form-control-wrap, .form-control, .form-control-submit, .from-control-submit),
+:where(.form-control-wrap, .form-control) + :where($(flow-blocks)) {
+  --flow-form-gap: var(--form-control-spacing);
+}
+
+/* People who ask for reduced motion get no transitions; the loading indicator keeps turning, it conveys state */
+@media (prefers-reduced-motion) {
+  *,
+  *:before,
+  *:after {
+    transition: none !important;
+  }
+}

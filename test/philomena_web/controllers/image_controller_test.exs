@@ -214,10 +214,10 @@ defmodule PhilomenaWeb.ImageControllerTest do
       refute response =~ ~s(id="edit-description")
       refute response =~ ~s(id="edit-source")
       refute response =~ ~s(id="edit-tags")
-      refute response =~ "interaction--fave"
-      refute response =~ "interaction--upvote"
-      refute response =~ "interaction--downvote"
-      assert response =~ ~r/class="favorites"[^>]*>7</
+      refute response =~ "js-interaction-fave"
+      refute response =~ "js-interaction-upvote"
+      refute response =~ "js-interaction-downvote"
+      assert response =~ ~r/class="js-fave-count"[^>]*>7</
       assert response =~ "Unsubscribe"
     end
 
@@ -226,11 +226,11 @@ defmodule PhilomenaWeb.ImageControllerTest do
 
       response = html_response(get(conn, ~p"/images/#{image}"), 200)
 
-      assert response =~ ~r/class="favorites"[^>]*>7</
-      assert response =~ ~r/class="upvotes"[^>]*>5</
-      assert response =~ ~r/class="downvotes"[^>]*>2</
-      assert response =~ ~r/class="score[^"]*"[^>]*>3</
-      assert response =~ "interaction--fave"
+      assert response =~ ~r/class="js-fave-count"[^>]*>7</
+      assert response =~ ~r/class="js-upvote-count"[^>]*>5</
+      assert response =~ ~r/class="js-downvote-count"[^>]*>2</
+      assert response =~ ~r/class="[^"]*\bjs-score"[^>]*>3</
+      assert response =~ "js-interaction-fave"
       assert response =~ ~s(href="/sessions/new"><i class="fa fa-bell">)
       assert response =~ "Featured in"
       assert response =~ "Sign in to create a gallery"
@@ -243,7 +243,7 @@ defmodule PhilomenaWeb.ImageControllerTest do
 
       response = html_response(get(conn, ~p"/images/#{image}"), 200)
 
-      assert response =~ "interaction--fave"
+      assert response =~ "js-interaction-fave"
       assert response =~ ~s(id="edit-tags")
       assert response =~ ~s(id="uploader-form")
       assert response =~ ~s(action="/images/#{image.id}/comments")
@@ -438,7 +438,8 @@ defmodule PhilomenaWeb.ImageControllerTest do
         post(conn, ~p"/images", %{
           "image" => %{
             "image" => png_upload(),
-            "tag_input" => "solo"
+            "tag_input" => "solo",
+            "sources" => %{"0" => %{"source" => ""}}
           }
         })
 
@@ -446,6 +447,8 @@ defmodule PhilomenaWeb.ImageControllerTest do
       # assign, so pin page content rather than the title.
       response = html_response(conn, 200)
       assert response =~ "Upload a file from your computer"
+      # The blank source is dropped, and a blank row is rendered for the script to copy.
+      assert response =~ ~s(id="image_sources_0_source")
       assert Repo.aggregate(Image, :count) == 0
     end
 

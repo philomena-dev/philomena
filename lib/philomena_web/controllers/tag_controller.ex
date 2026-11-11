@@ -48,7 +48,7 @@ defmodule PhilomenaWeb.TagController do
           search_query: page.search_query,
           interactions: page.interactions,
           images: page.images,
-          layout_class: "layout--wide",
+          layout_class: "page-wide",
           title: "#{tag.name} - Tags"
         )
 

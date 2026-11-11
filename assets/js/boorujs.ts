@@ -82,9 +82,6 @@ const actions: Record<string, Action> = {
       showBlock(container);
     }
   },
-  tabHide(data) {
-    selectorCbChildren(data.base, data.value, el => el.classList.add('hidden'));
-  },
   preventdefault() {
     /* The existence of this entry is enough */
   },
@@ -148,19 +145,17 @@ function switchTab(data: ActionData & { noPushState?: boolean }) {
   const block = data.el.parentNode?.parentNode;
   if (!(block instanceof HTMLElement)) return;
 
-  const newTab = $<HTMLElement>(`.block__tab[data-tab="${data.value}"]`, block);
+  const newTab = $<HTMLElement>(`.tab-panel[data-tab="${data.value}"]`, block);
   const loadTab = data.el.dataset.loadTab;
 
   // Switch tab
-  const selectedTab = $<HTMLElement>('.selected', block);
-  if (selectedTab) {
-    selectedTab.classList.remove('selected');
-  }
+  $<HTMLElement>('.tab.selected', block)?.classList.remove('selected');
   data.el.classList.add('selected');
 
-  // Switch contents
-  actions.tabHide({ ...data, base: block, value: '.block__tab' });
-  actions.show({ ...data, base: block, value: `.block__tab[data-tab="${data.value}"]` });
+  // Switch contents: the panels of this tab set are the children of the block
+  for (const panel of block.children) {
+    if (panel.classList.contains('tab-panel')) panel.classList.toggle('selected', panel === newTab);
+  }
 
   if (!data.noPushState && block.dataset.tabPersistInQueryParams === 'true') {
     // Save navigation state in the URL query params
@@ -183,16 +178,6 @@ function switchTab(data: ActionData & { noPushState?: boolean }) {
 // Use this function to apply a callback to elements matching the selectors
 function selectorCb(base: ParentNode = document, selector: string, cb: (el: Element) => void) {
   $$(selector, base).forEach(cb);
-}
-
-function selectorCbChildren(base: ParentNode = document, selector: string, cb: (el: Element) => void) {
-  const sel = $$(selector, base);
-
-  for (const el of base.children) {
-    if (!sel.includes(el)) continue;
-
-    cb(el);
-  }
 }
 
 function matchAttributes(event: Event) {

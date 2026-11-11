@@ -10,7 +10,7 @@ defmodule PhilomenaWeb.Admin.SubnetBanController do
       {:ok, subnet_bans, changeset} ->
         render(conn, "index.html",
           title: "Admin - Subnet Bans",
-          layout_class: "layout--wide",
+          layout_class: "page-wide",
           subnet_bans: subnet_bans,
           changeset: changeset
         )
@@ -18,7 +18,7 @@ defmodule PhilomenaWeb.Admin.SubnetBanController do
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "index.html",
           title: "Admin - Subnet Bans",
-          layout_class: "layout--wide",
+          layout_class: "page-wide",
           subnet_bans: nil,
           changeset: changeset
         )

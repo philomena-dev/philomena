@@ -1,0 +1,97 @@
+/*
+ * Tables: a framed box with the header row in the input material and thin row dividers. Wrap the table in
+ * .table-wrap (add .responsive to scroll it sideways on narrow screens, .allow-overflow to let a menu in a cell open
+ * beyond the frame). Modifiers on .table: .striped for zebra
+ * rows, .hover to tint the row under the pointer, .table-{color} to color the header and footer. A row or cell takes
+ * .table-{color} on its own. The colors are primary, success, warning, danger and special.
+ */
+
+.table-wrap {
+  width: 100%;
+  border: var(--border-width) solid var(--tint-color);
+  box-shadow: var(--emphasis-shadow), var(--container-shadow);
+  border-radius: var(--border-radius-inner);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.table-wrap.responsive {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* No clipping, so that a menu in a cell can open beyond the frame; a .responsive wrap still scrolls on narrow screens */
+.table-wrap.allow-overflow {
+  overflow: visible;
+}
+
+@media not all and (min-width: $breakpoint-md) {
+  .table-wrap.responsive.allow-overflow {
+    overflow: auto hidden;
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow-wrap: break-word;
+}
+
+.table th,
+.table td {
+  padding: var(--table-cell-padding-vertical) var(--table-cell-padding-horizontal);
+  vertical-align: middle;
+  text-align: start;
+}
+
+/* The top of the bevel runs over the header row, which covers the one of the frame */
+.table thead tr:first-child > * {
+  box-shadow: inset 0 1px 0 var(--inset-highlight-color);
+}
+
+.table thead tr:first-child > :first-child {
+  box-shadow: inset 1px 1px 0 var(--inset-highlight-color);
+}
+
+.table th {
+  font-weight: bold;
+}
+
+.table thead th,
+.table thead td {
+  padding-top: var(--table-header-padding-vertical);
+  padding-bottom: var(--table-header-padding-vertical);
+  background-color: var(--tint-color);
+  border-bottom: var(--border-thick-width) solid var(--tint-color);
+}
+
+.table tbody tr + tr {
+  border-top: var(--border-width) solid var(--tint-color);
+}
+
+.table tfoot th,
+.table tfoot td {
+  border-top: var(--border-width) solid var(--tint-color);
+  background-color: var(--tint-color);
+  color: var(--muted-text-color);
+}
+
+/* Only the table's own rows, so that a table in a cell keeps its look */
+.table.striped > tbody > tr:nth-child(even) {
+  background-color: var(--stripe-color);
+}
+
+.table.hover > tbody > tr:hover {
+  background-color: var(--hover-color);
+}
+
+/* Numbers line up when their column is marked */
+.table th.numeric,
+.table td.numeric {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+@mixin content-link-style .table;
+
+@mixin each-type table-color-variation;

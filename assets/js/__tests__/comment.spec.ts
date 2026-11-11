@@ -87,21 +87,21 @@ describe('comment.ts setupComments', () => {
     const comments = $<HTMLDivElement>('#comments')!;
     comments.dataset.loaded = 'true';
     comments.innerHTML = `
-       <article class="block fetched-comment"></article>
-      <article class="block" id="comment_1">
-         <div class="communication__body__text">
-           <a class="active_reply_link" href="/123#comment_456">parent</a>
+       <article class="communication js-fetched-comment"></article>
+      <article class="communication" id="comment_1">
+         <div class="communication-text">
+           <a class="js-active-reply-link" href="/123#comment_456">parent</a>
          </div>
        </article>
      `;
 
     setupComments();
 
-    const link = $<HTMLAnchorElement>('a.active_reply_link')!;
+    const link = $<HTMLAnchorElement>('a.js-active-reply-link')!;
     fireEvent.click(link);
 
-    // fetched-comment should be removed (sibling before full comment)
-    expect($('.fetched-comment', comments)).toBeNull();
+    // js-fetched-comment should be removed (sibling before full comment)
+    expect($('.js-fetched-comment', comments)).toBeNull();
   });
 
   it('handles nested comment subthreads', async () => {
@@ -109,22 +109,22 @@ describe('comment.ts setupComments', () => {
     const comments = $<HTMLDivElement>('#comments')!;
     comments.dataset.loaded = 'true';
     comments.innerHTML = `
-      <article class="block fetched-comment subthread" id="comment_1"></article>
-      <article class="block fetched-comment subthread" id="comment_2">
-        <div class="communication__body__text">
-          <a class="active_reply_link" href="/123#comment_456">parent</a>
+      <article class="communication js-fetched-comment" id="comment_1"></article>
+      <article class="communication js-fetched-comment" id="comment_2">
+        <div class="communication-text">
+          <a class="js-active-reply-link" href="/123#comment_456">parent</a>
         </div>
       </article>
-      <article class="block subthread" id="comment_3"></article>
+      <article class="communication" id="comment_3"></article>
     `;
 
     setupComments();
 
-    const link = $<HTMLAnchorElement>('a.active_reply_link')!;
+    const link = $<HTMLAnchorElement>('a.js-active-reply-link')!;
     fireEvent.click(link);
 
-    // fetched-comment should be removed (siblings before latest comment)
-    expect($('.fetched-comment', comments)!.id).toEqual('comment_2');
+    // js-fetched-comment should be removed (siblings before latest comment)
+    expect($('.js-fetched-comment', comments)!.id).toEqual('comment_2');
   });
 
   it('handles comment post completion via fetchcomplete event', async () => {
@@ -138,9 +138,11 @@ describe('comment.ts setupComments', () => {
     const form = $<HTMLFormElement>('#js-comment-form')!;
     const writeTab = $<HTMLAnchorElement>('a[data-click-tab="write"]')!;
     const clickSpy = vi.spyOn(writeTab, 'click');
+    const reloadSpy = vi.spyOn(window.location, 'reload');
 
+    // The post redirects to the page of comments that holds the new one, which fetch follows
     const event = new CustomEvent('fetchcomplete', {
-      detail: { ok: true, text: async () => '<div>after post</div>' },
+      detail: { ok: true, redirected: true, text: async () => '<div>after post</div>' },
       bubbles: true,
     });
     Object.defineProperty(event, 'target', { value: form });
@@ -150,29 +152,13 @@ describe('comment.ts setupComments', () => {
       expect(clickSpy).toHaveBeenCalled();
       expect(comments).toContainHTML('<div>after post</div>');
     });
+    expect(reloadSpy).not.toHaveBeenCalled();
   });
 
-  it('reloads page on server warning after comment post', async () => {
-    mockCommentsDom();
-    const comments = $<HTMLDivElement>('#comments')!;
-    comments.dataset.loaded = 'true';
-
-    const reloadSpy = vi.spyOn(window.location, 'reload');
-
-    setupComments();
-
-    const form = $<HTMLFormElement>('#js-comment-form')!;
-    const event = new CustomEvent('fetchcomplete', {
-      detail: { ok: true, text: async () => '<div class="flash flash--warning">warn</div>' },
-      bubbles: true,
-    });
-    Object.defineProperty(event, 'target', { value: form });
-    document.dispatchEvent(event);
-
-    await waitFor(() => expect(reloadSpy).toHaveBeenCalled());
-  });
-
-  it('reloads and scrolls on failed comment post', async () => {
+  it.each([
+    ['refused with a flash', 300],
+    ['forbidden', 403],
+  ])('reloads and scrolls up when a comment post is %s', async (_, status) => {
     mockCommentsDom();
     const comments = $<HTMLDivElement>('#comments')!;
     comments.dataset.loaded = 'true';
@@ -184,7 +170,7 @@ describe('comment.ts setupComments', () => {
 
     const form = $<HTMLFormElement>('#js-comment-form')!;
     const event = new CustomEvent('fetchcomplete', {
-      detail: { ok: false, text: async () => '' },
+      detail: { ok: false, status, text: async () => '' },
       bubbles: true,
     });
     Object.defineProperty(event, 'target', { value: form });
@@ -212,7 +198,6 @@ describe('comment.ts setupComments', () => {
 
     const link = $<HTMLAnchorElement>('.pagination a')!;
     const dispatched = fireEvent.click(link, { button: 0 });
-    // default should be prevented by the delegated handler
     expect(dispatched).toBe(false);
 
     await waitFor(() => {
@@ -223,7 +208,6 @@ describe('comment.ts setupComments', () => {
 
   it('displays error message when initial load fails (handleError path)', async () => {
     mockCommentsDom({ loaded: '' });
-    // Simulate server returning non-ok Response
     mockFetchHtml('<div>ignored</div>', false);
 
     setupComments();
@@ -241,14 +225,12 @@ describe('comment.ts setupComments', () => {
 
     setupComments();
 
-    // Dispatch fetchcomplete on a different target element
     const other = document.createElement('div');
     other.id = 'not-the-form';
     const event = new CustomEvent('fetchcomplete', { detail: { ok: true }, bubbles: true });
     Object.defineProperty(event, 'target', { value: other });
     document.dispatchEvent(event);
 
-    // Nothing should change; no errors thrown and no fetchHtml invoked
     await new Promise(r => setTimeout(r, 10));
     expect(fetchHtml).not.toHaveBeenCalled();
   });
@@ -258,14 +240,14 @@ describe('comment.ts setupComments', () => {
     const comments = $<HTMLDivElement>('#comments')!;
     comments.dataset.loaded = 'true';
     comments.innerHTML = `
-      <article class="block" id="comment_1">
-        <div class="communication__body__text">
+      <article class="communication" id="comment_1">
+        <div class="communication-text">
           <a id="reply" href="/999#comment_111">parent</a>
         </div>
       </article>
     `;
 
-    mockFetchHtml('<article class="block"><time></time></article>');
+    mockFetchHtml('<article class="communication"><time></time></article>');
 
     setupComments();
 
@@ -273,13 +255,8 @@ describe('comment.ts setupComments', () => {
     fireEvent.click(link, { button: 0 });
 
     await waitFor(() => {
-      // inserted parent is marked as fetched and subthread
-      const fetched = $<HTMLElement>('article.block.fetched-comment', comments);
-      expect(fetched).toBeTruthy();
-      expect(fetched!).toHaveClass('subthread');
-      // clicked link becomes active
-      expect(link).toHaveClass('active_reply_link');
-      // helpers called
+      expect($<HTMLElement>('article.communication.js-fetched-comment', comments)).toBeTruthy();
+      expect(link).toHaveClass('js-active-reply-link');
       expect(timeAgo).toHaveBeenCalled();
       expect(filterNode).toHaveBeenCalled();
     });
@@ -384,8 +361,8 @@ describe('comment.ts setupComments', () => {
     const comments = $<HTMLDivElement>('#comments')!;
     comments.dataset.loaded = 'true';
     comments.innerHTML = `
-      <article class="block" id="comment_1">
-        <div class="communication__body__text">
+      <article class="communication" id="comment_1">
+        <div class="communication-text">
           <a id="bad" href="/123#no_comment_marker">bad</a>
         </div>
       </article>
@@ -406,14 +383,14 @@ describe('comment.ts setupComments', () => {
     const comments = $<HTMLDivElement>('#comments')!;
     comments.dataset.loaded = 'true';
     comments.innerHTML = `
-      <article class="block" id="comment_1">
-        <div class="communication__body__text">
+      <article class="communication" id="comment_1">
+        <div class="communication-text">
           <a id="good" href="/123#comment_456">parent</a>
         </div>
       </article>
     `;
 
-    mockFetchHtml('<article class="block fetched-comment"><time></time></article>');
+    mockFetchHtml('<article class="communication js-fetched-comment"><time></time></article>');
 
     setupComments();
     vi.mocked(fetchHtml).mockClear();
@@ -424,7 +401,7 @@ describe('comment.ts setupComments', () => {
 
     await waitFor(() => {
       expect(fetchHtml).toHaveBeenCalledWith('/images/123/comments/456');
-      expect($('.fetched-comment', comments)).toBeTruthy();
+      expect($('.js-fetched-comment', comments)).toBeTruthy();
     });
   });
 });

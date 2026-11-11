@@ -1,0 +1,48 @@
+/* Communications are dense: their rows have less padding than a block's content */
+.communication {
+  --block-content-padding: var(--spacing-md);
+}
+
+/* The author's name is a link inside the name, which gives it the look of the name wherever the communication is */
+.communication .communication-author-name {
+  --link-style-color: var(--link-color);
+  --link-style-decoration: none;
+  --link-style-hover-decoration: underline;
+}
+
+/* The note that a communication was edited takes a row of its own, under the actions from the md breakpoint up */
+.communication .communication-options .communication-edited {
+  flex-basis: 100%;
+}
+
+@media (min-width: $breakpoint-md) {
+  .communication .communication-options .communication-edited {
+    order: 1;
+  }
+}
+
+/* A form that a staff action opens in a bar of a communication takes a row of its own */
+.communication :is(.communication-notice, .communication-options) > form {
+  flex-basis: 100%;
+}
+
+/* Narrow screens give the options and the author's name touch-sized targets, the rows of options need no gap, and a
+   long name breaks */
+@media not all and (min-width: $breakpoint-md) {
+  .communication .communication-options,
+  .communication .communication-options > * {
+    row-gap: 0;
+  }
+
+  .communication .communication-options a {
+    @mixin touch-target;
+  }
+
+  .communication .communication-author-name a {
+    @mixin touch-link;
+  }
+
+  .communication .communication-author {
+    overflow-wrap: anywhere;
+  }
+}

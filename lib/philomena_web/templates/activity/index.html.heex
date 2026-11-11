@@ -1,30 +1,27 @@
-<div class="column-layout">
+<div class="layout-columns">
   <%= if @show_sidebar do %>
-    <aside class="column-layout__left" id="activity-side">
+    <aside class="layout-side activity-side">
       <%= if not is_nil(@featured_image) and not PhilomenaWeb.ImageView.filter_or_spoiler_hits?(@conn, @featured_image) do %>
-        <div class="center">
-          <h4 class="remove-top-margin">Featured Image</h4>
-          <div class="media--featured">
-            {render(PhilomenaWeb.ImageView, "_image_box.html",
-              image: @featured_image,
-              size: :medium,
-              conn: @conn
-            )}
-          </div>
+        <div class="text-center">
+          <h4 class="mt-0">Featured Image</h4>
+          {render(PhilomenaWeb.ImageView, "_image_box.html",
+            image: @featured_image,
+            size: :medium,
+            conn: @conn
+          )}
         </div>
       <% end %>
-      <div class="block block--fixed block--fixed--sub block--success center hide-mobile">
+      <div class="alert alert-success text-center">
         Enjoy the site? <a href="/pages/donations">Become a patron or donate!</a>
       </div>
-      <div class="block block--fixed block--fixed--sub center hide-mobile">
+      <div class="alert text-center">
         Issues? Want to chat? <a href="/pages/contact">Contact us!</a>
       </div>
-      <div class="block hide-mobile">
-        <a
-          class="block__header--single-item center"
-          href="/search?q=first_seen_at.gt:3 days ago&amp;sf=wilson_score&amp;sd=desc"
-        >Trending Images</a>
-        <div class="block__content media-grid">
+      <div class="block">
+        <div class="block-header justify-center">
+          <a href="/search?q=first_seen_at.gt:3 days ago&amp;sf=wilson_score&amp;sd=desc">Trending Images</a>
+        </div>
+        <div :if={Enum.any?(@top_scoring)} class="block-content media-list small grid-cols-2">
           <%= for image <- @top_scoring do %>
             {render(PhilomenaWeb.ImageView, "_image_box.html",
               image: image,
@@ -33,43 +30,47 @@
             )}
           <% end %>
         </div>
-        <a class="block__header--single-item center" href="/search?q=*&amp;sf=score&amp;sd=desc">All Time Top Scoring</a>
+        <div class="block-header sub justify-center">
+          <a href="/search?q=*&amp;sf=score&amp;sd=desc">All Time Top Scoring</a>
+        </div>
       </div>
-      <div class="block hide-mobile">
-        <a class="block__header--single-item center" href="/channels">Streams</a>
+      <div class="block striped">
+        <div class="block-header justify-center"><a href="/channels">Streams</a></div>
         <%= for channel <- @streams do %>
           {render(PhilomenaWeb.ActivityView, "_channel_strip.html", channel: channel, conn: @conn)}
         <% end %>
+        <div :if={Enum.empty?(@streams)} class="block-content text-center">
+          No streams to show
+        </div>
       </div>
-      <div class="block hide-mobile">
-        <a class="block__header--single-item center" href="/forums">Forum Activity</a>
+      <div class="block striped">
+        <div class="block-header justify-center"><a href="/forums">Forum Activity</a></div>
         <%= for topic <- @topics do %>
           {render(PhilomenaWeb.ActivityView, "_topic_strip.html", topic: topic, conn: @conn)}
         <% end %>
       </div>
-      <div class="block hide-mobile">
-        <a class="block__header--single-item center" href="/comments">Recent Comments</a>
+      <div class="block striped">
+        <div class="block-header justify-center"><a href="/comments">Recent Comments</a></div>
         <%= for comment <- @comments do %>
           {render(PhilomenaWeb.ActivityView, "_comment_strip.html", comment: comment, conn: @conn)}
         <% end %>
-        <a
-          class="block__header--single-item center"
-          href="/search?q=first_seen_at.gt:3 days ago&amp;sf=comment_count&amp;sd=desc"
-        >Most Commented-on Images</a>
+        <div class="block-header sub justify-center">
+          <a href="/search?q=first_seen_at.gt:3 days ago&amp;sf=comment_count&amp;sd=desc">Most Commented-on Images</a>
+        </div>
       </div>
     </aside>
   <% end %>
-  <div class="column-layout__main">
+  <div class="layout-main">
     {render(PhilomenaWeb.ImageView, "index.html", conn: @conn, images: @images, size: :thumb)}
     <%= if @show_sidebar and not is_nil(@watched) and Enum.any?(@watched) do %>
       <div class="block">
-        <div class="block__header">
-          <span class="block__header__title">Watched Images</span>
+        <div class="block-header">
+          <span class="block-header-title">Watched Images</span>
           <a href="/search?q=my:watched" title="Browse Watched Images"><i class="fa fa-eye"></i>
-          <span class="hide-mobile">Browse Watched Images</span></a>
+          <span class="hidden-below-md">Browse Watched Images</span></a>
         </div>
-        <div class="block__content">
-          <div class="media-list media-list--small">
+        <div class="block-content">
+          <div class="media-list small">
             <%= for image <- @watched do %>
               {render(PhilomenaWeb.ImageView, "_image_box.html",
                 image: image,

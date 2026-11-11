@@ -22,35 +22,30 @@ function commentPosted(response: Response) {
   const commentEditTab = $<HTMLAnchorElement>('#js-comment-form a[data-click-tab="write"]');
   const commentEditForm = assertType($('#js-comment-form'), HTMLFormElement);
   const container = document.getElementById('comments')!;
-  const requestOk = response.ok;
 
   commentEditTab?.click();
   commentEditForm.reset();
 
-  if (requestOk) {
-    response.text().then(text => {
-      if (text.includes('<div class="flash flash--warning">')) {
-        window.location.reload();
-      } else {
-        displayComments(container, text);
-      }
-    });
-  } else {
+  // A posted comment answers with its page of comments; a refused one is not OK, and its reason is a flash
+  // at the top of the reloaded page
+  if (!response.ok) {
     window.location.reload();
-    window.scrollTo(0, 0); // Error message is displayed at the top of the page (flash)
+    window.scrollTo(0, 0);
+  } else {
+    response.text().then(text => displayComments(container, text));
   }
 }
 
 function loadParentPost(event: Event, target: HTMLElement) {
   // Find the comment containing the link that was clicked
-  const fullComment = assertType(target.closest('article.block'), HTMLElement);
+  const fullComment = assertType(target.closest('article.communication'), HTMLElement);
   // Look for a potential image and comment ID
   const href = assertNotNull(target.getAttribute('href'));
   const commentMatches = /(\w+)#comment_(\w+)$/.exec(href);
 
   // If the clicked link is already active, just clear the parent comments
-  if (target.classList.contains('active_reply_link')) {
-    clearParentPost(target, fullComment);
+  if (target.classList.contains('js-active-reply-link')) {
+    clearParentPost(fullComment);
     event.preventDefault();
     return;
   }
@@ -62,7 +57,7 @@ function loadParentPost(event: Event, target: HTMLElement) {
     fetchHtml(`/images/${imageId}/comments/${commentId}`)
       .then(handleError)
       .then(data => {
-        clearParentPost(target, fullComment);
+        clearParentPost(fullComment);
         insertParentPost(data, target, fullComment);
       });
 
@@ -71,9 +66,6 @@ function loadParentPost(event: Event, target: HTMLElement) {
 }
 
 function insertParentPost(data: string, clickedLink: HTMLElement, fullComment: HTMLElement) {
-  // Add the 'subthread' class to the comment with the clicked link
-  fullComment.classList.add('subthread');
-
   // Parse the HTML into an element so we can decorate it before insertion
   const tpl = document.createElement('template');
   tpl.innerHTML = data.trim();
@@ -81,40 +73,28 @@ function insertParentPost(data: string, clickedLink: HTMLElement, fullComment: H
 
   if (!newEl) return;
 
-  // Mark the inserted parent comment
-  newEl.classList.add('subthread');
-  newEl.classList.add('fetched-comment');
-
-  // Insert parent comment before the full comment
+  newEl.classList.add('js-fetched-comment');
   fullComment.insertAdjacentElement('beforebegin', newEl);
 
   // Execute timeago on the new comment - it was not present when first run
   timeAgo(newEl.getElementsByTagName('time'));
 
-  // Add class active_reply_link to the clicked link
-  clickedLink.classList.add('active_reply_link');
+  clickedLink.classList.add('js-active-reply-link');
 
   // Filter images (if any) in the loaded comment
   filterNode(newEl);
 }
 
-function clearParentPost(_clickedLink: HTMLElement, fullComment: HTMLElement) {
-  // Remove any previous siblings with the class fetched-comment
+function clearParentPost(fullComment: HTMLElement) {
   let prevEl = fullComment.previousElementSibling;
 
-  while (prevEl && prevEl.classList.contains('fetched-comment')) {
+  while (prevEl && prevEl.classList.contains('js-fetched-comment')) {
     prevEl.parentNode?.removeChild(prevEl);
     prevEl = fullComment.previousElementSibling;
   }
 
-  // Remove class active_reply_link from all links in the comment
-  for (const link of fullComment.getElementsByClassName('active_reply_link')) {
-    assertType(link, HTMLElement).classList.remove('active_reply_link');
-  }
-
-  // If this full comment isn't a fetched comment, remove the subthread class.
-  if (!fullComment.classList.contains('fetched-comment')) {
-    fullComment.classList.remove('subthread');
+  for (const link of fullComment.getElementsByClassName('js-active-reply-link')) {
+    assertType(link, HTMLElement).classList.remove('js-active-reply-link');
   }
 }
 
@@ -185,7 +165,7 @@ function setupComments() {
 
   // Define clickable elements and the function to execute on click
   delegate(document, 'click', {
-    'article[id*="comment"] .communication__body__text a[href]': leftClick((e: Event, link: HTMLElement) => {
+    'article[id*="comment"] .communication-text a[href]': leftClick((e: Event, link: HTMLElement) => {
       loadParentPost(e, link);
     }),
     '#comments .pagination a[href]': leftClick((e: Event, link: HTMLElement) => {

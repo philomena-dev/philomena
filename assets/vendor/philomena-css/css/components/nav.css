@@ -1,0 +1,48 @@
+/*
+ * A nav: a list of links, a column by default and a row with .horizontal, for sidebars and section menus (the bar
+ * across the top of a site is the .navbar). A link tints under the pointer; .current is filled like a primary button.
+ *   <nav class="nav"><a class="nav-link current" href="…">Overview</a><a class="nav-link" href="…">Settings</a></nav>
+ */
+
+.nav {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: var(--nav-spacing);
+}
+
+.nav.horizontal {
+  flex-flow: row wrap;
+}
+
+.nav .nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--nav-link-padding-vertical) var(--nav-link-padding-horizontal);
+  border-radius: var(--border-radius-inner);
+  color: var(--link-color);
+  text-decoration: none;
+  cursor: pointer;
+  transition-property: color, background-color;
+  transition-duration: 0.1s;
+}
+
+.nav .nav-link:hover {
+  background-color: var(--tint-faint-color);
+}
+
+.nav .nav-link.current {
+  color: var(--primary-text-color);
+  background-color: var(--primary-color);
+}
+
+/* In a header the links take its colors */
+.header .nav .nav-link {
+  color: var(--header-brand-color);
+}
+
+.header .nav .nav-link:hover,
+.header .nav .nav-link.current {
+  color: var(--header-text-color);
+  background-color: var(--bar-hover-shade-color);
+}

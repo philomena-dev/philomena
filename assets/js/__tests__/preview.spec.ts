@@ -28,7 +28,7 @@ function makeBaseDom({ withAnon }: { withAnon?: boolean } = {}) {
     <textarea class="js-preview-input"></textarea>
     <div class="js-preview-loading hidden"></div>
     <div class="js-preview-idle"></div>
-    <div class="js-preview-content"></div>
+    <div class="tab-panel selected js-preview-content"></div>
     ${withAnon ? '<input type="checkbox" class="js-preview-anonymous" />' : ''}
   `;
 
@@ -163,7 +163,7 @@ describe('preview.ts setupPreviews', () => {
     // add reply link
     const container = document.createElement('div');
     container.innerHTML = `
-      <a href="/u/test" class="post-reply" data-author="User" data-post="quote\nmore">
+      <a href="/u/test" class="js-post-reply" data-author="User" data-post="quote\nmore">
         <span class="inner">reply</span>
       </a>
     `;
@@ -230,7 +230,7 @@ describe('preview.ts setupPreviews', () => {
       <textarea class="js-preview-input"></textarea>
       <div class="js-preview-loading hidden"></div>
       <div class="js-preview-idle"></div>
-      <div class="js-preview-content hidden"></div>
+      <div class="tab-panel js-preview-content"></div>
       <input type="checkbox" class="js-preview-anonymous" />
     `;
 
@@ -251,31 +251,6 @@ describe('preview.ts setupPreviews', () => {
     expect(fetchJson).not.toHaveBeenCalled();
   });
 
-  it('uses description textarea fallback when input is missing', async () => {
-    document.body.innerHTML = `
-      <a href="#" data-click-tab="preview">Preview</a>
-      <a href="#" data-click-tab="write" class="not-selected"></a>
-      <textarea class="js-preview-description"></textarea>
-      <div class="js-preview-loading hidden"></div>
-      <div class="js-preview-idle"></div>
-      <div class="js-preview-content"></div>
-    `;
-
-    const desc = $<HTMLTextAreaElement>('.js-preview-description')!;
-    const previewBtn = $<HTMLAnchorElement>('a[data-click-tab="preview"]')!;
-    desc.value = 'From description';
-
-    mockSuccessfulPreview('<p>desc</p>');
-
-    setupPreviews();
-
-    fireEvent.click(previewBtn);
-    await waitFor(() => expect(fetchJson).toHaveBeenCalledTimes(1));
-
-    // Ensure body came from description textarea
-    expect(vi.mocked(fetchJson).mock.calls[0][2]).toEqual({ body: 'From description', anonymous: false });
-  });
-
   it('does not click write tab when it is already selected', () => {
     const { textarea } = makeBaseDom();
     textarea.value = '';
@@ -286,7 +261,7 @@ describe('preview.ts setupPreviews', () => {
 
     const container = document.createElement('div');
     container.innerHTML = `
-      <a href="/u/test" class="post-reply" data-author="User" data-post="quote">
+      <a href="/u/test" class="js-post-reply" data-author="User" data-post="quote">
         <span class="inner">reply</span>
       </a>
     `;
@@ -309,7 +284,7 @@ describe('preview.ts setupPreviews', () => {
 
     const container = document.createElement('div');
     container.innerHTML = `
-      <a href="/u/test" class="post-reply" data-author="User">
+      <a href="/u/test" class="js-post-reply" data-author="User">
         <span class="inner">reply</span>
       </a>
     `;
@@ -356,7 +331,7 @@ describe('preview.ts setupPreviews', () => {
 
     const container = document.createElement('div');
     container.innerHTML = `
-      <a class="post-reply">
+      <a class="js-post-reply">
         <span class="inner">reply</span>
       </a>
     `;

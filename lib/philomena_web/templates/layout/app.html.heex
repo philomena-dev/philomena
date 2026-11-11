@@ -1,20 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html data-theme={theme_mode(@current_user)} lang="en">
   <head>
     <meta content="IE=edge" http-equiv="X-UA-Compatible" />
     {viewport_meta_tag(@conn)}
     <title phx-no-format><%= if assigns[:title] do %>{assigns[:title]} - Derpibooru <% else %>Derpibooru <% end %></title>
     <link href={"https://#{cdn_host()}"} rel="preconnect" />
     <link href={~p"/css/application.css"} rel="stylesheet" />
-    <link href={stylesheet_path(@conn, @current_user)} id="js-theme-stylesheet" rel="stylesheet" />
-    <%= if is_nil(@current_user) do %>
-      <link
-        href={light_stylesheet_path(@conn)}
-        id="js-theme-stylesheet"
-        media="(prefers-color-scheme: light)"
-        rel="stylesheet"
-      />
-    <% end %>
+    <link
+      :if={@current_user}
+      href={user_stylesheet_path(@current_user)}
+      id="js-theme-stylesheet"
+      rel="stylesheet"
+    />
     {render(PhilomenaWeb.LayoutView, "_options.html", assigns)}
     <link href="/favicon.ico" rel="icon" type="image/x-icon" />
     <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
@@ -37,21 +34,16 @@
     {render(PhilomenaWeb.LayoutView, "_opengraph.html", assigns)}
   </head>
   <body
+    class={centering_class(@current_user)}
     data-hide-staff-tools={hide_staff_tools_attribute(@conn)}
-    data-theme={theme_name(@current_user)}
     data-vite-reload={to_string(vite_hmr?())}
   >
+    {render(PhilomenaWeb.LayoutView, "_header.html", assigns)}
     {render(PhilomenaWeb.LayoutView, "_burger.html", assigns)}
-    <div class={"#{container_class(@current_user)}"} id="container">
-      {render(PhilomenaWeb.LayoutView, "_header.html", assigns)}{render(
-        PhilomenaWeb.LayoutView,
-        "_flash_warnings.html",
-        assigns
-      )}
-      <main class={"#{layout_class(@conn)}"} id="content">{@inner_content}</main>
-      {render(PhilomenaWeb.LayoutView, "_footer.html", assigns)}
-      <form class="hidden"><input class="js-interaction-cache" type="hidden" value="{}" /></form>
-      {clientside_data(@conn)}
-    </div>
+    {render(PhilomenaWeb.LayoutView, "_notices.html", assigns)}
+    <main class={["page-content", layout_class(@conn)]}>{@inner_content}</main>
+    {render(PhilomenaWeb.LayoutView, "_footer.html", assigns)}
+    <form class="hidden"><input class="js-interaction-cache" type="hidden" value="{}" /></form>
+    {clientside_data(@conn)}
   </body>
 </html>

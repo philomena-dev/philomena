@@ -1,26 +1,3 @@
-<div class="block flex communication__content">
-  <div class="communication__body__avatar hide-mobile">
-    {render(PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html",
-      object: @post,
-      conn: @conn
-    )}
-  </div>
-  <div class="flex__grow communication__body">
-    <div class="communication__body__avatar hide-desktop">
-      {render(PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html",
-        object: @post,
-        conn: @conn
-      )}
-    </div>
-    <div class="communication__body__sender">
-      <span class="communication__body__sender-name">{render(
-        PhilomenaWeb.UserAttributionView,
-        "_anon_user.html",
-        object: @post,
-        conn: @conn,
-        awards: true
-      )}</span>
-    </div>
-    <div class="communication__body__text">{@body}</div>
-  </div>
-</div>
+<article class="communication allow-overflow">
+  {render(PhilomenaWeb.CommunicationView, "_body.html", object: @post, text: @body, conn: @conn)}
+</article>

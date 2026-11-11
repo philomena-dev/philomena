@@ -17,7 +17,7 @@ describe('Draggable Utilities', () => {
 
   describe('initDraggables', () => {
     const draggingClass = 'dragging';
-    const dragContainerClass = 'drag-container';
+    const dragContainerClass = 'js-drag-container';
     const dragOverClass = 'over';
     let documentEventListenerSpy: MockInstance;
 

@@ -45,9 +45,11 @@ defmodule PhilomenaWeb do
 
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
+      import Phoenix.HTML.Form, except: [form_for: 3, form_for: 4]
       use Gettext, backend: PhilomenaWeb.Gettext
 
       import PhilomenaWeb.ErrorHelpers
+      import PhilomenaWeb.FormHelpers
 
       # Wrong way around for convenience
       import PhilomenaWeb.AppView

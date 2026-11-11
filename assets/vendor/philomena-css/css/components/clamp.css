@@ -1,0 +1,102 @@
+/*
+ * A clamp: text that is cut off after a maximum height, with the rest behind a "Show more" label, for descriptions,
+ * comments and other text of unknown length. It needs no script: the labels check a hidden checkbox placed right
+ * before the text.
+ *   <input class="clamp-toggle" type="checkbox" id="description">
+ *   <div class="clamp">
+ *     <p>…</p>
+ *     <label class="clamp-more" for="description">Show more</label>
+ *     <label class="clamp-less" for="description">Show less</label>
+ *   </div>
+ * The maximum is --clamp-max-height, six lines unless you set it (on the element or globally); it is a height, so
+ * style="--clamp-max-height: 200px" works too. The label and the fade towards the cut only appear when at least a
+ * line of text is cut, both are sized from the height of the text, all or nothing; a text that fits, or is over by
+ * less than a line, is shown whole. The fade ends in --clamp-bg-color, the surface color unless the text sits on
+ * something else. .communication-text uses the same thing.
+ *
+ * The checkbox stays reachable from the keyboard when nothing is cut (CSS cannot tell), and checking it then shows
+ * "Show less". Leave the toggle and labels out, or give the checkbox the disabled attribute, where you know the text
+ * is short.
+ */
+
+.clamp-toggle {
+  @mixin hidden-toggle;
+}
+
+.clamp {
+  --_line: calc(1em * var(--text-line-height));
+  line-height: var(--text-line-height);
+  overflow-wrap: anywhere;
+}
+
+/* On the tinted surfaces of the framework the fade ends in their color */
+.collapsible .clamp {
+  --clamp-bg-color: var(--well-deep-color);
+}
+
+.clamp > :where(p, ul, ol, blockquote, pre) + :where(p, ul, ol, blockquote, pre) {
+  margin-top: var(--spacing-md);
+}
+
+.clamp .clamp-more,
+.clamp .clamp-less {
+  display: none;
+  color: var(--link-color);
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Cut: the text shows up to the maximum height plus one line. A text that reaches that has the "Show more" label
+   over its last line; a shorter one, also one that is over the maximum by less than a line, is shown whole */
+
+.clamp-toggle:not(:checked) + .clamp {
+  position: relative;
+  max-block-size: calc(var(--clamp-max-height) + var(--_line));
+  overflow: hidden;
+}
+
+.clamp-toggle:not(:checked) + .clamp .clamp-more {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  inset-inline: 0;
+  /* All or nothing: a full line once the text has reached its maximum height, nothing a moment before. 100% is the
+     height of the text, and the clamp turns the last two pixels before the maximum into the whole label */
+  block-size: clamp(0px, calc((100% - var(--clamp-max-height) - var(--_line) + 2px) * 1000), var(--_line));
+  overflow: hidden;
+  line-height: var(--_line);
+  background-color: var(--clamp-bg-color, var(--surface-color));
+}
+
+/*
+ * The text fades out towards the cut. The fade is stretched between a fixed top and the bottom of the text, so it is
+ * exactly as tall as its gradient only when the text is cut; when the text fits it is at least a line shorter, and
+ * the background position then throws the gradient out of it, so that a text that fits is never faded.
+ */
+
+.clamp-toggle:not(:checked) + .clamp:after {
+  --_fade: min(calc(3 * var(--_line)), calc(var(--clamp-max-height) * 0.6));
+  content: "";
+  position: absolute;
+  top: calc(var(--clamp-max-height) - var(--_fade));
+  bottom: var(--_line);
+  inset-inline: 0;
+  /* Opaque a little before its end, so that a line the cut runs through does not show above the label */
+  background-image: linear-gradient(to bottom, transparent, var(--clamp-bg-color, var(--surface-color)) 85%);
+  background-repeat: no-repeat;
+  background-size: 100% var(--_fade);
+  /* 100% here is the height of the fade minus that of the gradient: zero when cut, a line or more below when not */
+  background-position: 0 max(0px, calc(-100 * 100% - 200px));
+  pointer-events: none;
+}
+
+.clamp-toggle:checked + .clamp .clamp-less {
+  display: block;
+  margin-top: var(--spacing-sm);
+}
+
+.clamp-toggle:focus-visible + .clamp .clamp-more,
+.clamp-toggle:focus-visible + .clamp .clamp-less {
+  @mixin focus-ring-inset;
+}

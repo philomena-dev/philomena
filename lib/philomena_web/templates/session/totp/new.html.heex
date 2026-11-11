@@ -1,21 +1,15 @@
 <h1>Two Factor Authentication</h1>
-<%= form_for @changeset, ~p"/sessions/totp", [as: :user, method: "post"], fn f -> %>
-  <div class="field">
+<%= form_for @changeset, ~p"/sessions/totp", [as: :user, method: "post", class: "content"], fn f -> %>
+  <div class="form-control">
     <h4>Please enter your 2FA code</h4>
     {text_input(f, :twofactor_token,
-      class: "input",
+      class: "input-field",
       placeholder: "6-digit code",
       required: true,
       autofocus: true,
       autocomplete: "off"
     )}
   </div>
-  <div class="field">
-    {checkbox(f, :remember_me, class: "input", checked: true)} {label(
-      f,
-      :remember_me,
-      "Remember this device"
-    )}
-  </div>
-  {submit("Sign in", class: "button")}
+  {checkbox_field(f, :remember_me, "Remember this device", checked: true)}
+  <div class="form-control-submit">{submit("Sign in", class: "button")}</div>
 <% end %>

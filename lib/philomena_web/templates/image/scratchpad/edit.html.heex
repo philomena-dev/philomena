@@ -1,7 +1,9 @@
 <h1>Editing moderation notes for image {link("##{@image.id}", to: ~p"/images/#{@image}")}</h1>
-<%= form_for @changeset, ~p"/images/#{@image}/scratchpad", fn f -> %>
-  <div class="field">
-    {textarea(f, :scratchpad, placeholder: "Scratchpad contents", class: "input input--wide")}
+<%= form_for @changeset, ~p"/images/#{@image}/scratchpad", [class: "content"], fn f -> %>
+  <div class="form-control">
+    {textarea(f, :scratchpad, placeholder: "Scratchpad contents", class: "input-field full-width")}
   </div>
-  {submit("Update", class: "button", data: [disable_with: raw("Saving&hellip;")])}
+  <div class="form-control-submit">
+    {submit("Update", class: "button", data: [disable_with: raw("Saving&hellip;")])}
+  </div>
 <% end %>

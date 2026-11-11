@@ -10,7 +10,9 @@ defmodule PhilomenaWeb.ErrorHelpers do
   """
   def error_tag(form, field) do
     Enum.map(Keyword.get_values(form.errors, field), fn error ->
-      content_tag(:span, humanize_name(field) <> translate_error(error), class: "help-block")
+      content_tag(:span, humanize_name(field) <> translate_error(error),
+        class: "form-message form-message-error"
+      )
     end)
   end
 

@@ -1,10 +1,5 @@
-since 2019-09-01
-Safari > 13
-iOS > 13
-Chrome > 80
-ChromeAndroid > 80
-Android > 80
-Edge > 80
-Firefox > 69
-FirefoxAndroid > 69
-Opera > 63
+chrome >= 85
+edge >= 85
+firefox >= 81
+safari >= 14.1
+ios_saf >= 14.5

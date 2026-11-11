@@ -1,35 +1,31 @@
-<%= form_for @changeset, @action, fn f -> %>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
+<%= form_for @changeset, @action, [class: "content"], fn f -> %>
+  {error_summary(@changeset)}
+  <div class="form-control">
+    <div class="form-message form-message-description">
+      The short name of
+      <code class="code-span">https://picarto.tv/<em>picarto_channel_name</em></code>
+      is <code class="code-span">picarto_channel_name</code>.
     </div>
-  <% end %>
-  <div class="fieldlabel">
-    The short name of <code>https://picarto.tv/<em>picarto_channel_name</em></code>
-    is <code>picarto_channel_name</code>.
-  </div>
-  <div class="fieldlabel">
-    The short name of <code>https://piczel.tv/watch/<em>piczel_channel_name</em></code>
-    is <code>piczel_channel_name</code>. <br /><br />
-  </div>
-  <div class="field">
+    <div class="form-message form-message-description">
+      The short name of
+      <code class="code-span">https://piczel.tv/watch/<em>piczel_channel_name</em></code>
+      is <code class="code-span">piczel_channel_name</code>.
+    </div>
     {label(f, :short_name, "Short name")} {text_input(f, :short_name,
-      class: "input",
+      class: "input-field",
       placeholder: "Short name",
       required: true
     )}
   </div>
-  <div class="field">
-    {label(f, :type, "Type")} {select(f, :type, ["PicartoChannel", "PiczelChannel"],
-      class: "input"
-    )}
+  <div class="form-control">
+    {label(f, :type, "Type")} {select_field(f, :type, ["PicartoChannel", "PiczelChannel"])}
   </div>
-  <div class="field">
+  <div class="form-control">
     {label(f, :artist_tag, "Artist tag")} {text_input(f, :artist_tag,
-      class: "input",
+      class: "input-field",
       placeholder: "Artist tag",
       spellcheck: "false"
     )}
   </div>
-  {submit("Save", class: "button")}
+  <div class="form-control-submit">{submit("Save", class: "button")}</div>
 <% end %>

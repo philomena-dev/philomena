@@ -1,0 +1,11 @@
+/*
+ * Philomena's additions to the framework's buttons.
+ */
+
+/* Phones make buttons at least square touch targets */
+@media not all and (min-width: $breakpoint-md) {
+  .button {
+    min-inline-size: var(--touch-target-size);
+    text-align: center;
+  }
+}

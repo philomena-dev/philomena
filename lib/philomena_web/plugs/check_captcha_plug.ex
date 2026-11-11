@@ -1,6 +1,5 @@
 defmodule PhilomenaWeb.CheckCaptchaPlug do
-  import Plug.Conn
-  import Phoenix.Controller
+  alias PhilomenaWeb.RefusalResponse
 
   def init([]), do: false
 
@@ -16,13 +15,10 @@ defmodule PhilomenaWeb.CheckCaptchaPlug do
     if valid_solution?(conn.params) do
       conn
     else
-      conn
-      |> put_flash(
-        :error,
+      RefusalResponse.call(
+        conn,
         "There was an error verifying you're not a robot. Please try again."
       )
-      |> do_failure_response(conn.assigns.ajax?)
-      |> halt()
     end
   end
 
@@ -43,16 +39,6 @@ defmodule PhilomenaWeb.CheckCaptchaPlug do
   end
 
   defp valid_solution?(_params), do: false
-
-  defp do_failure_response(conn, true) do
-    conn
-    |> put_status(:multiple_choices)
-    |> text("")
-  end
-
-  defp do_failure_response(conn, _false) do
-    redirect(conn, external: conn.assigns.referrer)
-  end
 
   def captcha_enabled? do
     Application.get_env(:philomena, :captcha) != false

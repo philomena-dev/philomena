@@ -242,25 +242,26 @@ defmodule Philomena.Galleries do
   end
 
   @doc """
-  Builds a change-tracking changeset for a new gallery, on behalf of `actor`.
+  Builds a change-tracking changeset for a new gallery prefilled with `attrs`, on behalf
+  of `actor`.
 
   Only a signed-in actor authorized to create galleries receives the changeset.
 
   ## Examples
 
-      iex> new_gallery(actor)
+      iex> new_gallery(actor, %{"thumbnail_id" => "5"})
       {:ok, %Ecto.Changeset{}}
 
       iex> new_gallery(banned_actor)
       {:error, :ban}
 
   """
-  @spec new_gallery(Actor.t()) ::
+  @spec new_gallery(Actor.t(), map()) ::
           {:ok, Ecto.Changeset.t()} | {:error, :ban | :unauthorized}
-  def new_gallery(%Actor{} = actor) do
+  def new_gallery(%Actor{} = actor, attrs \\ %{}) do
     with :ok <- verify_not_banned(actor),
          :ok <- authorize(actor, :new, Gallery) do
-      {:ok, Gallery.changeset(%Gallery{})}
+      {:ok, Gallery.changeset(%Gallery{}, attrs)}
     end
   end
 

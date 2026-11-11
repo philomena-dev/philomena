@@ -1,7 +1,8 @@
 import {
   HistorySuggestionComponent,
-  ItemSelectedEvent,
+  ItemSelection,
   PropertySuggestionComponent,
+  Suggestion,
   Suggestions,
   SuggestionsPopupComponent,
   TagSuggestionComponent,
@@ -13,7 +14,6 @@ import { assertNotNull } from '../assert.ts';
 import { $, $$ } from '../dom.ts';
 import { literalProperty, numericProperty } from '../../autocomplete/properties/maps';
 import { MatchedPropertyParts, SuggestedProperty } from '../../autocomplete/properties';
-import { getRandomIntBetween } from '../../../test/randomness.ts';
 
 const mockedMatchedPropertyParts: MatchedPropertyParts = {
   propertyName: 's',
@@ -53,7 +53,10 @@ function mockBaseSuggestionsPopup(includeMockedSuggestions = false): [Suggestion
   return [popup, input];
 }
 
-const selectedItemClassName = 'autocomplete__item--selected';
+const selectedItemClassName = 'highlighted';
+
+const { history, tags } = mockedSuggestions;
+const item = (index: number) => $$<HTMLElement>('.combobox-suggestion-item')[index];
 
 describe('Suggestions', () => {
   let popup: SuggestionsPopupComponent | undefined;
@@ -97,27 +100,25 @@ describe('Suggestions', () => {
     it('should render suggestions', () => {
       [popup, input] = mockBaseSuggestionsPopup(true);
 
-      expect($$<HTMLElement>('.autocomplete__item').length).toBe(
+      expect($$<HTMLElement>('.combobox-suggestion-item').length).toBe(
         mockedSuggestions.history.length + mockedSuggestions.tags.length + mockedSuggestions.properties.length,
       );
     });
 
-    it('should compensate for scroll position of the parent element', () => {
+    it('should be placed under the field in page coordinates, wherever the page and the field scrolled', () => {
       [popup, input] = mockBaseSuggestionsPopup(true);
 
-      const popupContainer = $<HTMLElement>('.autocomplete');
+      const popupContainer = assertNotNull($<HTMLElement>('.autocomplete'));
 
-      assert(input.parentElement);
-      assert(popupContainer);
-
-      input.parentElement.scrollTop = getRandomIntBetween(100, 200);
+      vi.spyOn(input, 'getBoundingClientRect').mockReturnValue({ left: 30, bottom: 50 } as DOMRect);
+      vi.stubGlobal('scrollX', 5);
+      vi.stubGlobal('scrollY', 100);
       popup.showForElement(input);
 
-      expect(popupContainer.style.top).toBe(`${input.offsetTop - input.parentElement.scrollTop}px`);
+      expect(popupContainer.style.left).toBe('35px');
+      expect(popupContainer.style.top).toBe('150px');
 
-      popup.showForElement(document.documentElement);
-
-      expect(popupContainer.style.top).toBe(`${input.offsetTop}px`);
+      vi.unstubAllGlobals();
     });
 
     it('should not be displayed when input is detached from document', () => {
@@ -136,7 +137,7 @@ describe('Suggestions', () => {
 
       popup.selectDown();
 
-      expect($<HTMLElement>('.autocomplete__item:first-child')).toHaveClass(selectedItemClassName);
+      expect($<HTMLElement>('.combobox-suggestion-item:first-child')).toHaveClass(selectedItemClassName);
     });
 
     it('should initially select last element when selectUp is called', () => {
@@ -144,7 +145,7 @@ describe('Suggestions', () => {
 
       popup.selectUp();
 
-      expect($<HTMLElement>('.autocomplete__item:last-child')).toHaveClass(selectedItemClassName);
+      expect($<HTMLElement>('.combobox-suggestion-item:last-child')).toHaveClass(selectedItemClassName);
     });
 
     it('should jump to the next lower block when selectCtrlDown is called', () => {
@@ -153,22 +154,22 @@ describe('Suggestions', () => {
       popup.selectCtrlDown();
 
       expect(popup.selectedSuggestion).toBe(mockedSuggestions.tags[0]);
-      expect($<HTMLElement>('.autocomplete__item__tag')).toHaveClass(selectedItemClassName);
+      expect(item(history.length)).toHaveClass(selectedItemClassName);
 
       popup.selectCtrlDown();
 
-      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties.at(0));
-      expect($<HTMLElement>('.autocomplete__item__property')).toHaveClass(selectedItemClassName);
+      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties[0]);
+      expect(item(history.length + tags.length)).toHaveClass(selectedItemClassName);
 
       popup.selectCtrlDown();
 
-      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties.at(-1));
-      expect($<HTMLElement>('.autocomplete__item__property:last-child')).toHaveClass(selectedItemClassName);
+      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties[mockedSuggestions.properties.length - 1]);
+      expect($<HTMLElement>('.combobox-suggestion-item:last-child')).toHaveClass(selectedItemClassName);
 
       // Should loop around
       popup.selectCtrlDown();
       expect(popup.selectedSuggestion).toBe(mockedSuggestions.history[0]);
-      expect($<HTMLElement>('.autocomplete__item:first-child')).toHaveClass(selectedItemClassName);
+      expect($<HTMLElement>('.combobox-suggestion-item:first-child')).toHaveClass(selectedItemClassName);
     });
 
     it('should jump to the next upper block when selectCtrlUp is called', () => {
@@ -176,35 +177,31 @@ describe('Suggestions', () => {
 
       popup.selectCtrlUp();
 
-      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties.at(-1));
-      expect($<HTMLElement>('.autocomplete__item__property:last-child')).toHaveClass(selectedItemClassName);
+      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties[mockedSuggestions.properties.length - 1]);
+      expect($<HTMLElement>('.combobox-suggestion-item:last-child')).toHaveClass(selectedItemClassName);
 
       popup.selectCtrlUp();
 
-      const expectedNthOfTypeIndex = mockedSuggestions.history.length + mockedSuggestions.tags.length;
-
-      expect(popup.selectedSuggestion).toBe(mockedSuggestions.tags.at(-1));
-      expect($<HTMLElement>(`.autocomplete__item__tag:nth-of-type(${expectedNthOfTypeIndex})`)).toHaveClass(
-        selectedItemClassName,
-      );
+      expect(popup.selectedSuggestion).toBe(mockedSuggestions.tags[mockedSuggestions.tags.length - 1]);
+      expect(item(history.length + tags.length - 1)).toHaveClass(selectedItemClassName);
 
       popup.selectCtrlUp();
 
-      expect(popup.selectedSuggestion).toBe(mockedSuggestions.history.at(-1));
-      expect($<HTMLElement>(`.autocomplete__item__history:nth-child(${mockedSuggestions.history.length})`)).toHaveClass(
+      expect(popup.selectedSuggestion).toBe(mockedSuggestions.history[mockedSuggestions.history.length - 1]);
+      expect($<HTMLElement>(`.autocomplete-history:nth-child(${mockedSuggestions.history.length})`)).toHaveClass(
         selectedItemClassName,
       );
 
       popup.selectCtrlUp();
 
       expect(popup.selectedSuggestion).toBe(mockedSuggestions.history[0]);
-      expect($<HTMLElement>('.autocomplete__item:first-child')).toHaveClass(selectedItemClassName);
+      expect($<HTMLElement>('.combobox-suggestion-item:first-child')).toHaveClass(selectedItemClassName);
 
       // Should loop around
       popup.selectCtrlUp();
 
-      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties.at(-1));
-      expect($<HTMLElement>('.autocomplete__item__property:last-child')).toHaveClass(selectedItemClassName);
+      expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties[mockedSuggestions.properties.length - 1]);
+      expect($<HTMLElement>('.combobox-suggestion-item:last-child')).toHaveClass(selectedItemClassName);
     });
 
     it('should do nothing on selection changes when empty', () => {
@@ -221,8 +218,8 @@ describe('Suggestions', () => {
     it('should loop around when selecting next on last and previous on first', () => {
       [popup, input] = mockBaseSuggestionsPopup(true);
 
-      const firstItem = assertNotNull($<HTMLElement>('.autocomplete__item:first-child'));
-      const lastItem = assertNotNull($<HTMLElement>('.autocomplete__item:last-child'));
+      const firstItem = assertNotNull($<HTMLElement>('.combobox-suggestion-item:first-child'));
+      const lastItem = assertNotNull($<HTMLElement>('.combobox-suggestion-item:last-child'));
 
       popup.selectUp();
 
@@ -258,11 +255,11 @@ describe('Suggestions', () => {
     it('should emit an event when an item was clicked with a mouse', () => {
       [popup, input] = mockBaseSuggestionsPopup(true);
 
-      const itemSelectedHandler = vi.fn<(event: ItemSelectedEvent) => void>();
+      const itemSelectedHandler = vi.fn<(event: ItemSelection) => void>();
 
       popup.onItemSelected(itemSelectedHandler);
 
-      const firstItem = assertNotNull($<HTMLElement>('.autocomplete__item'));
+      const firstItem = assertNotNull($<HTMLElement>('.combobox-suggestion-item'));
 
       fireEvent.click(firstItem);
 
@@ -279,7 +276,7 @@ describe('Suggestions', () => {
     it('should render the suggestion', () => {
       expectHistoryRender('foo bar').toMatchInlineSnapshot(`
         {
-          "label": " foo bar",
+          "label": "<mark></mark>foo bar",
           "value": "foo bar",
         }
       `);
@@ -290,31 +287,31 @@ describe('Suggestions', () => {
     it('should format suggested tags as tag name and the count', () => {
       expectTagRender({ canonical: ['safe'], images: 10 }).toMatchInlineSnapshot(`
         {
-          "label": " safe  10",
+          "label": "safe | 10",
           "value": "safe",
         }
       `);
       expectTagRender({ canonical: ['safe'], images: 10_000 }).toMatchInlineSnapshot(`
         {
-          "label": " safe  10 000",
+          "label": "safe | 10 000",
           "value": "safe",
         }
       `);
       expectTagRender({ canonical: ['safe'], images: 100_000 }).toMatchInlineSnapshot(`
         {
-          "label": " safe  100 000",
+          "label": "safe | 100 000",
           "value": "safe",
         }
       `);
       expectTagRender({ canonical: ['safe'], images: 1000_000 }).toMatchInlineSnapshot(`
         {
-          "label": " safe  1 000 000",
+          "label": "safe | 1 000 000",
           "value": "safe",
         }
       `);
       expectTagRender({ canonical: ['safe'], images: 10_000_000 }).toMatchInlineSnapshot(`
         {
-          "label": " safe  10 000 000",
+          "label": "safe | 10 000 000",
           "value": "safe",
         }
       `);
@@ -324,7 +321,7 @@ describe('Suggestions', () => {
       expectTagRender({ images: 10, canonical: 'safe', alias: ['rating:safe'] }).toMatchInlineSnapshot(
         `
         {
-          "label": " rating:safe → safe  10",
+          "label": "rating:safe → safe | 10",
           "value": "safe",
         }
       `,
@@ -335,7 +332,7 @@ describe('Suggestions', () => {
       expectTagRender({ images: 10, canonical: 'rating:safe', alias: [{ matched: 'safe' }] }).toMatchInlineSnapshot(
         `
         {
-          "label": " safe → rating:safe  10",
+          "label": "<mark>safe</mark> → rating:safe | 10",
           "value": "rating:safe",
         }
       `,
@@ -357,7 +354,7 @@ describe('Suggestions', () => {
 
       expectPropertyRender(property).toMatchInlineSnapshot(`
         {
-          "label": "ⓘ <b>score</b>",
+          "label": "<mark>score</mark>",
           "value": "score",
         }
       `);
@@ -380,7 +377,7 @@ describe('Suggestions', () => {
 
       expectPropertyRender(property).toMatchInlineSnapshot(`
         {
-          "label": "ⓘ <b>first_seen_at</b>:3 days ago",
+          "label": "<mark>first_seen_at</mark>:3 days ago",
           "value": "first_seen_at:3 days ago",
         }
       `);
@@ -389,7 +386,7 @@ describe('Suggestions', () => {
       property.matchedParts.hasValueSyntax = true;
       expectPropertyRender(property).toMatchInlineSnapshot(`
         {
-          "label": "ⓘ <b>first_seen_at:</b>3 days ago",
+          "label": "<mark>first_seen_at:</mark>3 days ago",
           "value": "first_seen_at:3 days ago",
         }
       `);
@@ -398,7 +395,7 @@ describe('Suggestions', () => {
       property.matchedParts.value = '3 days';
       expectPropertyRender(property).toMatchInlineSnapshot(`
         {
-          "label": "ⓘ <b>first_seen_at:3 days</b> ago",
+          "label": "<mark>first_seen_at:3 days</mark> ago",
           "value": "first_seen_at:3 days ago",
         }
       `);
@@ -409,7 +406,7 @@ describe('Suggestions', () => {
       property.operator = 'gte';
       expectPropertyRender(property).toMatchInlineSnapshot(`
         {
-          "label": "ⓘ <b>first_seen_at</b>.gte:3 days ago",
+          "label": "<mark>first_seen_at</mark>.gte:3 days ago",
           "value": "first_seen_at.gte:3 days ago",
         }
       `);
@@ -418,7 +415,7 @@ describe('Suggestions', () => {
       property.matchedParts.hasOperatorSyntax = true;
       expectPropertyRender(property).toMatchInlineSnapshot(`
         {
-          "label": "ⓘ <b>first_seen_at.</b>gte:3 days ago",
+          "label": "<mark>first_seen_at.</mark>gte:3 days ago",
           "value": "first_seen_at.gte:3 days ago",
         }
       `);
@@ -427,7 +424,7 @@ describe('Suggestions', () => {
       property.matchedParts.operator = 'gt';
       expectPropertyRender(property).toMatchInlineSnapshot(`
         {
-          "label": "ⓘ <b>first_seen_at.gt</b>e:3 days ago",
+          "label": "<mark>first_seen_at.gt</mark>e:3 days ago",
           "value": "first_seen_at.gte:3 days ago",
         }
       `);
@@ -438,7 +435,7 @@ describe('Suggestions', () => {
       property.matchedParts.operator = 'gte';
       expectPropertyRender(property).toMatchInlineSnapshot(`
         {
-          "label": "ⓘ <b>first_seen_at.gte:3 days</b> ago",
+          "label": "<mark>first_seen_at.gte:3 days</mark> ago",
           "value": "first_seen_at.gte:3 days ago",
         }
       `);
@@ -458,7 +455,7 @@ describe('Suggestions', () => {
       // No value or operator.
       expectPropertyRender(property).toMatchInlineSnapshot(`
         {
-          "label": "ⓘ <b>score</b>",
+          "label": "<mark>score</mark>",
           "value": "score",
         }
       `);
@@ -467,7 +464,7 @@ describe('Suggestions', () => {
       property.operator = 'gt';
       expectPropertyRender(property).toMatchInlineSnapshot(`
         {
-          "label": "ⓘ <b>score</b>.gt:",
+          "label": "<mark>score</mark>.gt:",
           "value": "score.gt:",
         }
       `);
@@ -476,7 +473,7 @@ describe('Suggestions', () => {
       property.value = '100';
       expectPropertyRender(property).toMatchInlineSnapshot(`
         {
-          "label": "ⓘ <b>score</b>.gt:100",
+          "label": "<mark>score</mark>.gt:100",
           "value": "score.gt:100",
         }
       `);
@@ -485,7 +482,7 @@ describe('Suggestions', () => {
       property.operator = null;
       expectPropertyRender(property).toMatchInlineSnapshot(`
         {
-          "label": "ⓘ <b>score</b>:100",
+          "label": "<mark>score</mark>:100",
           "value": "score:100",
         }
       `);
@@ -493,60 +490,32 @@ describe('Suggestions', () => {
   });
 });
 
+// The text of a rendered suggestion and its addon, the highlighted parts marked
+function renderedLabel(suggestion: Suggestion) {
+  const [label] = suggestion.render();
+  const text = assertNotNull(label.querySelector('.combobox-suggestion-item-main-text'));
+  const addon = label.querySelector('.combobox-suggestion-item-addon')?.textContent;
+  const parts = [...text.childNodes].map(node =>
+    node.nodeName === 'MARK' ? `<mark>${node.textContent}</mark>` : node.textContent,
+  );
+
+  return [parts.join(''), addon].filter(Boolean).join(' | ');
+}
+
 function expectHistoryRender(content: string) {
   const suggestion = new HistorySuggestionComponent(content, 0);
-  const label = suggestion
-    .render()
-    .map(el => el.textContent)
-    .join('');
-  const value = suggestion.value();
 
-  return expect({ label, value });
+  return expect({ label: renderedLabel(suggestion), value: suggestion.value() });
 }
 
 function expectTagRender(params: TagSuggestion) {
   const suggestion = new TagSuggestionComponent(params);
-  const label = suggestion
-    .render()
-    .map(el => el.textContent)
-    .join('');
-  const value = suggestion.value();
 
-  return expect({ label, value });
+  return expect({ label: renderedLabel(suggestion), value: suggestion.value() });
 }
 
 function expectPropertyRender(property: SuggestedProperty) {
   const suggestion = new PropertySuggestionComponent(property);
-  const value = suggestion.value();
 
-  let label = '';
-
-  for (const element of suggestion.render()) {
-    const maybeIconElement = element.querySelector('i');
-
-    // We assume that property suggestion contains the icon in the structure. Otherwise, fall back to just printing
-    // everything as simple text content.
-    if (!maybeIconElement || !maybeIconElement.parentElement) {
-      label += element.textContent;
-      continue;
-    }
-
-    // We need to highlight specific parts of the label for snapshots. Other parts are ignored.
-    for (const node of maybeIconElement.parentElement.childNodes) {
-      switch (node.nodeName) {
-        // The icon.
-        case 'I':
-          label += 'ⓘ';
-          break;
-        // Highlighted part of the suggestion.
-        case 'B':
-          label += `<b>${node.textContent}</b>`;
-          break;
-        default:
-          label += node.textContent;
-      }
-    }
-  }
-
-  return expect({ label, value });
+  return expect({ label: renderedLabel(suggestion), value: suggestion.value() });
 }

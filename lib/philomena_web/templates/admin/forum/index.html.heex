@@ -1,18 +1,20 @@
 <h2>Listing Forums</h2>
-<table class="table">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Options</th>
-    </tr>
-  </thead>
-  <tbody>
-    <%= for forum <- @forums do %>
+<div class="table-wrap responsive">
+  <table class="table striped hover">
+    <thead>
       <tr>
-        <td>{link(forum.name, to: ~p"/forums/#{forum}")}</td>
-        <td class="text-right">{link("Edit", to: ~p"/admin/forums/#{forum}/edit")}</td>
+        <th>Name</th>
+        <th>Options</th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <%= for forum <- @forums do %>
+        <tr>
+          <td>{link(forum.name, to: ~p"/forums/#{forum}")}</td>
+          <td>{link("Edit", to: ~p"/admin/forums/#{forum}/edit")}</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
 {link("New Forum", to: ~p"/admin/forums/new")}

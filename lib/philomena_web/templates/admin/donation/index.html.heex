@@ -7,13 +7,13 @@
   ) %>
 <h1>Donations</h1>
 <div class="block">
-  <div class="block__header">
-    <div class="page__pagination">{pagination}</div>
+  <div :if={multiple_pages?(@donations)} class="block-header">
+    {pagination}
   </div>
-  <div class="block__content">
+  <div class="block-content">
     {render(PhilomenaWeb.Admin.DonationView, "_table.html", donations: @donations, conn: @conn)}
   </div>
-  <div class="block__header block__header--light">
-    <div class="page__pagination">{pagination}</div>
+  <div :if={multiple_pages?(@donations)} class="block-header sub">
+    {pagination}
   </div>
 </div>

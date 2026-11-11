@@ -1,0 +1,12 @@
+<div class="page-notices">
+  <div :for={notice <- @conn.assigns.site_notices} class="alert site-notice">
+    <strong>{notice.title}</strong> {notice.text}
+    <a :if={notice.link not in [nil, ""]} href={notice.link}>{notice.link_text}</a>
+  </div>
+  <noscript class="alert alert-warning">
+    <strong>You don't appear to have Javascript enabled.</strong>
+    If you're using an add-on like NoScript, please allow {cdn_host()} for the site to work properly.
+  </noscript>
+  <div :if={get_flash(@conn, :info)} class="alert alert-success">{get_flash(@conn, :info)}</div>
+  <div :if={get_flash(@conn, :error)} class="alert alert-danger">{get_flash(@conn, :error)}</div>
+</div>

@@ -22,9 +22,9 @@ RUN apk update --allow-untrusted \
 COPY . /tmp/philomena
 
 # Install and compile assets
-RUN cd /tmp/philomena/assets \
-    && NODE_ENV=development npm install \
-    && npm run deploy
+RUN cd /tmp/philomena \
+    && NODE_ENV=development npm ci \
+    && npm run deploy --workspace assets
 
 # Get the dependencies and digest the assets, no need to compile the whole app,
 # as we only need the static files for the web server.

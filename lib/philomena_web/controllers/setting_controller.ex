@@ -18,7 +18,7 @@ defmodule PhilomenaWeb.SettingController do
     render(conn, "edit.html", title: "Editing Settings", changeset: changeset)
   end
 
-  def update(conn, %{"user" => user_params}) do
+  def update(conn, %{"user" => %{} = user_params}) do
     user = conn.assigns.current_user
 
     conn
@@ -69,9 +69,7 @@ defmodule PhilomenaWeb.SettingController do
     set_cookie(conn, cookie_name, to_string(params[param_name] == "true"))
   end
 
-  defp set_cookie(conn, _, nil), do: conn
-
-  defp set_cookie(conn, cookie_name, value) do
+  defp set_cookie(conn, cookie_name, value) when is_binary(value) do
     # JS wants access; max-age is set to 25 years from now
     Conn.put_resp_cookie(conn, cookie_name, value,
       max_age: 788_923_800,
@@ -80,26 +78,33 @@ defmodule PhilomenaWeb.SettingController do
     )
   end
 
+  defp set_cookie(conn, _cookie_name, _value), do: conn
+
   defp assign_theme(%{theme: theme} = settings) do
-    [theme_name, theme_color] = String.split(theme, "-")
+    {theme_name, theme_color} = Settings.split_theme(theme)
 
     settings
     |> Map.put(:theme_name, theme_name)
     |> Map.put(:theme_color, theme_color)
   end
 
-  defp assign_theme(_), do: assign_theme(%Settings{theme: "dark-blue"})
+  defp assign_theme(_), do: assign_theme(%Settings{})
 
-  defp determine_theme(%{"settings" => settings} = user_params),
+  defp determine_theme(%{"settings" => %{} = settings} = user_params),
     do: %{user_params | "settings" => put_theme(settings)}
 
   defp determine_theme(user_params), do: user_params
 
   defp put_theme(%{"theme_name" => name, "theme_color" => color} = settings)
-       when name != nil and color != nil,
+       when is_binary(name) and is_binary(color),
        do: Map.put(settings, "theme", "#{name}-#{color}")
 
-  defp put_theme(settings), do: Map.put(settings, "theme", "dark-blue")
+  # Parts that are not strings fail validation through the nil theme
+  defp put_theme(%{"theme_name" => name, "theme_color" => color} = settings)
+       when name != nil and color != nil,
+       do: Map.put(settings, "theme", nil)
+
+  defp put_theme(settings), do: Map.put(settings, "theme", %Settings{}.theme)
 
   defp maybe_update_user(conn, nil, _user_params), do: {:ok, conn}
 

@@ -111,14 +111,14 @@ export class TestContext {
   }
 
   async deleteHistoryItem(content: string) {
-    const items = [...this.popup.querySelectorAll('.autocomplete__item__history')];
+    const items = [...this.popup.querySelectorAll('.autocomplete-history')];
     const item = items.find(elem => elem.textContent.trimStart() === content);
 
     if (!item) {
       throw new Error(`History item with content "${content}" was not found`);
     }
 
-    const deleteButton = item.querySelector('.autocomplete__item__history__delete');
+    const deleteButton = item.querySelector('.autocomplete-history-delete');
 
     if (!deleteButton) {
       throw new Error(`Delete button for history item with content "${content}" was not found`);
@@ -233,17 +233,20 @@ export class TestContext {
         return '-----------';
       }
 
-      let content = el.textContent!.trim();
+      let content = [...el.querySelectorAll('.combobox-suggestion-item-main-text, .combobox-suggestion-item-addon')]
+        .map(part => part.textContent)
+        .filter(Boolean)
+        .join('  ');
 
-      if (el.classList.contains('autocomplete__item__history')) {
+      if (el.classList.contains('autocomplete-history')) {
         content = `(history) ${content}`;
       }
 
-      if (el.classList.contains('autocomplete__item__property')) {
+      if (el.querySelector('.fa-circle-info')) {
         content = `(property) ${content}`;
       }
 
-      if (el.classList.contains('autocomplete__item--selected')) {
+      if (el.classList.contains('highlighted')) {
         return `👉 ${content}`;
       }
       return content;

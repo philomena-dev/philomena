@@ -31,10 +31,10 @@ defmodule PhilomenaWeb.Image.Comment.HistoryControllerTest do
       # for the old text and an inserted row for the new, with word-level
       # highlights marking the change.
       assert response =~ ~s(<table class="diff">)
-      assert response =~ ~s(<tr class="diff__row diff__row--del">)
-      assert response =~ ~s(<tr class="diff__row diff__row--ins">)
+      assert response =~ ~s(<tr class="diff-row deleted">)
+      assert response =~ ~s(<tr class="diff-row inserted">)
       assert response =~ "Original comment body"
-      assert response =~ ~s(<ins class="diff__hl"> plus an edit</ins>)
+      assert response =~ ~s(<ins class="diff-mark"> plus an edit</ins>)
     end
 
     test "renders an empty history for a never-edited comment", %{conn: conn} do

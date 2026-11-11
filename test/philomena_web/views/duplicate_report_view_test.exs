@@ -27,4 +27,15 @@ defmodule PhilomenaWeb.DuplicateReportViewTest do
       assert url =~ "#{image.id}-#{image.hidden_image_key}/full.png"
     end
   end
+
+  test "state_class/1 tints the status of a settled or claimed report" do
+    for {state, class} <- [
+          {"rejected", "alert alert-danger"},
+          {"accepted", "alert alert-success"},
+          {"claimed", "alert alert-warning"},
+          {"open", nil}
+        ] do
+      assert DuplicateReportView.state_class(%{state: state}) == class
+    end
+  end
 end

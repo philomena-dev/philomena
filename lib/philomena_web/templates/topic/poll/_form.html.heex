@@ -2,39 +2,46 @@
   Polls may have a maximum of <span class="js-max-option-count">20</span>
   options. Leave any options you don't want to use blank. Only registered users will be able to vote.
 </p>
-<div class="field field--block">
-  {text_input(@f, :title, class: "input input--wide", placeholder: "Poll title", maxlength: 140)}{error_tag(
+<div class="form-control">
+  {text_input(@f, :title,
+    class: "input-field full-width",
+    placeholder: "Poll title",
+    maxlength: 140
+  )}{error_tag(
     @f,
     :title
   )}
 </div>
-<p class="fieldlabel">End date</p>
-<div class="field field--block">
+<p class="form-message form-message-description">End date</p>
+<div class="form-control">
   {text_input(@f, :active_until,
-    class: "input input--wide",
+    class: "input-field full-width",
     placeholder: "2 weeks from now",
     maxlength: 255
   )}{error_tag(@f, :active_until)}
 </div>
-<p class="fieldlabel">
+<p class="form-message form-message-description">
   Specify when the poll should end. Once the poll ends, no more votes can be cast and the final results will be displayed. Good values to try are "1 week from now" and "24 hours from now". Polls must last for at least 24 hours.
 </p>
-<p class="fieldlabel">Voting method:</p>
-<div class="field field--block">
-  {select(@f, :vote_method, [-: "", "Single option": :single, "Multiple options": :multiple],
-    class: "input"
-  )}{error_tag(@f, :vote_method)}
+<p class="form-message form-message-description">Voting method:</p>
+<div class="form-control">
+  {select_field(@f, :vote_method, -: "", "Single option": :single, "Multiple options": :multiple)}{error_tag(
+    @f,
+    :vote_method
+  )}
 </div>
-<%= inputs_for @f, :options, fn opt -> %>
-  <div class="field js-poll-option field--inline flex--no-wrap flex--centered">
-    {text_input(opt, :label, class: "input flex__grow js-option-label", placeholder: "Option")}{error_tag(
+<%= repeatable_inputs_for @f, :options, fn opt -> %>
+  <div class="form-control form-control-buttons flex-nowrap items-center js-poll-option">
+    {text_input(opt, :label, class: "input-field flex-1", placeholder: "Option")}{error_tag(
       opt,
       :label
-    )}<label class="input--separate-left flex__fixed flex--centered"><a
-      class="js-option-remove"
+    )}<label class="flex-none"><a
+      class="touch-link js-option-remove"
       href="#"
       phx-no-format
     ><i class="fa fa-trash"></i> Delete </a></label>
   </div>
 <% end %>
-<button class="button js-poll-add-option" type="button"><i class="fa fa-plus"></i> Add option</button>
+<div class="form-control">
+  <button class="button js-poll-add-option" type="button"><i class="fa fa-plus"></i> Add option</button>
+</div>

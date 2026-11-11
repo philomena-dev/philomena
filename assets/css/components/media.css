@@ -1,0 +1,86 @@
+/*
+ * Philomena's additions to the framework's media boxes. A thumbnail (image/_image_container.html.heex) is the
+ * .media-box-content of its box, or stands alone in rows and tables.
+ */
+
+/* A landscape box has a 4:3 content area, for stream screenshots */
+.media-box.landscape .media-box-content {
+  padding-bottom: 75%;
+}
+
+/* A disabled action keeps the pointer, so that its title tells why, but has no hover look; the script ignores it */
+.media-box .media-box-header .media-box-action.disabled {
+  pointer-events: auto;
+  cursor: default;
+}
+
+.media-box .media-box-header .media-box-action.disabled:hover {
+  color: var(--_color);
+  background-color: transparent;
+}
+
+/* A thumbnail outside a media box centers its image at its own size, at most as large as the container */
+.image-container:not(.media-box-content) {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-container:not(.media-box-content) a,
+.image-container:not(.media-box-content) picture {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.image-container:not(.media-box-content) img,
+.image-container:not(.media-box-content) video {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.image-container.tiny {
+  flex: none;
+  width: var(--media-box-tiny-width);
+  height: var(--media-box-tiny-width);
+}
+
+/* Its overlays are small labels across the top of the image */
+.image-container:not(.media-box-content) > .media-box-overlays {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  pointer-events: none;
+}
+
+.image-container:not(.media-box-content) > .media-box-overlays > * {
+  padding: 0 var(--spacing-xs);
+  border-radius: var(--border-radius-inner);
+  font-size: var(--text-size-xs);
+  font-weight: bold;
+  line-height: var(--base-line-height);
+  text-align: center;
+  color: var(--overlay-text-color);
+  background-color: var(--overlay-color);
+  overflow-wrap: break-word;
+}
+
+/* Phones give the header of a box the height of a touch target, and its links and actions share the row */
+@media not all and (min-width: $breakpoint-md) {
+  .media-box .media-box-header {
+    line-height: var(--touch-target-size);
+  }
+
+  .media-box .media-box-header > * {
+    flex-grow: 1;
+    justify-content: center;
+    text-align: center;
+  }
+}

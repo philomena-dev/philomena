@@ -1,0 +1,77 @@
+/*
+ * An accordion: a framed column of items, each a header bar over a padded body. The framework styles the parts;
+ * opening and closing is native with <details>, or your script's with other elements:
+ *   <div class="accordion">
+ *     <details class="accordion-item" open>
+ *       <summary class="accordion-item-header">Title</summary>
+ *       <div class="accordion-item-body">…</div>
+ *     </details>
+ *   </div>
+ * The header gets a caret that turns when its <details> is open (or the item has .open).
+ */
+
+.accordion {
+  display: flex;
+  flex-flow: column;
+  /* Flex items are as wide as their content by default, which would let a wide code block stretch the page */
+  min-width: 0;
+  color: var(--text-color);
+  background-color: var(--surface-color);
+  border: var(--border-width) solid var(--tint-color);
+  border-radius: var(--border-radius-outer);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--container-shadow);
+}
+
+@mixin bevel .accordion;
+
+.accordion > .accordion-item {
+  min-width: 0;
+}
+
+.accordion > .accordion-item + .accordion-item {
+  border-top: var(--border-width) solid var(--surface-color);
+}
+
+.accordion .accordion-item-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--accordion-header-padding-vertical) var(--accordion-padding);
+  color: var(--bar-link-color);
+  background-color: var(--tint-color);
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+}
+
+.accordion .accordion-item-header:hover {
+  background-color: var(--tint-faint-color);
+}
+
+.accordion .accordion-item-header:focus-visible {
+  @mixin focus-ring-inset;
+}
+
+.accordion .accordion-item-header:before {
+  content: "";
+  flex: 0 0 auto;
+  border: 0.35em solid transparent;
+  border-inline-start-color: currentcolor;
+  border-inline-end-width: 0;
+  transition: transform 0.1s;
+}
+
+.accordion .accordion-item[open] > .accordion-item-header:before,
+.accordion .accordion-item.open > .accordion-item-header:before {
+  transform: rotate(90deg);
+}
+
+.accordion .accordion-item-body {
+  min-width: 0;
+  padding: var(--accordion-padding);
+  line-height: var(--accordion-line-height);
+}
+
+@mixin content-link-style .accordion .accordion-item-body;

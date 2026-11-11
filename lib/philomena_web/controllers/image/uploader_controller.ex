@@ -8,11 +8,9 @@ defmodule PhilomenaWeb.Image.UploaderController do
   def update(conn, params) do
     case Images.update_image_uploader(conn.assigns.actor, params["image_id"], params["image"]) do
       {:ok, image} ->
-        changeset = Images.change_image(image)
-
         conn
         |> put_view(PhilomenaWeb.ImageView)
-        |> render("_uploader.html", layout: false, image: image, changeset: changeset)
+        |> render("_uploader_name.html", layout: false, image: image)
 
       {:error, %Ecto.Changeset{}} ->
         update_failed(conn)

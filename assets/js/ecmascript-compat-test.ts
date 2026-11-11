@@ -5,11 +5,8 @@
  * specified in the tsconfig.json.
  */
 
-function _ecmascript2020() {
-  // @ts-expect-error You may see an 'unused @ts-expect-error' squiggle here.
-  // This is because your IDE is using the ES2020 library transitively included
-  // from `vitest` via `@types/node`. However, our final build uses a different
-  // config file (`tsconfig.build.json`) that doesn't include the ES2020
-  // library, where this `@ts-expect-error` is valid.
-  return Promise.allSettled;
+function _ecmascript2022(list: number[]) {
+  // @ts-expect-error The floor Safari lacks the ES2022 `Array.prototype.at`,
+  // which is past the `lib` of tsconfig.json.
+  return list.at(-1);
 }

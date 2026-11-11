@@ -39,14 +39,14 @@ function setupDom({ withList = false } = {}) {
   <input class="js-interaction-cache" value='{}'>
   ${withList ? '<div id="imagelist-container"></div>' : ''}
   <div class="image" data-image-id="42">
-    <a class="interaction--upvote" data-image-id="42"><i></i></a>
-    <a class="interaction--downvote" data-image-id="42"><i></i></a>
-    <a class="interaction--fave" data-image-id="42"><i></i></a>
-    <a class="interaction--hide" data-image-id="42"><i></i></a>
-    <span class="score" data-image-id="42"></span>
-    <span class="favorites" data-image-id="42"></span>
-    <span class="upvotes" data-image-id="42"></span>
-    <span class="downvotes" data-image-id="42"></span>
+    <a class="js-interaction-upvote" data-image-id="42"><i></i></a>
+    <a class="js-interaction-downvote" data-image-id="42"><i></i></a>
+    <a class="js-interaction-fave" data-image-id="42"><i></i></a>
+    <a class="js-interaction-hide" data-image-id="42"><i></i></a>
+    <span class="js-score" data-image-id="42"></span>
+    <span class="js-fave-count" data-image-id="42"></span>
+    <span class="js-upvote-count" data-image-id="42"></span>
+    <span class="js-downvote-count" data-image-id="42"></span>
   </div>`;
 }
 
@@ -69,9 +69,10 @@ describe('interactions', () => {
 
     setupInteractions();
 
-    expect($('a.interaction--fave')!.getAttribute('href')).toBe('/sessions/new');
-    expect($('a.interaction--upvote')!.getAttribute('href')).toBe('/sessions/new');
-    expect($('a.interaction--downvote')!.getAttribute('href')).toBe('/sessions/new');
+    expect($('a.js-interaction-fave')!.getAttribute('href')).toBe('/sessions/new');
+    expect($('a.js-interaction-upvote')!.getAttribute('href')).toBe('/sessions/new');
+    expect($('a.js-interaction-downvote')!.getAttribute('href')).toBe('/sessions/new');
+    expect($('a.js-interaction-hide')!.getAttribute('href')).toBe('/sessions/new');
   });
 
   it('fires POST interact for inactive upvote and updates score/classes', async () => {
@@ -81,13 +82,13 @@ describe('interactions', () => {
 
     setupInteractions();
 
-    const upvote = $('a.interaction--upvote')!;
+    const upvote = $('a.js-interaction-upvote')!;
     fireEvent.click(upvote, { button: 0 });
 
     expect(fetchJson).toHaveBeenCalled();
     await new Promise(r => setTimeout(r, 0));
-    expect($('.score')!.textContent).toBe('10');
-    expect($('.upvotes')!.textContent).toBe('11');
+    expect($('.js-score')!.textContent).toBe('10');
+    expect($('.js-upvote-count')!.textContent).toBe('11');
     expect(upvote.classList.contains('active')).toBe(true);
   });
 
@@ -98,7 +99,7 @@ describe('interactions', () => {
 
     setupInteractions();
 
-    const downvote = $('a.interaction--downvote')!;
+    const downvote = $('a.js-interaction-downvote')!;
     fireEvent.click(downvote, { button: 0 });
 
     expect(fetchJson).toHaveBeenCalled();
@@ -112,7 +113,7 @@ describe('interactions', () => {
 
     setupInteractions();
 
-    const downvote = $('a.interaction--downvote')!;
+    const downvote = $('a.js-interaction-downvote')!;
     fireEvent.click(downvote, { button: 0 });
 
     expect(fetchJson).not.toHaveBeenCalled();
@@ -148,9 +149,9 @@ describe('interactions', () => {
 
     displayInteractionSet(cachedInteractions);
 
-    expect($('.interaction--upvote')!.classList.contains('active')).toBe(true);
-    expect($('.interaction--hide')!.classList.contains('active')).toBe(true);
-    expect($('.interaction--fave')!.classList.contains('active')).toBe(true);
+    expect($('.js-interaction-upvote')!.classList.contains('active')).toBe(true);
+    expect($('.js-interaction-hide')!.classList.contains('active')).toBe(true);
+    expect($('.js-interaction-fave')!.classList.contains('active')).toBe(true);
   });
 
   it('active-state click triggers DELETE and resets', async () => {
@@ -158,19 +159,19 @@ describe('interactions', () => {
     setupDom();
 
     // mark upvote active
-    $('a.interaction--upvote')!.classList.add('active');
+    $('a.js-interaction-upvote')!.classList.add('active');
 
     mockFetchJsonScore({ score: 5, upvotes: 4 });
 
     setupInteractions();
 
-    const upvote = $('a.interaction--upvote')!;
+    const upvote = $('a.js-interaction-upvote')!;
     fireEvent.click(upvote, { button: 0 });
 
     await new Promise(r => setTimeout(r, 0));
     expect(upvote.classList.contains('active')).toBe(false);
-    expect($('.score')!.textContent).toBe('5');
-    expect($('.upvotes')!.textContent).toBe('4');
+    expect($('.js-score')!.textContent).toBe('5');
+    expect($('.js-upvote-count')!.textContent).toBe('4');
   });
 
   it('fires POST interact for inactive fave and updates classes', async () => {
@@ -180,14 +181,14 @@ describe('interactions', () => {
 
     setupInteractions();
 
-    const fave = $('a.interaction--fave')!;
+    const fave = $('a.js-interaction-fave')!;
     fireEvent.click(fave, { button: 0 });
 
     expect(fetchJson).toHaveBeenCalled();
     await new Promise(r => setTimeout(r, 0));
     expect(fave.classList.contains('active')).toBe(true);
     // fave click also shows upvoted per logic
-    expect($('a.interaction--upvote')!.classList.contains('active')).toBe(true);
+    expect($('a.js-interaction-upvote')!.classList.contains('active')).toBe(true);
   });
 
   it('fires POST interact for inactive hide and updates classes', async () => {
@@ -197,7 +198,7 @@ describe('interactions', () => {
 
     setupInteractions();
 
-    const hide = $('a.interaction--hide')!;
+    const hide = $('a.js-interaction-hide')!;
     fireEvent.click(hide, { button: 0 });
 
     expect(fetchJson).toHaveBeenCalled();
@@ -209,7 +210,7 @@ describe('interactions', () => {
     setWindowBooru({ signedIn: true });
     setupDom();
 
-    const downvote = $('a.interaction--downvote')!;
+    const downvote = $('a.js-interaction-downvote')!;
     downvote.classList.add('active');
     mockFetchJsonScore({ downvotes: 0 });
 
@@ -226,19 +227,17 @@ describe('interactions', () => {
 
     setupInteractions();
 
-    const upvote = $('a.interaction--upvote')!;
+    const upvote = $('a.js-interaction-upvote')!;
     fireEvent.click(upvote, { button: 1 }); // middle click
 
     expect(fetchJson).not.toHaveBeenCalled();
   });
 
-  it('loadInteractions sets title on anchor when no icon present', () => {
+  it('loadInteractions disables and explains spoilered downvotes in image lists', () => {
     setWindowBooru({ signedIn: true, interactions: [], disabled: ['42'] });
     setupDom({ withList: true });
 
-    // Remove all children to hit the third fallback branch
-    const downvote = $('a.interaction--downvote')!;
-    downvote.innerHTML = '';
+    const downvote = $('a.js-interaction-downvote')!;
 
     setupInteractions();
 
@@ -250,8 +249,8 @@ describe('interactions', () => {
     setWindowBooru({ signedIn: true });
     setupDom();
 
-    const upvote = $('a.interaction--upvote')!;
-    const downvote = $('a.interaction--downvote')!;
+    const upvote = $('a.js-interaction-upvote')!;
+    const downvote = $('a.js-interaction-downvote')!;
 
     // voted with empty value should not alter classes
     displayInteractionSet([{ image_id: '42', interaction_type: 'voted', value: '' } as unknown as InteractionLike]);
@@ -279,14 +278,14 @@ describe('interactions', () => {
 
     displayInteractionSet([{ image_id: '42', interaction_type: 'voted', value: 'down' } as unknown as InteractionLike]);
 
-    expect($('.interaction--downvote')!.classList.contains('active')).toBe(true);
+    expect($('.js-interaction-downvote')!.classList.contains('active')).toBe(true);
   });
 
   it('active-state fave triggers DELETE and resets', async () => {
     setWindowBooru({ signedIn: true });
     setupDom();
 
-    const fave = $('a.interaction--fave')!;
+    const fave = $('a.js-interaction-fave')!;
     fave.classList.add('active');
     mockFetchJsonScore({ faves: 0 });
 
@@ -301,7 +300,7 @@ describe('interactions', () => {
     setWindowBooru({ signedIn: true });
     setupDom();
 
-    const hide = $('a.interaction--hide')!;
+    const hide = $('a.js-interaction-hide')!;
     hide.classList.add('active');
     mockFetchJsonScore({});
 
@@ -316,7 +315,7 @@ describe('interactions', () => {
     setWindowBooru({ signedIn: true });
     setupDom();
 
-    const hide = $('a.interaction--hide')!;
+    const hide = $('a.js-interaction-hide')!;
     expect(hide.classList.contains('active')).toBe(false);
 
     const cached: InteractionLike[] = [
@@ -331,7 +330,7 @@ describe('interactions', () => {
     setWindowBooru({ signedIn: true });
     setupDom();
 
-    const up = $('a.interaction--upvote')!;
+    const up = $('a.js-interaction-upvote')!;
     expect(up.classList.contains('active')).toBe(false);
 
     const cached: InteractionLike[] = [
@@ -346,7 +345,7 @@ describe('interactions', () => {
     setWindowBooru({ signedIn: true, disabled: ['42'] });
     setupDom({ withList: true });
 
-    const downvote = $('a.interaction--downvote')!;
+    const downvote = $('a.js-interaction-downvote')!;
     downvote.classList.add('active');
 
     setupInteractions();
@@ -362,7 +361,7 @@ describe('interactions', () => {
     setWindowBooru({ signedIn: true });
     setupDom();
 
-    const fave = $('a.interaction--fave')!;
+    const fave = $('a.js-interaction-fave')!;
     expect(fave.classList.contains('active')).toBe(false);
 
     const cached: InteractionLike[] = [

@@ -1,0 +1,211 @@
+/*
+ * A communication: a comment, forum post or message, as on Philomena. An avatar next to the author and the text,
+ * over a bar of options (time, link, quote, reply):
+ *   <article class="communication">
+ *     <div class="communication-body">
+ *       <img class="avatar avatar-md communication-avatar" src="…" alt="">
+ *       <div class="communication-content">
+ *         <div class="communication-author">
+ *           <a class="communication-author-name" href="…">Name</a>
+ *           <span class="badge badge-success">Moderator</span>
+ *         </div>
+ *         <input class="clamp-toggle" type="checkbox" id="c1">
+ *         <div class="communication-text clamp">
+ *           <p>…</p>
+ *           <label class="clamp-more" for="c1">Show more</label>
+ *           <label class="clamp-less" for="c1">Show less</label>
+ *         </div>
+ *       </div>
+ *     </div>
+ *     <div class="communication-options">
+ *       <div>Posted 2 hours ago <a href="…">Report</a></div>
+ *       <div><a href="…">Link</a><a href="…">Quote</a><a href="…">Reply</a></div>
+ *     </div>
+ *   </article>
+ *
+ * The text is a clamp (css/components/clamp.css): with the toggle and the labels it is cut off after
+ * --communication-max-height (six lines unless you set it) behind a "Show more" label, without a script; leave them
+ * and the .clamp class out to never cut it. On narrow screens the avatar and the author become a header row over the
+ * text, as on Philomena, and a communication that is the target of the URL is outlined. .deleted tints a removed one,
+ * .allow-overflow lets a dropdown in its options open beyond its edges.
+ *
+ * What the site says about a communication (why it was deleted, by whom) goes in a .communication-notice, a bar
+ * before the .communication-body. It is outside the text, so nothing a user writes can look like it:
+ *   <div class="communication-notice">Deleted: Rule #1 <span class="communication-notice-by">Moderator</span></div>
+ */
+
+.communication {
+  color: var(--text-color);
+  background-color: var(--surface-color);
+  border: var(--border-width) solid var(--tint-color);
+  border-radius: var(--border-radius-outer);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--container-shadow);
+}
+
+@mixin bevel .communication;
+
+@mixin allow-overflow .communication;
+
+.communication:target {
+  border-color: var(--focus-color);
+}
+
+.communication .communication-body {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: flex-start;
+  gap: var(--spacing-lg);
+  padding: var(--block-content-padding);
+}
+
+.communication.deleted .communication-body {
+  --clamp-bg-color: var(--danger-wash-color);
+  background-color: var(--danger-wash-color);
+}
+
+/* The notice: a bar in the block header's tint, in the danger color on a deleted communication */
+.communication .communication-notice {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  gap: var(--spacing-xs) var(--spacing-md);
+  padding: var(--spacing-sm) var(--block-content-padding);
+  font-size: var(--badge-font-size);
+  font-weight: bold;
+  background-color: var(--tint-color);
+}
+
+.communication.deleted .communication-notice {
+  color: var(--danger-bar-text-color);
+  background-color: var(--danger-bar-color);
+}
+
+/* Who it comes from, at the end of the bar */
+.communication .communication-notice-by {
+  margin-inline-start: auto;
+  font-weight: normal;
+}
+
+.communication .communication-content {
+  flex: 1 1 auto;
+  /* Lets long words and wide content shrink instead of pushing the avatar out */
+  min-inline-size: 0;
+}
+
+/* The author: the name, and under it the role labels (badges), as Philomena's user titles */
+.communication .communication-author {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+  margin-block-end: var(--spacing-sm);
+}
+
+.communication .communication-author-name {
+  font-size: var(--communication-name-font-size);
+  font-weight: bold;
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.communication .communication-author .badge {
+  font-size: var(--code-small-font-size);
+}
+
+.communication .communication-text {
+  --clamp-max-height: var(--communication-max-height);
+  line-height: var(--text-line-height);
+  overflow-wrap: anywhere;
+}
+
+.communication .communication-text > :where(p, ul, ol, blockquote, pre) + :where(p, ul, ol, blockquote, pre) {
+  margin-top: var(--spacing-md);
+}
+
+.communication .communication-text {
+  @mixin content-links;
+}
+
+/* The options: two groups at the ends of the bar, the time and report on one side, the actions on the other */
+.communication .communication-options {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-sm) var(--spacing-lg);
+  padding: var(--spacing-sm) var(--block-content-padding);
+  font-size: var(--badge-font-size);
+  color: var(--muted-text-color);
+  background-color: var(--tint-faint-color);
+  border-top: var(--border-width) solid var(--tint-color);
+}
+
+.communication .communication-options > * {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  gap: var(--spacing-sm) var(--spacing-md);
+}
+
+.communication .communication-options {
+  @mixin bar-links;
+}
+
+.communication .communication-options a:hover {
+  @mixin links-hover;
+}
+
+.communication .communication-options a:where(:not(.button, .dropdown-item, .pagination-link)) {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+/*
+ * Narrow screens, as on Philomena: the avatar and the author are a header row in the tint of the options bar, and
+ * the text runs under them at the full width.
+ */
+@media not all and (min-width: $breakpoint-md) {
+  .communication .communication-body {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0;
+    padding: 0;
+  }
+
+  /* The band behind the header row */
+  .communication .communication-body:before {
+    content: "";
+    grid-area: 1 / 1 / 2 / -1;
+    background-color: var(--tint-faint-color);
+    border-bottom: var(--border-width) solid var(--tint-color);
+  }
+
+  .communication .communication-content {
+    display: contents;
+  }
+
+  .communication .communication-avatar {
+    grid-area: 1 / 1;
+    margin: var(--spacing-md);
+  }
+
+  .communication .communication-author {
+    grid-area: 1 / 2;
+    align-self: center;
+    margin: var(--spacing-md);
+  }
+
+  /* The avatar brings the distance between the two */
+  .communication .communication-avatar + .communication-content > .communication-author {
+    margin-inline-start: 0;
+  }
+
+  /* A margin and not a padding, so that the cut stays measured from the edges of the text */
+  .communication .communication-text {
+    grid-area: 2 / 1 / 3 / -1;
+    margin: var(--spacing-md);
+  }
+}

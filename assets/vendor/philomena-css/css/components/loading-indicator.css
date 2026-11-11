@@ -1,0 +1,52 @@
+.loading-indicator {
+  fill-rule: evenodd;
+  clip-rule: evenodd;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-miterlimit: 1.5;
+}
+
+.loading-indicator .minute,
+.loading-indicator .hour {
+  fill: currentcolor;
+  transform-origin: 32px 32px;
+  animation-name: rotate-hand;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.loading-indicator .hour {
+  animation-duration: var(--loading-revolution-time);
+}
+
+.loading-indicator .minute {
+  animation-duration: calc(var(--loading-revolution-time) / 12);
+}
+
+.loading-indicator .base {
+  opacity: 0.8;
+}
+
+.loading-indicator .face,
+.loading-indicator .ticking {
+  fill: none;
+  stroke: currentcolor;
+}
+
+.loading-indicator .face {
+  stroke-width: 6px;
+}
+
+.loading-indicator .ticking {
+  stroke-width: 5px;
+}
+
+@keyframes rotate-hand {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

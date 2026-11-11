@@ -21,7 +21,7 @@ defmodule PhilomenaWeb.ProfileView do
   def should_see_link?(conn, user, link),
     do: link.public or can?(conn, :edit, link) or current?(user, conn.assigns.current_user)
 
-  def link_block_class(%{public: false}), do: "block__content--destroyed"
+  def link_block_class(%{public: false}), do: "artist-link-private"
   def link_block_class(_link), do: nil
 
   def award_title(%{badge_name: nil} = award),
@@ -51,7 +51,7 @@ defmodule PhilomenaWeb.ProfileView do
         # In SVG coords, y grows down
         y = 20 - height
 
-        content_tag :rect, class: "barline__bar", x: i, y: y, width: 1, height: height do
+        content_tag :rect, class: "sparkline-bar", x: i, y: y, width: 1, height: height do
           content_tag(:title, val)
         end
       end

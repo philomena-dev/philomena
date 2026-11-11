@@ -1,0 +1,64 @@
+@media not all and (min-width: $breakpoint-md) {
+  body:has(.popup[open]) {
+    overflow: hidden;
+  }
+}
+
+.popup {
+  position: absolute;
+  max-width: var(--popup-max-width);
+  width: 100%;
+  background-color: var(--surface-color);
+  color: var(--text-color);
+  border: var(--border-thick-width) solid var(--tint-color);
+  border-radius: var(--border-radius-outer);
+  box-shadow:
+    var(--emphasis-shadow),
+    0 0 var(--popup-box-shadow) var(--shadow-color);
+  padding: var(--content-spacing);
+  z-index: var(--z-popup);
+}
+
+.popup.allow-overflow {
+  overflow: visible;
+}
+
+@media (min-width: $breakpoint-md) {
+  .popup {
+    top: unset;
+    left: unset;
+    right: unset;
+    bottom: unset;
+    width: auto;
+    height: auto;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  @supports (position-anchor: --test) {
+    .popup {
+      transform: none;
+    }
+
+    .popup.has-anchor {
+      position-anchor: var(--position-anchor-name);
+      top: anchor(bottom) !important;
+      left: anchor(left) !important;
+    }
+  }
+}
+
+.popup.wide {
+  width: 100%;
+  max-width: var(--popup-wide-max-width);
+}
+
+.popup.visible {
+  display: block !important;
+}
+
+.popup::backdrop {
+  backdrop-filter: blur(3px);
+}

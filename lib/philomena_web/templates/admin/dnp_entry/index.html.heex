@@ -1,16 +1,16 @@
 <h2>Do-Not-Post Requests</h2>
-<%= form_for @changeset, ~p"/admin/dnp_entries", [as: :eq, method: "get", class: "hform"], fn f -> %>
-  <div class="field">
+<%= form_for @changeset, ~p"/admin/dnp_entries", [as: :eq, method: "get"], fn f -> %>
+  <div class="form-input-group short">
     {text_input(f, :text,
-      class: "input hform__text",
+      class: "input-field",
       placeholder: "Search query",
       autocapitalize: "none",
       spellcheck: "false"
     )}
     <%= for state <- input_value(f, :states) || [] do %>
-      {hidden_input(f, :states, name: "#{f.name}[states][]", value: state)}
+      {hidden_input(f, :states, name: "#{f.name}[states][]", value: state, id: nil)}
     <% end %>
-    {submit("Search", class: "hform__button button")}
+    {submit("Search", class: "button")}
   </div>
 <% end %>
 <% route = fn p -> ~p"/admin/dnp_entries?#{p}" end %>
@@ -20,10 +20,10 @@
     route: route,
     params: [eq: @conn.params["eq"]]
   ) %>
-<div class="block">
-  <div class="block__header">
-    <div class="page__pagination">{pagination}</div>
-    <span class="block__header__title">Display only:</span>{link("All Entries",
+<div class="block allow-overflow">
+  <div class="block-header">
+    {pagination}
+    <span class="block-header-title">Display only:</span>{link("All Entries",
       to:
         ~p"/admin/dnp_entries?#{[eq: [states: ~W(requested claimed listed rescinded acknowledged closed)]]}"
     )} {link("All Open",
@@ -36,82 +36,86 @@
       to: ~p"/admin/dnp_entries?#{[eq: [states: ~W(closed)]]}"
     )}
   </div>
-  <div class="block__content">
-    <table class="table">
-      <thead>
-        <tr>
-          <td>Tag</td>
-          <td>Requesting User</td>
-          <td>Type</td>
-          <td>Conditions</td>
-          <td>Status</td>
-          <td>Created</td>
-          <td>Modified</td>
-          <td>Options</td>
-        </tr>
-      </thead>
-      <tbody>
-        <%= for {body, request} <- @dnp_entries do %>
+  <div class="block-content">
+    <div class="table-wrap responsive allow-overflow">
+      <table class="table striped hover">
+        <thead>
           <tr>
-            <td>{render(PhilomenaWeb.TagView, "_tag.html", tag: request.tag, conn: @conn)}</td>
-            <td>
-              {link(request.requesting_user.name, to: ~p"/profiles/#{request.requesting_user}")}
-            </td>
-            <td>{request.dnp_type}</td>
-            <td>{body}</td>
-            <td class={"#{dnp_entry_row_class(request)}"}>
-              {pretty_state(request)}
-              <%= if request.modifying_user do %>
-                by {link(request.modifying_user.name, to: ~p"/profiles/#{request.modifying_user}")}
-              <% end %>
-            </td>
-            <td>{pretty_time(request.created_at)}</td>
-            <td>{pretty_time(request.updated_at)}</td>
-            <td>
-              {link("Show", to: ~p"/dnp/#{request}")} &bull; {link("Send PM",
-                to: ~p"/conversations/new?#{[recipient: request.requesting_user.name]}"
-              )}
-              <%= case request.aasm_state do %>
-                <% s when s in ["requested", "claimed"] -> %>
-                  &bull; {link("Claim",
-                    to: ~p"/admin/dnp_entries/#{request}/transition?#{[state: "claimed"]}",
-                    data: [method: "post", confirm: "Are you really, really sure?"]
-                  )} &bull; {link("Approve",
-                    to: ~p"/admin/dnp_entries/#{request}/transition?#{[state: "listed"]}",
-                    data: [method: "post", confirm: "Are you really, really sure?"]
-                  )} &bull; {link("Close",
-                    to: ~p"/admin/dnp_entries/#{request}/transition?#{[state: "closed"]}",
-                    data: [method: "post", confirm: "Are you really, really sure?"]
-                  )}
-                <% "listed" -> %>
-                  &bull; {link("Rescind",
-                    to: ~p"/admin/dnp_entries/#{request}/transition?#{[state: "rescinded"]}",
-                    data: [method: "post", confirm: "Are you really, really sure?"]
-                  )} &bull; {link("Close",
-                    to: ~p"/admin/dnp_entries/#{request}/transition?#{[state: "closed"]}",
-                    data: [method: "post", confirm: "Are you really, really sure?"]
-                  )}
-                <% s when s in ["rescinded", "acknowledged"] -> %>
-                  &bull; {link("Claim",
-                    to: ~p"/admin/dnp_entries/#{request}/transition?#{[state: "acknowledged"]}",
-                    data: [method: "post", confirm: "Are you really, really sure?"]
-                  )} &bull; {link("Close",
-                    to: ~p"/admin/dnp_entries/#{request}/transition?#{[state: "closed"]}",
-                    data: [method: "post", confirm: "Are you really, really sure?"]
-                  )}
-                <% _state -> %>
-                  &bull; {link("Claim",
-                    to: ~p"/admin/dnp_entries/#{request}/transition?#{[state: "claimed"]}",
-                    data: [method: "post", confirm: "Are you really, really sure?"]
-                  )}
-              <% end %>
-            </td>
+            <td>Tag</td>
+            <td>Requesting User</td>
+            <td>Type</td>
+            <td>Conditions</td>
+            <td>Status</td>
+            <td>Created</td>
+            <td>Modified</td>
+            <td>Options</td>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <%= for {body, request} <- @dnp_entries do %>
+            <tr>
+              <td>{render(PhilomenaWeb.TagView, "_tag.html", tag: request.tag, conn: @conn)}</td>
+              <td>
+                {link(request.requesting_user.name, to: ~p"/profiles/#{request.requesting_user}")}
+              </td>
+              <td>{request.dnp_type}</td>
+              <td class="markdown">{body}</td>
+              <td class={dnp_entry_row_class(request)}>
+                {pretty_state(request)}
+                <%= if request.modifying_user do %>
+                  by {link(request.modifying_user.name,
+                    to: ~p"/profiles/#{request.modifying_user}"
+                  )}
+                <% end %>
+              </td>
+              <td>{pretty_time(request.created_at)}</td>
+              <td>{pretty_time(request.updated_at)}</td>
+              <td>
+                {link("Show", to: ~p"/dnp/#{request}")} &bull; {link("Send PM",
+                  to: ~p"/conversations/new?#{[recipient: request.requesting_user.name]}"
+                )}
+                <%= case request.aasm_state do %>
+                  <% s when s in ["requested", "claimed"] -> %>
+                    &bull; {link("Claim",
+                      to: ~p"/admin/dnp_entries/#{request}/transition?#{[state: "claimed"]}",
+                      data: [method: "post", confirm: "Are you really, really sure?"]
+                    )} &bull; {link("Approve",
+                      to: ~p"/admin/dnp_entries/#{request}/transition?#{[state: "listed"]}",
+                      data: [method: "post", confirm: "Are you really, really sure?"]
+                    )} &bull; {link("Close",
+                      to: ~p"/admin/dnp_entries/#{request}/transition?#{[state: "closed"]}",
+                      data: [method: "post", confirm: "Are you really, really sure?"]
+                    )}
+                  <% "listed" -> %>
+                    &bull; {link("Rescind",
+                      to: ~p"/admin/dnp_entries/#{request}/transition?#{[state: "rescinded"]}",
+                      data: [method: "post", confirm: "Are you really, really sure?"]
+                    )} &bull; {link("Close",
+                      to: ~p"/admin/dnp_entries/#{request}/transition?#{[state: "closed"]}",
+                      data: [method: "post", confirm: "Are you really, really sure?"]
+                    )}
+                  <% s when s in ["rescinded", "acknowledged"] -> %>
+                    &bull; {link("Claim",
+                      to: ~p"/admin/dnp_entries/#{request}/transition?#{[state: "acknowledged"]}",
+                      data: [method: "post", confirm: "Are you really, really sure?"]
+                    )} &bull; {link("Close",
+                      to: ~p"/admin/dnp_entries/#{request}/transition?#{[state: "closed"]}",
+                      data: [method: "post", confirm: "Are you really, really sure?"]
+                    )}
+                  <% _state -> %>
+                    &bull; {link("Claim",
+                      to: ~p"/admin/dnp_entries/#{request}/transition?#{[state: "claimed"]}",
+                      data: [method: "post", confirm: "Are you really, really sure?"]
+                    )}
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   </div>
-  <div class="block__header block__header--light">
-    <div class="page__pagination">{pagination}</div>
+  <div :if={multiple_pages?(@dnp_entries)} class="block-header sub">
+    {pagination}
   </div>
 </div>

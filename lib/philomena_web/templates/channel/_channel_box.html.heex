@@ -1,18 +1,41 @@
-<% link_class = "media-box__header media-box__header--channel media-box__header--link" %>
-<div class="media-box" phx-no-format>
-  <a class="media-box__header media-box__header--channel media-box__header--link" href={~p"/channels/#{@channel}"} title={@channel.title}>{@channel.title || @channel.short_name}</a>
-  <div class="media-box__header media-box__header--channel">
+<% channel_path = ~p"/channels/#{@channel}" %>
+<div class="media-box landscape">
+  <div class="media-box-header">
+    <a href={channel_path} title={@channel.title}>{@channel.title || @channel.short_name}</a>
+  </div>
+  <div class="media-box-header">
     <%= if @channel.is_live do %>
-      <div class="spacing-right label label--success label--block label--small"><strong>LIVE NOW</strong></div>{@channel.viewers} {pluralize "viewer", "viewers", @channel.viewers}
+      <span class="badge badge-success"><strong>LIVE NOW</strong></span>
+      <span>{@channel.viewers} {pluralize("viewer", "viewers", @channel.viewers)}</span>
     <% else %>
-      <div class="label label--danger label--block label--small"><strong>OFF AIR</strong></div>
+      <span class="badge badge-danger"><strong>OFF AIR</strong></span>
     <% end %>
   </div>
-  <div class="media-box__content media-box__content--channel">
-    <%= if @channel.nsfw do %>
-      <div class="media-box__overlay">NSFW</div>
+  <a class="media-box-content" href={channel_path}>
+    <img alt={"#{@channel.title}"} src={channel_image(@channel)} />
+    <span :if={@channel.nsfw} class="media-box-overlay">NSFW</span>
+  </a>
+  <div class="media-box-header">
+    <%= if @channel.associated_artist_tag do %>
+      <a href={~p"/tags/#{@channel.associated_artist_tag}"}><i class="fa fa-fw fa-tags"></i> {@channel.associated_artist_tag.name}</a>
+    <% else %>
+      <span>No artist tag</span>
     <% end %>
-    <a href={~p"/channels/#{@channel}"}><div class="image-constrained media-box__content--channel"><img alt={"#{@channel.title}"} src={channel_image(@channel)} /></div></a>
   </div>
-  <a :if={@channel.associated_artist_tag} class={"#{link_class}"} href={~p"/tags/#{@channel.associated_artist_tag}"}><i class="fa fa-fw fa-tags"></i> {@channel.associated_artist_tag.name}</a><div :if={!(@channel.associated_artist_tag)} class="media-box__header media-box__header--channel">No artist tag</div><%= if can?(@conn, :edit, @channel) do %><a class={"#{link_class}"} href={~p"/channels/#{@channel}/edit"}><i class="fas fa-fw fa-edit"></i> Edit</a> <a class={"#{link_class}"} data-confirm="Are you really, really sure?" data-method="delete" href={~p"/channels/#{@channel}"}><i class="fas fa-fw fa-trash"></i> Delete</a> <% end %>{render PhilomenaWeb.Channel.SubscriptionView, "_subscription.html", conn: @conn, watching: @subscriptions[@channel.id], channel: @channel}
+  <%= if can?(@conn, :edit, @channel) do %>
+    <div class="media-box-header">
+      <a href={~p"/channels/#{@channel}/edit"}><i class="fas fa-fw fa-edit"></i> Edit</a>
+    </div>
+    <div class="media-box-header">
+      <a data-confirm="Are you really, really sure?" data-method="delete" href={channel_path}><i class="fas fa-fw fa-trash"></i>
+      Delete</a>
+    </div>
+  <% end %>
+  <div class="media-box-header">
+    {render(PhilomenaWeb.SubscriptionView, "_subscription.html",
+      conn: @conn,
+      watching: @subscriptions[@channel.id],
+      target: @channel
+    )}
+  </div>
 </div>

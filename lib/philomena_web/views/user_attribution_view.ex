@@ -22,7 +22,7 @@ defmodule PhilomenaWeb.UserAttributionView do
     do: AnonymousName.generate(object, reveal_anon?)
 
   def user_avatar(object, opts \\ []) do
-    class = Keyword.get(opts, :class) || "avatar--100px"
+    class = Keyword.get(opts, :class) || "avatar-md"
     no_profile_link = Keyword.get(opts, :no_profile_link) || false
 
     anon = anonymous_user?(object)
@@ -41,7 +41,7 @@ defmodule PhilomenaWeb.UserAttributionView do
         {:a, href: ~p"/profiles/#{object.user}"}
       end
 
-    attrs = Keyword.put(attrs, :class, "image-constrained #{class}")
+    attrs = Keyword.put(attrs, :class, "avatar square #{class}")
 
     content_tag(tag, content, attrs)
   end
@@ -74,7 +74,7 @@ defmodule PhilomenaWeb.UserAttributionView do
     if blank?(t) do
       labels
     else
-      [{"label--primary", t} | labels]
+      [{"badge-primary", t} | labels]
     end
   end
 
@@ -84,29 +84,29 @@ defmodule PhilomenaWeb.UserAttributionView do
     if blank?(t) do
       labels
     else
-      [{"label--warning", t} | labels]
+      [{"badge-warning", t} | labels]
     end
   end
 
   defp secondary_role(labels, _user), do: labels
 
   defp staff_role(labels, %{hide_default_role: false, role: "admin", senior_staff: true}),
-    do: [{"label--danger", "Head Administrator"} | labels]
+    do: [{"badge-danger", "Head Administrator"} | labels]
 
   defp staff_role(labels, %{hide_default_role: false, role: "admin"}),
-    do: [{"label--danger", "Administrator"} | labels]
+    do: [{"badge-danger", "Administrator"} | labels]
 
   defp staff_role(labels, %{hide_default_role: false, role: "moderator", senior_staff: true}),
-    do: [{"label--success", "Senior Moderator"} | labels]
+    do: [{"badge-success", "Senior Moderator"} | labels]
 
   defp staff_role(labels, %{hide_default_role: false, role: "moderator"}),
-    do: [{"label--success", "Moderator"} | labels]
+    do: [{"badge-success", "Moderator"} | labels]
 
   defp staff_role(labels, %{hide_default_role: false, role: "assistant", senior_staff: true}),
-    do: [{"label--purple", "Senior Assistant"} | labels]
+    do: [{"badge-special", "Senior Assistant"} | labels]
 
   defp staff_role(labels, %{hide_default_role: false, role: "assistant"}),
-    do: [{"label--purple", "Assistant"} | labels]
+    do: [{"badge-special", "Assistant"} | labels]
 
   defp staff_role(labels, _user),
     do: labels

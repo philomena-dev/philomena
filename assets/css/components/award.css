@@ -1,0 +1,14 @@
+/* The award icons next to a user's name; those beyond the first ten open in a menu under a caret */
+.awards {
+  display: inline-block;
+  padding: 0 var(--spacing-sm);
+}
+
+.award {
+  display: inline-block;
+  margin: 0 var(--spacing-xs);
+}
+
+.award > img {
+  max-width: none;
+}

@@ -23,9 +23,9 @@ RUN apk update --allow-untrusted \
 COPY . /tmp/philomena
 
 # Install and compile assets
-RUN cd /tmp/philomena/assets \
-    && NODE_ENV=development npm install \
-    && npm run deploy
+RUN cd /tmp/philomena \
+    && NODE_ENV=development npm ci \
+    && npm run deploy --workspace assets
 
 # Build the application and create symlinks for easier access
 RUN cd /tmp/philomena \

@@ -95,17 +95,17 @@ describe('Image upload form', () => {
         <input id="image_image" name="image[image]" type="file" class="js-scraper" />
         <input id="image_scraper_url" name="image[scraper_url]" type="url" class="js-scraper" />
         <button id="js-scraper-preview" type="button">Fetch</button>
-        <div class="field-error-js hidden js-scraper"></div>
+        <div class="alert alert-warning hidden js-scraper"></div>
 
         <input id="image_sources_0_source" name="image[sources][0][source]" type="text" class="js-source-url" />
-        <div class="js-tag-block fancy-tag-upload">
-          <textarea id="image_tag_input" name="image[tag_input]" class="input input--wide tagsinput js-image-tags-input js-taginput js-taginput-plain"></textarea>
-          <div class="js-taginput input input--wide tagsinput hidden js-taginput-fancy"></div>
+        <div class="js-tag-block js-fancy-tag-upload">
+          <textarea id="image_tag_input" name="image[tag_input]" class="input-field full-width js-image-tags-input js-taginput js-taginput-plain"></textarea>
+          <div class="tag-box hidden js-taginput js-taginput-fancy"></div>
         </div>
         <button id="tagsinput-save" type="button" class="button">Save</button>
         <textarea id="image_description" name="image[description]" class="js-image-descr-input"></textarea>
-        <div class="actions">
-          <button class="button input--separate-top" type="submit">Upload</button>
+        <div class="form-control-submit">
+          <button class="button js-upload-submit" type="submit">Upload</button>
         </div>
        </form>`,
     );
@@ -119,7 +119,7 @@ describe('Image upload form', () => {
     sourceEl = assertNotNull($<HTMLInputElement>('.js-source-url'));
     descrEl = assertNotNull($<HTMLTextAreaElement>('.js-image-descr-input'));
     fetchButton = assertNotNull($<HTMLButtonElement>('#js-scraper-preview'));
-    submitButton = assertNotNull($<HTMLButtonElement>('.actions > .button'));
+    submitButton = assertNotNull($<HTMLButtonElement>('.js-upload-submit'));
     fetchMock.resetMocks();
   });
 
@@ -331,7 +331,7 @@ describe('Image upload form', () => {
         const frm = form;
         await waitFor(() => {
           assertSubmitButtonIsEnabled();
-          expect($$<HTMLDivElement>('.help-block', frm)).toHaveLength(tagErrorCounts[i]);
+          expect($$<HTMLDivElement>('.js-tag-error', frm)).toHaveLength(tagErrorCounts[i]);
         });
       }
     });
@@ -363,7 +363,7 @@ describe('Image upload form', () => {
       fireEvent.submit(form);
 
       // Should not crash and no errors should be created
-      expect($$<HTMLDivElement>('.help-block', form)).toHaveLength(0);
+      expect($$<HTMLDivElement>('.js-tag-error', form)).toHaveLength(0);
     });
 
     it('should return early from disableUploadButton if submitButton not disabled on pagehide', async () => {
@@ -537,7 +537,7 @@ describe('Image upload form - early returns and edge paths', () => {
         <div id="js-image-upload-previews"></div>
         <input id="image_image" type="file" class="js-scraper" />
         <input id="image_scraper_url" type="url" class="js-scraper" />
-        <div class="field-error-js hidden js-scraper"></div>
+        <div class="alert alert-warning hidden js-scraper"></div>
         <input id="image_sources_0_source" type="text" class="js-source-url" />
         <textarea id="image_description" class="js-image-descr-input"></textarea>
       </form>`,
@@ -573,17 +573,17 @@ describe('Image upload form - additional branches', () => {
         <input id="image_image" name="image[image]" type="file" class="js-scraper" />
         <input id="image_scraper_url" name="image[scraper_url]" type="url" class="js-scraper" />
         <button id="js-scraper-preview" type="button">Fetch</button>
-        <div class="field-error-js hidden js-scraper"></div>
+        <div class="alert alert-warning hidden js-scraper"></div>
 
         <input id="image_sources_0_source" name="image[sources][0][source]" type="text" class="js-source-url" />
-        <div class="js-tag-block fancy-tag-upload">
-          <textarea id="image_tag_input" name="image[tag_input]" class="input input--wide tagsinput js-image-tags-input js-taginput js-taginput-plain"></textarea>
-          <div class="js-taginput input input--wide tagsinput hidden js-taginput-fancy"></div>
+        <div class="js-tag-block js-fancy-tag-upload">
+          <textarea id="image_tag_input" name="image[tag_input]" class="input-field full-width js-image-tags-input js-taginput js-taginput-plain"></textarea>
+          <div class="tag-box hidden js-taginput js-taginput-fancy"></div>
         </div>
         <button id="tagsinput-save" type="button" class="button">Save</button>
         <textarea id="image_description" name="image[description]" class="js-image-descr-input"></textarea>
-        <div class="actions">
-          <button class="button input--separate-top" type="submit">Upload</button>
+        <div class="form-control-submit">
+          <button class="button js-upload-submit" type="submit">Upload</button>
         </div>
        </form>`,
     );
@@ -731,7 +731,7 @@ describe('Image upload form - synthetic FileReader', () => {
         <input id="image_image" name="image[image]" type="file" class="js-scraper" />
         <input id="image_scraper_url" name="image[scraper_url]" type="url" class="js-scraper" />
         <button id="js-scraper-preview" type="button">Fetch</button>
-        <div class="field-error-js hidden js-scraper"></div>
+        <div class="alert alert-warning hidden js-scraper"></div>
       </form>`,
     );
 

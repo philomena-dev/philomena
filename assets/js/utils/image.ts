@@ -9,7 +9,7 @@ function getSpoilerOverlay(img: HTMLDivElement): HTMLElement {
 
 function getFilterExplanation(img: HTMLDivElement): HTMLElement {
   // This always exists in markup, regardless of the image type and state
-  return assertNotNull($<HTMLElement>('.filter-explanation', img));
+  return assertNotNull($<HTMLElement>('.js-filter-explanation', img));
 }
 
 function showVideoThumb(img: HTMLDivElement, size: string, uris: Record<string, string>) {
@@ -70,12 +70,12 @@ export function showThumb(img: HTMLDivElement) {
 }
 
 export function showBlock(img: HTMLDivElement) {
-  $<HTMLElement>('.image-filtered', img)?.classList.add('hidden');
-  const imageShowClasses = $<HTMLElement>('.image-show', img)?.classList;
+  $<HTMLElement>('.js-image-filtered', img)?.classList.add('hidden');
+  const imageShowClasses = $<HTMLElement>('.js-image-show', img)?.classList;
 
   if (imageShowClasses) {
     imageShowClasses.remove('hidden');
-    imageShowClasses.add('spoiler-pending');
+    imageShowClasses.add('js-spoiler-pending');
 
     const vidEl = $<HTMLVideoElement>('video', img);
     if (vidEl) {
@@ -139,12 +139,12 @@ export function spoilerThumb(img: HTMLDivElement, spoilerUri: string, reason: st
 }
 
 export function spoilerBlock(img: HTMLDivElement, spoilerUri: string, reason: string) {
-  const imgFiltered = $<HTMLElement>('.image-filtered', img);
+  const imgFiltered = $<HTMLElement>('.js-image-filtered', img);
   const imgEl = imgFiltered ? $<HTMLImageElement>('img', imgFiltered) : null;
   if (!imgEl) return;
 
   const imgReason = getFilterExplanation(img);
-  const imageShow = $<HTMLElement>('.image-show', img);
+  const imageShow = $<HTMLElement>('.js-image-show', img);
 
   imgEl.src = spoilerUri;
   imgReason.innerHTML = reason;

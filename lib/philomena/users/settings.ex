@@ -107,17 +107,24 @@ defmodule Philomena.Users.Settings do
     |> validate_inclusion(:spoiler_type, ~W(static click hover off))
   end
 
-  def theme_colors do
-    ~W(red orange yellow blue green purple teal pink gray)
-  end
+  @theme_names ~W(dark light)
+  @theme_colors ~W(red orange yellow blue green purple teal pink gray)
+  @themes for name <- @theme_names, color <- @theme_colors, do: "#{name}-#{color}"
 
-  def theme_names do
-    ~W(dark light)
-  end
+  def theme_colors, do: @theme_colors
 
-  def themes do
-    for name <- theme_names(), color <- theme_colors() do
-      "#{name}-#{color}"
-    end
+  def theme_names, do: @theme_names
+
+  def themes, do: @themes
+
+  @doc """
+  The name (`dark` or `light`) and the color of a theme such as `dark-purple`, those of the default theme for one
+  that is not offered.
+  """
+  @spec split_theme(String.t() | nil) :: {String.t(), String.t()}
+  def split_theme(theme) do
+    offered = if theme in @themes, do: theme, else: %__MODULE__{}.theme
+    [name, color] = String.split(offered, "-")
+    {name, color}
   end
 end

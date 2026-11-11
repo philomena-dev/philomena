@@ -14,9 +14,9 @@ export function setupDupeReports() {
     setupBrowserWorkarounds(diffImageSource, diffImageTarget);
   }
 
-  const onion = $<SVGSVGElement>('.onion-skin__image');
-  const slider = $<HTMLInputElement>('.onion-skin__slider');
-  const swipe = $<SVGSVGElement>('.swipe__image');
+  const onion = $<SVGSVGElement>('.onion-skin-image');
+  const slider = $<HTMLInputElement>('.js-onion-skin-slider');
+  const swipe = $<SVGSVGElement>('.swipe-image');
 
   if (swipe) setupSwipe(swipe);
   if (onion && slider) setupOnionSkin(onion, slider);
@@ -50,12 +50,13 @@ function setupSwipe(swipe: SVGSVGElement) {
 
 function setupOnionSkin(onion: SVGSVGElement, slider: HTMLInputElement) {
   const target = assertNotNull($<SVGImageElement>('#target', onion));
-  const [sourceButton, targetButton] = $$<HTMLButtonElement>('.onion-skin__button');
+  const [sourceButton, targetButton] = $$<HTMLButtonElement>('.js-onion-skin-button');
 
   slider.addEventListener('input', setOpacity);
 
   function setOpacity() {
     target.setAttribute('opacity', slider.value);
+    slider.style.setProperty('--slider-fill', `${Number(slider.value) * 100}%`);
   }
 
   function setSliderAndOpacity(value: number) {
@@ -74,12 +75,12 @@ function setupOnionSkin(onion: SVGSVGElement, slider: HTMLInputElement) {
 }
 
 function setupKeyBindings() {
-  const onionSkinButtons = $$<HTMLButtonElement>('.onion-skin__button');
+  const onionSkinButtons = $$<HTMLButtonElement>('.js-onion-skin-button');
   if (onionSkinButtons.length !== 2) return;
 
   const [onionSkinSourceButton, onionSkinTargetButton] = onionSkinButtons;
 
-  const navigationButtons = $$<HTMLButtonElement>('.comparison--navigation__button');
+  const navigationButtons = $$<HTMLButtonElement>('.js-comparison-button');
   if (navigationButtons.length !== 5) return;
 
   const [

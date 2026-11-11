@@ -15,6 +15,13 @@ defmodule PhilomenaWeb.FilterControllerTest do
   alias PhilomenaQuery.SearchHelpers
 
   describe "GET /filters" do
+    test "renders a query that is not text as blank", %{conn: conn} do
+      response = html_response(get(conn, "/filters?fq[x]=1"), 200)
+
+      assert response =~ "Filters - Derpibooru"
+      refute response =~ ~r/name="fq"[^>]* value=/
+    end
+
     test "renders system filters for anonymous users", %{conn: conn} do
       response = html_response(get(conn, ~p"/filters"), 200)
 
@@ -82,6 +89,24 @@ defmodule PhilomenaWeb.FilterControllerTest do
 
       assert response =~ "Showing Filter - Derpibooru"
       assert response =~ filter.name
+    end
+
+    test "says what a filter spoilers and hides, and when it does neither", %{conn: conn} do
+      empty = filter_fixture(confirmed_user_fixture(), %{public: true})
+      response = html_response(get(conn, ~p"/filters/#{empty}"), 200)
+
+      assert response =~ "This filter doesn't spoiler any tags."
+      assert response =~ "This filter doesn't hide any tags."
+      refute response =~ "code-block"
+
+      complex =
+        filter_fixture(confirmed_user_fixture(), %{public: true, hidden_complex_str: "safe"})
+
+      response = html_response(get(conn, ~p"/filters/#{complex}"), 200)
+
+      assert response =~ "This filter doesn't spoiler any tags."
+      assert response =~ "This filter hides..."
+      assert response =~ ~s(<pre class="code-block wrap">safe</pre>)
     end
 
     test "renders another user's public filter", %{conn: conn} do
@@ -228,6 +253,20 @@ defmodule PhilomenaWeb.FilterControllerTest do
       response = html_response(conn, 200)
       assert response =~ "Creating New Filter"
       assert Repo.aggregate(Filter, :count) == 1
+    end
+
+    test "re-renders a name that is not text as blank and keeps the other values", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+
+      conn =
+        post(conn, ~p"/filters", %{
+          "filter" => %{"name" => %{"x" => "1"}, "description" => "Kept description"}
+        })
+
+      response = html_response(conn, 200)
+      assert response =~ "Oops, something went wrong! Please check the errors below."
+      refute response =~ ~r/name="filter\[name\]"[^>]* value=/
+      assert response =~ "Kept description"
     end
 
     test "without a fingerprint redirects to / with the authorization flash", %{conn: conn} do

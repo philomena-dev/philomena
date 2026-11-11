@@ -30,8 +30,11 @@ defmodule PhilomenaWeb.ActivityControllerTest do
   describe "GET /" do
     test "renders the homepage on an empty site for anonymous users", %{conn: conn} do
       conn = get(conn, ~p"/")
+      response = html_response(conn, 200)
 
-      assert html_response(conn, 200) =~ "Homepage - Derpibooru"
+      assert response =~ "Homepage - Derpibooru"
+      # No trending images leaves no empty row under the bar
+      refute response =~ "media-list small grid-cols-2"
     end
 
     test "shows recent images, comments, and forum topics", %{conn: conn} do
@@ -100,6 +103,7 @@ defmodule PhilomenaWeb.ActivityControllerTest do
 
       hidden_response = html_response(get(conn, ~p"/"), 200)
       refute hidden_response =~ channel.title
+      assert hidden_response =~ "No streams to show"
 
       visible_response =
         conn
@@ -108,6 +112,7 @@ defmodule PhilomenaWeb.ActivityControllerTest do
         |> html_response(200)
 
       assert visible_response =~ channel.title
+      refute visible_response =~ "No streams to show"
     end
   end
 

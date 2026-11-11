@@ -5,9 +5,9 @@ defmodule PhilomenaWeb.Admin.SiteNoticeView do
     now = DateTime.utc_now()
 
     if DateTime.diff(time, now) > 0 do
-      "success"
+      "table-success"
     else
-      "danger"
+      "table-danger"
     end
   end
 

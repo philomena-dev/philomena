@@ -1,0 +1,34 @@
+/*
+ * Philomena's utilities, beside the framework's and named as in Tailwind: like the framework's, they are !important.
+ */
+
+/* Long words and links break anywhere rather than widen their container */
+.wrap-anywhere {
+  overflow-wrap: anywhere !important;
+}
+
+/* Long words are hyphenated where they break */
+.hyphens-auto {
+  hyphens: auto !important;
+}
+
+/* Text in the strong color of a type, readable on the page and on surfaces */
+.text-danger {
+  color: var(--danger-tint-text-color) !important;
+}
+
+.text-warning {
+  color: var(--warning-tint-text-color) !important;
+}
+
+/* Text that stays on one line */
+.whitespace-nowrap {
+  white-space: nowrap !important;
+}
+
+/* A link that stands alone, as tall as a touch target on phones */
+@media not all and (min-width: $breakpoint-md) {
+  .touch-link {
+    @mixin touch-link;
+  }
+}

@@ -1,0 +1,231 @@
+.button {
+  --_border-color: var(--neutral-button-border-color);
+  --_shade: var(--_pointer-shade, transparent);
+  --_bevel: var(--_pointer-bevel, var(--emphasis-shadow));
+  --_drop: var(--_pointer-drop, var(--raised-shadow-color));
+  /* A long label is cut off (or wraps, with .allow-overflow) instead of widening the page */
+  max-inline-size: 100%;
+  --_hover-shade: var(--neutral-button-hover-color);
+  --_active-shade: var(--neutral-button-active-color);
+  position: relative;
+  line-height: normal;
+  color: var(--neutral-button-text-color);
+  background-color: var(--neutral-button-color);
+  /* The feedback shade is an inset shadow over the fill, under the text, so it can be transitioned; over it the
+     bevel, raised at rest and a well when pressed */
+  box-shadow:
+    var(--_bevel),
+    inset 0 0 0 100em var(--_shade),
+    1px 1px 0 var(--_drop);
+  padding: var(--button-padding-vertical) var(--button-padding-horizontal);
+  border: var(--border-width) solid var(--_border-color);
+  border-radius: var(--border-radius-inner);
+  font-size: var(--button-font-size);
+  transition-property: box-shadow, opacity;
+  transition-duration: 0.1s;
+  user-select: none;
+  text-decoration: none !important;
+  box-sizing: border-box;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.button.button-size-input {
+  padding: var(--input-padding) !important;
+}
+
+.button.button-size-input.icon-only {
+  font-size: 1.1875em;
+}
+
+.button:focus {
+  z-index: var(--z-focus);
+}
+
+/* The ring is in the focus color and a little away from the button, so that it shows on every fill */
+.button:focus-visible {
+  @mixin focus-ring-offset;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  @mixin faded;
+}
+
+/* The text of a disabled button is italic and fainter than the rest of it; the trailing room keeps the slanted last
+   glyph from being clipped by the label's overflow */
+
+.button:disabled .button-text {
+  font-style: italic;
+  opacity: 0.7;
+  padding-inline-end: 0.15em;
+}
+
+/* A pressed button keeps its darker shade under the pointer, a disabled toggle button (below) gets no shade */
+.button:hover {
+  --_pointer-shade: var(--_hover-shade);
+}
+
+.button:active {
+  --_pointer-shade: var(--_active-shade);
+  --_pointer-bevel: var(--well-shadow);
+  --_pointer-drop: transparent;
+}
+
+.button:disabled,
+.button-check-input:disabled + .button {
+  --_pointer-shade: initial;
+  --_pointer-bevel: initial;
+  --_pointer-drop: initial;
+}
+
+.button.icon-only {
+  padding: var(--button-padding-vertical);
+}
+
+.button.visually-hidden {
+  opacity: 0 !important;
+}
+
+.button .button-content {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--button-content-gap);
+  pointer-events: none;
+}
+
+.button.justify-start .button-content {
+  justify-content: flex-start;
+}
+
+.button.justify-center .button-content {
+  justify-content: center;
+}
+
+.button.justify-end .button-content {
+  justify-content: flex-end;
+}
+
+.button.full-width {
+  display: block;
+  width: 100%;
+}
+
+.button:not(.allow-overflow) .button-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.button.pressed,
+.button-check-input:checked + .button {
+  --_shade: var(--_active-shade);
+  --_bevel: var(--well-shadow);
+  --_drop: transparent;
+}
+
+/*
+ * A toggle button: a checkbox or radio drawn as the .button right after it, a <label> for it, which is pressed while
+ * the input is checked. While the input is disabled the button is faded, without a hover or pressed look:
+ *   <input class="button-check-input" type="checkbox" id="x"><label class="button" for="x">Open</label>
+ */
+
+.button-check-input {
+  @mixin hidden-toggle;
+}
+
+.button-check-input:focus-visible + .button {
+  @mixin focus-ring-offset;
+}
+
+.button-check-input:disabled + .button {
+  cursor: not-allowed;
+  @mixin faded;
+}
+
+.button.loading {
+  cursor: wait;
+}
+
+@mixin each-type button-color-variation;
+
+/* Loading: the icon sits over the content, which fades to 20% */
+.button .loading-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 1;
+}
+
+.button .loading-icon + .button-content {
+  opacity: 0.2;
+}
+
+.button .button-content .button-icon {
+  flex: 0 0 auto;
+}
+
+.button .button-content .button-text {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.button-group {
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.button-group.separated {
+  flex-wrap: wrap;
+  gap: var(--group-gap);
+}
+
+.button-group:not(.separated) .button {
+  min-width: 0;
+  flex-grow: 1;
+}
+
+/* Badge-sized buttons: the size and shape of a badge and of pagination links, for toolbars, list rows and other
+   places where a regular button is too heavy. On a .button-group it sizes every button in it */
+
+.button.button-size-badge,
+.button-group.button-size-badge .button {
+  padding: var(--badge-padding-vertical) var(--badge-padding-horizontal);
+  font-size: var(--badge-font-size);
+  border-radius: var(--border-radius-large);
+}
+
+.button.button-size-badge.icon-only,
+.button-group.button-size-badge .button.icon-only {
+  padding: var(--badge-padding-vertical);
+}
+
+.button-group.button-size-badge:not(.separated) > :not(.button) {
+  border-radius: var(--border-radius-large);
+}
+
+/* A joined group of badge-sized buttons hugs its buttons instead of filling the row */
+.button-group.button-size-badge:not(.separated) {
+  display: inline-flex;
+  @mixin hug-content;
+}
+
+.button-group.button-size-badge:not(.separated) .button {
+  flex-grow: 0;
+}
+
+/* prettier-ignore */
+@mixin combined-border-radius .button-group:not(.separated) .button;
+
+.button-group:not(.separated) > :not(.button) {
+  border-radius: var(--border-radius-inner);
+}
+
+/* prettier-ignore */
+@mixin combined-border-radius .button-group:not(.separated) > :not(.button);
+
+.button-group:not(.separated) > :not(.button) > .button {
+  border-radius: inherit !important;
+}

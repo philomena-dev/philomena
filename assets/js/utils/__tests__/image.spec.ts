@@ -56,9 +56,9 @@ describe('Image utils', () => {
       mockSpoilerOverlay,
     };
   };
-  const imageFilteredClass = 'image-filtered';
-  const imageShowClass = 'image-show';
-  const spoilerPendingClass = 'spoiler-pending';
+  const imageFilteredClass = 'js-image-filtered';
+  const imageShowClass = 'js-image-show';
+  const spoilerPendingClass = 'js-spoiler-pending';
   const createImageFilteredElement = (mockElement: HTMLDivElement) => {
     const mockFilteredImageElement = document.createElement('div');
     mockFilteredImageElement.classList.add(imageFilteredClass);
@@ -343,13 +343,13 @@ describe('Image utils', () => {
       expect(playSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('should not throw if image-filtered element is missing', () => {
+    it('should not throw if js-image-filtered element is missing', () => {
       const mockElement = document.createElement('div');
       createImageShowElement(mockElement);
       expect(() => showBlock(mockElement)).not.toThrow();
     });
 
-    it('should not throw if image-show element is missing', () => {
+    it('should not throw if js-image-show element is missing', () => {
       const mockElement = document.createElement('div');
       createImageFilteredElement(mockElement);
       expect(() => showBlock(mockElement)).not.toThrow();
@@ -553,7 +553,7 @@ describe('Image utils', () => {
   });
 
   describe('spoilerBlock', () => {
-    const filterExplanationClass = 'filter-explanation';
+    const filterExplanationClass = 'js-filter-explanation';
     const createFilteredImageElement = () => {
       const mockImageFiltered = document.createElement('div');
       mockImageFiltered.classList.add(imageFilteredClass, hiddenClass);
@@ -598,12 +598,12 @@ describe('Image utils', () => {
       expect(mockImageFiltered).not.toHaveClass(hiddenClass);
     });
 
-    it('should not throw if image-filtered element is missing', () => {
+    it('should not throw if js-image-filtered element is missing', () => {
       const { mockElement } = createMockElement(true, false);
       expect(() => spoilerBlock(mockElement, mockSpoilerUri, mockSpoilerReason)).not.toThrow();
     });
 
-    it('should not throw if image-show element is missing', () => {
+    it('should not throw if js-image-show element is missing', () => {
       const { mockElement } = createMockElement(false, true);
       expect(() => spoilerBlock(mockElement, mockSpoilerUri, mockSpoilerReason)).not.toThrow();
     });

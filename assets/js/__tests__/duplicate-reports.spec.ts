@@ -39,18 +39,52 @@ it.each(['', '<feImage id="source"/>', '<feImage id="target"/>'])(
   },
 );
 
+describe('onion skin', () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <svg class="onion-skin-image"><image id="source"/><image id="target"/></svg>
+      <input class="js-onion-skin-slider" type="range" min="0" max="1" step="0.01" value="0.5">
+      <button class="js-onion-skin-button">0%</button>
+      <button class="js-onion-skin-button">100%</button>`;
+    setupDupeReports();
+  });
+
+  const target = () => assertNotNull($<SVGImageElement>('#target'));
+  const slider = () => assertNotNull($<HTMLInputElement>('.js-onion-skin-slider'));
+
+  it('shows the target at the opacity of the slider and fills the track up to it', () => {
+    expect(target().getAttribute('opacity')).toBe('0.5');
+
+    fireEvent.input(slider(), { target: { value: '0.25' } });
+
+    expect(target().getAttribute('opacity')).toBe('0.25');
+    expect(slider().style.getPropertyValue('--slider-fill')).toBe('25%');
+  });
+
+  it('jumps to the source or the target with the buttons', () => {
+    const [sourceButton, targetButton] = document.querySelectorAll<HTMLButtonElement>('.js-onion-skin-button');
+
+    targetButton.click();
+    expect(target().getAttribute('opacity')).toBe('1');
+    expect(slider().style.getPropertyValue('--slider-fill')).toBe('100%');
+
+    sourceButton.click();
+    expect(target().getAttribute('opacity')).toBe('0');
+  });
+});
+
 describe('key bindings', () => {
   let swipeClick: MockInstance;
 
   beforeEach(() => {
     document.body.innerHTML = `
-      <button class="onion-skin__button"></button>
-      <button class="onion-skin__button"></button>
-      <button class="comparison--navigation__button"></button>
-      <button class="comparison--navigation__button"></button>
-      <button class="comparison--navigation__button"></button>
-      <button class="comparison--navigation__button" id="swipe"></button>
-      <button class="comparison--navigation__button"></button>
+      <button class="js-onion-skin-button"></button>
+      <button class="js-onion-skin-button"></button>
+      <button class="js-comparison-button"></button>
+      <button class="js-comparison-button"></button>
+      <button class="js-comparison-button"></button>
+      <button class="js-comparison-button" id="swipe"></button>
+      <button class="js-comparison-button"></button>
       <input type="text">`;
     swipeClick = vi.spyOn(assertNotNull($<HTMLButtonElement>('#swipe')), 'click');
     setupDupeReports();

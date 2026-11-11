@@ -24,9 +24,10 @@ defmodule PhilomenaWeb.FallbackController do
   def call(conn, {:error, :not_found}), do: PhilomenaWeb.NotFoundPlug.call(conn)
   def call(conn, {:error, :ban}), do: PhilomenaWeb.FilterBannedUsersPlug.ban_response(conn)
 
-  def call(conn, {:error, :forced_filter}) do
-    conn
-    |> put_flash(:error, "You have been blocked from performing this action on this image.")
-    |> redirect(external: conn.assigns.referrer)
-  end
+  def call(conn, {:error, :forced_filter}),
+    do:
+      PhilomenaWeb.RefusalResponse.call(
+        conn,
+        "You have been blocked from performing this action on this image."
+      )
 end

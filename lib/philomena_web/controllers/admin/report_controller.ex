@@ -15,7 +15,7 @@ defmodule PhilomenaWeb.Admin.ReportController do
       {:ok, page, query_changeset} ->
         render(conn, "index.html",
           title: "Admin - Reports",
-          layout_class: "layout--wide",
+          layout_class: "page-wide",
           reports: page.reports,
           my_reports: page.my_reports,
           system_reports: page.system_reports,
@@ -25,7 +25,7 @@ defmodule PhilomenaWeb.Admin.ReportController do
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "index.html",
           title: "Admin - Reports",
-          layout_class: "layout--wide",
+          layout_class: "page-wide",
           reports: nil,
           my_reports: [],
           system_reports: [],

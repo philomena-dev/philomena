@@ -3,7 +3,7 @@ import { assertNotNull } from '../utils/assert';
 import { setupTagsInput, addTag, reloadTagsInput } from '../tagsinput';
 
 const formData = `<form class="tags-form">
-  <div class="js-tag-block fancy-tag-upload">
+  <div class="js-tag-block js-fancy-tag-upload">
     <textarea class="js-taginput js-taginput-plain"></textarea>
     <div class="js-taginput js-taginput-fancy">
       <input type="text" class="js-taginput-input" placeholder="add a tag">
@@ -53,8 +53,8 @@ describe('Fancy tags input', () => {
       window.booru[name] = value;
 
       plainInput.value = 'a, b';
-      tagBlock.classList.remove('fancy-tag-edit', 'fancy-tag-upload');
-      tagBlock.classList.add(`fancy-tag-${type}`);
+      tagBlock.classList.remove('js-fancy-tag-edit', 'js-fancy-tag-upload');
+      tagBlock.classList.add(`js-fancy-tag-${type}`);
       expect($$('span.tag', fancyInput)).toHaveLength(0);
 
       setupTagsInput(tagBlock);
@@ -102,7 +102,7 @@ describe('Fancy tags input', () => {
   it('should allow removing previously added tags by clicking them', () => {
     setupTagsInput(tagBlock);
     addTag(plainInput, 'a');
-    assertNotNull($<HTMLAnchorElement>('span.tag a', fancyInput)).click();
+    assertNotNull($<HTMLButtonElement>('.tag-remove', fancyInput)).click();
     expect($$('span.tag', fancyInput)).toHaveLength(0);
   });
 

@@ -1,0 +1,9 @@
+/*
+ * Philomena's additions to the framework's avatars. An avatar always holds a picture, never initials, so it takes no
+ * text or fill color of its own.
+ */
+
+.avatar {
+  color: inherit;
+  background-color: transparent;
+}

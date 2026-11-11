@@ -1,14 +1,14 @@
-<%= form_for @changeset, ~p"/duplicate_reports", fn f -> %>
+<%= form_for @changeset, ~p"/duplicate_reports", [class: "content"], fn f -> %>
   {hidden_input(f, :image_id, value: @image.id)}
-  <div class="field">
+  <div class="form-control">
     Delete this image and redirect to {number_input(f, :duplicate_of_image_id,
-      class: "input",
+      class: "input-field",
       min: 0,
       placeholder: "image number.",
       required: true
-    )}{text_input(f, :reason, class: "input input--separate-left", placeholder: "Explanation")}
+    )}{text_input(f, :reason, class: "input-field ms-md", placeholder: "Explanation")}
   </div>
-  <div class="actions">
+  <div class="form-control-submit">
     {submit("Report Duplicate", class: "button", data: [disable_with: raw("Saving&hellip;")])}
   </div>
 <% end %>

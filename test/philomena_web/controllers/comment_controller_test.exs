@@ -20,6 +20,13 @@ defmodule PhilomenaWeb.CommentControllerTest do
   end
 
   describe "GET /comments" do
+    test "renders a query that is not text as blank", %{conn: conn} do
+      response = html_response(get(conn, "/comments?cq[x]=1"), 200)
+
+      assert response =~ "Comments - Derpibooru"
+      refute response =~ ~r/name="cq"[^>]* value=/
+    end
+
     test "renders recent comments for anonymous users", %{conn: conn} do
       image = image_fixture()
       _comment = comment_fixture(image, nil, %{"body" => "Test searchable comment body"})

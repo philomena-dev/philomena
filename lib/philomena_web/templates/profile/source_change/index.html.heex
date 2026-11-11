@@ -9,15 +9,15 @@
     params: params
   ) %>
 <div class="block">
-  <div class="block__header">
-    <span class="block__header__title">Display only:</span>{link("Removed",
+  <div class="block-header">
+    <span class="block-header-title">Display only:</span>{link("Removed",
       to: ~p"/profiles/#{@user}/source_changes?#{[added: 0]}"
     )}{link("Added", to: ~p"/profiles/#{@user}/source_changes?#{[added: 1]}")}{link("All",
       to: ~p"/profiles/#{@user}/source_changes"
     )}
   </div>
-  <div class="block__header block__header--light">
-    <span class="block__header__title page__info">Listing changes for {@image_count} {pluralize(
+  <div class="block-header sub">
+    <span class="block-header-title">Listing changes for {@image_count} {pluralize(
       "image",
       "images",
       @image_count

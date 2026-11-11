@@ -1,14 +1,14 @@
 <% tabs = Enum.with_index(@data["tabs"])
 tab_modes = @data["tab_modes"] %>
-<div class="block__header--sub block__header--js-tabbed">
+<div class="tabs">
   <%= for {name, i} <- tabs do %>
-    {link(name, to: "#", class: tab_class(i), data: [click_tab: name])}
+    <a class={["tab", tab_class(i)]} data-click-tab={name} href="#">{name}</a>
   <% end %>
 </div>
 <%= for {name, i} <- tabs do %>
   <% tab_data = @data[name] %>
   <% tab_mode = tab_modes[name] %>
-  <div class={"block__tab quick-tag-table__tab #{tab_body_class(i)}"} data-tab={name}>
+  <div class={["tab-panel quick-tag-table-tab", tab_class(i)]} data-tab={name}>
     {render(PhilomenaWeb.TagView, "_quick_tag_table_#{tab_mode}.html",
       tab: name,
       data: tab_data,

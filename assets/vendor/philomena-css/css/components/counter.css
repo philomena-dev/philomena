@@ -1,0 +1,55 @@
+/*
+ * A counter: a small pill with a number, for unread notifications, live channels, items in a tab and the like.
+ *   <span class="counter">3</span>
+ * It is filled like a button of its color: .counter-{type} for the palette, the default is neutral. .subtle is a
+ * darker (or, on a light surface, shaded) chip in the color of whatever it sits on, for bars and buttons, where a
+ * filled pill would shout. To pin a counter to the corner of an icon or an avatar, as an unread badge, wrap the two
+ * in a .counter-anchor and give the counter .corner:
+ *   <span class="counter-anchor">…icon…<span class="counter counter-danger corner">12</span></span>
+ */
+
+.counter {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  min-inline-size: calc(1em + 2 * var(--spacing-xs));
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-large);
+  font-size: var(--badge-font-size);
+  font-weight: bold;
+  font-style: normal;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--neutral-text-color);
+  background-color: var(--neutral-color);
+  box-shadow: var(--fill-bevel-shadow);
+}
+
+@mixin each-type counter-color-variation;
+
+.counter.subtle {
+  color: inherit;
+  background-color: var(--active-shade-color);
+  box-shadow: none;
+}
+
+/* After a button's text the counter keeps a word space, the content gap alone is made for icons */
+.button-content > .counter:not(.corner) {
+  margin-inline-start: var(--spacing-xs);
+}
+
+.counter-anchor {
+  position: relative;
+  display: inline-flex;
+}
+
+.counter-anchor > .counter.corner {
+  position: absolute;
+  top: 0;
+  inset-inline-end: 0;
+  transform: translate(50%, -50%);
+  padding: var(--spacing-xs);
+  font-size: var(--counter-corner-font-size);
+}

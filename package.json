@@ -1,4 +1,10 @@
 {
+  "name": "philomena",
+  "private": true,
+  "workspaces": [
+    "assets",
+    "assets/vendor/philomena-css"
+  ],
   "scripts": {
     "fmt": "prettier --write ."
   },

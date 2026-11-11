@@ -16,30 +16,6 @@ defmodule PhilomenaWeb.Admin.UserView do
     end
   end
 
-  def checkbox_mapper(form, field, input_opts, role, _label_opts, _opts) do
-    input_id = "user_roles_#{role.id}"
-    label_opts = [for: input_id]
-
-    input_opts =
-      Keyword.merge(input_opts,
-        class: "checkbox",
-        id: input_id,
-        checked_value: to_string(role.id),
-        hidden_input: false,
-        checked: Enum.member?(Enum.map(Map.get(form.data, field), & &1.id), role.id)
-      )
-
-    content_tag(:li, class: "table-list__label") do
-      content_tag(:div) do
-        [
-          checkbox(form, field, input_opts),
-          " ",
-          content_tag(:label, description(role.name, role.resource_type), label_opts)
-        ]
-      end
-    end
-  end
-
   def description("moderator", "Image"), do: "Manage images"
   def description("moderator", "DuplicateReport"), do: "Manage duplicates"
   def description("moderator", "Comment"), do: "Manage comments"
@@ -63,8 +39,10 @@ defmodule PhilomenaWeb.Admin.UserView do
   def filtered_roles(permission_set, roles) do
     roles
     |> Enum.filter(&Enum.member?(permission_set, [&1.name, &1.resource_type]))
-    |> Enum.map(&{&1, ""})
+    |> Enum.map(&{description(&1.name, &1.resource_type), &1.id})
   end
+
+  def role_ids(user), do: Enum.map(user.roles, & &1.id)
 
   def general_permissions do
     [

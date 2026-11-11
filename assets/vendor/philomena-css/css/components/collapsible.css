@@ -1,0 +1,42 @@
+.collapsible {
+  display: flex;
+  flex-flow: column;
+  overflow: hidden;
+  border-radius: var(--border-radius-outer);
+  background-color: var(--well-deep-color);
+  box-shadow: var(--emphasis-shadow), var(--container-shadow);
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.collapsible.animate {
+  transition: min-height, height, margin;
+  transition-duration: 0.2s;
+  transition-timing-function: linear;
+}
+
+.collapsible:not(.visible) {
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+.collapsible.visible {
+  margin: var(--collapsible-padding) 0;
+}
+
+.collapsible.visible.limited-height {
+  overflow: auto !important;
+}
+
+.collapsible .collapsible-inner {
+  padding: var(--collapsible-padding);
+}
+
+/* Links take the stronger shade made for tinted surfaces, as in alerts */
+.collapsible {
+  --link-style-color: var(--link-strong-color);
+}
+
+.collapsible .collapsible-inner > :not(:last-child) {
+  margin-bottom: var(--collapsible-padding);
+}

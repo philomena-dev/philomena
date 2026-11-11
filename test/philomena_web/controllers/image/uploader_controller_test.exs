@@ -31,7 +31,7 @@ defmodule PhilomenaWeb.Image.UploaderControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :error) == "You can't access that page."
     end
 
-    test "as a moderator reassigns the uploader and renders the partial", %{conn: conn} do
+    test "as a moderator reassigns the uploader and renders the new attribution", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       new_uploader = user_fixture()
       image = image_fixture()
@@ -41,7 +41,12 @@ defmodule PhilomenaWeb.Image.UploaderControllerTest do
           "image" => %{"username" => new_uploader.name}
         })
 
-      assert html_response(conn, 200) =~ new_uploader.name
+      # The response replaces the contents of the page's .image-uploader, so it is
+      # neither that element nor the form next to it.
+      response = html_response(conn, 200)
+      assert response =~ ~r/\Aby .*#{new_uploader.name}/s
+      refute response =~ ~s(class="image-uploader")
+      refute response =~ ~s(id="uploader-form")
       assert uploader_id(image) == new_uploader.id
     end
 

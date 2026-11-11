@@ -45,7 +45,7 @@ defmodule PhilomenaWeb.Profile.CommissionController do
         rendered: rendered,
         commission: commission,
         items: items,
-        layout_class: "layout--wide"
+        layout_class: "page-wide"
       )
     end
   end

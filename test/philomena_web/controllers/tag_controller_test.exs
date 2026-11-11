@@ -26,6 +26,12 @@ defmodule PhilomenaWeb.TagControllerTest do
   end
 
   describe "GET /tags" do
+    test "renders a query that is not text as the default query", %{conn: conn} do
+      response = html_response(get(conn, "/tags?tq[x]=1"), 200)
+
+      assert response =~ ~r/name="tq"[^>]* value="\*"/
+    end
+
     test "renders matching tags for anonymous users", %{conn: conn} do
       tag = tag_fixture(name: "test searchable tag")
       _other = tag_fixture(name: "test unrelated tag")

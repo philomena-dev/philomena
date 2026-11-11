@@ -5,19 +5,16 @@ defmodule PhilomenaWeb.Topic.SubscriptionController do
 
   action_fallback PhilomenaWeb.FallbackController
 
+  plug :put_view, PhilomenaWeb.SubscriptionView
+
   def create(conn, params) do
     case Topics.create_topic_subscription(
            conn.assigns.actor,
            params["forum_id"],
            params["topic_id"]
          ) do
-      {:ok, {forum, topic}} ->
-        render(conn, "_subscription.html",
-          forum: forum,
-          topic: topic,
-          watching: true,
-          layout: false
-        )
+      {:ok, target} ->
+        render(conn, "_subscription.html", target: target, watching: true, layout: false)
 
       {:error, %Ecto.Changeset{}} ->
         render(conn, "_error.html", layout: false)
@@ -28,18 +25,13 @@ defmodule PhilomenaWeb.Topic.SubscriptionController do
   end
 
   def delete(conn, params) do
-    with {:ok, {forum, topic}} <-
+    with {:ok, target} <-
            Topics.delete_topic_subscription(
              conn.assigns.actor,
              params["forum_id"],
              params["topic_id"]
            ) do
-      render(conn, "_subscription.html",
-        forum: forum,
-        topic: topic,
-        watching: false,
-        layout: false
-      )
+      render(conn, "_subscription.html", target: target, watching: false, layout: false)
     end
   end
 end

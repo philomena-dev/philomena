@@ -1,16 +1,16 @@
-<div class={"block__content js-imagelist-info flex #{tags_row_class(@conn)}"}>
-  <div class="flex__fixed tag-info__image thumb-tiny-container spacing-right">
+<div class={"block-content flex #{tags_row_class(@conn)}"}>
+  <div class="flex-none tag-info-image me-lg">
     <%= if @tag.image do %>
       <img alt="spoiler image" src={tag_image(@tag)} />
     <% else %>
       no spoiler image
     <% end %>
   </div>
-  <div class="flex__grow" phx-no-format>
-    {render PhilomenaWeb.TagView, "_tag.html", tag: @tag, conn: @conn} {link "Tag changes", to: ~p"/tags/#{@tag}/tag_changes", class: "detail-link"}<%= if manages_tags?(@conn) do %>{link "Edit details", to: ~p"/tags/#{@tag}/edit", class: "detail-link"}{link "Usage", to: ~p"/tags/#{@tag}/details", class: "detail-link"}<% end %><%= if manages_dnp?(@conn) do %>{link "Create new DNP entry", to: ~p"/dnp/new?#{[tag_id: @tag.id]}", class: "detail-link"}<% end %>
+  <div class="flex-1" phx-no-format>
+    {render PhilomenaWeb.TagView, "_tag.html", tag: @tag, conn: @conn} {link "Tag changes", to: ~p"/tags/#{@tag}/tag_changes", class: "me-md touch-link"}<%= if manages_tags?(@conn) do %>{link "Edit details", to: ~p"/tags/#{@tag}/edit", class: "me-md touch-link"}{link "Usage", to: ~p"/tags/#{@tag}/details", class: "me-md touch-link"}<% end %><%= if manages_dnp?(@conn) do %>{link "Create new DNP entry", to: ~p"/dnp/new?#{[tag_id: @tag.id]}", class: "me-md touch-link"}<% end %>
     <br />
     <%= if @tag.short_description not in [nil, ""] do %><strong>Short description:</strong> {@tag.short_description}<br /><% end %>
-    <%= if manages_tags?(@conn) and present?(@tag.mod_notes) do %><strong class="comment_deleted">Mod notes:</strong> {@tag.mod_notes}<br /><% end %>
+    <%= if manages_tags?(@conn) and present?(@tag.mod_notes) do %><strong class="text-danger">Mod notes:</strong> {@tag.mod_notes}<br /><% end %>
     <%= if Enum.any?(@tag.aliases) do %>
       <strong>Aliases:</strong>
       <%= if aliases_tags?(@conn) do %>{map_join(Tag.display_order(@tag.aliases), ", ", &link(&1.name, to: ~p"/tags/#{&1}/alias/edit"))}<% else %>{map_join(Tag.display_order(@tag.aliases), ", ", & &1.name)}<% end %>
@@ -18,12 +18,12 @@
     <% end %>
     <%= if Enum.any?(@tag.implied_tags) do %><strong>Implies:</strong> {map_join(Tag.display_order(@tag.implied_tags), ", ", &link(&1.name, to: ~p"/tags/#{&1}"))}<br /><% end %>
     <%= if Enum.any?(@tag.hidden_links) and manages_links?(@conn) do %>
-      <strong class="comment_deleted">Hidden links:</strong> <br />
+      <strong class="text-danger">Hidden links:</strong> <br />
       <%= for artist_link <- @tag.hidden_links do %>{link artist_link.user.name, to: ~p"/profiles/#{artist_link.user}"} &rarr; {link artist_link.uri, to: artist_link.uri} <br /><% end %>
     <% end %>
     <%= if present?(@tag.public_links) or present?(@tag.channels) or present?(@tag.implied_by_tags) or present?(@tag.description) do %>
-      <br />{link "Toggle detailed information", to: "#", data: [click_toggle: ".tag-info__more"]}
-      <div class="tag-info__more">
+      <br />{link "Toggle detailed information", to: "#", data: [click_toggle: ".js-tag-info-more"]}
+      <div class="js-tag-info-more">
         <hr />
         <%= if Enum.any?(@tag.public_links) do %>
           <strong>Associated links:</strong>
@@ -45,25 +45,25 @@
           <br />
         <% end %>
         <%= if Enum.any?(@tag.implied_by_tags) do %>
-          <input class="toggle-box" id="implied_by" type="checkbox" /><label for="implied_by">Implied by (warning: unfiltered)</label>
-          <div class="toggle-box-container">
-            <div class="toggle-box-container__content">
+          <details class="disclosure">
+            <summary class="button">Implied by (warning: unfiltered)</summary>
+            <div>
               <%= map_join Tag.display_order(@tag.implied_by_tags), ", ", fn tag -> %>{link tag.name, to: ~p"/tags/#{tag}"}<% end %>
             </div>
-          </div>
+          </details>
           <br />
         <% end %>
-        <%= if @tag.description not in [nil, ""] do %><strong>Detailed description:</strong> <br />{@body}<% end %>
+        <%= if @tag.description not in [nil, ""] do %><strong>Detailed description:</strong><div class="markdown">{@body}</div><% end %>
       </div>
     <% end %>
     <%= if Enum.any?(@dnp_entries) do %>
       <hr />
-      <strong class="comment_deleted">This artist is on the Do-Not-Post List with the following restrictions:</strong>
-      <div class="flex flex--column">
+      <strong class="text-danger">This artist is on the Do-Not-Post List with the following restrictions:</strong>
+      <div class="flex flex-col">
         <%= for {body, entry} <- @dnp_entries do %>
-          <div class="block block--fixed">
+          <div class="alert">
             <strong><i class="fa fa-fw fa-triangle-exclamation"></i> {entry.dnp_type}</strong> {link "View details", to: ~p"/dnp/#{entry}"}<%= case body do %>
-              <% {:safe, html} when html != "" -> %><br /><strong><i class="fa fa-fw fa-circle-info"></i> Conditions:</strong>{body}<% _ -> %><span></span><% end %>
+              <% {:safe, html} when html != "" -> %><br /><strong><i class="fa fa-fw fa-circle-info"></i> Conditions:</strong><div class="markdown">{body}</div><% _ -> %><span></span><% end %>
           </div>
         <% end %>
       </div>

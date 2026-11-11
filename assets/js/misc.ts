@@ -10,8 +10,8 @@ let touchMoved = false;
 
 function formResult({ target, detail }: FetchcompleteEvent) {
   const elements: Record<string, string> = {
-    '#description-form': '.image-description',
-    '#uploader-form': '.image_uploader',
+    '#description-form': '.js-image-description',
+    '#uploader-form': '.image-uploader',
   };
 
   function showResult(formEl: HTMLFormElement, resultEl: HTMLElement, response: string) {
@@ -36,9 +36,9 @@ function formResult({ target, detail }: FetchcompleteEvent) {
 
 function revealSpoiler(event: MouseEvent | TouchEvent) {
   const target = assertType(event.target, HTMLElement);
-  const spoiler = target.closest('.spoiler');
+  const spoiler = target.closest('.spoiler:not(.revealed)');
   const showContainer = target.closest('.image-show-container');
-  let imgspoiler = target.closest('.spoiler .imgspoiler, .spoiler-revealed .imgspoiler');
+  let imgspoiler = target.closest('.spoiler .imgspoiler');
 
   // Prevent reveal if touchend came after touchmove event
   if (touchMoved) {
@@ -48,16 +48,15 @@ function revealSpoiler(event: MouseEvent | TouchEvent) {
 
   if (spoiler) {
     if (showContainer) {
-      const imageShow = assertNotNull($<HTMLDivElement>('.image-show', showContainer));
+      const imageShow = assertNotNull($<HTMLDivElement>('.js-image-show', showContainer));
 
-      if (!imageShow.classList.contains('hidden') && imageShow.classList.contains('spoiler-pending')) {
-        imageShow.classList.remove('spoiler-pending');
+      if (!imageShow.classList.contains('hidden') && imageShow.classList.contains('js-spoiler-pending')) {
+        imageShow.classList.remove('js-spoiler-pending');
         return;
       }
     }
 
-    spoiler.classList.remove('spoiler');
-    spoiler.classList.add('spoiler-revealed');
+    spoiler.classList.add('revealed');
     // Prevent click-through to links on mobile platforms
     if (event.type === 'touchend') event.preventDefault();
 
@@ -68,7 +67,6 @@ function revealSpoiler(event: MouseEvent | TouchEvent) {
 
   if (imgspoiler) {
     imgspoiler.classList.remove('imgspoiler');
-    imgspoiler.classList.add('imgspoiler-revealed');
 
     if (event.type === 'touchend' && !event.defaultPrevented) {
       event.preventDefault();
@@ -84,7 +82,7 @@ export function setupEvents() {
   }
 
   if (store.get('hide_score')) {
-    $$<HTMLElement>('.upvotes,.score,.downvotes').forEach(s => hideEl(s));
+    $$<HTMLElement>('.js-upvote-count,.js-score,.js-downvote-count').forEach(s => hideEl(s));
   }
 
   document.addEventListener('fetchcomplete', formResult);

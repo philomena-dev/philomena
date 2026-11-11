@@ -1,55 +1,41 @@
-.approval-grid {
+/*
+ * The approval queue: a row per image, its facts in equal columns beside the actions, which go under them on narrow
+ * screens. The header row has the same columns.
+ */
+
+.approval-row {
   display: grid;
   grid-template-columns: 1fr auto;
-  grid-template-rows: 1fr;
-  gap: var(--padding-small);
+  gap: var(--spacing-md);
   text-align: center;
 }
 
-.approval-items--main {
+.approval-main {
   display: grid;
   grid-template-columns: auto 1fr 1fr 1fr;
-  gap: var(--padding-small);
-  justify-content: center;
+  place-items: center;
+  gap: var(--spacing-md);
 }
 
-.approval-items--main span {
-  margin: auto;
-}
-
-.approval-items--footer {
+/* The delete form takes what the approve button leaves */
+.approval-actions {
   display: grid;
   grid-template-columns: auto 1fr;
-  grid-template-rows: 1fr;
-  gap: var(--padding-normal);
+  align-items: center;
+  gap: var(--spacing-lg);
 }
 
-.approval-items--footer * {
-  height: 2rem;
-  margin-top: auto;
-  margin-bottom: auto;
+/* The thumbnail and what makes it need a look, which wraps under it when the column is narrow */
+.approval-details {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-md);
 }
 
-.approval-items__details {
-  display: grid;
-  grid-template-columns: auto auto;
-  gap: var(--padding-normal);
-  line-height: 100%;
-}
-
-@media (max-width: $min-desktop-width) {
-  .approval-grid {
-    grid-template:
-      "main" auto
-      "footer" auto
-      / 1fr;
-  }
-
-  .approval-items--main {
-    grid-area: main;
-  }
-
-  .approval-items--footer {
-    grid-area: footer;
+@media not all and (min-width: $breakpoint-md) {
+  .approval-row {
+    grid-template-columns: 1fr;
   }
 }

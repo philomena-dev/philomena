@@ -1,67 +1,65 @@
-<div class="column-layout">
-  <div class="column-layout__left">
+<div class="layout-columns">
+  <div class="layout-side">
     <div class="block">
-      <div class="block__content">
+      <div class="block-content">
         <h3>Search Galleries</h3>
-        <%= form_for @changeset, ~p"/galleries", [as: :gallery, method: "get", class: "hform"], fn f -> %>
-          <div class="field">{label(f, :title, "Title")}</div>
-          <div class="field">
+        <%= form_for @changeset, ~p"/galleries", [as: :gallery, method: "get", class: "content"], fn f -> %>
+          <div class="form-control">
+            {label(f, :title, "Title")}
             {text_input(f, :title,
-              class: "input hform__text",
+              class: "input-field full-width",
               placeholder: "Gallery title (* as wildcard)"
             )}
           </div>
-          <div class="field">{label(f, :description, "Description")}</div>
-          <div class="field">
+          <div class="form-control">
+            {label(f, :description, "Description")}
             {textarea(f, :description,
-              class: "input hform__text",
+              class: "input-field full-width",
               placeholder: "Gallery description"
             )}
           </div>
-          <div class="field">{label(f, :creator, "Creator")}</div>
-          <div class="field">
+          <div class="form-control">
+            {label(f, :creator, "Creator")}
             {text_input(f, :creator,
-              class: "input hform__text",
+              class: "input-field full-width",
               placeholder: "Gallery creator (exact match)"
             )}
           </div>
-          <div class="field">{label(f, :include_image, "Include image")}</div>
-          <div class="field">
+          <div class="form-control">
+            {label(f, :include_image, "Include image")}
             {number_input(f, :include_image,
-              class: "input hform__text",
+              class: "input-field full-width",
               placeholder: "Image ID (e.g. 100)"
             )}
           </div>
-          <div class="field">{label(f, :sf, "Sort by")}</div>
-          <div class="field">
-            {select(
-              f,
-              :sf,
-              [
+          <div class="form-control">
+            {label(f, :sf, "Sort by")}
+            <div class="flex flex-wrap gap-md">
+              {select_field(
+                f,
+                :sf,
                 "Creation date": "created_at",
                 "Modification date": "updated_at",
                 "Image count": "image_count",
                 "Subscriber count": "subscriber_count",
                 Relevance: "_score"
-              ],
-              class: "input"
-            )} {select(f, :sd, [Descending: "desc", Ascending: "asc"], class: "input")}
+              )}{select_field(f, :sd, Descending: "desc", Ascending: "asc")}
+            </div>
           </div>
-          <div class="error">{error_tag(f, :include_image)}</div>
-          <div class="error">{error_tag(f, :sf)}</div>
-          <div class="error">{error_tag(f, :sd)}</div>
-          <div class="field"></div>
-          {submit("Search", class: "button button--state-primary")}
+          {error_tag(f, :include_image)}{error_tag(f, :sf)}{error_tag(f, :sd)}
+          <div class="form-control-submit">
+            {submit("Search", class: "button button-primary")}
+          </div>
         <% end %>
       </div>
     </div>
     <div class="block">
-      <div class="block__header">
+      <div class="block-header">
         <a href="/galleries/new" title="Create Gallery">Create Gallery</a>
       </div>
     </div>
   </div>
-  <div class="column-layout__main">
+  <div class="layout-main">
     <div class="block">
       <%= if not is_nil(@galleries) and Enum.any?(@galleries) do %>
         <% route = fn p -> ~p"/galleries?#{p}" end %>
@@ -71,20 +69,20 @@
             route: route,
             params: [gallery: @conn.params["gallery"]]
           ) %>
-        <div class="block__header page__header">
-          <div class="page__pagination">{pagination}</div>
+        <div :if={multiple_pages?(@galleries)} class="block-header">
+          {pagination}
         </div>
-        <div class="block__content media-list">
+        <div class="block-content media-list">
           <%= for gallery <- @galleries do %>
             {render(PhilomenaWeb.GalleryView, "_gallery.html", gallery: gallery, conn: @conn)}
           <% end %>
         </div>
-        <div class="block__header block__header--light page__header">
-          <div class="page__pagination">{pagination}</div>
+        <div :if={multiple_pages?(@galleries)} class="block-header sub">
+          {pagination}
         </div>
       <% else %>
-        <div class="block__content">
-          <div class="block block--fixed block--no-margin block--warning">
+        <div class="block-content">
+          <div class="alert alert-warning">
             No galleries found!
           </div>
         </div>

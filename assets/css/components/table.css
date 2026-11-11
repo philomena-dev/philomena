@@ -1,0 +1,11 @@
+/*
+ * Philomena's additions to the framework's tables.
+ */
+
+/* Narrow screens make the links of a cell touch targets */
+@media not all and (min-width: $breakpoint-md) {
+  .table td > a:not(.button),
+  .table td > :is(strong, em, .code-span) > a {
+    @mixin touch-link;
+  }
+}

@@ -1,0 +1,584 @@
+.form-control-group {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+  gap: var(--form-control-spacing);
+  margin-bottom: var(--form-control-spacing);
+}
+
+.form-control-group.vertical {
+  flex-flow: column nowrap;
+}
+
+.form-control-wrap {
+  display: block;
+  flex: 1 1 auto;
+  /* Never wider than the group, whatever the size of the control inside */
+  box-sizing: border-box;
+  max-inline-size: 100%;
+}
+
+/* Every disabled control shows the not-allowed cursor, on its own or in a disabled wrapper (over its label too) */
+.form-control-wrap.disabled {
+  cursor: not-allowed;
+  @mixin faded;
+}
+
+/* The wrapper fades everything in it, so the disabled controls inside do not fade a second time */
+/* What is inside takes no pointer events, so the cursor of the wrapper shows over all of it */
+.form-control-wrap.disabled > * {
+  --faded-opacity: 1;
+  pointer-events: none;
+}
+
+.form-checkbox-input:disabled,
+.form-radio-input:disabled {
+  cursor: not-allowed;
+}
+
+.form-control-wrap.full-width {
+  width: 100%;
+}
+
+.form-control {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+  gap: var(--form-control-spacing);
+}
+
+.form-control.form-control-buttons {
+  flex-direction: row;
+}
+
+/* From md up a horizontal control is a grid with the label in a column beside the field, ending at it. The field
+   and the messages after it stack in the second column, and so does a control without a label */
+@media (min-width: $breakpoint-md) {
+  .form-control.horizontal {
+    display: grid;
+    grid-template-columns: var(--form-label-width) minmax(0, 1fr);
+    place-items: center start;
+  }
+
+  .form-control.horizontal > :first-child:not(:only-child) {
+    justify-self: end;
+    text-align: end;
+  }
+
+  .form-control.horizontal > :not(:first-child),
+  .form-control.horizontal > :only-child {
+    grid-column: 2;
+  }
+}
+
+.form-control-checkbox {
+  display: flex;
+  gap: var(--form-control-spacing);
+}
+
+.form-control-checkbox .form-checkbox-input-wrap {
+  position: relative;
+  display: inline-block;
+  width: var(--form-checkbox-width);
+  height: var(--form-checkbox-height);
+  border: var(--border-width) solid var(--control-border-color);
+  background-color: var(--well-color);
+  border-radius: var(--border-radius-inner);
+  align-self: center;
+  transition: border-color 0.1s;
+}
+
+/* The box reacts to the pointer over it or over its label, as a text field does */
+.form-control-checkbox:hover .form-checkbox-input-wrap:where(:not(:has(:disabled))) {
+  border-color: var(--text-color);
+}
+
+.form-control-checkbox .form-checkbox-input-wrap input {
+  border-radius: inherit;
+}
+
+.form-control-checkbox .form-checkbox-input-wrap input:focus {
+  z-index: var(--z-focus);
+}
+
+.form-control-checkbox .form-checkbox-input-wrap input:focus-visible {
+  @mixin focus-ring;
+}
+
+.form-control-checkbox .form-checkbox-input-wrap .form-checkbox-check-icon,
+.form-control-checkbox .form-checkbox-input-wrap .form-checkbox-input {
+  position: absolute;
+  inset: 0;
+}
+
+.form-control-checkbox .form-checkbox-input-wrap .form-checkbox-input {
+  border: 0;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.form-control-checkbox .form-checkbox-input-wrap .form-checkbox-check-icon {
+  text-align: center;
+  transform: translate(-0.1em, 0.05em);
+  opacity: 0;
+  color: var(--text-color);
+  transition: opacity 0.1s linear;
+  font-size: 0.8em;
+  pointer-events: none;
+}
+
+/* A checked box is filled with the primary color, like the boxes in menus; the fill also covers the wrap's border */
+.form-control-checkbox .form-checkbox-input-wrap .form-checkbox-input:checked {
+  background-color: var(--primary-color);
+  box-shadow: 0 0 0 var(--border-width) var(--primary-border-color);
+}
+
+.form-control-checkbox .form-checkbox-input-wrap .form-checkbox-input:checked + .form-checkbox-check-icon {
+  opacity: 1;
+  color: var(--primary-text-color);
+}
+
+.form-control-checkbox .form-checkbox-label {
+  cursor: default;
+  /* Clicking the control in quick succession does not select the label */
+  user-select: none;
+}
+
+/*
+ * A switch: a checkbox drawn as a sliding toggle, as Philomena's .fancy-toggle. It is filled like a danger button
+ * when off and like a success button when on, and the knob has the button's text color. Markup:
+ *   <div class="form-control-switch">
+ *     <input id="x" class="form-switch-input" type="checkbox">
+ *     <label class="form-switch-label" for="x">Label</label>
+ *   </div>
+ * The knob is a background image, so the input needs no wrapper or pseudo-element, and .form-switch-input works on
+ * its own wherever a checkbox does, such as at the end of a menu item.
+ */
+
+.form-control-switch {
+  display: flex;
+  align-items: center;
+  gap: var(--form-control-spacing);
+}
+
+.form-switch-input {
+  --_knob: calc(var(--form-switch-height) - 2 * var(--border-width) - 2 * var(--spacing-xs));
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  inline-size: var(--form-switch-width);
+  block-size: var(--form-switch-height);
+  margin: 0;
+  appearance: none;
+  border: var(--border-width) solid var(--danger-border-color);
+  border-radius: var(--form-switch-height);
+  background-color: var(--danger-color);
+  background-image: radial-gradient(circle closest-side, var(--danger-text-color) 92%, transparent);
+  background-repeat: no-repeat;
+  background-size: var(--_knob) var(--_knob);
+  background-position: var(--spacing-xs) 50%;
+  cursor: pointer;
+  transition-property: background-color, background-position, border-color, box-shadow;
+  transition-duration: 0.1s;
+}
+
+.form-switch-input:checked {
+  border-color: var(--success-border-color);
+  background-color: var(--success-color);
+  background-image: radial-gradient(circle closest-side, var(--success-text-color) 92%, transparent);
+  background-position: calc(100% - var(--spacing-xs)) 50%;
+}
+
+.form-switch-input:focus-visible {
+  @mixin focus-ring-offset;
+}
+
+.form-switch-input:disabled {
+  cursor: not-allowed;
+  @mixin faded;
+}
+
+.form-switch-input:not(:disabled):hover {
+  box-shadow: inset 0 0 0 100em var(--hover-shade-color);
+}
+
+.form-control-switch .form-switch-label {
+  cursor: default;
+  /* Clicking the control in quick succession does not select the label */
+  user-select: none;
+}
+
+/* A disabled checkbox or radio fades like every other disabled control (the wrapper .disabled fades the label too) */
+.form-control-checkbox .form-checkbox-input-wrap:has(:disabled),
+.form-control-radio .form-radio-input-wrap:has(:disabled) {
+  @mixin faded;
+}
+
+.form-control-radio {
+  /* Flex centering instead of inline-block + vertical-align, which differ between browsers */
+  display: flex;
+  align-items: center;
+}
+
+.form-control-radio .form-radio-input-wrap {
+  position: relative;
+  display: inline-block;
+  width: var(--form-checkbox-width);
+  height: var(--form-checkbox-height);
+  flex: 0 0 auto;
+  margin-right: var(--form-control-spacing);
+}
+
+.form-control-radio .form-radio-input-wrap .form-radio-input,
+.form-control-radio .form-radio-input-wrap .form-radio-select-icon {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.form-control-radio .form-radio-input-wrap .form-radio-select-icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  background-color: var(--text-color);
+  transition: opacity 0.1s linear;
+  display: block;
+  width: var(--form-radio-select-icon);
+  height: var(--form-radio-select-icon);
+  margin: calc((100% - var(--form-radio-select-icon)) * 0.5);
+  pointer-events: none;
+}
+
+.form-control-radio .form-radio-input-wrap .form-radio-input {
+  border: var(--border-width) solid var(--_radio-hover-border-color, var(--control-border-color));
+  background-color: var(--well-color);
+  border-radius: 50%;
+  transition: border-color 0.1s;
+}
+
+.form-control-radio:hover {
+  --_radio-hover-border-color: var(--text-color);
+}
+
+.form-control-radio .form-radio-input-wrap .form-radio-input:disabled {
+  --_radio-hover-border-color: initial;
+}
+
+.form-control-radio .form-radio-input-wrap .form-radio-input:focus {
+  border-color: var(--focus-color);
+}
+
+.form-control-radio .form-radio-input-wrap .form-radio-input:focus-visible {
+  @mixin focus-ring;
+}
+
+.form-control-radio .form-radio-input-wrap .form-radio-input:checked {
+  border-color: var(--primary-border-color);
+  background-color: var(--primary-color);
+}
+
+.form-control-radio .form-radio-input-wrap .form-radio-input:checked + .form-radio-select-icon {
+  opacity: 1;
+  background-color: var(--primary-text-color);
+}
+
+.form-control-radio .form-radio-label {
+  cursor: default;
+  /* Clicking the control in quick succession does not select the label */
+  user-select: none;
+}
+
+.form-control-select {
+  display: inline-block;
+  position: relative;
+}
+
+.form-control-select.full-width {
+  width: 100%;
+}
+
+.form-control-select > .form-select-input {
+  --padding-value: calc(var(--input-padding) * 2 + var(--form-select-icon-padding) * 2 + var(--form-select-icon-size));
+  padding-right: var(--padding-value);
+}
+
+.form-control-select > .form-select-input:focus-visible {
+  @mixin focus-ring;
+}
+
+.form-control-select .form-select-icon {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--form-select-icon-padding);
+  font-size: var(--form-select-icon-size);
+  right: 0;
+}
+
+.form-control-select .form-select-icon:not(.clickable) {
+  pointer-events: none;
+}
+
+/*
+ * A combobox: a select-like input with a suggestion list under it. The framework only styles it; filtering, keyboard
+ * handling and the state classes (.suggestions-open, .has-suggestions, .allow-typing, .selected and .highlighted on
+ * items) are your script's job.
+ *
+ * Upstream HammerTimeCSS needs a .has-combobox class on the ancestors of a combobox, because it gives every element
+ * a z-index, which traps the list under later siblings. Nothing here does that, so the class is not needed.
+ */
+
+.form-control-combobox.suggestions-open.has-suggestions > .form-select-input {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* stylelint-disable-next-line no-descending-specificity -- the combobox rules stay together */
+.form-control-combobox:not(.allow-typing) > .form-select-input {
+  user-select: none;
+  cursor: default;
+}
+
+/* A select-only combobox is read-only but still a control, so it reacts to the pointer like the other fields */
+/* stylelint-disable-next-line no-descending-specificity -- the combobox rules stay together */
+.form-control-combobox > .form-select-input[readonly]:where(:not(:disabled)):hover {
+  border-color: var(--text-color);
+}
+
+.combobox-suggestions {
+  position: absolute;
+  width: 100%;
+  height: auto;
+  max-height: 35vh;
+  overflow: hidden auto;
+  border: var(--border-width) solid var(--control-border-color);
+  color: var(--text-color);
+  background-color: var(--well-color);
+  transition: border-color 0.1s;
+  border-bottom-left-radius: var(--border-radius-inner);
+  border-bottom-right-radius: var(--border-radius-inner);
+  box-sizing: border-box;
+  z-index: var(--z-suggestions);
+  margin-top: calc(-1 * var(--border-width));
+  box-shadow: var(--menu-shadow);
+}
+
+.combobox-suggestions .combobox-suggestion-header {
+  padding: var(--input-padding);
+  font-size: 1em;
+  font-weight: bold;
+  color: var(--muted-text-color);
+  background-color: var(--well-deep-color);
+  pointer-events: none;
+  user-select: none;
+}
+
+.combobox-suggestions .combobox-suggestion-header.combobox-suggestion-header-overlay {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-suggestions-header);
+}
+
+.combobox-suggestions .combobox-suggestion-item {
+  display: flex;
+  width: 100%;
+  flex-flow: column nowrap;
+  align-items: stretch;
+  padding: var(--input-padding);
+  gap: var(--input-padding);
+  cursor: pointer;
+  justify-content: space-between;
+  position: relative;
+}
+
+.combobox-suggestions .combobox-suggestion-item mark {
+  font-weight: bold;
+}
+
+.combobox-suggestions .combobox-suggestion-item .combobox-suggestion-item-label {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: inherit;
+  align-items: center;
+}
+
+.combobox-suggestions .combobox-suggestion-item .combobox-suggestion-item-label .combobox-suggestion-item-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.combobox-suggestions
+  .combobox-suggestion-item
+  .combobox-suggestion-item-label
+  .combobox-suggestion-item-text
+  .combobox-suggestion-item-main-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.combobox-suggestions .combobox-suggestion-item .combobox-suggestion-item-label .combobox-suggestion-item-addon {
+  flex: 0 0 auto;
+  font-variant: tabular-nums;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 60%;
+  text-align: right;
+}
+
+.combobox-suggestions
+  .combobox-suggestion-item.addon-mode-dynamic.label-truncated:hover
+  .combobox-suggestion-item-addon {
+  /* Take the element out of the flex layout while visually hiding it to allow the text to become full-width */
+  position: absolute;
+  transition-property: font-size, padding;
+  transition-duration: 0.1s;
+  transition-timing-function: ease-out;
+  animation: reposition 0.1s ease-out forwards;
+  right: 0;
+}
+
+@keyframes reposition {
+  0% {
+    top: var(--input-padding);
+    right: var(--input-padding);
+  }
+
+  100% {
+    top: 0;
+    right: 0;
+    font-size: 0.65em;
+    padding: var(--spacing-xs) var(--spacing-xs);
+  }
+}
+
+/* The open list is one frame with its field, so its border follows the field's when that is hovered */
+.form-control-combobox > .form-select-input:where(:not(:disabled)):hover ~ .combobox-suggestions {
+  border-color: var(--text-color);
+}
+
+/* Items tint under the pointer and when highlighted from the keyboard; the selected one is filled like a primary
+   button, and darkens the way a button does when it is also hovered or highlighted */
+
+.combobox-suggestions .combobox-suggestion-item:hover,
+.combobox-suggestions .combobox-suggestion-item.highlighted {
+  background-color: var(--tint-color);
+}
+
+.combobox-suggestions .combobox-suggestion-item.selected {
+  color: var(--primary-text-color);
+  background-color: var(--primary-color);
+}
+
+.combobox-suggestions .combobox-suggestion-item.selected mark {
+  color: inherit;
+}
+
+.combobox-suggestions .combobox-suggestion-item.selected.highlighted,
+.combobox-suggestions .combobox-suggestion-item.selected:hover {
+  box-shadow: inset 0 0 0 100em var(--hover-shade-color);
+}
+
+.form-input-group {
+  display: flex;
+  flex-flow: row nowrap;
+  margin-bottom: var(--form-control-spacing);
+}
+
+.form-input-group > .input-field {
+  min-width: 0;
+  flex-grow: 1;
+}
+
+/* A button in the group is as tall as the inputs and keeps its width */
+.form-input-group > .button {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.form-input-group > .input-field[inputmode="numeric"] {
+  line-height: 1em;
+}
+
+.form-input-group > .form-input-group-symbol-wrap {
+  position: relative;
+  transform: translateX(-50%);
+  width: 0;
+  overflow: visible;
+  align-self: stretch;
+  display: block;
+  z-index: var(--z-input-symbol);
+  pointer-events: none;
+}
+
+.form-input-group > .form-input-group-symbol-wrap .form-input-group-symbol {
+  --size: 1em;
+  position: absolute;
+  left: calc(-0.5 * var(--size));
+  height: 100%;
+  width: var(--size);
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-input-group > .form-input-group-symbol-wrap .form-input-group-symbol .form-input-group-symbol-inner {
+  display: block;
+  font-size: 1.5rem;
+  line-height: 1em;
+  color: var(--text-color);
+  background-color: var(--well-color);
+  border-radius: var(--border-radius-inner);
+}
+
+/* prettier-ignore */
+@mixin combined-border-radius .form-input-group > .input-field;
+/* prettier-ignore */
+@mixin combined-border-radius .form-input-group > .button;
+/* prettier-ignore */
+@mixin combined-border-radius .form-input-group > .form-control-select, > .form-select-input;
+
+.form-message {
+  display: block;
+  font-size: 0.875em;
+}
+
+.form-message.form-message-error {
+  color: var(--danger-tint-text-color);
+}
+
+.form-message.form-message-success {
+  color: var(--success-tint-text-color);
+}
+
+.form-message.form-message-description {
+  color: var(--muted-text-color);
+}
+
+@mixin content-link-style .form-message;
+
+/* .from-control-submit is the misspelt name this class used to have */
+.form-control-submit,
+.from-control-submit {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--form-control-spacing);
+}
+
+.form-control-submit .form-message,
+.from-control-submit .form-message {
+  margin-top: 0;
+}

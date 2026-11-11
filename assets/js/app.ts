@@ -4,6 +4,7 @@
 // Import new files and add their exported setup function to the functions array below.
 
 import './ujs';
+import { polyfillFocusVisible } from './focus-visible';
 
 import { whenReady } from './utils/dom';
 
@@ -13,6 +14,7 @@ import { registerEvents } from './boorujs';
 import { setupBurgerMenu } from './burger';
 import { bindCaptchaLinks } from './captcha';
 import { setupComments } from './comment';
+import { setupDropdowns } from './dropdowns';
 import { setupDupeReports } from './duplicate-reports';
 import { setSesCookie } from './fp';
 import { setupGalleryEditing } from './galleries';
@@ -36,6 +38,8 @@ import { pollOptionCreator } from './poll';
 import { warnAboutPMs } from './pmwarning';
 import { imageSourcesCreator } from './sources';
 
+polyfillFocusVisible();
+
 whenReady(
   loadBooruData,
   listenAutocomplete,
@@ -44,6 +48,7 @@ whenReady(
   bindCaptchaLinks,
   initImagesClientside,
   setupComments,
+  setupDropdowns,
   setupDupeReports,
   setSesCookie,
   setupGalleryEditing,
@@ -72,8 +77,8 @@ whenReady(
 // Would typically be either the theme file, or any additional file
 // you later intend to put in the <link> tag.
 //
-// For example, if you'd like to work on the dark blue theme,
+// For example, if you'd like to work on the purple theme,
 // import the following:
 //
 // import '../css/application.css';
-// import '../css/themes/dark-blue.css';
+// import '../css/themes/purple.css';

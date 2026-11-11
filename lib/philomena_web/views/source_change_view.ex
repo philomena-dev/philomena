@@ -8,7 +8,7 @@ defmodule PhilomenaWeb.SourceChangeView do
 
   def user_column_class(source_change) do
     if staff?(source_change) do
-      "success"
+      "table-success"
     else
       nil
     end

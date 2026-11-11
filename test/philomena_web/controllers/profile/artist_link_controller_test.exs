@@ -69,6 +69,11 @@ defmodule PhilomenaWeb.Profile.ArtistLinkControllerTest do
 
       assert response =~ "New Artist Link - Derpibooru"
       assert response =~ "Request Artist Link"
+
+      for id <- ~w(artist_link_tag_name artist_link_uri) do
+        assert response =~ ~s(<label for="#{id}">)
+        assert response =~ ~r/<input [^>]*id="#{id}"/
+      end
     end
 
     test "redirects banned users with the ban flash", %{conn: conn} do
@@ -165,6 +170,8 @@ defmodule PhilomenaWeb.Profile.ArtistLinkControllerTest do
 
       assert response =~ "Showing Artist Link - Derpibooru"
       assert response =~ link.uri
+      # The verification card follows the status paragraph instead of nesting in it.
+      assert response =~ ~r{</strong>\s*</p>\s*<div class="card card-danger">}
     end
 
     test "renders artist-link management controls only to link staff", %{conn: conn} do

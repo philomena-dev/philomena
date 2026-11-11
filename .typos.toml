@@ -19,3 +19,6 @@ extend-ignore-re = [
 [default.extend-words]
 # Template class names
 togglable = "togglable"
+
+[files]
+extend-exclude = ["assets/vendor/philomena-css/*", "!assets/vendor/philomena-css/UPSTREAM.md"]

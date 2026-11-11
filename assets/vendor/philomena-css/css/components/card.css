@@ -1,0 +1,44 @@
+.card {
+  border-radius: var(--border-radius-outer);
+  padding: var(--card-padding);
+  color: var(--text-color);
+  background-color: var(--surface-color);
+  border: var(--border-width) solid var(--tint-color);
+  position: relative;
+  box-shadow: var(--container-shadow);
+}
+
+@mixin bevel .card;
+
+@media print {
+  .card {
+    background-color: #ffffff;
+  }
+}
+
+/* The header is a band across the top of the card, separated from the body by the card border */
+.card .card-header {
+  margin: calc(-1 * var(--card-padding)) calc(-1 * var(--card-padding)) var(--card-padding);
+  padding: var(--card-header-padding-vertical) var(--card-padding);
+  border-bottom: var(--border-width) solid var(--tint-color);
+  border-radius: calc(var(--border-radius-outer) - var(--border-width))
+    calc(var(--border-radius-outer) - var(--border-width)) 0 0;
+}
+
+/* A card that is only a header */
+.card .card-header:last-child {
+  margin-bottom: calc(-1 * var(--card-padding));
+  border-bottom: 0;
+  border-radius: calc(var(--border-radius-outer) - var(--border-width));
+}
+
+.card .card-header:empty {
+  display: none;
+}
+
+/* Links in the body take the content link color, or the card's color on a colored card (so do default buttons) */
+.card {
+  @mixin content-links;
+}
+
+@mixin each-type card-color-variation;

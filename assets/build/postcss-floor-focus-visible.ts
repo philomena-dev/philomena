@@ -1,0 +1,46 @@
+import type { PluginCreator, Rule } from 'postcss';
+import parser from 'postcss-selector-parser';
+
+/**
+ * The selector with `:focus-visible` as the `.focus-visible` class that the focus-visible polyfill sets, except inside
+ * `:not()`, where the class would match every focused element until the polyfill runs
+ */
+export const classTwin = (selector: string) =>
+  parser(root =>
+    root.walkPseudos(pseudo => {
+      if (pseudo.value.toLowerCase() === ':focus-visible' && pseudo.parent?.parent?.type !== 'pseudo') {
+        pseudo.replaceWith(parser.className({ value: 'focus-visible' }));
+      }
+    }),
+  ).processSync(selector);
+
+/**
+ * Writes every rule for `:focus-visible` with the `.focus-visible` class of the polyfill that js/focus-visible.ts
+ * applies where `:focus-visible` is missing, which floor browsers match, followed by a native twin of the same
+ * specificity, which current browsers match. A floor browser drops a whole rule that names `:focus-visible`, so the
+ * native twin takes only the selectors that use it. A rule that only negates `:focus-visible` stays native, which
+ * floor browsers drop.
+ */
+const postcssFloorFocusVisible: PluginCreator<void> = () => ({
+  postcssPlugin: 'philomena-floor-focus-visible',
+  OnceExit(root) {
+    const rules: Rule[] = [];
+    root.walkRules(/:focus-visible/i, rule => {
+      rules.push(rule);
+    });
+
+    for (const rule of rules) {
+      const classes = rule.selectors.map(classTwin);
+      const natives = rule.selectors.filter((selector, i) => classes[i] !== selector);
+
+      if (!natives.length) continue;
+
+      rule.cloneAfter({ selectors: natives });
+      rule.selectors = classes;
+    }
+  },
+});
+
+postcssFloorFocusVisible.postcss = true;
+
+export default postcssFloorFocusVisible;

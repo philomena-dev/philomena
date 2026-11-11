@@ -1,0 +1,77 @@
+{
+  "name": "@philomena/philomena-css",
+  "version": "0.4.0",
+  "description": "HTML/CSS-only design framework based on HammerTimeCSS and adapted for Philomena, customizable through PostCSS variables",
+  "keywords": [
+    "css",
+    "postcss",
+    "design-system",
+    "css-variables",
+    "dark-mode",
+    "philomena",
+    "no-js"
+  ],
+  "homepage": "https://github.com/Meow/PhilomenaCSS#readme",
+  "bugs": {
+    "url": "https://github.com/Meow/PhilomenaCSS/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Meow/PhilomenaCSS.git"
+  },
+  "license": "MIT",
+  "author": "WentTheFox",
+  "type": "module",
+  "style": "dist/philomena.css",
+  "exports": {
+    ".": {
+      "style": "./dist/philomena.css",
+      "default": "./dist/philomena.css"
+    },
+    "./css/*": "./css/*",
+    "./dist/*": "./dist/*",
+    "./postcss.config.js": "./postcss.config.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "css",
+    "dist",
+    "postcss.config.js"
+  ],
+  "scripts": {
+    "build": "vite build && vite build --mode min",
+    "check:contrast": "node scripts/contrast.mjs"
+  },
+  "dependencies": {
+    "the-new-css-reset": "^1.11.3"
+  },
+  "peerDependencies": {
+    "@csstools/postcss-relative-color-syntax": "^4.0.16",
+    "postcss-mixins": "^12.1.2",
+    "postcss-simple-vars": "^7.0.1"
+  },
+  "peerDependenciesMeta": {
+    "@csstools/postcss-relative-color-syntax": {
+      "optional": true
+    },
+    "postcss-mixins": {
+      "optional": true
+    },
+    "postcss-simple-vars": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@csstools/postcss-relative-color-syntax": "^4.0.16",
+    "postcss": "^8.5.32",
+    "postcss-mixins": "^12.1.2",
+    "postcss-simple-vars": "^7.0.1",
+    "vite": "^8.3.7"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

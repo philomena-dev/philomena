@@ -1,0 +1,39 @@
+/*
+ * Philomena's configuration of the framework, loaded after its css/config.css and before anything that emits CSS.
+ * Only $variables: they are substituted where they are defined, so a file that also has @imports builds wrongly.
+ */
+
+/* Everything from 800px up is the desktop layout */
+$breakpoint-md: 800px;
+$breakpoint-xl: 1150px;
+
+/* Inputs of Philomena's color tokens that every hue shares unless it sets its own */
+$header-admin-color-dark: #3b1d1d;
+$header-admin-color-light: #ffcfcf;
+$header-admin-hover-color-light: #ff9c9c;
+$burger-color-light: #f7f7f7;
+$unread-message-color: #ff8800;
+$notice-color-dark: #07070a;
+$link-hover-color-dark: #b099dd;
+$link-hover-color-light: #9273d0;
+
+/* The lightness of the framework's role colors that css/tokens.css lets a hue set; the framework's by default */
+$link-lightness-light: 39%;
+$link-strong-lightness-light: 35%;
+$placeholder-lightness-light: 40%;
+$bar-link-lightness-light: 30%;
+$control-border-lightness-light: 42%;
+$focus-lightness-light: 39%;
+$neutral-fill-light: 43%;
+$primary-fill-light: 41%;
+$warning-fill-light: 41%;
+$danger-fill-light: 48%;
+$link-lightness-dark: 61%;
+$link-strong-lightness-dark: 72%;
+$tint-lightness-dark: 25%;
+$control-border-lightness-dark: 59%;
+$focus-lightness-dark: 61%;
+$neutral-fill-dark: 35%;
+$primary-fill-dark: 35%;
+$warning-fill-dark: 35%;
+$danger-fill-dark: 35%;

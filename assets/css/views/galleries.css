@@ -1,68 +1,52 @@
-.media-box--js-sortable-chosen .media-box__header {
-  background: var(--primary-color);
+/*
+ * The add to gallery menu: its list of galleries scrolls; a gallery that holds the image is green and turns red under
+ * the pointer, as a click removes the image from it.
+ */
+
+.add-to-gallery {
+  max-width: min(20rem, 90vw);
 }
 
-/* Make it clear that the extra images are not truly part of the page. */
-.js-sortable-has-next .media-box:last-child,
-.js-sortable-has-prev .media-box:first-child {
-  opacity: 0.4;
+.add-to-gallery-list {
+  max-height: 15rem;
+  overflow-y: auto;
 }
 
-/* The server renders additional thumb(s) for extra images in a gallery,
- * if the user is allowed to edit it and it has multiple pages; hide these
- * until the user explicitly requests to edit it (if at all). */
-
-.js-sortable-has-next:not(.editing) .media-box:last-child,
-.js-sortable-has-prev:not(.editing) .media-box:first-child {
-  display: none;
-}
-
-.js-sortable-has-prev:not(.editing) .media-box:nth-child(2) {
-  grid-row: 1 / 1;
-  grid-column: 1 / 1;
-}
-
-.input--search-gallery-list {
-  border: var(--border);
-  width: 250px;
-  padding: 0 4px;
-  line-height: 28px;
-  font-family: var(--font-family-base);
-}
-
-.input--search-gallery-list,
-.add-to-gallery-list ul a.block__list__link {
+.add-to-gallery-list .dropdown-item {
+  display: block;
   overflow: hidden;
-  text-align: center;
   text-overflow: ellipsis;
 }
 
-.add-to-gallery-list ::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px #cccccc;
-  background-color: var(--background-color);
+.add-to-gallery-list .dropdown-item:hover,
+.add-to-gallery-list .dropdown-item.active {
+  background-color: var(--success-tint-color);
 }
 
-.add-to-gallery-list ::-webkit-scrollbar {
-  width: 6px;
-  background-color: var(--background-color);
+.add-to-gallery-list .dropdown-item.active:hover {
+  background-color: var(--danger-tint-color);
 }
 
-.add-to-gallery-list ::-webkit-scrollbar-thumb {
-  background-color: var(--primary-color);
-}
-
-.add-to-gallery-list ul {
-  max-height: 132px;
-  overflow: hidden auto; /* Scrollbar customization is only available in WebKit; Gecko and IE have wider bars that cause horizontal overflow */
-}
-
-/* Limit the width of ul items inside gallery list (.add-to-gallery-list includes .block__list__link elements
- * that are not part of the list, hence nested selector) */
-
-.add-to-gallery-list li a.block__list__link {
-  width: 244px; /* input--search-gallery-list width - 6px scrollbar */
-}
+/*
+ * Rearranging a gallery: the thumbnail being dragged is faded and the one it is over is outlined. A gallery of
+ * several pages also renders the last image of the previous page and the first of the next one, to move images
+ * between pages; they are hidden until rearranging starts, then faded as they are not part of the page.
+ */
 
 .dragging {
-  opacity: 0.4;
+  @mixin faded;
+}
+
+.media-box.over {
+  outline: var(--border-thick-width) dashed var(--focus-color);
+}
+
+.sortable-has-next .media-box:last-child,
+.sortable-has-prev .media-box:first-child {
+  @mixin faded;
+}
+
+.sortable-has-next:not(.editing) .media-box:last-child,
+.sortable-has-prev:not(.editing) .media-box:first-child {
+  display: none;
 }

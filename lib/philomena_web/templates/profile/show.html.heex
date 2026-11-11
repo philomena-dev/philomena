@@ -1,9 +1,9 @@
-<div class="profile-top">
-  <div class="profile-top__avatar">
+<div class="flex gap-lg">
+  <div class="flex-none">
     <% avatar =
       render(PhilomenaWeb.UserAttributionView, "_user_avatar.html",
         object: %{user: @user},
-        class: "avatar--125px",
+        class: "avatar-lg",
         no_profile_link: true
       ) %>
     <%= if current?(@user, @conn.assigns.current_user) do %>
@@ -12,86 +12,98 @@
       {avatar}
     <% end %>
   </div>
-  <div class="profile-top__name-and-links">
-    <div>
-      <h1 class="profile-top__name-header">{@user.name}'s profile</h1>
-      {render(PhilomenaWeb.UserAttributionView, "_user_title.html",
-        object: %{user: @user},
-        large: true
-      )}<br />
-      <%= if can?(@conn, :edit_description, @user) do %>
-        {link("Edit Personal Title", to: ~p"/profiles/#{@user}/description/edit")}<br />
-      <% end %>
-      <span>Member since {pretty_time(@user.created_at)}</span>
-    </div>
-    <div class="profile-top__options">
-      <ul class="profile-top__options__column">
-        <li>{link("Send message", to: ~p"/conversations/new?#{[recipient: @user.name]}")}</li>
-        <li>{link("Our conversations", to: ~p"/conversations?#{[with: @user.id]}")}</li>
-        <li>{link("Report this user", to: ~p"/profiles/#{@user}/reports/new")}</li>
-      </ul>
-      <ul class="profile-top__options__column">
+  <div class="flex-1">
+    <h1 class="m-0">{@user.name}'s profile</h1>
+    {render(PhilomenaWeb.UserAttributionView, "_user_title.html",
+      object: %{user: @user},
+      large: true
+    )}<br />
+    <%= if can?(@conn, :edit_description, @user) do %>
+      {link("Edit Personal Title", to: ~p"/profiles/#{@user}/description/edit")}<br />
+    <% end %>
+    <span>Member since {pretty_time(@user.created_at)}</span>
+    <div class="flex flex-wrap gap-x-xl mt-md">
+      <nav class="nav">
+        {link("Send message",
+          to: ~p"/conversations/new?#{[recipient: @user.name]}",
+          class: "nav-link"
+        )}
+        {link("Our conversations", to: ~p"/conversations?#{[with: @user.id]}", class: "nav-link")}
+        {link("Report this user", to: ~p"/profiles/#{@user}/reports/new", class: "nav-link")}
+      </nav>
+      <nav class="nav">
         <% true_prefix = if can_reveal_anon?(@conn), do: "true_", else: "" %>
-        <li>
-          {link("Uploads", to: ~p"/search?#{[q: "#{true_prefix}uploader_id:#{@user.id}"]}")}
-        </li>
-        <li>
-          {link("Comments", to: ~p"/comments?#{[cq: "#{true_prefix}author_id:#{@user.id}"]}")}
-        </li>
-        <li>{link("Posts", to: ~p"/posts?#{[pq: "#{true_prefix}author_id:#{@user.id}"]}")}</li>
+        {link("Uploads",
+          to: ~p"/search?#{[q: "#{true_prefix}uploader_id:#{@user.id}"]}",
+          class: "nav-link"
+        )}
+        {link("Comments",
+          to: ~p"/comments?#{[cq: "#{true_prefix}author_id:#{@user.id}"]}",
+          class: "nav-link"
+        )}
+        {link("Posts",
+          to: ~p"/posts?#{[pq: "#{true_prefix}author_id:#{@user.id}"]}",
+          class: "nav-link"
+        )}
         <%= if current?(@user, @conn.assigns.current_user) do %>
-          <li>{link("My reports", to: ~p"/reports")}</li>
+          {link("My reports", to: ~p"/reports", class: "nav-link")}
         <% end %>
-      </ul>
-      <ul class="profile-top__options__column">
-        <li>{link("Favorites", to: ~p"/search?#{[q: "faved_by_id:#{@user.id}"]}")}</li>
-        <li>{link("Tag changes", to: ~p"/profiles/#{@user}/tag_changes")}</li>
-        <li>{link("Source changes", to: ~p"/profiles/#{@user}/source_changes")}</li>
-      </ul>
+      </nav>
+      <nav class="nav">
+        {link("Favorites", to: ~p"/search?#{[q: "faved_by_id:#{@user.id}"]}", class: "nav-link")}
+        {link("Tag changes", to: ~p"/profiles/#{@user}/tag_changes", class: "nav-link")}
+        {link("Source changes", to: ~p"/profiles/#{@user}/source_changes", class: "nav-link")}
+      </nav>
     </div>
   </div>
 </div>
 <%= if can_index_user?(@conn) do %>
-  <div class="js-staff-action">
+  <div class="staff-action">
     {render(PhilomenaWeb.ProfileView, "_admin_block.html", assigns)}
   </div>
 <% end %>
 <%= if @forced && (current?(@user, @conn.assigns.current_user) or can_index_user?(@conn)) do %>
   <div class="block">
-    <i class="fa fa-fw fa-filter"></i>
-    <strong class="comment_deleted">Forced Filter:</strong> {link(@forced.name,
-      to: ~p"/filters/#{@forced}"
-    )}
+    <div class="block-content">
+      <i class="fa fa-fw fa-filter"></i>
+      <strong class="text-danger">Forced Filter:</strong> {link(@forced.name,
+        to: ~p"/filters/#{@forced}"
+      )}
+    </div>
   </div>
 <% end %>
 <%= if (current?(@user, @conn.assigns.current_user) or can?(@conn, :index, Philomena.Bans.User)) and Enum.any?(@bans) do %>
   <div class="block">
-    <div class="block__header--single-item">Ban History</div>
-    <div class="block__content">
+    <div class="block-header"><span class="block-header-title">Ban History</span></div>
+    <div class="block-content">
       {render(PhilomenaWeb.BanView, "_bans.html", bans: @bans, conn: @conn)}
     </div>
   </div>
 <% end %>
-<div class="column-layout">
-  <div class="column-layout__left">
-    <div class="block">
-      <div class="block__header"><span class="block__header__title">Commissions</span></div>
+<div class="layout-columns">
+  <div class="layout-side">
+    <div :if={@user.commission || current?(@user, @conn.assigns.current_user)} class="block">
+      <div class="block-header"><span class="block-header-title">Commissions</span></div>
       {render(PhilomenaWeb.ProfileView, "_commission.html",
         user: @user,
         commission_information: @commission_information,
         conn: @conn
       )}
     </div>
-    <div class="block">
-      <%= if current?(@user, @conn.assigns.current_user) or manages_links?(@conn, @user) do %>
-        <a class="block__header--single-item" href={~p"/profiles/#{@user}/artist_links/new"}>Artist Links</a>
-      <% else %>
-        <div class="block__header"><span class="block__header__title">Artist Links</span></div>
-      <% end %>
+    <div class="block striped allow-overflow">
+      <div class="block-header">
+        <span class="block-header-title">Artist Links</span>
+        <div
+          :if={current?(@user, @conn.assigns.current_user) or manages_links?(@conn, @user)}
+          class="block-header-actions"
+        >
+          <a href={~p"/profiles/#{@user}/artist_links/new"}><i class="fa fa-plus"></i> New</a>
+        </div>
+      </div>
       <%= for link <- @user.verified_links, should_see_link?(@conn, @user, link) do %>
         <% watchers = if link.tag, do: @watcher_counts[link.tag.id] || 0, else: 0 %>
-        <div class={"block__content alternating-color break-word #{link_block_class(link)}"}>
-          <div class="center">
+        <div class={["block-content wrap-anywhere", link_block_class(link)]}>
+          <div class="text-center">
             <%= if link.tag do %>
               <div>{render(PhilomenaWeb.TagView, "_tag.html", tag: link.tag, conn: @conn)}</div>
             <% end %>
@@ -122,48 +134,56 @@
         </div>
       <% end %>
     </div>
-    <div class="block">
-      <%= if manages_awards?(@conn) and not hide_staff_tools?(@conn) do %>
-        <a class="block__header--single-item" href={~p"/profiles/#{@user}/awards/new"}>Badges</a>
-      <% else %>
-        <div class="block__header"><span class="block__header__title">Badges</span></div>
-      <% end %>
+    <div class="block striped">
+      <div class="block-header">
+        <span class="block-header-title">Badges</span>
+        <div
+          :if={manages_awards?(@conn) and not hide_staff_tools?(@conn)}
+          class="block-header-actions"
+        >
+          <a href={~p"/profiles/#{@user}/awards/new"}><i class="fa fa-plus"></i> Award</a>
+        </div>
+      </div>
       <%= for award <- award_order(@user.awards) do %>
         <div
-          class="block__content flex flex--centered flex--center-distributed alternating-color no-overflow"
+          class="block-content flex items-center justify-center"
           title={award.label}
         >
-          <div class="flex__grow center">
-            <div class="badge">
+          <div class="flex-1 text-center">
+            <div class="award">
               {badge_image(award.badge, alt: award.label, width: "32", height: "32")}
             </div>
             <br />{award_title(award)}
           </div>
-          <div class="flex__grow center">
+          <div class="flex-1 text-center">
             {pretty_time(award.awarded_on)}
             <%= if manages_awards?(@conn) do %>
               {user_abbrv(award.awarded_by)}
             <% end %>
           </div>
           <%= if manages_awards?(@conn) do %>
-            <div class="flex__grow center">
+            <div class="flex-1 text-center">
               <a
+                class="touch-link"
                 data-confirm="Are you really, really sure?"
                 data-method="delete"
                 href={~p"/profiles/#{@user}/awards/#{award}"}
-              >Remove</a> <br /><a href={~p"/profiles/#{@user}/awards/#{award}/edit"}>Edit</a>
+              >Remove</a>
+              <br /><a class="touch-link" href={~p"/profiles/#{@user}/awards/#{award}/edit"}>Edit</a>
             </div>
           <% end %>
         </div>
       <% end %>
     </div>
-    <div class="block">
-      <div class="block__header">
-        <%= if can?(@conn, :edit_description, @user) do %>
-          <a class="block__header--single-item" href={~p"/profiles/#{@user}/description/edit"}>About Me</a>
-        <% else %>
-          <span class="block__header__title">About Me</span>
-        <% end %>
+    <div
+      :if={@user.description not in [nil, ""] or can?(@conn, :edit_description, @user)}
+      class="block"
+    >
+      <div class="block-header">
+        <span class="block-header-title">About Me</span>
+        <div :if={can?(@conn, :edit_description, @user)} class="block-header-actions">
+          <a href={~p"/profiles/#{@user}/description/edit"}><i class="fa fa-edit"></i> Edit</a>
+        </div>
       </div>
       {render(PhilomenaWeb.ProfileView, "_about_me.html",
         user: @user,
@@ -173,59 +193,73 @@
     </div>
     <%= if can_read_mod_notes?(@conn, @user) and not hide_staff_tools?(@conn) do %>
       <div class="block">
-        <div class="block__header flex flex--no-wrap">
-          <a class="flex__grow" href={~p"/admin/mod_notes?#{[user_id: @user.id]}"}>Mod Notes</a><a
-            class="flex__right flex__shrink"
-            href={~p"/admin/mod_notes/new?#{[user_id: @user.id]}"}
-          ><i class="fa fa-plus"></i> New</a>
+        <div class="block-header">
+          <a href={~p"/admin/mod_notes?#{[user_id: @user.id]}"}>Mod Notes</a>
+          <div class="block-header-actions">
+            <a href={~p"/admin/mod_notes/new?#{[user_id: @user.id]}"}><i class="fa fa-plus"></i>
+            New</a>
+          </div>
         </div>
         <%= if Enum.any?(@mod_notes) do %>
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Note</th>
-                <th>Created</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= for {mod_note, body} <- @mod_notes do %>
-                <tr>
-                  <td>{body}</td>
-                  <td>{pretty_time(mod_note.created_at)}</td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
+          <div class="block-content">
+            <div class="table-wrap responsive">
+              <table class="table striped">
+                <thead>
+                  <tr>
+                    <th>Note</th>
+                    <th>Created</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <%= for {mod_note, body} <- @mod_notes do %>
+                    <tr>
+                      <td class="markdown">{body}</td>
+                      <td>{pretty_time(mod_note.created_at)}</td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
         <% end %>
       </div>
       <div class="block">
-        <a class="block__header--single-item" href={~p"/profiles/#{@user}/scratchpad/edit"}>Moderation Scratchpad</a>
-        <div class="block__content profile-about">{@scratchpad}</div>
+        <div class="block-header">
+          <span class="block-header-title">Moderation Scratchpad</span>
+          <div class="block-header-actions">
+            <a href={~p"/profiles/#{@user}/scratchpad/edit"}><i class="fa fa-edit"></i> Edit</a>
+          </div>
+        </div>
+        <div class="block-content markdown">{@scratchpad}</div>
       </div>
     <% end %>
     <%= if can_see_user_name_changes?(@conn, @user) and not hide_staff_tools?(@conn) and Enum.any?(@name_changes) do %>
       <div class="block">
-        <div class="block__header"><span class="block__header__title">Name History</span></div>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Changed</th>
-            </tr>
-          </thead>
-          <tbody>
-            <%= for nc <- @name_changes do %>
-              <tr>
-                <td>{nc.name}</td>
-                <td>{pretty_time(nc.created_at)}</td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
+        <div class="block-header"><span class="block-header-title">Name History</span></div>
+        <div class="block-content">
+          <div class="table-wrap responsive">
+            <table class="table striped">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Changed</th>
+                </tr>
+              </thead>
+              <tbody>
+                <%= for nc <- @name_changes do %>
+                  <tr>
+                    <td>{nc.name}</td>
+                    <td>{pretty_time(nc.created_at)}</td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     <% end %>
   </div>
-  <div class="column-layout__main">
+  <div class="layout-main">
     {render(PhilomenaWeb.ProfileView, "_statistics.html",
       user: @user,
       statistics: @statistics,

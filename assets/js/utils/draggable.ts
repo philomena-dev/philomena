@@ -61,7 +61,7 @@ function dragEnd(_event: DragEvent, target: HTMLElement) {
 }
 
 export function initDraggables() {
-  const draggableSelector = '.drag-container [draggable]';
+  const draggableSelector = '.js-drag-container [draggable]';
   delegate(document, 'dragstart', { [draggableSelector]: dragStart });
   delegate(document, 'dragover', { [draggableSelector]: dragOver });
   delegate(document, 'dragenter', { [draggableSelector]: dragEnter });

@@ -1,7 +1,7 @@
 <% size = assigns[:size] || :full %>
 <% embed_display = assigns[:embed_display] || false %>
 <%= content_tag :div, [data: image_container_data(@conn, @image, size), class: "image-show-container"] do %>
-  <div class="block block--fixed block--warning block--no-margin image-filtered hidden">
+  <div class="alert alert-warning js-image-filtered hidden">
     <strong>{link(
       "This image is blocked by your current filter - click here to display it anyway",
       to: "#",
@@ -14,14 +14,13 @@
         data: [click_unfilter: @image.id]
       )}
     </p>
-    <span class="filter-explanation"></span> {link("your current filter",
-      to: ~p"/filters/#{@conn.assigns.current_filter}",
-      class: "filter-link"
+    <span class="js-filter-explanation"></span> {link("your current filter",
+      to: ~p"/filters/#{@conn.assigns.current_filter}"
     )}.
   </div>
   <%= if size == :full and not embed_display do %>
     <div
-      class="image-target hidden image-show"
+      class="image-target hidden js-image-show"
       data-height={@image.image_height}
       data-image-size={@image.image_size}
       data-mime-type={@image.image_mime_type}
@@ -36,7 +35,7 @@
       <% end %>
     </div>
   <% else %>
-    <div class="image-show hidden">
+    <div class="js-image-show hidden">
       <a href={~p"/images/#{@image}"} title={title_text(@image)}><span class="imgspoiler"><% thumb_url =
         thumb_url(@image, can?(@conn, :show, @image), size) %>
       <%= if @image.image_mime_type == "video/webm" do %>

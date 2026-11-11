@@ -1,15 +1,15 @@
 <h1>Deleting all changes for user {@user.name}</h1>
-<div class="block block--fixed block--warning">
+<div class="card card-warning">
   <p>This is IRREVERSIBLE.</p>
   <p>All user details will be destroyed.</p>
   <p>Are you really, really sure?</p>
 </div>
-<div class="field">
+<div class="form-control">
   {button_to("Abort", ~p"/profiles/#{@user}", class: "button")} {button_to(
     "Erase user",
     ~p"/admin/users/#{@user}/erase",
     method: "post",
-    class: "button button--state-danger"
+    class: "button button-danger"
   )}
 </div>
 <p>

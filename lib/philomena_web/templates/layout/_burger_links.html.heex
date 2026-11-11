@@ -1,0 +1,9 @@
+<a
+  :for={link <- @links}
+  class={["burger-item", current_page?(@conn, link.path) && "current"]}
+  data-method={link[:method]}
+  href={link.path}
+>
+  <span class="burger-icon"><i class={[!assigns[:nested] && link[:icon], "fa-fw"]}></i></span>
+  {link.label}<span :if={link[:count]} class="counter subtle">{link.count}</span>
+</a>

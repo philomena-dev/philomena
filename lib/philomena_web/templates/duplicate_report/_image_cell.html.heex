@@ -1,31 +1,24 @@
-<div class="flex flex--column flex--spaced-out flex--centered flex--no-wrap center dr__image-cell">
-  <p>
-    <%= if is_nil(@image) do %>
-      (Image now hard-deleted)
-    <% else %>
-      #{@image.id}
-    <% end %>
-  </p>
-  <div class="dupe-report-list--image-container">
-    {render(PhilomenaWeb.ImageView, "_image_container.html",
-      image: @image,
-      size: :thumb_small,
-      conn: @conn
-    )}
-  </div>
+<div class="flex flex-col justify-between items-center flex-nowrap text-center">
+  <p>#{@image.id}</p>
+  {render(PhilomenaWeb.ImageView, "_image_container.html",
+    image: @image,
+    size: :thumb_small,
+    class: "dupe-report-image",
+    conn: @conn
+  )}
   <p>{@image.image_width}x{@image.image_height}</p>
   <p>
     {render(PhilomenaWeb.UserAttributionView, "_anon_user.html", object: @image, conn: @conn)}
   </p>
   <%= if can?(@conn, :accept, @report) and mergeable?(@report) do %>
     <%= if @source do %>
-      <%= form_for @conn, ~p"/duplicate_reports/#{@report}/accept_reverse", [method: "post", class: "button_to js-duplicate-report", data: [remote: "true"]], fn _f -> %>
-        <button class="button button--separate-right" data-disable-with="Loading…" type="submit">Keep Source
+      <%= form_for @conn, ~p"/duplicate_reports/#{@report}/accept_reverse", [method: "post", class: "button-to js-duplicate-report", data: [remote: "true"]], fn _f -> %>
+        <button class="button me-md" data-disable-with="Loading…" type="submit">Keep Source
         <i class="fa fa-arrow-left"></i></button>
       <% end %>
     <% else %>
-      <%= form_for @conn, ~p"/duplicate_reports/#{@report}/accept", [method: "post", class: "button_to js-duplicate-report", data: [remote: "true"]], fn _f -> %>
-        <button class="button button--separate-right" data-disable-with="Loading…" type="submit"><i class="fa fa-arrow-right"></i>
+      <%= form_for @conn, ~p"/duplicate_reports/#{@report}/accept", [method: "post", class: "button-to js-duplicate-report", data: [remote: "true"]], fn _f -> %>
+        <button class="button me-md" data-disable-with="Loading…" type="submit"><i class="fa fa-arrow-right"></i>
         Keep Target</button>
       <% end %>
     <% end %>

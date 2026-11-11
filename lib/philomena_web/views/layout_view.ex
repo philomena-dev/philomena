@@ -9,14 +9,13 @@ defmodule PhilomenaWeb.LayoutView do
   alias Philomena.Users.Settings
   alias Plug.Conn
 
-  @themes Settings.themes()
-
   def layout_class(conn) do
-    conn.assigns[:layout_class] || "layout--narrow"
+    conn.assigns[:layout_class] || "page-narrow"
   end
 
-  def container_class(%{settings: %{use_centered_layout: false}}), do: nil
-  def container_class(_user), do: "layout--center-aligned"
+  @doc "Centers the page, unless the signed-in user turned that off."
+  def centering_class(%{settings: %{use_centered_layout: false}}), do: nil
+  def centering_class(_user), do: "page-centered"
 
   def philomena_version, do: Application.spec(:philomena, :vsn)
 
@@ -87,18 +86,23 @@ defmodule PhilomenaWeb.LayoutView do
     Config.get(:footer)
   end
 
-  def stylesheet_path(conn, %{settings: %{theme: theme}})
-      when theme in @themes,
-      do: static_path(conn, "/css/#{theme}.css")
+  @doc """
+  The mode (`dark` or `light`) of a signed-in user's theme, for `<html data-theme>`. Anonymous users have none:
+  their pages follow the system's color scheme.
+  """
+  def theme_mode(nil), do: nil
+  def theme_mode(user), do: user |> user_theme() |> Settings.split_theme() |> elem(0)
 
-  def stylesheet_path(_conn, _user),
-    do: ~p"/css/dark-blue.css"
+  def user_stylesheet_path(user), do: user |> user_theme() |> theme_stylesheet_path()
 
-  def light_stylesheet_path(_conn),
-    do: ~p"/css/light-blue.css"
+  @doc "The stylesheet of a theme such as `dark-purple`: the one of its color, for both modes."
+  def theme_stylesheet_path(theme) do
+    {_name, color} = Settings.split_theme(theme)
+    static_path(PhilomenaWeb.Endpoint, "/css/#{color}.css")
+  end
 
-  def theme_name(%{settings: %{theme: theme}}), do: theme
-  def theme_name(_user), do: "dark-blue"
+  defp user_theme(%{settings: %{theme: theme}}), do: theme
+  defp user_theme(_user), do: %Settings{}.theme
 
   def hide_staff_tools_attribute(conn),
     do: if(conn.cookies["hide_staff_tools"] == "true", do: "true", else: "false")
@@ -110,6 +114,141 @@ defmodule PhilomenaWeb.LayoutView do
     do:
       !is_nil(conn.assigns[:image]) and conn.assigns.image.__meta__.state == :loaded and
         is_list(conn.assigns.image.tags)
+
+  @doc """
+  The sections of the site that the secondary bar and the burger menu link to, each with the pages under it.
+  """
+  def site_sections(conn) do
+    forums = Enum.map(conn.assigns.forums, &%{label: &1.name, path: ~p"/forums/#{&1}"})
+
+    [
+      %{
+        icon: "fa fa-images",
+        label: "Images",
+        path: ~p"/images",
+        pages: [%{icon: "fa fa-random", label: "Random", path: ~p"/images/random"}]
+      },
+      %{
+        icon: "fa fa-bolt",
+        label: "Activity",
+        path: ~p"/activity",
+        pages: [%{icon: "fa fa-comments", label: "Comments", path: ~p"/comments"}]
+      },
+      %{
+        icon: "fas fa-pen-square",
+        label: "Forums",
+        path: ~p"/forums",
+        pages: forums ++ [%{icon: "fa fa-search", label: "Post Search", path: ~p"/posts"}]
+      },
+      %{
+        icon: "fa fa-tag",
+        label: "Tags",
+        path: ~p"/tags",
+        pages: [%{icon: "fa fa-tags", label: "Tag Changes", path: ~p"/tag_changes"}]
+      },
+      %{
+        icon: "fa fa-podcast",
+        label: "Live",
+        path: ~p"/channels",
+        pages: [],
+        count: conn.assigns.live_channels
+      },
+      %{icon: "fa fa-image", label: "Galleries", path: ~p"/galleries", pages: []},
+      %{icon: "fa fa-address-card", label: "Commissions", path: ~p"/commissions", pages: []}
+    ]
+  end
+
+  @doc """
+  The selects that switch a signed-in user's current filter and spoiler type, which the header and the
+  burger menu render: an optional `name` replaces the parameter the select submits, an optional
+  `header_class` hides it in the header.
+  """
+  def quick_selects(assigns) do
+    [
+      %{
+        key: "filter",
+        label: "Filter",
+        changeset: assigns.user_changeset,
+        action: ~p"/filters/current",
+        field: :current_filter_id,
+        options: assigns.available_filters,
+        name: "id"
+      },
+      %{
+        key: "spoiler",
+        label: "Spoilers",
+        changeset: assigns.spoiler_changeset,
+        action: ~p"/filters/spoiler_type",
+        field: :spoiler_type,
+        options: assigns.spoiler_types,
+        header_class: "hidden-below-xl"
+      }
+    ]
+  end
+
+  @doc "The pages of a signed-in user's menu, from the profile to logging out."
+  def user_links(user) do
+    [
+      %{icon: "fa fa-user-circle", label: user.name, path: ~p"/profiles/#{user}"},
+      %{icon: "fa fa-eye", label: "Watched", path: ~p"/search?q=my:watched"},
+      %{icon: "fa fa-star", label: "Faves", path: ~p"/search?q=my:faves"},
+      %{icon: "fa fa-arrow-up", label: "Upvotes", path: ~p"/search?q=my:upvotes"},
+      %{
+        icon: "fa fa-image",
+        label: "Galleries",
+        path: ~p"/galleries?#{[gallery: [creator: user.name]]}"
+      },
+      %{icon: "fa fa-upload", label: "Uploads", path: ~p"/search?q=my:uploads"},
+      %{icon: "fa fa-comments", label: "Comments", path: ~p"/comments?cq=my:comments"},
+      %{icon: "fas fa-pen-square", label: "Posts", path: ~p"/posts?pq=my:posts"},
+      %{icon: "fa fa-link", label: "Links", path: ~p"/profiles/#{user}/artist_links"},
+      %{icon: "fa fa-cogs", label: "Settings", path: ~p"/settings/edit"},
+      %{icon: "fa fa-envelope", label: "Messages", path: ~p"/conversations"},
+      %{icon: "fa fa-user", label: "Account", path: ~p"/registrations/edit"},
+      %{icon: "fa fa-sign-out-alt", label: "Logout", path: ~p"/sessions", method: "delete"}
+    ]
+  end
+
+  @doc """
+  The administration pages the signed-in staff member may manage; every staff role may at least read the mod notes.
+  """
+  def admin_links(conn) do
+    for {allowed?, icon, label, path} <- [
+          {manages_site_notices?(conn), "fa fa-info-circle", "Site Notices",
+           ~p"/admin/site_notices"},
+          {manages_users?(conn), "fa fa-users", "Users", ~p"/admin/users"},
+          {manages_forums?(conn), "fa fa-paragraph", "Forums", ~p"/admin/forums"},
+          {manages_ads?(conn), "fa fa-shopping-bag", "Adverts", ~p"/admin/adverts"},
+          {manages_badges?(conn), "fa fa-trophy", "Badges", ~p"/admin/badges"},
+          {manages_static_pages?(conn), "fa fa-sticky-note", "Pages", ~p"/pages"},
+          {manages_mod_notes?(conn), "fa fa-clipboard", "Mod Notes", ~p"/admin/mod_notes"},
+          {can_see_moderation_log?(conn), "fa fa-list-alt", "Mod Logs", ~p"/moderation_logs"}
+        ],
+        allowed?,
+        do: %{icon: icon, label: label, path: path}
+  end
+
+  @doc "The ban lists, for staff who may ban."
+  def ban_links(conn) do
+    if manages_bans?(conn) do
+      [
+        %{icon: "fa fa-user", label: "User Bans", path: ~p"/admin/user_bans"},
+        %{icon: "fab fa-internet-explorer", label: "IP Bans", path: ~p"/admin/subnet_bans"},
+        %{icon: "fa fa-desktop", label: "FP Bans", path: ~p"/admin/fingerprint_bans"}
+      ]
+    else
+      []
+    end
+  end
+
+  @doc """
+  Whether `path` is the page being shown or a section it belongs to. Links with a query, which are searches,
+  never are.
+  """
+  def current_page?(conn, path) do
+    not String.contains?(path, "?") and
+      (conn.request_path == path or String.starts_with?(conn.request_path, path <> "/"))
+  end
 
   def staff?(conn) do
     case conn.assigns.current_user do

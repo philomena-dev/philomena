@@ -19,6 +19,21 @@ defmodule PhilomenaWeb.TagView do
     can?(conn, :alias, %Tag{})
   end
 
+  @category_classes %{
+    "error" => "tag-error",
+    "rating" => "tag-rating",
+    "origin" => "tag-origin",
+    "character" => "tag-character",
+    "oc" => "tag-oc",
+    "species" => "tag-species",
+    "body-type" => "tag-body",
+    "content-fanmade" => "tag-fanmade",
+    "content-official" => "tag-official",
+    "spoiler" => "tag-spoiler"
+  }
+
+  def tag_class(%{category: category}), do: ["tag", @category_classes[category]]
+
   def pretty_tag_path(%{slug: slug}) do
     "/tags/" <> URI.encode(slug, &(&1 == ?+ or URI.char_unreserved?(&1)))
   end
@@ -34,9 +49,6 @@ defmodule PhilomenaWeb.TagView do
 
   def tab_class(0), do: "selected"
   def tab_class(_), do: nil
-
-  def tab_body_class(0), do: nil
-  def tab_body_class(_), do: "hidden"
 
   def tag_link(nil, tag_name), do: tag_name
 

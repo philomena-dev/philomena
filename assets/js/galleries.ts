@@ -9,9 +9,9 @@ import { initDraggables } from './utils/draggable';
 import { fetchJson } from './utils/requests';
 
 export function setupGalleryEditing() {
-  if (!$('.rearrange-button')) return;
+  if (!$('.js-rearrange-button')) return;
 
-  const [rearrangeEl, saveEl] = $$<HTMLElement>('.rearrange-button');
+  const [rearrangeEl, saveEl] = $$<HTMLElement>('.js-rearrange-button');
   const sortableEl = assertNotNull($<HTMLDivElement>('#sortable'));
   const containerEl = assertNotNull($<HTMLDivElement>('.media-list'));
 
@@ -28,12 +28,12 @@ export function setupGalleryEditing() {
 
   rearrangeEl.addEventListener('click', () => {
     sortableEl.classList.add('editing');
-    containerEl.classList.add('drag-container');
+    containerEl.classList.add('js-drag-container');
   });
 
   saveEl.addEventListener('click', () => {
     sortableEl.classList.remove('editing');
-    containerEl.classList.remove('drag-container');
+    containerEl.classList.remove('js-drag-container');
 
     newImages = $$<HTMLDivElement>('.image-container', containerEl).map(i =>
       parseInt(assertNotUndefined(i.dataset.imageId), 10),

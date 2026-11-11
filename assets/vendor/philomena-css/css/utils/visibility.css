@@ -1,0 +1,75 @@
+/*
+ * Visibility: .hidden hides an element, .hidden-below-{breakpoint} hides it on screens narrower than the breakpoint
+ * and .hidden-from-{breakpoint} from the breakpoint up (sm, md, lg, xl, xxl, see css/config.css). .hidden-print
+ * hides it on paper. .hidden-below-md is "desktop only", .hidden-from-md "mobile only".
+ */
+
+.hidden {
+  display: none !important;
+}
+
+@media not all and (min-width: $breakpoint-sm) {
+  .hidden-below-sm {
+    display: none !important;
+  }
+}
+
+@media (min-width: $breakpoint-sm) {
+  .hidden-from-sm {
+    display: none !important;
+  }
+}
+
+@media not all and (min-width: $breakpoint-md) {
+  .hidden-below-md {
+    display: none !important;
+  }
+}
+
+@media (min-width: $breakpoint-md) {
+  .hidden-from-md {
+    display: none !important;
+  }
+}
+
+@media not all and (min-width: $breakpoint-lg) {
+  .hidden-below-lg {
+    display: none !important;
+  }
+}
+
+@media (min-width: $breakpoint-lg) {
+  .hidden-from-lg {
+    display: none !important;
+  }
+}
+
+@media not all and (min-width: $breakpoint-xl) {
+  .hidden-below-xl {
+    display: none !important;
+  }
+}
+
+@media (min-width: $breakpoint-xl) {
+  .hidden-from-xl {
+    display: none !important;
+  }
+}
+
+@media not all and (min-width: $breakpoint-xxl) {
+  .hidden-below-xxl {
+    display: none !important;
+  }
+}
+
+@media (min-width: $breakpoint-xxl) {
+  .hidden-from-xxl {
+    display: none !important;
+  }
+}
+
+@media print {
+  .hidden-print {
+    display: none !important;
+  }
+}

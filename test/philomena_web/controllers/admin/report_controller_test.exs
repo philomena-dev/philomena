@@ -57,7 +57,10 @@ defmodule PhilomenaWeb.Admin.ReportControllerTest do
     test "allows a moderator", %{conn: conn} do
       %{conn: conn} = register_and_log_in_moderator(%{conn: conn})
       conn = get(conn, ~p"/admin/reports")
-      assert html_response(conn, 200) =~ "Reports"
+      response = html_response(conn, 200)
+      assert response =~ "Reports"
+      assert response =~ ~s(<label for="rq_query">)
+      assert response =~ ~r/<input [^>]*id="rq_query"/
     end
 
     test "allows an admin", %{conn: conn} do

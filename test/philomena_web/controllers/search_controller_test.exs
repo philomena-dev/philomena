@@ -20,6 +20,15 @@ defmodule PhilomenaWeb.SearchControllerTest do
   end
 
   describe "GET /search" do
+    test "renders search parameters that are not text as blank", %{conn: conn} do
+      conn = get(conn, "/search?q[x]=1&sf[x]=1&sd[x]=1&hidden[x]=1")
+      response = html_response(conn, 200)
+
+      assert response =~ "Searching for  - Derpibooru"
+      refute response =~ ~r/name="q"[^>]* value=/
+      refute response =~ ~s(name="hidden")
+    end
+
     test "renders matching images for anonymous users", %{conn: conn} do
       wanted = image_fixture(tags: "safe, test wanted tag")
       other = image_fixture(tags: "safe, test unrelated tag")

@@ -10,7 +10,7 @@ pagination =
 other = other_party(@current_user, @conversation) %>
 <h1>{@conversation.title}</h1>
 <div class="block">
-  <div class="block__header">
+  <div class="block-header">
     {link("Message Center", to: ~p"/conversations")} &raquo; {link(@conversation.title,
       to: ~p"/conversations/#{@conversation}"
     )} Conversation with {render(PhilomenaWeb.UserAttributionView, "_user.html",
@@ -18,16 +18,29 @@ other = other_party(@current_user, @conversation) %>
       conn: @conn
     )}
   </div>
-  <div class="block__header--sub block__header--light page__header">
-    <span class="block__header__title page__title">{@messages.total_entries} {pluralize(
+  <div class="block-header sub">
+    <span class="block-header-title">{@messages.total_entries} {pluralize(
       "message",
       "messages",
       @messages.total_entries
     )}</span>
-    <div class="page__pagination">{pagination}</div>
-    <div class="page__info" phx-no-format>
-      <%= if hidden_by?(@current_user, @conversation) do %>{link "Restore conversation", to: ~p"/conversations/#{@conversation}/hide", data: [method: "delete"]}<% else %>{link "Remove conversation", to: ~p"/conversations/#{@conversation}/hide", data: [method: "post", confirm: "Are you really, really sure?"]}<% end %>{link "Report conversation", to: ~p"/conversations/#{@conversation}/reports/new"}{link "Mark as unread", to: ~p"/conversations/#{@conversation}/read", data: [method: "delete"]}
-    </div>
+    {pagination}
+    <%= if hidden_by?(@current_user, @conversation) do %>
+      {link("Restore conversation",
+        to: ~p"/conversations/#{@conversation}/hide",
+        data: [method: "delete"]
+      )}
+    <% else %>
+      {link("Remove conversation",
+        to: ~p"/conversations/#{@conversation}/hide",
+        data: [method: "post", confirm: "Are you really, really sure?"]
+      )}
+    <% end %>
+    {link("Report conversation", to: ~p"/conversations/#{@conversation}/reports/new")}
+    {link("Mark as unread",
+      to: ~p"/conversations/#{@conversation}/read",
+      data: [method: "delete"]
+    )}
   </div>
 </div>
 <%= for {message, body} <- @messages do %>
@@ -38,19 +51,19 @@ other = other_party(@current_user, @conversation) %>
     conn: @conn
   )}
 <% end %>
-<div class="block">
-  <div class="block__header block__header--light page__header">
-    <div class="page__pagination">{pagination}</div>
+<div :if={multiple_pages?(@messages)} class="block">
+  <div class="block-header sub">
+    {pagination}
   </div>
 </div>
 <%= if not @trusted? do %>
-  <div class="block block--fixed block--warning hidden js-hidden-warning">
+  <div class="card card-warning hidden js-hidden-warning">
     <h2>Warning!</h2>
     <p>
       <strong>Your account is too new, so your PM will need to be reviewed by staff members.</strong>
       This is because it contains an external image. If you are not okay with a moderator viewing this PM conversation, please consider linking the image instead of embedding it (change
-      <code>![</code>
-      to <code>[</code>).
+      <code class="code-span">![</code>
+      to <code class="code-span">[</code>).
     </p>
   </div>
 <% end %>

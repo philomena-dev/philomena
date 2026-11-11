@@ -1,0 +1,35 @@
+<%!-- The avatar, author and text of a comment, post, report or version: the author's avatar, or the commented image
+      when given as image --%>
+<div class="communication-body">
+  <%= if assigns[:image] do %>
+    <div class="communication-avatar">
+      {render(PhilomenaWeb.ImageView, "_image_container.html",
+        image: @image,
+        size: :thumb_tiny,
+        conn: @conn
+      )}
+    </div>
+  <% else %>
+    {render(PhilomenaWeb.UserAttributionView, "_anon_user_avatar.html",
+      object: @object,
+      class: "avatar-md communication-avatar",
+      conn: @conn
+    )}
+  <% end %>
+  <div class="communication-content">
+    <div class="communication-author">
+      <span class="communication-author-name">{render(
+        PhilomenaWeb.UserAttributionView,
+        "_anon_user.html",
+        object: @object,
+        awards: true,
+        conn: @conn
+      )}</span>
+      {render(PhilomenaWeb.UserAttributionView, "_anon_user_title.html",
+        object: @object,
+        conn: @conn
+      )}
+    </div>
+    <div :if={@text} class="communication-text">{@text}</div>
+  </div>
+</div>

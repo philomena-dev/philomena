@@ -1,0 +1,93 @@
+/*
+ * A list of tag changes, each a card (in the success color when staff made it) with the image beside who made it,
+ * the tags added and removed and the staff tools.
+ */
+
+/* The cards are dense, with a medium padding */
+.tag-change {
+  --card-padding: var(--spacing-md);
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.tag-change-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+.tag-change-info {
+  display: flex;
+  flex: 1 0 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-md);
+  max-width: 100%;
+}
+
+.tag-change-image {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.tag-change-added,
+.tag-change-removed {
+  display: flex;
+  flex: 1 0 auto;
+  gap: var(--spacing-md);
+}
+
+.tag-change-added {
+  background-color: var(--success-tint-color);
+}
+
+.tag-change-removed {
+  background-color: var(--danger-tint-color);
+}
+
+.tag-change-added > i,
+.tag-change-removed > i {
+  align-self: center;
+  padding: var(--spacing-md);
+  font-size: 0.75em;
+}
+
+.tag-change-tags .tag-list {
+  padding: var(--spacing-sm) 0;
+}
+
+.tag-change-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: var(--border-thick-width) solid var(--tint-color);
+}
+
+/* Phones wrap the tools and give their links the height of a touch target */
+@media not all and (min-width: $breakpoint-md) {
+  .tag-change-tools {
+    flex-wrap: wrap;
+  }
+
+  .tag-change-tools > a:not(.button) {
+    @mixin touch-target;
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* A tag that a later change took back */
+.tag-change-not-retained .tag-name {
+  text-decoration: line-through;
+  font-weight: normal;
+  font-style: italic;
+}
+
+.tag-change-not-retained .tag-count {
+  display: none;
+}

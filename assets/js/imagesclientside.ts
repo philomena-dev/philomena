@@ -65,7 +65,7 @@ function spoilerThumbTyped(img: HTMLDivElement, tagsHit: TagData[], type: Callba
 function hideBlockTyped(img: HTMLDivElement, tagsHit: TagData[], type: CallbackType) {
   const bannerText =
     type === 'tags'
-      ? `This image is tagged <code>${escapeHtml(tagsHit[0].name)}</code>, which is hidden by `
+      ? `This image is tagged <code class="code-span">${escapeHtml(tagsHit[0].name)}</code>, which is hidden by `
       : 'This image was hidden by a complex tag expression in ';
   spoilerBlock(img, bannerImage(tagsHit), bannerText);
 }
@@ -73,7 +73,7 @@ function hideBlockTyped(img: HTMLDivElement, tagsHit: TagData[], type: CallbackT
 function spoilerBlockTyped(img: HTMLDivElement, tagsHit: TagData[], type: CallbackType) {
   const bannerText =
     type === 'tags'
-      ? `This image is tagged <code>${escapeHtml(tagsHit[0].name)}</code>, which is spoilered by `
+      ? `This image is tagged <code class="code-span">${escapeHtml(tagsHit[0].name)}</code>, which is spoilered by `
       : 'This image was spoilered by a complex tag expression in ';
   spoilerBlock(img, bannerImage(tagsHit), bannerText);
 }

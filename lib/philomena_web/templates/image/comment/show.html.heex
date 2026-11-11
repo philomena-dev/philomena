@@ -1,1 +1,5 @@
-{render(PhilomenaWeb.CommentView, "_comment.html", comment: @comment, body: @body, conn: @conn)}
+{render(PhilomenaWeb.CommunicationView, "_communication.html",
+  object: @comment,
+  body: @body,
+  conn: @conn
+)}

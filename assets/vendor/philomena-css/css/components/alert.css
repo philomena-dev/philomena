@@ -1,0 +1,36 @@
+/*
+ * An alert, as Philomena's flash notices: a flat tinted bar of text and links, with no title, border or shadow.
+ * Without a color it is neutral, like every other component; .alert-{type} tints it and colors its links and icon.
+ * An icon is optional: put an .alert-icon first and the text in an .alert-text, which keeps its lines beside the icon:
+ *   <div class="alert alert-warning"><span class="alert-icon">…</span><div class="alert-text">Text</div></div>
+ */
+
+.alert {
+  padding: var(--alert-padding-vertical) var(--alert-padding-horizontal);
+  border-radius: var(--border-radius-inner);
+  color: var(--text-color);
+  background-color: var(--neutral-tint-color);
+  line-height: var(--text-line-height);
+  overflow-wrap: anywhere;
+}
+
+.alert a {
+  color: var(--neutral-tint-text-color);
+  text-decoration: underline;
+}
+
+/* The icon is as tall as a line of the text and floats, so that .alert-text becomes a column next to it */
+.alert .alert-icon {
+  float: left;
+  display: flex;
+  align-items: center;
+  block-size: calc(1em * var(--text-line-height));
+  margin-inline-end: var(--spacing-md);
+  color: var(--neutral-tint-text-color);
+}
+
+.alert .alert-text {
+  display: flow-root;
+}
+
+@mixin each-type alert-color-variation;

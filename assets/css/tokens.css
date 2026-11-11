@@ -1,0 +1,153 @@
+/*
+ * Philomena's own tokens and its values of the framework's. Colors are set on the framework's three theme selectors;
+ * the header bars keep the colors of Philomena's themes, with opaque hover colors. The framework's role colors below
+ * repeat its formulas with the lightness read from config.css, which a hue too bright or too dark for the
+ * framework's fixed lightness sets to keep the contrast of the palette.
+ */
+
+/* The header bars have fixed heights, which their fields and items fill */
+:root {
+  --header-height: 36px;
+  --header-secondary-height: 32px;
+  --header-field-height: 28px;
+  --header-spacing-horizontal: 0;
+}
+
+@media (min-width: $breakpoint-md) {
+  :root {
+    --navbar-item-padding-vertical: 0;
+  }
+}
+
+/* Phones: the bars grow with their contents, controls are touch-sized and no text is under 12px */
+@media not all and (min-width: $breakpoint-md) {
+  :root {
+    --header-height: auto;
+    --header-field-height: 3rem;
+    --header-spacing-vertical: 0;
+    --navbar-item-padding-horizontal: var(--spacing-lg);
+    --button-padding-vertical: var(--spacing-lg);
+    --nav-link-padding-vertical: var(--touch-padding-vertical);
+    --input-padding: var(--spacing-lg);
+    --editor-button-size: var(--touch-target-size);
+    --navbar-menu-padding-vertical: var(--touch-padding-vertical);
+    --media-header-padding-vertical: 0;
+    --media-header-small-font-size: var(--media-header-font-size);
+    --text-size-xs: var(--text-size-sm);
+    --code-small-font-size: var(--text-size-sm);
+  }
+}
+
+/* Thumbnails in lists are 225px wide above the xl breakpoint and small up to it; tiny thumbnails are 50px */
+:root {
+  --media-box-width: var(--media-box-small-width);
+  --media-box-tiny-width: 50px;
+}
+
+@media not all and (max-width: $breakpoint-xl) {
+  :root {
+    --media-box-width: 225px;
+  }
+}
+
+/* Controls on phones are at least this tall; a line of text in this vertical padding is as tall */
+:root {
+  --touch-target-size: 3rem;
+  --touch-padding-vertical: calc((var(--touch-target-size) - 1em * var(--base-line-height)) / 2);
+}
+
+/* Phones size badge-sized buttons as regular buttons */
+@media not all and (min-width: $breakpoint-md) {
+  .button-size-badge {
+    --badge-padding-vertical: var(--button-padding-vertical);
+    --badge-padding-horizontal: var(--button-padding-horizontal);
+    --badge-font-size: var(--button-font-size);
+  }
+}
+
+/* The side column of two-column pages fits the featured image box */
+:root {
+  --layout-side-width: 326px;
+}
+
+/* Tags are bordered and square; the tag options of the settings (css/options/) remove the border or round them */
+:root {
+  --tag-border: var(--border-width);
+  --tag-border-radius: 0;
+}
+
+@define-mixin philomena-light-colors {
+  color-scheme: light;
+  --link-color: hsl(from $link-color-light h s $link-lightness-light);
+  --link-strong-color: hsl(from $link-color-light h s $link-strong-lightness-light);
+  --placeholder-color: hsl(from $base-color-light h calc(s - 40) $placeholder-lightness-light);
+  --bar-link-color: hsl(from $base-color-light h s $bar-link-lightness-light);
+  --control-border-color: hsl(from $base-color-light h calc(s - 20) $control-border-lightness-light);
+  --focus-color: hsl(from $base-color-light h s $focus-lightness-light);
+
+  @mixin type-color-light neutral, $base-color-light, -48, $neutral-fill-light;
+  @mixin type-color-light primary, $primary-color, 0, $primary-fill-light;
+  @mixin type-color-light warning, $warning-color, 0, $warning-fill-light;
+  @mixin type-color-light danger, $danger-color, 0, $danger-fill-light;
+  --header-color: hsl(from $base-color-light h s calc(l - 9));
+  --header-text-color: $surface-color-light;
+  --bar-hover-shade-color: hsl(from $base-color-light h s calc(l - 16));
+  --header-field-color: $base-color-light;
+  --header-field-hover-color: hsl(from $base-color-light h s calc(l - 7));
+  --header-placeholder-color: rgb(from $surface-color-light r g b / 0.54);
+  --header-secondary-color: hsl(from $base-color-light h calc(s - 25) calc(l + 30));
+  --header-secondary-hover-color: hsl(from $base-color-light h calc(s - 25) calc(l + 23));
+  --header-admin-color: $header-admin-color-light;
+  --header-admin-hover-color: $header-admin-hover-color-light;
+  --search-icon-hover-color: $link-hover-color-light;
+  --burger-color: $burger-color-light;
+  --burger-hover-color: $base-color-light;
+  --burger-hover-text-color: $surface-color-light;
+  --burger-divider-color: $burger-divider-color-light;
+  --notice-color: hsl(from $base-color-light h s calc(l - 32));
+  --notice-link-color: hsl(from $base-color-light h calc(s - 16) calc(l + 31));
+  --notice-link-hover-color: hsl(from $base-color-light h calc(s - 5) calc(l + 20));
+}
+
+:root {
+  color-scheme: dark;
+  --link-color: hsl(from $link-color-dark h s $link-lightness-dark);
+  --link-strong-color: hsl(from $link-color-dark h s $link-strong-lightness-dark);
+  --tint-color: hsl(from $base-color-dark h s $tint-lightness-dark);
+  --control-border-color: hsl(from $base-color-dark h s $control-border-lightness-dark);
+  --focus-color: hsl(from $base-color-dark h calc(s + 15) $focus-lightness-dark);
+
+  @mixin type-color-dark neutral, $base-color-dark, -9, $neutral-fill-dark;
+  @mixin type-color-dark primary, $primary-color, 0, $primary-fill-dark;
+  @mixin type-color-dark warning, $warning-color, 0, $warning-fill-dark;
+  @mixin type-color-dark danger, $danger-color, 0, $danger-fill-dark;
+  --header-color: $header-color-dark;
+  --header-text-color: $text-color-dark;
+  --bar-hover-shade-color: hsl(from $header-color-dark h s calc(l - 8));
+  --header-field-color: $header-field-color-dark;
+  --header-field-hover-color: hsl(from $header-color-dark h s calc(l - 12));
+  --header-placeholder-color: rgb(from $text-color-dark r g b / 0.54);
+  --header-secondary-color: $header-secondary-color-dark;
+  --header-secondary-hover-color: hsl(from $header-secondary-color-dark h s calc(l - 4));
+  --header-admin-color: $header-admin-color-dark;
+  --header-admin-hover-color: hsl(from $header-admin-color-dark h s calc(l - 5));
+  --search-icon-hover-color: $link-hover-color-dark;
+  --burger-color: $burger-color-dark;
+  --burger-hover-color: $base-color-dark;
+  --burger-hover-text-color: $text-color-dark;
+  --burger-divider-color: $burger-divider-color-dark;
+  --unread-message-color: $unread-message-color;
+  --notice-color: $notice-color-dark;
+  --notice-link-color: hsl(from $block-header-link-text-color-dark h calc(s - 20) calc(l + 8));
+  --notice-link-hover-color: hsl(from $block-header-link-text-color-dark h calc(s - 20) l);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    @mixin philomena-light-colors;
+  }
+}
+
+:root[data-theme="light"] {
+  @mixin philomena-light-colors;
+}

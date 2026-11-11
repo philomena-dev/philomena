@@ -13,6 +13,7 @@ import {
 } from '../utils/suggestions-view';
 import { prefixMatchParts } from '../utils/suggestions-model';
 import { $$ } from '../utils/dom';
+import { requestSubmit } from '../utils/request-submit';
 import { AutocompleteClient, GetTagSuggestionsRequest } from './client';
 import { DebouncedCache } from '../utils/debounced-cache';
 import store from '../utils/store';
@@ -372,10 +373,9 @@ class Autocomplete {
     this.input.element.dispatchEvent(newEvent);
 
     if (ctrlKey || (suggestion instanceof HistorySuggestionComponent && !shiftKey)) {
-      // We use `requestSubmit()` instead of `submit()` because it triggers the
-      // 'submit' event on the form. We have a handler subscribed to that event
-      // that records the input's value for history tracking.
-      this.input.element.form?.requestSubmit();
+      // The form's 'submit' handler records the input's value for history tracking.
+      const form = this.input.element.form;
+      if (form) requestSubmit(form);
     }
 
     // XXX: it's important to focus the input element first before hiding the popup,

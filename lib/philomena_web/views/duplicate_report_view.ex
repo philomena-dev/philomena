@@ -25,10 +25,10 @@ defmodule PhilomenaWeb.DuplicateReportView do
     ]
   end
 
-  def background_class(%{state: "rejected"}), do: "background-danger"
-  def background_class(%{state: "accepted"}), do: "background-success"
-  def background_class(%{state: "claimed"}), do: "background-warning"
-  def background_class(_duplicate_report), do: nil
+  def state_class(%{state: "rejected"}), do: "alert alert-danger"
+  def state_class(%{state: "accepted"}), do: "alert alert-success"
+  def state_class(%{state: "claimed"}), do: "alert alert-warning"
+  def state_class(_duplicate_report), do: nil
 
   def file_types(%{image: image, duplicate_of_image: duplicate_of_image}) do
     source_type = String.upcase(to_string(image.image_format))

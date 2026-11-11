@@ -88,7 +88,7 @@ defmodule PhilomenaWeb.SingletonToggleTests do
 
   @doc """
   Asserts the 200 subscription partial (`_subscription.html`,
-  `layout: false`) and returns whether it renders in the watching state -
+  `layout: false`) for the requested path and returns whether it renders in the watching state -
   the Subscribe (`data-method="post"`) link is the hidden one iff the
   user is subscribed.
   """
@@ -98,6 +98,9 @@ defmodule PhilomenaWeb.SingletonToggleTests do
     # layout: false - a bare partial, no page chrome
     refute response =~ "Derpibooru"
     assert response =~ "js-subscription-target"
+
+    # Both links go on toggling the subscription that was requested
+    assert length(Regex.scan(~r/href="#{Regex.escape(conn.request_path)}"/, response)) == 2
 
     subscribe_link = Regex.run(~r/<a[^>]*data-method="post"[^>]*>/, response)
     assert subscribe_link, "expected a subscribe link in the partial, got: #{response}"

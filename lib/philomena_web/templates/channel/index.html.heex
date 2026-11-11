@@ -9,20 +9,21 @@
         conn: @conn,
         params: [cq: @conn.params["cq"]]
       ) %>
-<%= form_for @changeset, ~p"/channels", [method: "get", class: "hform", enforce_utf8: false], fn f -> %>
-  <div class="field">
+<%= form_for @changeset, ~p"/channels", [method: "get", enforce_utf8: false], fn f -> %>
+  <div class="form-input-group short">
     {text_input(f, :cq,
       name: :cq,
-      class: "input hform__text",
+      class: "input-field",
       placeholder: "Search channels",
       autocapitalize: "none",
       spellcheck: "false"
-    )}{error_tag(f, :cq)}{submit("Search", class: "hform__button button")}
+    )}{submit("Search", class: "button")}
   </div>
+  {error_tag(f, :cq)}
 <% end %>
 <div class="block">
-  <div class="block__header page__header">
-    <div class="page__pagination">{pagination}</div>
+  <div class="block-header">
+    {pagination}
     <%= if @conn.cookies["chan_nsfw"] == "true" do %>
       <a data-method="delete" href={~p"/channels/nsfw"}><i class="fa fa-eye-slash"></i>
       Hide NSFW streams</a>
@@ -31,7 +32,7 @@
       Show NSFW streams</a>
     <% end %>
   </div>
-  <div class="block__content">
+  <div class="block-content">
     <div class="media-list">
       <%= for channel <- @channels || [] do %>
         {render(PhilomenaWeb.ChannelView, "_channel_box.html",
@@ -42,8 +43,8 @@
       <% end %>
     </div>
   </div>
-  <div class="block__header page__header">
-    <div class="page__pagination">{pagination}</div>
+  <div :if={multiple_pages?(@channels)} class="block-header">
+    {pagination}
   </div>
 </div>
 <br />

@@ -94,20 +94,20 @@ describe('filterNode', () => {
     const element = document.createElement('div');
     element.innerHTML = `
       <div class="image-show-container" data-image-id="1" data-image-tags="[1]">
-        <div class="image-filtered hidden">
+        <div class="js-image-filtered hidden">
           <img src=""/>
-          <span class="filter-explanation"></span>
+          <span class="js-filter-explanation"></span>
         </div>
-        <div class="image-show hidden">
+        <div class="js-image-show hidden">
           <picture><img src=""/></picture>
         </div>
       </div>
     `;
     return [
       element,
-      assertNotNull($<HTMLDivElement>('.image-filtered', element)),
-      assertNotNull($<HTMLDivElement>('.image-show', element)),
-      assertNotNull($<HTMLSpanElement>('.filter-explanation', element)),
+      assertNotNull($<HTMLDivElement>('.js-image-filtered', element)),
+      assertNotNull($<HTMLDivElement>('.js-image-show', element)),
+      assertNotNull($<HTMLSpanElement>('.js-filter-explanation', element)),
     ];
   }
 

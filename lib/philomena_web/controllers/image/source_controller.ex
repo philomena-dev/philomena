@@ -1,9 +1,8 @@
 defmodule PhilomenaWeb.Image.SourceController do
   use PhilomenaWeb, :controller
 
-  alias Philomena.Images.Source
   alias Philomena.Images
-  alias PhilomenaWeb.RateLimitedResponse
+  alias PhilomenaWeb.RefusalResponse
 
   action_fallback PhilomenaWeb.FallbackController
 
@@ -13,9 +12,7 @@ defmodule PhilomenaWeb.Image.SourceController do
   def update(conn, %{"image" => image_params} = params) do
     case Images.update_image_sources(conn.assigns.actor, params["image_id"], image_params) do
       {:ok, %{image: image, source_change_count: count}} ->
-        changeset =
-          %{image | sources: sources_for_edit(image.sources)}
-          |> Images.change_image()
+        changeset = Images.change_image(image)
 
         conn
         |> put_view(PhilomenaWeb.ImageView)
@@ -37,14 +34,10 @@ defmodule PhilomenaWeb.Image.SourceController do
         )
 
       {:error, :rate_limited} ->
-        RateLimitedResponse.call(conn, "You may only update metadata once every 5 seconds.")
+        RefusalResponse.call(conn, "You may only update metadata once every 5 seconds.")
 
       {:error, _} = error ->
         error
     end
   end
-
-  defp sources_for_edit(), do: [%Source{}]
-  defp sources_for_edit([]), do: sources_for_edit()
-  defp sources_for_edit(sources), do: sources
 end

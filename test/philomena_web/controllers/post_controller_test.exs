@@ -24,6 +24,13 @@ defmodule PhilomenaWeb.PostControllerTest do
   end
 
   describe "GET /posts" do
+    test "renders a query that is not text as blank", %{conn: conn} do
+      response = html_response(get(conn, "/posts?pq[x]=1"), 200)
+
+      assert response =~ "Posts - Derpibooru"
+      refute response =~ ~r/name="pq"[^>]* value=/
+    end
+
     test "renders recent posts for anonymous users", %{conn: conn} do
       topic = topic_fixture(forum_fixture())
       _post = post_fixture(topic, nil, %{"body" => "Test searchable post body"})

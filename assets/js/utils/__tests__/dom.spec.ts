@@ -153,7 +153,7 @@ describe('DOM Utilities', () => {
     it('should set the disabled attribute to true on elements provided in multiple arrays', () => {
       const mockElements1 = [document.createElement('input'), document.createElement('button')];
       const mockElements2 = [document.createElement('textarea'), document.createElement('button')];
-      disableEl(mockElements1, mockElements2);
+      disableEl<HTMLInputElement | HTMLButtonElement | HTMLTextAreaElement>(mockElements1, mockElements2);
       expect(mockElements1[0]).toBeDisabled();
       expect(mockElements1[1]).toBeDisabled();
       expect(mockElements2[0]).toBeDisabled();
@@ -178,7 +178,7 @@ describe('DOM Utilities', () => {
     it('should set the disabled attribute to false on elements provided in multiple arrays', () => {
       const mockElements1 = [document.createElement('input'), document.createElement('button')];
       const mockElements2 = [document.createElement('textarea'), document.createElement('button')];
-      enableEl(mockElements1, mockElements2);
+      enableEl<HTMLInputElement | HTMLButtonElement | HTMLTextAreaElement>(mockElements1, mockElements2);
       expect(mockElements1[0]).toBeEnabled();
       expect(mockElements1[1]).toBeEnabled();
       expect(mockElements2[0]).toBeEnabled();

@@ -132,4 +132,22 @@ defmodule PhilomenaWeb.ProfileViewTest do
              )
     end
   end
+
+  test "link_block_class/1 marks a link hidden from the public" do
+    assert ProfileView.link_block_class(%{public: false}) == "artist-link-private"
+    assert ProfileView.link_block_class(%{public: true}) == nil
+  end
+
+  test "sparkline_data/1 draws a bar per day, as high as its share of the busiest day" do
+    html = [3, 0, 6, -2] |> ProfileView.sparkline_data() |> Phoenix.HTML.safe_to_string()
+
+    bars =
+      Regex.scan(
+        ~r/<rect class="sparkline-bar" height="(\d+)" width="1" x="(\d+)" y="(\d+)">/,
+        html,
+        capture: :all_but_first
+      )
+
+    assert bars == [["10", "0", "10"], ["0", "1", "20"], ["20", "2", "0"], ["0", "3", "20"]]
+  end
 end

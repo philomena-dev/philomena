@@ -1,0 +1,51 @@
+/*
+ * Philomena's additions to the framework's form controls.
+ */
+
+/* An input group of a search form is as wide as a short sentence */
+.form-input-group.short {
+  max-inline-size: 30em;
+}
+
+/* On narrow screens the fields of a form take the full width, an input group a row of its own, and the label of a
+   checkbox is a touch target */
+@media not all and (min-width: $breakpoint-md) {
+  .form-input-group {
+    min-inline-size: 100%;
+  }
+
+  .form-control {
+    align-items: stretch;
+  }
+
+  .form-control > .button {
+    align-self: flex-start;
+  }
+
+  .form-control-select > .form-select-input {
+    width: 100%;
+  }
+
+  .form-control-checkbox {
+    align-items: center;
+  }
+
+  .form-control-checkbox > .form-checkbox-label {
+    padding-block: var(--touch-padding-vertical);
+  }
+}
+
+/* The framework's checkbox hover rule needs :has(), which the floor browsers lack; no checkbox is rendered disabled */
+.form-control-checkbox:hover .form-checkbox-input-wrap {
+  border-color: var(--text-color);
+}
+
+/* The editor rings its frame through :has(), which the floor browsers lack; its textarea rings itself instead */
+.editor .editor-input:focus-visible {
+  @mixin focus-ring-inset;
+}
+
+/* The form of a button that submits to a route (PhilomenaWeb.AppView.button_to/3) flows with text */
+.button-to {
+  display: inline;
+}

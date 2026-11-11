@@ -1,0 +1,49 @@
+<%!-- A comment or post as object, with its rendered text as body; image shows the commented image as the avatar --%>
+<% noun = noun(@object)
+staff? = can?(@conn, :hide, @object) %>
+<article
+  class={["communication allow-overflow", @object.hidden_from_users && "deleted"]}
+  id={"#{noun}_#{@object.id}"}
+>
+  <div :if={not @object.approved and not @object.hidden_from_users} class="communication-notice">
+    <span><i class="fas fa-exclamation-triangle"></i>
+    This {noun} is pending approval from a staff member.</span>
+    <%= if can?(@conn, :approve, @object) do %>
+      <div class="button-group separated button-size-badge">
+        <%= link(to: communication_path(@object, :approve), data: [confirm: "Are you sure?"], method: "post", class: "button") do %>
+          <i class="fas fa-check"></i> Approve
+        <% end %>
+        <a
+          class="button"
+          data-click-toggle={"#inline-reject-form-#{noun}-#{@object.id}"}
+          href="#"
+        ><i class="fa fa-times"></i> Reject</a>
+      </div>
+      <%= form_for noun, communication_path(@object, :hide), [class: "hidden flex", id: "inline-reject-form-#{noun}-#{@object.id}"], fn f -> %>
+        {text_input(f, :deletion_reason,
+          class: "input-field full-width",
+          placeholder: "Deletion Reason",
+          id: "inline-reject-reason-#{noun}-#{@object.id}",
+          required: true
+        )}{submit("Delete", class: "button")}
+      <% end %>
+    <% end %>
+  </div>
+  <div :if={@object.hidden_from_users} class="communication-notice">
+    <span>Deletion reason: {@object.deletion_reason}</span>
+    <span :if={staff? and @object.destroyed_content}>This {noun}'s contents have been destroyed.</span>
+    <span :if={staff? and not is_nil(@object.deleted_by)} class="communication-notice-by">
+      {@object.deleted_by.name}
+    </span>
+  </div>
+  {render(PhilomenaWeb.CommunicationView, "_body.html",
+    object: @object,
+    image: assigns[:image],
+    text:
+      if(not @object.hidden_from_users or (staff? and not @object.destroyed_content),
+        do: @body
+      ),
+    conn: @conn
+  )}
+  {render(PhilomenaWeb.CommunicationView, "_options.html", object: @object, conn: @conn)}
+</article>

@@ -1,0 +1,24 @@
+<%= for quick <- quick_selects(assigns) do %>
+  <% {id, class} =
+    if @burger,
+      do: {"#{quick.key}-burger", "burger-item"},
+      else: {"#{quick.key}-quick", ["header-field", quick[:header_class]]} %>
+  <%= form_for quick.changeset, quick.action, [class: class, id: "#{id}-form"], fn f -> %>
+    <% input =
+      select(f, quick.field, quick.options,
+        name: quick[:name] || input_name(f, quick.field),
+        id: "#{id}-menu",
+        class: "header-field-input",
+        data: [change_submit: "##{id}-form"],
+        autocomplete: "off",
+        "aria-label": if(!@burger, do: quick.label)
+      ) %>
+    <%= if @burger do %>
+      <span class="burger-icon"><i class="fa-fw"></i></span>
+      <label for={"#{id}-menu"}>{quick.label}</label>
+      <div class="header-field">{input}</div>
+    <% else %>
+      {input}
+    <% end %>
+  <% end %>
+<% end %>

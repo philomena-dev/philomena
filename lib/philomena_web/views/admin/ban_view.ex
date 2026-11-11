@@ -8,9 +8,9 @@ defmodule PhilomenaWeb.Admin.BanView do
     now = DateTime.utc_now()
 
     if enabled and DateTime.diff(until, now) > 0 do
-      "success"
+      "table-success"
     else
-      "danger"
+      "table-danger"
     end
   end
 
