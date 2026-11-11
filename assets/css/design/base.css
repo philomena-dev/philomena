@@ -9,6 +9,25 @@ body {
   --link-style-hover-decoration: underline;
 }
 
+/* Links in navigational lists (striped block rows, table cells) and in code are underlined only under the pointer */
+.block.striped > .block-content,
+.table th,
+.table td,
+.code-span {
+  --link-style-decoration: none;
+  --link-style-hover-decoration: underline;
+}
+
+/* Markdown in a table cell is prose */
+.table .markdown {
+  @mixin content-links;
+}
+
+/* The framework underlines every link of a table */
+.table a {
+  text-decoration: var(--link-style-decoration, none);
+}
+
 a:hover {
   @mixin links-hover;
 }
