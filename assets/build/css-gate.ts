@@ -124,6 +124,11 @@ function valueNeeds(prop: string, value: string, grid = false): Need[] {
     needs.push(subfeature(prop, 'alt_text'));
   }
 
+  // Two keywords of display, such as `inline flex`, are a syntax of their own
+  if (base === 'display' && parsed.nodes.filter(node => node.type === 'word').length > 1) {
+    needs.push(subfeature(prop, 'multi-keyword_values'));
+  }
+
   parsed.walk(node => {
     // A parenthesized group is a function without a name
     if (node.type === 'function' && node.value) {
@@ -136,6 +141,9 @@ function valueNeeds(prop: string, value: string, grid = false): Need[] {
       needs.push({ path: own || (functions[bare] ?? `css.types.${bare}`), spelling });
       if (node.nodes[0]?.value === 'from' && functions[name]) {
         needs.push({ path: `${functions[name]}.relative_syntax` });
+      }
+      if (node.nodes[0]?.value === 'in' && bcd.css.types.gradient[bare]) {
+        needs.push({ path: `css.types.gradient.${bare}.interpolation_color_space` });
       }
       // The arguments of a vendor function follow that vendor's syntax
       if (prefixed(name)) return false;
@@ -426,11 +434,13 @@ export function checkCss(css: string): string[] {
 
 /**
  * Fails the build when an emitted stylesheet uses a selector, at-rule, property, value, function or unit that a
- * browser of the floor (assets/.browserslistrc) lacks, judged by browser-compat-data, except for keywords set through
- * custom properties, values of several keywords, math keywords inside calc(), keywords under an alternative name,
- * media queries with `not` in parentheses, @import conditions, @font-face descriptor values, the inside of
- * vendor-prefixed functions and the real container of alignment keywords. build/enhancements.ts lists the features
- * accepted anyway.
+ * browser of the floor (assets/.browserslistrc) lacks, judged by browser-compat-data. It does not judge keywords set
+ * through custom properties, keywords that a floor browser has one by one but not in the combination used (two
+ * keywords of display and the color space of a gradient are judged), a gradient with a single color stop, the
+ * font-family keywords of the font shorthand (`font: 12px system-ui`), math keywords inside calc(), keywords under an
+ * alternative name, media queries with `not` in parentheses, @import conditions, @font-face descriptor values, the
+ * inside of vendor-prefixed functions, the real container of alignment keywords and support that browser-compat-data
+ * calls partial (build/floor.ts). build/enhancements.ts lists the features accepted anyway.
  */
 export default function cssGate(): Plugin {
   return {

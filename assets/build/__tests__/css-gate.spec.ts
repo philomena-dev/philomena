@@ -81,6 +81,12 @@ describe('css-gate', () => {
     ['an unprefixed property without its prefix', '.a { user-select: none }', 'css.properties.user-select'],
     ['an unknown property', '.a { colour: red }', 'css.properties.colour'],
     ['a keyword in camel case in the data', '.a { text-decoration: underline currentcolor }', 'currentColor'],
+    ['two keywords of display', '.a { display: inline flex }', 'display.multi-keyword_values'],
+    [
+      'the color space of a gradient',
+      '.a { background: linear-gradient(in srgb, red, blue) }',
+      'linear-gradient.interpolation_color_space',
+    ],
   ])('rejects %s', (_, css, problem) => {
     expect(checkCss(css).join('\n')).toContain(problem);
   });

@@ -58,6 +58,8 @@ function versionAtMost(version: string, limit: string) {
   return value(version) <= value(limit);
 }
 
+// A partial implementation counts as support, such as an outline that does not follow border-radius before Chrome 94,
+// Firefox 88 and Safari 16.4
 function supports(statement: SimpleSupportStatement, version: string, name: string, spelling: string) {
   const added = statement.version_added;
   // Alternative names of selectors are written as `:-webkit-any()`
