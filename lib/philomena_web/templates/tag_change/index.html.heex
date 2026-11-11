@@ -7,12 +7,10 @@
     params: scope(@conn)
   ) %>
 <h1>{@title}</h1>
-<%= form_for :tag_changes, @path, [method: "get", enforce_utf8: false, class: "content"], fn f -> %>
+<%= form_for @conn, @path, [method: "get", enforce_utf8: false, class: "content"], fn f -> %>
   <div class="flex flex-wrap items-start gap-md">
     <div class="form-input-group flex-1">
       {text_input(f, :tcq,
-        name: :tcq,
-        value: @conn.params["tcq"],
         class: "input-field",
         placeholder: "Search tag changes",
         autocapitalize: "none",
@@ -21,24 +19,15 @@
         data: [autocomplete: "multi-tags", autocomplete_condition: "enable_search_ac"]
       )}{submit("Search", class: "button button-primary")}
     </div>
-    {select_field(
-      f,
-      :sf,
-      [
-        "Sort by date": "created_at",
-        "Sort by tag count": "tag_count",
-        "Sort by added tag count": "added_tag_count",
-        "Sort by removed tag count": "removed_tag_count"
-      ],
-      name: :sf,
-      selected: @conn.params["sf"]
-    )} {select_field(
-      f,
-      :sd,
-      [Descending: "desc", Ascending: "asc"],
-      name: :sd,
-      selected: @conn.params["sd"]
-    )}
+    <% sort_fields = [
+      "Sort by date": "created_at",
+      "Sort by tag count": "tag_count",
+      "Sort by added tag count": "added_tag_count",
+      "Sort by removed tag count": "removed_tag_count"
+    ]
+
+    sort_directions = [Descending: "desc", Ascending: "asc"] %>
+    {select_field(f, :sf, sort_fields)} {select_field(f, :sd, sort_directions)}
   </div>
   <div class="form-message form-message-description">
     For more information, see the <a href="/pages/search_syntax">search syntax documentation</a>. Wildcards are supported in all literal fields.

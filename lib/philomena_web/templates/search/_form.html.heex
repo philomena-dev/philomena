@@ -1,11 +1,9 @@
 <h1>Search</h1>
-<%= form_for :search, ~p"/search", [id: "searchform", method: "get", class: "js-search-form", enforce_utf8: false], fn f -> %>
+<%= form_for @conn, ~p"/search", [id: "searchform", method: "get", class: "js-search-form", enforce_utf8: false], fn f -> %>
   {text_input(f, :q,
     class: "input-field full-width js-search-field",
     placeholder: "Search terms are chained with commas",
     autocapitalize: "none",
-    name: :q,
-    value: @conn.params["q"],
     autocomplete: if(@conn.cookies["enable_search_ac"], do: "on", else: "off"),
     inputmode: "search",
     data: [
@@ -219,11 +217,12 @@
   </div>
   <div class="flex flex-wrap items-center gap-md">
     {submit("Search", class: "button button-primary")}
-    <% random_is_selected = to_string(@conn.params["sf"]) =~ ~r/\Arandom(:\d+)?\z/
+    <% sf = input_value(f, :sf)
+    random_is_selected = to_string(sf) =~ ~r/\Arandom(:\d+)?\z/
 
     random_seed =
       if random_is_selected do
-        @conn.params["sf"]
+        sf
       else
         "random:#{:rand.uniform(4_294_967_296)}"
       end
@@ -261,24 +260,14 @@
       "Deleted Only": "deleted",
       "Deleted/Merged Only": "only"
     ] %>
-    {select_field(f, :sf, sort_fields,
-      name: "sf",
-      autocomplete: "off",
-      selected: @conn.params["sf"]
-    )}{select_field(f, :sd, sort_directions,
-      name: "sd",
-      autocomplete: "off",
-      selected: @conn.params["sd"]
+    {select_field(f, :sf, sort_fields, autocomplete: "off")}{select_field(f, :sd, sort_directions,
+      autocomplete: "off"
     )}
-    <%= if present?(@conn.params["hidden"]) do %>
-      {hidden_input(f, :hidden, name: "hidden", value: @conn.params["hidden"])}
+    <%= if present?(input_value(f, :hidden)) do %>
+      {hidden_input(f, :hidden)}
     <% end %>
     <%= if hides_images?(@conn) do %>
-      {select_field(f, :del, sort_hidden,
-        name: "del",
-        autocomplete: "off",
-        selected: @conn.params["del"]
-      )}
+      {select_field(f, :del, sort_hidden, autocomplete: "off")}
     <% end %>
   </div>
 <% end %>

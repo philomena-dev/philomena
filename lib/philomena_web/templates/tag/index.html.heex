@@ -1,9 +1,8 @@
 <h1>Tags</h1>
-<%= form_for :tags, ~p"/tags", [method: "get", enforce_utf8: false], fn f -> %>
+<%= form_for @conn, ~p"/tags", [method: "get", enforce_utf8: false], fn f -> %>
   <div class="form-input-group short">
     {text_input(f, :tq,
-      name: :tq,
-      value: @conn.params["tq"] || "*",
+      value: input_value(f, :tq) || "*",
       class: "input-field",
       placeholder: "Search tags",
       autocapitalize: "none",

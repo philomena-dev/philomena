@@ -15,6 +15,13 @@ defmodule PhilomenaWeb.FilterControllerTest do
   alias PhilomenaQuery.SearchHelpers
 
   describe "GET /filters" do
+    test "renders a query that is not text as blank", %{conn: conn} do
+      response = html_response(get(conn, "/filters?fq[x]=1"), 200)
+
+      assert response =~ "Filters - Derpibooru"
+      refute response =~ ~r/name="fq"[^>]* value=/
+    end
+
     test "renders system filters for anonymous users", %{conn: conn} do
       response = html_response(get(conn, ~p"/filters"), 200)
 

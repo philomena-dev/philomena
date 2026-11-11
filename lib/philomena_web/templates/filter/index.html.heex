@@ -74,11 +74,9 @@
 <% end %>
 <h2>Search</h2>
 <p>Some filters are publicly shared; you can search these filters with the box below.</p>
-<%= form_for :filters, ~p"/filters", [method: "get", enforce_utf8: false], fn f -> %>
+<%= form_for @conn, ~p"/filters", [method: "get", enforce_utf8: false], fn f -> %>
   <div class="form-input-group short">
     {text_input(f, :fq,
-      name: :fq,
-      value: @conn.params["fq"],
       class: "input-field",
       placeholder: "Search filters",
       autocapitalize: "none",

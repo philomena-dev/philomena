@@ -1,9 +1,7 @@
 <h1>Comments</h1>
-<%= form_for :comments, ~p"/comments", [method: "get", enforce_utf8: false], fn f -> %>
+<%= form_for @conn, ~p"/comments", [method: "get", enforce_utf8: false], fn f -> %>
   <div class="form-input-group short">
     {text_input(f, :cq,
-      name: :cq,
-      value: @conn.params["cq"],
       class: "input-field",
       placeholder: "Search comments",
       autocapitalize: "none",

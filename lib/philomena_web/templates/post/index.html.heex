@@ -1,9 +1,7 @@
 <h1>Posts</h1>
-<%= form_for :posts, ~p"/posts", [method: "get", enforce_utf8: false], fn f -> %>
+<%= form_for @conn, ~p"/posts", [method: "get", enforce_utf8: false], fn f -> %>
   <div class="form-input-group short">
     {text_input(f, :pq,
-      name: :pq,
-      value: @conn.params["pq"],
       class: "input-field",
       placeholder: "Search posts",
       autocapitalize: "none",

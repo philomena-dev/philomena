@@ -36,15 +36,14 @@
       placeholder="Search"
       spellcheck="false"
       title={title}
-      value={@conn.params["q"]}
+      value={input_value(f, :q)}
     />
-    <input :if={present?(@conn.params["sf"])} name="sf" type="hidden" value={@conn.params["sf"]} />
-    <input :if={present?(@conn.params["sd"])} name="sd" type="hidden" value={@conn.params["sd"]} />
     <input
-      :if={present?(@conn.params["hidden"])}
-      name="hidden"
+      :for={field <- [:sf, :sd, :hidden]}
+      :if={present?(input_value(f, field))}
+      name={field}
       type="hidden"
-      value={@conn.params["hidden"]}
+      value={input_value(f, field)}
     />
     <%= if hides_images?(@conn) do %>
       {select(f, :del, [{"-D", ""}, {"+D", 1}, {"*D", "deleted"}, {"DO", "only"}],
