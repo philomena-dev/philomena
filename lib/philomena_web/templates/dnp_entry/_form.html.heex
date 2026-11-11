@@ -42,7 +42,7 @@
       <%!-- Option (set by script depending on the option chosen above) --%>
       <strong>Type</strong>
       <div class="form-control">
-        {select_field(f, :dnp_type, selectable_types(), full_width: true)}{error_tag(
+        {select_field(f, :dnp_type, selectable_types(), full_width: true, class: "js-dnp-type")}{error_tag(
           f,
           :dnp_type
         )}

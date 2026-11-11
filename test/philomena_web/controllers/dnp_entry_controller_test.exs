@@ -201,6 +201,9 @@ defmodule PhilomenaWeb.DnpEntryControllerTest do
 
       assert response =~ "New DNP Listing - Derpibooru"
       assert response =~ "New DNP Request"
+      # The reason links fill the type select through this hook.
+      assert response =~ ~s(data-click-inputvalue=".js-dnp-type")
+      assert response =~ ~r/<select [^>]*class="[^"]*\bjs-dnp-type\b/
     end
 
     test "redirects banned users with the ban flash", %{conn: conn} do
