@@ -26,9 +26,11 @@
     --header-spacing-vertical: 0;
     --navbar-item-padding-horizontal: var(--spacing-lg);
     --button-padding-vertical: var(--spacing-lg);
-    --nav-link-padding-vertical: var(--spacing-lg);
+    --nav-link-padding-vertical: var(--touch-padding-vertical);
     --input-padding: var(--spacing-lg);
-    --editor-button-size: 2.5rem;
+    --editor-button-size: var(--touch-target-size);
+    --navbar-menu-padding-vertical: var(--touch-padding-vertical);
+    --media-header-padding-vertical: 0;
   }
 }
 
@@ -44,9 +46,19 @@
   }
 }
 
-/* Controls on phones are at least this tall */
+/* Controls on phones are at least this tall; a line of text in this vertical padding is as tall */
 :root {
   --touch-target-size: 3rem;
+  --touch-padding-vertical: calc((var(--touch-target-size) - 1em * var(--base-line-height)) / 2);
+}
+
+/* Phones size badge-sized buttons as regular buttons */
+@media not all and (min-width: $breakpoint-md) {
+  .button-size-badge {
+    --badge-padding-vertical: var(--button-padding-vertical);
+    --badge-padding-horizontal: var(--button-padding-horizontal);
+    --badge-font-size: var(--button-font-size);
+  }
 }
 
 /* The side column of two-column pages fits the featured image box */

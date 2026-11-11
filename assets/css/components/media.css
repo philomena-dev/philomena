@@ -71,3 +71,16 @@
   background-color: var(--overlay-color);
   overflow-wrap: break-word;
 }
+
+/* Phones give the header of a box the height of a touch target, and its links and actions share the row */
+@media not all and (min-width: $breakpoint-md) {
+  .media-box .media-box-header {
+    line-height: var(--touch-target-size);
+  }
+
+  .media-box .media-box-header > * {
+    flex-grow: 1;
+    justify-content: center;
+    text-align: center;
+  }
+}

@@ -1,0 +1,10 @@
+/*
+ * Philomena's additions to the framework's pagination.
+ */
+
+/* Phones give the links the height of a touch target */
+@media not all and (min-width: $breakpoint-md) {
+  .pagination .pagination-link {
+    min-block-size: var(--touch-target-size);
+  }
+}

@@ -1,0 +1,12 @@
+/*
+ * Philomena's additions to the framework's tabs.
+ */
+
+/* Phones make tabs at least square touch targets */
+@media not all and (min-width: $breakpoint-md) {
+  .tabs .tab {
+    justify-content: center;
+    min-block-size: var(--touch-target-size);
+    min-inline-size: var(--touch-target-size);
+  }
+}

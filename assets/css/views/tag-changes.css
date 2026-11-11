@@ -78,6 +78,19 @@
   border-top: var(--border-thick-width) solid var(--tint-color);
 }
 
+/* Phones wrap the tools and give their links the height of a touch target */
+@media not all and (min-width: $breakpoint-md) {
+  .tag-change-tools {
+    flex-wrap: wrap;
+  }
+
+  .tag-change-tools > a:not(.button) {
+    display: flex;
+    align-items: center;
+    min-block-size: var(--touch-target-size);
+  }
+}
+
 /* A tag that a later change took back */
 .tag-change-not-retained .tag-name {
   text-decoration: line-through;

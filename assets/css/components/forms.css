@@ -7,7 +7,7 @@
   max-inline-size: 30em;
 }
 
-/* On narrow screens the fields of a form take the full width, and checkbox rows are as tall as a field */
+/* On narrow screens the fields of a form take the full width, and the label of a checkbox is a touch target */
 @media not all and (min-width: $breakpoint-md) {
   .form-control {
     align-items: stretch;
@@ -23,7 +23,10 @@
 
   .form-control-checkbox {
     align-items: center;
-    min-block-size: calc(1em + 2 * var(--input-padding) + 2 * var(--border-width));
+  }
+
+  .form-control-checkbox > .form-checkbox-label {
+    padding-block: var(--touch-padding-vertical);
   }
 }
 

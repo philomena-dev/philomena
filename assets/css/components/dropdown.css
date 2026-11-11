@@ -6,11 +6,16 @@
   --link-style-hover-decoration: initial;
 }
 
-/* Narrow screens give menu items the height of a touch target, and open the menus of a block header under the whole
-   bar, across its width */
+/* Narrow screens make triggers touch targets and give menu items their height, and open the menus of a block header
+   under the whole bar, across its width */
 @media not all and (min-width: $breakpoint-md) {
+  .dropdown > [aria-haspopup] {
+    min-block-size: var(--touch-target-size);
+    min-inline-size: var(--touch-target-size);
+  }
+
   .dropdown .dropdown-item {
-    padding-block: var(--spacing-lg);
+    padding-block: var(--touch-padding-vertical);
   }
 
   .block-header {

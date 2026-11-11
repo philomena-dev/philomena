@@ -141,8 +141,10 @@ body {
     line-height: var(--text-line-height);
   }
 
-  .page-footer-column {
-    gap: var(--spacing-sm);
+  .page-footer-column a {
+    display: flex;
+    align-items: center;
+    min-block-size: var(--touch-target-size);
   }
 }
 

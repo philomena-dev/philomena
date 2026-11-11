@@ -266,6 +266,11 @@ a.header-button:hover {
 
   .navbar-staff > .navbar-item {
     flex: 1 1 auto;
+  }
+
+  /* Items are at least square touch targets */
+  .navbar .navbar-item {
     justify-content: center;
+    min-inline-size: var(--touch-target-size);
   }
 }

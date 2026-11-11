@@ -58,6 +58,7 @@
 @import "./components/avatar.css";
 @import "./components/award.css";
 @import "./components/block.css";
+@import "./components/button.css";
 @import "./components/communication.css";
 @import "./components/diff.css";
 @import "./components/dropdown.css";
@@ -66,9 +67,11 @@
 @import "./components/media.css";
 @import "./components/navbar.css";
 @import "./components/page.css";
+@import "./components/pagination.css";
 @import "./components/poll.css";
 @import "./components/sparkline.css";
 @import "./components/table.css";
+@import "./components/tabs.css";
 @import "./components/tag.css";
 @import "./views/adverts.css";
 @import "./views/approval.css";
