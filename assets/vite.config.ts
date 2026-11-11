@@ -12,19 +12,15 @@ import type { ConfigEnv, ViteUserConfig } from 'vitest/config';
 
 export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
   const isDev = command !== 'build' && mode !== 'test';
-  const targets = new Map();
-  const themes = fs
-    .readdirSync(path.resolve(import.meta.dirname, 'css/themes/'))
-    .filter(name => name.endsWith('.css'))
-    .map(name => path.resolve(import.meta.dirname, 'css/themes/', name));
-
-  themes.forEach(file => targets.set(`css/${path.basename(file, '.css')}`, file));
-
-  fs.readdirSync(path.resolve(import.meta.dirname, 'css/options/')).forEach(name => {
-    const m = name.match(/([-a-z]+).css/);
-
-    if (m) targets.set(`css/options/${m[1]}`, `./css/options/${m[1]}.css`);
-  });
+  // The stylesheets of a directory as build entries, named `{out}/{file name}`
+  const stylesheets = (dir: string, out: string): Record<string, string> =>
+    Object.fromEntries(
+      fs
+        .readdirSync(path.resolve(import.meta.dirname, dir))
+        .filter(name => name.endsWith('.css'))
+        .map(name => [`${out}/${path.basename(name, '.css')}`, path.resolve(import.meta.dirname, dir, name)]),
+    );
+  const themes = stylesheets('css/themes', 'css');
 
   return {
     publicDir: 'static',
@@ -47,7 +43,8 @@ export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
         input: {
           'js/app': './js/app.ts',
           'css/application': './css/application.css',
-          ...Object.fromEntries(targets),
+          ...themes,
+          ...stylesheets('css/options', 'css/options'),
         },
         output: {
           entryFileNames: '[name].js',
@@ -62,7 +59,7 @@ export default defineConfig(({ command, mode }: ConfigEnv): ViteUserConfig => {
           postcssMixins(),
           postcssSimpleVars(),
           postcssRelativeColor(),
-          themeColors({ themes }),
+          themeColors({ themes: Object.values(themes) }),
           ...cssCompat(),
         ],
       },
