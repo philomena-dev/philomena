@@ -1,6 +1,7 @@
 /*
  * The elements that the framework's reset leaves unstyled and that are used outside its components: links, text
- * semantics, paragraphs, lists, images and figures; running text and the site's icon.
+ * semantics, paragraphs, lists, images and figures; running text, the site's icon and the focus ring of floor
+ * browsers without a script.
  */
 
 /* Links are in the link color, underlined under the pointer; components set their own link styles */
@@ -146,4 +147,12 @@ i.favicon-home {
   min-width: 1em;
   height: 1em;
   display: inline-block;
+}
+
+/* Floor browsers lack :focus-visible, and without a script the polyfill sets no .js-focus-visible on the root to
+   match its .focus-visible class: every focus is ringed instead */
+@supports not selector(:focus-visible) {
+  html:not(.js-focus-visible) :focus {
+    @mixin focus-ring;
+  }
 }

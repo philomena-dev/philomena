@@ -20,5 +20,9 @@ describe('postcss-floor-supports', () => {
     expect(run('@supports (display: grid) and (gap: 0) { .a {} }')).toBe(
       '@supports (display: grid) and (gap: 0) { .a {} }',
     );
+    // The build twins :focus-visible instead of dropping it, so whether a browser has it is decided at runtime
+    expect(run('@supports not selector(:focus-visible) { .a {} }')).toBe(
+      '@supports not selector(:focus-visible) { .a {} }',
+    );
   });
 });
