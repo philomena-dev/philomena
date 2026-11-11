@@ -155,7 +155,7 @@ a {
 /* prettier-ignore */
 $flow-containers: body, main, .content, .card, .block-content, .tab-panel, .collapsible-inner, .accordion-item-body, .popup, .card-forms-section, .layout-main, .layout-side, .alert, .alert-text;
 /* prettier-ignore */
-$flow-blocks: .card, .block, .communication, blockquote, .blockquote, .media-list, .table-wrap, .alert, .code-block, .collapsible.visible, .tag-box, .accordion, .form-control-group, .editor, .side-tabs, .content;
+$flow-blocks: .card, .block, .communication, blockquote, .blockquote, .media-list, .table-wrap, .alert, .code-block, .collapsible.visible, .disclosure, .tag-box, .accordion, .form-control-group, .editor, .side-tabs, .content;
 /* prettier-ignore */
 $flow-groups: .button-group, .badge-group, .tag-list, .pagination, .pagination-bar;
 $flow-text: p, ul, ol;

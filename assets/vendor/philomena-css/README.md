@@ -277,7 +277,10 @@ The framework is plain CSS, so some structure is on you:
   single `.tag` to draw the border in the count color; the padding shrinks so the height stays the same.
   `--tag-border-radius` sets their corners (the inner radius by default, `0` for square tags).
 - **`<summary>` has no marker.** The CSS reset removes the disclosure marker, so give `<details>` toggles their own
-  affordance (chevron, border, pointer cursor).
+  affordance (chevron, border, pointer cursor), or make them a disclosure.
+- **Disclosures.** `<details class="disclosure">` with a `<summary class="button">` is a button that shows the rest
+  of the `<details>` under it, with a caret that turns while it is open. Put the content in a `.content` (or another
+  container) to space its paragraphs.
 
 See the [documentation site](https://meow.github.io/PhilomenaCSS/) for rendered examples.
 

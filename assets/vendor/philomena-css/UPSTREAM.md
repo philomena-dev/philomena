@@ -18,6 +18,8 @@ request leaves this list once the commit above includes it.
   `css/components/tag.css`, `css/design/mixins.css`, `css/design/tokens.css`.
 - https://github.com/Meow/PhilomenaCSS/pull/3, branch `feat/forms-horizontal-toggles`, commits `2a19b8e` and
   `f0b4b33`: `README.md`, `css/components/button.css`, `css/components/forms.css`, `css/design/tokens.css`.
+- https://github.com/Meow/PhilomenaCSS/pull/4, branch `feat/disclosure`, commit `ea218b2`: `README.md`,
+  `css/components/disclosure.css`, `css/components/index.css`, `css/design/layout.css`.
 
 ## Left out
 

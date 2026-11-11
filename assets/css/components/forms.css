@@ -40,25 +40,6 @@
   @mixin focus-ring-inset;
 }
 
-/* A <details> opened by its <summary>, a button with a caret that points down while it is open */
-.disclosure > summary:before {
-  content: "";
-  display: inline-block;
-  border: 0.3em solid transparent;
-  border-inline-start-color: currentcolor;
-  border-inline-end-width: 0;
-  margin-inline-end: var(--spacing-sm);
-  transition: transform 0.1s;
-}
-
-.disclosure[open] > summary:before {
-  transform: rotate(90deg);
-}
-
-.disclosure[open] > summary {
-  margin-bottom: var(--spacing-md);
-}
-
 /* The form of a button that submits to a route (PhilomenaWeb.AppView.button_to/3) flows with text */
 .button-to {
   display: inline;
