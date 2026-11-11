@@ -32,19 +32,19 @@ quote_body = if @object.hidden_from_users, do: "", else: @object.body %>
         <span class="staff-action">{link_to_fingerprint(@conn, @object.fingerprint)}</span>
       <% end %>
     <% end %>
-    <a
-      :if={not is_nil(@object.edited_at) and can?(@conn, :show, @object)}
-      class="communication-edited"
-      href={communication_path(@object, :history)}
-    >
-      <span>
-        Edited {pretty_time(@object.edited_at)}
-        <%= if @object.edit_reason not in [nil, ""] do %>
-          because: {@object.edit_reason}
-        <% end %>
-      </span>
-    </a>
   </div>
+  <a
+    :if={not is_nil(@object.edited_at) and can?(@conn, :show, @object)}
+    class="communication-edited"
+    href={communication_path(@object, :history)}
+  >
+    <span>
+      Edited {pretty_time(@object.edited_at)}
+      <%= if @object.edit_reason not in [nil, ""] do %>
+        because: {@object.edit_reason}
+      <% end %>
+    </span>
+  </a>
   <div>
     <a href={link_path} title={"Link to #{noun}"}><i class="fa fa-link"></i> Link</a>
     <a

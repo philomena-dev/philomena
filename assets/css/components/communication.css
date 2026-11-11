@@ -10,9 +10,15 @@
   --link-style-hover-decoration: underline;
 }
 
-/* The note that a communication was edited takes a row of its own under the time and the tools */
+/* The note that a communication was edited takes a row of its own, under the actions from the md breakpoint up */
 .communication .communication-options .communication-edited {
   flex-basis: 100%;
+}
+
+@media (min-width: $breakpoint-md) {
+  .communication .communication-options .communication-edited {
+    order: 1;
+  }
 }
 
 /* A form that a staff action opens in a bar of a communication takes a row of its own */
