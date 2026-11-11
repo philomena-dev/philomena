@@ -3,7 +3,7 @@
 # Pre-commit hook to run lightweight checks and auto-format the code. It's designed
 # to be blazingly fast, so it checks only changed files.
 #
-# You can install this hook and some of its dependencies by running `scripts/init.sh`.
+# The devcontainer installs this hook on startup (`docker/app/run`).
 
 set -euo pipefail
 
