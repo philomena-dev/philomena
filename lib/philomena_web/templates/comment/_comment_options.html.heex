@@ -9,17 +9,6 @@ quote_body = if @comment.hidden_from_users, do: "", else: @comment.body %>
     <a href={~p"/images/#{@comment.image}/comments/#{@comment}/reports/new"}>
       <i class="fa fa-flag"></i> Report
     </a>
-    <a
-      :if={not is_nil(@comment.edited_at) and can?(@conn, :show, @comment)}
-      href={~p"/images/#{@comment.image}/comments/#{@comment}/history"}
-    >
-      <span>
-        Edited {pretty_time(@comment.edited_at)}
-        <%= if @comment.edit_reason not in [nil, ""] do %>
-          because: {@comment.edit_reason}
-        <% end %>
-      </span>
-    </a>
     <%= if staff? do %>
       <%= if @comment.hidden_from_users and not @comment.destroyed_content do %>
         <%= link(to: ~p"/images/#{@comment.image_id}/comments/#{@comment}/hide", data: [confirm: "Are you sure?"], method: "delete", class: "js-staff-action") do %>
@@ -42,6 +31,18 @@ quote_body = if @comment.hidden_from_users, do: "", else: @comment.body %>
         <span class="js-staff-action">{link_to_fingerprint(@conn, @comment.fingerprint)}</span>
       <% end %>
     <% end %>
+    <a
+      :if={not is_nil(@comment.edited_at) and can?(@conn, :show, @comment)}
+      class="communication-edited"
+      href={~p"/images/#{@comment.image}/comments/#{@comment}/history"}
+    >
+      <span>
+        Edited {pretty_time(@comment.edited_at)}
+        <%= if @comment.edit_reason not in [nil, ""] do %>
+          because: {@comment.edit_reason}
+        <% end %>
+      </span>
+    </a>
   </div>
   <div>
     <a href={link_path} title="Link to comment"><i class="fa fa-link"></i> Link</a>

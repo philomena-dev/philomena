@@ -10,6 +10,11 @@
   --link-style-hover-decoration: underline;
 }
 
+/* The note that a communication was edited takes a row of its own under the time and the tools */
+.communication .communication-options .communication-edited {
+  flex-basis: 100%;
+}
+
 /* A form that a staff action opens in a bar of a communication takes a row of its own */
 .communication :is(.communication-notice, .communication-options) > form {
   flex-basis: 100%;

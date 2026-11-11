@@ -12,17 +12,6 @@ quote_body = if @post.hidden_from_users, do: "", else: @post.body %>
     <span>Posted {pretty_time(@post.created_at)}</span>
     <a href={~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/reports/new"}><i class="fa fa-flag"></i>
     Report</a>
-    <a
-      :if={not is_nil(@post.edited_at) and can?(@conn, :show, @post)}
-      href={~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/history"}
-    >
-      <span>
-        Edited {pretty_time(@post.edited_at)}
-        <%= if @post.edit_reason not in [nil, ""] do %>
-          because: {@post.edit_reason}
-        <% end %>
-      </span>
-    </a>
     <%= if staff? do %>
       <%= if @post.hidden_from_users and not @post.destroyed_content do %>
         <%= link(to: ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/hide", data: [confirm: "Are you sure?"], method: "delete") do %>
@@ -45,6 +34,18 @@ quote_body = if @post.hidden_from_users, do: "", else: @post.body %>
         {link_to_fingerprint(@conn, @post.fingerprint)}
       <% end %>
     <% end %>
+    <a
+      :if={not is_nil(@post.edited_at) and can?(@conn, :show, @post)}
+      class="communication-edited"
+      href={~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/history"}
+    >
+      <span>
+        Edited {pretty_time(@post.edited_at)}
+        <%= if @post.edit_reason not in [nil, ""] do %>
+          because: {@post.edit_reason}
+        <% end %>
+      </span>
+    </a>
   </div>
   <div>
     <a href={link_path} title="Link to post"><i class="fa fa-link"></i> Link</a>
