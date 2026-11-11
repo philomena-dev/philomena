@@ -17,8 +17,8 @@
 @import "@philomena/philomena-css/css/design/index.css";
 @import "@philomena/philomena-css/css/utils/index.css";
 
-/* Every component but accordion, card-forms, clamp, collapsible, content, loading-indicator, popup and progress,
-   which Philomena does not use */
+/* Every component but accordion, card-forms, clamp, collapsible, content, loading-indicator and popup, which
+   Philomena does not use */
 @import "@philomena/philomena-css/css/components/alert.css";
 @import "@philomena/philomena-css/css/components/avatar.css";
 @import "@philomena/philomena-css/css/components/badge.css";
@@ -43,6 +43,7 @@
 @import "@philomena/philomena-css/css/components/nav.css";
 @import "@philomena/philomena-css/css/components/navbar.css";
 @import "@philomena/philomena-css/css/components/pagination.css";
+@import "@philomena/philomena-css/css/components/progress.css";
 @import "@philomena/philomena-css/css/components/separator.css";
 @import "@philomena/philomena-css/css/components/slider.css";
 @import "@philomena/philomena-css/css/components/spoiler.css";

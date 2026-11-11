@@ -1,6 +1,6 @@
 /*
- * Topic polls: the vote form and the results, a column of options under the title. A result has a bar as wide as its
- * share of the votes (the width attribute of its SVG); the winning option is marked once there are votes.
+ * Topic polls: the vote form and the results, a column of options under the title. A result has a progress bar as
+ * wide as its share of the votes (the width attribute of its SVG); the winning option is marked once there are votes.
  */
 
 .poll {
@@ -54,26 +54,17 @@
   white-space: nowrap;
 }
 
-.poll .poll-bar {
-  height: var(--spacing-md);
+.poll .progress {
   margin-top: var(--spacing-xs);
-  overflow: hidden;
-  background-color: var(--well-deep-color);
-  border: var(--border-width) solid var(--tint-color);
-  border-radius: var(--border-radius-inner);
 }
 
-.poll .poll-bar-fill {
+/* An inline SVG would sit on the text baseline */
+.poll .progress-bar {
   display: block;
-  background-color: var(--primary-color);
 }
 
 .poll .poll-option.winner .poll-option-label {
   font-weight: bold;
-}
-
-.poll .poll-option.winner .poll-bar-fill {
-  background-color: var(--success-color);
 }
 
 /* Narrow screens give the options the whole width, and the choices the height of a touch target */

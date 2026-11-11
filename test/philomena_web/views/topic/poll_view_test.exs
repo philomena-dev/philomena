@@ -17,11 +17,17 @@ defmodule PhilomenaWeb.Topic.PollViewTest do
     }
   end
 
-  test "ranks options by votes, ties in creation order, and names the first the winner" do
-    poll = poll([option(1, 2), option(2, 5), option(3, 2)])
+  test "ranks options by votes, ties in creation order, and names the first the winner once there are votes" do
+    winners =
+      &Enum.map(PollView.ranked_options(&1), fn {option, winner?} -> {option.id, winner?} end)
 
-    assert Enum.map(PollView.ranked_options(poll), & &1.id) == [2, 1, 3]
-    assert PollView.winning_option(poll).id == 2
+    assert winners.(poll([option(1, 2), option(2, 5), option(3, 2)])) == [
+             {2, true},
+             {1, false},
+             {3, false}
+           ]
+
+    assert winners.(poll([option(1, 0), option(2, 0)])) == [{1, false}, {2, false}]
   end
 
   test "is active until its end and single choice by its vote method" do
@@ -33,19 +39,19 @@ defmodule PhilomenaWeb.Topic.PollViewTest do
     refute PollView.single_choice?(%{poll | vote_method: "multiple"})
   end
 
-  test "gives each option its share of the votes" do
-    poll = poll([option(1, 1), option(2, 2)])
+  test "shows each option's share of the votes as a progress bar named by the option" do
+    results =
+      &Phoenix.View.render_to_string(PollView, "_results.html", poll: poll(&1))
 
-    assert to_string(PollView.percent_of_total(option(1, 1), poll)) == "33.33%"
-    assert PollView.percent_of_total(option(1, 0), poll([option(1, 0)])) == "0%"
-  end
+    html = results.([option(1, 1), option(2, 2)])
 
-  test "names the winning option only once there are votes" do
-    poll = poll([option(1, 3), option(2, 1)])
-    [winner, other] = poll.options
+    assert html =~
+             ~s(role="progressbar" aria-label="Option 1" aria-valuemin="0" aria-valuemax="100" aria-valuenow="33.33">)
 
-    assert PollView.winner?(winner, poll)
-    refute PollView.winner?(other, poll)
-    refute PollView.winner?(option(1, 0), poll([option(1, 0), option(2, 0)]))
+    assert html =~ ~s(<svg class="progress-bar" width="33.33%">)
+    assert html =~ "33.33% 1 vote"
+
+    assert results.([option(1, 0)]) =~
+             ~s(aria-label="Option 1" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">)
   end
 end
