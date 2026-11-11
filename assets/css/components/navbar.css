@@ -273,4 +273,9 @@ a.header-button:hover {
     justify-content: center;
     min-inline-size: var(--touch-target-size);
   }
+
+  /* Long names in the menu wrap instead of widening it */
+  .burger .burger-item {
+    overflow-wrap: anywhere;
+  }
 }

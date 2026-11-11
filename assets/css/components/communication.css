@@ -15,7 +15,8 @@
   flex-basis: 100%;
 }
 
-/* Narrow screens give the options and the author's name touch-sized targets; the rows of options need no gap */
+/* Narrow screens give the options and the author's name touch-sized targets, the rows of options need no gap, and a
+   long name breaks */
 @media not all and (min-width: $breakpoint-md) {
   .communication .communication-options,
   .communication .communication-options > * {
@@ -28,5 +29,9 @@
 
   .communication .communication-author-name a {
     @mixin touch-link;
+  }
+
+  .communication .communication-author {
+    overflow-wrap: anywhere;
   }
 }

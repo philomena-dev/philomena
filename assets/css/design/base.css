@@ -67,6 +67,18 @@ p:last-child {
   --flow: 1;
 }
 
+/* On narrow screens a long word in a heading, such as a user's name, breaks rather than widen the page */
+@media not all and (min-width: $breakpoint-md) {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    overflow-wrap: anywhere;
+  }
+}
+
 /* Running text lists, with bullets or numbers */
 ul,
 ol {
