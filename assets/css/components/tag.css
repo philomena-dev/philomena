@@ -25,7 +25,7 @@
 }
 
 /* A tag's spoiler image, in a bordered square as large as a tiny thumbnail */
-.tag-info__image {
+.tag-info-image {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -37,7 +37,7 @@
   border: var(--border-width) solid var(--tint-color);
 }
 
-.tag-info__image img {
+.tag-info-image img {
   max-width: 100%;
   max-height: 100%;
 }
