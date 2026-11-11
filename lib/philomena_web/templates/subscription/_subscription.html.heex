@@ -2,14 +2,14 @@
   class={["js-subscription-link", @watching && "hidden"]}
   data-method="post"
   data-remote="true"
-  href={@path}
+  href={subscription_path(@target)}
   phx-no-format
   title="Subscribe"
 ><i class="fa fa-bell"></i> <span class="hidden-below-md">Subscribe</span> </a><a
   class={["js-subscription-link", !@watching && "hidden"]}
   data-method="delete"
   data-remote="true"
-  href={@path}
+  href={subscription_path(@target)}
   phx-no-format
   title="Unsubscribe"
 ><i class="fa fa-bell-slash"></i> <span class="hidden-below-md">Unsubscribe</span> </a></span><a

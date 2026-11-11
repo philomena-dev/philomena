@@ -16,7 +16,7 @@
     <span class="block-header-title">{@forum.description}</span>{render(
       PhilomenaWeb.SubscriptionView,
       "_subscription.html",
-      path: ~p"/forums/#{@forum}/subscription",
+      target: @forum,
       watching: @watching,
       conn: @conn
     )}

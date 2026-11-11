@@ -43,7 +43,7 @@
       <span>{@topic.post_count - 1} replies</span>
       <%= if not @topic.hidden_from_users do %>
         {render(PhilomenaWeb.SubscriptionView, "_subscription.html",
-          path: ~p"/forums/#{@forum}/topics/#{@topic}/subscription",
+          target: {@forum, @topic},
           watching: @watching,
           conn: @conn
         )}

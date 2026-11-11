@@ -35,7 +35,7 @@
     {render(PhilomenaWeb.SubscriptionView, "_subscription.html",
       conn: @conn,
       watching: @subscriptions[@channel.id],
-      path: ~p"/channels/#{@channel}/subscription"
+      target: @channel
     )}
   </div>
 </div>

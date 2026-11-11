@@ -46,7 +46,7 @@ info = render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @image
         <%= if show_subscription_link?(@gallery.user, @conn.assigns.current_user) do %>
           {render(PhilomenaWeb.SubscriptionView, "_subscription.html",
             watching: @watching,
-            path: ~p"/galleries/#{@gallery}/subscription",
+            target: @gallery,
             conn: @conn
           )}
         <% end %>
