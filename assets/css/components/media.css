@@ -8,6 +8,17 @@
   padding-bottom: 75%;
 }
 
+/* A disabled action keeps the pointer, so that its title tells why, but has no hover look; the script ignores it */
+.media-box .media-box-header .media-box-action.disabled {
+  pointer-events: auto;
+  cursor: default;
+}
+
+.media-box .media-box-header .media-box-action.disabled:hover {
+  color: var(--_color);
+  background-color: transparent;
+}
+
 /* A thumbnail outside a media box centers its image at its own size, at most as large as the container */
 .image-container:not(.media-box-content) {
   position: relative;
