@@ -279,15 +279,8 @@ export class SuggestionsPopupComponent {
   }
 
   private appendSuggestion(suggestion: Suggestion) {
-    const type = suggestion.type;
-
-    const element = makeEl(
-      'div',
-      {
-        className: `combobox-suggestion-item autocomplete-${type}`,
-      },
-      suggestion.render(),
-    );
+    const element = makeEl('div', { className: 'combobox-suggestion-item' }, suggestion.render());
+    element.classList.toggle('autocomplete-history', suggestion.type === 'history');
 
     const item: SuggestionItem = { element, suggestion };
 

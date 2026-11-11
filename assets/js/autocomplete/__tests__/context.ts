@@ -242,7 +242,7 @@ export class TestContext {
         content = `(history) ${content}`;
       }
 
-      if (el.classList.contains('autocomplete-property')) {
+      if (el.querySelector('.fa-circle-info')) {
         content = `(property) ${content}`;
       }
 

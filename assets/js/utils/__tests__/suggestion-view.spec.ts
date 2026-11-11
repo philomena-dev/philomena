@@ -55,6 +55,9 @@ function mockBaseSuggestionsPopup(includeMockedSuggestions = false): [Suggestion
 
 const selectedItemClassName = 'highlighted';
 
+const { history, tags } = mockedSuggestions;
+const item = (index: number) => $$<HTMLElement>('.combobox-suggestion-item')[index];
+
 describe('Suggestions', () => {
   let popup: SuggestionsPopupComponent | undefined;
   let input: HTMLInputElement | undefined;
@@ -151,17 +154,17 @@ describe('Suggestions', () => {
       popup.selectCtrlDown();
 
       expect(popup.selectedSuggestion).toBe(mockedSuggestions.tags[0]);
-      expect($<HTMLElement>('.autocomplete-tag')).toHaveClass(selectedItemClassName);
+      expect(item(history.length)).toHaveClass(selectedItemClassName);
 
       popup.selectCtrlDown();
 
       expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties[0]);
-      expect($<HTMLElement>('.autocomplete-property')).toHaveClass(selectedItemClassName);
+      expect(item(history.length + tags.length)).toHaveClass(selectedItemClassName);
 
       popup.selectCtrlDown();
 
       expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties[mockedSuggestions.properties.length - 1]);
-      expect($<HTMLElement>('.autocomplete-property:last-child')).toHaveClass(selectedItemClassName);
+      expect($<HTMLElement>('.combobox-suggestion-item:last-child')).toHaveClass(selectedItemClassName);
 
       // Should loop around
       popup.selectCtrlDown();
@@ -175,16 +178,12 @@ describe('Suggestions', () => {
       popup.selectCtrlUp();
 
       expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties[mockedSuggestions.properties.length - 1]);
-      expect($<HTMLElement>('.autocomplete-property:last-child')).toHaveClass(selectedItemClassName);
+      expect($<HTMLElement>('.combobox-suggestion-item:last-child')).toHaveClass(selectedItemClassName);
 
       popup.selectCtrlUp();
 
-      const expectedNthOfTypeIndex = mockedSuggestions.history.length + mockedSuggestions.tags.length;
-
       expect(popup.selectedSuggestion).toBe(mockedSuggestions.tags[mockedSuggestions.tags.length - 1]);
-      expect($<HTMLElement>(`.autocomplete-tag:nth-of-type(${expectedNthOfTypeIndex})`)).toHaveClass(
-        selectedItemClassName,
-      );
+      expect(item(history.length + tags.length - 1)).toHaveClass(selectedItemClassName);
 
       popup.selectCtrlUp();
 
@@ -202,7 +201,7 @@ describe('Suggestions', () => {
       popup.selectCtrlUp();
 
       expect(popup.selectedSuggestion).toBe(mockedSuggestions.properties[mockedSuggestions.properties.length - 1]);
-      expect($<HTMLElement>('.autocomplete-property:last-child')).toHaveClass(selectedItemClassName);
+      expect($<HTMLElement>('.combobox-suggestion-item:last-child')).toHaveClass(selectedItemClassName);
     });
 
     it('should do nothing on selection changes when empty', () => {
