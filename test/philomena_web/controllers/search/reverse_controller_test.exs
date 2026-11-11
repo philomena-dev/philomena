@@ -120,7 +120,7 @@ defmodule PhilomenaWeb.Search.ReverseControllerTest do
 
       assert html_response(conn, 200) =~ "Reverse Search"
 
-      # An image that is no map is not replaced by the fetched URL; no request goes out.
+      # The scraper fetches only into an image param that is a map, so a string sends no request.
       conn =
         post(build_conn(), ~p"/search/reverse", %{"image" => "x", "url" => "http://a.test/b.png"})
 
