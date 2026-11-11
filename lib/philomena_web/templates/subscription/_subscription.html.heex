@@ -1,22 +1,15 @@
-<% watch_path = ~p"/forums/#{@forum}/subscription"
-watch_class = if @watching, do: "hidden", else: ""
-
-unwatch_path = ~p"/forums/#{@forum}/subscription"
-unwatch_class = if @watching, do: "", else: "hidden" %><span
-  :if={@conn.assigns.current_user}
-  class="js-subscription-target"
-><a
-  class={"js-subscription-link #{watch_class}"}
+<span :if={@conn.assigns.current_user} class="js-subscription-target"><a
+  class={["js-subscription-link", @watching && "hidden"]}
   data-method="post"
   data-remote="true"
-  href={watch_path}
+  href={@path}
   phx-no-format
   title="Subscribe"
 ><i class="fa fa-bell"></i> <span class="hidden-below-md">Subscribe</span> </a><a
-  class={"js-subscription-link #{unwatch_class}"}
+  class={["js-subscription-link", !@watching && "hidden"]}
   data-method="delete"
   data-remote="true"
-  href={unwatch_path}
+  href={@path}
   phx-no-format
   title="Unsubscribe"
 ><i class="fa fa-bell-slash"></i> <span class="hidden-below-md">Unsubscribe</span> </a></span><a

@@ -5,10 +5,16 @@ defmodule PhilomenaWeb.Gallery.SubscriptionController do
 
   action_fallback PhilomenaWeb.FallbackController
 
+  plug :put_view, PhilomenaWeb.SubscriptionView
+
   def create(conn, params) do
     case Galleries.create_gallery_subscription(conn.assigns.actor, params["gallery_id"]) do
       {:ok, gallery} ->
-        render(conn, "_subscription.html", gallery: gallery, watching: true, layout: false)
+        render(conn, "_subscription.html",
+          path: ~p"/galleries/#{gallery}/subscription",
+          watching: true,
+          layout: false
+        )
 
       {:error, %Ecto.Changeset{}} ->
         render(conn, "_error.html", layout: false)
@@ -21,7 +27,11 @@ defmodule PhilomenaWeb.Gallery.SubscriptionController do
   def delete(conn, params) do
     with {:ok, gallery} <-
            Galleries.delete_gallery_subscription(conn.assigns.actor, params["gallery_id"]) do
-      render(conn, "_subscription.html", gallery: gallery, watching: false, layout: false)
+      render(conn, "_subscription.html",
+        path: ~p"/galleries/#{gallery}/subscription",
+        watching: false,
+        layout: false
+      )
     end
   end
 end

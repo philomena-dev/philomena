@@ -5,6 +5,8 @@ defmodule PhilomenaWeb.Topic.SubscriptionController do
 
   action_fallback PhilomenaWeb.FallbackController
 
+  plug :put_view, PhilomenaWeb.SubscriptionView
+
   def create(conn, params) do
     case Topics.create_topic_subscription(
            conn.assigns.actor,
@@ -13,8 +15,7 @@ defmodule PhilomenaWeb.Topic.SubscriptionController do
          ) do
       {:ok, {forum, topic}} ->
         render(conn, "_subscription.html",
-          forum: forum,
-          topic: topic,
+          path: ~p"/forums/#{forum}/topics/#{topic}/subscription",
           watching: true,
           layout: false
         )
@@ -35,8 +36,7 @@ defmodule PhilomenaWeb.Topic.SubscriptionController do
              params["topic_id"]
            ) do
       render(conn, "_subscription.html",
-        forum: forum,
-        topic: topic,
+        path: ~p"/forums/#{forum}/topics/#{topic}/subscription",
         watching: false,
         layout: false
       )

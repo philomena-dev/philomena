@@ -14,9 +14,9 @@
   <div class="block-header sub">
     {pagination}
     <span class="block-header-title">{@forum.description}</span>{render(
-      PhilomenaWeb.Forum.SubscriptionView,
+      PhilomenaWeb.SubscriptionView,
       "_subscription.html",
-      forum: @forum,
+      path: ~p"/forums/#{@forum}/subscription",
       watching: @watching,
       conn: @conn
     )}

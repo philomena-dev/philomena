@@ -32,10 +32,10 @@
     </div>
   <% end %>
   <div class="media-box-header">
-    {render(PhilomenaWeb.Channel.SubscriptionView, "_subscription.html",
+    {render(PhilomenaWeb.SubscriptionView, "_subscription.html",
       conn: @conn,
       watching: @subscriptions[@channel.id],
-      channel: @channel
+      path: ~p"/channels/#{@channel}/subscription"
     )}
   </div>
 </div>

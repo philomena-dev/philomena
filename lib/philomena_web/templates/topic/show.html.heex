@@ -42,9 +42,8 @@
       <span>Posted {pretty_time(@topic.created_at)}</span>
       <span>{@topic.post_count - 1} replies</span>
       <%= if not @topic.hidden_from_users do %>
-        {render(PhilomenaWeb.Topic.SubscriptionView, "_subscription.html",
-          forum: @forum,
-          topic: @topic,
+        {render(PhilomenaWeb.SubscriptionView, "_subscription.html",
+          path: ~p"/forums/#{@forum}/topics/#{@topic}/subscription",
           watching: @watching,
           conn: @conn
         )}

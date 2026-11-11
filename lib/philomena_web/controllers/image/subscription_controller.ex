@@ -11,7 +11,9 @@ defmodule PhilomenaWeb.Image.SubscriptionController do
         render(conn, "_subscription.html", image: image, watching: true, layout: false)
 
       {:error, %Ecto.Changeset{}} ->
-        render(conn, "_error.html", layout: false)
+        conn
+        |> put_view(PhilomenaWeb.SubscriptionView)
+        |> render("_error.html", layout: false)
 
       {:error, _} = error ->
         error

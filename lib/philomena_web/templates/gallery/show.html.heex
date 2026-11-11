@@ -44,9 +44,9 @@ info = render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @image
           ><i class="fa fa-trash"></i> <span class="hidden-below-md">Delete</span></a>
         <% end %>
         <%= if show_subscription_link?(@gallery.user, @conn.assigns.current_user) do %>
-          {render(PhilomenaWeb.Gallery.SubscriptionView, "_subscription.html",
+          {render(PhilomenaWeb.SubscriptionView, "_subscription.html",
             watching: @watching,
-            gallery: @gallery,
+            path: ~p"/galleries/#{@gallery}/subscription",
             conn: @conn
           )}
         <% end %>
