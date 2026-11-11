@@ -37,44 +37,38 @@ defmodule PhilomenaWeb.ReportView do
   def report_target(%Report{gallery: %Gallery{} = t}), do: t
   def report_target(%Report{}), do: nil
 
-  def link_to_target(%Image{} = r),
-    do: link("Image >>#{r.id}", to: ~p"/images/#{r}")
+  def link_to_target(%Image{} = r), do: target_link("Image >>#{r.id}", ~p"/images/#{r}")
 
   def link_to_target(%Comment{} = r),
     do:
-      link("Comment on image >>#{r.image.id}",
-        to: ~p"/images/#{r.image}" <> "#comment_#{r.id}"
+      target_link(
+        "Comment on image >>#{r.image.id}",
+        ~p"/images/#{r.image}" <> "#comment_#{r.id}"
       )
 
   def link_to_target(%Conversation{} = r),
     do:
-      link("Conversation between #{r.from.name} and #{r.to.name}",
-        to: ~p"/conversations/#{r}"
-      )
+      target_link("Conversation between #{r.from.name} and #{r.to.name}", ~p"/conversations/#{r}")
 
   def link_to_target(%Commission{} = r),
-    do:
-      link("#{r.user.name}'s commission page",
-        to: ~p"/profiles/#{r.user}/commission"
-      )
+    do: target_link("#{r.user.name}'s commission page", ~p"/profiles/#{r.user}/commission")
 
-  def link_to_target(%Gallery{} = r),
-    do: link("Gallery '#{r.title}'", to: ~p"/galleries/#{r}")
+  def link_to_target(%Gallery{} = r), do: target_link("Gallery '#{r.title}'", ~p"/galleries/#{r}")
 
   def link_to_target(%Post{} = r),
     do:
-      link("Post in #{r.topic.title}",
-        to:
-          ~p"/forums/#{r.topic.forum}/topics/#{r.topic}?#{[post_id: r.id]}" <>
-            "#post_#{r.id}"
+      target_link(
+        "Post in #{r.topic.title}",
+        ~p"/forums/#{r.topic.forum}/topics/#{r.topic}?#{[post_id: r.id]}" <> "#post_#{r.id}"
       )
 
-  def link_to_target(%User{} = r),
-    do: link("User '#{r.name}'", to: ~p"/profiles/#{r}")
+  def link_to_target(%User{} = r), do: target_link("User '#{r.name}'", ~p"/profiles/#{r}")
 
   def link_to_target(_target) do
     "Reported item permanently destroyed."
   end
+
+  defp target_link(text, path), do: link(text, to: path, class: "touch-link")
 
   def get_user_agent(conn) do
     case Plug.Conn.get_req_header(conn, "user-agent") do

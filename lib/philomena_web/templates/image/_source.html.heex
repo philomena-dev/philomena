@@ -31,7 +31,7 @@
           <div class="wrap-anywhere"><a class="touch-link js-source-link" href={first_source.source}><strong>{first_source.source}</strong></a></div>
           <%= for source <- sources do %>
             <div class="image-source-icon"><i class={"#{image_source_icon(source.source)}"}></i></div>
-            <div class="wrap-anywhere"><a href={source.source}><strong>{source.source}</strong></a></div>
+            <div class="wrap-anywhere"><a class="touch-link" href={source.source}><strong>{source.source}</strong></a></div>
           <% end %>
         <% else %>
           <div class="image-source-icon"><i class="fa fa-unlink"></i></div>

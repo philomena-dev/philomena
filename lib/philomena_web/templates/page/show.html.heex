@@ -5,7 +5,7 @@
     <i class="fa fa-history"></i> Revision history
   <% end %>
   <%= if can?(@conn, :edit, Philomena.StaticPages.StaticPage) do %>
-    <%= link to: ~p"/pages/#{@static_page}/edit" do %>
+    <%= link to: ~p"/pages/#{@static_page}/edit", class: "touch-link" do %>
       <i class="fa fa-edit"></i> Edit
     <% end %>
   <% end %>

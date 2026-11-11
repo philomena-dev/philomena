@@ -13,7 +13,8 @@
     <%!-- Lotta space here --%>
     <br /><div class="markdown">{@commission_information}</div><br /><br />{link(
       "More information",
-      to: ~p"/profiles/#{@user}/commission"
+      to: ~p"/profiles/#{@user}/commission",
+      class: "touch-link"
     )}
   <% else %>
     <%= if Enum.any?(@conn.assigns.user.verified_links) do %>
