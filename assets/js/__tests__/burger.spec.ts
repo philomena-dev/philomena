@@ -28,6 +28,7 @@ describe('setupBurgerMenu', () => {
           <a class="burger-item" href="/images">Images</a>
           <form><input type="hidden" name="_csrf_token"><select><option>Default</option></select></form>
           <a class="burger-item" href="/sessions">Logout</a>
+          <div class="staff-action"><a class="burger-item" href="/admin/site_notices">Site Notices</a></div>
         </nav>
       </div>
       <div class="burger-overlay js-burger-close"></div>
@@ -41,6 +42,10 @@ describe('setupBurgerMenu', () => {
   afterEach(() => {
     fireEvent.keyDown(document, { key: 'Escape' });
   });
+
+  // jsdom lays nothing out, so every element has no boxes until it is given one
+  const render = (element: HTMLElement) =>
+    vi.spyOn(element, 'getClientRects').mockReturnValue([new DOMRect()] as unknown as DOMRectList);
 
   const isOpen = () =>
     panel.classList.contains('open') &&
@@ -67,7 +72,7 @@ describe('setupBurgerMenu', () => {
   });
 
   it('closes when the screen grows wide enough to hide the toggle', () => {
-    const rects = vi.spyOn(toggle, 'getClientRects').mockReturnValue([new DOMRect()] as unknown as DOMRectList);
+    const rects = render(toggle);
     fireEvent.click(toggle);
 
     resize();
@@ -91,16 +96,24 @@ describe('setupBurgerMenu', () => {
     expect(document.activeElement).toBe(outside);
   });
 
-  it('keeps Tab and Shift+Tab going round the controls of the open panel', () => {
-    const [close, images, logout] = panel.querySelectorAll<HTMLElement>('button, a');
+  it.each([
+    ['shown', 'Site Notices'],
+    ['hidden', 'Logout'],
+  ])('keeps Tab and Shift+Tab going round the rendered controls with staff tools %s', (staffTools, lastLabel) => {
+    const controls = [...panel.querySelectorAll<HTMLElement>('button, a, select')];
+    const rendered = controls.filter(control => staffTools === 'shown' || !control.closest('.staff-action'));
+    rendered.forEach(render);
+    const [close, images] = rendered;
+    const last = rendered[rendered.length - 1];
+    expect(last).toHaveTextContent(lastLabel);
     fireEvent.click(toggle);
 
-    logout.focus();
+    last.focus();
     expect(fireEvent.keyDown(document, { key: 'Tab' })).toBe(false);
     expect(document.activeElement).toBe(close);
 
     expect(fireEvent.keyDown(document, { key: 'Tab', shiftKey: true })).toBe(false);
-    expect(document.activeElement).toBe(logout);
+    expect(document.activeElement).toBe(last);
 
     images.focus();
     expect(fireEvent.keyDown(document, { key: 'Tab' })).toBe(true);

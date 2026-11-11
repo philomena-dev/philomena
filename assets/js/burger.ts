@@ -29,9 +29,9 @@ export function setupBurgerMenu() {
     }
   };
 
-  // Tab and Shift+Tab go round the panel's controls instead of leaving it
+  // Tab and Shift+Tab go round the panel's rendered controls instead of leaving it
   const keepFocus = (event: KeyboardEvent) => {
-    const controls = $$<HTMLElement>(focusable, panel);
+    const controls = $$<HTMLElement>(focusable, panel).filter(control => control.getClientRects().length > 0);
     const [first, last] = [controls[0], controls[controls.length - 1]];
 
     if (document.activeElement === (event.shiftKey ? first : last) || !panel.contains(document.activeElement)) {
