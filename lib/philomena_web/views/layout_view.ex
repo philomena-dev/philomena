@@ -190,17 +190,17 @@ defmodule PhilomenaWeb.LayoutView do
   def user_links(user) do
     [
       %{icon: "fa fa-user-circle", label: user.name, path: ~p"/profiles/#{user}"},
-      %{icon: "fa fa-eye", label: "Watched", path: "/search?q=my:watched"},
-      %{icon: "fa fa-star", label: "Faves", path: "/search?q=my:faves"},
-      %{icon: "fa fa-arrow-up", label: "Upvotes", path: "/search?q=my:upvotes"},
+      %{icon: "fa fa-eye", label: "Watched", path: ~p"/search?q=my:watched"},
+      %{icon: "fa fa-star", label: "Faves", path: ~p"/search?q=my:faves"},
+      %{icon: "fa fa-arrow-up", label: "Upvotes", path: ~p"/search?q=my:upvotes"},
       %{
         icon: "fa fa-image",
         label: "Galleries",
         path: ~p"/galleries?#{[gallery: [creator: user.name]]}"
       },
-      %{icon: "fa fa-upload", label: "Uploads", path: "/search?q=my:uploads"},
-      %{icon: "fa fa-comments", label: "Comments", path: "/comments?cq=my:comments"},
-      %{icon: "fas fa-pen-square", label: "Posts", path: "/posts?pq=my:posts"},
+      %{icon: "fa fa-upload", label: "Uploads", path: ~p"/search?q=my:uploads"},
+      %{icon: "fa fa-comments", label: "Comments", path: ~p"/comments?cq=my:comments"},
+      %{icon: "fas fa-pen-square", label: "Posts", path: ~p"/posts?pq=my:posts"},
       %{icon: "fa fa-link", label: "Links", path: ~p"/profiles/#{user}/artist_links"},
       %{icon: "fa fa-cogs", label: "Settings", path: ~p"/settings/edit"},
       %{icon: "fa fa-envelope", label: "Messages", path: ~p"/conversations"},
