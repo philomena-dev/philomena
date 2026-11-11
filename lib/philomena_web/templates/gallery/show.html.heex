@@ -24,9 +24,9 @@ info = render(PhilomenaWeb.PaginationView, "_pagination_info.html", page: @image
         A gallery by {render(PhilomenaWeb.UserAttributionView, "_anon_user.html",
           object: @gallery,
           conn: @conn
-        )} with {@gallery.image_count} {pluralize("image", "images", @gallery.image_count)}<span class="hidden-below-md">, last updated {pretty_time(
+        )} with {@gallery.image_count} {pluralize("image", "images", @gallery.image_count)}, last updated {pretty_time(
           @gallery.updated_at
-        )} (created {pretty_time(@gallery.created_at)})</span>
+        )} (created {pretty_time(@gallery.created_at)})
       </span>
     </div>
     <div class="block-content flex js-imagelist-info">
