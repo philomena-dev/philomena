@@ -19,6 +19,7 @@
   }
 }
 
+/* Phones: the bars grow with their contents, controls are touch-sized and no text is under 12px */
 @media not all and (min-width: $breakpoint-md) {
   :root {
     --header-height: auto;
@@ -31,6 +32,9 @@
     --editor-button-size: var(--touch-target-size);
     --navbar-menu-padding-vertical: var(--touch-padding-vertical);
     --media-header-padding-vertical: 0;
+    --media-header-small-font-size: var(--media-header-font-size);
+    --text-size-xs: var(--text-size-sm);
+    --code-small-font-size: var(--text-size-sm);
   }
 }
 
