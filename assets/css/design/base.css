@@ -10,18 +10,25 @@ body {
   --link-style-hover-decoration: underline;
 }
 
-/* Links in navigational lists (striped block rows, table cells) and in code are underlined only under the pointer */
+/* Links that stand alone, in navigational lists and in code are underlined only under the pointer */
+.touch-link,
 .block.striped > .block-content,
 .table th,
 .table td,
+.block .notification,
+.card.tag-change,
+.staff-grid .card,
+.commission-listing,
+.staff-action > .card,
 .code-span {
   --link-style-decoration: none;
   --link-style-hover-decoration: underline;
 }
 
-/* Markdown in a table cell is prose */
-.table .markdown {
-  @mixin content-links;
+/* Markdown is prose wherever it is */
+.markdown {
+  --link-style-decoration: underline;
+  --link-style-hover-decoration: initial;
 }
 
 /* The framework underlines every link of a table */
