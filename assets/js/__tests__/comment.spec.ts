@@ -198,7 +198,6 @@ describe('comment.ts setupComments', () => {
 
     const link = $<HTMLAnchorElement>('.pagination a')!;
     const dispatched = fireEvent.click(link, { button: 0 });
-    // default should be prevented by the delegated handler
     expect(dispatched).toBe(false);
 
     await waitFor(() => {
@@ -209,7 +208,6 @@ describe('comment.ts setupComments', () => {
 
   it('displays error message when initial load fails (handleError path)', async () => {
     mockCommentsDom({ loaded: '' });
-    // Simulate server returning non-ok Response
     mockFetchHtml('<div>ignored</div>', false);
 
     setupComments();
@@ -227,14 +225,12 @@ describe('comment.ts setupComments', () => {
 
     setupComments();
 
-    // Dispatch fetchcomplete on a different target element
     const other = document.createElement('div');
     other.id = 'not-the-form';
     const event = new CustomEvent('fetchcomplete', { detail: { ok: true }, bubbles: true });
     Object.defineProperty(event, 'target', { value: other });
     document.dispatchEvent(event);
 
-    // Nothing should change; no errors thrown and no fetchHtml invoked
     await new Promise(r => setTimeout(r, 10));
     expect(fetchHtml).not.toHaveBeenCalled();
   });
@@ -259,11 +255,8 @@ describe('comment.ts setupComments', () => {
     fireEvent.click(link, { button: 0 });
 
     await waitFor(() => {
-      // inserted parent is marked as fetched
       expect($<HTMLElement>('article.communication.js-fetched-comment', comments)).toBeTruthy();
-      // clicked link becomes active
       expect(link).toHaveClass('js-active-reply-link');
-      // helpers called
       expect(timeAgo).toHaveBeenCalled();
       expect(filterNode).toHaveBeenCalled();
     });
