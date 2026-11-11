@@ -114,6 +114,19 @@ defmodule PhilomenaWeb.Search.ReverseControllerTest do
       refute response =~ "No images found!"
     end
 
+    test "renders the plain form for a URL, distance or image that is malformed", %{conn: conn} do
+      conn =
+        post(conn, ~p"/search/reverse", %{"url" => %{"x" => "1"}, "distance" => %{"x" => "1"}})
+
+      assert html_response(conn, 200) =~ "Reverse Search"
+
+      # An image that is no map is not replaced by the fetched URL; no request goes out.
+      conn =
+        post(build_conn(), ~p"/search/reverse", %{"image" => "x", "url" => "http://a.test/b.png"})
+
+      assert html_response(conn, 200) =~ "Reverse Search"
+    end
+
     test "renders the plain form for an invalid distance", %{conn: conn} do
       image = image_fixture()
       insert_intensities(image, @png_intensity)

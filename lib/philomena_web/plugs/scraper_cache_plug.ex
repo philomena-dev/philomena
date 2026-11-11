@@ -15,7 +15,7 @@ defmodule PhilomenaWeb.ScraperCachePlug do
     %Plug.Conn{conn | params: params}
   end
 
-  defp normalize_dist(%{"distance" => distance}) do
+  defp normalize_dist(%{"distance" => distance}) when is_binary(distance) do
     ("0" <> distance)
     |> Float.parse()
     |> elem(0)
