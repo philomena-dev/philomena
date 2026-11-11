@@ -15,7 +15,11 @@ pagination =
   </div>
 </div>
 <%= for {comment, body} <- @comments do %>
-  {render(PhilomenaWeb.CommentView, "_comment.html", comment: comment, body: body, conn: @conn)}
+  {render(PhilomenaWeb.CommunicationView, "_communication.html",
+    object: comment,
+    body: body,
+    conn: @conn
+  )}
 <% end %>
 <div :if={multiple_pages?(@comments)} class="block">
   <div class="block-header sub">

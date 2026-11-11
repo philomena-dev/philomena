@@ -1,0 +1,74 @@
+<% noun = noun(@object)
+staff? = can?(@conn, :hide, @object)
+deletable? = not @object.hidden_from_users and not @object.destroyed_content
+link_path = communication_path(@object, :link)
+safe_author = markdown_safe_author(@object)
+quote_body = if @object.hidden_from_users, do: "", else: @object.body %>
+<div class="communication-options">
+  <div>
+    <span>Posted {pretty_time(@object.created_at)}</span>
+    <a href={communication_path(@object, :report)}>
+      <i class="fa fa-flag"></i> Report
+    </a>
+    <%= if staff? do %>
+      <%= if @object.hidden_from_users and not @object.destroyed_content do %>
+        <%= link(to: communication_path(@object, :hide), data: [confirm: "Are you sure?"], method: "delete", class: "staff-action") do %>
+          <i class="fas fa-check"></i> Restore
+        <% end %>
+        <%= if can?(@conn, :delete, @object) do %>
+          <%= link(to: communication_path(@object, :delete), data: [confirm: "Are you sure?"], method: "post", class: "staff-action") do %>
+            <i class="fas fa-times"></i> Delete Contents
+          <% end %>
+        <% end %>
+      <% end %>
+      <a
+        :if={deletable?}
+        class="staff-action"
+        data-click-toggle={"#inline-del-form-#{noun}-#{@object.id}"}
+        href="#"
+      ><i class="fas fa-times"></i> Delete</a>
+      <%= if can?(@conn, :show, :identity_metadata) do %>
+        <span class="staff-action">{link_to_ip(@conn, @object.ip)}</span>
+        <span class="staff-action">{link_to_fingerprint(@conn, @object.fingerprint)}</span>
+      <% end %>
+    <% end %>
+    <a
+      :if={not is_nil(@object.edited_at) and can?(@conn, :show, @object)}
+      class="communication-edited"
+      href={communication_path(@object, :history)}
+    >
+      <span>
+        Edited {pretty_time(@object.edited_at)}
+        <%= if @object.edit_reason not in [nil, ""] do %>
+          because: {@object.edit_reason}
+        <% end %>
+      </span>
+    </a>
+  </div>
+  <div>
+    <a href={link_path} title={"Link to #{noun}"}><i class="fa fa-link"></i> Link</a>
+    <a
+      class="js-post-reply"
+      data-author={safe_author}
+      data-post={quote_body}
+      data-reply-url={link_path}
+      href={link_path}
+    ><i class="fa fa-quote-right"></i> Quote</a>
+    <a class="js-post-reply" data-author={safe_author} data-reply-url={link_path} href={link_path}>
+      <i class="fa fa-reply"></i> Reply
+    </a>
+    <a :if={can?(@conn, :edit, @object)} href={communication_path(@object, :edit)}>
+      <i class="fas fa-edit"></i> Edit
+    </a>
+  </div>
+  <%= if staff? and deletable? do %>
+    <%= form_for noun, communication_path(@object, :hide), [class: "hidden flex staff-action", id: "inline-del-form-#{noun}-#{@object.id}"], fn f -> %>
+      {text_input(f, :deletion_reason,
+        class: "input-field full-width",
+        placeholder: "Deletion Reason",
+        id: "inline-del-reason-#{noun}-#{@object.id}",
+        required: true
+      )}{submit("Delete", class: "button")}
+    <% end %>
+  <% end %>
+</div>

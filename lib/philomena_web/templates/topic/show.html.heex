@@ -58,7 +58,11 @@
   <% end %>
   <%!-- The actual posts --%>
   <%= for {post, body} <- @posts do %>
-    {render(PhilomenaWeb.PostView, "_post.html", conn: @conn, post: post, body: body)}
+    {render(PhilomenaWeb.CommunicationView, "_communication.html",
+      conn: @conn,
+      object: post,
+      body: body
+    )}
   <% end %>
   <%= if @conn.assigns.advert do %>
     {render(PhilomenaWeb.AdvertView, "_box.html", advert: @conn.assigns.advert, conn: @conn)}
