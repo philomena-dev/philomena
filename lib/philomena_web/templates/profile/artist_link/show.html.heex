@@ -14,9 +14,7 @@
       An administrator {"(#{@artist_link.contacted_by_user.name})"} has manually contacted you at the address above, as your verification code was not found on the website. Please respond to the message from the administrator to confirm your link.
     </p>
     <p>The verification code is:</p>
-    <p>
-      <h1>{@artist_link.verification_code}</h1>
-    </p>
+    <h1>{@artist_link.verification_code}</h1>
   <% link_verified?(@artist_link) -> %>
     <p>
       <strong>This link is pending verification by a member of the administration team.</strong>
@@ -25,19 +23,17 @@
       We've now found the verification code on your website. An administrator still needs to check the tag list before verifying the link. Please leave the code on your website until verification is complete.
     </p>
     <p>If you need it again, your verification code is:</p>
-    <p>
-      <h1>{@artist_link.verification_code}</h1>
-    </p>
+    <h1>{@artist_link.verification_code}</h1>
   <% unverified?(@artist_link) -> %>
     <p>
       <strong>This link is pending verification by a member of the administration team.</strong>
-      <div class="card card-danger">
-        <h3>
-          To have your link verified as fast as possible, please place this text somewhere on the page you are linking.
-        </h3>
-        <h1>{@artist_link.verification_code}</h1>
-      </div>
     </p>
+    <div class="card card-danger">
+      <h3>
+        To have your link verified as fast as possible, please place this text somewhere on the page you are linking.
+      </h3>
+      <h1>{@artist_link.verification_code}</h1>
+    </div>
     <p>Otherwise, an administrator will have to contact you to verify your identity.</p>
     <p>
       Once the link has been verified you can remove the text; the text simply allows the team to directly check with your website rather than messaging you and waiting for a reply.

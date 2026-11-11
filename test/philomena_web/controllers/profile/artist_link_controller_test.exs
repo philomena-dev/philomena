@@ -165,6 +165,8 @@ defmodule PhilomenaWeb.Profile.ArtistLinkControllerTest do
 
       assert response =~ "Showing Artist Link - Derpibooru"
       assert response =~ link.uri
+      # The verification card follows the status paragraph instead of nesting in it.
+      assert response =~ ~r{</strong>\s*</p>\s*<div class="card card-danger">}
     end
 
     test "renders artist-link management controls only to link staff", %{conn: conn} do
