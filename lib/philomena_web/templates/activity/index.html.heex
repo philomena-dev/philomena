@@ -1,6 +1,6 @@
 <div class="layout-columns">
   <%= if @show_sidebar do %>
-    <aside class="layout-side" id="activity-side">
+    <aside class="layout-side activity-side">
       <%= if not is_nil(@featured_image) and not PhilomenaWeb.ImageView.filter_or_spoiler_hits?(@conn, @featured_image) do %>
         <div class="text-center">
           <h4 class="mt-0">Featured Image</h4>
@@ -11,13 +11,13 @@
           )}
         </div>
       <% end %>
-      <div class="alert alert-success text-center hidden-below-md">
+      <div class="alert alert-success text-center">
         Enjoy the site? <a href="/pages/donations">Become a patron or donate!</a>
       </div>
-      <div class="alert text-center hidden-below-md">
+      <div class="alert text-center">
         Issues? Want to chat? <a href="/pages/contact">Contact us!</a>
       </div>
-      <div class="block hidden-below-md">
+      <div class="block">
         <div class="block-header justify-center">
           <a href="/search?q=first_seen_at.gt:3 days ago&amp;sf=wilson_score&amp;sd=desc">Trending Images</a>
         </div>
@@ -34,7 +34,7 @@
           <a href="/search?q=*&amp;sf=score&amp;sd=desc">All Time Top Scoring</a>
         </div>
       </div>
-      <div class="block striped hidden-below-md">
+      <div class="block striped">
         <div class="block-header justify-center"><a href="/channels">Streams</a></div>
         <%= for channel <- @streams do %>
           {render(PhilomenaWeb.ActivityView, "_channel_strip.html", channel: channel, conn: @conn)}
@@ -43,13 +43,13 @@
           No streams to show
         </div>
       </div>
-      <div class="block striped hidden-below-md">
+      <div class="block striped">
         <div class="block-header justify-center"><a href="/forums">Forum Activity</a></div>
         <%= for topic <- @topics do %>
           {render(PhilomenaWeb.ActivityView, "_topic_strip.html", topic: topic, conn: @conn)}
         <% end %>
       </div>
-      <div class="block striped hidden-below-md">
+      <div class="block striped">
         <div class="block-header justify-center"><a href="/comments">Recent Comments</a></div>
         <%= for comment <- @comments do %>
           {render(PhilomenaWeb.ActivityView, "_comment_strip.html", comment: comment, conn: @conn)}

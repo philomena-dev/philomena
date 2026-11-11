@@ -1,0 +1,6 @@
+/* The activity column of the front page follows the images on phones */
+@media not all and (min-width: $breakpoint-md) {
+  .activity-side {
+    order: 1;
+  }
+}

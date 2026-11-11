@@ -73,6 +73,7 @@
 @import "./components/table.css";
 @import "./components/tabs.css";
 @import "./components/tag.css";
+@import "./views/activity.css";
 @import "./views/adverts.css";
 @import "./views/approval.css";
 @import "./views/duplicates.css";
