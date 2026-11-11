@@ -25,7 +25,7 @@ defmodule PhilomenaWeb.TagChangeView do
 
   def user_block_class(tag_change) do
     if staff?(tag_change) do
-      "staff"
+      "card-success"
     else
       nil
     end

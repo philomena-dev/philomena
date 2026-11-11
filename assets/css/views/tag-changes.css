@@ -1,23 +1,13 @@
-/* A list of tag changes, each the image beside who made it, the tags added and removed and the staff tools */
-.tag-change-list {
-  display: flex;
-  flex-flow: column;
-  gap: var(--spacing-lg);
-}
+/*
+ * A list of tag changes, each a card (in the success color when staff made it) with the image beside who made it,
+ * the tags added and removed and the staff tools.
+ */
 
+/* The cards are dense, with a medium padding */
 .tag-change {
+  --card-padding: var(--spacing-md);
   display: flex;
-  flex: 1 0 auto;
   gap: var(--spacing-md);
-  padding: var(--spacing-md);
-  background-color: var(--surface-color);
-  border: var(--border-width) solid var(--tint-color);
-  border-radius: var(--border-radius-inner);
-}
-
-.tag-change.staff {
-  border-color: var(--success-border-color);
-  box-shadow: inset 0 0 var(--spacing-sm) var(--success-tint-color);
 }
 
 .tag-change-header {

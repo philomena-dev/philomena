@@ -44,7 +44,7 @@
         <a data-click-checkall=".js-tag-changes-form"><i class="fa fa-check"></i> Toggle all</a>
       </div>
     <% end %>
-    <div class="block-content tag-change-list">
+    <div class="block-content">
       <div class="card card-warning">
         <h4>
           <i class="fa fa-triangle-exclamation"></i>
@@ -59,7 +59,7 @@
         <% added_tags_count = Enum.count(added_tags) %>
         <% removed_tags_count = Enum.count(removed_tags) %>
         <% non_retained = non_retained_tags(tag_change) %>
-        <div class={["tag-change", user_block_class(tag_change)]}>
+        <div class={["card tag-change", user_block_class(tag_change)]}>
           <%= unless assigns[:hide_image] do %>
             <div class="tag-change-image">
               {render(PhilomenaWeb.ImageView, "_image_container.html",
