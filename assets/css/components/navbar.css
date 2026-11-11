@@ -58,7 +58,7 @@
   background-color: var(--header-color);
 }
 
-/* The new conversations envelope */
+/* The envelope of unread conversations */
 .navbar .navbar-icon.unread {
   color: var(--unread-message-color);
 }

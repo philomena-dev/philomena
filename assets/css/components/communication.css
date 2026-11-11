@@ -1,4 +1,4 @@
-/* Communications keep Philomena's dense rows */
+/* Communications are dense: their rows have less padding than a block's content */
 .communication {
   --block-content-padding: var(--spacing-md);
 }

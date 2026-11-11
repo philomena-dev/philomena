@@ -5,7 +5,7 @@
  * framework's fixed lightness sets to keep the contrast of the palette.
  */
 
-/* The header bars are as high as Philomena's, with fields and items filling them; controls are touch-sized */
+/* The header bars have fixed heights, which their fields and items fill */
 :root {
   --header-height: 36px;
   --header-secondary-height: 32px;
@@ -38,7 +38,7 @@
   }
 }
 
-/* Thumbnail lists keep Philomena's columns, 225px wide above 1150px and small up to it; tiny thumbnails are 50px */
+/* Thumbnails in lists are 225px wide above the xl breakpoint and small up to it; tiny thumbnails are 50px */
 :root {
   --media-box-width: var(--media-box-small-width);
   --media-box-tiny-width: 50px;
