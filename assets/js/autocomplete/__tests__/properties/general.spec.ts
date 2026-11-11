@@ -53,3 +53,18 @@ autocompleteTest('should only work on known query fields', async ({ ctx, expect 
     }
   `);
 });
+
+autocompleteTest('should suggest report properties in the admin report search', async ({ ctx, expect }) => {
+  await ctx.setName('rq[query]');
+  await ctx.setInput('re');
+  expect(ctx.snapUi()).toMatchInlineSnapshot(`
+    {
+      "input": "re<>",
+      "suggestions": [
+        "(property) reason",
+        "(property) reportable_id",
+        "(property) reportable_type",
+      ],
+    }
+  `);
+});
