@@ -1,84 +1,37 @@
 /*
- * The suggestions of a search or tag field, a list that the script places under the field: the part that matches
- * what was typed stands out, history entries are in the link color.
+ * The suggestions of a search or tag field: the framework's combobox list, which the script places under the field
+ * in page coordinates, so it takes the width of its content. History entries are in the link color and end in a
+ * delete control.
  */
 
-.autocomplete {
-  position: absolute;
-  z-index: var(--z-suggestions);
+.combobox-suggestions.autocomplete {
+  width: auto;
   max-width: 70vw;
-  overflow: hidden;
-  font-family: var(--mono-font);
-  font-weight: bold;
-  white-space: nowrap;
-  color: var(--muted-text-color);
-  background-color: var(--well-color);
-  border: var(--border-width) solid var(--control-border-color);
-  border-top-width: 0;
-  border-radius: 0 0 var(--border-radius-inner) var(--border-radius-inner);
-  box-shadow: var(--menu-shadow);
-  cursor: pointer;
-  user-select: none;
 }
 
 .autocomplete-separator {
   margin: 0;
 }
 
-.autocomplete-item {
-  padding: var(--input-padding);
-}
-
-.autocomplete-item:hover,
-.autocomplete-item.selected {
-  background-color: var(--tint-color);
-}
-
-.autocomplete-item-content {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.autocomplete-item-tag,
-.autocomplete-item-history {
-  display: flex;
-  justify-content: space-between;
-  white-space: pre;
-}
-
-.autocomplete-tag-match,
-.autocomplete-property-match {
-  color: var(--text-color);
-}
-
-.autocomplete-item-history {
-  padding: 0;
+.autocomplete-history {
   color: var(--link-color);
 }
 
-.autocomplete-item-history .autocomplete-item-content {
-  padding: var(--input-padding);
-}
-
-.autocomplete-history-match {
+.autocomplete-history mark {
   color: var(--link-strong-color);
 }
 
+/* The delete control fills the end of the row, over the item's padding */
 .autocomplete-history-delete {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 0 var(--spacing-md);
-  font-size: 0.75em;
+  align-self: stretch;
+  margin-block: calc(-1 * var(--input-padding));
+  margin-inline-end: calc(-1 * var(--input-padding));
+  padding-inline: var(--spacing-md);
 }
 
-/* Always shown, as touch screens have no hover */
 .autocomplete-history-delete:hover {
   color: var(--danger-tint-text-color);
   background-color: var(--danger-tint-color);
-}
-
-/* Narrow spaces between the groups of digits */
-.autocomplete-tag-count {
-  word-spacing: -0.25em;
 }

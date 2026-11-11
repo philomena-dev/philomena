@@ -2,6 +2,19 @@ import { makeEl } from './dom.ts';
 import { MatchPart, TagSuggestion } from './suggestions-model.ts';
 import { SuggestedProperty } from '../autocomplete/properties';
 
+/** The label of a suggestion item: an icon, the text and an optional addon at its end */
+function itemLabel(icon: string, text: (HTMLElement | string)[], addon?: HTMLElement): HTMLElement[] {
+  return [
+    makeEl('div', { className: 'combobox-suggestion-item-label' }, [
+      makeEl('i', { className: `fa-solid ${icon}` }),
+      makeEl('span', { className: 'combobox-suggestion-item-text' }, [
+        makeEl('span', { className: 'combobox-suggestion-item-main-text' }, text),
+      ]),
+      ...(addon ? [addon] : []),
+    ]),
+  ];
+}
+
 interface SuggestionComponent {
   readonly type: string;
 
@@ -27,19 +40,14 @@ export class TagSuggestionComponent implements SuggestionComponent {
   }
 
   render(): HTMLElement[] {
-    const { data } = this;
-
-    return [
-      makeEl('div', { className: 'autocomplete-item-content' }, [
-        makeEl('i', { className: 'fa-solid fa-tag' }),
-        ' ',
-        ...this.renderLabel(),
-      ]),
+    return itemLabel(
+      'fa-tag',
+      this.renderLabel(),
       makeEl('span', {
-        className: 'autocomplete-tag-count',
-        textContent: `  ${TagSuggestionComponent.renderImageCount(data.images)}`,
+        className: 'combobox-suggestion-item-addon',
+        textContent: TagSuggestionComponent.renderImageCount(this.data.images),
       }),
-    ];
+    );
   }
 
   renderLabel(): (HTMLElement | string)[] {
@@ -58,10 +66,7 @@ export class TagSuggestionComponent implements SuggestionComponent {
         return part;
       }
 
-      return makeEl('b', {
-        className: 'autocomplete-tag-match',
-        textContent: part.matched,
-      });
+      return makeEl('mark', { textContent: part.matched });
     });
   }
 
@@ -102,23 +107,15 @@ export class HistorySuggestionComponent implements SuggestionComponent {
   }
 
   render(): HTMLElement[] {
-    return [
-      makeEl('div', { className: 'autocomplete-item-content' }, [
-        makeEl('i', { className: 'fa-solid fa-history' }),
-        makeEl('b', {
-          textContent: ` ${this.content.slice(0, this.matchLength)}`,
-          className: 'autocomplete-history-match',
-        }),
-        makeEl('span', {
-          textContent: this.content.slice(this.matchLength),
-        }),
-      ]),
-      makeEl('div', { className: 'autocomplete-history-delete', title: 'Delete this history item' }, [
-        makeEl('i', {
-          className: 'fa-solid fa-xmark',
-        }),
-      ]),
-    ];
+    return itemLabel(
+      'fa-history',
+      [makeEl('mark', { textContent: this.content.slice(0, this.matchLength) }), this.content.slice(this.matchLength)],
+      makeEl(
+        'span',
+        { className: 'combobox-suggestion-item-addon autocomplete-history-delete', title: 'Delete this history item' },
+        [makeEl('i', { className: 'fa-solid fa-xmark' })],
+      ),
+    );
   }
 }
 
@@ -135,13 +132,7 @@ export class PropertySuggestionComponent implements SuggestionComponent {
   }
 
   render(): HTMLElement[] {
-    return [
-      makeEl('div', { className: 'autocomplete-item-content' }, [
-        makeEl('i', { className: 'fa-solid fa-circle-info' }),
-        ' ',
-        ...this.#renderSuggestionWithHighlighting(),
-      ]),
-    ];
+    return itemLabel('fa-circle-info', this.#renderSuggestionWithHighlighting());
   }
 
   #renderSuggestionWithHighlighting(): (HTMLElement | string)[] {
@@ -149,10 +140,7 @@ export class PropertySuggestionComponent implements SuggestionComponent {
     const matchedLength = this.suggestion.calculateMatchedLength();
 
     const resultElements: (HTMLElement | string)[] = [
-      makeEl('b', {
-        className: 'autocomplete-property-match',
-        textContent: renderedSuggestion.slice(0, matchedLength),
-      }),
+      makeEl('mark', { textContent: renderedSuggestion.slice(0, matchedLength) }),
     ];
 
     if (matchedLength !== renderedSuggestion.length) {
@@ -216,7 +204,7 @@ export class SuggestionsPopupComponent {
 
   constructor() {
     this.container = makeEl('div', {
-      className: 'autocomplete hidden',
+      className: 'combobox-suggestions autocomplete hidden',
       tabIndex: -1,
     });
 
@@ -254,13 +242,11 @@ export class SuggestionsPopupComponent {
       return;
     }
 
-    const selectedClass = 'selected';
-
-    this.selectedItem?.element.classList.remove(selectedClass);
+    this.selectedItem?.element.classList.remove('highlighted');
     this.cursor = index;
 
     if (index >= 0) {
-      this.selectedItem?.element.classList.add(selectedClass);
+      this.selectedItem?.element.classList.add('highlighted');
     }
   }
 
@@ -298,7 +284,7 @@ export class SuggestionsPopupComponent {
     const element = makeEl(
       'div',
       {
-        className: `autocomplete-item autocomplete-item-${type}`,
+        className: `combobox-suggestion-item autocomplete-${type}`,
       },
       suggestion.render(),
     );

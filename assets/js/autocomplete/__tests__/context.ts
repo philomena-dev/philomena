@@ -111,7 +111,7 @@ export class TestContext {
   }
 
   async deleteHistoryItem(content: string) {
-    const items = [...this.popup.querySelectorAll('.autocomplete-item-history')];
+    const items = [...this.popup.querySelectorAll('.autocomplete-history')];
     const item = items.find(elem => elem.textContent.trimStart() === content);
 
     if (!item) {
@@ -233,17 +233,20 @@ export class TestContext {
         return '-----------';
       }
 
-      let content = el.textContent!.trim();
+      let content = [...el.querySelectorAll('.combobox-suggestion-item-main-text, .combobox-suggestion-item-addon')]
+        .map(part => part.textContent)
+        .filter(Boolean)
+        .join('  ');
 
-      if (el.classList.contains('autocomplete-item-history')) {
+      if (el.classList.contains('autocomplete-history')) {
         content = `(history) ${content}`;
       }
 
-      if (el.classList.contains('autocomplete-item-property')) {
+      if (el.classList.contains('autocomplete-property')) {
         content = `(property) ${content}`;
       }
 
-      if (el.classList.contains('selected')) {
+      if (el.classList.contains('highlighted')) {
         return `👉 ${content}`;
       }
       return content;
