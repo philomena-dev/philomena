@@ -154,7 +154,7 @@
   @mixin links-hover;
 }
 
-.communication .communication-options a:where(:not(.button)) {
+.communication .communication-options a:where(:not(.button, .dropdown-item, .pagination-link)) {
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);

@@ -4,6 +4,15 @@
 - Commit: `a30090d96e96c089bd871fa3cbe4353ed60e1615`
 - Version: 0.4.0
 
+## Pending upstream
+
+Pull requests against upstream `main` that are merged over the commit above. They merge cleanly in any order. A pull
+request leaves this list once the commit above includes it.
+
+- https://github.com/Meow/PhilomenaCSS/pull/1, branch `fix/component-polish`, commits `c64307e`, `63bd3d9`,
+  `262a99e`, `2f75426`, `fa3d203` and `6884f0f`: `README.md`, `css/components/input-field.css`,
+  `css/components/table.css`, `css/design/layout.css`, `css/design/mixins.css`, `css/utils/alignment.css`.
+
 ## Left out
 
 Repository plumbing and the documentation site: `.github/`, `.husky/`, `docs/`, `commitlint.config.js`,
@@ -28,14 +37,16 @@ rewritten to state, hover or position through custom properties instead, read by
 - `design/mixins.css`, `design/layout.css` and the link rules of `components/card.css`, `block.css`,
   `collapsible.css`, `editor.css`, `media.css` and `communication.css`: a container sets its link style as
   `--link-style-*` custom properties (the new `content-links` and `bar-links` mixins) that one `a` rule applies, and
-  buttons, nav links, tags and badges reset them, in place of `a:where(:not($(content-controls)))`, whose
-  `.tag a`-style arguments floor browsers can't parse. Each bar underlines its hovered links in a `{bar} a:hover`
-  rule (the new `links-hover` mixin), of the specificity upstream's had. Where link containers nest, the
-  innermost one decides, where upstream the most specific rule did (a block in a colored card, say). A link inside a
-  `.button` or `.nav-link` (nested interactive content, invalid HTML) is reset as well. The options bar of
-  `communication.css` lays out every link but buttons as `a:where(:not(.button))`, links in a tag or badge there
-  included. The media box color variants no longer give the bar's background to its links, which sit on that same
-  background.
+  the controls of `$content-controls` and `$bar-controls` reset them (buttons, nav links, tags, badges, dropdown
+  items, pagination links and tabs), in place of `a:where(:not($(content-controls)))`, whose `.tag a`-style arguments
+  floor browsers can't parse. The reset is one list for both kinds of container, so a nav link or a tab in a bar keeps
+  its own style too. Each bar underlines its hovered links in a `{bar} a:hover` rule (the new `links-hover` mixin), of
+  the specificity upstream's had. Where link containers nest, the innermost one decides, where upstream the most
+  specific rule did (a block in a colored card, say). A link inside a `.button` or `.nav-link` (nested interactive
+  content, invalid HTML) is reset as well. The options bar of `communication.css` lays out every link but buttons,
+  dropdown items and pagination links as `a:where(:not(.button, .dropdown-item, .pagination-link))`, links in a tag or
+  badge there included. The media box color variants no longer give the bar's background to its links, which sit on
+  that same background.
 - `design/layout.css`, headings: those inside a card header, a table cell, a badge, a tag or a button get
   `--heading-rhythm: 0` instead of being left out by `:not(.card-header *, …)`, a heading that is the first or last
   child sets `--heading-first` or `--heading-last` to zero its margin at that edge, in place of `:where(:first-child)`
@@ -63,12 +74,13 @@ winner only for rare combinations: a read-only field that is also `.invalid` (th
 `<hr>` inside a `.blockquote` element (it takes the blockquote's spacing), and elements matched by the reset's
 `[hidden]` rule and a type selector, or by its `[contenteditable]` rule and a single class.
 
-Every other file is byte-identical to upstream. `npm run build` and `npm run check:contrast` work through the
-workspace (`npm run build -w @philomena/philomena-css`).
+Every other file is byte-identical to upstream with the pending pull requests merged. `npm run build` and
+`npm run check:contrast` work through the workspace (`npm run build -w @philomena/philomena-css`).
 
 ## Updating
 
-1. Clone upstream and check out the new commit.
+1. Clone upstream, check out the new commit and merge into it the branches of "Pending upstream" that it does not
+   include yet. A pull request that the new commit includes is merged upstream: drop its entry.
 2. From the clone, copy `css/`, `scripts/contrast.mjs`, `postcss.config.js`, `vite.config.js`, `LICENSE`,
    `README.md` and `package.json` over this directory, deleting files that upstream removed.
 3. Reapply the local modifications listed above.
@@ -76,3 +88,6 @@ workspace (`npm run build -w @philomena/philomena-css`).
 5. Run `npm install` at the repository root, inside the app container, to refresh `package-lock.json`.
 6. Check with `diff -r <clone> assets/vendor/philomena-css` that only the omissions, the local modifications and
    this file differ.
+
+A pull request that is still open is brought in the same way, by merging its branch over the commit above, and gets
+an entry under "Pending upstream".

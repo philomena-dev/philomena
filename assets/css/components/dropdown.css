@@ -1,11 +1,3 @@
-/* Menu items keep the menu's text style inside a bar or content that styles its links */
-.dropdown-menu {
-  --link-style-color: initial;
-  --link-style-weight: initial;
-  --link-style-decoration: initial;
-  --link-style-hover-decoration: initial;
-}
-
 /* Narrow screens make triggers touch targets and give menu items their height, and open the menus of a block header
    under the whole bar, across its width */
 @media not all and (min-width: $breakpoint-md) {

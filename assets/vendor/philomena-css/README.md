@@ -167,7 +167,7 @@ The framework is plain CSS, so some structure is on you:
   `.accordion-item-body` (use `<details>` and `<summary>` for script-free items). `.nav` is a column of
   `.nav-link`s, a row with `.horizontal`. `.progress` holds a `.progress-bar` whose width you set.
 - **Alerts.** `.alert` is a flat tinted bar of text and links, as Philomena's flash notices: it has no title or
-  action slots. An optional `.alert-icon` goes first, with the text in an `.alert-text` beside it. It is neutral; `.alert-{type}` tints it, like the variants of every other component.
+  action slots. An optional `.alert-icon` goes first, with the text in an `.alert-text` beside it. It is neutral; `.alert-{type}` tints it, like the variants of every other component. Paragraphs and lists in an alert (or its `.alert-text`) are spaced as running text.
 - **Editor.** `.editor` frames a `<textarea class="editor-input">` with an `.editor-toolbar` of flat
   `.editor-button`s (in `.editor-toolbar-group`s, `.active` for a format that is on, an `.editor-toolbar-spacer`
   to push buttons to the end) and an optional `.editor-footer`. The textarea is resized by its lower edge;
@@ -204,6 +204,7 @@ The framework is plain CSS, so some structure is on you:
     `--grid-auto-column-width` as fit), `.col-span-{1-6|12}`, `.col-span-full`, `.place-items-center`.
   - Text size: `.text-xs`, `.text-sm`, `.text-base`, `.text-lg`, `.text-xl`, `.text-2xl`, `.text-3xl`, from the
     `--text-size-{key}` tokens (in rem).
+  - Text alignment: `.text-left`, `.text-center`, `.text-right`, also on the cells of a table.
 
   There are no responsive (`md:`) or state (`hover:`) variants; use the `.hidden-*` utilities and your own CSS
   for those.

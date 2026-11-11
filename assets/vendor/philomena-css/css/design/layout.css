@@ -84,7 +84,10 @@ a {
 .button,
 .nav-link,
 .tag,
-.badge {
+.badge,
+.dropdown-item,
+.pagination-link,
+.tab {
   --link-style-color: initial;
   --link-style-weight: initial;
   --link-style-decoration: initial;
@@ -150,7 +153,7 @@ a {
  * so any margin of your own wins.
  */
 /* prettier-ignore */
-$flow-containers: body, main, .content, .card, .block-content, .tab-panel, .collapsible-inner, .accordion-item-body, .popup, .card-forms-section, .layout-main, .layout-side;
+$flow-containers: body, main, .content, .card, .block-content, .tab-panel, .collapsible-inner, .accordion-item-body, .popup, .card-forms-section, .layout-main, .layout-side, .alert, .alert-text;
 /* prettier-ignore */
 $flow-blocks: .card, .block, .communication, blockquote, .blockquote, .media-list, .table-wrap, .alert, .code-block, .collapsible.visible, .tag-box, .accordion, .form-control-group, .editor, .side-tabs, .content;
 /* prettier-ignore */
@@ -199,9 +202,11 @@ $flow-text: p, ul, ol;
   --flow-text-gap: var(--spacing-md);
 }
 
-/* Form controls that are stacked without a .form-control-group, and the submit row after them, keep the form distance */
+/* Form controls that are stacked without a .form-control-group, the submit row after them and the blocks among them
+   (an alert over a field) keep the form distance */
 /* prettier-ignore */
-:where(.form-control-wrap, .form-control, .form-control-group) + :where(.form-control-wrap, .form-control, .form-control-submit, .from-control-submit) {
+:where(.form-control-wrap, .form-control, $(flow-blocks)) + :where(.form-control-wrap, .form-control, .form-control-submit, .from-control-submit),
+:where(.form-control-wrap, .form-control) + :where($(flow-blocks)) {
   --flow-form-gap: var(--form-control-spacing);
 }
 

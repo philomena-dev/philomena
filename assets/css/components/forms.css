@@ -53,11 +53,6 @@
   }
 }
 
-/* The field padding of the framework comes after its select rule, which keeps room for the chevron */
-.form-control-select > .form-select-input:not([type="color"]) {
-  padding-right: var(--padding-value);
-}
-
 /* The editor rings its frame through :has(), which the floor browsers lack; its textarea rings itself instead */
 .editor .editor-input:focus-visible {
   @mixin focus-ring-inset;
@@ -80,12 +75,6 @@
 
 .disclosure[open] > summary {
   margin-bottom: var(--spacing-md);
-}
-
-/* Blocks, cards and alerts among the controls of a form keep the form distance to them */
-:where(.form-control-wrap, .form-control, .form-control-group) + :where(.block, .card, .alert),
-:where(.block, .card, .alert) + :where(.form-control-wrap, .form-control, .form-control-submit) {
-  --flow-form-gap: var(--form-control-spacing);
 }
 
 /* A checkbox drawn as the button after it, pressed and filled like a success button while checked */

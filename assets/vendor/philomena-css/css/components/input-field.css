@@ -3,6 +3,8 @@
   box-sizing: border-box;
   /* A field with a size or cols attribute is never wider than its column */
   max-inline-size: 100%;
+  /* Only a class, so that a component can change one side (a select keeps room for its icon) */
+  padding: var(--input-padding);
   border: var(--border-width) solid var(--_hover-border-color, var(--control-border-color));
   border-radius: var(--border-radius-inner);
   box-shadow: var(--well-shadow);
@@ -44,7 +46,6 @@ textarea.input-field {
 .input-field:not([type="color"]) {
   color: var(--text-color);
   background-color: var(--well-color);
-  padding: var(--input-padding);
 }
 
 /* Read-only: a flat field on the surface with a dashed border, since its text can be selected but not edited */
@@ -89,6 +90,7 @@ textarea.input-field {
   /* The reset leaves color inputs without an intrinsic size */
   width: var(--color-input-width);
   height: var(--color-input-height);
+  padding: 0;
   cursor: pointer;
 }
 
