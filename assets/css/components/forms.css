@@ -7,8 +7,13 @@
   max-inline-size: 30em;
 }
 
-/* On narrow screens the fields of a form take the full width, and the label of a checkbox is a touch target */
+/* On narrow screens the fields of a form take the full width, an input group a row of its own, and the label of a
+   checkbox is a touch target */
 @media not all and (min-width: $breakpoint-md) {
+  .form-input-group {
+    min-inline-size: 100%;
+  }
+
   .form-control {
     align-items: stretch;
   }
