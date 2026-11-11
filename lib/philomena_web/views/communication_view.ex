@@ -1,7 +1,6 @@
 defmodule PhilomenaWeb.CommunicationView do
   use PhilomenaWeb, :view
 
-  alias Philomena.Attribution
   alias Philomena.Attribution.AnonymousName
   alias Philomena.Comments.Comment
   alias Philomena.Posts.Post
@@ -52,14 +51,6 @@ defmodule PhilomenaWeb.CommunicationView do
     do: ~p"/forums/#{t.forum}/topics/#{t}/posts/#{p}/edit"
 
   def markdown_safe_author(object) do
-    Philomena.Markdown.escape("@" <> author_name(object))
-  end
-
-  defp author_name(object) do
-    if Attribution.anonymous?(object) || !object.user do
-      AnonymousName.generate(object)
-    else
-      object.user.name
-    end
+    Philomena.Markdown.escape("@" <> AnonymousName.name(object))
   end
 end
