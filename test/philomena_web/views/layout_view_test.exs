@@ -213,6 +213,30 @@ defmodule PhilomenaWeb.LayoutViewTest do
     end
   end
 
+  describe "header quick selects" do
+    test "give a signed-in user the filter and, on wide screens, the spoiler type", %{conn: conn} do
+      %{conn: conn} = register_and_log_in_user(%{conn: conn})
+      response = conn |> get(~p"/forums") |> html_response(200)
+      [header, _burger] = String.split(response, ~s(<div class="burger" id="burger"))
+
+      assert header =~
+               ~s(<form action="/filters/current" class="header-field" id="filter-quick-form")
+
+      assert header =~
+               ~s(<select aria-label="Filter" autocomplete="off" class="header-field-input")
+
+      assert header =~ ~s(id="filter-quick-menu" name="id">)
+
+      assert header =~
+               ~s(<form action="/filters/spoiler_type" class="header-field hidden-below-xl" id="spoiler-quick-form")
+
+      assert header =~
+               ~s(<select aria-label="Spoilers" autocomplete="off" class="header-field-input")
+
+      assert header =~ ~s(id="spoiler-quick-menu" name="settings[spoiler_type]">)
+    end
+  end
+
   describe "burger menu" do
     defp burger(response) do
       [_header, burger] =
