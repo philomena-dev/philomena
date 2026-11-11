@@ -35,6 +35,11 @@
   }
 }
 
+/* The framework's checkbox hover rule needs :has(), which the floor browsers lack; no checkbox is rendered disabled */
+.form-control-checkbox:hover .form-checkbox-input-wrap {
+  border-color: var(--text-color);
+}
+
 /* The editor rings its frame through :has(), which the floor browsers lack; its textarea rings itself instead */
 .editor .editor-input:focus-visible {
   @mixin focus-ring-inset;
