@@ -55,6 +55,12 @@ defmodule PhilomenaWeb.ProfileControllerTest do
       owner_response = html_response(get(owner_conn, ~p"/profiles/#{user}"), 200)
       assert owner_response =~ ">Commissions</span>"
       assert owner_response =~ ">About Me</span>"
+
+      staff_conn = log_in_user(build_conn(), moderator_user_fixture())
+      staff_response = html_response(get(staff_conn, ~p"/profiles/#{user}"), 200)
+      [_, after_about] = String.split(staff_response, ">About Me</span>", parts: 2)
+      [about_block, _] = String.split(after_about, ">Mod Notes</a>", parts: 2)
+      refute about_block =~ "block-content"
     end
 
     test "renders a profile for logged-in users", %{conn: conn} do
