@@ -11,24 +11,24 @@ quote_body = if @comment.hidden_from_users, do: "", else: @comment.body %>
     </a>
     <%= if staff? do %>
       <%= if @comment.hidden_from_users and not @comment.destroyed_content do %>
-        <%= link(to: ~p"/images/#{@comment.image_id}/comments/#{@comment}/hide", data: [confirm: "Are you sure?"], method: "delete", class: "js-staff-action") do %>
+        <%= link(to: ~p"/images/#{@comment.image_id}/comments/#{@comment}/hide", data: [confirm: "Are you sure?"], method: "delete", class: "staff-action") do %>
           <i class="fas fa-check"></i> Restore
         <% end %>
         <%= if can?(@conn, :delete, @comment) do %>
-          <%= link(to: ~p"/images/#{@comment.image_id}/comments/#{@comment}/delete", data: [confirm: "Are you sure?"], method: "post", class: "js-staff-action") do %>
+          <%= link(to: ~p"/images/#{@comment.image_id}/comments/#{@comment}/delete", data: [confirm: "Are you sure?"], method: "post", class: "staff-action") do %>
             <i class="fas fa-times"></i> Delete Contents
           <% end %>
         <% end %>
       <% end %>
       <a
         :if={deletable?}
-        class="js-staff-action js-togglable-delete-form-link"
+        class="staff-action js-togglable-delete-form-link"
         data-click-toggle={"#inline-del-form-comment-#{@comment.id}"}
         href="#"
       ><i class="fas fa-times"></i> Delete</a>
       <%= if can?(@conn, :show, :identity_metadata) do %>
-        <span class="js-staff-action">{link_to_ip(@conn, @comment.ip)}</span>
-        <span class="js-staff-action">{link_to_fingerprint(@conn, @comment.fingerprint)}</span>
+        <span class="staff-action">{link_to_ip(@conn, @comment.ip)}</span>
+        <span class="staff-action">{link_to_fingerprint(@conn, @comment.fingerprint)}</span>
       <% end %>
     <% end %>
     <a
@@ -64,7 +64,7 @@ quote_body = if @comment.hidden_from_users, do: "", else: @comment.body %>
     </a>
   </div>
   <%= if staff? and deletable? do %>
-    <%= form_for :comment, ~p"/images/#{@comment.image_id}/comments/#{@comment}/hide", [class: "js-togglable-delete-form hidden flex js-staff-action", id: "inline-del-form-comment-#{@comment.id}"], fn f -> %>
+    <%= form_for :comment, ~p"/images/#{@comment.image_id}/comments/#{@comment}/hide", [class: "js-togglable-delete-form hidden flex staff-action", id: "inline-del-form-comment-#{@comment.id}"], fn f -> %>
       {text_input(f, :deletion_reason,
         class: "input-field full-width",
         placeholder: "Deletion Reason",

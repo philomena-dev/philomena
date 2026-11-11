@@ -112,7 +112,7 @@
     <div class="tab-panel" data-tab="replace">
       <%= if @file_changeset do %>
         <%= form_for @file_changeset, ~p"/images/#{@image}/file", [method: "put", multipart: true, class: "content"], fn f -> %>
-          <div id="js-image-upload-previews"></div>
+          <div class="upload-previews" id="js-image-upload-previews"></div>
           <p>Upload a file from your computer</p>
           <div class="form-control">{file_input(f, :image, class: "input-field js-scraper")}</div>
           <div class="form-input-group">

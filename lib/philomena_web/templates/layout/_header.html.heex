@@ -48,7 +48,7 @@
     <%= if hides_images?(@conn) do %>
       {select(f, :del, [{"-D", ""}, {"+D", 1}, {"*D", "deleted"}, {"DO", "only"}],
         name: "del",
-        class: "header-field-input js-staff-action",
+        class: "header-field-input staff-action",
         autocomplete: "off",
         "aria-label": "Deleted images"
       )}

@@ -74,7 +74,7 @@
         ]
       )}
     <% end %>
-    <div :if={staff?(@conn)} class="js-staff-action">
+    <div :if={staff?(@conn)} class="staff-action">
       <hr class="burger-divider" />
       {render(PhilomenaWeb.LayoutView, "_burger_links.html",
         conn: @conn,

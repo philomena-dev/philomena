@@ -239,8 +239,8 @@ defmodule PhilomenaWeb.LayoutViewTest do
         assert burger =~ label
       end
 
-      # The hide staff tools setting hides .js-staff-action
-      [_, staff_links] = String.split(burger, ~s(<div class="js-staff-action">))
+      # The hide staff tools setting hides .staff-action
+      [_, staff_links] = String.split(burger, ~s(<div class="staff-action">))
 
       for label <- ["Site Notices", "Mod Logs", "User Bans", "FP Bans"] do
         assert staff_links =~ label

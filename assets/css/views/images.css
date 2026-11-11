@@ -153,29 +153,30 @@
   padding: var(--spacing-xs) var(--spacing-md) var(--spacing-xs) var(--spacing-xs);
 }
 
-#js-image-upload-previews {
+/* The previews of the file being uploaded, or of the images a scraper found */
+.upload-previews {
   display: flex;
   flex-flow: row wrap;
   align-items: center;
   gap: var(--spacing-md);
 }
 
-#js-image-upload-previews:empty {
+.upload-previews:empty {
   display: none;
 }
 
-#js-image-upload-previews img,
-#js-image-upload-previews video {
+.upload-previews img,
+.upload-previews video {
   max-height: 200px;
   max-width: 200px;
 }
 
 /* The images a scraper found: a hidden radio button each, the chosen image framed and the others faded */
-#js-image-upload-previews .scraper-preview-label {
+.scraper-preview-label {
   cursor: pointer;
 }
 
-#js-image-upload-previews .scraper-preview-frame {
+.scraper-preview-frame {
   display: inline-block;
   padding: var(--spacing-md);
   border: var(--border-width) solid transparent;
@@ -184,21 +185,21 @@
   @mixin faded;
 }
 
-#js-image-upload-previews .scraper-preview-image {
+.scraper-preview-image {
   @mixin checkerboard;
 }
 
-#js-image-upload-previews .scraper-preview-input {
+.scraper-preview-input {
   @mixin hidden-toggle;
 }
 
-#js-image-upload-previews .scraper-preview-input:checked + .scraper-preview-frame {
+.scraper-preview-input:checked + .scraper-preview-frame {
   opacity: 1;
   border-color: var(--primary-border-color);
   background-color: var(--tint-color);
 }
 
-#js-image-upload-previews .scraper-preview-input:focus-visible + .scraper-preview-frame {
+.scraper-preview-input:focus-visible + .scraper-preview-frame {
   @mixin focus-ring;
 }
 

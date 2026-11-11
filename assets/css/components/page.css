@@ -149,6 +149,6 @@ body {
 }
 
 /* Staff can hide their tools on the pages they browse */
-body[data-hide-staff-tools="true"] .js-staff-action {
+body[data-hide-staff-tools="true"] .staff-action {
   display: none;
 }
