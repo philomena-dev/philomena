@@ -25,7 +25,8 @@ body {
   --link-style-hover-decoration: underline;
 }
 
-/* Markdown is prose wherever it is */
+/* Paragraphs and Markdown are prose wherever they are */
+p,
 .markdown {
   --link-style-decoration: underline;
   --link-style-hover-decoration: initial;
