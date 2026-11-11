@@ -71,7 +71,10 @@ pagination =
                     </div>
                   </div>
                   <p>
-                    <strong>{link("More information", to: ~p"/profiles/#{c.user}/commission")}</strong>
+                    <strong>{link("More information",
+                      to: ~p"/profiles/#{c.user}/commission",
+                      class: "touch-link"
+                    )}</strong>
                   </p>
                 </div>
               </div>

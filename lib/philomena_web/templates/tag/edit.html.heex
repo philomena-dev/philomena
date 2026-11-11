@@ -1,7 +1,7 @@
 <h1>Editing Tag</h1>
-<p>{link("Edit image", to: ~p"/tags/#{@tag}/image/edit")}</p>
+<p>{link("Edit image", to: ~p"/tags/#{@tag}/image/edit", class: "touch-link")}</p>
 <%= if can?(@conn, :alias, @tag) do %>
-  <p>{link("Edit aliases", to: ~p"/tags/#{@tag}/alias/edit")}</p>
+  <p>{link("Edit aliases", to: ~p"/tags/#{@tag}/alias/edit", class: "touch-link")}</p>
 <% end %>
 <%= form_for @changeset, ~p"/tags/#{@tag}", [class: "content"], fn f -> %>
   {error_summary(@changeset)}

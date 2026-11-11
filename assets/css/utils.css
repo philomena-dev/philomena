@@ -25,3 +25,10 @@
 .whitespace-nowrap {
   white-space: nowrap !important;
 }
+
+/* A link that stands alone, as tall as a touch target on phones */
+@media not all and (min-width: $breakpoint-md) {
+  .touch-link {
+    @mixin touch-link;
+  }
+}

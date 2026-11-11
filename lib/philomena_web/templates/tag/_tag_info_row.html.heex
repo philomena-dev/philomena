@@ -7,7 +7,7 @@
     <% end %>
   </div>
   <div class="flex-1" phx-no-format>
-    {render PhilomenaWeb.TagView, "_tag.html", tag: @tag, conn: @conn} {link "Tag changes", to: ~p"/tags/#{@tag}/tag_changes", class: "me-md"}<%= if manages_tags?(@conn) do %>{link "Edit details", to: ~p"/tags/#{@tag}/edit", class: "me-md"}{link "Usage", to: ~p"/tags/#{@tag}/details", class: "me-md"}<% end %><%= if manages_dnp?(@conn) do %>{link "Create new DNP entry", to: ~p"/dnp/new?#{[tag_id: @tag.id]}", class: "me-md"}<% end %>
+    {render PhilomenaWeb.TagView, "_tag.html", tag: @tag, conn: @conn} {link "Tag changes", to: ~p"/tags/#{@tag}/tag_changes", class: "me-md touch-link"}<%= if manages_tags?(@conn) do %>{link "Edit details", to: ~p"/tags/#{@tag}/edit", class: "me-md touch-link"}{link "Usage", to: ~p"/tags/#{@tag}/details", class: "me-md touch-link"}<% end %><%= if manages_dnp?(@conn) do %>{link "Create new DNP entry", to: ~p"/dnp/new?#{[tag_id: @tag.id]}", class: "me-md touch-link"}<% end %>
     <br />
     <%= if @tag.short_description not in [nil, ""] do %><strong>Short description:</strong> {@tag.short_description}<br /><% end %>
     <%= if manages_tags?(@conn) and present?(@tag.mod_notes) do %><strong class="text-danger">Mod notes:</strong> {@tag.mod_notes}<br /><% end %>

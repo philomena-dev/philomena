@@ -164,10 +164,12 @@
           <%= if manages_awards?(@conn) do %>
             <div class="flex-1 text-center">
               <a
+                class="touch-link"
                 data-confirm="Are you really, really sure?"
                 data-method="delete"
                 href={~p"/profiles/#{@user}/awards/#{award}"}
-              >Remove</a> <br /><a href={~p"/profiles/#{@user}/awards/#{award}/edit"}>Edit</a>
+              >Remove</a>
+              <br /><a class="touch-link" href={~p"/profiles/#{@user}/awards/#{award}/edit"}>Edit</a>
             </div>
           <% end %>
         </div>

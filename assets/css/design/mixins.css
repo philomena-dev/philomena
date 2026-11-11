@@ -1,3 +1,10 @@
+/* On phones, a link that stands alone: a box of its own, at least as large as a touch target */
+@define-mixin touch-link {
+  display: inline-block;
+  min-inline-size: var(--touch-target-size);
+  padding-block: var(--touch-padding-vertical);
+}
+
 /* A checkerboard of 8px squares behind an image, so that its transparent parts show */
 @define-mixin checkerboard {
   background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAGUlEQVR42mP474AKGdDhCFGALoChYWQoAACpW7+B5lv5BwAAAABJRU5ErkJggg==");

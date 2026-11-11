@@ -30,16 +30,17 @@
       ) %>
     <%= for {body, post} <- @posts do %>
       <h3>
-        {link(post.topic.forum.name, to: ~p"/forums/#{post.topic.forum}")} &raquo; {link(
+        {link(post.topic.forum.name, to: ~p"/forums/#{post.topic.forum}", class: "touch-link")} &raquo; {link(
           post.topic.title,
-          to: ~p"/forums/#{post.topic.forum}/topics/#{post.topic}"
+          to: ~p"/forums/#{post.topic.forum}/topics/#{post.topic}",
+          class: "touch-link"
         )} &raquo; <% post_link =
           ~p"/forums/#{post.topic.forum}/topics/#{post.topic}?#{[post_id: post.id]}" <>
             "#post_#{post.id}" %>
         <%= if post.topic_position == 0 do %>
-          {link("Topic Opener", to: post_link)}
+          {link("Topic Opener", to: post_link, class: "touch-link")}
         <% else %>
-          {link("Post #{post.topic_position}", to: post_link)}
+          {link("Post #{post.topic_position}", to: post_link, class: "touch-link")}
         <% end %>
       </h3>
       {render(PhilomenaWeb.PostView, "_post.html", body: body, post: post, conn: @conn)}

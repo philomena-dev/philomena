@@ -37,8 +37,13 @@ table:not([class]) tbody tr:nth-child(even) {
   background-color: var(--stripe-color);
 }
 
-/* Narrow screens scroll a wide table sideways */
+/* Narrow screens scroll a wide table sideways, and make the links of a cell touch targets */
 @media not all and (min-width: $breakpoint-md) {
+  .table td > a:not(.button),
+  .table td > :is(strong, em, .code-span) > a {
+    @mixin touch-link;
+  }
+
   table:not([class]) {
     display: block;
     overflow-x: auto;

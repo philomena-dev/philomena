@@ -7,7 +7,7 @@
     <p>{link("Resend unlock instructions", to: ~p"/unlocks/new")}</p>
     <p>{link("Resend confirmation email", to: ~p"/confirmations/new")}</p>
   <% end %>
-  <p>{link("Forgot your password?", to: ~p"/passwords/new")}</p>
+  <p>{link("Forgot your password?", to: ~p"/passwords/new", class: "touch-link")}</p>
   <div class="form-control">
     {email_input(f, :email,
       class: "input-field",

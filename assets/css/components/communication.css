@@ -15,7 +15,7 @@
   flex-basis: 100%;
 }
 
-/* Narrow screens give the options touch-sized targets, whose rows need no gap */
+/* Narrow screens give the options and the author's name touch-sized targets; the rows of options need no gap */
 @media not all and (min-width: $breakpoint-md) {
   .communication .communication-options,
   .communication .communication-options > * {
@@ -24,5 +24,9 @@
 
   .communication .communication-options a {
     min-height: var(--touch-target-size);
+  }
+
+  .communication .communication-author-name a {
+    @mixin touch-link;
   }
 }
