@@ -376,6 +376,8 @@ $_syntax-punctuation: #6b6d78;
   --color-input-width: 4rem;
   --color-input-height: 2.5rem;
   --form-control-spacing: var(--spacing-md);
+  /* The label column of a horizontal form control */
+  --form-label-width: 30%;
   --focus-outline: 0.1875em;
   /* How much unavailable controls and muted content are faded */
   --faded-opacity: 0.6;

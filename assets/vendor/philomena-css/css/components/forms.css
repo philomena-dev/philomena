@@ -51,6 +51,26 @@
   flex-direction: row;
 }
 
+/* From md up a horizontal control is a grid with the label in a column beside the field, ending at it. The field
+   and the messages after it stack in the second column, and so does a control without a label */
+@media (min-width: $breakpoint-md) {
+  .form-control.horizontal {
+    display: grid;
+    grid-template-columns: var(--form-label-width) minmax(0, 1fr);
+    place-items: center start;
+  }
+
+  .form-control.horizontal > :first-child:not(:only-child) {
+    justify-self: end;
+    text-align: end;
+  }
+
+  .form-control.horizontal > :not(:first-child),
+  .form-control.horizontal > :only-child {
+    grid-column: 2;
+  }
+}
+
 .form-control-checkbox {
   display: flex;
   gap: var(--form-control-spacing);

@@ -35,24 +35,6 @@
   }
 }
 
-/* From md up a horizontal field has its label in a right-aligned column beside it; a control alone sits under the
-   controls of the fields around it */
-@media (min-width: $breakpoint-md) {
-  .form-control.horizontal {
-    flex-direction: row;
-    align-items: center;
-  }
-
-  .form-control.horizontal > :first-child:not(:only-child) {
-    flex: 0 0 30%;
-    text-align: right;
-  }
-
-  .form-control.horizontal > :only-child {
-    margin-inline-start: calc(30% + var(--form-control-spacing));
-  }
-}
-
 /* The editor rings its frame through :has(), which the floor browsers lack; its textarea rings itself instead */
 .editor .editor-input:focus-visible {
   @mixin focus-ring-inset;
@@ -75,23 +57,6 @@
 
 .disclosure[open] > summary {
   margin-bottom: var(--spacing-md);
-}
-
-/* A checkbox drawn as the button after it, pressed and filled like a success button while checked */
-.button-check-input {
-  @mixin hidden-toggle;
-}
-
-.button-check-input:checked + .button {
-  --_bevel: var(--well-shadow);
-  --_drop: transparent;
-  --_border-color: var(--success-border-color);
-  color: var(--success-button-text-color);
-  background-color: var(--success-button-color);
-}
-
-.button-check-input:focus-visible + .button {
-  @mixin focus-ring-offset;
 }
 
 /* The form of a button that submits to a route (PhilomenaWeb.AppView.button_to/3) flows with text */

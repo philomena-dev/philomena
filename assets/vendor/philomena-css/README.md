@@ -143,6 +143,10 @@ The framework is plain CSS, so some structure is on you:
 - **Badge-sized buttons.** `.button-size-badge` on a `.button`, or on a `.button-group` to size every button in
   it, gives buttons the size and shape of a badge (`--badge-*` sizes, `--border-radius-large`) for toolbars and
   list rows.
+- **Toggle buttons.** `<input class="button-check-input" type="checkbox">` (or a radio) right before a
+  `<label class="button">` for it draws the input as that button, pressed while it is checked. Radios with one name
+  make a choice of buttons. Put them in a `.button-group.separated`; a joined group needs the buttons as its only
+  children.
 - **Media box actions.** `.media-box-header.actions` is the header of a Philomena image thumbnail: a row of
   `.media-box-action` links with a kind (`.fave`, `.upvote`, `.downvote`, `.comments`, `.hide`) and a
   `.media-box-score`. An action has the color of its kind, taken from the tag palette, and is filled with it when hovered or `.active`.
@@ -244,6 +248,10 @@ The framework is plain CSS, so some structure is on you:
   or Font Awesome's `fa-fw`). A text glyph will not line up.
 - **Loading buttons need a `.loading-icon` element** placed before `.button-content` inside the button. The icon is
   drawn over the content, which fades to 20%; `.loading` alone only changes the cursor.
+- **Horizontal forms.** `.form-control.horizontal` puts the label in a column beside its field from the `md`
+  breakpoint up (`--form-label-width`, 30%, with the text against the field); below it the label is over the field as
+  usual. The `.form-message` texts after the field stay under it, and a horizontal control with a single child (a
+  checkbox, a button) lines up with the fields above it.
 - **Radio controls:** before v0.1.2, whitespace between `.form-radio-input-wrap` and `.form-radio-label` pushed
   the label out of line with checkbox labels. From v0.1.2 the control is a flex row and formatting is free.
 - **Blockquotes stack bars.** `<blockquote>` (or `.blockquote`) draws a bar on the start side; a quote inside a quote

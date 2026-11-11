@@ -1,8 +1,8 @@
 .button {
   --_border-color: var(--neutral-button-border-color);
   --_shade: var(--_pointer-shade, transparent);
-  --_bevel: var(--emphasis-shadow);
-  --_drop: var(--raised-shadow-color);
+  --_bevel: var(--_pointer-bevel, var(--emphasis-shadow));
+  --_drop: var(--_pointer-drop, var(--raised-shadow-color));
   /* A long label is cut off (or wraps, with .allow-overflow) instead of widening the page */
   max-inline-size: 100%;
   --_hover-shade: var(--neutral-button-hover-color);
@@ -61,13 +61,22 @@
   padding-inline-end: 0.15em;
 }
 
-/* A pressed button keeps its darker shade under the pointer */
+/* A pressed button keeps its darker shade under the pointer, a disabled toggle button (below) gets no shade */
 .button:hover {
   --_pointer-shade: var(--_hover-shade);
 }
 
-.button:disabled {
+.button:active {
+  --_pointer-shade: var(--_active-shade);
+  --_pointer-bevel: var(--well-shadow);
+  --_pointer-drop: transparent;
+}
+
+.button:disabled,
+.button-check-input:disabled + .button {
   --_pointer-shade: initial;
+  --_pointer-bevel: initial;
+  --_pointer-drop: initial;
 }
 
 .button.icon-only {
@@ -108,11 +117,30 @@
   text-overflow: ellipsis;
 }
 
-.button:not(:disabled):active,
-.button.pressed {
+.button.pressed,
+.button-check-input:checked + .button {
   --_shade: var(--_active-shade);
   --_bevel: var(--well-shadow);
   --_drop: transparent;
+}
+
+/*
+ * A toggle button: a checkbox or radio drawn as the .button right after it, a <label> for it, which is pressed while
+ * the input is checked. While the input is disabled the button is faded, without a hover or pressed look:
+ *   <input class="button-check-input" type="checkbox" id="x"><label class="button" for="x">Open</label>
+ */
+
+.button-check-input {
+  @mixin hidden-toggle;
+}
+
+.button-check-input:focus-visible + .button {
+  @mixin focus-ring-offset;
+}
+
+.button-check-input:disabled + .button {
+  cursor: not-allowed;
+  @mixin faded;
 }
 
 .button.loading {

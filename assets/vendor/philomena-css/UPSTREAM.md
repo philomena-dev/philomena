@@ -16,6 +16,8 @@ request leaves this list once the commit above includes it.
   `71d71c0`, `edadeba`, `11db244` and `b76fd96`: `README.md`, `css/components/avatar.css`, `css/components/block.css`,
   `css/components/communication.css`, `css/components/media.css`, `css/components/table.css`,
   `css/components/tag.css`, `css/design/mixins.css`, `css/design/tokens.css`.
+- https://github.com/Meow/PhilomenaCSS/pull/3, branch `feat/forms-horizontal-toggles`, commits `2a19b8e` and
+  `f0b4b33`: `README.md`, `css/components/button.css`, `css/components/forms.css`, `css/design/tokens.css`.
 
 ## Left out
 
@@ -67,7 +69,11 @@ rewritten to state, hover or position through custom properties instead, read by
 - `components/input-field.css`, `components/forms.css` (radio buttons) and `components/button.css`: the hover state
   sets `--_hover-border-color`, `--_radio-hover-border-color` or `--_pointer-shade`, which the rules that color the
   border or shade read, and disabled or read-only controls reset it, in place of `:where(:not(:disabled, …))` and
-  `:not(:disabled, .pressed)` on the hover rule; a pressed button sets its shade itself.
+  `:not(:disabled, .pressed)` on the hover rule. A button held down sets `--_pointer-shade`, `--_pointer-bevel` and
+  `--_pointer-drop` the same way. Disabled buttons and the buttons of disabled toggle inputs reset all three, in place
+  of `:where(:not(.button-check-input:disabled + *))` on the hover and `:active` rules, a complex selector inside
+  `:not()` that no floor browser parses. A pressed button and the button of a checked toggle input set their look
+  themselves.
 - `components/media.css`: the square image area is `height: 0; padding-bottom: 100%` with the image or video
   positioned over it, as floor browsers lack `aspect-ratio`.
 - `components/button.css`: `.justify-start` and `.justify-end` align the button content with `flex-start` and
