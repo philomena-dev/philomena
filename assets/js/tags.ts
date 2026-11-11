@@ -87,6 +87,7 @@ function createTagDropdown(dropdown: HTMLElement) {
   });
 
   refresh();
+  dropdown.classList.remove('manual');
 }
 
 export function initTagDropdown() {

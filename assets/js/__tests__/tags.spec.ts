@@ -3,7 +3,7 @@ import { assertNotNull } from '../utils/assert';
 import { fireEvent } from '@testing-library/dom';
 import { initTagDropdown } from '../tags';
 
-const tagMarkup = `<div class="dropdown" data-tag-id="1">
+const tagMarkup = `<div class="dropdown manual" data-tag-id="1">
   <span class="tag" aria-haspopup="true"><a class="tag-name" href="/tags/safe">safe</a><span class="tag-count">5</span></span>
   <div class="dropdown-menu">
     <a class="dropdown-item hidden" data-tag-action="unwatch">Unwatch</a>
@@ -40,6 +40,12 @@ describe('Tag dropdown', () => {
 
     expect(shownItems()).toEqual(['Sign in to Watch']);
     expect(icons()).toEqual([]);
+  });
+
+  it('lets the menu open on hover once its items are picked', () => {
+    setup({ userIsSignedIn: true, userCanEditFilter: true });
+
+    expect(assertNotNull($('.dropdown'))).not.toHaveClass('manual');
   });
 
   it('offers watching and a link to the filters to users who cannot edit their filter', () => {
