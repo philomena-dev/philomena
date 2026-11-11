@@ -140,6 +140,9 @@ defmodule PhilomenaWeb.Profile.CommissionControllerTest do
 
       assert response =~ "New Commission - Derpibooru"
       assert response =~ "New Commission Listing"
+      # The category checkboxes are a group named by its caption
+      assert response =~ ~s(<span id="commission_categories_label">Art Categories:</span>)
+      assert response =~ ~s(aria-labelledby="commission_categories_label")
     end
 
     test "redirects with the authorization flash when a commission already exists",

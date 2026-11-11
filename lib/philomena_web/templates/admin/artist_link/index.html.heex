@@ -12,7 +12,7 @@
       spellcheck: "false"
     )}
     <%= for state <- input_value(f, :states) || [] do %>
-      {hidden_input(f, :states, name: "#{f.name}[states][]", value: state)}
+      {hidden_input(f, :states, name: "#{f.name}[states][]", value: state, id: nil)}
     <% end %>
     {submit("Search", class: "button")}
   </div>

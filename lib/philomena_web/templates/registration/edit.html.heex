@@ -38,6 +38,7 @@
     {password_input(f, :current_password,
       class: "input-field",
       required: true,
+      id: "email_current_password",
       name: "current_password",
       placeholder: "Current password"
     )}{error_tag(f, :current_password)}
@@ -66,6 +67,7 @@
   </div>
   <div class="form-control">
     {password_input(f, :current_password,
+      id: "password_current_password",
       name: "current_password",
       class: "input-field",
       placeholder: "Current password"

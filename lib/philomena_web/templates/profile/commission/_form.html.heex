@@ -38,8 +38,8 @@
     )}{error_tag(f, :will_not_create)}
   </div>
   <div class="form-control">
-    {label(f, :categories, "Art Categories:")}
-    <div class="form-control-group">
+    <span id="commission_categories_label">Art Categories:</span>
+    <div aria-labelledby="commission_categories_label" class="form-control-group" role="group">
       {collection_checkboxes(f, :categories, categories(), selected: f.data.categories)}
     </div>
     {error_tag(f, :categories)}

@@ -96,7 +96,7 @@
         </p>
       </div>
       <div class={["tab-panel", tab_class(@conn, "display")]} data-tab="display" phx-no-format>
-        <%= inputs_for f, :settings, fn fs -> %>{field_with_help( \
+        <%= inputs_for f, :settings, [skip_hidden: true], fn fs -> %>{field_with_help( \
               "Align content to the center of the page - try this option out if you " <> \
               "browse the site on a tablet or a fairly wide screen.",
               checkbox_field(fs, :use_centered_layout, "Use centered layout") \
@@ -133,7 +133,7 @@
           )}<% end %>
       </div>
       <div class={["tab-panel", tab_class(@conn, "comments")]} data-tab="comments" phx-no-format>
-        <%= inputs_for f, :settings, fn fs -> %>{field_with_help( \
+        <%= inputs_for f, :settings, [skip_hidden: true], fn fs -> %>{field_with_help( \
             "Display the newest comments at the top of the page.", \
             checkbox_field(fs, :comments_newest_first, "Newest comments first") \
           )}{field_with_help( \
@@ -162,7 +162,7 @@
         data-tab="notifications"
         phx-no-format
       >
-        <%= inputs_for f, :settings, fn fs -> %>{field_with_help( \
+        <%= inputs_for f, :settings, [skip_hidden: true], fn fs -> %>{field_with_help( \
             "If enabled, you'll be subscribed to things (images or topics) " <> \
             "automatically as soon as you post a comment or reply, keeping " <> \
             "you in the conversation.",
@@ -178,7 +178,7 @@
           )}<% end %>
       </div>
       <div class={["tab-panel", tab_class(@conn, "metadata")]} data-tab="metadata">
-        <%= inputs_for f, :settings, fn fs -> %>
+        <%= inputs_for f, :settings, [skip_hidden: true], fn fs -> %>
           {checkbox_field(fs, :fancy_tag_field_on_upload, "Fancy tags - uploads")}
           {field_with_help(
             "The fancy tag editor gives you autosuggestions and visual " <>

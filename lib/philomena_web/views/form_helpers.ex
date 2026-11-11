@@ -90,7 +90,7 @@ defmodule PhilomenaWeb.FormHelpers do
         )
       end)
 
-    [boxes, hidden_input(form, field, name: name, value: "")]
+    [boxes, hidden_input(form, field, name: name, value: "", id: nil)]
   end
 
   @doc """

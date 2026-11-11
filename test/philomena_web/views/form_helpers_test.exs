@@ -128,7 +128,7 @@ defmodule PhilomenaWeb.FormHelpersTest do
                ~s(<input checked class="form-checkbox-input" id="user_roles_2" name="user[roles][]" type="checkbox" value="2">)
 
       assert html =~ ~s(<label class="form-checkbox-label" for="user_roles_2">Alias tags</label>)
-      assert html =~ ~s(<input id="user_roles" name="user[roles][]" type="hidden" value="">)
+      assert html =~ ~s(<input name="user[roles][]" type="hidden" value="">)
     end
   end
 
