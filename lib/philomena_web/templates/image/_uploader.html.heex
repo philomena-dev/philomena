@@ -1,4 +1,4 @@
-<span class="image-uploader">{render(PhilomenaWeb.ImageView, "_uploader_name.html", assigns)}</span>
+<div class="image-uploader">{render(PhilomenaWeb.ImageView, "_uploader_name.html", assigns)}</div>
 <%= if can?(@conn, :show, :identity_metadata) do %>
   <%= if @changeset do %>
     <%= form_for @changeset, ~p"/images/#{@image}/uploader", [class: "hidden", id: "uploader-form", data: [remote: "true", method: "put"]], fn f -> %>
