@@ -503,7 +503,13 @@ defmodule PhilomenaWeb.TopicControllerTest do
           "topic" => %{
             "title" => "abc",
             "anonymous" => "false",
-            "posts" => %{"0" => %{"body" => "First post body"}}
+            "posts" => %{"0" => %{"body" => "First post body"}},
+            "poll" => %{
+              "title" => "",
+              "active_until" => "",
+              "vote_method" => "",
+              "options" => %{"0" => %{"label" => ""}, "1" => %{"label" => ""}}
+            }
           }
         })
 
@@ -512,6 +518,8 @@ defmodule PhilomenaWeb.TopicControllerTest do
       response = html_response(conn, 200)
       assert response =~ "Oops, something went wrong! Please check the errors below."
       assert response =~ "Create a Topic"
+      # The blank poll is dropped, and a blank option row is rendered for the script to copy.
+      assert response =~ ~s(id="topic_poll_options_0_label")
       assert Repo.aggregate(from(t in Topic, where: t.user_id == ^user.id), :count) == 0
     end
 

@@ -438,7 +438,8 @@ defmodule PhilomenaWeb.ImageControllerTest do
         post(conn, ~p"/images", %{
           "image" => %{
             "image" => png_upload(),
-            "tag_input" => "solo"
+            "tag_input" => "solo",
+            "sources" => %{"0" => %{"source" => ""}}
           }
         })
 
@@ -446,6 +447,8 @@ defmodule PhilomenaWeb.ImageControllerTest do
       # assign, so pin page content rather than the title.
       response = html_response(conn, 200)
       assert response =~ "Upload a file from your computer"
+      # The blank source is dropped, and a blank row is rendered for the script to copy.
+      assert response =~ ~s(id="image_sources_0_source")
       assert Repo.aggregate(Image, :count) == 0
     end
 

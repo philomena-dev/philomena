@@ -132,6 +132,25 @@ defmodule PhilomenaWeb.FormHelpersTest do
     end
   end
 
+  describe "repeatable_inputs_for/4" do
+    test "renders a row per entry, or one blank row for an empty list" do
+      row = &Phoenix.HTML.Form.text_input(&1, :label)
+      options = [default: []]
+
+      assert form()
+             |> FormHelpers.repeatable_inputs_for(:options, options, row)
+             |> safe_to_string() ==
+               ~s(<input id="user_options_0_label" name="user[options][0][label]" type="text">)
+
+      assert %{"options" => %{"0" => %{"label" => "Yes"}, "1" => %{"label" => "No"}}}
+             |> form()
+             |> FormHelpers.repeatable_inputs_for(:options, options, row)
+             |> safe_to_string() ==
+               ~s(<input id="user_options_0_label" name="user[options][0][label]" type="text" value="Yes">) <>
+                 ~s(<input id="user_options_1_label" name="user[options][1][label]" type="text" value="No">)
+    end
+  end
+
   describe "error_summary/1" do
     test "is empty until the changeset was submitted" do
       assert FormHelpers.error_summary(%Ecto.Changeset{action: nil}) == nil

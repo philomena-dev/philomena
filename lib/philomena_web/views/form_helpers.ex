@@ -94,6 +94,22 @@ defmodule PhilomenaWeb.FormHelpers do
   end
 
   @doc """
+  `Phoenix.HTML.Form.inputs_for/4` for a list the user extends by copying its last row, as
+  `assets/js/input-duplicator.ts` does: an empty list renders one blank row.
+  """
+  def repeatable_inputs_for(form, field, options \\ [], fun) do
+    with {:safe, []} <- inputs_for(form, field, options, fun) do
+      blank =
+        Phoenix.HTML.FormData.to_form(%{},
+          as: "#{input_name(form, field)}[0]",
+          id: "#{input_id(form, field)}_0"
+        )
+
+      html_escape(fun.(blank))
+    end
+  end
+
+  @doc """
   The alert at the top of a form whose changeset failed to save, nothing otherwise.
   """
   def error_summary(%{action: nil}), do: nil

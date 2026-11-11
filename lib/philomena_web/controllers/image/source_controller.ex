@@ -1,7 +1,6 @@
 defmodule PhilomenaWeb.Image.SourceController do
   use PhilomenaWeb, :controller
 
-  alias Philomena.Images.Source
   alias Philomena.Images
   alias PhilomenaWeb.RefusalResponse
 
@@ -13,9 +12,7 @@ defmodule PhilomenaWeb.Image.SourceController do
   def update(conn, %{"image" => image_params} = params) do
     case Images.update_image_sources(conn.assigns.actor, params["image_id"], image_params) do
       {:ok, %{image: image, source_change_count: count}} ->
-        changeset =
-          %{image | sources: sources_for_edit(image.sources)}
-          |> Images.change_image()
+        changeset = Images.change_image(image)
 
         conn
         |> put_view(PhilomenaWeb.ImageView)
@@ -43,8 +40,4 @@ defmodule PhilomenaWeb.Image.SourceController do
         error
     end
   end
-
-  defp sources_for_edit(), do: [%Source{}]
-  defp sources_for_edit([]), do: sources_for_edit()
-  defp sources_for_edit(sources), do: sources
 end
