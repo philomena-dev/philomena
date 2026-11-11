@@ -440,7 +440,8 @@ export function checkCss(css: string): string[] {
  * font-family keywords of the font shorthand (`font: 12px system-ui`), math keywords inside calc(), keywords under an
  * alternative name, media queries with `not` in parentheses, @import conditions, @font-face descriptor values, the
  * inside of vendor-prefixed functions, the real container of alignment keywords and support that browser-compat-data
- * calls partial (build/floor.ts). build/enhancements.ts lists the features accepted anyway.
+ * calls partial (build/floor.ts). build/enhancements.ts lists the features accepted anyway, in every floor browser,
+ * also where an entry's reason names only some of them.
  */
 export default function cssGate(): Plugin {
   return {
