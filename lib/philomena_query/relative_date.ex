@@ -92,7 +92,7 @@ defmodule PhilomenaQuery.RelativeDate do
   See `parse_absolute/1` and `parse_relative/1` for examples of what may be accepted
   by this function.
   """
-  @spec parse_absolute(String.t()) :: {:ok, DateTime.t()} | {:error, any()}
+  @spec parse(String.t()) :: {:ok, DateTime.t()} | {:error, any()}
   def parse(input) do
     input =
       input
