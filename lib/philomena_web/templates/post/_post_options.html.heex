@@ -1,4 +1,4 @@
-<% staff? = can?(@conn, :hide, @post) and not hide_staff_tools?(@conn)
+<% staff? = can?(@conn, :hide, @post)
 deletable? = not @post.hidden_from_users and not @post.destroyed_content
 
 link_path =
@@ -14,23 +14,24 @@ quote_body = if @post.hidden_from_users, do: "", else: @post.body %>
     Report</a>
     <%= if staff? do %>
       <%= if @post.hidden_from_users and not @post.destroyed_content do %>
-        <%= link(to: ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/hide", data: [confirm: "Are you sure?"], method: "delete") do %>
+        <%= link(to: ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/hide", data: [confirm: "Are you sure?"], method: "delete", class: "staff-action") do %>
           <i class="fas fa-check"></i> Restore
         <% end %>
         <%= if can?(@conn, :delete, @post) do %>
-          <%= link(to: ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/delete", data: [confirm: "Are you sure?"], method: "post") do %>
+          <%= link(to: ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/delete", data: [confirm: "Are you sure?"], method: "post", class: "staff-action") do %>
             <i class="fas fa-times"></i> Delete Contents
           <% end %>
         <% end %>
       <% end %>
       <a
         :if={deletable?}
+        class="staff-action"
         data-click-toggle={"#inline-del-form-post-#{@post.id}"}
         href="#"
-      ><i class="fa fa-times"></i> Delete</a>
+      ><i class="fas fa-times"></i> Delete</a>
       <%= if can?(@conn, :show, :identity_metadata) do %>
-        {link_to_ip(@conn, @post.ip)}
-        {link_to_fingerprint(@conn, @post.fingerprint)}
+        <span class="staff-action">{link_to_ip(@conn, @post.ip)}</span>
+        <span class="staff-action">{link_to_fingerprint(@conn, @post.fingerprint)}</span>
       <% end %>
     <% end %>
     <a
@@ -66,7 +67,7 @@ quote_body = if @post.hidden_from_users, do: "", else: @post.body %>
     </a>
   </div>
   <%= if staff? and deletable? do %>
-    <%= form_for :post, ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/hide", [class: "hidden flex", id: "inline-del-form-post-#{@post.id}"], fn f -> %>
+    <%= form_for :post, ~p"/forums/#{@post.topic.forum}/topics/#{@post.topic}/posts/#{@post}/hide", [class: "hidden flex staff-action", id: "inline-del-form-post-#{@post.id}"], fn f -> %>
       {text_input(f, :deletion_reason,
         class: "input-field full-width",
         placeholder: "Deletion Reason",

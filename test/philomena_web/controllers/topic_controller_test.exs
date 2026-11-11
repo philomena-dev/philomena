@@ -196,6 +196,9 @@ defmodule PhilomenaWeb.TopicControllerTest do
 
       refute staff_tools_hidden_response =~ "Anonymous Topic Author"
       assert staff_tools_hidden_response =~ ~r/Background Pony #[0-9A-F]{4}/
+      # The post's staff tools carry the class that the setting hides
+      assert staff_tools_hidden_response =~
+               ~s(<a class="staff-action" data-click-toggle="#inline-del-form-post-)
     end
 
     test "renders pending-post approval controls for moderators and Topic assistants",
