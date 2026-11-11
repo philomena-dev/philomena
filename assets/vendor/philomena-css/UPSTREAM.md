@@ -92,6 +92,11 @@ winner only for rare combinations: a read-only field that is also `.invalid` (th
 `<hr>` inside a `.blockquote` element (it takes the blockquote's spacing), and elements matched by the reset's
 `[hidden]` rule and a type selector, or by its `[contenteditable]` rule and a single class.
 
+Philomena's own stylesheets read and set what these rewrites introduce, so it is an interface to keep when updating:
+`--link-style-*` with the `content-links` and `links-hover` mixins (`assets/css/design/base.css`,
+`components/communication.css`, `components/navbar.css`, `views/rules.css`), and `--flow` and `--flow-margin`
+(`design/base.css`, `components/markdown.css`).
+
 Every other file is byte-identical to upstream with the pending pull requests merged. `npm run build` and
 `npm run check:contrast` work through the workspace (`npm run build -w @philomena/philomena-css`).
 
