@@ -1,7 +1,7 @@
 /*
- * The elements that the framework's reset leaves unstyled and that are used outside its components: links, text
- * semantics, paragraphs, lists, images and figures; running text, the site's icon and the focus ring of floor
- * browsers without a script.
+ * The elements that the framework's reset leaves unstyled and that are used outside its components: links and
+ * buttons drawn as links, text semantics, paragraphs, lists, images and figures; running text, the site's icon and
+ * the focus ring of floor browsers without a script.
  */
 
 /* Links are in the link color, underlined under the pointer; components set their own link styles */
@@ -29,7 +29,16 @@ body {
   text-decoration: var(--link-style-decoration, none);
 }
 
-a:hover {
+/* A button drawn as a link of its container */
+.link-button {
+  color: var(--link-style-color, none);
+  font-weight: var(--link-style-weight, none);
+  text-decoration: var(--link-style-decoration, none);
+  cursor: pointer;
+}
+
+a:hover,
+.link-button:hover {
   @mixin links-hover;
 }
 

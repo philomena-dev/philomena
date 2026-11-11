@@ -17,12 +17,14 @@
    over its padding; buttons, menu items and pages have their own size */
 @media not all and (min-width: $breakpoint-md) {
   .block .block-header > a:not(.button),
+  .block .block-header > .link-button,
   .block .block-header-actions > a:not(.button),
   .block .block-header .dropdown > a {
     margin-block: calc(-1 * var(--block-header-padding-vertical));
   }
 
-  .block .block-header a:not(.button):not(.dropdown-item):not(.pagination-link) {
+  .block .block-header a:not(.button):not(.dropdown-item):not(.pagination-link),
+  .block .block-header .link-button {
     @mixin touch-target;
     display: inline-flex;
     align-items: center;
