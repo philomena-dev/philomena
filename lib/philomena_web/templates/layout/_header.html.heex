@@ -84,25 +84,7 @@
         <i class="navbar-icon fa fa-filter"></i>
         <span class="hidden-below-xl">Filters</span>
       </a>
-      <%= form_for @user_changeset, ~p"/filters/current", [class: "header-field", id: "filter-quick-form"], fn f -> %>
-        {select(f, :current_filter_id, @available_filters,
-          name: "id",
-          id: "filter-quick-menu",
-          class: "header-field-input",
-          data: [change_submit: "#filter-quick-form"],
-          autocomplete: "off",
-          "aria-label": "Filter"
-        )}
-      <% end %>
-      <%= form_for @spoiler_changeset, ~p"/filters/spoiler_type", [class: "header-field hidden-below-xl", id: "spoiler-quick-form"], fn f -> %>
-        {select(f, :spoiler_type, @spoiler_types,
-          id: "spoiler-quick-menu",
-          class: "header-field-input",
-          data: [change_submit: "#spoiler-quick-form"],
-          autocomplete: "off",
-          "aria-label": "Spoilers"
-        )}
-      <% end %>
+      {render(PhilomenaWeb.LayoutView, "_quick_selects.html", Map.put(assigns, :burger, false))}
       <div class="navbar-dropdown navbar-pinned">
         <a
           aria-expanded="false"

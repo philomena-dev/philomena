@@ -35,31 +35,7 @@
         conn: @conn,
         links: [%{icon: "fa fa-filter", label: "Filters", path: ~p"/filters"}]
       )}
-      <%= form_for @user_changeset, ~p"/filters/current", [class: "burger-item", id: "filter-burger-form"], fn f -> %>
-        <span class="burger-icon"><i class="fa-fw"></i></span>
-        <label for="filter-burger-menu">Filter</label>
-        <div class="header-field">
-          {select(f, :current_filter_id, @available_filters,
-            name: "id",
-            id: "filter-burger-menu",
-            class: "header-field-input",
-            data: [change_submit: "#filter-burger-form"],
-            autocomplete: "off"
-          )}
-        </div>
-      <% end %>
-      <%= form_for @spoiler_changeset, ~p"/filters/spoiler_type", [class: "burger-item", id: "spoiler-burger-form"], fn f -> %>
-        <span class="burger-icon"><i class="fa-fw"></i></span>
-        <label for="spoiler-burger-menu">Spoilers</label>
-        <div class="header-field">
-          {select(f, :spoiler_type, @spoiler_types,
-            id: "spoiler-burger-menu",
-            class: "header-field-input",
-            data: [change_submit: "#spoiler-burger-form"],
-            autocomplete: "off"
-          )}
-        </div>
-      <% end %>
+      {render(PhilomenaWeb.LayoutView, "_quick_selects.html", Map.put(assigns, :burger, true))}
       <hr class="burger-divider" />
       {render(PhilomenaWeb.LayoutView, "_burger_links.html",
         conn: @conn,

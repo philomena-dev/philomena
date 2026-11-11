@@ -158,6 +158,34 @@ defmodule PhilomenaWeb.LayoutView do
     ]
   end
 
+  @doc """
+  The selects that switch a signed-in user's current filter and spoiler type, which the header and the
+  burger menu render: an optional `name` replaces the parameter the select submits, an optional
+  `header_class` hides it in the header.
+  """
+  def quick_selects(assigns) do
+    [
+      %{
+        key: "filter",
+        label: "Filter",
+        changeset: assigns.user_changeset,
+        action: ~p"/filters/current",
+        field: :current_filter_id,
+        options: assigns.available_filters,
+        name: "id"
+      },
+      %{
+        key: "spoiler",
+        label: "Spoilers",
+        changeset: assigns.spoiler_changeset,
+        action: ~p"/filters/spoiler_type",
+        field: :spoiler_type,
+        options: assigns.spoiler_types,
+        header_class: "hidden-below-xl"
+      }
+    ]
+  end
+
   @doc "The pages of a signed-in user's menu, from the profile to logging out."
   def user_links(user) do
     [
