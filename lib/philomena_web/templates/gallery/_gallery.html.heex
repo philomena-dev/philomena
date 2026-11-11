@@ -1,5 +1,5 @@
 <% link = ~p"/galleries/#{@gallery}" %>
-<div class="media-box">
+<div class="media-box scale-down">
   <div class="media-box-header"><a href={link} title={@gallery.title}>{@gallery.title}</a></div>
   {render(PhilomenaWeb.ImageView, "_image_container.html",
     image: @gallery.thumbnail,

@@ -26,7 +26,8 @@
  * The text is a clamp (css/components/clamp.css): with the toggle and the labels it is cut off after
  * --communication-max-height (six lines unless you set it) behind a "Show more" label, without a script; leave them
  * and the .clamp class out to never cut it. On narrow screens the avatar and the author become a header row over the
- * text, as on Philomena, and a communication that is the target of the URL is outlined. .deleted tints a removed one.
+ * text, as on Philomena, and a communication that is the target of the URL is outlined. .deleted tints a removed one,
+ * .allow-overflow lets a dropdown in its options open beyond its edges.
  *
  * What the site says about a communication (why it was deleted, by whom) goes in a .communication-notice, a bar
  * before the .communication-body. It is outside the text, so nothing a user writes can look like it:
@@ -44,6 +45,8 @@
 }
 
 @mixin bevel .communication;
+
+@mixin allow-overflow .communication;
 
 .communication:target {
   border-color: var(--focus-color);

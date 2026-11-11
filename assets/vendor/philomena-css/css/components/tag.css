@@ -1,6 +1,7 @@
 /*
  * Tags, as on Philomena's tag lists: a bold name with an optional count, colored by category (.tag-{category}).
- * Borderless by default, set --tag-border to a width to draw a border in the count color. Markup:
+ * Borderless by default, set --tag-border to a width to draw a border in the count color; --tag-border-radius sets
+ * the corners. Markup:
  *   <span class="tag tag-rating"><span class="tag-icon">…</span><a class="tag-name" href="…">safe</a><span class="tag-count">1234</span></span>
  */
 
@@ -18,7 +19,7 @@
   color: var(--_text);
   background-color: var(--_bg);
   border: var(--tag-border) solid var(--_affix);
-  border-radius: var(--border-radius-inner);
+  border-radius: var(--tag-border-radius);
   box-sizing: border-box;
   position: relative;
   overflow: hidden;

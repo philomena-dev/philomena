@@ -1,6 +1,7 @@
 /*
  * Tables: a framed box with the header row in the input material and thin row dividers. Wrap the table in
- * .table-wrap (add .responsive to scroll it sideways on narrow screens). Modifiers on .table: .striped for zebra
+ * .table-wrap (add .responsive to scroll it sideways on narrow screens, .allow-overflow to let a menu in a cell open
+ * beyond the frame). Modifiers on .table: .striped for zebra
  * rows, .hover to tint the row under the pointer, .table-{color} to color the header and footer. A row or cell takes
  * .table-{color} on its own. The colors are primary, success, warning, danger and special.
  */
@@ -17,6 +18,17 @@
 .table-wrap.responsive {
   max-width: 100%;
   overflow-x: auto;
+}
+
+/* No clipping, so that a menu in a cell can open beyond the frame; a .responsive wrap still scrolls on narrow screens */
+.table-wrap.allow-overflow {
+  overflow: visible;
+}
+
+@media not all and (min-width: $breakpoint-md) {
+  .table-wrap.responsive.allow-overflow {
+    overflow: auto hidden;
+  }
 }
 
 .table {

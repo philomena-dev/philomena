@@ -1,5 +1,6 @@
 /*
- * An avatar: a round picture of a user, an <img class="avatar"> or an element with an image or initials inside.
+ * An avatar: a round picture of a user, an <img class="avatar"> or an element with an image, an inline SVG (a
+ * generated avatar) or initials inside.
  * The sizes are Philomena's: .avatar-xs 28px (headers and navbars), .avatar-sm 50px (comments on small screens),
  * .avatar-md 100px (comments) and .avatar-lg 125px (profiles). Without a size class the avatar is --size wide,
  * 28px unless you set it. On screens below the md breakpoint the two large sizes step down, as on Philomena.
@@ -28,7 +29,8 @@
   user-select: none;
 }
 
-.avatar > img {
+.avatar > img,
+.avatar > svg {
   display: block;
   width: 100%;
   height: 100%;

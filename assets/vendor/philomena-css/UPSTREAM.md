@@ -12,6 +12,10 @@ request leaves this list once the commit above includes it.
 - https://github.com/Meow/PhilomenaCSS/pull/1, branch `fix/component-polish`, commits `c64307e`, `63bd3d9`,
   `262a99e`, `2f75426`, `fa3d203` and `6884f0f`: `README.md`, `css/components/input-field.css`,
   `css/components/table.css`, `css/design/layout.css`, `css/design/mixins.css`, `css/utils/alignment.css`.
+- https://github.com/Meow/PhilomenaCSS/pull/2, branch `feat/opt-in-modifiers`, commits `1853313`, `d406fd2`,
+  `71d71c0`, `edadeba`, `11db244` and `b76fd96`: `README.md`, `css/components/avatar.css`, `css/components/block.css`,
+  `css/components/communication.css`, `css/components/media.css`, `css/components/table.css`,
+  `css/components/tag.css`, `css/design/mixins.css`, `css/design/tokens.css`.
 
 ## Left out
 

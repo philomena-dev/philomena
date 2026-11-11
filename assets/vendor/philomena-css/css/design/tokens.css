@@ -405,6 +405,7 @@ $_syntax-punctuation: #6b6d78;
   --counter-corner-font-size: 0.7rem;
   /* Tags are borderless; set --tag-border to a width (such as .0625rem) to draw one, the padding shrinks to keep the height */
   --tag-border: 0px;
+  --tag-border-radius: var(--border-radius-inner);
   --tag-padding-vertical: var(--spacing-md);
   --tag-padding-horizontal: var(--spacing-md);
   --tag-gap: var(--spacing-0);

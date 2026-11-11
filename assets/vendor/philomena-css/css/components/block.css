@@ -6,6 +6,7 @@
  *     <div class="block-content">…</div>
  *   </section>
  * .block-header.sub is a lighter bar for a section inside the block. .block-{color} colors the bar and the border.
+ * .allow-overflow lets a dropdown in the block open beyond its edges.
  */
 
 .block {
@@ -19,6 +20,8 @@
 }
 
 @mixin bevel .block;
+
+@mixin allow-overflow .block;
 
 .block .block-header {
   display: flex;

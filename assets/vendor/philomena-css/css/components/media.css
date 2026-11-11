@@ -1,7 +1,8 @@
 /*
  * Media boxes and lists, after Philomena's thumbnails. A box holds an image in a square area (fitted inside it,
- * .cover to crop it to fill) with an optional title bar above and overlay badges on the image. A list is a grid of as
- * many boxes as fit per row, at least the thumbnail width each (the small one on small screens), filling the row.
+ * .cover to crop it to fill, .scale-down to never enlarge it) with an optional title bar above and overlay badges on
+ * the image. A list is a grid of as many boxes as fit per row, at least the thumbnail width each (the small one on
+ * small screens), filling the row (.fixed: at the width).
  *   <div class="media-list">
  *     <figure class="media-box">
  *       <div class="media-box-header"><a href="…">Title</a></div>
@@ -176,6 +177,12 @@
   object-fit: cover;
 }
 
+/* Fitted, but a picture smaller than the area keeps its size */
+.media-box.scale-down .media-box-content img,
+.media-box.scale-down .media-box-content video {
+  object-fit: scale-down;
+}
+
 /*
  * Overlays: labels over the image, as Philomena's "WebM", "Spoiler: …" or "Deleted" markers. A label is a rounded,
  * centered bar spanning the image minus a large inset on both sides. A single .media-box-overlay sits at the top
@@ -260,16 +267,21 @@
 
 /*
  * The list: as many boxes as fit per row, at least the thumbnail width each, stretched to fill the row. .small uses
- * the small width.
+ * the small width, .fixed keeps the boxes at the width instead of stretching them.
  */
 
 .media-list {
+  --_width: var(--media-box-width);
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(var(--media-box-width), 100%), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(var(--_width), 100%), 1fr));
   gap: var(--group-gap);
   align-items: start;
 }
 
 .media-list.small {
-  grid-template-columns: repeat(auto-fill, minmax(min(var(--media-box-small-width), 100%), 1fr));
+  --_width: var(--media-box-small-width);
+}
+
+.media-list.fixed {
+  grid-template-columns: repeat(auto-fill, min(var(--_width), 100%));
 }

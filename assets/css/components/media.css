@@ -3,20 +3,9 @@
  * .media-box-content of its box, or stands alone in rows and tables.
  */
 
-/* Thumbnails are fitted into their box but never shown larger than they are */
-.media-box .image-container img,
-.media-box .image-container video {
-  object-fit: scale-down;
-}
-
 /* A landscape box has a 4:3 content area, for stream screenshots */
 .media-box.landscape .media-box-content {
   padding-bottom: 75%;
-}
-
-/* A fixed list keeps its small boxes at their width instead of stretching them across the row */
-.media-list.small.fixed {
-  grid-template-columns: repeat(auto-fill, var(--media-box-small-width));
 }
 
 /* A thumbnail outside a media box centers its image at its own size, at most as large as the container */

@@ -46,7 +46,7 @@ Token reference:
 | `--*-font`                               | Font families: `--base-font`, `--mono-font`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `--spacing-*`                            | The spacing scale: `tiny` .1rem, `small` .25rem, `medium` .4rem, `large` .8rem, `huge` 1.2rem, aliased as `xs`, `sm`, `md`, `lg`, `xl`. Every padding, margin and gap is a step of it, as are the `.m-{key}` / `.p-{key}` utilities                                                                                                                                                                                                                                                                                                                                                     |
 | `--block-spacing`, `--heading-spacing`   | The rhythm: significant blocks that follow each other (cards, tables, alerts, code blocks ...) and headings keep a large distance, controls (buttons, badges, form controls) and a run of alerts (`--alert-gap`) a medium one. The rules have no specificity, your own margins win                                                                                                                                                                                                                                                                                                      |
-| `--border-radius-*`                      | The radii: `inner` .2rem for controls inside a block, `outer` .3rem for cards and other blocks, `large` .5rem for badges                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `--border-radius-*`                      | The radii: `inner` .2rem for controls inside a block, `outer` .3rem for cards and other blocks, `large` .5rem for badges; `--tag-border-radius` (inner by default) for tags                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `--border-width`, `--border-thick-width` | The border widths: 1px for borders and dividers, 2px for emphasis                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `--base-font-size`, `--*-size`           | Philomena's font sizes: 14px text (every rem is a multiple of it), `--header-font-size` 16px for the header and navbar, `--heading-1-size` 1.75rem down to `--heading-6-size` 1rem. Headings are not bold                                                                                                                                                                                                                                                                                                                                                                               |
 | `--*-line-height`                        | Philomena's line heights: `base` 1.15 for the page, `heading` 1.15, `text` 1.35 for paragraphs, alert text, accordion bodies and code                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -212,8 +212,9 @@ The framework is plain CSS, so some structure is on you:
 - **Layout and visibility.** `.layout-columns` with `.layout-side` and `.layout-main`, `.layout-narrow`,
   `.layout-center`, the `.flex` helpers and `.gap-{key}`, and `.hidden`, `.hidden-below-{breakpoint}`,
   `.hidden-from-{breakpoint}` and `.hidden-print`.
-- **Avatars.** `.avatar` on an `<img>`, or on an element holding an image or initials, with a size: `.avatar-xs`
-  28px, `.avatar-sm` 50px, `.avatar-md` 100px, `.avatar-lg` 125px. `.square` and `.avatar-group` are variants.
+- **Avatars.** `.avatar` on an `<img>`, or on an element holding an image, an inline `<svg>` or initials, with a
+  size: `.avatar-xs` 28px, `.avatar-sm` 50px, `.avatar-md` 100px, `.avatar-lg` 125px. `.square` and `.avatar-group`
+  are variants.
 - **Clamped text.** Put `<input class="clamp-toggle" type="checkbox">` right before a `.clamp` element, and
   `.clamp-more` / `.clamp-less` labels for it inside, to cut text off after `--clamp-max-height` (six lines by
   default, any length works) behind a click, without a script. The label and a fade towards the cut only appear when
@@ -249,18 +250,24 @@ The framework is plain CSS, so some structure is on you:
   adds another bar, and from the seventh level on the gap to the text is small (`--blockquote-deep-gap`).
 - **Blocks are the sibling of cards with a bar instead of a heading band.** `.block` has a `.block-header` bar at text size (a `.block-header-title`,
   bold links, a `.block-header-actions` slot) over `.block-content`; `.block-header.sub` is a lighter bar for a section
-  inside. `.block-{color}` works like `.card-{color}`.
+  inside. `.block-{color}` works like `.card-{color}`. A block clips what is inside it to its rounded corners; add
+  `.allow-overflow` (also on a `.communication`) when a dropdown in it has to open beyond its edges.
+- **Table frames clip.** A `.table-wrap` clips the table to its rounded frame; `.allow-overflow` lets a dropdown in a
+  cell open beyond it. On a `.responsive` wrap that is from the `md` breakpoint up, below it the wrap scrolls.
 - **Media overlays are styling only.** `.media-box-overlay` strips (or several in `.media-box-overlays`) and the
   `.media-box-veil` with the `.spoilered` blur are static; revealing a spoiler means removing them from your script.
 - **Media boxes are square.** `.media-box-content` is a square `aspect-ratio` area and the image is fitted inside
   it like a thumbnail (`object-fit: contain`); add `.cover` to the box to crop it to fill the area instead.
+  `.scale-down` fits a larger picture but leaves a smaller one at its size, centered, instead of enlarging it.
   `.media-list` fills the row with boxes at
-  least the thumbnail width (`--media-box-width`, 250px, 150px below the `md` breakpoint).
+  least the thumbnail width (`--media-box-width`, 250px, 150px below the `md` breakpoint); `.fixed` keeps them at
+  that width, for a short row that should not stretch.
 - **Tag boxes are styling only.** `.tag-box` holds `.tag` elements (with an optional `.tag-remove` control) and an
   `.input-field` that sizes to its placeholder and grows as you type (`field-sizing: content`; give it a `size`
   attribute as the fallback for browsers without it). Adding and removing tags is your script's job.
 - **Tags are borderless.** Set `--tag-border` to a width (for example `1px`) on `:root`, a `.tag-list` or a
   single `.tag` to draw the border in the count color; the padding shrinks so the height stays the same.
+  `--tag-border-radius` sets their corners (the inner radius by default, `0` for square tags).
 - **`<summary>` has no marker.** The CSS reset removes the disclosure marker, so give `<details>` toggles their own
   affordance (chevron, border, pointer cursor).
 

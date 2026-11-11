@@ -1,8 +1,3 @@
-/* The corners of tags are a token, which css/options/tag-rounded-border.css sets */
-.tag {
-  border-radius: var(--tag-border-radius);
-}
-
 /* Phones give tags and the field of a tag box the height of a touch target */
 @media not all and (min-width: $breakpoint-md) {
   .tag,

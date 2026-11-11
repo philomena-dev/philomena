@@ -2,21 +2,6 @@
  * Philomena's additions to the framework's blocks.
  */
 
-/* A block or communication whose menus open beyond its edges does not clip; its edge rows round their corners */
-:is(.block, .communication).allow-overflow {
-  overflow: visible;
-}
-
-:is(.block, .communication).allow-overflow > :first-child {
-  border-top-left-radius: calc(var(--border-radius-outer) - var(--border-width));
-  border-top-right-radius: calc(var(--border-radius-outer) - var(--border-width));
-}
-
-:is(.block, .communication).allow-overflow > :last-child {
-  border-bottom-left-radius: calc(var(--border-radius-outer) - var(--border-width));
-  border-bottom-right-radius: calc(var(--border-radius-outer) - var(--border-width));
-}
-
 /* The rows of a striped block alternate as those of a striped table do; its header bar is the first child */
 .block.striped > .block-content:nth-child(odd) {
   background-color: var(--stripe-color);

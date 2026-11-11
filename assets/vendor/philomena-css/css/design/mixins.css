@@ -109,6 +109,26 @@
   }
 }
 
+/*
+ * .allow-overflow on a container that clips its children ($selector, rounded with the outer radius), so that a menu
+ * or popup inside can open beyond its edges: the first and last child round their own corners instead.
+ */
+@define-mixin allow-overflow $selector {
+  $(selector).allow-overflow {
+    overflow: visible;
+  }
+
+  $(selector).allow-overflow > :first-child {
+    border-start-start-radius: calc(var(--border-radius-outer) - var(--border-width));
+    border-start-end-radius: calc(var(--border-radius-outer) - var(--border-width));
+  }
+
+  $(selector).allow-overflow > :last-child {
+    border-end-start-radius: calc(var(--border-radius-outer) - var(--border-width));
+    border-end-end-radius: calc(var(--border-radius-outer) - var(--border-width));
+  }
+}
+
 /* Unavailable controls and muted content are faded by the same amount */
 @define-mixin faded {
   opacity: var(--faded-opacity);

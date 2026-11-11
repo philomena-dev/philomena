@@ -59,7 +59,7 @@ pagination =
                     <strong>Example Artwork:</strong>
                     <div class="media-list small fixed">
                       <%= for item <- Enum.take_random(c.items, 5), not is_nil(item.example_image) do %>
-                        <div class="media-box">
+                        <div class="media-box scale-down">
                           {render(PhilomenaWeb.ImageView, "_image_container.html",
                             image: item.example_image,
                             size: :thumb_small,

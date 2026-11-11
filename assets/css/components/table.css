@@ -2,13 +2,6 @@
  * Philomena's additions to the framework's tables.
  */
 
-/* A table whose cells open menus (tags, awards) does not clip them; narrow screens still scroll it sideways */
-@media (min-width: $breakpoint-md) {
-  .table-wrap.allow-overflow {
-    overflow: visible;
-  }
-}
-
 /* Tables in rendered Markdown carry no class: they take the look of a striped framework table, framed by the table */
 table:not([class]) {
   width: 100%;
