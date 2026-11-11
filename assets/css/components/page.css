@@ -103,7 +103,7 @@ body {
   color: var(--notice-link-hover-color);
 }
 
-/* The footer: columns of links in a row, which wrap on narrow screens, over the version line */
+/* The footer: columns of links in a row over the version line, wrapped on phones and stacked on the narrowest */
 .page-footer {
   display: flex;
   flex-direction: column;
@@ -145,6 +145,24 @@ body {
     @mixin touch-target;
     display: flex;
     align-items: center;
+  }
+}
+
+/* The narrowest phones stack the columns, each a heading over two columns of links */
+@media not all and (min-width: $breakpoint-sm) {
+  .page-footer-columns {
+    display: grid;
+    gap: var(--spacing-lg);
+  }
+
+  .page-footer-column {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--spacing-lg);
+  }
+
+  .page-footer-column h5 {
+    grid-column: 1 / -1;
   }
 }
 
