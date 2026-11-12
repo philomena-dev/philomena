@@ -2,7 +2,15 @@ h1 Users
 
 = form_for @changeset, ~p"/admin/users", [as: :uq, method: "get", class: "hform"], fn f ->
   .field
-    => text_input f, :query, class: "hform__text input", placeholder: "Search query", spellcheck: "false"
+    => text_input f, :query,
+      class: "hform__text input",
+      placeholder: "Search query",
+      spellcheck: "false",
+      autocomplete: if(@conn.cookies["enable_search_ac"], do: "on", else: "off"),
+      inputmode: "search",
+      data: [ \
+        autocomplete: "properties",
+      ]
     = submit "Search", class: "button hform__button"
   .field
     elixir:
