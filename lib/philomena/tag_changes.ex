@@ -592,6 +592,57 @@ defmodule Philomena.TagChanges do
   end
 
   @doc """
+  Removes canceling addition/removal pairs from a locked image's tag history,
+  as a workflow step.
+
+  Unmatched changes and the image's current state are preserved.
+  """
+  @spec put_squash_tag_changes(Multi.t(), Loader.integer_id()) :: Multi.t()
+  def put_squash_tag_changes(%Multi{} = multi, image_id) do
+    multi
+    |> Multi.all(
+      {image_id, :history},
+      TagChangeTag
+      |> join(:inner, [entry], change in assoc(entry, :tag_change))
+      |> where([entry, change], change.image_id == ^image_id)
+      |> order_by([entry, change], asc: change.created_at, asc: change.id)
+      |> select([entry], %{id: entry.tag_change_id, key: entry.tag_id, added: entry.added})
+    )
+    |> Multi.merge(fn %{{^image_id, :history} => history} ->
+      {_pending, ids} =
+        Enum.reduce(history, {%{}, []}, fn entry, {pending, ids} ->
+          case Map.get(pending, entry.key, []) do
+            [previous | rest] when previous.added != entry.added ->
+              {Map.put(pending, entry.key, rest), [{entry.id, entry.key}, previous.id | ids]}
+
+            entries ->
+              previous = %{id: {entry.id, entry.key}, added: entry.added}
+              {Map.put(pending, entry.key, [previous | entries]), ids}
+          end
+        end)
+
+      query =
+        case ids do
+          [] ->
+            # The values API rejects an empty list.
+            where(TagChangeTag, false)
+
+          ids ->
+            pairs =
+              Enum.map(ids, fn {change_id, tag_id} ->
+                %{tag_change_id: change_id, tag_id: tag_id}
+              end)
+
+            from entry in TagChangeTag,
+              join: pair in values(pairs, %{tag_change_id: :integer, tag_id: :integer}),
+              on: entry.tag_change_id == pair.tag_change_id and entry.tag_id == pair.tag_id
+        end
+
+      put_delete_tag_change_tags(Multi.new(), {:deleted, image_id}, query)
+    end)
+  end
+
+  @doc """
   Counts tag-change batches and changed tags for an already-loaded image.
 
   ## Examples
