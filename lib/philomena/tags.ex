@@ -67,6 +67,7 @@ defmodule Philomena.Tags do
   @api_preloads [:aliased_tag, :aliases, :implied_tags, :implied_by_tags, :dnp_entries]
   @alias_preloads [:implied_tags, :aliased_tag]
   @image_preloads [:implied_tags]
+  @tag_insert_batch_size 5_000
 
   defp locked_tag_ids(tag_ids) do
     Tag
@@ -215,7 +216,17 @@ defmodule Philomena.Tags do
     ]
 
     multi
-    |> Multi.insert_all(:new_tags, Tag, insert_rows, insert_options)
+    |> Multi.run(:new_tags, fn repo, _changes ->
+      results =
+        insert_rows
+        |> Enum.chunk_every(@tag_insert_batch_size)
+        |> Enum.map(&repo.insert_all(Tag, &1, insert_options))
+
+      count = Enum.reduce(results, 0, fn {count, _}, total -> total + count end)
+      tags = Enum.flat_map(results, fn {_, tags} -> tags end)
+
+      {:ok, {count, tags}}
+    end)
     |> Multi.on_commit(fn %{new_tags: {_count, new_tags}} ->
       if Enum.any?(new_tags) do
         reindex_tags(new_tags)
