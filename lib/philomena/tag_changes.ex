@@ -770,8 +770,13 @@ defmodule Philomena.TagChanges do
             }
           end)
 
-        {_count, tag_changes} =
-          repo.insert_all(TagChange, tag_change_rows, returning: [:image_id, :id])
+        tag_changes =
+          tag_change_rows
+          |> Enum.chunk_every(10_000)
+          |> Enum.flat_map(fn rows ->
+            {_count, changes} = repo.insert_all(TagChange, rows, returning: [:image_id, :id])
+            changes
+          end)
 
         tag_change_ids = Enum.map(tag_changes, & &1.id)
         tag_change_ids_by_image_id = Map.new(tag_changes, &{&1.image_id, &1.id})
@@ -786,7 +791,9 @@ defmodule Philomena.TagChanges do
             }
           end)
 
-        {_count, nil} = repo.insert_all(TagChangeTag, tag_change_tag_rows)
+        tag_change_tag_rows
+        |> Enum.chunk_every(10_000)
+        |> Enum.each(&repo.insert_all(TagChangeTag, &1))
 
         {:ok, tag_change_ids}
     end)

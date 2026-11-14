@@ -601,34 +601,35 @@ defmodule Philomena.Images do
 
   defp put_perform_batch_update(%Multi{} = multi, attributes) do
     multi
-    |> Multi.insert_all(
-      :inserted_taggings,
-      Tagging,
-      fn %{locked_image_ids: image_ids, pairs: {added, _removed}} ->
-        # Scope insertions to existing, requested images.
-        Enum.filter(added, &(&1.image_id in image_ids))
-      end,
-      on_conflict: :nothing,
-      returning: [:image_id, :tag_id]
-    )
-    |> Multi.delete_all(:deleted_taggings, fn
-      %{locked_image_ids: image_ids, pairs: {_added, removed}} ->
-        # Scope deletions to existing, requested images.
-        removed
-        |> Enum.filter(&(&1.image_id in image_ids))
-        |> case do
-          [] ->
-            # The values API rejects an empty list.
-            from t in Tagging,
-              where: false,
-              select: [t.image_id, t.tag_id]
+    |> Multi.run(:inserted_taggings, fn repo, %{locked_image_ids: image_ids, pairs: {added, _}} ->
+      # Scope insertions to existing, requested images.
+      added
+      |> Enum.filter(&(&1.image_id in image_ids))
+      |> Enum.chunk_every(10_000)
+      |> Enum.map(fn pairs ->
+        repo.insert_all(Tagging, pairs,
+          on_conflict: :nothing,
+          returning: [:image_id, :tag_id]
+        )
+      end)
+      |> aggregate_tagging_results()
+    end)
+    |> Multi.run(:deleted_taggings, fn repo,
+                                       %{locked_image_ids: image_ids, pairs: {_, removed}} ->
+      # Scope deletions to existing, requested images.
+      removed
+      |> Enum.filter(&(&1.image_id in image_ids))
+      |> Enum.chunk_every(10_000)
+      |> Enum.map(fn pairs ->
+        query =
+          from t in Tagging,
+            join: pair in values(pairs, %{image_id: :integer, tag_id: :integer}),
+            on: t.image_id == pair.image_id and t.tag_id == pair.tag_id,
+            select: [t.image_id, t.tag_id]
 
-          pairs ->
-            from t in Tagging,
-              join: pair in values(pairs, %{image_id: :integer, tag_id: :integer}),
-              on: t.image_id == pair.image_id and t.tag_id == pair.tag_id,
-              select: [t.image_id, t.tag_id]
-        end
+        repo.delete_all(query)
+      end)
+      |> aggregate_tagging_results()
     end)
     |> TagChanges.put_batch_tag_changes(:inserted_taggings, :deleted_taggings, attributes)
     |> Tags.put_batch_image_count_changes(:inserted_taggings, :deleted_taggings, :visible_images)
@@ -636,6 +637,14 @@ defmodule Philomena.Images do
       reindex_images(image_ids)
       Comments.reindex_comments_on_images(image_ids)
     end)
+  end
+
+  # Postgres 65k parameter limit requires batching queries.
+  # This collects all batch results for use by downstream workflow steps.
+  defp aggregate_tagging_results(results) do
+    count = Enum.reduce(results, 0, fn {count, _}, total -> total + count end)
+    rows = Enum.flat_map(results, fn {_, rows} -> rows end)
+    {:ok, {count, rows}}
   end
 
   defp put_batch_revert_tag_changes(%Multi{} = multi, changes, attributes) do

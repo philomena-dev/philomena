@@ -27,6 +27,7 @@ defmodule Philomena.Images.TagValidator do
 
     changeset
     |> validate_number_of_tags(tag_set, 3)
+    |> validate_maximum_number_of_tags(tag_set)
     |> validate_bad_words(tag_set)
     |> validate_has_rating(rating_set)
     |> validate_safe(rating_set)
@@ -51,6 +52,14 @@ defmodule Philomena.Images.TagValidator do
   defp validate_number_of_tags(changeset, tag_set, num) do
     if MapSet.size(tag_set) < num do
       add_error(changeset, :tag_input, "must contain at least #{num} tags")
+    else
+      changeset
+    end
+  end
+
+  defp validate_maximum_number_of_tags(changeset, tag_set) do
+    if MapSet.size(tag_set) > 6_000 do
+      add_error(changeset, :tag_input, "must contain at most 6000 tags")
     else
       changeset
     end
