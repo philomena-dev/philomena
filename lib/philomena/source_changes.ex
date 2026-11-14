@@ -340,8 +340,18 @@ defmodule Philomena.SourceChanges do
           end
         end)
 
-      Multi.new()
-      |> Multi.delete_all({image_id, :deleted}, where(SourceChange, [entry], entry.id in ^ids))
+      # Images with extensive vandalization can overflow the parameter limit.
+      # Per-query parameter count is bounded via batching here.
+      ids
+      |> Enum.chunk_every(1_000)
+      |> Enum.with_index()
+      |> Enum.reduce(Multi.new(), fn {ids, batch}, multi ->
+        Multi.delete_all(
+          multi,
+          {:deleted, image_id, batch},
+          where(SourceChange, [entry], entry.id in ^ids)
+        )
+      end)
     end)
   end
 

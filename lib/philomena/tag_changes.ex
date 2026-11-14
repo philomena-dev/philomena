@@ -621,24 +621,24 @@ defmodule Philomena.TagChanges do
           end
         end)
 
-      query =
-        case ids do
-          [] ->
-            # The values API rejects an empty list.
-            where(TagChangeTag, false)
+      # Images with extensive vandalization can overflow the parameter limit.
+      # Per-query parameter count is bounded via batching here.
+      ids
+      |> Enum.chunk_every(1_000)
+      |> Enum.with_index()
+      |> Enum.reduce(Multi.new(), fn {ids, batch}, multi ->
+        pairs =
+          Enum.map(ids, fn {change_id, tag_id} ->
+            %{tag_change_id: change_id, tag_id: tag_id}
+          end)
 
-          ids ->
-            pairs =
-              Enum.map(ids, fn {change_id, tag_id} ->
-                %{tag_change_id: change_id, tag_id: tag_id}
-              end)
+        query =
+          from entry in TagChangeTag,
+            join: pair in values(pairs, %{tag_change_id: :integer, tag_id: :integer}),
+            on: entry.tag_change_id == pair.tag_change_id and entry.tag_id == pair.tag_id
 
-            from entry in TagChangeTag,
-              join: pair in values(pairs, %{tag_change_id: :integer, tag_id: :integer}),
-              on: entry.tag_change_id == pair.tag_change_id and entry.tag_id == pair.tag_id
-        end
-
-      put_delete_tag_change_tags(Multi.new(), {:deleted, image_id}, query)
+        put_delete_tag_change_tags(multi, {:deleted, image_id, batch}, query)
+      end)
     end)
   end
 

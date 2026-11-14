@@ -5223,6 +5223,31 @@ defmodule Philomena.ImagesTest do
   end
 
   describe "create_image_tag_change_squash/2" do
+    test "removes canceled rows across deletion batches" do
+      base_tags = "safe, base one, base two"
+      image = image_fixture(tags: base_tags)
+      moderator = actor(moderator_user_fixture())
+      added_tags = Enum.map_join(1..1_001, ", ", &"squash batch tag #{&1}")
+      tag_input = base_tags <> ", " <> added_tags
+
+      assert {:ok, _} =
+               Images.update_image_tags(moderator, image.id, %{
+                 "old_tag_input" => base_tags,
+                 "tag_input" => tag_input
+               })
+
+      assert {:ok, _} =
+               Images.update_image_tags(moderator, image.id, %{
+                 "old_tag_input" => tag_input,
+                 "tag_input" => base_tags
+               })
+
+      assert Repo.aggregate(from(c in TagChange, where: c.image_id == ^image.id), :count) == 2
+      assert {:ok, _} = Images.create_image_tag_change_squash(moderator, image.id)
+      refute Repo.exists?(from c in TagChange, where: c.image_id == ^image.id)
+      assert {:ok, _} = Images.create_image_tag_change_squash(moderator, image.id)
+    end
+
     test "removes canceled tag rows and cleans up empty batches" do
       image = image_fixture(tags: "safe, base one, base two")
       tag = tag_fixture()
