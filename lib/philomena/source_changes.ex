@@ -312,6 +312,50 @@ defmodule Philomena.SourceChanges do
   end
 
   @doc """
+  Removes canceling addition/removal pairs from a locked image's source
+  history, as a workflow step.
+
+  Unmatched changes and the image's current state are preserved.
+  """
+  @spec put_squash_source_changes(Multi.t(), Loader.integer_id()) :: Multi.t()
+  def put_squash_source_changes(%Multi{} = multi, image_id) do
+    multi
+    |> Multi.all(
+      {image_id, :history},
+      SourceChange
+      |> where(image_id: ^image_id)
+      |> order_by(asc: :created_at, asc: :id)
+      |> select([entry], %{id: entry.id, key: entry.source_url, added: entry.added})
+    )
+    |> Multi.merge(fn %{{^image_id, :history} => history} ->
+      {_pending, ids} =
+        Enum.reduce(history, {%{}, []}, fn entry, {pending, ids} ->
+          case Map.get(pending, entry.key, []) do
+            [previous | rest] when previous.added != entry.added ->
+              {Map.put(pending, entry.key, rest), [entry.id, previous.id | ids]}
+
+            entries ->
+              previous = %{id: entry.id, added: entry.added}
+              {Map.put(pending, entry.key, [previous | entries]), ids}
+          end
+        end)
+
+      # Images with extensive vandalization can overflow the parameter limit.
+      # Per-query parameter count is bounded via batching here.
+      ids
+      |> Enum.chunk_every(1_000)
+      |> Enum.with_index()
+      |> Enum.reduce(Multi.new(), fn {ids, batch}, multi ->
+        Multi.delete_all(
+          multi,
+          {:deleted, image_id, batch},
+          where(SourceChange, [entry], entry.id in ^ids)
+        )
+      end)
+    end)
+  end
+
+  @doc """
   Records added and removed source URLs from an image mutation in `multi`.
 
   The image owner can attach any image reindex needed by the surrounding

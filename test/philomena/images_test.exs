@@ -43,6 +43,7 @@ defmodule Philomena.ImagesTest do
   import Philomena.AttributionFixtures
   import Philomena.CommentsFixtures
   import Philomena.RulesFixtures
+  import Philomena.TagChangesFixtures
   import Philomena.TagsFixtures
 
   # A truthy ban value in the shape production passes (the result of
@@ -5199,6 +5200,88 @@ defmodule Philomena.ImagesTest do
       refute "batchhiddentag" in image_tag_names(hidden)
       assert "batchhiddentag" in image_tag_names(visible)
       assert Repo.get_by!(Tag, name: "batchhiddentag").images_count == 1
+    end
+  end
+
+  describe "create_image_source_change_squash/2" do
+    test "removes pairs, preserves the latest unmatched change and other images" do
+      image = image_fixture()
+      other = image_fixture()
+      first = source_change_fixture(image)
+      removed = source_change_fixture(image, %{added: false})
+      retained = source_change_fixture(image)
+      unrelated = source_change_fixture(other, %{added: false})
+      moderator = actor(moderator_user_fixture())
+
+      assert {:ok, _} = Images.create_image_source_change_squash(moderator, image.id)
+      refute Repo.get(SourceChange, first.id)
+      refute Repo.get(SourceChange, removed.id)
+      assert Repo.get(SourceChange, retained.id)
+      assert Repo.get(SourceChange, unrelated.id)
+      assert {:ok, _} = Images.create_image_source_change_squash(moderator, image.id)
+    end
+  end
+
+  describe "create_image_tag_change_squash/2" do
+    test "removes canceled rows across deletion batches" do
+      base_tags = "safe, base one, base two"
+      image = image_fixture(tags: base_tags)
+      moderator = actor(moderator_user_fixture())
+      added_tags = Enum.map_join(1..1_001, ", ", &"squash batch tag #{&1}")
+      tag_input = base_tags <> ", " <> added_tags
+
+      assert {:ok, _} =
+               Images.update_image_tags(moderator, image.id, %{
+                 "old_tag_input" => base_tags,
+                 "tag_input" => tag_input
+               })
+
+      assert {:ok, _} =
+               Images.update_image_tags(moderator, image.id, %{
+                 "old_tag_input" => tag_input,
+                 "tag_input" => base_tags
+               })
+
+      assert Repo.aggregate(from(c in TagChange, where: c.image_id == ^image.id), :count) == 2
+      assert {:ok, _} = Images.create_image_tag_change_squash(moderator, image.id)
+      refute Repo.exists?(from c in TagChange, where: c.image_id == ^image.id)
+      assert {:ok, _} = Images.create_image_tag_change_squash(moderator, image.id)
+    end
+
+    test "removes canceled tag rows and cleans up empty batches" do
+      image = image_fixture(tags: "safe, base one, base two")
+      tag = tag_fixture()
+      user = moderator_user_fixture()
+      first = create_tag_change!(image, tag, user, true)
+      removed = create_tag_change!(image, tag, user, false)
+      retained = create_tag_change!(image, tag, user, true)
+
+      assert {:ok, _} = Images.create_image_tag_change_squash(actor(user), image.id)
+      refute Repo.get(TagChange, first.id)
+      refute Repo.get(TagChange, removed.id)
+      assert Repo.get(TagChange, retained.id)
+      assert {:ok, _} = Images.create_image_tag_change_squash(actor(user), image.id)
+    end
+
+    test "preserves the unmatched part of a batch" do
+      image = image_fixture(tags: "safe, base one, base two")
+      user = moderator_user_fixture()
+      tag = tag_fixture()
+      kept = tag_fixture()
+
+      {:ok, _} =
+        Images.update_image_tags(actor(user), image.id, %{
+          "old_tag_input" => "safe, base one, base two",
+          "tag_input" => "safe, base one, base two, #{tag.name}, #{kept.name}"
+        })
+
+      batch = Repo.one!(from c in TagChange, where: c.image_id == ^image.id)
+      removed = create_tag_change!(image, tag, user, false)
+
+      assert {:ok, _} = Images.create_image_tag_change_squash(actor(user), image.id)
+      refute Repo.get(TagChange, removed.id)
+      remaining = Repo.get!(TagChange, batch.id) |> Repo.preload(:tag_change_tags)
+      assert Enum.map(remaining.tag_change_tags, & &1.tag_id) == [kept.id]
     end
   end
 
