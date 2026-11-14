@@ -1360,11 +1360,14 @@ defmodule Philomena.Tags do
             }
           end)
 
-        {_count, nil} =
+        rows
+        |> Enum.chunk_every(10_000)
+        |> Enum.each(fn rows ->
           repo.insert_all(Tag, rows,
             on_conflict: update(Tag, inc: [images_count: fragment("EXCLUDED.images_count")]),
             conflict_target: [:id]
           )
+        end)
 
         {:ok, Enum.map(rows, & &1.id)}
     end)
