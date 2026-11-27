@@ -5,6 +5,7 @@
 import store from './utils/store';
 import { $, $$, hideEl, showEl } from './utils/dom';
 import { assertNotNull, assertType } from './utils/assert';
+import { filterNode } from './imagesclientside';
 
 let touchMoved = false;
 
@@ -16,6 +17,7 @@ function formResult({ target, detail }: FetchcompleteEvent) {
 
   function showResult(formEl: HTMLFormElement, resultEl: HTMLElement, response: string) {
     resultEl.innerHTML = response;
+    filterNode(resultEl);
     hideEl(formEl);
     showEl(resultEl);
 
