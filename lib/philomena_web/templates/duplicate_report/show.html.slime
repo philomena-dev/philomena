@@ -17,7 +17,7 @@ elixir:
     ' Onion skin
 
 h1 Difference
-.difference#subtractive
+.difference.zoomable#subtractive
   svg.difference__image viewBox="0 0 #{width} #{height}" height=height
     defs
       filter#overlay-diff
@@ -30,7 +30,7 @@ h1 Difference
     rect width=width height=height filter="url(#overlay-diff)"
 
 h1 Swipe
-.swipe#swipe
+.swipe.zoomable#swipe
   svg.swipe__image viewBox="0 0 #{width} #{height}" height=height
     defs
       pattern#checkerboard width="16" height="16" patternUnits="userSpaceOnUse"
@@ -46,7 +46,7 @@ h1 Swipe
     rect#divider width="3" height=height x=div(width, 2) fill="#000" stroke="#fff" stroke-width="1"
 
 h1 Onion Skin
-.onion-skin#onion-skin
+.onion-skin.zoomable#onion-skin
   svg.onion-skin__image viewBox="0 0 #{width} #{height}" height=height
     defs
       pattern#checkerboard width="16" height="16" patternUnits="userSpaceOnUse"
