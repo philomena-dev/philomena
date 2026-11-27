@@ -5,7 +5,7 @@
 import { assertNotNull } from './utils/assert';
 import { needsChromiumJpegNormalization, replaceFilterImageHrefIfNeeded } from './utils/browser-workarounds';
 import { $, $$, makeEl } from './utils/dom';
-import { normalizedKeyboardKey, keys, isShortcutEvent } from './utils/keyboard';
+import { isShortcutEvent, keys, normalizedKeyboardKey } from './utils/keyboard';
 
 export function setupDupeReports() {
   const diffImageSource = $<SVGFEImageElement>('feImage#source');
@@ -14,6 +14,7 @@ export function setupDupeReports() {
     setupBrowserWorkarounds(diffImageSource, diffImageTarget);
   }
 
+  const diff = $<SVGSVGElement>('.difference__image');
   const onion = $<SVGSVGElement>('.onion-skin__image');
   const slider = $<HTMLInputElement>('.onion-skin__slider');
   const swipe = $<SVGSVGElement>('.swipe__image');
@@ -21,6 +22,7 @@ export function setupDupeReports() {
   if (swipe) setupSwipe(swipe);
   if (onion && slider) setupOnionSkin(onion, slider);
 
+  setupZoomForImages(diff, swipe, onion);
   setupKeyBindings();
 
   document.addEventListener('fetchcomplete', mergeDuplicateReportTable);
@@ -124,5 +126,102 @@ function mergeDuplicateReportTable({ target, detail }: FetchcompleteEvent) {
         updateTarget.outerHTML = child.outerHTML;
       }
     }
+  });
+}
+
+function setupZoomForImages(...zoomableElements: (Element | null)[]) {
+  for (const zoomableElement of zoomableElements) {
+    if (!(zoomableElement instanceof SVGElement)) continue;
+
+    const zoomableContainer = zoomableElement?.closest('.zoomable');
+    if (!(zoomableContainer instanceof HTMLElement)) continue;
+
+    initializeZoom(zoomableContainer, zoomableElement);
+  }
+}
+
+function clamp(minValue: number, value: number, maxValue: number) {
+  return Math.min(Math.max(minValue, value), maxValue);
+}
+
+/**
+ * Setting up zoom for each of the duplicate report image diffs.
+ *
+ * Zooming is configured as Ctrl + MouseWheel, while panning can be done by regular vertical/horizontal scroll.
+ *
+ * @param container Outer container.
+ * @param imageElement Element that should be zoomed.
+ */
+function initializeZoom(container: HTMLElement, imageElement: SVGElement) {
+  const maxZoomPower = 5;
+
+  let zoomPower = 0,
+    zoomRatio = 1,
+    offsetX: number | null = null,
+    offsetY: number | null = null;
+
+  const applyZoomAndScrollOffset = () => {
+    // Just to be safer, on the first refresh we should force the static height for the container.
+    container.style.height ||= `${container.offsetHeight}px`;
+    imageElement.style.zoom = zoomRatio.toString();
+
+    // When scroll offset compensation is required, apply it.
+    if (offsetX !== null || offsetY !== null) {
+      const scrollOptions: ScrollToOptions = {
+        behavior: 'instant',
+      };
+
+      if (offsetX !== null) {
+        scrollOptions.left = offsetX;
+        offsetX = null;
+      }
+
+      if (offsetY !== null) {
+        scrollOptions.top = offsetY;
+        offsetY = null;
+      }
+
+      container.scrollTo(scrollOptions);
+    }
+  };
+
+  container.addEventListener('wheel', wheelEvent => {
+    if (!wheelEvent.ctrlKey) return;
+
+    wheelEvent.preventDefault();
+
+    const anyScrollDelta = wheelEvent.deltaX || wheelEvent.deltaY;
+    const zoomRatioDirection = (anyScrollDelta > 0 && -1) || (anyScrollDelta < 0 && 1) || 0;
+
+    if (!zoomRatioDirection) return;
+
+    // To make it so image is zoomed in centered on cursor, we need to figure out where it's located.
+    // Should avoid using this one for other calculations, since it depends on the browser global zoom, fine for
+    // calculating ratio.
+    const containerRect = container.getBoundingClientRect();
+
+    let cursorRatioX = (wheelEvent.clientX - containerRect.x) / containerRect.width;
+    let cursorRatioY = (wheelEvent.clientY - containerRect.y) / containerRect.height;
+
+    cursorRatioX = clamp(0, cursorRatioX, 1);
+    cursorRatioY = clamp(0, cursorRatioY, 1);
+
+    const cursorOffsetX = container.offsetWidth * cursorRatioX;
+    const cursorOffsetY = container.offsetHeight * cursorRatioY;
+
+    // Zooming using top-left corner + cursor offset
+    const baseZoomOffsetX = (container.scrollLeft + cursorOffsetX) / zoomRatio;
+    const baseZoomOffsetY = (container.scrollTop + cursorOffsetY) / zoomRatio;
+
+    // Changing the zoom
+    zoomPower += zoomRatioDirection;
+    zoomPower = clamp(0, zoomPower, maxZoomPower);
+    zoomRatio = Math.pow(2, zoomPower);
+
+    // And then applying the zoom and un-compensating cursor offset back
+    offsetX = baseZoomOffsetX * zoomRatio - cursorOffsetX;
+    offsetY = baseZoomOffsetY * zoomRatio - cursorOffsetY;
+
+    applyZoomAndScrollOffset();
   });
 }
