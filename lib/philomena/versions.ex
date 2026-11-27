@@ -8,8 +8,8 @@ defmodule Philomena.Versions do
 
   Version rows are after-edit snapshots. On the first meaningful edit, an
   initial row captures the parent's original state and attribution before the
-  edited snapshot is inserted. An update that changes neither the body nor the
-  edit reason creates no history rows.
+  edited snapshot is inserted. Only updates that change the body are considered
+  meaningful.
   """
 
   import Ecto.Query, warn: false
@@ -24,7 +24,7 @@ defmodule Philomena.Versions do
   alias Philomena.Users.User
 
   defp meaningful_edit?(original, updated) do
-    original.body != updated.body or original.edit_reason != updated.edit_reason
+    original.body != updated.body
   end
 
   defp maybe_insert_initial(repo, schema, foreign_key, original) do
@@ -118,7 +118,7 @@ defmodule Philomena.Versions do
   parent before and after its update. Both must have the same supported parent
   type. The actor's user attributes the edited snapshot. This step inserts the
   initial and edited snapshots atomically with the parent update, or returns
-  `nil` without inserting history when body and edit reason are unchanged.
+  `nil` without inserting history when the body is unchanged.
 
   The parent's update lock serializes concurrent edits. Same-second snapshots
   are ordered by their increasing database ids.
