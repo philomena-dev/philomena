@@ -55,7 +55,6 @@ defmodule Philomena.Schema.ApprovalTest do
 
       for body <- [
             "https://spam.example/",
-            "https\\://spam.example/",
             "HTTPS://spam.example/",
             "https://#{site_domain()}.spam.example/",
             "https://#{site_domain()}@spam.example/",
@@ -69,6 +68,30 @@ defmodule Philomena.Schema.ApprovalTest do
     test "holds image embeds" do
       assert Approval.approved?(new_user(), "[link](/images/1)", :image_embeds)
       refute Approval.approved?(new_user(), "![embed](/images/1)", :image_embeds)
+    end
+
+    test "checks parsed Markdown nodes rather than code or incomplete syntax" do
+      assert Approval.approved?(new_user(), "`https://spam.example/`", :external_links)
+      assert Approval.approved?(new_user(), "`![embed](https://spam.example/)`", :image_embeds)
+      assert Approval.approved?(new_user(), "![incomplete", :image_embeds)
+
+      refute Approval.approved?(
+               new_user(),
+               "[link][target]\n\n[target]: https://spam.example/",
+               :external_links
+             )
+
+      refute Approval.approved?(
+               new_user(),
+               "![image](https://spam.example/image.png)",
+               :external_links
+             )
+
+      refute Approval.approved?(
+               new_user(),
+               "![image][target]\n\n[target]: /image.png",
+               :image_embeds
+             )
     end
   end
 

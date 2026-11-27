@@ -13,6 +13,16 @@ rustler::init! {
 // Markdown NIF wrappers.
 
 #[rustler::nif(schedule = "DirtyCpu")]
+fn markdown_links(input: &str) -> Vec<String> {
+    markdown::links(input)
+}
+
+#[rustler::nif(schedule = "DirtyCpu")]
+fn markdown_has_image(input: &str) -> bool {
+    markdown::has_image(input)
+}
+
+#[rustler::nif(schedule = "DirtyCpu")]
 fn markdown_to_html(input: &str, reps: HashMap<String, String>) -> String {
     markdown::to_html(input, reps)
 }

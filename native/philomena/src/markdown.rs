@@ -1,5 +1,5 @@
 use crate::{camo, domains};
-use comrak::Options;
+use comrak::{Arena, Options, nodes::NodeValue, parse_document};
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -50,4 +50,26 @@ pub fn to_html_unsafe(input: &str, reps: HashMap<String, String>) -> String {
     options.extension.replacements = Some(reps);
 
     comrak::markdown_to_html(input, &options)
+}
+
+pub fn links(input: &str) -> Vec<String> {
+    let arena = Arena::new();
+    let options = common_options();
+    let root = parse_document(&arena, input, &options);
+
+    root.descendants()
+        .filter_map(|node| match &node.data.borrow().value {
+            NodeValue::Link(link) | NodeValue::Image(link) => Some(link.url.clone()),
+            _ => None,
+        })
+        .collect()
+}
+
+pub fn has_image(input: &str) -> bool {
+    let arena = Arena::new();
+    let options = common_options();
+    let root = parse_document(&arena, input, &options);
+
+    root.descendants()
+        .any(|node| matches!(node.data.borrow().value, NodeValue::Image(_)))
 }
