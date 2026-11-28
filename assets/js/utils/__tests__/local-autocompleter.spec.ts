@@ -112,6 +112,7 @@ describe('LocalAutocompleter', () => {
     });
 
     it('should return suggestions sorted by image count', () => {
+      // spellchecker:off
       expectLocalAutocomplete(termStem).toMatchInlineSnapshot(`
         [
           "{fo}rest (3)",
@@ -119,6 +120,7 @@ describe('LocalAutocompleter', () => {
           "{fo}g (1)",
         ]
       `);
+      // spellchecker:on
     });
 
     it('should return namespaced suggestions without including namespace', () => {
@@ -130,11 +132,13 @@ describe('LocalAutocompleter', () => {
     });
 
     it('should return only the required number of suggestions', () => {
+      // spellchecker:off
       expectLocalAutocomplete(termStem, 1).toMatchInlineSnapshot(`
         [
           "{fo}rest (3)",
         ]
       `);
+      // spellchecker:on
     });
 
     it('should NOT return suggestions associated with hidden tags', () => {
