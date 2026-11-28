@@ -29,6 +29,20 @@ defmodule Philomena.Markdown do
     do: Philomena.Native.markdown_diff_to_html(old, new)
 
   @doc """
+  Extracts the links which would be rendered in the Markdown source as strings.
+  """
+  @spec links(String.t()) :: [String.t()]
+  def links(text),
+    do: Philomena.Native.markdown_links(text)
+
+  @doc """
+  Determines whether the Markdown source contains an image reference.
+  """
+  @spec has_image?(String.t()) :: boolean()
+  def has_image?(text),
+    do: Philomena.Native.markdown_has_image(text)
+
+  @doc """
   Escapes special characters in text which is to be rendered as Markdown.
   """
   @spec escape(String.t()) :: String.t()

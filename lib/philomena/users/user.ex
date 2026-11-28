@@ -374,10 +374,21 @@ defmodule Philomena.Users.User do
     user
     |> cast(attrs, [:name])
     |> validate_name()
+    |> validate_name_changed()
     |> put_slug()
     |> unique_constraints()
     |> put_change(:last_renamed_at, DateTime.utc_now(:second))
   end
+
+  defp validate_name_changed(%{valid?: true, data: user} = changeset) do
+    if get_field(changeset, :name) == user.name do
+      add_error(changeset, :name, "must be different from your current name")
+    else
+      changeset
+    end
+  end
+
+  defp validate_name_changed(changeset), do: changeset
 
   def avatar_changeset(user, attrs) do
     user

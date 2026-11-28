@@ -1,23 +1,34 @@
 defmodule Philomena.Schema.Approval do
   import Ecto.Changeset
 
-  @image_embed_regex ~r/!+\[/
+  alias Philomena.Markdown
 
-  # site_domains is not a user-controlled input
-  # sobelow_skip ["DOS.Regex"]
-  defp external_link_regex do
-    site_domains =
-      String.split(Application.get_env(:philomena, :site_domains), ",") ++
-        [Application.get_env(:philomena, :cdn_host)]
+  defp relative_link?(%URI{scheme: nil, host: nil}), do: true
+  defp relative_link?(%URI{}), do: false
 
-    Regex.compile!(
-      "https?\\\\?:(?:\\\\*\\/?)*+(?!(?:#{Enum.map_join(site_domains, "|", &Regex.escape/1)})(?::\\d+)?(?=[\\/?#\\s)\\]>\"'<]|$))",
-      "i"
-    )
+  defp site_domains do
+    String.split(Application.get_env(:philomena, :site_domains), ",") ++
+      [Application.get_env(:philomena, :cdn_host)]
   end
 
-  defp regex(:external_links), do: external_link_regex()
-  defp regex(:image_embeds), do: @image_embed_regex
+  defp trusted_link?(trusted_domains, link) do
+    uri = URI.parse(link)
+    host = uri.host && String.downcase(uri.host)
+
+    relative_link?(uri) or host in trusted_domains
+  end
+
+  defp automatic_approval?(body, :image_embeds) do
+    not Markdown.has_image?(body)
+  end
+
+  defp automatic_approval?(body, :external_links) do
+    domains = site_domains()
+
+    body
+    |> Markdown.links()
+    |> Enum.all?(&trusted_link?(domains, &1))
+  end
 
   def trusted?(nil), do: false
   def trusted?(user) when user.role != "user", do: true
@@ -31,7 +42,7 @@ defmodule Philomena.Schema.Approval do
   def approved?(_user, "", _check), do: true
 
   def approved?(user, body, check) do
-    trusted?(user) or not Regex.match?(regex(check), body)
+    trusted?(user) or automatic_approval?(body, check)
   end
 
   def maybe_put_approval(

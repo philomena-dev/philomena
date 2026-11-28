@@ -479,4 +479,10 @@ fn nif_api() {
         to_html_unsafe("<b>Hello world</b>", Default::default()),
         "<div class=\"paragraph\"><b>Hello world</b></div>\n"
     );
+    assert_eq!(
+        links("[link](https://example.com) ![image](/image.png)"),
+        vec!["https://example.com", "/image.png"]
+    );
+    assert!(has_image("![image](/image.png)"));
+    assert!(!has_image("`![image](/image.png)`"));
 }

@@ -36,6 +36,7 @@ describe('prefixMatchParts', () => {
   });
 
   it(`should ignore case when matching`, () => {
+    // spellchecker:ignore-next-line
     expect(prefixMatchParts('FOObar', 'foo')).toMatchInlineSnapshot(`
       [
         {

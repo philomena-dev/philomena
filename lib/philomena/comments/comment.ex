@@ -46,7 +46,7 @@ defmodule Philomena.Comments.Comment do
     changeset =
       comment
       |> cast(attrs, [:body, :edit_reason])
-      |> put_change(:edited_at, edited_at)
+      |> maybe_put_edit_metadata(edited_at)
       |> validate_required([:body])
       |> validate_length(:body, min: 1, max: 300_000, count: :bytes)
       |> validate_length(:edit_reason, max: 70, count: :bytes)
@@ -57,6 +57,14 @@ defmodule Philomena.Comments.Comment do
       :became_approved?,
       not comment.approved and get_field(changeset, :approved)
     )
+  end
+
+  defp maybe_put_edit_metadata(changeset, edited_at) do
+    if changed?(changeset, :body) do
+      put_change(changeset, :edited_at, edited_at)
+    else
+      delete_change(changeset, :edit_reason)
+    end
   end
 
   def hide_changeset(comment, attrs, user) do

@@ -1382,6 +1382,23 @@ defmodule Philomena.UsersTest do
       assert %{name: ["can't be blank"]} = errors_on(changeset)
     end
 
+    test "the current name is rejected without consuming the rename attempt" do
+      user = renameable_user()
+
+      for name <- [user.name, "  #{user.name}  "] do
+        assert {:error, %Ecto.Changeset{} = changeset} =
+                 Users.update_name(actor(user), %{"name" => name})
+
+        assert %{name: ["must be different from your current name"]} = errors_on(changeset)
+        stored = Users.fetch_user_for_worker!(user.id)
+        assert stored.name == user.name
+        assert stored.last_renamed_at == user.last_renamed_at
+        refute Repo.get_by(Philomena.UserNameChanges.UserNameChange, user_id: user.id)
+      end
+
+      assert {:ok, _} = Users.update_name(actor(user), %{"name" => "actually_renamed"})
+    end
+
     test "a case variant of another user's name is a rejected changeset" do
       %{name: taken} = user_fixture(%{name: "TakenName#{System.unique_integer([:positive])}"})
       user = renameable_user()

@@ -7,13 +7,18 @@ extend-ignore-re = [
   # Key constraints with encoded names
   "fk_rails_[a-f0-9]+",
 
-  # Often used in tests as a partial match for `foo`
-  "fo",
-  "FO",
-
   # Database dumps
   "\\\\restrict.*",
-  "\\\\unrestrict.*"
+  "\\\\unrestrict.*",
+
+  # Ignore lines that end with `# spellchecker:disable-line`
+  "(?Rm)^.*(#|//)\\s*spellchecker:disable-line$",
+
+  # Ignore the line after `# spellchecker:ignore-next-line`:
+  "(#|//)\\s*spellchecker:ignore-next-line\\n.*",
+
+  # Ignore blocks between `# spellchecker:off` and `# spellchecker:on`
+  "(?s)(#|//)\\s*spellchecker:off.*?\\n\\s*(#|//)\\s*spellchecker:on",
 ]
 
 [default.extend-words]

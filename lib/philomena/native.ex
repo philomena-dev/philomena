@@ -12,6 +12,12 @@ defmodule Philomena.Native do
   @spec markdown_diff_to_html(String.t(), String.t()) :: String.t()
   def markdown_diff_to_html(_old, _new), do: :erlang.nif_error(:nif_not_loaded)
 
+  @spec markdown_links(String.t()) :: [String.t()]
+  def markdown_links(_text), do: :erlang.nif_error(:nif_not_loaded)
+
+  @spec markdown_has_image(String.t()) :: boolean()
+  def markdown_has_image(_text), do: :erlang.nif_error(:nif_not_loaded)
+
   @spec camo_image_url(String.t()) :: String.t()
   def camo_image_url(_uri), do: :erlang.nif_error(:nif_not_loaded)
 

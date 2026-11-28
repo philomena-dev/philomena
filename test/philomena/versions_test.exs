@@ -3,6 +3,7 @@ defmodule Philomena.VersionsTest do
 
   alias Philomena.Multi
   alias Philomena.Comments
+  alias Philomena.Comments.Comment
   alias Philomena.Comments.CommentVersion
   alias Philomena.Posts
   alias Philomena.Posts.Post
@@ -110,16 +111,37 @@ defmodule Philomena.VersionsTest do
       assert Repo.get!(Post, stale_post.id).edit_reason == second_edit.edit_reason
     end
 
-    test "an update with unchanged body and edit reason creates no history" do
+    test "an unchanged body does not record edit metadata or history" do
       {post, author} = post_fixture_with_body("same body")
 
-      assert {:ok, %Post{}} =
+      assert {:ok, %Post{edited_at: nil, edit_reason: nil}} =
                update_post(post, actor(author), %{
                  "body" => post.body,
-                 "edit_reason" => post.edit_reason
+                 "edit_reason" => "reason only"
                })
 
+      assert %{edited_at: nil, edit_reason: nil} = Repo.get!(Post, post.id)
       assert post_versions(post) == []
+    end
+
+    test "unchanged body preserves edit metadata and history" do
+      {post, author} = post_fixture_with_body("original")
+
+      {:ok, post} =
+        update_post(post, actor(author), %{"body" => "edited", "edit_reason" => "first"})
+
+      versions = post_versions(post)
+
+      assert {:ok, updated} =
+               update_post(post, actor(author), %{
+                 "body" => post.body,
+                 "edit_reason" => "different"
+               })
+
+      reloaded = Repo.get!(Post, post.id)
+      assert {updated.edited_at, updated.edit_reason} == {post.edited_at, "first"}
+      assert {reloaded.edited_at, reloaded.edit_reason} == {post.edited_at, "first"}
+      assert post_versions(post) == versions
     end
 
     test "the parent update and version rows roll back together" do
@@ -173,13 +195,41 @@ defmodule Philomena.VersionsTest do
       image = image_fixture()
       comment = comment_fixture(image, user, %{"body" => "same"})
 
-      assert {:ok, _comment} =
+      assert {:ok, {_image, %{edited_at: nil, edit_reason: nil}}} =
                Comments.update_comment(actor(user), image.id, comment.id, %{
                  "body" => comment.body,
-                 "edit_reason" => comment.edit_reason
+                 "edit_reason" => "reason only"
                })
 
+      assert %{edited_at: nil, edit_reason: nil} = Repo.get!(Comment, comment.id)
       assert comment_versions(comment) == []
+    end
+  end
+
+  describe "unchanged comment bodies" do
+    test "preserve edit metadata and history" do
+      user = confirmed_user_fixture()
+      image = image_fixture()
+      comment = comment_fixture(image, user, %{"body" => "original"})
+
+      {:ok, {_image, comment}} =
+        Comments.update_comment(actor(user), image.id, comment.id, %{
+          "body" => "edited",
+          "edit_reason" => "first"
+        })
+
+      versions = comment_versions(comment)
+
+      assert {:ok, {_image, updated}} =
+               Comments.update_comment(actor(user), image.id, comment.id, %{
+                 "body" => comment.body,
+                 "edit_reason" => "different"
+               })
+
+      reloaded = Repo.get!(Comment, comment.id)
+      assert {updated.edited_at, updated.edit_reason} == {comment.edited_at, "first"}
+      assert {reloaded.edited_at, reloaded.edit_reason} == {comment.edited_at, "first"}
+      assert comment_versions(comment) == versions
     end
   end
 
